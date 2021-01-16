@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Authors>MarcinZiabek</Authors>
+        <Company>CodeFlint</Company>
+        <PackageId>QuestPDF</PackageId>
+        <Version>2021.1.0</Version>
+        <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.</PackageDescription>
+        <PackageReleaseNotes>The library is open-source and totally free now. Removed watermak.</PackageReleaseNotes>
+        <LangVersion>8</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageIcon>Logo.png</PackageIcon>
+        <PackageIconUrl>https://www.questpdf.com/images/package-logo.png</PackageIconUrl>
+        <PackageProjectUrl>https://www.questpdf.com/</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/QuestPDF/library.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Copyright>QuestPDF contributors</Copyright>
+        <PackageTags>PDF file export generate create render portable document format quest free</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Nullable>enable</Nullable>
+        <TargetFrameworks>net462;netstandard2.0;netcoreapp2.0;netcoreapp3.0</TargetFrameworks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SkiaSharp" Version="2.80.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\ImagePlaceholder.png" />
+      <None Remove="ImagePlaceholder.png" />
+      <None Include="Resources\Logo.png">
+        <Pack>true</Pack>
+        <Visible>false</Visible>
+        <PackagePath>\</PackagePath>
+      </None>
+    </ItemGroup>
+
+</Project>

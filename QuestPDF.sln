@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.ReportSample", "QuestPDF.ReportSample\QuestPDF.ReportSample.csproj", "{6718C16B-CB31-46E0-A9A6-920EBC36BE4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF", "QuestPDF\QuestPDF.csproj", "{1FA7DFE3-8FBF-4D14-887F-03231B75F93F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.UnitTests", "QuestPDF.UnitTests\QuestPDF.UnitTests.csproj", "{4D0CC9F4-46D9-4015-AE24-08A5B5CC7AE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.Examples", "QuestPDF.Examples\QuestPDF.Examples.csproj", "{8BD0A2B4-2DC1-47BA-9724-C158320D9CAE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6718C16B-CB31-46E0-A9A6-920EBC36BE4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6718C16B-CB31-46E0-A9A6-920EBC36BE4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6718C16B-CB31-46E0-A9A6-920EBC36BE4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6718C16B-CB31-46E0-A9A6-920EBC36BE4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FA7DFE3-8FBF-4D14-887F-03231B75F93F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FA7DFE3-8FBF-4D14-887F-03231B75F93F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FA7DFE3-8FBF-4D14-887F-03231B75F93F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FA7DFE3-8FBF-4D14-887F-03231B75F93F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4D0CC9F4-46D9-4015-AE24-08A5B5CC7AE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D0CC9F4-46D9-4015-AE24-08A5B5CC7AE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D0CC9F4-46D9-4015-AE24-08A5B5CC7AE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D0CC9F4-46D9-4015-AE24-08A5B5CC7AE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BD0A2B4-2DC1-47BA-9724-C158320D9CAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BD0A2B4-2DC1-47BA-9724-C158320D9CAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BD0A2B4-2DC1-47BA-9724-C158320D9CAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BD0A2B4-2DC1-47BA-9724-C158320D9CAE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

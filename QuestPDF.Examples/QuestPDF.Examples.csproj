@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="nunit" Version="3.12.0" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.15.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+        <PackageReference Include="SkiaSharp" Version="2.80.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\QuestPDF.InvoiceSample\QuestPDF.InvoiceSample.csproj" />
+      <ProjectReference Include="..\QuestPDF\QuestPDF.csproj" />
+    </ItemGroup>
+
+</Project>
