@@ -1,5 +1,5 @@
 <a href="https://www.questpdf.com/">
-  <img src="images/logo.svg" width="400px"> 
+  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="400px"> 
 </a>
 
 QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.
@@ -24,7 +24,7 @@ QuestPDF is an open-source, modern and battle-tested library that can help you w
 The library is available as a nuget package. You can install it as any other nuget package from your IDE, try to search by `QuestPDF`. You can find package details [on this webpage](https://www.nuget.org/packages/QuestPDF/).
 
 <a href="https://www.nuget.org/packages/QuestPDF/">
-  <img src="images/nuget.svg" width="200px">  
+  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/nuget.svg" width="200px">  
 </a>
 
 
@@ -36,4 +36,4 @@ For tutorial, documentation and API reference, please visit [the QuestPDF docume
 
 This repository contains sample implementation of the full, page-aware invoice similar to the one below. Let's get started!
 
-<img src="images/invoice.png" width="595px">
+<img src="https://github.com/QuestPDF/example-invoice/raw/main/images/invoice.png" width="595px">
