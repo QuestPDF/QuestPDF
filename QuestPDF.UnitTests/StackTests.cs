@@ -2,7 +2,7 @@
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
-using QuestPDF.UnitTests.MeasureTest;
+using QuestPDF.UnitTests.TestEngine;
 
 namespace QuestPDF.UnitTests
 {
@@ -220,6 +220,9 @@ namespace QuestPDF.UnitTests
                 .ExpectCanvasTranslate(0, -250)
 
                 .ExpectChildMeasure("c", expectedInput: new Size(500, 400), returns: new FullRender(Size.Zero))
+                .ExpectCanvasTranslate(0, 600)
+                .ExpectChildDraw("c", new Size(500, 0))
+                .ExpectCanvasTranslate(0, -600)
 
                 .ExpectChildMeasure("d", expectedInput: new Size(500, 400), returns: new FullRender(200, 400))
                 .ExpectCanvasTranslate(0, 600)

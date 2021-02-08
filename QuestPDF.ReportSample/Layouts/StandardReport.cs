@@ -71,7 +71,7 @@ namespace QuestPDF.ReportSample.Layouts
 
                 });
                 
-                row.ConstantColumn(150).Image(Model.LogoData);
+                row.ConstantColumn(150).ExternalLink("https://www.questpdf.com").Image(Model.LogoData);
             });
         }
 
@@ -81,11 +81,14 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 stack.Spacing(20);
 
+                stack.Element().Component(new TableOfContentsTemplate(Model.Sections));
+                
                 foreach (var section in Model.Sections)
-                    stack.Element().Component(new SectionTemplate(section));
+                    stack.Element().Location(section.Title).Component(new SectionTemplate(section));
 
                 stack.Element().PageBreak();
-
+                stack.Element().Location("Photos");
+                
                 foreach (var photo in Model.Photos)
                     stack.Element().Component(new PhotoTemplate(photo));
             });

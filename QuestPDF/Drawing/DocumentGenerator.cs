@@ -12,7 +12,6 @@ namespace QuestPDF.Drawing
     static class DocumentGenerator
     {
         const int DocumentLayoutExceptionThreshold = 250;
-        private static readonly Watermark Watermark = new Watermark();
 
         internal static void Generate(Stream stream, IDocument document)
         {

@@ -66,6 +66,14 @@ namespace QuestPDF.Fluent
             });
         }
         
+        public static void DynamicImage(this IContainer element, Func<Size, byte[]> imageSource)
+        {
+            element.Element(new DynamicImage
+            {
+                Source = imageSource
+            });
+        }
+        
         public static void PageNumber(this IContainer element, string textFormat = "{number}", TextStyle? style = null)
         {
             element.Element(new PageNumber
@@ -127,11 +135,27 @@ namespace QuestPDF.Fluent
             return element.Element(new Container());
         }
         
-        private static void DynamicImage(this IContainer element, Func<Size, byte[]> handler)
+        public static IContainer ExternalLink(this IContainer element, string url)
         {
-            element.Element(new DynamicImage()
+            return element.Element(new ExternalLink
             {
-                Source = handler
+                Url = url
+            });
+        }
+        
+        public static IContainer Location(this IContainer element, string locationName)
+        {
+            return element.Element(new InternalLocation
+            {
+                LocationName = locationName
+            });
+        }
+        
+        public static IContainer InternalLink(this IContainer element, string locationName)
+        {
+            return element.Element(new InternalLink
+            {
+                LocationName = locationName
             });
         }
     }

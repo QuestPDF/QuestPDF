@@ -25,11 +25,11 @@ namespace QuestPDF.ReportSample.Layouts
                         .PaddingBottom(5)
                         .Text(Model.Title, Typography.Headline);
 
-                    section.Content().PageableStack(column =>
+                    section.Content().PageableStack(stack =>
                     {
                         foreach (var part in Model.Parts)
                         {
-                            column.Element().Row(row =>
+                            stack.Element().Row(row =>
                             {
                                 row.ConstantColumn(150).DarkCell().Text(part.Label, Typography.Normal);
                                 var frame = row.RelativeColumn().LightCell();

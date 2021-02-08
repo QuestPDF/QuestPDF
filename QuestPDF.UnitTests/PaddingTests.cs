@@ -4,7 +4,7 @@ using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
-using QuestPDF.UnitTests.MeasureTest;
+using QuestPDF.UnitTests.TestEngine;
 
 namespace QuestPDF.UnitTests
 {

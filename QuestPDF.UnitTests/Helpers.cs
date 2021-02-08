@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
 using QuestPDF.Infrastructure;
-using QuestPDF.UnitTests.MeasureTest;
+using QuestPDF.UnitTests.TestEngine;
 
 namespace QuestPDF.UnitTests
 {
@@ -13,7 +13,7 @@ namespace QuestPDF.UnitTests
         
         public static Size RandomSize => new Size(Random.Next(200, 400), Random.Next(100, 200));
 
-        public static void ShouldEqual(this IEnumerable<Operation> commands, IEnumerable<Operation> expected)
+        public static void ShouldEqual(this IEnumerable<OperationBase> commands, IEnumerable<OperationBase> expected)
         {
             commands.Should().HaveSameCount(expected);
             

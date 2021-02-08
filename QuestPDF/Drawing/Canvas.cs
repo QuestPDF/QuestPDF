@@ -41,9 +41,19 @@ namespace QuestPDF.Drawing
             SkiaCanvas.DrawImage(image, new SKRect(vector.X, vector.Y, size.Width, size.Height));
         }
 
-        public void DrawLink(string url, Size size)
+        public void DrawExternalLink(string url, Size size)
         {
             SkiaCanvas.DrawUrlAnnotation(new SKRect(0, 0, size.Width, size.Height), url);
+        }
+        
+        public void DrawLocationLink(string locationName, Size size)
+        {
+            SkiaCanvas.DrawLinkDestinationAnnotation(new SKRect(0, 0, size.Width, size.Height), locationName);
+        }
+
+        public void DrawLocation(string locationName)
+        {
+            SkiaCanvas.DrawNamedDestinationAnnotation(new SKPoint(0, 0), locationName);
         }
     }
 }

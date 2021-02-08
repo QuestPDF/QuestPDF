@@ -47,10 +47,8 @@ namespace QuestPDF.Elements
 
                 var size = space as Size;
                 
-                if (size.Height < Size.Epsilon)
-                    continue;
-
-                heightOnCurrentPage += size.Height + Spacing;
+                if (size.Height > Size.Epsilon)
+                    heightOnCurrentPage += size.Height + Spacing;
 
                 if (space is PartialRender)
                 {
@@ -81,18 +79,13 @@ namespace QuestPDF.Elements
                     break;
 
                 var size = space as Size;
-
-                if (size.Height < Size.Epsilon)
-                {
-                    ChildrenQueue.Dequeue();
-                    continue;
-                }
-
+                
                 canvas.Translate(new Position(0, topOffset));
                 child.Draw(canvas, new Size(availableSpace.Width, size.Height));
                 canvas.Translate(new Position(0, -topOffset));
                 
-                topOffset += size.Height + Spacing;
+                if (size.Height > Size.Epsilon)
+                    topOffset += size.Height + Spacing;
 
                 if (space is PartialRender)
                     break;

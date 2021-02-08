@@ -30,13 +30,15 @@ namespace QuestPDF.Drawing
             
             static SKPaint Convert(TextStyle style)
             {
+                var slant = style.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
+                
                 return new SKPaint
                 {
                     Color = SKColor.Parse(style.Color),
-                    Typeface = Fonts.GetOrAdd(style.FontType, SKTypeface.FromFamilyName),
+                    Typeface = SKTypeface.FromFamilyName(style.FontType, (int)style.FontWeight, (int)SKFontStyleWidth.Normal, slant),
                     TextSize = style.Size,
-                    IsLinearText = true,
-                
+                    TextEncoding = SKTextEncoding.Utf32,
+                    
                     TextAlign = style.Alignment switch
                     {
                         HorizontalAlignment.Left => SKTextAlign.Left,
