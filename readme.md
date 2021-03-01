@@ -2,8 +2,6 @@
   <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="400px"> 
 </a>
 
-QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.
-
 ## Overview
 
 1) **Rely on solid fundamentals** - This library is created specifically for designing and arranging document layouts, with full paging support.  Alternative solutions, such as HTML-based converters, are not designed for this purpose and therefore are often unpredictable and do not produce desired results.
