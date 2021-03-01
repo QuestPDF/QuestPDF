@@ -98,7 +98,10 @@ namespace QuestPDF.Fluent
             style ??= TextStyle.Default;
 
             if (element is Alignment alignment)
+            {
+                style = style.Clone();
                 style.Alignment = alignment.Horizontal;
+            }
             
             element.Element(new Text()
             {
