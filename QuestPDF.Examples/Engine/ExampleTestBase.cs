@@ -6,6 +6,7 @@ using System.Reflection;
 using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -60,23 +61,13 @@ namespace QuestPDF.Examples.Engine
             var container = new Container();
             methodInfo.Invoke(this, new object[] {container});
 
-            var iteration = 1;
+            Func<int, string> fileNameSchema = i => $"{fileName.ToLower()}-${i}.png";
             
-            while (iteration <= 1)
-            {
-                var imageData = RenderPage(container, size);
-                
-                if (imageData == null)
-                    return;
-
-                var path = Path.Combine(ResultPath, $"{fileName.ToLower()}-${iteration}.png");
-                File.WriteAllBytes(path, imageData);
-
-                if (showResult)
-                    Process.Start("explorer", path);
-                
-                iteration++;
-            }
+            var document = new SimpleDocument(container, size);
+            document.GenerateImages(fileNameSchema);
+            
+            if (showResult)
+                Process.Start("explorer", fileNameSchema(0));
         }
         
         private byte[] RenderPage(Element element, Size size)

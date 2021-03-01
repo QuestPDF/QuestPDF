@@ -21,6 +21,12 @@ namespace QuestPDF.Drawing
         public DateTime CreationDate { get; set; } = DateTime.Now;
         public DateTime ModifiedDate { get; set; } = DateTime.Now;
 
+        /// <summary>
+        /// If the number of generated pages exceeds this threshold
+        /// (likely due to infinite layout), the exception is thrown.
+        /// </summary>
+        public int DocumentLayoutExceptionThreshold { get; set; } = 250;
+        
         public static DocumentMetadata Default => new DocumentMetadata();
     }
 }

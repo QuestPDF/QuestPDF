@@ -4,6 +4,8 @@ namespace QuestPDF.Helpers
 {
     public static class PageSizes
     {
+        public const int PointsPerInch = 72;
+        
         public static Size A0 => new Size(2384, 3370);
         public static Size A1 => new Size(1684, 2384);
         public static Size A2 => new Size(1190, 1684);

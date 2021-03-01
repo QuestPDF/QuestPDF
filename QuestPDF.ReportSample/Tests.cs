@@ -19,7 +19,7 @@ namespace QuestPDF.ReportSample
             
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
             using var stream = new FileStream(path, FileMode.Create);
-            report.Generate(stream);
+            report.GeneratePdf(stream);
             
             Process.Start("explorer.exe", path);
         }
@@ -45,7 +45,7 @@ namespace QuestPDF.ReportSample
             var sw = new Stopwatch();
             
             sw.Start();
-            var totalSize = reports.Select(x => x.Generate()).Sum(x => (long)x.Length);
+            var totalSize = reports.Select(x => x.GeneratePdf()).Sum(x => (long)x.Length);
             sw.Stop();
 
             // show summary

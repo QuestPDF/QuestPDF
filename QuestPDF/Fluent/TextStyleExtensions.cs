@@ -7,6 +7,8 @@ namespace QuestPDF.Fluent
     {
         private static TextStyle Mutate(this TextStyle style, Action<TextStyle> handler)
         {
+            style = style.Clone();
+            
             handler(style);
             return style;
         }

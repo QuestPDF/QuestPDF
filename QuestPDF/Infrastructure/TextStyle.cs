@@ -1,4 +1,7 @@
-﻿namespace QuestPDF.Infrastructure
+﻿using System;
+using QuestPDF.Elements;
+
+namespace QuestPDF.Infrastructure
 {
     public class TextStyle
     {
@@ -16,5 +19,7 @@
         {
             return $"{Color}|{FontType}|{Size}|{LineHeight}|{Alignment}|{FontWeight}|{IsItalic}";
         }
+
+        internal TextStyle Clone() => (TextStyle)MemberwiseClone();
     }
 }

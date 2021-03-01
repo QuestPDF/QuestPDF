@@ -16,24 +16,6 @@ namespace QuestPDF.Fluent
             return container;
         }
 
-        public static byte[] Generate(this IDocument document)
-        {
-            using var stream = new MemoryStream();
-            document.Generate(stream);
-            return stream.ToArray();
-        }
-        
-        public static void Generate(this IDocument document, string filePath)
-        {
-            using var stream = new FileStream(filePath, FileMode.Create);
-            document.Generate(stream);
-        }
-
-        public static void Generate(this IDocument document, Stream stream)
-        {
-            DocumentGenerator.Generate(stream, document);
-        }
-
         public static T Element<T>(this IContainer element, T child) where T : IElement
         {
             if (element?.Child != null && element.Child is Empty == false)
@@ -157,6 +139,11 @@ namespace QuestPDF.Fluent
             {
                 LocationName = locationName
             });
+        }
+        
+        public static IContainer ShowIf(this IContainer element, bool condition)
+        {
+            return condition ? element : new Container();
         }
     }
 }
