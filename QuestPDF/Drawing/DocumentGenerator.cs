@@ -35,8 +35,6 @@ namespace QuestPDF.Drawing
                 catch (Exception exception)
                 {
                     pdf.Close();
-                    stream.Close();
-                    
                     throw new DocumentDrawingException("An exception occured during document drawing.", exception);
                 }
 
@@ -45,8 +43,6 @@ namespace QuestPDF.Drawing
                 if (totalPages >= metadata.DocumentLayoutExceptionThreshold)
                 {
                     pdf.Close();
-                    stream.Close();
-
                     throw new DocumentLayoutException("Composed layout generates infinite document.");
                 }
                 
@@ -57,7 +53,6 @@ namespace QuestPDF.Drawing
             }
             
             pdf.Close();
-            stream.Dispose();
         }
 
         internal static IEnumerable<byte[]> GenerateImages(IDocument document)

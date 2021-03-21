@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -18,8 +18,7 @@ namespace QuestPDF.ReportSample
             var report = new StandardReport(reportModel);
             
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
-            using var stream = new FileStream(path, FileMode.Create);
-            report.GeneratePdf(stream);
+            report.GeneratePdf(path);
             
             Process.Start("explorer.exe", path);
         }
