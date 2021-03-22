@@ -27,7 +27,7 @@ namespace QuestPDF.ReportSample
         public void PerformanceBenchmark()
         {
             // test size
-            const int testSize = 1000;
+            const int testSize = 250;
             const decimal performanceTarget = 5; // documents per second
 
             // create report models

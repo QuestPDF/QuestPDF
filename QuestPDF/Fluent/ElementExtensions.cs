@@ -4,6 +4,7 @@ using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Fluent
 {
@@ -33,21 +34,51 @@ namespace QuestPDF.Fluent
             return child;
         }
         
-        public static void Element(this IContainer element, Action<IContainer> handler)
+        public static void Element<TParent>(this TParent parent, Action<IContainer> handler) where TParent : IContainer
         {
-            var container = new Container();
-            element.Element(container);
-            handler?.Invoke(container);
-        }
-
-        public static void Image(this IContainer element, byte[] data)
-        {
-            element.Element(new Image
-            {
-                Data = data
-            });
+            handler(parent.Container());
         }
         
+        public static IContainer Element<TParent>(this TParent parent, Func<IContainer, IContainer> handler) where TParent : IContainer
+        {
+            return handler(parent.Container()).Container();
+        }
+        
+        public static IContainer Debug(this IContainer parent)
+        {
+            return parent.Element(new Debug());
+        }
+        
+        public static void Image(this IContainer parent, byte[] data, ImageScaling scaling = ImageScaling.FitWidth)
+        {
+            if (data == null)
+                return;
+            
+            var image = SKImage.FromEncodedData(data);
+            var aspectRatio = image.Width / (float)image.Height;
+            
+            var imageElement = new Image
+            {
+                InternalImage = image
+            };
+
+            if (scaling != ImageScaling.Resize)
+                parent = parent.AspectRatio(aspectRatio, Map(scaling));
+            
+            parent.Element(imageElement);
+
+            static AspectRatioOption Map(ImageScaling scaling)
+            {
+                return scaling switch
+                {
+                    ImageScaling.FitWidth => AspectRatioOption.FitWidth,
+                    ImageScaling.FitHeight => AspectRatioOption.FitHeight,
+                    ImageScaling.FitArea => AspectRatioOption.FitArea,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            }
+        }
+
         public static void DynamicImage(this IContainer element, Func<Size, byte[]> imageSource)
         {
             element.Element(new DynamicImage
@@ -65,11 +96,12 @@ namespace QuestPDF.Fluent
             });
         }
         
-        public static IContainer AspectRatio(this IContainer element, float ratio)
+        public static IContainer AspectRatio(this IContainer element, float ratio, AspectRatioOption option = AspectRatioOption.FitWidth)
         {
             return element.Element(new AspectRatio
             {
-                Ratio = ratio
+                Ratio = ratio,
+                Option = option
             });
         }
 

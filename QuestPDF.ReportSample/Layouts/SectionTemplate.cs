@@ -38,10 +38,10 @@ namespace QuestPDF.ReportSample.Layouts
                                     frame.Text(text.Text, Typography.Normal);
                         
                                 if (part is ReportSectionMap map)
-                                    frame.Element(container => MapElement(container, map));
+                                    frame.Element(x => MapElement(x, map));
                         
                                 if (part is ReportSectionPhotos photos)
-                                    frame.Element(container => PhotosElement(container, photos));
+                                    frame.Element(x => PhotosElement(x, photos));
                             });
                         }
                     });
@@ -56,7 +56,7 @@ namespace QuestPDF.ReportSample.Layouts
                 return;
             }
 
-            container.Stack(stack =>
+            container.PageableStack(stack =>
             {
                 stack.Spacing(5);
                 
@@ -75,7 +75,7 @@ namespace QuestPDF.ReportSample.Layouts
 
             var rowCount = (int) Math.Ceiling(model.Photos.Count / 3f);
 
-            container.Padding(-2).Stack(stack =>
+            container.Debug().Padding(-2).PageableStack(stack =>
             {
                 foreach (var rowId in Enumerable.Range(0, rowCount))
                 {

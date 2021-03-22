@@ -15,7 +15,7 @@ namespace QuestPDF.UnitTests
             {
                 var image = new Image()
                 {
-                    Data = null
+                    InternalImage = null
                 };
                 
                 image.Draw(It.IsAny<ICanvas>(), Size.Zero);

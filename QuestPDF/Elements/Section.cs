@@ -6,8 +6,8 @@ namespace QuestPDF.Elements
 {
     internal class Section : Element
     {
-        public Element? Header { get; set; }
-        public Element? Content { get; set; }
+        public ContainerElement? Header { get; set; }
+        public ContainerElement? Content { get; set; }
 
         internal override ISpacePlan Measure(Size availableSpace)
         {
