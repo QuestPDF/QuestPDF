@@ -8,10 +8,7 @@ namespace QuestPDF.Elements
         
         internal override void Draw(ICanvas canvas, Size availableSpace)
         {
-            if (Child == null)
-                return;
-            
-            Child.Draw(canvas, availableSpace);
+            Child?.Draw(canvas, availableSpace);
         }
     }
     

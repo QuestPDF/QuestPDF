@@ -14,12 +14,14 @@ namespace QuestPDF.Elements
 
         public void Compose(IContainer container)
         {
+            // TODO: consider moving this element into fluent API
+            
             container
                 .Background("CCC")
                 .AlignMiddle()
                 .AlignCenter()
                 .MaxHeight(32)
-                .Image(ImageData);
+                .Image(ImageData, ImageScaling.FitArea);
         }
     }
 }

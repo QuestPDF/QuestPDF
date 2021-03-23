@@ -134,5 +134,37 @@ namespace QuestPDF.Examples
                         .Height(150);
                 });
         }
+        
+        //[ShowResult]
+        [ImageSize(300, 200)]
+        public void Debug(IContainer container)
+        {
+            container
+                .Padding(25)
+                .Debug()
+                .Padding(-5)
+                .Row(row =>
+                {
+                    row.RelativeColumn().Padding(5).Extend().Placeholder();
+                    row.RelativeColumn().Padding(5).Extend().Placeholder();
+                });
+        }
+        
+        [ShowResult]
+        [ImageSize(300, 200)]
+        public void ElementEnd(IContainer container)
+        {
+            var text = "";
+            
+            container
+                .Padding(10)
+                .Element(x =>
+                {
+                    if (string.IsNullOrWhiteSpace(text))
+                        x.Height(10).Width(50).Background("#DDD");
+                    else
+                        x.Text(text);
+                });
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace QuestPDF.Elements
                 
             void DrawBoundingBox()
             {
+                // TODO: when layer element is done, move this code into fluent API
+                
                 var container = new Container();
 
                 container

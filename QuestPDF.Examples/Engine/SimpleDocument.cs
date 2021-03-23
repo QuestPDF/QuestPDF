@@ -27,7 +27,7 @@ namespace QuestPDF.Examples.Engine
 
         public void Compose(IContainer container)
         {
-            container.Element(Container.Child);
+            container.Background("#FFF").Element(Container.Child);
         }
     }
 }

@@ -62,10 +62,17 @@ namespace QuestPDF.Examples.Engine
             methodInfo.Invoke(this, new object[] {container});
 
             Func<int, string> fileNameSchema = i => $"{fileName.ToLower()}-${i}.png";
-            
-            var document = new SimpleDocument(container, size);
-            document.GenerateImages(fileNameSchema);
-            
+
+            try
+            {
+                var document = new SimpleDocument(container, size);
+                document.GenerateImages(fileNameSchema);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Cannot perform test ${fileName}", e);
+            }
+
             if (showResult)
                 Process.Start("explorer", fileNameSchema(0));
         }

@@ -31,11 +31,7 @@ namespace QuestPDF.Elements
                 return;
             
             var size = GetTargetSize(availableSpace);
-            
-            if (size.Height > availableSpace.Height)
-                return;
-
-            Child.Draw(canvas, size);
+            Child?.Draw(canvas, size);
         }
         
         private Size GetTargetSize(Size availableSpace)
