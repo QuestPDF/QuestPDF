@@ -10,6 +10,8 @@ namespace QuestPDF.UnitTests.TestEngine
 {
     internal class TestPlan
     {
+        private const string DefaultChildName = "child";
+        
         private Element Element { get; set; }
         private ICanvas Canvas { get; }
         
@@ -100,6 +102,8 @@ namespace QuestPDF.UnitTests.TestEngine
                 }
             };
         }
+
+        public Element CreateChild() => CreateChild(DefaultChildName);
         
         public Element CreateChild(string id)
         {
@@ -153,9 +157,19 @@ namespace QuestPDF.UnitTests.TestEngine
             return this;
         }
         
+        public TestPlan ExpectChildMeasure(Size expectedInput, ISpacePlan returns)
+        {
+            return ExpectChildMeasure(DefaultChildName, expectedInput, returns);
+        }
+        
         public TestPlan ExpectChildMeasure(string child, Size expectedInput, ISpacePlan returns)
         {
             return AddOperation(new ChildMeasureOperationBase(child, expectedInput, returns));
+        }
+        
+        public TestPlan ExpectChildDraw(Size expectedInput)
+        {
+            return ExpectChildDraw(DefaultChildName, expectedInput);
         }
         
         public TestPlan ExpectChildDraw(string child, Size expectedInput)

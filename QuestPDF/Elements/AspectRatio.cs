@@ -14,15 +14,26 @@ namespace QuestPDF.Elements
             if(Child == null)
                 return new FullRender(Size.Zero);
             
-            var size = GetTargetSize(availableSpace);
+            var targetSize = GetTargetSize(availableSpace);
             
-            if (size.Height > availableSpace.Height + Size.Epsilon)
+            if (targetSize.Height > availableSpace.Height + Size.Epsilon)
                 return new Wrap();
             
-            if (size.Width > availableSpace.Width + Size.Epsilon)
+            if (targetSize.Width > availableSpace.Width + Size.Epsilon)
                 return new Wrap();
+
+            var childSize = Child.Measure(targetSize);
+
+            if (childSize is Wrap)
+                return new Wrap();
+
+            if (childSize is PartialRender)
+                return new PartialRender(targetSize);
+
+            if (childSize is FullRender)
+                return new FullRender(targetSize);
             
-            return new FullRender(size);
+            throw new NotSupportedException();
         }
 
         internal override void Draw(ICanvas canvas, Size availableSpace)

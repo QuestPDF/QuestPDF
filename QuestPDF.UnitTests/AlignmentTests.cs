@@ -21,10 +21,10 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(x => new Alignment
                 {
-                    Child = x.CreateChild("child")
+                    Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(1000, 500))
-                .ExpectChildMeasure("child", expectedInput: new Size(1000, 500), returns: new Wrap())
+                .ExpectChildMeasure(expectedInput: new Size(1000, 500), returns: new Wrap())
                 .CheckMeasureResult(new Wrap());
         }
 
@@ -37,12 +37,12 @@ namespace QuestPDF.UnitTests
                     Horizontal = HorizontalAlignment.Center,
                     Vertical = VerticalAlignment.Middle,
                     
-                    Child = x.CreateChild("child")
+                    Child = x.CreateChild()
                 })
                 .DrawElement(new Size(1000, 500))
-                .ExpectChildMeasure("child", expectedInput: new Size(1000, 500), returns: new PartialRender(new Size(400, 200)))
+                .ExpectChildMeasure(expectedInput: new Size(1000, 500), returns: new PartialRender(new Size(400, 200)))
                 .ExpectCanvasTranslate(new Position(300, 150))
-                .ExpectChildDraw("child", new Size(400, 200))
+                .ExpectChildDraw(new Size(400, 200))
                 .ExpectCanvasTranslate(new Position(-300, -150))
                 .CheckDrawResult();
         }
@@ -56,12 +56,12 @@ namespace QuestPDF.UnitTests
                     Horizontal = HorizontalAlignment.Left,
                     Vertical = VerticalAlignment.Middle,
                     
-                    Child = x.CreateChild("child")
+                    Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("child", expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
                 .ExpectCanvasTranslate(new Position(0, 125))
-                .ExpectChildDraw("child", new Size(100, 50))
+                .ExpectChildDraw(new Size(100, 50))
                 .ExpectCanvasTranslate(new Position(0, -125))
                 .CheckDrawResult();
         }
@@ -75,12 +75,12 @@ namespace QuestPDF.UnitTests
                     Horizontal = HorizontalAlignment.Center,
                     Vertical = VerticalAlignment.Bottom,
                     
-                    Child = x.CreateChild("child")
+                    Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("child", expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
                 .ExpectCanvasTranslate(new Position(150, 250))
-                .ExpectChildDraw("child", new Size(100, 50))
+                .ExpectChildDraw(new Size(100, 50))
                 .ExpectCanvasTranslate(new Position(-150, -250))
                 .CheckDrawResult();
         }
@@ -94,12 +94,12 @@ namespace QuestPDF.UnitTests
                     Horizontal = HorizontalAlignment.Right,
                     Vertical = VerticalAlignment.Top,
                     
-                    Child = x.CreateChild("child")
+                    Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("child", expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
                 .ExpectCanvasTranslate(new Position(300, 0))
-                .ExpectChildDraw("child", new Size(100, 50))
+                .ExpectChildDraw(new Size(100, 50))
                 .ExpectCanvasTranslate(new Position(-300, 0))
                 .CheckDrawResult();
         }

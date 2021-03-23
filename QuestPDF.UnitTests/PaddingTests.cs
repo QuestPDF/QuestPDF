@@ -17,62 +17,77 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Draw_ShouldHandleNullChild() => new Padding().DrawWithoutChild();
         
-        private Padding GetPadding(Element child)
+        private Padding GetPadding(TestPlan plan)
         {
             return new Padding()
             {
-                Top = 5,
-                Right = 10,
-                Bottom = 15,
-                Left = 20,
+                Top = 10,
+                Right = 20,
+                Bottom = 30,
+                Left = 40,
                 
-                Child = child
+                Child = plan.CreateChild()
             };
         }
 
         [Test]
-        public void Measure_WhenChildReturnsWrap_ReturnsWrap()
+        public void Measure_General_EnoughSpace()
         {
-            var child = new Mock<Element>();
-            
-            child
-                .Setup(x => x.Measure(It.IsAny<Size>()))
-                .Returns(() => new Wrap());
-
-            GetPadding(child.Object)
-                .Measure(Size.Zero)
-                .Should()
-                .BeOfType<Wrap>();
+            TestPlan
+                .For(GetPadding)
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure(new Size(340, 260), new FullRender(140, 60))
+                .CheckMeasureResult(new FullRender(200, 100));
+        } 
+        
+        [Test]
+        public void Measure_NotEnoughWidth()
+        {
+            TestPlan
+                .For(GetPadding)
+                .MeasureElement(new Size(50, 300))
+                .CheckMeasureResult(new Wrap());
         }
         
         [Test]
-        public void Measure_WhenChildReturnsFullRender_ReturnsFullRender()
+        public void Measure_NotEnoughHeight()
         {
-            var child = new Mock<Element>();
-            
-            child
-                .Setup(x => x.Measure(It.IsAny<Size>()))
-                .Returns(() => new FullRender(Size.Zero));
-
-            GetPadding(child.Object)
-                .Measure(Size.Zero)
-                .Should()
-                .BeOfType<FullRender>();
+            TestPlan
+                .For(GetPadding)
+                .MeasureElement(new Size(20, 300))
+                .CheckMeasureResult(new Wrap());
         }
         
         [Test]
-        public void Measure_WhenChildReturnsPartialRender_ReturnsPartialRender()
+        public void Measure_AcceptsPartialRender()
         {
-            var child = new Mock<Element>();
-            
-            child
-                .Setup(x => x.Measure(It.IsAny<Size>()))
-                .Returns(() => new PartialRender(Size.Zero));
-
-            GetPadding(child.Object)
-                .Measure(Size.Zero)
-                .Should()
-                .BeOfType<PartialRender>();
+            TestPlan
+                .For(GetPadding)
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure(new Size(340, 260), new PartialRender(40, 160))
+                .CheckMeasureResult(new PartialRender(100, 200));
+        }
+        
+        [Test]
+        public void Measure_AcceptsWrap()
+        {
+            TestPlan
+                .For(GetPadding)
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure(new Size(340, 260), new Wrap())
+                .CheckMeasureResult(new Wrap());
+        }
+        
+        [Test]
+        public void Draw_General()
+        {
+            TestPlan
+                .For(GetPadding)
+                .DrawElement(new Size(400, 300))
+                .ExpectCanvasTranslate(new Position(40, 10))
+                .ExpectChildDraw(new Size(340, 260))
+                .ExpectCanvasTranslate(new Position(-40, -10))
+                .CheckDrawResult();
         }
     }
 }

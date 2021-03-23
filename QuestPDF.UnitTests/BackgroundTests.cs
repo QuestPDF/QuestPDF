@@ -31,11 +31,11 @@ namespace QuestPDF.UnitTests
                 .For(x => new Background
                 {
                     Color = "#F00",
-                    Child = x.CreateChild("a")
+                    Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
                 .ExpectCanvasDrawRectangle(new Position(0, 0), new Size(400, 300), "#F00")
-                .ExpectChildDraw("a", new Size(400, 300))
+                .ExpectChildDraw(new Size(400, 300))
                 .CheckDrawResult();
         }
     }

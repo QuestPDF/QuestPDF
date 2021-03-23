@@ -11,9 +11,6 @@ namespace QuestPDF.Elements
         
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            if (availableSpace.Width < 0 || availableSpace.Height < 0)
-                return new Wrap();
-            
             return new FullRender(availableSpace.Width, availableSpace.Height);
         }
 

@@ -23,10 +23,10 @@ namespace QuestPDF.UnitTests
                     Bottom = 30,
                     Left = 40,
                     
-                    Child = x.CreateChild("child")
+                    Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("child", expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
                 .CheckMeasureResult( new FullRender(new Size(100, 50)));
         }
         
@@ -43,15 +43,15 @@ namespace QuestPDF.UnitTests
                     
                     Color = "#FF0000",
                     
-                    Child = x.CreateChild("child")
+                    Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectChildDraw("child", new Size(400, 300))
+                .ExpectChildDraw(new Size(400, 300))
                 .ExpectCanvasDrawRectangle(new Position(-20, -5), new Size(430, 10), "#FF0000") // top
                 .ExpectCanvasDrawRectangle(new Position(-20, -5), new Size(40, 320), "#FF0000") // left
                 .ExpectCanvasDrawRectangle(new Position(-20, 285), new Size(430, 30), "#FF0000") // bottom
                 .ExpectCanvasDrawRectangle(new Position(390, -5), new Size(20, 320), "#FF0000") // right
-                .ExpectChildDraw("child", new Size(400, 300))
+                .ExpectChildDraw(new Size(400, 300))
                 .CheckDrawResult();
         }
     }
