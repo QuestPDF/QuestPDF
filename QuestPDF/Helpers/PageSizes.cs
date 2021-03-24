@@ -71,8 +71,8 @@ namespace QuestPDF.Helpers
         public static Size Comm10 => new Size(297, 684);
 		
         public static Size DL => new Size(312, 624);
-        public static Size DoublePostcard => new Size(567, 420);
-        public static Size DoublePostcardRotated => new Size(420, 567);
+        public static Size DoublePostcard => new Size(567, 419.5f);
+        public static Size DoublePostcardRotated => new Size(419.5f, 567);
 		
         public static Size Env9 => new Size(279, 639);
         public static Size Env10 => new Size(297, 684);
@@ -139,7 +139,7 @@ namespace QuestPDF.Helpers
         public static Size ISOB3 => new Size(1001, 1417);
         public static Size ISOB4 => new Size(709, 1001);
         public static Size ISOB5 => new Size(499, 709);
-        public static Size ISOB5Extra => new Size(570, 782);
+        public static Size ISOB5Extra => new Size(569.7f, 782);
         public static Size ISOB6 => new Size(354, 499);
         public static Size ISOB7 => new Size(249, 354);
         public static Size ISOB8 => new Size(176, 249);
@@ -153,7 +153,7 @@ namespace QuestPDF.Helpers
         public static Size LetterTransverse => new Size(612, 792);
         public static Size LetterExtra => new Size(684, 864);
         public static Size LetterExtraTransverse => new Size(684, 864);
-        public static Size LetterPlus => new Size(612, 914);
+        public static Size LetterPlus => new Size(612, 913.7f);
         public static Size LetterRotated => new Size(792, 612);
         public static Size LetterSmall => new Size(612, 792);
 		
