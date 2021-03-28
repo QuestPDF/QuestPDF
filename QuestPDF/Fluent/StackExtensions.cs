@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
@@ -6,64 +8,71 @@ namespace QuestPDF.Fluent
 {
     public class StackDescriptor
     {
-        private Stack Stack { get; }
-
-        internal StackDescriptor(Stack stack)
-        {
-            Stack = stack;
-        }
-
+        private List<Element> Elements { get; } = new List<Element>();
+        private float StackSpacing { get; set; } = 0;
+        
         public void Spacing(float value)
         {
-            Stack.Spacing = value;
+            StackSpacing = value;
         }
         
         public IContainer Element()
         {
             var container = new Container();
-            Stack.Children.Add(container);
+            Elements.Add(container);
             return container;
         }
         
         public void Element(Action<IContainer> handler)
         {
-            var container = new Container();
-            Stack.Children.Add(container);
-            handler?.Invoke(container);
+            handler?.Invoke(Element());
         }
         
         public void Element(IElement element)
         {
-            Stack.Children.Add(element as Element);
+            Elements.Add(element as Element);
+        }
+
+        internal Element CreateStack()
+        {
+            if (Elements.Count == 0)
+                return new Empty();
+            
+            if (StackSpacing <= Size.Epsilon)
+                return new Stack
+                {
+                    Children = Elements
+                };
+            
+            var children = Elements
+                .Select(x => new Padding
+                {
+                    Bottom = StackSpacing,
+                    Child = x
+                })
+                .Cast<Element>()
+                .ToList();
+
+            var stack = new Stack
+            {
+                Children = children
+            };
+            
+            return new Padding
+            {
+                Bottom = -StackSpacing,
+                Child = stack
+            };
         }
     }
     
     public static class StackExtensions
     {
-        public static void PageableStack(this IContainer element, Action<StackDescriptor> handler)
-        {
-            var column = new Stack
-            {
-                Pageable = true
-            };
-
-            element.Element(column);
-            
-            var descriptor = new StackDescriptor(column);
-            handler(descriptor);
-        }
-        
         public static void Stack(this IContainer element, Action<StackDescriptor> handler)
         {
-            var column = new Stack
-            {
-                Pageable = false
-            };
-
-            element.Element(column);
-            
-            var descriptor = new StackDescriptor(column);
+            var descriptor = new StackDescriptor();
             handler(descriptor);
+            element.Element(descriptor.CreateStack());
         }
     }
 }

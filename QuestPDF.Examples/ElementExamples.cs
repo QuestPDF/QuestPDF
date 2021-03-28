@@ -150,7 +150,7 @@ namespace QuestPDF.Examples
                 });
         }
         
-        [ShowResult]
+        //[ShowResult]
         [ImageSize(300, 200)]
         public void ElementEnd(IContainer container)
         {
@@ -164,6 +164,29 @@ namespace QuestPDF.Examples
                         x.Height(10).Width(50).Background("#DDD");
                     else
                         x.Text(text);
+                });
+        }
+        
+        [ShowResult]
+        [ImageSize(300, 200)]
+        public void GridExample(IContainer container)
+        {
+            var textStyle = TextStyle.Default.Size(14);
+            
+            container
+                .Padding(20)
+                .AlignRight()
+                .Grid(grid =>
+                {
+                    grid.Spacing(5);
+                    grid.Columns(12);
+
+                    grid.Element(8).Background("#DDD").Height(50).Padding(5).Text("This is a short text", textStyle);
+                    grid.Element(4).Background("#BBB").Padding(5).Text("Showing how to...", textStyle);
+                    grid.Element(2).Background("#999").Height(50);
+                    grid.Element(4).Background("#AAA").Border(2).BorderColor("#666").Padding(5).Text("...generate", textStyle);
+                    grid.Element(6).Background("#CCC").Padding(5).Text("simple grids", textStyle.Size(18).Bold());
+                    grid.Element(8).Background("#DDD").Height(50);
                 });
         }
     }

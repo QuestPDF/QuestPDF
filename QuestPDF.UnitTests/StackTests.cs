@@ -9,7 +9,7 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class StackTests
     {
-        [Test]
+        /*[Test]
         public void Measure_NoChildren_Empty()
         {
             TestPlan
@@ -289,6 +289,6 @@ namespace QuestPDF.UnitTests
                 .ExpectCanvasTranslate(0, -150)
                 
                 .CheckDrawResult();
-        }
+        }*/
     }
 }

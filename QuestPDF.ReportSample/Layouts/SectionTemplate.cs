@@ -25,7 +25,7 @@ namespace QuestPDF.ReportSample.Layouts
                         .PaddingBottom(5)
                         .Text(Model.Title, Typography.Headline);
 
-                    section.Content().PageableStack(stack =>
+                    section.Content().Border(0.75f).Stack(stack =>
                     {
                         foreach (var part in Model.Parts)
                         {
@@ -56,7 +56,7 @@ namespace QuestPDF.ReportSample.Layouts
                 return;
             }
 
-            container.PageableStack(stack =>
+            container.ShowEntire().Stack(stack =>
             {
                 stack.Spacing(5);
                 
@@ -73,21 +73,12 @@ namespace QuestPDF.ReportSample.Layouts
                 return;
             }
 
-            var rowCount = (int) Math.Ceiling(model.Photos.Count / 3f);
-
-            container.Debug().Padding(-2).PageableStack(stack =>
+            container.Debug().Debug().Grid(grid =>
             {
-                foreach (var rowId in Enumerable.Range(0, rowCount))
-                {
-                    stack.Element().Row(row =>
-                    {
-                        foreach (var id in Enumerable.Range(0, 3))
-                        {
-                            var data = model.Photos.ElementAtOrDefault(rowId + id); 
-                            row.RelativeColumn().Padding(2).Component(new ImageTemplate(data));
-                        }
-                    });
-                }
+                grid.Spacing(5);
+                grid.Columns(3);
+                
+                model.Photos.ForEach(x => grid.Element().Component(new ImageTemplate(x)));
             });
         }
     }

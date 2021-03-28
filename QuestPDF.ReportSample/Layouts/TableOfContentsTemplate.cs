@@ -25,7 +25,7 @@ namespace QuestPDF.ReportSample.Layouts
                         .PaddingBottom(5)
                         .Text("Table of contents", Typography.Headline);
 
-                    section.Content().PageableStack(stack =>
+                    section.Content().Stack(stack =>
                     {
                         stack.Spacing(5);
                         

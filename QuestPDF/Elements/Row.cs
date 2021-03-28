@@ -7,10 +7,10 @@ namespace QuestPDF.Elements
 {
     internal class Row : Element
     {
-        public List<RowElement?>? Children { get; set; } = new List<RowElement?>();
+        public List<RowElement> Children { get; set; } = new List<RowElement>();
         
-        public float? ConstantWidthSum { get; set; }
-        public float? RelativeWidthSum { get; set; }
+        float? ConstantWidthSum { get; set; }
+        float? RelativeWidthSum { get; set; }
 
         internal override ISpacePlan Measure(Size availableSpace)
         {

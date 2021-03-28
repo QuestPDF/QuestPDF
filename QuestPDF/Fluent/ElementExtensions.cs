@@ -82,13 +82,17 @@ namespace QuestPDF.Fluent
 
         public static IContainer ShowOnce(this IContainer element)
         {
-            var alignment = new ShowOnce();
-
-            return element.Element(alignment);
+            return element.Element(new ShowOnce());
+        }
+        
+        public static IContainer ShowEntire(this IContainer element)
+        {
+            return element.Element(new ShowEntire());
         }
 
         public static void Text(this IContainer element, object text, TextStyle? style = null)
         {
+            text ??= string.Empty;
             style ??= TextStyle.Default;
 
             if (element is Alignment alignment)

@@ -58,12 +58,13 @@ namespace QuestPDF.ReportSample.Layouts
                         {
                             table.Element().Row(row =>
                             {
+                                row.Spacing(10);
+                                
                                 row.ConstantColumn(50)
                                     .AlignLeft()
                                     .Text($"{field.Label}:", Typography.Normal);
                                 
                                 row.RelativeColumn()
-                                    .PaddingLeft(10)
                                     .Text(field.Value, Typography.Normal);
                             });
                         }
@@ -77,7 +78,7 @@ namespace QuestPDF.ReportSample.Layouts
 
         void ComposeContent(IContainer container)
         {
-            container.PaddingVertical(20).PageableStack(stack =>
+            container.PaddingVertical(20).Stack(stack =>
             {
                 stack.Spacing(20);
 

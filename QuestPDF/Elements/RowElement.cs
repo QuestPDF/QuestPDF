@@ -14,11 +14,17 @@ namespace QuestPDF.Elements
     
     internal class ConstantRowElement : RowElement
     {
-        
+        public ConstantRowElement(float width)
+        {
+            Width = width;
+        }
     }
     
     internal class RelativeRowElement : RowElement
     {
-        
+        public RelativeRowElement(float width)
+        {
+            Width = width;
+        }
     }
 }
