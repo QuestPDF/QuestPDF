@@ -31,15 +31,15 @@ namespace QuestPDF.Elements
             if (measurement is Wrap)
                 return new Wrap();
             
-            var actualSize = new Size(
+            var targetSize = new Size(
                 MathHelpers.Max(MinWidth, size.Width),
                 MathHelpers.Max(MinHeight, size.Height));
             
             if (size is FullRender)
-                return new FullRender(actualSize);
+                return new FullRender(targetSize);
             
             if (size is PartialRender)
-                return new PartialRender(actualSize);
+                return new PartialRender(targetSize);
             
             throw new NotSupportedException();
         }
