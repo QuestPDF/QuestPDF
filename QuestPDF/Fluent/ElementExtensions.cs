@@ -95,6 +95,7 @@ namespace QuestPDF.Fluent
 
         public static void Text(this IContainer element, object text, TextStyle? style = null)
         {
+            text ??= string.Empty;
             style ??= TextStyle.Default;
 
             if (element is Alignment alignment)
