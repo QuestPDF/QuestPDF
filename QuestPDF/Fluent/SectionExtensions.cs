@@ -6,12 +6,7 @@ namespace QuestPDF.Fluent
 {
     public class SectionDescriptor
     {
-        private Section Section { get; }
-
-        internal SectionDescriptor(Section section)
-        {
-            Section = section;
-        }
+        internal Section Section { get; } = new Section();
         
         public IContainer Header()
         {
@@ -36,17 +31,28 @@ namespace QuestPDF.Fluent
         {
             handler?.Invoke(Content());
         }
+        
+        public IContainer Footer()
+        {
+            var container = new Container();
+            Section.Footer = container;
+            return container;
+        }
+        
+        public void Footer(Action<IContainer> handler)
+        {
+            handler?.Invoke(Footer());
+        }
     }
     
     public static class SectionExtensions
     {
         public static void Section(this IContainer element, Action<SectionDescriptor> handler)
         {
-            var section = new Section();
-            element.Element(section);
-
-            var descriptor = new SectionDescriptor(section);
+            var descriptor = new SectionDescriptor();
             handler(descriptor);
+            
+            element.Component(descriptor.Section);
         }
     }
 }

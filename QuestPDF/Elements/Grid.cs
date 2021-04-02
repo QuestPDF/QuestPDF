@@ -15,7 +15,8 @@ namespace QuestPDF.Elements
         public int ColumnsCount { get; set; } = DefaultColumnsCount;
 
         public HorizontalAlignment Alignment { get; set; } = Left;
-        public float Spacing { get; set; } = 0;
+        public float VerticalSpacing { get; set; } = 0;
+        public float HorizontalSpacing { get; set; } = 0;
         
         public void Compose(IContainer container)
         {
@@ -23,7 +24,7 @@ namespace QuestPDF.Elements
             
             container.Stack(stack =>
             {
-                stack.Spacing(Spacing);
+                stack.Spacing(HorizontalSpacing);
                 
                 while (ChildrenQueue.Any())
                     stack.Element().Row(BuildRow);
@@ -48,7 +49,7 @@ namespace QuestPDF.Elements
             
         void BuildRow(RowDescriptor row)
         {
-            row.Spacing(Spacing);
+            row.Spacing(HorizontalSpacing);
                 
             var elements = GetRowElements().ToList();
             var columnsWidth = elements.Sum(x => x.Columns);

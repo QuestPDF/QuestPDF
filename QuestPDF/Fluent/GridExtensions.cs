@@ -11,7 +11,18 @@ namespace QuestPDF.Fluent
         
         public void Spacing(float value)
         {
-            Grid.Spacing = value;
+            VerticalSpacing(value);
+            HorizontalSpacing(value);
+        }
+        
+        public void VerticalSpacing(float value)
+        {
+            Grid.VerticalSpacing = value;
+        }
+         
+        public void HorizontalSpacing(float value)
+        {
+            Grid.HorizontalSpacing = value;
         }
         
         public void Columns(int value = Grid.DefaultColumnsCount)

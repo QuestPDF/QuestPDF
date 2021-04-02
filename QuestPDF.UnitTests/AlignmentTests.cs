@@ -16,19 +16,6 @@ namespace QuestPDF.UnitTests
         public void Draw_ShouldHandleNullChild() => new Alignment().DrawWithoutChild();
 
         [Test]
-        public void Measure_ShouldReturnWrap_WhenChildReturnsWrap()
-        {
-            TestPlan
-                .For(x => new Alignment
-                {
-                    Child = x.CreateChild()
-                })
-                .MeasureElement(new Size(1000, 500))
-                .ExpectChildMeasure(expectedInput: new Size(1000, 500), returns: new Wrap())
-                .CheckMeasureResult(new Wrap());
-        }
-
-        [Test]
         public void Draw_HorizontalCenter_VerticalCenter()
         {
             TestPlan

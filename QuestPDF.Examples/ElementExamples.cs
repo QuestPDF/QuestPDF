@@ -17,7 +17,7 @@ namespace QuestPDF.Examples
                 .Placeholder();
         }
         
-        //[ShowResult]
+        [ShowResult]
         [ImageSize(300, 300)]
         public void Section(IContainer container)
         {
@@ -167,7 +167,7 @@ namespace QuestPDF.Examples
                 });
         }
         
-        [ShowResult]
+        //[ShowResult]
         [ImageSize(300, 200)]
         public void GridExample(IContainer container)
         {
