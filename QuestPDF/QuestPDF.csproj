@@ -4,9 +4,16 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2021.3.1</Version>
+        <Version>2021.4.0</Version>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.</PackageDescription>
-        <PackageReleaseNotes>Generating images functionality, ShowIf element, fixed mutating TextStyle</PackageReleaseNotes>
+        <PackageReleaseNotes>
+            1. Added new element: `Debug` - this element can be used for inspecting its children and space taken by them,
+            2. Added new element: `Element` can be used for injecting dynamic elements (usually conditionally) without breaking the fluent API chain. This is practically a syntactic sugar to simplify your code.
+            3. The `AspectRatio` element allows now to specify scaling rule: fitting width, height or available space.
+            4. The `Image` element supports now scaling rules: fitting width, height or available space, as well as scaling unproportionally.
+            5. Added more, commonly used page sizes (thank you for your work [lmingle](https://github.com/lmingle)).
+            6. Bug fix: the `GeneratePdf(Stream stream)` method does not close the output stream (thank you for your suggestion [tthiery](https://github.com/tthiery)).
+        </PackageReleaseNotes>
         <LangVersion>8</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageIcon>Logo.png</PackageIcon>
@@ -22,17 +29,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SkiaSharp" Version="2.80.2" />
+        <PackageReference Include="SkiaSharp" Version="2.80.2" />
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Resources\ImagePlaceholder.png" />
-      <None Remove="ImagePlaceholder.png" />
-      <None Include="Resources\Logo.png">
-        <Pack>true</Pack>
-        <Visible>false</Visible>
-        <PackagePath>\</PackagePath>
-      </None>
+        <EmbeddedResource Include="Resources\ImagePlaceholder.png" />
+        <None Remove="ImagePlaceholder.png" />
+        <None Include="Resources\Logo.png">
+            <Pack>true</Pack>
+            <Visible>false</Visible>
+            <PackagePath>\</PackagePath>
+        </None>
     </ItemGroup>
-
 </Project>
