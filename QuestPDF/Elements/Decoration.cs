@@ -13,8 +13,8 @@ namespace QuestPDF.Elements
     
     internal class Decoration : Element
     {
-        public Element? DecorationElement { get; set; }
-        public Element? ContentElement { get; set; }
+        public Element DecorationElement { get; set; } = new Empty();
+        public Element ContentElement { get; set; } = new Empty();
         public DecorationType Type { get; set; } 
 
         internal override ISpacePlan Measure(Size availableSpace)
