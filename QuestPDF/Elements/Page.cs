@@ -7,17 +7,17 @@ namespace QuestPDF.Elements
 {
     internal class Page : IComponent
     {
-        public Element? Header { get; set; }
-        public Element? Content { get; set; }
-        public Element? Footer { get; set; }
+        public Element Header { get; set; } = new Empty();
+        public Element Content { get; set; } = new Empty();
+        public Element Footer { get; set; } = new Empty();
 
         public void Compose(IContainer container)
         {
             container.Section(section =>
             {
-                section.Header().Element(Header ?? new Empty());
-                section.Content().Extend().Element(Content ?? new Empty());
-                section.Footer().Element(Footer ?? new Empty());
+                section.Header().Element(Header);
+                section.Content().Extend().Element(Content);
+                section.Footer().Element(Footer);
             });
         }
     }

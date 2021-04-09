@@ -5,7 +5,7 @@ namespace QuestPDF.Elements
 {
     internal class Debug : ContainerElement
     {
-        private static readonly TextStyle TextStyle = TextStyle.Default.Color("#FF0000").FontType("Consolas").Size(10);
+        private static readonly TextStyle TextStyle = TextStyle.Default.Color("#F00").FontType("Consolas").Size(10);
         
         internal override void Draw(ICanvas canvas, Size availableSpace)
         {
