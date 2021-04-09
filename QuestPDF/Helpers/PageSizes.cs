@@ -47,15 +47,18 @@ namespace QuestPDF.Helpers
         public static Size Legal => new PageSize(612.4f, 1009.3f);
         public static Size Letter => new PageSize(612.4f, 791);
 
-        public static Size ARCHA => new PageSize(649.2f, 864.7f);
-        public static Size ARCHB => new PageSize(864.7f, 1295.6f);
-        public static Size ARCHC => new PageSize(1295.6f, 1729.3f);
-        public static Size ARCHD => new PageSize(1729.3f, 2591.2f);
-        public static Size ARCHE => new PageSize(2591.2f, 3455.9f);
+        public static Size ARCH_A => new PageSize(649.2f, 864.7f);
+        public static Size ARCH_B => new PageSize(864.7f, 1295.6f);
+        public static Size ARCH_C => new PageSize(1295.6f, 1729.3f);
+        public static Size ARCH_D => new PageSize(1729.3f, 2591.2f);
+        public static Size ARCH_E => new PageSize(2591.2f, 3455.9f);
         public static Size ARCH_E1 => new PageSize(2160.3f, 3024.9f);
         public static Size ARCH_E2 => new PageSize(1871.1f, 2735.8f);
         public static Size ARCH_E3 => new PageSize(1944.8f, 2809.5f);
+    }
 
+    public static class PageSizeExtensions
+    {
         public static PageSize Portrait(this Size size)
         {
             return new PageSize(Math.Min(size.Width, size.Height), Math.Max(size.Width, size.Height));
