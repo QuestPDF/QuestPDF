@@ -1,5 +1,6 @@
 using System;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ReportSample.Layouts
@@ -16,12 +17,12 @@ namespace QuestPDF.ReportSample.Layouts
         
         public static IContainer LightCell(this IContainer container)
         {
-            return container.Cell("#0000");
+            return container.Cell(Colors.Transparent);
         }
         
         public static IContainer DarkCell(this IContainer container)
         {
-            return container.Cell("#1000");
+            return container.Cell(Colors.Grey.Lighten3);
         }
         
         public static string Format(this Location location)
