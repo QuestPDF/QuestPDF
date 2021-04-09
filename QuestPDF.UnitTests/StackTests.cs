@@ -1,6 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Collections.Generic;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
+using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 
@@ -9,6 +14,8 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class StackTests
     {
+        #region Measure
+        
         [Test]
         public void Measure_NoChildren_Empty()
         {
@@ -56,6 +63,10 @@ namespace QuestPDF.UnitTests
                 .ExpectChildMeasure("a", expectedInput: new Size(500, 1000), returns: new Wrap())
                 .CheckMeasureResult(new Wrap());
         }
+        
+        #endregion
+
+        #region Combined
 
         [Test]
         public void WhenPageable_AndChildReturnsWrap()
@@ -167,5 +178,99 @@ namespace QuestPDF.UnitTests
                 
                 .CheckDrawResult();
         }
+        
+        #endregion
+        
+        #region Spacing
+        
+        [Test]
+        public void Fluent_WithoutSpacing()
+        {
+            // arrange
+            var structure = new Container();
+
+            var childA = TestPlan.CreateUniqueElement();
+            var childB = TestPlan.CreateUniqueElement();
+            var childC = TestPlan.CreateUniqueElement();
+
+            // act
+            structure
+                .Stack(stack =>
+                {
+                    stack.Spacing(0);
+
+                    stack.Element(childA);
+                    stack.Element(childB);
+                    stack.Element(childC);
+                });
+            
+            // assert
+            var expected = new Stack
+            {
+                Children = new List<Element>
+                {
+                    childA,
+                    childB,
+                    childC
+                }
+            };
+            
+            structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
+        }
+        
+        [Test]
+        public void Fluent_WithSpacing()
+        {
+            // arrange
+            var structure = new Container();
+
+            var childA = TestPlan.CreateUniqueElement();
+            var childB = TestPlan.CreateUniqueElement();
+            var childC = TestPlan.CreateUniqueElement();
+
+            // act
+            structure
+                .Stack(stack =>
+                {
+                    stack.Spacing(100);
+
+                    stack.Element(childA);
+                    stack.Element(childB);
+                    stack.Element(childC);
+                });
+            
+            // assert
+            var expected = new Padding
+            {
+                Bottom = -100,
+                Child = new Stack
+                {
+                    Children = new List<Element>
+                    {
+                        new Padding
+                        {
+                            Bottom = 100,
+                            Child = childA
+                        },
+                        new Padding
+                        {
+                            Bottom = 100,
+                            Child = childB
+                        },
+                        new Padding
+                        {
+                            Bottom = 100,
+                            Child = childC
+                        },
+                    }
+                }
+            };
+            
+            var traceWriter = new StringBuilderTraceWriter();   
+            structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
+            Console.WriteLine( traceWriter.ToString());
+        }
+        
+        #endregion
     }
 }

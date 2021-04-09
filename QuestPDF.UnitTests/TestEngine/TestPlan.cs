@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine.Operations;
 
@@ -224,6 +225,14 @@ namespace QuestPDF.UnitTests.TestEngine
         {
             Element.Draw(Canvas, OperationInput);
             return this;
+        }
+
+        public static Element CreateUniqueElement()
+        {
+            return new Text
+            {
+                Value = Guid.NewGuid().ToString("N")
+            };
         }
     }
 }
