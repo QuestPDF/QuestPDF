@@ -1,4 +1,5 @@
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ReportSample.Layouts
@@ -29,13 +30,11 @@ namespace QuestPDF.ReportSample.Layouts
             container
                 .Row(row =>
                 {
-                    row.Spacing(5);
-                    
                     row.RelativeColumn(2).Component(new ImageTemplate(Model.PhotoData));
 
-                    row.RelativeColumn().Stack(stack =>
+                    row.RelativeColumn().PaddingLeft(5).Stack(stack =>
                     {
-                        stack.Spacing(5);
+                        stack.Spacing(7f);
                         
                         stack.Element().Component(new ImageTemplate(Model.MapDetailsSource));
                         stack.Element().Component(new ImageTemplate(Model.MapContextSource));
@@ -45,17 +44,17 @@ namespace QuestPDF.ReportSample.Layouts
 
         void PhotoDetails(IContainer container)
         {
-            container.Border(0.75f).Grid(grid =>
+            container.Border(0.75f).BorderColor(Colors.Grey.Medium).Grid(grid =>
             {
                 grid.Columns(6);
                 
-                grid.Element().DarkCell().Text("Date", Typography.Normal);
-                grid.Element(2).LightCell().Text(Model.Date?.ToString("g") ?? string.Empty, Typography.Normal);
-                grid.Element().DarkCell().Text("Location", Typography.Normal);
-                grid.Element(2).LightCell().Text(Model.Location.Format(), Typography.Normal);
+                grid.Element().LabelCell().Text("Date", Typography.Normal);
+                grid.Element(2).ValueCell().Text(Model.Date?.ToString("g") ?? string.Empty, Typography.Normal);
+                grid.Element().LabelCell().Text("Location", Typography.Normal);
+                grid.Element(2).ValueCell().Text(Model.Location.Format(), Typography.Normal);
                 
-                grid.Element().DarkCell().Text("Comments", Typography.Normal);
-                grid.Element(5).LightCell().Text(Model.Comments, Typography.Normal);
+                grid.Element().LabelCell().Text("Comments", Typography.Normal);
+                grid.Element(5).ValueCell().Text(Model.Comments, Typography.Normal);
             });
         }
     }

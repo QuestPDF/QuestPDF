@@ -5,7 +5,7 @@ namespace QuestPDF.Drawing
 {
     internal class Canvas : ICanvas
     {
-        private SKCanvas SkiaCanvas { get; }
+        internal SKCanvas SkiaCanvas { get; }
         
         public Canvas(SKCanvas skiaCanvas)
         {

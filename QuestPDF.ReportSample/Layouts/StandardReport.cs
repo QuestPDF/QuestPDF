@@ -28,7 +28,6 @@ namespace QuestPDF.ReportSample.Layouts
             container
                 .PaddingVertical(40)
                 .PaddingHorizontal(50)
-                
                 .Page(page =>
                 {
                     page.Header(ComposeHeader);
@@ -43,16 +42,16 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 row.RelativeColumn().MaxWidth(300).Stack(stack =>
                 {
-                    stack.Spacing(5);
+                    stack.Spacing(10);
                     
                     stack
                         .Element()
                         .PaddingBottom(5)
                         .Text(Model.Title, Typography.Title);
                     
-                    stack.Element().ShowOnce().Stack(table =>
+                    stack.Element().Stack(table =>
                     {
-                        table.Spacing(5);
+                        table.Spacing(2);
 
                         foreach (var field in Model.HeaderFields)
                         {

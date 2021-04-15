@@ -266,9 +266,7 @@ namespace QuestPDF.UnitTests
                 }
             };
             
-            var traceWriter = new StringBuilderTraceWriter();   
             structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
-            Console.WriteLine( traceWriter.ToString());
         }
         
         #endregion

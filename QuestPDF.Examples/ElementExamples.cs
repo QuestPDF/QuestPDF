@@ -17,7 +17,7 @@ namespace QuestPDF.Examples
                 .Placeholder();
         }
         
-        [ShowResult]
+        //[ShowResult]
         [ImageSize(300, 300)]
         public void Section(IContainer container)
         {
@@ -187,6 +187,28 @@ namespace QuestPDF.Examples
                     grid.Element(4).Background("#AAA").Border(2).BorderColor("#666").Padding(5).Text("...generate", textStyle);
                     grid.Element(6).Background("#CCC").Padding(5).Text("simple grids", textStyle.Size(18).Bold());
                     grid.Element(8).Background("#DDD").Height(50);
+                });
+        }
+        
+        [ShowResult]
+        [ImageSize(300, 300)]
+        public void Layers(IContainer container)
+        {
+            container
+                .Background("#FFF")
+                .Padding(25)
+                .Layers(layers =>
+                {
+                    layers.Layer().Text("Something else");
+                    
+                    layers.PrimaryLayer().Stack(stack =>
+                    {
+                        stack.Element().PaddingTop(20).Text("Dupa 1");
+                        stack.Element().PaddingTop(40).Text("Dupa 2");
+                    });
+                    
+                    layers.Layer().Background("#8F00").Extend();
+                    layers.Layer().PaddingTop(40).Text("Super", TextStyle.Default.Size(24));
                 });
         }
     }

@@ -36,12 +36,12 @@ namespace QuestPDF.Fluent
         
         public static void Element<TParent>(this TParent parent, Action<IContainer> handler) where TParent : IContainer
         {
-            handler(parent.Container());
+            handler(parent);
         }
         
         public static IContainer Element<TParent>(this TParent parent, Func<IContainer, IContainer> handler) where TParent : IContainer
         {
-            return handler(parent.Container()).Container();
+            return handler(parent);
         }
         
         public static IContainer Debug(this IContainer parent)
@@ -90,6 +90,14 @@ namespace QuestPDF.Fluent
             return element.Element(new ShowEntire());
         }
 
+        public static IContainer EnsureSpace(this IContainer element, float minHeight = Elements.EnsureSpace.DefaultMinHeight)
+        {
+            return element.Element(new EnsureSpace
+            {
+                MinHeight = minHeight
+            });
+        }
+        
         public static void Text(this IContainer element, object text, TextStyle? style = null)
         {
             text ??= string.Empty;
@@ -145,6 +153,14 @@ namespace QuestPDF.Fluent
         public static IContainer ShowIf(this IContainer element, bool condition)
         {
             return condition ? element : new Container();
+        }
+        
+        public static void Canvas(this IContainer element, DrawOnCanvas handler)
+        {
+            element.Element(new Elements.Canvas
+            {
+                Handler = handler
+            });
         }
     }
 }

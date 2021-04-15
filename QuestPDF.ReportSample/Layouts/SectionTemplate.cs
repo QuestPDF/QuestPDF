@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ReportSample.Layouts
@@ -17,7 +18,7 @@ namespace QuestPDF.ReportSample.Layouts
         public void Compose(IContainer container)
         {
             container
-                .MinHeight(100)
+                .EnsureSpace()
                 .Section(section =>
                 {
                     section
@@ -25,14 +26,14 @@ namespace QuestPDF.ReportSample.Layouts
                         .PaddingBottom(5)
                         .Text(Model.Title, Typography.Headline);
 
-                    section.Content().Border(0.75f).Stack(stack =>
+                    section.Content().Border(0.75f).BorderColor(Colors.Grey.Medium).Stack(stack =>
                     {
                         foreach (var part in Model.Parts)
                         {
                             stack.Element().Row(row =>
                             {
-                                row.ConstantColumn(150).DarkCell().Text(part.Label, Typography.Normal);
-                                var frame = row.RelativeColumn().LightCell();
+                                row.ConstantColumn(150).LabelCell().Text(part.Label, Typography.Normal);
+                                var frame = row.RelativeColumn().ValueCell();
                             
                                 if (part is ReportSectionText text)
                                     frame.Text(text.Text, Typography.Normal);

@@ -70,7 +70,7 @@ namespace QuestPDF.Examples.Engine
             }
             catch (Exception e)
             {
-                throw new Exception($"Cannot perform test ${fileName}", e);
+                throw new Exception($"Cannot perform test {fileName}", e);
             }
 
             if (showResult)
@@ -86,7 +86,7 @@ namespace QuestPDF.Examples.Engine
             using var surface = SKSurface.Create(imageInfo);
             surface.Canvas.Scale(scalingFactor);
 
-            var canvas = new Canvas(surface.Canvas);
+            var canvas = new Drawing.Canvas(surface.Canvas);
             element?.Draw(canvas, size);
 
             surface.Canvas.Save();

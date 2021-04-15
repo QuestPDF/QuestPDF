@@ -56,7 +56,7 @@ namespace QuestPDF.Fluent
             var descriptor = new ComponentDescriptor<T>(component);
             handler?.Invoke(descriptor);
             
-            component.Compose(element.Container());
+            component.Compose(element);
         }
         
         static void Component<T>(this IContainer element, Action<ComponentDescriptor<T>>? handler = null) where T : IComponent, new()
