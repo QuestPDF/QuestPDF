@@ -6,6 +6,12 @@ using static QuestPDF.Infrastructure.HorizontalAlignment;
 
 namespace QuestPDF.Elements
 {
+    internal class GridElement
+    {
+        public int Columns { get; set; } = 1;
+        public Element? Child { get; set; }
+    }
+    
     internal class Grid : IComponent
     {
         public const int DefaultColumnsCount = 12;
