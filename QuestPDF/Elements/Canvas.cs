@@ -1,5 +1,6 @@
 ﻿using System;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -22,8 +23,10 @@ namespace QuestPDF.Elements
             
             if (Handler == null || skiaCanvas == null)
                 return;
-            
+
+            var currentMatrix = skiaCanvas.TotalMatrix;
             Handler.Invoke(skiaCanvas, availableSpace);
+            skiaCanvas.SetMatrix(currentMatrix);
         }
     }
 }

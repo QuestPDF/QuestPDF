@@ -2,6 +2,7 @@ using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Examples
 {
@@ -205,6 +206,18 @@ namespace QuestPDF.Examples
                     {
                         stack.Element().PaddingTop(20).Text("Dupa 1");
                         stack.Element().PaddingTop(40).Text("Dupa 2");
+                    });
+                    
+                    layers.Layer().Canvas((canvas, size) =>
+                    {
+                        using var paint = new SKPaint
+                        {
+                            Color = SKColors.Red,
+                            StrokeWidth = 5
+                        };
+                        
+                        canvas.Translate(size.Width / 2, size.Height / 2);
+                        canvas.DrawCircle(0, 0, 50, paint);
                     });
                     
                     layers.Layer().Background("#8F00").Extend();
