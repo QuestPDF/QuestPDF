@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.SpacePlan;
-using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;

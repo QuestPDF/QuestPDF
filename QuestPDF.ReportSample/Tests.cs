@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
 using QuestPDF.ReportSample.Layouts;
 
 namespace QuestPDF.ReportSample

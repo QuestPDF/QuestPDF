@@ -1,10 +1,7 @@
 ﻿using System;
-using System.IO;
-using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 namespace QuestPDF.Fluent
 {

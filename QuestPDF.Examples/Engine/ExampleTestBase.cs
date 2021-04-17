@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;

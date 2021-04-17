@@ -1,6 +1,4 @@
-﻿using Moq;
-using NUnit.Framework;
-using QuestPDF.Drawing;
+﻿using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;

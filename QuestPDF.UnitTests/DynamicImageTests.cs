@@ -1,5 +1,4 @@
-﻿using System;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;

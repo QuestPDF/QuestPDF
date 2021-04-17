@@ -1,5 +1,3 @@
-using System;
-using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 

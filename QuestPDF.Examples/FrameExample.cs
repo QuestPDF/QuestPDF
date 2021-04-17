@@ -1,4 +1,3 @@
-using System.Linq;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;

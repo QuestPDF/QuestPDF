@@ -1,10 +1,7 @@
-﻿using System;
-using FluentAssertions;
-using FluentAssertions.Equivalency;
+﻿using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 
 namespace QuestPDF.UnitTests

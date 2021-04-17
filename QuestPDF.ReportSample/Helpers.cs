@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using QuestPDF.ReportSample.Layouts;
 using SkiaSharp;
 
 namespace QuestPDF.ReportSample

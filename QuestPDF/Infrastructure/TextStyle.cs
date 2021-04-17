@@ -1,7 +1,4 @@
-﻿using System;
-using QuestPDF.Elements;
-
-namespace QuestPDF.Infrastructure
+﻿namespace QuestPDF.Infrastructure
 {
     public class TextStyle
     {

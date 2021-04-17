@@ -1,6 +1,4 @@
-﻿using System;
-using QuestPDF.Drawing.SpacePlan;
-using QuestPDF.Helpers;
+﻿using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
