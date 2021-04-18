@@ -1,9 +1,11 @@
-﻿namespace QuestPDF.Infrastructure
+﻿using QuestPDF.Helpers;
+
+namespace QuestPDF.Infrastructure
 {
     public class TextStyle
     {
-        internal string Color { get; set; } = "#000000";
-        internal string FontType { get; set; } = "Helvetica";
+        internal string Color { get; set; } = Colors.Black;
+        internal string FontType { get; set; } = "Calibri";
         internal float Size { get; set; } = 12;
         internal float LineHeight { get; set; } = 1.2f;
         internal HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;

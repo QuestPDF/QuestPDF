@@ -34,8 +34,8 @@ namespace QuestPDF.Examples
                     {
                         stack.Element().Row(row =>
                         {
-                            row.RelativeColumn(2).LabelCell().Text(TextPlaceholder.Label());
-                            row.RelativeColumn(3).ValueCell().Text(TextPlaceholder.Paragraph());
+                            row.RelativeColumn(2).LabelCell().Text(Placeholders.Label());
+                            row.RelativeColumn(3).ValueCell().Text(Placeholders.Paragraph());
                         });
                     }
                 });

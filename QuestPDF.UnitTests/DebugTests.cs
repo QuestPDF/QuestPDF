@@ -7,7 +7,6 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class DebugTests
     {
-        [Test]
-        public void Measure_ShouldHandleNullChild() => new Debug().MeasureWithoutChild();
+        
     }
 }

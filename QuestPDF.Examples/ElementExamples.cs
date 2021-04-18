@@ -38,7 +38,7 @@ namespace QuestPDF.Examples
                         .Background("#DDD")
                         .Padding(10)
                         .ExtendVertical()
-                        .Text(TextPlaceholder.LoremIpsum());
+                        .Text(Helpers.Placeholders.LoremIpsum());
                 });
         }
         

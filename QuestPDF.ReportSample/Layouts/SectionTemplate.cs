@@ -59,7 +59,7 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 stack.Spacing(5);
                 
-                stack.Element().Component(new ImageTemplate(model.ImageSource));
+                stack.Element().MaxWidth(250).AspectRatio(4 / 3f).Image(Placeholders.Image);
                 stack.Element().Text(model.Location.Format(), Typography.Normal);
             });
         }
@@ -72,12 +72,12 @@ namespace QuestPDF.ReportSample.Layouts
                 return;
             }
 
-            container.Debug().Debug().Grid(grid =>
+            container.Debug("Photo gallery").Grid(grid =>
             {
                 grid.Spacing(5);
                 grid.Columns(3);
                 
-                model.Photos.ForEach(x => grid.Element().Component(new ImageTemplate(x)));
+                model.Photos.ForEach(x => grid.Element().AspectRatio(4 / 3f).Image(Placeholders.Image));
             });
         }
     }

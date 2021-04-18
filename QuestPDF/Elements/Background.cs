@@ -1,10 +1,11 @@
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
     internal class Background : ContainerElement
     {
-        public string Color { get; set; } = "#00000000";
+        public string Color { get; set; } = Colors.Black;
         
         internal override void Draw(ICanvas canvas, Size availableSpace)
         {

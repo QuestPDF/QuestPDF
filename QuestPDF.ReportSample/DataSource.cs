@@ -52,7 +52,7 @@ namespace QuestPDF.ReportSample
                 
                 return new ReportSection
                 {
-                    Title = TextPlaceholder.Label(),
+                    Title = Placeholders.Label(),
                     Parts = Enumerable.Range(0, sectionLength).Select(x => GetRandomElement()).ToList()
                 };
             }
@@ -74,8 +74,8 @@ namespace QuestPDF.ReportSample
             {
                 return new ReportSectionText
                 {
-                    Label = TextPlaceholder.Label(),
-                    Text = TextPlaceholder.Paragraph()
+                    Label = Placeholders.Label(),
+                    Text = Placeholders.Paragraph()
                 };
             }
             
@@ -113,7 +113,7 @@ namespace QuestPDF.ReportSample
                 {
                     PhotoData = Helpers.GetPhoto($"{photoId}.jpg"),
 
-                    Comments = TextPlaceholder.Paragraph(),
+                    Comments = Placeholders.Paragraph(),
                     Date = DateTime.Now - TimeSpan.FromDays(Helpers.Random.NextDouble() * 100),
                     Location = Helpers.RandomLocation(),
 

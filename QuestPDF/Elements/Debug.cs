@@ -1,37 +1,36 @@
 ﻿using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Elements
 {
-    internal class Debug : ContainerElement
+    internal class Debug : IComponent
     {
-        private static readonly TextStyle TextStyle = TextStyle.Default.Color("#F00").FontType("Consolas").Size(10);
+        public IElement? Child { get; set; }
         
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        public string Text { get; set; }
+        public string Color { get; set; } = Colors.Red.Medium;
+        public void Compose(IContainer container)
         {
-            Child?.Draw(canvas, availableSpace);
-            DrawBoundingBox();
-            DrawDimensions();
-                
-            void DrawBoundingBox()
-            {
-                // TODO: when layer element is done, move this code into fluent API
-                
-                var container = new Container();
-
-                container
-                    .Border(1)
-                    .BorderColor("#FF0000")
-                    .Background("#33FF0000");
-
-                container.Draw(canvas, availableSpace);
-            }
-
-            void DrawDimensions()
-            {
-                canvas.DrawText($"W: {availableSpace.Width:F1}", new Position(5, 12), TextStyle);
-                canvas.DrawText($"H: {availableSpace.Height:F1}", new Position(5, 22), TextStyle);
-            }
+            var backgroundColor = SKColor.Parse(Color).WithAlpha(75).ToString();
+            
+            container
+                .Border(1)
+                .BorderColor(Color)
+                .Layers(layers =>
+                {
+                    layers.PrimaryLayer().Element(Child);
+                    layers.Layer().Background(backgroundColor);
+                    
+                    layers
+                        .Layer()
+                        .ShowIf(!string.IsNullOrWhiteSpace(Text))
+                        .Box()
+                        .Background(Colors.White)
+                        .Padding(2)
+                        .Text(Text, TextStyle.Default.Color(Color).FontType("Consolas").Size(8));
+                });
         }
     }
 }

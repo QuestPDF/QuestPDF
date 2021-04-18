@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 
@@ -41,16 +42,16 @@ namespace QuestPDF.UnitTests
                     Bottom = 30,
                     Left = 40,
                     
-                    Color = "#FF0000",
+                    Color = Colors.Red.Medium,
                     
                     Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
                 .ExpectChildDraw(new Size(400, 300))
-                .ExpectCanvasDrawRectangle(new Position(-20, -5), new Size(430, 10), "#FF0000") // top
-                .ExpectCanvasDrawRectangle(new Position(-20, -5), new Size(40, 320), "#FF0000") // left
-                .ExpectCanvasDrawRectangle(new Position(-20, 285), new Size(430, 30), "#FF0000") // bottom
-                .ExpectCanvasDrawRectangle(new Position(390, -5), new Size(20, 320), "#FF0000") // right
+                .ExpectCanvasDrawRectangle(new Position(-20, -5), new Size(430, 10), Colors.Red.Medium) // top
+                .ExpectCanvasDrawRectangle(new Position(-20, -5), new Size(40, 320), Colors.Red.Medium) // left
+                .ExpectCanvasDrawRectangle(new Position(-20, 285), new Size(430, 30), Colors.Red.Medium) // bottom
+                .ExpectCanvasDrawRectangle(new Position(390, -5), new Size(20, 320), Colors.Red.Medium) // right
                 .ExpectChildDraw(new Size(400, 300))
                 .CheckDrawResult();
         }

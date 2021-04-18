@@ -1,6 +1,7 @@
 ﻿using System;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -40,11 +41,6 @@ namespace QuestPDF.Fluent
         {
             return handler(parent);
         }
-        
-        public static IContainer Debug(this IContainer parent)
-        {
-            return parent.Element(new Debug());
-        }
 
         public static void PageNumber(this IContainer element, string textFormat = "{number}", TextStyle? style = null)
         {
@@ -71,10 +67,13 @@ namespace QuestPDF.Fluent
                 Color = color
             });
         }
-        
-        public static void Placeholder(this IContainer element)
+
+        public static void Placeholder(this IContainer element, string? text = null)
         {
-            element.Component<Placeholder>();
+            element.Component(new Elements.Placeholder
+            {
+                Text = text ?? string.Empty
+            });
         }
 
         public static IContainer ShowOnce(this IContainer element)
@@ -158,6 +157,11 @@ namespace QuestPDF.Fluent
             {
                 Handler = handler
             });
+        }
+        
+        public static IContainer Box(this IContainer element)
+        {
+            return element.Element(new Box());
         }
     }
 }

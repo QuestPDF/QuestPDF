@@ -37,7 +37,7 @@ namespace QuestPDF.Fluent
             }
         }
 
-        public static void DynamicImage(this IContainer element, Func<Size, byte[]> imageSource)
+        public static void Image(this IContainer element, Func<Size, byte[]> imageSource)
         {
             element.Element(new DynamicImage
             {

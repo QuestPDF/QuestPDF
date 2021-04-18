@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Linq;
+using QuestPDF.Drawing;
+using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Helpers
 {
-    public static class TextPlaceholder
+    public static class Placeholders
     {
         private static Random Random = new Random();
         
@@ -147,6 +150,127 @@ namespace QuestPDF.Helpers
         public static string Decimal() => (Random.NextDouble() * Random.Next(0, 100)).ToString("N2");
         public static string Percent() => (Random.NextDouble() * 100).ToString("N0") + "%";
 
+        #endregion
+
+        #region Visual
+
+        private static readonly string[] BackgroundColors =
+        {
+            Colors.Red.Lighten2,
+            Colors.Pink.Lighten2,
+            Colors.Purple.Lighten2,
+            Colors.DeepPurple.Lighten2,
+            Colors.Indigo.Lighten2,
+            Colors.Blue.Lighten2,
+            Colors.LightBlue.Lighten2,
+            Colors.Cyan.Lighten2,
+            Colors.Teal.Lighten2,
+            Colors.Green.Lighten2,
+            Colors.LightGreen.Lighten2,
+            Colors.Lime.Lighten2,
+            Colors.Yellow.Lighten2,
+            Colors.Amber.Lighten2,
+            Colors.Orange.Lighten2,
+            Colors.DeepOrange.Lighten2,
+            Colors.Brown.Lighten2,
+            Colors.Grey.Lighten2,
+            Colors.BlueGrey.Lighten2
+        };
+        
+        public static string BackgroundColor()
+        {
+            var index = Random.Next(0, BackgroundColors.Length);
+            return BackgroundColors[index];
+        }
+        
+        public static string Color()
+        {
+            var colors = new[]
+            {
+                Colors.Red.Medium,
+                Colors.Pink.Medium,
+                Colors.Purple.Medium,
+                Colors.DeepPurple.Medium,
+                Colors.Indigo.Medium,
+                Colors.Blue.Medium,
+                Colors.LightBlue.Medium,
+                Colors.Cyan.Medium,
+                Colors.Teal.Medium,
+                Colors.Green.Medium,
+                Colors.LightGreen.Medium,
+                Colors.Lime.Medium,
+                Colors.Yellow.Medium,
+                Colors.Amber.Medium,
+                Colors.Orange.Medium,
+                Colors.DeepOrange.Medium,
+                Colors.Brown.Medium,
+                Colors.Grey.Medium,
+                Colors.BlueGrey.Medium
+            };
+
+            var index = Random.Next(0, colors.Length);
+            return colors[index];
+        }
+        
+        public static byte[] Image(Size size)
+        {
+            // shuffle corner positions
+            var targetPositions = new[]
+            {
+                new SKPoint(0, 0),
+                new SKPoint(size.Width, 0),
+                new SKPoint(0, size.Height),
+                new SKPoint(size.Width, size.Height)
+            };
+            
+            var positions = targetPositions
+                .OrderBy(x => Random.Next())
+                .ToList();
+            
+            // rand and shuffle colors
+            var colors = BackgroundColors
+                .OrderBy(x => Random.Next())
+                .Take(4)
+                .Select(SKColor.Parse)
+                .ToArray();
+            
+            // create image with white background
+            var imageInfo = new SKImageInfo((int)size.Width, (int)size.Height);
+            using var surface = SKSurface.Create(imageInfo);
+   
+            using var backgroundPaint = new SKPaint
+            {
+                Color = SKColors.White
+            };
+            
+            surface.Canvas.DrawRect(0, 0, size.Width, size.Height, backgroundPaint);
+
+            // draw gradient
+            SKShader GetForegroundShader(int index)
+            {
+                var radius = Math.Max(size.Width, size.Height);
+                var color = colors[index];
+                
+                return SKShader.CreateRadialGradient(
+                    positions[index], radius,
+                    new[] {color, color.WithAlpha(0)}, new[] {0, 1f},
+                    SKShaderTileMode.Decal);
+            }
+            
+            using var shaderPaint = new SKPaint
+            {
+                Shader = SKShader.CreateCompose(
+                    SKShader.CreateCompose(GetForegroundShader(0), GetForegroundShader(1)),
+                    SKShader.CreateCompose(GetForegroundShader(2), GetForegroundShader(3)))
+            };
+            
+            surface.Canvas.DrawRect(0, 0, size.Width, size.Height, shaderPaint);
+            
+            // return result as an image
+            surface.Canvas.Save();
+            return surface.Snapshot().Encode(SKEncodedImageFormat.Jpeg, 90).ToArray();
+        }
+        
         #endregion
     }
 }
