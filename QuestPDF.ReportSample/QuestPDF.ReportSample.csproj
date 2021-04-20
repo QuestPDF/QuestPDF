@@ -16,10 +16,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Resources" />
-    </ItemGroup>
-
-    <ItemGroup>
         <Content Include="Resources\**\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
@@ -27,5 +23,9 @@
 
     <ItemGroup>
       <ProjectReference Include="..\QuestPDF\QuestPDF.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resources\Logo.png" />
     </ItemGroup>
 </Project>

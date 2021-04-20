@@ -9,13 +9,7 @@ namespace QuestPDF.ReportSample
         public static Random Random { get; } = new Random();
         
         public static string GetTestItem(string path) => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", path);
-        
-        public static byte[] GetDocumentMap(string name) => GetImage(Path.Combine("Maps", "Document", name));
-        public static byte[] GetDetailsMap(string name) => GetImage(Path.Combine("Maps", "Details", name));
-        public static byte[] GetContextMap(string name) => GetImage(Path.Combine("Maps", "Context", name));
-        
-        public static byte[] GetPhoto(string name) => GetImage(Path.Combine("Photos", name));
-        
+
         public static byte[] GetImage(string name)
         {
             var photoPath = GetTestItem(name);

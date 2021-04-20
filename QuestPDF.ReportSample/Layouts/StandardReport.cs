@@ -38,40 +38,32 @@ namespace QuestPDF.ReportSample.Layouts
 
         private void ComposeHeader(IContainer container)
         {
-            container.Row(row =>
+            container.Stack(stack =>
             {
-                row.RelativeColumn().MaxWidth(300).Stack(stack =>
+                stack.Element().Row(row =>
                 {
-                    stack.Spacing(10);
+                    row.Spacing(50);
                     
-                    stack
-                        .Element()
-                        .PaddingBottom(5)
-                        .Text(Model.Title, Typography.Title);
-                    
-                    stack.Element().Stack(table =>
-                    {
-                        table.Spacing(2);
-
-                        foreach (var field in Model.HeaderFields)
-                        {
-                            table.Element().Row(row =>
-                            {
-                                row.Spacing(10);
-                                
-                                row.ConstantColumn(50)
-                                    .AlignLeft()
-                                    .Text($"{field.Label}:", Typography.Normal);
-                                
-                                row.RelativeColumn()
-                                    .Text(field.Value, Typography.Normal);
-                            });
-                        }
-                    });
-
+                    row.RelativeColumn().PaddingTop(-10).Text(Model.Title, Typography.Title);
+                    row.ConstantColumn(150).ExternalLink("https://www.questpdf.com").Image(Model.LogoData);
                 });
+
+                stack.Element().ShowOnce().PaddingVertical(15).Border(1f).BorderColor(Colors.Grey.Lighten1).ExtendHorizontal();
                 
-                row.ConstantColumn(150).ExternalLink("https://www.questpdf.com").Image(Model.LogoData);
+                stack.Element().ShowOnce().Grid(grid =>
+                {
+                    grid.Columns(2);
+                    grid.Spacing(5);
+                        
+                    foreach (var field in Model.HeaderFields)
+                    {
+                        grid.Element().Stack(row =>
+                        {   
+                            row.Element().AlignLeft().Text(field.Label, Typography.Normal.SemiBold());
+                            row.Element().Text(field.Value, Typography.Normal);
+                        });
+                    }
+                });
             });
         }
 
