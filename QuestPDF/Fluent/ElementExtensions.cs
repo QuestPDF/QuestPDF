@@ -1,7 +1,6 @@
 ﻿using System;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent

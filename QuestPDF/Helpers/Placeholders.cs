@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -210,6 +209,11 @@ namespace QuestPDF.Helpers
 
             var index = Random.Next(0, colors.Length);
             return colors[index];
+        }
+
+        public static byte[] Image(int width, int height)
+        {
+            return Image(new Size(width, height));
         }
         
         public static byte[] Image(Size size)

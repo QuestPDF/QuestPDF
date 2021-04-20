@@ -13,7 +13,7 @@ namespace QuestPDF.Elements
         public string Color { get; set; } = Colors.Red.Medium;
         public void Compose(IContainer container)
         {
-            var backgroundColor = SKColor.Parse(Color).WithAlpha(75).ToString();
+            var backgroundColor = SKColor.Parse(Color).WithAlpha(50).ToString();
             
             container
                 .Border(1)
@@ -26,6 +26,7 @@ namespace QuestPDF.Elements
                     layers
                         .Layer()
                         .ShowIf(!string.IsNullOrWhiteSpace(Text))
+                        .AlignCenter()
                         .Box()
                         .Background(Colors.White)
                         .Padding(2)
