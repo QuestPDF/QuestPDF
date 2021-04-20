@@ -20,7 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Resources\Photos\readme.txt" />
         <Content Include="Resources\**\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
