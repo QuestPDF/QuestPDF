@@ -203,8 +203,8 @@ namespace QuestPDF.Examples
                     
                     layers.PrimaryLayer().Stack(stack =>
                     {
-                        stack.Element().PaddingTop(20).Text("Dupa 1");
-                        stack.Element().PaddingTop(40).Text("Dupa 2");
+                        stack.Element().PaddingTop(20).Text("Text 1");
+                        stack.Element().PaddingTop(40).Text("Text 2");
                     });
                     
                     layers.Layer().Canvas((canvas, size) =>
@@ -220,7 +220,7 @@ namespace QuestPDF.Examples
                     });
                     
                     layers.Layer().Background("#8F00").Extend();
-                    layers.Layer().PaddingTop(40).Text("Super", TextStyle.Default.Size(24));
+                    layers.Layer().PaddingTop(40).Text("It works!", TextStyle.Default.Size(24));
                 });
         }
     }
