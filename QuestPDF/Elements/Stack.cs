@@ -24,6 +24,7 @@ namespace QuestPDF.Elements
                 return new FullRender(Size.Zero);
 
             var heightOnCurrentPage = 0f;
+            var maxWidth = 0f;
 
             foreach (var renderer in ChildrenQueue)
             {
@@ -34,17 +35,20 @@ namespace QuestPDF.Elements
                     if (heightOnCurrentPage < Size.Epsilon)
                         return new Wrap();
                     
-                    return new PartialRender(availableSpace.Width, heightOnCurrentPage);
+                    return new PartialRender(maxWidth, heightOnCurrentPage);
                 }
 
                 var size = space as Size;
                 heightOnCurrentPage += size.Height;
 
+                if (size.Width > maxWidth)
+                    maxWidth = size.Width;
+
                 if (space is PartialRender)
-                    return new PartialRender(availableSpace.Width, heightOnCurrentPage);
+                    return new PartialRender(maxWidth, heightOnCurrentPage);
             }
             
-            return new FullRender(availableSpace.Width, heightOnCurrentPage);
+            return new FullRender(maxWidth, heightOnCurrentPage);
         }
 
         internal override void Draw(ICanvas canvas, Size availableSpace)

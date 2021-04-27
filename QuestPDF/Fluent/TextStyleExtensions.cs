@@ -18,6 +18,11 @@ namespace QuestPDF.Fluent
             return style.Mutate(x => x.Color = value);
         }
         
+        public static TextStyle BackgroundColor(this TextStyle style, string value)
+        {
+            return style.Mutate(x => x.BackgroundColor = value);
+        }
+        
         public static TextStyle FontType(this TextStyle style, string value)
         {
             return style.Mutate(x => x.FontType = value);
