@@ -6,13 +6,14 @@ using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Examples
 {
     public class TextExample : ExampleTestBase
     {
         [ShowResult]
-        [ImageSize(1200, 500)]
+        [ImageSize(1600, 500)]
         public void Test(IContainer container)
         {
             List<TextElement> Lorem()
@@ -21,36 +22,32 @@ namespace QuestPDF.Examples
                 {
                     new TextElement()
                     {
-                        Style = TextStyle.Default.Size(32).BackgroundColor(Colors.Red.Lighten3),
+                        Style = TextStyle.Default.Size(32).BackgroundColor(Placeholders.BackgroundColor()),
                         Text = "Lorem ipsum "
                     },
                     new TextElement()
                     {
-                        Style = TextStyle.Default.Size(24).BackgroundColor(Colors.Orange.Lighten3),
+                        Style = TextStyle.Default.Size(24).BackgroundColor(Placeholders.BackgroundColor()),
                         Text = " dolor "
                     },
                     new TextElement()
                     {
-                        Style = TextStyle.Default.Size(64).BackgroundColor(Colors.Yellow.Lighten3),
-                        Text = " sit "
+                        Style = TextStyle.Default.Size(64).BackgroundColor(Placeholders.BackgroundColor()),
+                        Text = " sijt "
                     },
                     new TextElement()
                     {
-                        Style = TextStyle.Default.Size(32).BackgroundColor(Colors.Green.Lighten3),
+                        Style = TextStyle.Default.Size(32).BackgroundColor(Placeholders.BackgroundColor()),
                         Text = " amet"
                     }
                 };
             }
 
-            Func<List<TextElement>> Source = Lorem ;
-            
+            Func<List<TextElement>> Source = () => Split(RandomText());
+
             container
                 .Padding(50)
-                .Stack(row =>
-                {
-                    row.Spacing(50);
-                    
-                    row.Element().Box().Border(1).Stack(stack =>
+                .Box().Border(1).Stack(stack =>
                     {
                         stack
                             .Element()
@@ -69,58 +66,62 @@ namespace QuestPDF.Examples
                             {
                                 Elements = Source()
                             });
-                        
+
                         stack
                             .Element()
                             .Box()
                             //.Background(Placeholders.BackgroundColor())
                             .Element(new TextRun()
                             {
-                                Elements = Split(Source())
-                            });
-                    });
-                    
-                    row.Element().Box().Border(1).Stack(stack =>
-                    {
-                        stack
-                            .Element()
-                            .Box()
-                            .Background(Placeholders.BackgroundColor())
-                            .Element(new TextRun()
-                            {
-                                Elements = Dense(Source())
+                                Elements = Source()
                             });
 
                         stack
                             .Element()
                             .Box()
-                            .Background(Placeholders.BackgroundColor())
+                            //.Background(Placeholders.BackgroundColor())
                             .Element(new TextRun()
                             {
-                                Elements = Dense(Source())
+                                Elements = Source()
                             });
-                        
+
                         stack
                             .Element()
                             .Box()
-                            .Background(Placeholders.BackgroundColor())
+                            //.Background(Placeholders.BackgroundColor())
                             .Element(new TextRun()
                             {
-                                Elements = Dense(Split(Source()))
+                                Elements = Source()
+                            });
+
+                        stack
+                            .Element()
+                            .Box()
+                            //.Background(Placeholders.BackgroundColor())
+                            .Element(new TextRun()
+                            {
+                                Elements = Source()
                             });
                     });
-                });
         }
 
         List<TextElement> RandomText()
         {
+            var sizes = new[] { 24, 32, 48, 64};
+            
             return Placeholders
                 .Sentence()
                 .Split(" ")
                 .Select(x => new TextElement
                 {
                     Text = $"{x} ",
-                    Style = TextStyle.Default.Size(Placeholders.Random.Next(24, 64))
+                    Style = TextStyle
+                        .Default
+                        //.Size(sizes[Placeholders.Random.Next(0, 3)])
+                        .Size(24)
+                        .BackgroundColor(Placeholders.BackgroundColor())
+                        //.LineHeight((float)Placeholders.Random.NextDouble() / 2 + 1f)
+                        .LineHeight(1.2f)
                 })
                 .ToList();
         }
@@ -136,12 +137,6 @@ namespace QuestPDF.Examples
                         Text = y.ToString()
                     }))
                 .ToList();
-        }
-        
-        List<TextElement> Dense(List<TextElement> elements)
-        {
-            elements.ForEach(x => x.Style.IsDense = true);
-            return elements;
         }
     }
 }

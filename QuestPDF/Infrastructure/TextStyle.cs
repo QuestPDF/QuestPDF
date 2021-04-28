@@ -12,13 +12,12 @@ namespace QuestPDF.Infrastructure
         internal HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         internal FontWeight FontWeight { get; set; } = FontWeight.Normal;
         internal bool IsItalic { get; set; } = false;
-        internal bool IsDense { get; set; }
         
         public static TextStyle Default => new TextStyle();
         
         public override string ToString()
         {
-            return $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{Alignment}|{FontWeight}|{IsItalic}|{IsDense}";
+            return $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{Alignment}|{FontWeight}|{IsItalic}";
         }
 
         internal TextStyle Clone() => (TextStyle)MemberwiseClone();

@@ -16,9 +16,9 @@ namespace QuestPDF.Elements
             
             var width = measurements.Sum(x => x.Width);
             //var height = measurements.Max(x => x.Height);
-            var height = measurements.Max(x => x.Position.Bottom) + measurements.Max(x => x.Position.Height);
-
-
+            //var height = measurements.Max(x => x.Position.Bottom) + measurements.Max(x => x.Position.Height);
+            var height = Elements.Max(x => x.Style.Size * x.Style.LineHeight);
+    
             return new FullRender(width, height);
         }
 
@@ -26,23 +26,33 @@ namespace QuestPDF.Elements
         {
             var measurements = Elements.Select(x => x.Measure()).ToList();
 
-            var top = measurements.Max(x => x.Position.Height);
-            var bottom = measurements.Max(x => x.Position.Bottom);
+            var lineHeight = Elements.Max(x => x.Style.Size * x.Style.LineHeight);
+            var textHeight = Elements.Max(x => x.Style.Size);
             
-            var offset = measurements.Min(x => x.Position.Top);
-            canvas.Translate(new Position(0, -offset));
+            var lineHeightOffset = (lineHeight - textHeight) / 2;
+            var baselineOffset = measurements.Max(x => -x.Position.Top);
+            var offset = lineHeightOffset + baselineOffset;
+            
             
             foreach (var textElement in Elements)
             {
                 var size = textElement.Measure();
                 
-                canvas.DrawRectangle(new Position(0, -top), new Size(size.Width, bottom + top), textElement.Style.BackgroundColor);
+                //canvas.DrawRectangle(new Position(0, 0), new Size(size.Width, lineHeight), textElement.Style.BackgroundColor);
                 //canvas.DrawRectangle(new Position(size.Position.Left, size.Position.Top), new Size(size.Position.Width, size.Position.Height), textElement.Style.BackgroundColor);
+                
+                canvas.Translate(new Position(0, offset));
                 textElement.Draw(canvas);
+                canvas.Translate(new Position(0, -offset));
+                
                 canvas.Translate(new Position(size.Width, 0));
             }
             
-            canvas.Translate(new Position(-measurements.Sum(x => x.Width), offset));
+            canvas.Translate(new Position(-measurements.Sum(x => x.Width), 0));
+            
+            
+            
+            //
         }
     }
 }

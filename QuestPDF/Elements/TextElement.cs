@@ -10,7 +10,6 @@ namespace QuestPDF.Elements
     public struct TextMeasurement
     {
         public float Width { get; set; }
-        public float Height { get; set; }
         public SKRect Position { get; set; }
     }
     
@@ -44,9 +43,6 @@ namespace QuestPDF.Elements
                 return new TextMeasurement
                 {
                     Position = rect,
-                    Height = style.IsDense 
-                        ? rect.Bottom + rect.Height 
-                        : style.LineHeight * style.Size,
                     Width = width
                 };
             });
