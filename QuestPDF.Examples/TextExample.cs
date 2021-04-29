@@ -23,6 +23,31 @@ namespace QuestPDF.Examples
                     new TextElement()
                     {
                         Style = TextStyle.Default.Size(32).BackgroundColor(Placeholders.BackgroundColor()),
+                        Text = "Podstawowy łaciński Tabela znaków Unicode"
+                    },
+                    new TextElement()
+                    {
+                        Style = TextStyle.Default.FontType("Segoe UI Emoji").Size(32).BackgroundColor(Placeholders.BackgroundColor()),
+                        Text = "✔"
+                    },
+                    new TextElement()
+                    {
+                        Style = TextStyle.Default.FontType("Segoe UI Emoji").Size(32).BackgroundColor(Placeholders.BackgroundColor()),
+                        Text = "🥛"
+                    },
+                    new TextElement()
+                    {
+                        Style = TextStyle.Default.FontType("Segoe UI Emoji").Size(32).BackgroundColor(Placeholders.BackgroundColor()),
+                        Text = "🧀"
+                    },
+                    new TextElement()
+                    {
+                        Style = TextStyle.Default.FontType("Segoe UI Emoji").Size(32).BackgroundColor(Placeholders.BackgroundColor()),
+                        Text = "❤🚵‍♀️"
+                    },
+                    new TextElement()
+                    {
+                        Style = TextStyle.Default.Size(32).BackgroundColor(Placeholders.BackgroundColor()),
                         Text = "Lorem ipsum "
                     },
                     new TextElement()
@@ -55,7 +80,7 @@ namespace QuestPDF.Examples
                             //.Background(Placeholders.BackgroundColor())
                             .Element(new TextRun()
                             {
-                                Elements = Source()
+                                Elements = Lorem()
                             });
 
                         stack

@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using QuestPDF.Drawing;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 
 namespace QuestPDF.Elements
 {
@@ -32,15 +35,18 @@ namespace QuestPDF.Elements
             var lineHeightOffset = (lineHeight - textHeight) / 2;
             var baselineOffset = measurements.Max(x => -x.Position.Top);
             var offset = lineHeightOffset + baselineOffset;
-            
+
+
+            using var typeface = SKTypeface.FromFamilyName("Helvetica");
+            using var shaper = new SKShaper(typeface);
+            var shaped = shaper.Shape("Podstawowy łaciński — ✔️ ❤️ ☆ Tabela znaków Unicode", Elements.First().Style.ToPaint());
             
             foreach (var textElement in Elements)
             {
                 var size = textElement.Measure();
                 
-                //canvas.DrawRectangle(new Position(0, 0), new Size(size.Width, lineHeight), textElement.Style.BackgroundColor);
-                //canvas.DrawRectangle(new Position(size.Position.Left, size.Position.Top), new Size(size.Position.Width, size.Position.Height), textElement.Style.BackgroundColor);
-                
+                canvas.DrawRectangle(new Position(0, 0), new Size(size.Width, lineHeight), textElement.Style.BackgroundColor);
+
                 canvas.Translate(new Position(0, offset));
                 textElement.Draw(canvas);
                 canvas.Translate(new Position(0, -offset));
