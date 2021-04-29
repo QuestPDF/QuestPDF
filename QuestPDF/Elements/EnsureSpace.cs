@@ -7,13 +7,15 @@ namespace QuestPDF.Elements
     {
         public const float DefaultMinHeight = 150;
         public float MinHeight { get; set; } = DefaultMinHeight;
-        
+
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            if (availableSpace.Height < MinHeight)
+            var measurement = base.Measure(availableSpace);
+
+            if (measurement is PartialRender && availableSpace.Height < MinHeight)
                 return new Wrap();
 
-            return base.Measure(availableSpace);
+            return measurement;
         }
     }
 }
