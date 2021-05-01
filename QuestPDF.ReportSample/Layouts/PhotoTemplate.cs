@@ -20,8 +20,8 @@ namespace QuestPDF.ReportSample.Layouts
                 .Stack(stack =>
                 {
                     stack.Spacing(5);
-                    stack.Element(PhotoWithMaps);
-                    stack.Element(PhotoDetails);
+                    stack.Item(PhotoWithMaps);
+                    stack.Item(PhotoDetails);
                 });
         }
         
@@ -36,8 +36,8 @@ namespace QuestPDF.ReportSample.Layouts
                     {
                         stack.Spacing(7f);
                         
-                        stack.Element().AspectRatio(4 / 3f).Image(Placeholders.Image);
-                        stack.Element().AspectRatio(4 / 3f).Image(Placeholders.Image);
+                        stack.Item().AspectRatio(4 / 3f).Image(Placeholders.Image);
+                        stack.Item().AspectRatio(4 / 3f).Image(Placeholders.Image);
                     });
                 });
         }

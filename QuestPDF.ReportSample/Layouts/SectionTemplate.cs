@@ -17,7 +17,7 @@ namespace QuestPDF.ReportSample.Layouts
         {
             container
                 .EnsureSpace()
-                .Section(section =>
+                .Decoration(section =>
                 {
                     section
                         .Header()
@@ -28,7 +28,7 @@ namespace QuestPDF.ReportSample.Layouts
                     {
                         foreach (var part in Model.Parts)
                         {
-                            stack.Element().Row(row =>
+                            stack.Item().Row(row =>
                             {
                                 row.ConstantColumn(150).LabelCell().Text(part.Label, Typography.Normal);
                                 var frame = row.RelativeColumn().ValueCell();
@@ -59,8 +59,8 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 stack.Spacing(5);
                 
-                stack.Element().MaxWidth(250).AspectRatio(4 / 3f).Image(Placeholders.Image);
-                stack.Element().Text(model.Location.Format(), Typography.Normal);
+                stack.Item().MaxWidth(250).AspectRatio(4 / 3f).Image(Placeholders.Image);
+                stack.Item().Text(model.Location.Format(), Typography.Normal);
             });
         }
         

@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
 
         public void Compose(IContainer container)
         {
-            container.Section(section =>
+            container.Decoration(section =>
             {
                 section.Header().Element(Header);
                 section.Content().Extend().Element(Content);

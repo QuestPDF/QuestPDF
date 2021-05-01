@@ -197,9 +197,9 @@ namespace QuestPDF.UnitTests
                 {
                     stack.Spacing(0);
 
-                    stack.Element(childA);
-                    stack.Element(childB);
-                    stack.Element(childC);
+                    stack.Item().Element(childA);
+                    stack.Item().Element(childB);
+                    stack.Item().Element(childC);
                 });
             
             // assert
@@ -207,9 +207,18 @@ namespace QuestPDF.UnitTests
             {
                 Children = new List<Element>
                 {
-                    childA,
-                    childB,
-                    childC
+                    new Container
+                    {
+                        Child = childA
+                    },
+                    new Container
+                    {
+                        Child = childB
+                    },
+                    new Container
+                    {
+                        Child = childC
+                    }
                 }
             };
             
@@ -232,9 +241,9 @@ namespace QuestPDF.UnitTests
                 {
                     stack.Spacing(100);
 
-                    stack.Element(childA);
-                    stack.Element(childB);
-                    stack.Element(childC);
+                    stack.Item().Element(childA);
+                    stack.Item().Element(childB);
+                    stack.Item().Element(childC);
                 });
             
             // assert
@@ -248,17 +257,26 @@ namespace QuestPDF.UnitTests
                         new Padding
                         {
                             Bottom = 100,
-                            Child = childA
+                            Child = new Container
+                            {
+                                Child = childA
+                            }
                         },
                         new Padding
                         {
                             Bottom = 100,
-                            Child = childB
+                            Child = new Container
+                            {
+                                Child = childB
+                            }
                         },
                         new Padding
                         {
                             Bottom = 100,
-                            Child = childC
+                            Child = new Container
+                            {
+                                Child = childC
+                            }
                         },
                     }
                 }

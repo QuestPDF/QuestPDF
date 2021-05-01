@@ -16,7 +16,7 @@ namespace QuestPDF.ReportSample.Layouts
         public void Compose(IContainer container)
         {
             container
-                .Section(section =>
+                .Decoration(section =>
                 {
                     section
                         .Header()
@@ -28,9 +28,9 @@ namespace QuestPDF.ReportSample.Layouts
                         stack.Spacing(5);
                         
                         for (var i = 0; i < Sections.Count; i++)
-                            stack.Element(c => DrawLink(c, i+1, Sections[i].Title));
+                            stack.Item(c => DrawLink(c, i+1, Sections[i].Title));
 
-                        stack.Element(c => DrawLink(c, Sections.Count+1, "Photos"));
+                        stack.Item(c => DrawLink(c, Sections.Count+1, "Photos"));
                     });
                 });
         }

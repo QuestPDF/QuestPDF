@@ -4,14 +4,14 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class SectionDescriptor
+    public class DecorationDescriptor
     {
-        internal Section Section { get; } = new Section();
+        internal Decoration Decoration { get; } = new Decoration();
         
         public IContainer Header()
         {
             var container = new Container();
-            Section.Header = container;
+            Decoration.Header = container;
             return container;
         }
         
@@ -23,7 +23,7 @@ namespace QuestPDF.Fluent
         public IContainer Content()
         {
             var container = new Container();
-            Section.Content = container;
+            Decoration.Content = container;
             return container;
         }
         
@@ -35,7 +35,7 @@ namespace QuestPDF.Fluent
         public IContainer Footer()
         {
             var container = new Container();
-            Section.Footer = container;
+            Decoration.Footer = container;
             return container;
         }
         
@@ -47,12 +47,12 @@ namespace QuestPDF.Fluent
     
     public static class SectionExtensions
     {
-        public static void Section(this IContainer element, Action<SectionDescriptor> handler)
+        public static void Decoration(this IContainer element, Action<DecorationDescriptor> handler)
         {
-            var descriptor = new SectionDescriptor();
+            var descriptor = new DecorationDescriptor();
             handler(descriptor);
             
-            element.Component(descriptor.Section);
+            element.Component(descriptor.Decoration);
         }
     }
 }

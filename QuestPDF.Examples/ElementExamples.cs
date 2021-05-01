@@ -24,7 +24,7 @@ namespace QuestPDF.Examples
             container
                 .Background("#FFF")
                 .Padding(25)
-                .Section(section =>
+                .Decoration(section =>
                 {
                     section
                         .Header()
@@ -81,12 +81,12 @@ namespace QuestPDF.Examples
                 .Padding(20)
                 .Stack(stack =>
                 {
-                    stack.Element()
+                    stack.Item()
                         .PaddingBottom(10)
                         .AlignCenter()
                         .Text("This Row element is 700pt wide");
 
-                    stack.Element().Row(row =>
+                    stack.Item().Row(row =>
                     {
                         row.ConstantColumn(100)
                             .Background("#DDD")
@@ -119,17 +119,17 @@ namespace QuestPDF.Examples
                     column.Spacing(10);
                     
                     column
-                        .Element()
+                        .Item()
                         .Background("#999")
                         .Height(50);
                     
                     column
-                        .Element()
+                        .Item()
                         .Background("#BBB")
                         .Height(100);
                     
                     column
-                        .Element()
+                        .Item()
                         .Background("#DDD")
                         .Height(150);
                 });
@@ -203,8 +203,8 @@ namespace QuestPDF.Examples
                     
                     layers.PrimaryLayer().Stack(stack =>
                     {
-                        stack.Element().PaddingTop(20).Text("Text 1");
-                        stack.Element().PaddingTop(40).Text("Text 2");
+                        stack.Item().PaddingTop(20).Text("Text 1");
+                        stack.Item().PaddingTop(40).Text("Text 2");
                     });
                     
                     layers.Layer().Canvas((canvas, size) =>

@@ -8,7 +8,7 @@ namespace QuestPDF.Fluent
 {
     public class StackDescriptor
     {
-        private List<Element> Elements { get; } = new List<Element>();
+        private List<Element> Items { get; } = new List<Element>();
         private float StackSpacing { get; set; } = 0;
         
         public void Spacing(float value)
@@ -16,35 +16,30 @@ namespace QuestPDF.Fluent
             StackSpacing = value;
         }
         
-        public IContainer Element()
+        public IContainer Item()
         {
             var container = new Container();
-            Elements.Add(container);
+            Items.Add(container);
             return container;
         }
         
-        public void Element(Action<IContainer> handler)
+        public void Item(Action<IContainer> handler)
         {
-            handler?.Invoke(Element());
+            handler?.Invoke(Item());
         }
         
-        public void Element(IElement element)
-        {
-            Elements.Add(element as Element);
-        }
-
         internal Element CreateStack()
         {
-            if (Elements.Count == 0)
+            if (Items.Count == 0)
                 return new Empty();
             
             if (StackSpacing <= Size.Epsilon)
                 return new Stack
                 {
-                    Children = Elements
+                    Children = Items
                 };
             
-            var children = Elements
+            var children = Items
                 .Select(x => new Padding
                 {
                     Bottom = StackSpacing,

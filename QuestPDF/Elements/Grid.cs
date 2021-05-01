@@ -33,7 +33,7 @@ namespace QuestPDF.Elements
                 stack.Spacing(HorizontalSpacing);
                 
                 while (ChildrenQueue.Any())
-                    stack.Element().Row(BuildRow);
+                    stack.Item().Row(BuildRow);
             });
         }
         

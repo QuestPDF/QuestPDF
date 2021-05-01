@@ -40,7 +40,7 @@ namespace QuestPDF.ReportSample.Layouts
         {
             container.Stack(stack =>
             {
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
                     row.Spacing(50);
                     
@@ -48,9 +48,9 @@ namespace QuestPDF.ReportSample.Layouts
                     row.ConstantColumn(150).ExternalLink("https://www.questpdf.com").Image(Model.LogoData);
                 });
 
-                stack.Element().ShowOnce().PaddingVertical(15).Border(1f).BorderColor(Colors.Grey.Lighten1).ExtendHorizontal();
+                stack.Item().ShowOnce().PaddingVertical(15).Border(1f).BorderColor(Colors.Grey.Lighten1).ExtendHorizontal();
                 
-                stack.Element().ShowOnce().Grid(grid =>
+                stack.Item().ShowOnce().Grid(grid =>
                 {
                     grid.Columns(2);
                     grid.Spacing(5);
@@ -59,8 +59,8 @@ namespace QuestPDF.ReportSample.Layouts
                     {
                         grid.Element().Stack(row =>
                         {   
-                            row.Element().AlignLeft().Text(field.Label, Typography.Normal.SemiBold());
-                            row.Element().Text(field.Value, Typography.Normal);
+                            row.Item().AlignLeft().Text(field.Label, Typography.Normal.SemiBold());
+                            row.Item().Text(field.Value, Typography.Normal);
                         });
                     }
                 });
@@ -73,16 +73,16 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 stack.Spacing(20);
 
-                stack.Element().Component(new TableOfContentsTemplate(Model.Sections));
+                stack.Item().Component(new TableOfContentsTemplate(Model.Sections));
                 
                 foreach (var section in Model.Sections)
-                    stack.Element().Location(section.Title).Component(new SectionTemplate(section));
+                    stack.Item().Location(section.Title).Component(new SectionTemplate(section));
 
-                stack.Element().PageBreak();
-                stack.Element().Location("Photos");
+                stack.Item().PageBreak();
+                stack.Item().Location("Photos");
                 
                 foreach (var photo in Model.Photos)
-                    stack.Element().Component(new PhotoTemplate(photo));
+                    stack.Item().Component(new PhotoTemplate(photo));
             });
         }
     }
