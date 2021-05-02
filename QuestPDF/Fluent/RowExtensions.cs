@@ -34,8 +34,17 @@ namespace QuestPDF.Fluent
         
         internal Element CreateRow()
         {
+            return new TreeRow
+            {
+                Children = Elements,
+                Spacing = RowSpacing
+            };
+        }
+        
+        internal Element CreateRow2()
+        {
             if (Elements.Count == 0)
-                return new Empty();
+                return Empty.Instance;
             
             if (RowSpacing <= Size.Epsilon)
                 return new Row
@@ -67,6 +76,7 @@ namespace QuestPDF.Fluent
             var descriptor = new RowDescriptor();
             handler(descriptor);
             element.Element(descriptor.CreateRow());
+            //element.Element(descriptor.CreateRow2());
         }
     }
 }

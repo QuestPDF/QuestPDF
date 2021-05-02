@@ -45,20 +45,20 @@ namespace QuestPDF.UnitTests
                 {
                     row.RelativeColumn(6).Element(childA);
                     row.RelativeColumn(4).Element(childB);
-                    row.RelativeColumn(2).Element(new Empty());
+                    row.RelativeColumn(2).Element(Empty.Instance);
                 });
                 
                 stack.Item().Row(row =>
                 {
                     row.RelativeColumn(4).Element(childC);
                     row.RelativeColumn(2).Element(childD);
-                    row.RelativeColumn(6).Element(new Empty());
+                    row.RelativeColumn(6).Element(Empty.Instance);
                 });
                 
                 stack.Item().Row(row =>
                 {
                     row.RelativeColumn(8).Element(childE);
-                    row.RelativeColumn(4).Element(new Empty());
+                    row.RelativeColumn(4).Element(Empty.Instance);
                 });
             });
             
@@ -97,25 +97,25 @@ namespace QuestPDF.UnitTests
             {
                 stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(1).Element(new Empty());
+                    row.RelativeColumn(1).Element(Empty.Instance);
                     row.RelativeColumn(6).Element(childA);
                     row.RelativeColumn(4).Element(childB);
-                    row.RelativeColumn(1).Element(new Empty());
+                    row.RelativeColumn(1).Element(Empty.Instance);
                 });
                 
                 stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(3).Element(new Empty());
+                    row.RelativeColumn(3).Element(Empty.Instance);
                     row.RelativeColumn(4).Element(childC);
                     row.RelativeColumn(2).Element(childD);
-                    row.RelativeColumn(3).Element(new Empty());
+                    row.RelativeColumn(3).Element(Empty.Instance);
                 });
                 
                 stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(2).Element(new Empty());
+                    row.RelativeColumn(2).Element(Empty.Instance);
                     row.RelativeColumn(8).Element(childE);
-                    row.RelativeColumn(2).Element(new Empty());
+                    row.RelativeColumn(2).Element(Empty.Instance);
                 });
             });
 
@@ -154,21 +154,21 @@ namespace QuestPDF.UnitTests
             {
                 stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(2).Element(new Empty());
+                    row.RelativeColumn(2).Element(Empty.Instance);
                     row.RelativeColumn(6).Element(childA);
                     row.RelativeColumn(4).Element(childB);
                 });
                 
                 stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(6).Element(new Empty());
+                    row.RelativeColumn(6).Element(Empty.Instance);
                     row.RelativeColumn(4).Element(childC);
                     row.RelativeColumn(2).Element(childD);
                 });
                 
                 stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(4).Element(new Empty());
+                    row.RelativeColumn(4).Element(Empty.Instance);
                     row.RelativeColumn(8).Element(childE);
                 });
             });

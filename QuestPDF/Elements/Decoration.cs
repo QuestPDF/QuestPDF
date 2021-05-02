@@ -5,9 +5,9 @@ namespace QuestPDF.Elements
 {
     internal class Decoration : IComponent
     {
-        public Element Header { get; set; } = new Empty();
-        public Element Content { get; set; } = new Empty();
-        public Element Footer { get; set; } = new Empty();
+        public Element Header { get; set; } = Empty.Instance;
+        public Element Content { get; set; } = Empty.Instance;
+        public Element Footer { get; set; } = Empty.Instance;
 
         public void Compose(IContainer container)
         {

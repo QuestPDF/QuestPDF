@@ -28,10 +28,19 @@ namespace QuestPDF.Fluent
             handler?.Invoke(Item());
         }
         
-        internal Element CreateStack()
+        internal IComponent CreateStack()
+        {
+            return new TreeStack
+            {
+                Children = Items,
+                Spacing = StackSpacing
+            };
+        }
+        
+        internal Element CreateStack2()
         {
             if (Items.Count == 0)
-                return new Empty();
+                return Empty.Instance;
             
             if (StackSpacing <= Size.Epsilon)
                 return new Stack
@@ -67,7 +76,7 @@ namespace QuestPDF.Fluent
         {
             var descriptor = new StackDescriptor();
             handler(descriptor);
-            element.Element(descriptor.CreateStack());
+            element.Component(descriptor.CreateStack());
         }
     }
 }
