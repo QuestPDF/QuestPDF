@@ -17,14 +17,14 @@ namespace QuestPDF.ReportSample.Layouts
         {
             container
                 .EnsureSpace()
-                .Decoration(section =>
+                .Decoration(decoration =>
                 {
-                    section
+                    decoration
                         .Header()
                         .PaddingBottom(5)
                         .Text(Model.Title, Typography.Headline);
 
-                    section.Content().Border(0.75f).BorderColor(Colors.Grey.Medium).Stack(stack =>
+                    decoration.Content().Border(0.75f).BorderColor(Colors.Grey.Medium).Stack(stack =>
                     {
                         foreach (var part in Model.Parts)
                         {
@@ -77,7 +77,7 @@ namespace QuestPDF.ReportSample.Layouts
                 grid.Spacing(5);
                 grid.Columns(3);
                 
-                model.Photos.ForEach(x => grid.Element().AspectRatio(4 / 3f).Image(Placeholders.Image));
+                model.Photos.ForEach(x => grid.Item().AspectRatio(4 / 3f).Image(Placeholders.Image));
             });
         }
     }

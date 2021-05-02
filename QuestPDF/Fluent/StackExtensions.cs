@@ -8,65 +8,18 @@ namespace QuestPDF.Fluent
 {
     public class StackDescriptor
     {
-        private List<Element> Items { get; } = new List<Element>();
-        private float StackSpacing { get; set; } = 0;
-        
+        internal Stack Stack { get; } = new Stack();
+
         public void Spacing(float value)
         {
-            StackSpacing = value;
+            Stack.Spacing = value;
         }
         
         public IContainer Item()
         {
             var container = new Container();
-            Items.Add(container);
+            Stack.Children.Add(container);
             return container;
-        }
-        
-        public void Item(Action<IContainer> handler)
-        {
-            handler?.Invoke(Item());
-        }
-        
-        internal IComponent CreateStack()
-        {
-            return new TreeStack
-            {
-                Children = Items,
-                Spacing = StackSpacing
-            };
-        }
-        
-        internal Element CreateStack2()
-        {
-            if (Items.Count == 0)
-                return Empty.Instance;
-            
-            if (StackSpacing <= Size.Epsilon)
-                return new Stack
-                {
-                    Children = Items
-                };
-            
-            var children = Items
-                .Select(x => new Padding
-                {
-                    Bottom = StackSpacing,
-                    Child = x
-                })
-                .Cast<Element>()
-                .ToList();
-
-            var stack = new Stack
-            {
-                Children = children
-            };
-            
-            return new Padding
-            {
-                Bottom = -StackSpacing,
-                Child = stack
-            };
         }
     }
     
@@ -76,7 +29,7 @@ namespace QuestPDF.Fluent
         {
             var descriptor = new StackDescriptor();
             handler(descriptor);
-            element.Component(descriptor.CreateStack());
+            element.Component(descriptor.Stack);
         }
     }
 }

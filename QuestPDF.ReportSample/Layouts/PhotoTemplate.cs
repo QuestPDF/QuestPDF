@@ -20,8 +20,8 @@ namespace QuestPDF.ReportSample.Layouts
                 .Stack(stack =>
                 {
                     stack.Spacing(5);
-                    stack.Item(PhotoWithMaps);
-                    stack.Item(PhotoDetails);
+                    stack.Item().Element(PhotoWithMaps);
+                    stack.Item().Element(PhotoDetails);
                 });
         }
         
@@ -48,13 +48,13 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 grid.Columns(6);
                 
-                grid.Element().LabelCell().Text("Date", Typography.Normal);
-                grid.Element(2).ValueCell().Text(Model.Date?.ToString("g") ?? string.Empty, Typography.Normal);
-                grid.Element().LabelCell().Text("Location", Typography.Normal);
-                grid.Element(2).ValueCell().Text(Model.Location.Format(), Typography.Normal);
+                grid.Item().LabelCell().Text("Date", Typography.Normal);
+                grid.Item(2).ValueCell().Text(Model.Date?.ToString("g") ?? string.Empty, Typography.Normal);
+                grid.Item().LabelCell().Text("Location", Typography.Normal);
+                grid.Item(2).ValueCell().Text(Model.Location.Format(), Typography.Normal);
                 
-                grid.Element().LabelCell().Text("Comments", Typography.Normal);
-                grid.Element(5).ValueCell().Text(Model.Comments, Typography.Normal);
+                grid.Item().LabelCell().Text("Comments", Typography.Normal);
+                grid.Item(5).ValueCell().Text(Model.Comments, Typography.Normal);
             });
         }
     }

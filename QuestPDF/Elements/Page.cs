@@ -11,11 +11,11 @@ namespace QuestPDF.Elements
 
         public void Compose(IContainer container)
         {
-            container.Decoration(section =>
+            container.Decoration(decoration =>
             {
-                section.Header().Element(Header);
-                section.Content().Extend().Element(Content);
-                section.Footer().Element(Footer);
+                decoration.Header().Element(Header);
+                decoration.Content().Extend().Element(Content);
+                decoration.Footer().Element(Footer);
             });
         }
     }

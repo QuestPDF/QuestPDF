@@ -8,19 +8,18 @@ namespace QuestPDF.Fluent
 {
     public class RowDescriptor
     {
-        private List<RowElement> Elements { get; } = new List<RowElement>();
-        private float RowSpacing { get; set; } = 0;
-        
+        internal Row Row { get; } = new Row();
+
         public void Spacing(float value)
         {
-            RowSpacing = value;
+            Row.Spacing = value;
         }
         
         public IContainer ConstantColumn(float width)
         {
             var element = new ConstantRowElement(width);
             
-            Elements.Add(element);
+            Row.Children.Add(element);
             return element;
         }
         
@@ -28,44 +27,8 @@ namespace QuestPDF.Fluent
         {
             var element = new RelativeRowElement(width);
             
-            Elements.Add(element);
+            Row.Children.Add(element);
             return element;
-        }
-        
-        internal Element CreateRow()
-        {
-            return new TreeRow
-            {
-                Children = Elements,
-                Spacing = RowSpacing
-            };
-        }
-        
-        internal Element CreateRow2()
-        {
-            if (Elements.Count == 0)
-                return Empty.Instance;
-            
-            if (RowSpacing <= Size.Epsilon)
-                return new Row
-                {
-                    Children = Elements
-                };
-
-            var children = Elements
-                .SelectMany(x => new[] {x, new ConstantRowElement(RowSpacing) })
-                .ToList();
-
-            var row = new Row
-            {
-                Children = children
-            };
-            
-            return new Padding
-            {
-                Right = -RowSpacing,
-                Child = row
-            };
         }
     }
     
@@ -75,8 +38,7 @@ namespace QuestPDF.Fluent
         {
             var descriptor = new RowDescriptor();
             handler(descriptor);
-            element.Element(descriptor.CreateRow());
-            //element.Element(descriptor.CreateRow2());
+            element.Element(descriptor.Row);
         }
     }
 }

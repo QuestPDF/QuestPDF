@@ -38,7 +38,7 @@ namespace QuestPDF.Fluent
         public void AlignCenter() => Alignment(HorizontalAlignment.Center);
         public void AlignRight() => Alignment(HorizontalAlignment.Right);
         
-        public IContainer Element(int columns = 1)
+        public IContainer Item(int columns = 1)
         {
             var container = new Container();
             
