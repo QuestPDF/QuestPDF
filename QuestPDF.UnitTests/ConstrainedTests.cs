@@ -34,10 +34,10 @@ namespace QuestPDF.UnitTests
                 .For(x => new Constrained
                 {
                     MinHeight = 100,
-                    Child = x.CreateChild("a")
+                    Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure("a", new Size(400, 200), new FullRender(400, 50))
+                .ExpectChildMeasure(new Size(400, 200), new FullRender(400, 50))
                 .CheckMeasureResult(new FullRender(400, 100));
         }
         
@@ -48,10 +48,10 @@ namespace QuestPDF.UnitTests
                 .For(x => new Constrained
                 {
                     MinHeight = 100,
-                    Child = x.CreateChild("a")
+                    Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure("a", new Size(400, 200), new FullRender(400, 150))
+                .ExpectChildMeasure(new Size(400, 200), new FullRender(400, 150))
                 .CheckMeasureResult(new FullRender(400, 150));
         }
         
@@ -74,10 +74,10 @@ namespace QuestPDF.UnitTests
                 .For(x => new Constrained
                 {
                     MaxHeight = 100,
-                    Child = x.CreateChild("a")
+                    Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure("a", new Size(400, 100), new PartialRender(400, 75))
+                .ExpectChildMeasure(new Size(400, 100), new PartialRender(400, 75))
                 .CheckMeasureResult(new PartialRender(400, 75));
         }
         
@@ -88,10 +88,10 @@ namespace QuestPDF.UnitTests
                 .For(x => new Constrained
                 {
                     MaxHeight = 100,
-                    Child = x.CreateChild("a")
+                    Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure("a", new Size(400, 100), new Wrap())
+                .ExpectChildMeasure(new Size(400, 100), new Wrap())
                 .CheckMeasureResult(new Wrap());
         }
     }

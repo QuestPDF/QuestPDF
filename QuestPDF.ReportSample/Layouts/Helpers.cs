@@ -1,27 +1,29 @@
 using System;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ReportSample.Layouts
 {
     public static class Helpers
     {
-        static IContainer Cell(this IContainer container, string color)
+        static IContainer Cell(this IContainer container, bool background)
         {
             return container
                 .Border(0.5f)
-                .Background(color)
+                .BorderColor(Colors.Grey.Lighten1)
+                .Background(background ? Colors.Grey.Lighten4 : Colors.White)
                 .Padding(5);
         }
         
-        public static IContainer LightCell(this IContainer container)
+        public static IContainer ValueCell(this IContainer container)
         {
-            return container.Cell("#0000");
+            return container.Cell(false);
         }
         
-        public static IContainer DarkCell(this IContainer container)
+        public static IContainer LabelCell(this IContainer container)
         {
-            return container.Cell("#1000");
+            return container.Cell(true);
         }
         
         public static string Format(this Location location)

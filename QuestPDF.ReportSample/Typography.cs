@@ -1,12 +1,13 @@
 ﻿using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ReportSample
 {
     public static class Typography
     {
-        public static TextStyle Title => TextStyle.Default.FontType("Helvetica").Color("#000000").Size(20).Bold();
-        public static TextStyle Headline => TextStyle.Default.FontType("Helvetica").Color("#047AED").Size(14);
-        public static TextStyle Normal => TextStyle.Default.FontType("Helvetica").Color("#000000").Size(10).LineHeight(1.25f).AlignLeft();
+        public static TextStyle Title => TextStyle.Default.FontType(Fonts.Calibri).Color(Colors.Blue.Darken3).Size(26).Black();
+        public static TextStyle Headline => TextStyle.Default.FontType(Fonts.Calibri).Color(Colors.Blue.Medium).Size(16).SemiBold();
+        public static TextStyle Normal => TextStyle.Default.FontType(Fonts.Calibri).Color(Colors.Black).Size(11).LineHeight(1.25f).AlignLeft();
     }
 }

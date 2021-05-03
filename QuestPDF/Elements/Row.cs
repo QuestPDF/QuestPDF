@@ -5,12 +5,38 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
+    internal abstract class RowElement : ContainerElement
+    {
+        public float Width { get; set; } = 1;
+        
+        internal override void Draw(ICanvas canvas, Size availableSpace)
+        {
+            Child?.Draw(canvas, availableSpace);
+        }
+    }
+    
+    internal class ConstantRowElement : RowElement
+    {
+        public ConstantRowElement(float width)
+        {
+            Width = width;
+        }
+    }
+    
+    internal class RelativeRowElement : RowElement
+    {
+        public RelativeRowElement(float width)
+        {
+            Width = width;
+        }
+    }
+    
     internal class Row : Element
     {
-        public List<RowElement?>? Children { get; set; } = new List<RowElement?>();
+        public List<RowElement> Children { get; set; } = new List<RowElement>();
         
-        public float? ConstantWidthSum { get; set; }
-        public float? RelativeWidthSum { get; set; }
+        float? ConstantWidthSum { get; set; }
+        float? RelativeWidthSum { get; set; }
 
         internal override ISpacePlan Measure(Size availableSpace)
         {

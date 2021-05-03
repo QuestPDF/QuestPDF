@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
@@ -6,33 +8,55 @@ namespace QuestPDF.Fluent
 {
     public class RowDescriptor
     {
-        private Row Row { get; }
-
-        internal RowDescriptor(Row row)
+        private List<RowElement> Elements { get; } = new List<RowElement>();
+        private float RowSpacing { get; set; } = 0;
+        
+        public void Spacing(float value)
         {
-            Row = row;
+            RowSpacing = value;
         }
         
         public IContainer ConstantColumn(float width)
         {
-            var element = new ConstantRowElement()
-            {
-                Width = width
-            };
+            var element = new ConstantRowElement(width);
             
-            Row.Children.Add(element);
+            Elements.Add(element);
             return element;
         }
         
         public IContainer RelativeColumn(float width = 1)
         {
-            var element = new RelativeRowElement()
+            var element = new RelativeRowElement(width);
+            
+            Elements.Add(element);
+            return element;
+        }
+        
+        internal Element CreateRow()
+        {
+            if (Elements.Count == 0)
+                return new Empty();
+            
+            if (RowSpacing <= Size.Epsilon)
+                return new Row
+                {
+                    Children = Elements
+                };
+
+            var children = Elements
+                .SelectMany(x => new[] {x, new ConstantRowElement(RowSpacing) })
+                .ToList();
+
+            var row = new Row
             {
-                Width = width
+                Children = children
             };
             
-            Row.Children.Add(element);
-            return element;
+            return new Padding
+            {
+                Right = -RowSpacing,
+                Child = row
+            };
         }
     }
     
@@ -40,11 +64,9 @@ namespace QuestPDF.Fluent
     {
         public static void Row(this IContainer element, Action<RowDescriptor> handler)
         {
-            var row = new Row();
-            element.Element(row);
-            
-            var descriptor = new RowDescriptor(row);
+            var descriptor = new RowDescriptor();
             handler(descriptor);
+            element.Element(descriptor.CreateRow());
         }
     }
 }

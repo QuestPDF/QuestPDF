@@ -1,10 +1,11 @@
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
     internal class Border : ContainerElement
     {
-        public string Color { get; set; } = "#000000";
+        public string Color { get; set; } = Colors.Black;
 
         public float Top { get; set; }
         public float Right { get; set; }

@@ -28,7 +28,6 @@ namespace QuestPDF.ReportSample.Layouts
             container
                 .PaddingVertical(40)
                 .PaddingHorizontal(50)
-                
                 .Page(page =>
                 {
                     page.Header(ComposeHeader);
@@ -39,58 +38,51 @@ namespace QuestPDF.ReportSample.Layouts
 
         private void ComposeHeader(IContainer container)
         {
-            container.Row(row =>
+            container.Stack(stack =>
             {
-                row.RelativeColumn().MaxWidth(300).Stack(stack =>
+                stack.Item().Row(row =>
                 {
-                    stack.Spacing(5);
+                    row.Spacing(50);
                     
-                    stack
-                        .Element()
-                        .PaddingBottom(5)
-                        .Text(Model.Title, Typography.Title);
-                    
-                    stack.Element().ShowOnce().Stack(table =>
-                    {
-                        table.Spacing(5);
-
-                        foreach (var field in Model.HeaderFields)
-                        {
-                            table.Element().Row(row =>
-                            {
-                                row.ConstantColumn(50)
-                                    .AlignLeft()
-                                    .Text($"{field.Label}:", Typography.Normal);
-                                
-                                row.RelativeColumn()
-                                    .PaddingLeft(10)
-                                    .Text(field.Value, Typography.Normal);
-                            });
-                        }
-                    });
-
+                    row.RelativeColumn().PaddingTop(-10).Text(Model.Title, Typography.Title);
+                    row.ConstantColumn(150).ExternalLink("https://www.questpdf.com").Image(Model.LogoData);
                 });
+
+                stack.Item().ShowOnce().PaddingVertical(15).Border(1f).BorderColor(Colors.Grey.Lighten1).ExtendHorizontal();
                 
-                row.ConstantColumn(150).ExternalLink("https://www.questpdf.com").Image(Model.LogoData);
+                stack.Item().ShowOnce().Grid(grid =>
+                {
+                    grid.Columns(2);
+                    grid.Spacing(5);
+                        
+                    foreach (var field in Model.HeaderFields)
+                    {
+                        grid.Element().Stack(row =>
+                        {   
+                            row.Item().AlignLeft().Text(field.Label, Typography.Normal.SemiBold());
+                            row.Item().Text(field.Value, Typography.Normal);
+                        });
+                    }
+                });
             });
         }
 
         void ComposeContent(IContainer container)
         {
-            container.PaddingVertical(20).PageableStack(stack =>
+            container.PaddingVertical(20).Stack(stack =>
             {
                 stack.Spacing(20);
 
-                stack.Element().Component(new TableOfContentsTemplate(Model.Sections));
+                stack.Item().Component(new TableOfContentsTemplate(Model.Sections));
                 
                 foreach (var section in Model.Sections)
-                    stack.Element().Location(section.Title).Component(new SectionTemplate(section));
+                    stack.Item().Location(section.Title).Component(new SectionTemplate(section));
 
-                stack.Element().PageBreak();
-                stack.Element().Location("Photos");
+                stack.Item().PageBreak();
+                stack.Item().Location("Photos");
                 
                 foreach (var photo in Model.Photos)
-                    stack.Element().Component(new PhotoTemplate(photo));
+                    stack.Item().Component(new PhotoTemplate(photo));
             });
         }
     }

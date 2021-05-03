@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
@@ -33,29 +31,16 @@ namespace QuestPDF.Fluent
             return child;
         }
         
-        public static void Element(this IContainer element, Action<IContainer> handler)
+        public static void Element<TParent>(this TParent parent, Action<IContainer> handler) where TParent : IContainer
         {
-            var container = new Container();
-            element.Element(container);
-            handler?.Invoke(container);
+            handler(parent);
+        }
+        
+        public static IContainer Element<TParent>(this TParent parent, Func<IContainer, IContainer> handler) where TParent : IContainer
+        {
+            return handler(parent);
         }
 
-        public static void Image(this IContainer element, byte[] data)
-        {
-            element.Element(new Image
-            {
-                Data = data
-            });
-        }
-        
-        public static void DynamicImage(this IContainer element, Func<Size, byte[]> imageSource)
-        {
-            element.Element(new DynamicImage
-            {
-                Source = imageSource
-            });
-        }
-        
         public static void PageNumber(this IContainer element, string textFormat = "{number}", TextStyle? style = null)
         {
             element.Element(new PageNumber
@@ -65,11 +50,12 @@ namespace QuestPDF.Fluent
             });
         }
         
-        public static IContainer AspectRatio(this IContainer element, float ratio)
+        public static IContainer AspectRatio(this IContainer element, float ratio, AspectRatioOption option = AspectRatioOption.FitWidth)
         {
             return element.Element(new AspectRatio
             {
-                Ratio = ratio
+                Ratio = ratio,
+                Option = option
             });
         }
 
@@ -80,19 +66,33 @@ namespace QuestPDF.Fluent
                 Color = color
             });
         }
-        
-        public static void Placeholder(this IContainer element)
+
+        public static void Placeholder(this IContainer element, string? text = null)
         {
-            element.Component<Placeholder>();
+            element.Component(new Elements.Placeholder
+            {
+                Text = text ?? string.Empty
+            });
         }
 
         public static IContainer ShowOnce(this IContainer element)
         {
-            var alignment = new ShowOnce();
-
-            return element.Element(alignment);
+            return element.Element(new ShowOnce());
+        }
+        
+        public static IContainer ShowEntire(this IContainer element)
+        {
+            return element.Element(new ShowEntire());
         }
 
+        public static IContainer EnsureSpace(this IContainer element, float minHeight = Elements.EnsureSpace.DefaultMinHeight)
+        {
+            return element.Element(new EnsureSpace
+            {
+                MinHeight = minHeight
+            });
+        }
+        
         public static void Text(this IContainer element, object text, TextStyle? style = null)
         {
             text ??= string.Empty;
@@ -148,6 +148,19 @@ namespace QuestPDF.Fluent
         public static IContainer ShowIf(this IContainer element, bool condition)
         {
             return condition ? element : new Container();
+        }
+        
+        public static void Canvas(this IContainer element, DrawOnCanvas handler)
+        {
+            element.Element(new Elements.Canvas
+            {
+                Handler = handler
+            });
+        }
+        
+        public static IContainer Box(this IContainer element)
+        {
+            return element.Element(new Box());
         }
     }
 }

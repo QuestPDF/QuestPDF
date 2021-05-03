@@ -1,10 +1,12 @@
 ﻿using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
     internal class Placeholder : IComponent
     {
+        public string Text { get; set; }
         private static readonly byte[] ImageData;
 
         static Placeholder()
@@ -15,11 +17,18 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
-                .Background("CCC")
+                .Background(Colors.Grey.Lighten2)
                 .AlignMiddle()
                 .AlignCenter()
+                .Padding(5)
                 .MaxHeight(32)
-                .Image(ImageData);
+                .Element(x =>
+                {
+                    if (string.IsNullOrWhiteSpace(Text))
+                        x.Image(ImageData, ImageScaling.FitArea);
+                    else
+                        x.Text(Text, TextStyle.Default.Size(14).SemiBold());
+                });
         }
     }
 }

@@ -7,18 +7,13 @@ namespace QuestPDF.Elements
 {
     internal class Stack : Element
     {
-        public float Spacing { get; set; }
-        public bool Pageable { get; set; } = true;
-        
         public ICollection<Element?> Children { get; internal set; } = new List<Element?>();
-        private Queue<Element?> ChildrenQueue { get; set; }
+        private Queue<Element?> ChildrenQueue { get; set; } = new Queue<Element?>();
         
         private void Initialize()
         {
-            if (!Pageable)
-                ChildrenQueue = null;
-                
-            ChildrenQueue ??= new Queue<Element>(Children.Where(x => x != null));
+            if (ChildrenQueue.Count == 0)
+                ChildrenQueue = new Queue<Element>(Children.Where(x => x != null));
         }
         
         internal override ISpacePlan Measure(Size availableSpace)
@@ -36,30 +31,20 @@ namespace QuestPDF.Elements
 
                 if (space is Wrap)
                 {
-                    if (!Pageable)
-                        return new Wrap();
-                    
                     if (heightOnCurrentPage < Size.Epsilon)
                         return new Wrap();
                     
-                    return new PartialRender(availableSpace.Width, heightOnCurrentPage - Spacing);
+                    return new PartialRender(availableSpace.Width, heightOnCurrentPage);
                 }
 
                 var size = space as Size;
-                
-                if (size.Height > Size.Epsilon)
-                    heightOnCurrentPage += size.Height + Spacing;
+                heightOnCurrentPage += size.Height;
 
                 if (space is PartialRender)
-                {
-                    if (!Pageable)
-                        return new Wrap();
-                    
-                    return new PartialRender(availableSpace.Width, heightOnCurrentPage - Spacing);   
-                }
+                    return new PartialRender(availableSpace.Width, heightOnCurrentPage);
             }
             
-            return new FullRender(availableSpace.Width, heightOnCurrentPage - Spacing);
+            return new FullRender(availableSpace.Width, heightOnCurrentPage);
         }
 
         internal override void Draw(ICanvas canvas, Size availableSpace)
@@ -84,8 +69,7 @@ namespace QuestPDF.Elements
                 child.Draw(canvas, new Size(availableSpace.Width, size.Height));
                 canvas.Translate(new Position(0, -topOffset));
                 
-                if (size.Height > Size.Epsilon)
-                    topOffset += size.Height + Spacing;
+                topOffset += size.Height;
 
                 if (space is PartialRender)
                     break;

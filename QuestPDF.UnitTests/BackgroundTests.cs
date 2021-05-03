@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 
@@ -17,10 +18,10 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(x => new Background
                 {
-                    Color = "#F00"
+                    Color = Colors.Red.Medium
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectCanvasDrawRectangle(new Position(0, 0), new Size(400, 300), "#F00")
+                .ExpectCanvasDrawRectangle(new Position(0, 0), new Size(400, 300), Colors.Red.Medium)
                 .CheckDrawResult();
         }
         
@@ -30,12 +31,12 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(x => new Background
                 {
-                    Color = "#F00",
-                    Child = x.CreateChild("a")
+                    Color = Colors.Red.Medium,
+                    Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectCanvasDrawRectangle(new Position(0, 0), new Size(400, 300), "#F00")
-                .ExpectChildDraw("a", new Size(400, 300))
+                .ExpectCanvasDrawRectangle(new Position(0, 0), new Size(400, 300), Colors.Red.Medium)
+                .ExpectChildDraw(new Size(400, 300))
                 .CheckDrawResult();
         }
     }

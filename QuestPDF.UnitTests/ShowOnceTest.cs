@@ -42,7 +42,7 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(x => new ShowOnce()
                 {
-                    Child = x.CreateChild("child")
+                    Child = x.CreateChild()
                 })
                 
                 // Measure the element and return result
@@ -52,21 +52,21 @@ namespace QuestPDF.UnitTests
                 
                 // Draw element partially
                 .DrawElement(new Size(200, 200))
-                .ExpectChildMeasure("child", new Size(200, 200), new PartialRender(new Size(200, 200)))
-                .ExpectChildDraw("child", new Size(200, 200))
+                .ExpectChildMeasure(new Size(200, 200), new PartialRender(new Size(200, 200)))
+                .ExpectChildDraw(new Size(200, 200))
                 .CheckDrawResult()
                 
                 // Element was not fully drawn
                 // It should be measured again for rendering on next page
                 .MeasureElement(new Size(800, 200))
-                .ExpectChildMeasure("child", new Size(800, 200), new FullRender(new Size(400, 200)))
+                .ExpectChildMeasure(new Size(800, 200), new FullRender(new Size(400, 200)))
                 .CheckMeasureResult(new FullRender(new Size(400, 200)))
 
                 // Draw element on next page
                 // Element was fully drawn at this point
                 .DrawElement(new Size(400, 200))
-                .ExpectChildMeasure("child", new Size(400, 200), new FullRender(new Size(400, 200)))
-                .ExpectChildDraw("child", new Size(400, 200))
+                .ExpectChildMeasure(new Size(400, 200), new FullRender(new Size(400, 200)))
+                .ExpectChildDraw(new Size(400, 200))
                 .CheckDrawResult()
                 
                 // In the next attempt of measuring element, it should behave like empty parent.

@@ -7,7 +7,6 @@ namespace QuestPDF.Drawing
 {
     internal static class CanvasCache
     {
-        private static ConcurrentDictionary<string, SKTypeface> Fonts = new ConcurrentDictionary<string, SKTypeface>();
         private static ConcurrentDictionary<string, SKPaint> Paints = new ConcurrentDictionary<string, SKPaint>();
         private static ConcurrentDictionary<string, SKPaint> ColorPaint = new ConcurrentDictionary<string, SKPaint>();
 

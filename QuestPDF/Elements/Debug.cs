@@ -1,25 +1,37 @@
-﻿using QuestPDF.Infrastructure;
+﻿using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Elements
 {
-    internal class Debug : ContainerElement
+    internal class Debug : IComponent
     {
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        public IElement? Child { get; set; }
+        
+        public string Text { get; set; }
+        public string Color { get; set; } = Colors.Red.Medium;
+        public void Compose(IContainer container)
         {
-            var textStyle = new TextStyle
-            {
-                Color = "#FF0000",
-                FontType = "Consolas",
-                Size = 10
-            };
+            var backgroundColor = SKColor.Parse(Color).WithAlpha(50).ToString();
             
-            Child?.Draw(canvas, availableSpace);
-            
-            canvas.DrawRectangle(Position.Zero, availableSpace, "#FF0000");
-            canvas.DrawRectangle(Position.Zero, availableSpace, "#FF00FF");
-            
-            canvas.DrawText($"W: {availableSpace.Width}", new Position(5, 12), textStyle);
-            canvas.DrawText($"H: {availableSpace.Height}", new Position(5, 22), textStyle);
+            container
+                .Border(1)
+                .BorderColor(Color)
+                .Layers(layers =>
+                {
+                    layers.PrimaryLayer().Element(Child);
+                    layers.Layer().Background(backgroundColor);
+                    
+                    layers
+                        .Layer()
+                        .ShowIf(!string.IsNullOrWhiteSpace(Text))
+                        .AlignCenter()
+                        .Box()
+                        .Background(Colors.White)
+                        .Padding(2)
+                        .Text(Text, TextStyle.Default.Color(Color).FontType("Consolas").Size(8));
+                });
         }
     }
 }

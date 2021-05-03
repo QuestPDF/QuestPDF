@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
-using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -62,10 +61,17 @@ namespace QuestPDF.Examples.Engine
             methodInfo.Invoke(this, new object[] {container});
 
             Func<int, string> fileNameSchema = i => $"{fileName.ToLower()}-${i}.png";
-            
-            var document = new SimpleDocument(container, size);
-            document.GenerateImages(fileNameSchema);
-            
+
+            try
+            {
+                var document = new SimpleDocument(container, size);
+                document.GenerateImages(fileNameSchema);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Cannot perform test {fileName}", e);
+            }
+
             if (showResult)
                 Process.Start("explorer", fileNameSchema(0));
         }
@@ -79,7 +85,7 @@ namespace QuestPDF.Examples.Engine
             using var surface = SKSurface.Create(imageInfo);
             surface.Canvas.Scale(scalingFactor);
 
-            var canvas = new Canvas(surface.Canvas);
+            var canvas = new Drawing.Canvas(surface.Canvas);
             element?.Draw(canvas, size);
 
             surface.Canvas.Save();

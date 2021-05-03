@@ -1,4 +1,3 @@
-using System.Linq;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -33,10 +32,10 @@ namespace QuestPDF.Examples
                 {
                     for(var i=1; i<=4; i++)
                     {
-                        stack.Element().Row(row =>
+                        stack.Item().Row(row =>
                         {
-                            row.RelativeColumn(2).LabelCell().Text(TextPlaceholder.Label());
-                            row.RelativeColumn(3).ValueCell().Text(TextPlaceholder.Paragraph());
+                            row.RelativeColumn(2).LabelCell().Text(Placeholders.Label());
+                            row.RelativeColumn(3).ValueCell().Text(Placeholders.Paragraph());
                         });
                     }
                 });

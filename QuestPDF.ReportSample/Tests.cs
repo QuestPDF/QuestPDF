@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
 using QuestPDF.ReportSample.Layouts;
 
 namespace QuestPDF.ReportSample
@@ -27,7 +26,7 @@ namespace QuestPDF.ReportSample
         public void PerformanceBenchmark()
         {
             // test size
-            const int testSize = 1000;
+            const int testSize = 100;
             const decimal performanceTarget = 5; // documents per second
 
             // create report models

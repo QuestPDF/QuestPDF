@@ -41,11 +41,11 @@ namespace QuestPDF.Examples
                     column.Spacing(10);
 
                     column
-                        .Element()
+                        .Item()
                         .Component(new LoremPicsum(true));
                     
                     column
-                        .Element()
+                        .Item()
                         .AlignRight()
                         .Text("From Lorem Picsum");
                 });

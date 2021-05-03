@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Helpers;
-using QuestPDF.ReportSample.Layouts;
 
 namespace QuestPDF.ReportSample
 {
@@ -18,9 +17,9 @@ namespace QuestPDF.ReportSample
                 Title = "Sample Report Document",
                 HeaderFields = HeaderFields(),
                 
-                LogoData = Helpers.GetImage("logo.png"),
-                Sections = Enumerable.Range(0, 10).Select(x => GenerateSection()).ToList(),
-                Photos = Enumerable.Range(0, 10).Select(x => GetReportPhotos()).ToList()
+                LogoData = Helpers.GetImage("Logo.png"),
+                Sections = Enumerable.Range(0, 8).Select(x => GenerateSection()).ToList(),
+                Photos = Enumerable.Range(2, 6).Select(x => GetReportPhotos()).ToList()
             };
 
             List<ReportHeaderField> HeaderFields()
@@ -41,6 +40,11 @@ namespace QuestPDF.ReportSample
                     {
                         Label = "Date",
                         Value = DateTime.Now.ToString("g")
+                    },
+                    new ReportHeaderField()
+                    {
+                        Label = "Status",
+                        Value = "Completed, found 2 issues"
                     }
                 };
             }
@@ -53,7 +57,7 @@ namespace QuestPDF.ReportSample
                 
                 return new ReportSection
                 {
-                    Title = TextPlaceholder.Label(),
+                    Title = Placeholders.Label(),
                     Parts = Enumerable.Range(0, sectionLength).Select(x => GetRandomElement()).ToList()
                 };
             }
@@ -62,10 +66,10 @@ namespace QuestPDF.ReportSample
             {
                 var random = Helpers.Random.NextDouble();
 
-                if (random < 0.8f)
+                if (random < 0.9f)
                     return GetTextElement();
                 
-                if (random < 0.9f)
+                if (random < 0.95f)
                     return GetMapElement();
                 
                 return GetPhotosElement();
@@ -75,19 +79,17 @@ namespace QuestPDF.ReportSample
             {
                 return new ReportSectionText
                 {
-                    Label = TextPlaceholder.Label(),
-                    Text = TextPlaceholder.Paragraph()
+                    Label = Placeholders.Label(),
+                    Text = Placeholders.Paragraph()
                 };
             }
             
             ReportSectionMap GetMapElement()
             {
-                var rnd = Helpers.Random.Next(0, 64);
-                    
                 return new ReportSectionMap
                 {
                     Label = "Location",
-                    ImageSource = x => Helpers.GetDocumentMap($"{rnd}.jpg"),
+                    ImageSource = Placeholders.Image,
                     Location = Helpers.RandomLocation()
                 };
             }
@@ -100,26 +102,23 @@ namespace QuestPDF.ReportSample
                     Photos = Enumerable
                         .Range(0, Helpers.Random.Next(1, 10))
                         .Select(x => Helpers.Random.Next(0, 128))
-                        .Select(x => Helpers.GetPhoto($"{x}.jpg"))
+                        .Select(x => Placeholders.Image(400, 300))
                         .ToList()
                 };
             }
 
             ReportPhoto GetReportPhotos()
             {
-                var photoId = Helpers.Random.Next(0, 128);
-                var mapId = Helpers.Random.Next(0, 64);
-
                 return new ReportPhoto()
                 {
-                    PhotoData = Helpers.GetPhoto($"{photoId}.jpg"),
+                    PhotoData = Placeholders.Image(400, 300),
 
-                    Comments = TextPlaceholder.Paragraph(),
+                    Comments = Placeholders.Sentence(),
                     Date = DateTime.Now - TimeSpan.FromDays(Helpers.Random.NextDouble() * 100),
                     Location = Helpers.RandomLocation(),
 
-                    MapContextSource = x => Helpers.GetContextMap($"{mapId}.jpg"),
-                    MapDetailsSource = x => Helpers.GetDetailsMap($"{mapId}.jpg")
+                    MapContextSource = x => Placeholders.Image(400, 300),
+                    MapDetailsSource = x => Placeholders.Image(400, 300)
                 };
             }
         }

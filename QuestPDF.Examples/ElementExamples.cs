@@ -1,7 +1,7 @@
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Examples
 {
@@ -24,7 +24,7 @@ namespace QuestPDF.Examples
             container
                 .Background("#FFF")
                 .Padding(25)
-                .Section(section =>
+                .Decoration(section =>
                 {
                     section
                         .Header()
@@ -37,7 +37,7 @@ namespace QuestPDF.Examples
                         .Background("#DDD")
                         .Padding(10)
                         .ExtendVertical()
-                        .Text(TextPlaceholder.LoremIpsum());
+                        .Text(Helpers.Placeholders.LoremIpsum());
                 });
         }
         
@@ -81,12 +81,12 @@ namespace QuestPDF.Examples
                 .Padding(20)
                 .Stack(stack =>
                 {
-                    stack.Element()
+                    stack.Item()
                         .PaddingBottom(10)
                         .AlignCenter()
                         .Text("This Row element is 700pt wide");
 
-                    stack.Element().Row(row =>
+                    stack.Item().Row(row =>
                     {
                         row.ConstantColumn(100)
                             .Background("#DDD")
@@ -119,19 +119,108 @@ namespace QuestPDF.Examples
                     column.Spacing(10);
                     
                     column
-                        .Element()
+                        .Item()
                         .Background("#999")
                         .Height(50);
                     
                     column
-                        .Element()
+                        .Item()
                         .Background("#BBB")
                         .Height(100);
                     
                     column
-                        .Element()
+                        .Item()
                         .Background("#DDD")
                         .Height(150);
+                });
+        }
+        
+        //[ShowResult]
+        [ImageSize(300, 200)]
+        public void Debug(IContainer container)
+        {
+            container
+                .Padding(25)
+                .Debug()
+                .Padding(-5)
+                .Row(row =>
+                {
+                    row.RelativeColumn().Padding(5).Extend().Placeholder();
+                    row.RelativeColumn().Padding(5).Extend().Placeholder();
+                });
+        }
+        
+        //[ShowResult]
+        [ImageSize(300, 200)]
+        public void ElementEnd(IContainer container)
+        {
+            var text = "";
+            
+            container
+                .Padding(10)
+                .Element(x =>
+                {
+                    if (string.IsNullOrWhiteSpace(text))
+                        x.Height(10).Width(50).Background("#DDD");
+                    else
+                        x.Text(text);
+                });
+        }
+        
+        //[ShowResult]
+        [ImageSize(300, 200)]
+        public void GridExample(IContainer container)
+        {
+            var textStyle = TextStyle.Default.Size(14);
+            
+            container
+                .Padding(20)
+                .AlignRight()
+                .Grid(grid =>
+                {
+                    grid.Spacing(5);
+                    grid.Columns(12);
+
+                    grid.Element(8).Background("#DDD").Height(50).Padding(5).Text("This is a short text", textStyle);
+                    grid.Element(4).Background("#BBB").Padding(5).Text("Showing how to...", textStyle);
+                    grid.Element(2).Background("#999").Height(50);
+                    grid.Element(4).Background("#AAA").Border(2).BorderColor("#666").Padding(5).Text("...generate", textStyle);
+                    grid.Element(6).Background("#CCC").Padding(5).Text("simple grids", textStyle.Size(18).Bold());
+                    grid.Element(8).Background("#DDD").Height(50);
+                });
+        }
+        
+        [ShowResult]
+        [ImageSize(300, 300)]
+        public void Layers(IContainer container)
+        {
+            container
+                .Background("#FFF")
+                .Padding(25)
+                .Layers(layers =>
+                {
+                    layers.Layer().Text("Something else");
+                    
+                    layers.PrimaryLayer().Stack(stack =>
+                    {
+                        stack.Item().PaddingTop(20).Text("Text 1");
+                        stack.Item().PaddingTop(40).Text("Text 2");
+                    });
+                    
+                    layers.Layer().Canvas((canvas, size) =>
+                    {
+                        using var paint = new SKPaint
+                        {
+                            Color = SKColors.Red,
+                            StrokeWidth = 5
+                        };
+                        
+                        canvas.Translate(size.Width / 2, size.Height / 2);
+                        canvas.DrawCircle(0, 0, 50, paint);
+                    });
+                    
+                    layers.Layer().Background("#8F00").Extend();
+                    layers.Layer().PaddingTop(40).Text("It works!", TextStyle.Default.Size(24));
                 });
         }
     }

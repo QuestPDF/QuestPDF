@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
@@ -18,21 +16,21 @@ namespace QuestPDF.ReportSample.Layouts
         public void Compose(IContainer container)
         {
             container
-                .Section(section =>
+                .Decoration(section =>
                 {
                     section
                         .Header()
                         .PaddingBottom(5)
                         .Text("Table of contents", Typography.Headline);
 
-                    section.Content().PageableStack(stack =>
+                    section.Content().Stack(stack =>
                     {
                         stack.Spacing(5);
                         
                         for (var i = 0; i < Sections.Count; i++)
-                            stack.Element(c => DrawLink(c, i+1, Sections[i].Title));
+                            stack.Item(c => DrawLink(c, i+1, Sections[i].Title));
 
-                        stack.Element(c => DrawLink(c, Sections.Count+1, "Photos"));
+                        stack.Item(c => DrawLink(c, Sections.Count+1, "Photos"));
                     });
                 });
         }

@@ -6,13 +6,8 @@ namespace QuestPDF.Fluent
 {
     public class PageDescriptor
     {
-        private Page Page { get; }
-        
-        internal PageDescriptor(Page page)
-        {
-            Page = page;
-        }
-        
+        internal Page Page { get; } = new Page();
+
         public IContainer Header()
         {
             var container = new Container();
@@ -54,11 +49,9 @@ namespace QuestPDF.Fluent
     {
         public static void Page(this IContainer document, Action<PageDescriptor> handler)
         {
-            var page = new Page();
-            document.Element(page);
-            
-            var descriptor = new PageDescriptor(page);
+            var descriptor = new PageDescriptor();
             handler(descriptor);
+            document.Component(descriptor.Page);
         }
     }
 }

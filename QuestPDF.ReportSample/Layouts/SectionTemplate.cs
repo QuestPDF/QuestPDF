@@ -1,6 +1,5 @@
-using System;
-using System.Linq;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ReportSample.Layouts
@@ -17,31 +16,31 @@ namespace QuestPDF.ReportSample.Layouts
         public void Compose(IContainer container)
         {
             container
-                .MinHeight(100)
-                .Section(section =>
+                .EnsureSpace()
+                .Decoration(section =>
                 {
                     section
                         .Header()
                         .PaddingBottom(5)
                         .Text(Model.Title, Typography.Headline);
 
-                    section.Content().PageableStack(stack =>
+                    section.Content().Border(0.75f).BorderColor(Colors.Grey.Medium).Stack(stack =>
                     {
                         foreach (var part in Model.Parts)
                         {
-                            stack.Element().Row(row =>
+                            stack.Item().Row(row =>
                             {
-                                row.ConstantColumn(150).DarkCell().Text(part.Label, Typography.Normal);
-                                var frame = row.RelativeColumn().LightCell();
+                                row.ConstantColumn(150).LabelCell().Text(part.Label, Typography.Normal);
+                                var frame = row.RelativeColumn().ValueCell();
                             
                                 if (part is ReportSectionText text)
                                     frame.Text(text.Text, Typography.Normal);
                         
                                 if (part is ReportSectionMap map)
-                                    frame.Element(container => MapElement(container, map));
+                                    frame.Element(x => MapElement(x, map));
                         
                                 if (part is ReportSectionPhotos photos)
-                                    frame.Element(container => PhotosElement(container, photos));
+                                    frame.Element(x => PhotosElement(x, photos));
                             });
                         }
                     });
@@ -56,12 +55,12 @@ namespace QuestPDF.ReportSample.Layouts
                 return;
             }
 
-            container.Stack(stack =>
+            container.ShowEntire().Stack(stack =>
             {
                 stack.Spacing(5);
                 
-                stack.Element().Component(new ImageTemplate(model.ImageSource));
-                stack.Element().Text(model.Location.Format(), Typography.Normal);
+                stack.Item().MaxWidth(250).AspectRatio(4 / 3f).Image(Placeholders.Image);
+                stack.Item().Text(model.Location.Format(), Typography.Normal);
             });
         }
         
@@ -73,21 +72,12 @@ namespace QuestPDF.ReportSample.Layouts
                 return;
             }
 
-            var rowCount = (int) Math.Ceiling(model.Photos.Count / 3f);
-
-            container.Padding(-2).Stack(stack =>
+            container.Debug("Photo gallery").Grid(grid =>
             {
-                foreach (var rowId in Enumerable.Range(0, rowCount))
-                {
-                    stack.Element().Row(row =>
-                    {
-                        foreach (var id in Enumerable.Range(0, 3))
-                        {
-                            var data = model.Photos.ElementAtOrDefault(rowId + id); 
-                            row.RelativeColumn().Padding(2).Component(new ImageTemplate(data));
-                        }
-                    });
-                }
+                grid.Spacing(5);
+                grid.Columns(3);
+                
+                model.Photos.ForEach(x => grid.Element().AspectRatio(4 / 3f).Image(Placeholders.Image));
             });
         }
     }

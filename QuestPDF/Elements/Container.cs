@@ -6,7 +6,7 @@ namespace QuestPDF.Elements
     {
         internal Container()
         {
-            Child = new Empty();
+            
         }
     }
 }

@@ -12,7 +12,7 @@ namespace QuestPDF.Elements
             if (IsRendered)
                 return new FullRender(Size.Zero);
             
-            return new PartialRender(availableSpace.Width, 1);
+            return new PartialRender(availableSpace.Width, availableSpace.Height);
         }
 
         internal override void Draw(ICanvas canvas, Size availableSpace)

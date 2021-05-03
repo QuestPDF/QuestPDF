@@ -1,4 +1,5 @@
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ReportSample.Layouts
@@ -15,47 +16,45 @@ namespace QuestPDF.ReportSample.Layouts
         public void Compose(IContainer container)
         {
             container
+                .ShowEntire()
                 .Stack(stack =>
                 {
-                    stack.Element(PhotoWithMaps);
-                    stack.Element(PhotoDetails);
+                    stack.Spacing(5);
+                    stack.Item(PhotoWithMaps);
+                    stack.Item(PhotoDetails);
                 });
         }
         
         void PhotoWithMaps(IContainer container)
         {
             container
-                .Padding(-3)
-                .PaddingBottom(3)
                 .Row(row =>
                 {
-                    row.RelativeColumn(2).Padding(3).Component(new ImageTemplate(Model.PhotoData));
+                    row.RelativeColumn(2).AspectRatio(4 / 3f).Image(Placeholders.Image);
 
-                    row.RelativeColumn().Stack(stack =>
+                    row.RelativeColumn().PaddingLeft(5).Stack(stack =>
                     {
-                        stack.Element().Padding(3).Component(new ImageTemplate(Model.MapDetailsSource));
-                        stack.Element().Padding(3).Component(new ImageTemplate(Model.MapContextSource));
+                        stack.Spacing(7f);
+                        
+                        stack.Item().AspectRatio(4 / 3f).Image(Placeholders.Image);
+                        stack.Item().AspectRatio(4 / 3f).Image(Placeholders.Image);
                     });
                 });
         }
 
         void PhotoDetails(IContainer container)
         {
-            container.Stack(stack =>
+            container.Border(0.75f).BorderColor(Colors.Grey.Medium).Grid(grid =>
             {
-                stack.Element().Row(row =>
-                {
-                    row.RelativeColumn().DarkCell().Text("Date", Typography.Normal);
-                    row.RelativeColumn(2).LightCell().Text(Model.Date?.ToString("g") ?? string.Empty, Typography.Normal);
-                    row.RelativeColumn().DarkCell().Text("Location", Typography.Normal);
-                    row.RelativeColumn(2).LightCell().Text(Model.Location.Format(), Typography.Normal);
-                });
+                grid.Columns(6);
                 
-                stack.Element().Row(row =>
-                {
-                    row.RelativeColumn().DarkCell().Text("Comments", Typography.Normal);
-                    row.RelativeColumn(5).LightCell().Text(Model.Comments, Typography.Normal);
-                });
+                grid.Element().LabelCell().Text("Date", Typography.Normal);
+                grid.Element(2).ValueCell().Text(Model.Date?.ToString("g") ?? string.Empty, Typography.Normal);
+                grid.Element().LabelCell().Text("Location", Typography.Normal);
+                grid.Element(2).ValueCell().Text(Model.Location.Format(), Typography.Normal);
+                
+                grid.Element().LabelCell().Text("Comments", Typography.Normal);
+                grid.Element(5).ValueCell().Text(Model.Comments, Typography.Normal);
             });
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine.Operations;
 
@@ -10,6 +11,8 @@ namespace QuestPDF.UnitTests.TestEngine
 {
     internal class TestPlan
     {
+        private const string DefaultChildName = "child";
+        
         private Element Element { get; set; }
         private ICanvas Canvas { get; }
         
@@ -100,6 +103,8 @@ namespace QuestPDF.UnitTests.TestEngine
                 }
             };
         }
+
+        public Element CreateChild() => CreateChild(DefaultChildName);
         
         public Element CreateChild(string id)
         {
@@ -153,9 +158,19 @@ namespace QuestPDF.UnitTests.TestEngine
             return this;
         }
         
+        public TestPlan ExpectChildMeasure(Size expectedInput, ISpacePlan returns)
+        {
+            return ExpectChildMeasure(DefaultChildName, expectedInput, returns);
+        }
+        
         public TestPlan ExpectChildMeasure(string child, Size expectedInput, ISpacePlan returns)
         {
             return AddOperation(new ChildMeasureOperationBase(child, expectedInput, returns));
+        }
+        
+        public TestPlan ExpectChildDraw(Size expectedInput)
+        {
+            return ExpectChildDraw(DefaultChildName, expectedInput);
         }
         
         public TestPlan ExpectChildDraw(string child, Size expectedInput)
@@ -210,6 +225,14 @@ namespace QuestPDF.UnitTests.TestEngine
         {
             Element.Draw(Canvas, OperationInput);
             return this;
+        }
+
+        public static Element CreateUniqueElement()
+        {
+            return new Text
+            {
+                Value = Guid.NewGuid().ToString("N")
+            };
         }
     }
 }
