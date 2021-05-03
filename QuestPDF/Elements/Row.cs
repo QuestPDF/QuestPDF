@@ -1,6 +1,8 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -31,78 +33,134 @@ namespace QuestPDF.Elements
         }
     }
     
-    internal class Row : Element
+    internal class SimpleRow : Element
     {
-        public List<RowElement> Children { get; set; } = new List<RowElement>();
-        
-        float? ConstantWidthSum { get; set; }
-        float? RelativeWidthSum { get; set; }
+        internal Element Left { get; set; }
+        internal Element Right { get; set; }
 
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            var sizes = Children
-                .Select(x =>
-                {
-                    var space = GetTargetSize(x, availableSpace);
-                    return x.Child.Measure(space);
-                })
-                .ToList();
+            var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height)) as Size;
             
-            if (sizes.Any(x => x is Wrap))
+            if (leftMeasurement == null)
                 return new Wrap();
-
-            var height = sizes
-                .Where(x => x is Size)
-                .Cast<Size>()
-                .DefaultIfEmpty(Size.Zero)
-                .Max(x => x.Height);
             
-            if (sizes.All(x => x is FullRender))
-                return new FullRender(availableSpace.Width, height);
-            
-            if (sizes.Any(x => x is PartialRender))
-                return new PartialRender(availableSpace.Width, height);
+            var rightMeasurement = Right.Measure(new Size(availableSpace.Width - leftMeasurement.Width, availableSpace.Height)) as Size;
 
-            return new FullRender(Size.Zero);
+            if (rightMeasurement == null)
+                return new Wrap();
+            
+            var totalWidth = leftMeasurement.Width + rightMeasurement.Width;
+            var totalHeight = Math.Max(leftMeasurement.Height, rightMeasurement.Height);
+
+            var targetSize = new Size(totalWidth, totalHeight);
+
+            if (leftMeasurement is PartialRender || rightMeasurement is PartialRender)
+                return new PartialRender(targetSize);
+            
+            return new FullRender(targetSize);
         }
 
         internal override void Draw(ICanvas canvas, Size availableSpace)
         {
-            var targetSpace = Measure(availableSpace) as Size;
-
-            if (targetSpace == null)
-                return;
+            var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height));
+            var leftWidth = (leftMeasurement as Size)?.Width ?? 0;
             
-            var offset = 0f;
-
-            foreach (var column in Children)
-            { 
-                var space = GetTargetSize(column, targetSpace);
-                
-                canvas.Translate(new Position(offset, 0));
-                column.Child.Draw(canvas, space);
-                canvas.Translate(new Position(-offset, 0));
-
-                offset += space.Width;
-            }
+            Left.Draw(canvas, new Size(leftWidth, availableSpace.Height));
+            
+            canvas.Translate(new Position(leftWidth, 0));
+            Right.Draw(canvas, new Size(availableSpace.Width - leftWidth, availableSpace.Height));
+            canvas.Translate(new Position(-leftWidth, 0));
+        }
+    }
+    
+    internal class Row : Element
+    {
+        public ICollection<RowElement> Children { get; internal set; } = new List<RowElement>();
+        public float Spacing { get; set; } = 0;
+        
+        internal override ISpacePlan Measure(Size availableSpace)
+        {
+            return Compose(availableSpace.Width).Measure(availableSpace);
         }
 
-        private Size GetTargetSize(RowElement rowElement, Size availableSpace)
+        internal override void Draw(ICanvas canvas, Size availableSpace)
         {
-            if (rowElement is ConstantRowElement)
-                return new Size(rowElement.Width, availableSpace.Height);
-
-            ConstantWidthSum ??= Children
+            Compose(availableSpace.Width).Draw(canvas, availableSpace);
+        }
+        
+        #region structure
+        
+        private Element Compose(float availableWidth)
+        {
+            var elements = AddSpacing(Children, Spacing);
+            var rowElements = ReduceRows(elements, availableWidth);
+            return BuildTree(rowElements.ToArray());
+        }
+        
+        private static ICollection<Element> ReduceRows(ICollection<RowElement> elements, float availableWidth)
+        {
+            var constantWidth = elements
                 .Where(x => x is ConstantRowElement)
                 .Cast<ConstantRowElement>()
                 .Sum(x => x.Width);
-            
-            RelativeWidthSum ??= Children
+        
+            var relativeWidth = elements
                 .Where(x => x is RelativeRowElement)
                 .Cast<RelativeRowElement>()
                 .Sum(x => x.Width);
+
+            var widthPerRelativeUnit = (availableWidth - constantWidth) / relativeWidth;
             
-            return new Size((availableSpace.Width - ConstantWidthSum.Value) * rowElement.Width / RelativeWidthSum.Value, availableSpace.Height);
+            return elements
+                .Select(x =>
+                {
+                    if (x is RelativeRowElement r)
+                        return new ConstantRowElement(r.Width * widthPerRelativeUnit)
+                        {
+                            Child = x.Child
+                        };
+                    
+                    return x;
+                })
+                .Select(x => new Constrained
+                {
+                    MinWidth = x.Width,
+                    MaxWidth = x.Width,
+                    Child = x.Child
+                })
+                .Cast<Element>()
+                .ToList();
         }
+        
+        private static ICollection<RowElement> AddSpacing(ICollection<RowElement> elements, float spacing)
+        {
+            if (spacing < Size.Epsilon)
+                return elements;
+            
+            return elements
+                .SelectMany(x => new[] { new ConstantRowElement(spacing), x })
+                .Skip(1)
+                .ToList();
+        }
+
+        private static Element BuildTree(Span<Element> elements)
+        {
+            if (elements.IsEmpty)
+                return Empty.Instance;
+
+            if (elements.Length == 1)
+                return elements[0];
+
+            var half = elements.Length / 2;
+            
+            return new SimpleRow
+            {
+                Left = BuildTree(elements.Slice(0, half)),
+                Right = BuildTree(elements.Slice(half))
+            };
+        }
+        
+        #endregion
     }
 }

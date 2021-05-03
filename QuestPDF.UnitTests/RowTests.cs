@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
-using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 
 namespace QuestPDF.UnitTests
@@ -10,103 +9,108 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class RowTests
     {
-        #region Spacing
+        #region Measure
         
         [Test]
-        public void Fluent_WithoutSpacing()
+        public void Measure_ReturnsWrap_WhenLeftChildReturnsWrap()
         {
-            // arrange
-            var structure = new Container();
-
-            var childA = TestPlan.CreateUniqueElement();
-            var childB = TestPlan.CreateUniqueElement();
-            var childC = TestPlan.CreateUniqueElement();
-
-            // act
-            structure
-                .Row(stack =>
+            TestPlan
+                .For(x => new SimpleRow
                 {
-                    stack.Spacing(0);
-
-                    stack.ConstantColumn(100).Element(childA);
-                    stack.RelativeColumn(2).Element(childB);
-                    stack.RelativeColumn(3).Element(childC);
-                });
-            
-            // assert
-            var expected = new Row()
-            {
-                Children = new List<RowElement>
-                {
-                    new ConstantRowElement(100)
-                    {
-                        Child = childA
-                    },
-                    new RelativeRowElement(2)
-                    {
-                        Child = childB
-                    },
-                    new RelativeRowElement(3)
-                    {
-                        Child = childC
-                    },
-                }
-            };
-            
-            structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
+                    Left = x.CreateChild("left"),
+                    Right = x.CreateChild("right")
+                })
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("left", new Size(400, 300), new Wrap())
+                .CheckMeasureResult(new Wrap());
         }
         
         [Test]
-        public void Fluent_WithSpacing()
+        public void Measure_ReturnsWrap_WhenRightChildReturnsWrap()
         {
-            // arrange
-            var structure = new Container();
-
-            var childA = TestPlan.CreateUniqueElement();
-            var childB = TestPlan.CreateUniqueElement();
-            var childC = TestPlan.CreateUniqueElement();
-
-            // act
-            structure
-                .Row(stack =>
+            TestPlan
+                .For(x => new SimpleRow
                 {
-                    stack.Spacing(25);
-
-                    stack.ConstantColumn(100).Element(childA);
-                    stack.RelativeColumn(2).Element(childB);
-                    stack.RelativeColumn(3).Element(childC);
-                });
-            
-            // assert
-            var expected = new Padding
-            {
-                Right = -25,
-                Child = new Row()
+                    Left = x.CreateChild("left"),
+                    Right = x.CreateChild("right")
+                })
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("left", new Size(400, 300), new FullRender(250, 150))
+                .ExpectChildMeasure("right", new Size(150, 300), new Wrap())
+                .CheckMeasureResult(new Wrap());
+        }
+        
+        [Test]
+        public void Measure_ReturnsPartialRender_WhenLeftChildReturnsPartialRender()
+        {
+            TestPlan
+                .For(x => new SimpleRow
                 {
-                    Children = new List<RowElement>
-                    {
-                        new ConstantRowElement(100)
-                        {
-                            Child = childA
-                        },
-                        new ConstantRowElement(25),
-                        new RelativeRowElement(2)
-                        {
-                            Child = childB
-                        },
-                        new ConstantRowElement(25),
-                        new RelativeRowElement(3)
-                        {
-                            Child = childC
-                        },
-                        new ConstantRowElement(25)
-                    }
-                }
-            };
-            
-            structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
+                    Left = x.CreateChild("left"),
+                    Right = x.CreateChild("right")
+                })
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("left", new Size(400, 300), new PartialRender(250, 150))
+                .ExpectChildMeasure("right", new Size(150, 300), new FullRender(100, 100))
+                .CheckMeasureResult(new PartialRender(350, 150));
+        }
+        
+        [Test]
+        public void Measure_ReturnsPartialRender_WhenRightChildReturnsPartialRender()
+        {
+            TestPlan
+                .For(x => new SimpleRow
+                {
+                    Left = x.CreateChild("left"),
+                    Right = x.CreateChild("right")
+                })
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("left", new Size(400, 300), new FullRender(250, 150))
+                .ExpectChildMeasure("right", new Size(150, 300), new PartialRender(100, 100))
+                .CheckMeasureResult(new PartialRender(350, 150));
+        }
+        
+        [Test]
+        public void Measure_ReturnsFullRender_WhenBothChildrenReturnFullRender()
+        {
+            TestPlan
+                .For(x => new SimpleRow
+                {
+                    Left = x.CreateChild("left"),
+                    Right = x.CreateChild("right")
+                })
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("left", new Size(400, 300), new FullRender(200, 150))
+                .ExpectChildMeasure("right", new Size(200, 300), new FullRender(100, 100))
+                .CheckMeasureResult(new FullRender(300, 150));
         }
         
         #endregion
+
+        #region Draw
+
+        [Test]
+        public void Draw()
+        {
+            TestPlan
+                .For(x => new SimpleRow
+                {
+                    Left = x.CreateChild("left"),
+                    Right = x.CreateChild("right")
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure("left", new Size(400, 300), new FullRender(250, 150))
+                .ExpectChildDraw("left", new Size(250, 300))
+                .ExpectCanvasTranslate(250, 0)
+                .ExpectChildDraw("right", new Size(150, 300))
+                .ExpectCanvasTranslate(-250, 0)
+                .CheckDrawResult();
+        }
+
+        #endregion
+        
+        // TODO: add tests for the spacing property
+        // TODO: add tests for the tree builder method
+        // TODO: add tests for relative column
     }
 }

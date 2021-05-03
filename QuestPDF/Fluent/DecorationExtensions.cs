@@ -45,7 +45,7 @@ namespace QuestPDF.Fluent
         }
     }
     
-    public static class SectionExtensions
+    public static class DecorationExtensions
     {
         public static void Decoration(this IContainer element, Action<DecorationDescriptor> handler)
         {

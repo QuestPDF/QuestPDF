@@ -14,11 +14,6 @@ namespace QuestPDF.Fluent
             Page.Header = container;
             return container;
         }
-
-        public void Header(Action<IContainer> handler)
-        {
-            handler?.Invoke(Header());
-        }
         
         public IContainer Content()
         {
@@ -27,21 +22,11 @@ namespace QuestPDF.Fluent
             return container;
         }
 
-        public void Content(Action<IContainer> handler)
-        {
-            handler?.Invoke(Content());
-        }
-        
         public IContainer Footer()
         {
             var container = new Container();
             Page.Footer = container;
             return container;
-        }
-
-        public void Footer(Action<IContainer> handler)
-        {
-            handler?.Invoke(Footer());
         }
     }
     

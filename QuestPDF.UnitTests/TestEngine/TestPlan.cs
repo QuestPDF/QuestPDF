@@ -49,9 +49,9 @@ namespace QuestPDF.UnitTests.TestEngine
                 TranslateFunc = position =>
                 {
                     var expected = GetExpected<CanvasTranslateOperationBase>();
-                    
-                    Assert.AreEqual(expected.Position.X, position.X);
-                    Assert.AreEqual(expected.Position.Y, position.Y);
+
+                    Assert.AreEqual(expected.Position.X, position.X, "Translate X");
+                    Assert.AreEqual(expected.Position.Y, position.Y, "Translate Y");
                     
                     //position.Should().BeEquivalentTo(expected.Position);
                 },
@@ -59,13 +59,13 @@ namespace QuestPDF.UnitTests.TestEngine
                 {
                     var expected = GetExpected<CanvasDrawRectangleOperationBase>();
                     
-                    Assert.AreEqual(expected.Position.X, position.X);
-                    Assert.AreEqual(expected.Position.Y, position.Y);
+                    Assert.AreEqual(expected.Position.X, position.X, "Draw rectangle: X");
+                    Assert.AreEqual(expected.Position.Y, position.Y, "Draw rectangle: Y");
                     
-                    Assert.AreEqual(expected.Size.Width, size.Width);
-                    Assert.AreEqual(expected.Size.Height, size.Height);
+                    Assert.AreEqual(expected.Size.Width, size.Width, "Draw rectangle: width");
+                    Assert.AreEqual(expected.Size.Height, size.Height, "Draw rectangle: height");
                     
-                    Assert.AreEqual(expected.Color, color);
+                    Assert.AreEqual(expected.Color, color, "Draw rectangle: color");
                     
                     /*position.Should().BeEquivalentTo(expected.Position);
                     size.Should().BeEquivalentTo(expected.Size);
@@ -77,12 +77,12 @@ namespace QuestPDF.UnitTests.TestEngine
                     
                     Assert.AreEqual(expected.Text, text);
                     
-                    Assert.AreEqual(expected.Position.X, position.X);
-                    Assert.AreEqual(expected.Position.Y, position.Y);
+                    Assert.AreEqual(expected.Position.X, position.X, "Draw text: X");
+                    Assert.AreEqual(expected.Position.Y, position.Y, "Draw text: Y");
                     
-                    Assert.AreEqual(expected.Style.Color, style.Color);
-                    Assert.AreEqual(expected.Style.FontType, style.FontType);
-                    Assert.AreEqual(expected.Style.Size, style.Size);
+                    Assert.AreEqual(expected.Style.Color, style.Color, "Draw text: color");
+                    Assert.AreEqual(expected.Style.FontType, style.FontType, "Draw text: font");
+                    Assert.AreEqual(expected.Style.Size, style.Size, "Draw text: size");
 
                     /*text.Should().Be(expected.Text);
                     position.Should().BeEquivalentTo(expected.Position);
@@ -92,11 +92,11 @@ namespace QuestPDF.UnitTests.TestEngine
                 {
                     var expected = GetExpected<CanvasDrawImageOperationBase>();
                     
-                    Assert.AreEqual(expected.Position.X, position.X);
-                    Assert.AreEqual(expected.Position.Y, position.Y);
+                    Assert.AreEqual(expected.Position.X, position.X, "Draw image: X");
+                    Assert.AreEqual(expected.Position.Y, position.Y, "Draw image: Y");
                     
-                    Assert.AreEqual(expected.Size.Width, size.Width);
-                    Assert.AreEqual(expected.Size.Height, size.Height);
+                    Assert.AreEqual(expected.Size.Width, size.Width, "Draw image: width");
+                    Assert.AreEqual(expected.Size.Height, size.Height, "Draw image: height");
                     
                     /*position.Should().BeEquivalentTo(expected.Position);
                     size.Should().BeEquivalentTo(expected.Size);*/
@@ -117,8 +117,8 @@ namespace QuestPDF.UnitTests.TestEngine
 
                     Assert.AreEqual(expected.ChildId, id);
                     
-                    Assert.AreEqual(expected.Input.Width, availableSpace.Width);
-                    Assert.AreEqual(expected.Input.Height, availableSpace.Height);
+                    Assert.AreEqual(expected.Input.Width, availableSpace.Width, $"Measure: width of child '{expected.ChildId}'");
+                    Assert.AreEqual(expected.Input.Height, availableSpace.Height, $"Measure: height of child '{expected.ChildId}'");
 
                     // id.Should().Be(expected.ChildId);
                     // availableSpace.Should().Be(expected.Input);
@@ -131,8 +131,8 @@ namespace QuestPDF.UnitTests.TestEngine
 
                     Assert.AreEqual(expected.ChildId, id);
                     
-                    Assert.AreEqual(expected.Input.Width, availableSpace.Width);
-                    Assert.AreEqual(expected.Input.Height, availableSpace.Height);
+                    Assert.AreEqual(expected.Input.Width, availableSpace.Width, $"Draw: width of child '{expected.ChildId}'");
+                    Assert.AreEqual(expected.Input.Height, availableSpace.Height, $"Draw: width of child '{expected.ChildId}'");
                     
                     /*id.Should().Be(expected.ChildId);
                     availableSpace.Should().Be(expected.Input);*/
@@ -214,8 +214,8 @@ namespace QuestPDF.UnitTests.TestEngine
 
             if (expectedSize != null)
             {
-                Assert.AreEqual(expectedSize.Width, actualSize.Width);
-                Assert.AreEqual(expectedSize.Height, actualSize.Height);
+                Assert.AreEqual(expectedSize.Width, actualSize.Width, "Measure: width");
+                Assert.AreEqual(expectedSize.Height, actualSize.Height, "Measure: height");
             }
             
             return this;
@@ -227,6 +227,19 @@ namespace QuestPDF.UnitTests.TestEngine
             return this;
         }
 
+        public TestPlan CheckState(Func<Element, bool> condition)
+        {
+            Assert.IsTrue(condition(Element), "Checking condition");
+            return this;
+        }
+
+        public TestPlan CheckState<T>(Func<T, bool> condition) where T : Element
+        {
+            Assert.IsTrue(Element is T);
+            Assert.IsTrue(condition(Element as T), "Checking condition");
+            return this;
+        }
+        
         public static Element CreateUniqueElement()
         {
             return new Text

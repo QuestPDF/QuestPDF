@@ -19,20 +19,20 @@ namespace QuestPDF.Examples
         
         //[ShowResult]
         [ImageSize(300, 300)]
-        public void Section(IContainer container)
+        public void Decoration(IContainer container)
         {
             container
                 .Background("#FFF")
                 .Padding(25)
-                .Decoration(section =>
+                .Decoration(decoration =>
                 {
-                    section
+                    decoration
                         .Header()
                         .Background("#888")
                         .Padding(10)
                         .Text("Notes", TextStyle.Default.Size(16).Color("#FFF"));
                     
-                    section
+                    decoration
                         .Content()
                         .Background("#DDD")
                         .Padding(10)
@@ -181,12 +181,12 @@ namespace QuestPDF.Examples
                     grid.Spacing(5);
                     grid.Columns(12);
 
-                    grid.Element(8).Background("#DDD").Height(50).Padding(5).Text("This is a short text", textStyle);
-                    grid.Element(4).Background("#BBB").Padding(5).Text("Showing how to...", textStyle);
-                    grid.Element(2).Background("#999").Height(50);
-                    grid.Element(4).Background("#AAA").Border(2).BorderColor("#666").Padding(5).Text("...generate", textStyle);
-                    grid.Element(6).Background("#CCC").Padding(5).Text("simple grids", textStyle.Size(18).Bold());
-                    grid.Element(8).Background("#DDD").Height(50);
+                    grid.Item(8).Background("#DDD").Height(50).Padding(5).Text("This is a short text", textStyle);
+                    grid.Item(4).Background("#BBB").Padding(5).Text("Showing how to...", textStyle);
+                    grid.Item(2).Background("#999").Height(50);
+                    grid.Item(4).Background("#AAA").Border(2).BorderColor("#666").Padding(5).Text("...generate", textStyle);
+                    grid.Item(6).Background("#CCC").Padding(5).Text("simple grids", textStyle.Size(18).Bold());
+                    grid.Item(8).Background("#DDD").Height(50);
                 });
         }
         

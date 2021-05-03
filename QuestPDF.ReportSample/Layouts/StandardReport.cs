@@ -30,8 +30,8 @@ namespace QuestPDF.ReportSample.Layouts
                 .PaddingHorizontal(50)
                 .Page(page =>
                 {
-                    page.Header(ComposeHeader);
-                    page.Content(ComposeContent);
+                    page.Header().Element(ComposeHeader);
+                    page.Content().Element(ComposeContent);
                     page.Footer().AlignCenter().PageNumber("Page {number}");
                 });
         }
@@ -57,7 +57,7 @@ namespace QuestPDF.ReportSample.Layouts
                         
                     foreach (var field in Model.HeaderFields)
                     {
-                        grid.Element().Stack(row =>
+                        grid.Item().Stack(row =>
                         {   
                             row.Item().AlignLeft().Text(field.Label, Typography.Normal.SemiBold());
                             row.Item().Text(field.Value, Typography.Normal);
