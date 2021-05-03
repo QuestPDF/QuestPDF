@@ -72,7 +72,7 @@ namespace QuestPDF.ReportSample.Layouts
                 return;
             }
 
-            container.Debug("Photo gallery").Grid(grid =>
+            container.Debug("Photos").Grid(grid =>
             {
                 grid.Spacing(5);
                 grid.Columns(3);

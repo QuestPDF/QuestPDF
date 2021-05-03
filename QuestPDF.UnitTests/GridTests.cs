@@ -40,7 +40,7 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Container().Stack(stack =>
             {
                 stack.Item().Row(row =>
                 {
@@ -94,7 +94,7 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Container().Stack(stack =>
             {
                 stack.Item().Row(row =>
                 {
@@ -151,7 +151,7 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Container().Stack(stack =>
             {
                 stack.Item().Row(row =>
                 {
@@ -211,7 +211,7 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Container().Stack(stack =>
             {
                 stack.Spacing(20);
                 
@@ -244,7 +244,7 @@ namespace QuestPDF.UnitTests
                 });
             });
             
-            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
+            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties().AllowingInfiniteRecursion());
         }
         
         #endregion
