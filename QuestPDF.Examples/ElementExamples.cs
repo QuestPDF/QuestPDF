@@ -167,7 +167,7 @@ namespace QuestPDF.Examples
                 });
         }
         
-        //[ShowResult]
+        [ShowResult]
         [ImageSize(300, 200)]
         public void GridExample(IContainer container)
         {
@@ -178,7 +178,8 @@ namespace QuestPDF.Examples
                 .AlignRight()
                 .Grid(grid =>
                 {
-                    grid.Spacing(5);
+                    grid.VerticalSpacing(20);
+                    grid.HorizontalSpacing(10);
                     grid.Columns(12);
 
                     grid.Item(8).Background("#DDD").Height(50).Padding(5).Text("This is a short text", textStyle);

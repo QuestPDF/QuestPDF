@@ -18,8 +18,8 @@ namespace QuestPDF.ReportSample
                 HeaderFields = HeaderFields(),
                 
                 LogoData = Helpers.GetImage("Logo.png"),
-                Sections = Enumerable.Range(0, 8).Select(x => GenerateSection()).ToList(),
-                Photos = Enumerable.Range(2, 6).Select(x => GetReportPhotos()).ToList()
+                Sections = Enumerable.Range(0, 50).Select(x => GenerateSection()).ToList(),
+                Photos = Enumerable.Range(0, 30).Select(x => GetReportPhotos()).ToList()
             };
 
             List<ReportHeaderField> HeaderFields()
@@ -52,8 +52,8 @@ namespace QuestPDF.ReportSample
             ReportSection GenerateSection()
             {
                 var sectionLength = Helpers.Random.NextDouble() > 0.75
-                    ? Helpers.Random.Next(10, 20)
-                    : Helpers.Random.Next(3, 11);
+                    ? Helpers.Random.Next(20, 40)
+                    : Helpers.Random.Next(5, 10);
                 
                 return new ReportSection
                 {
@@ -100,8 +100,7 @@ namespace QuestPDF.ReportSample
                 {    
                     Label = "Photos",
                     Photos = Enumerable
-                        .Range(0, Helpers.Random.Next(1, 10))
-                        .Select(x => Helpers.Random.Next(0, 128))
+                        .Range(0, Helpers.Random.Next(1, 15))
                         .Select(x => Placeholders.Image(400, 300))
                         .ToList()
                 };
@@ -111,7 +110,7 @@ namespace QuestPDF.ReportSample
             {
                 return new ReportPhoto()
                 {
-                    PhotoData = Placeholders.Image(400, 300),
+                    PhotoData = Placeholders.Image(800, 600),
 
                     Comments = Placeholders.Sentence(),
                     Date = DateTime.Now - TimeSpan.FromDays(Helpers.Random.NextDouble() * 100),
