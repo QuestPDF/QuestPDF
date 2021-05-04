@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using Size = QuestPDF.Infrastructure.Size;
 
@@ -24,7 +25,8 @@ namespace QuestPDF.Elements
                 .DefaultIfEmpty(0)
                 .Max();
             
-            var realHeight = lines.Count * LineHeight;
+            var paint = Style.ToPaint().FontMetrics;
+            var realHeight = -paint.Ascent + paint.Descent;
             
             if (realHeight > availableSpace.Height + Size.Epsilon)
                 return new Wrap();
@@ -34,12 +36,15 @@ namespace QuestPDF.Elements
 
         internal override void Draw(ICanvas canvas, Size availableSpace)
         {
+            var paint = Style.ToPaint().FontMetrics;
+            var offeset = -paint.Ascent; // paint.Ascent - Style.Size;
+
             var lines = BreakLines(availableSpace.Width);
             
             var offsetTop = 0f;
             var offsetLeft = GetLeftOffset();
 
-            canvas.Translate(new Position(0, Style.Size));
+            canvas.Translate(new Position(0, offeset));
             
             foreach (var line in lines)
             {
@@ -47,7 +52,7 @@ namespace QuestPDF.Elements
                 offsetTop += LineHeight;
             }
             
-            canvas.Translate(new Position(0, -Style.Size));
+            canvas.Translate(new Position(0, -offeset));
 
             float GetLeftOffset()
             {

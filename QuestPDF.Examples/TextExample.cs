@@ -13,7 +13,52 @@ namespace QuestPDF.Examples
     public class TextExample : ExampleTestBase
     {
         [ShowResult]
-        [ImageSize(1600, 500)]
+        [ImageSize(1400, 600)]
+        public void OldText(IContainer container)
+        {
+            var fonts = new[]
+            {
+                Fonts.Arial,
+                Fonts.Calibri,
+                Fonts.Cambria,
+                Fonts.Candara,
+                Fonts.ComicSans,
+                Fonts.Consolas,
+                Fonts.Corbel,
+                Fonts.Courier,
+                Fonts.CourierNew,
+                Fonts.Georgia,
+                Fonts.Impact,
+                Fonts.LucidaConsole,
+                Fonts.SegoeSD,
+                Fonts.SegoeUI,
+                Fonts.Tahoma,
+                Fonts.TimesNewRoman,
+                Fonts.TimesRoman,
+                Fonts.Trebuchet,
+                Fonts.Verdana,
+            };
+            
+            container
+                .Padding(50)
+                .Grid(stack =>
+                {
+                    stack.Spacing(10);
+                    stack.Columns(2);
+
+                    foreach (var font in fonts)
+                    {
+                        stack
+                            .Element()
+                            .Box()
+                            .Background(Placeholders.BackgroundColor())
+                            .Text($"Lorem ipsum dolor sit amet {font}", TextStyle.Default.Size(24).FontType(font));
+                    }
+                });
+        }
+        
+        //[ShowResult]
+        [ImageSize(1400, 800)]
         public void Test(IContainer container)
         {
             List<TextElement> Lorem()
