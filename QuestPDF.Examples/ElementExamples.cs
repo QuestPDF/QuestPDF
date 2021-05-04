@@ -1,5 +1,7 @@
+using System.Linq;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -135,18 +137,20 @@ namespace QuestPDF.Examples
                 });
         }
         
-        //[ShowResult]
-        [ImageSize(300, 200)]
+        [ShowResult]
+        [ImageSize(210, 210)]
         public void Debug(IContainer container)
         {
             container
                 .Padding(25)
-                .Debug()
-                .Padding(-5)
-                .Row(row =>
+                .Debug("Grid example", Colors.Blue.Medium)
+                .Grid(grid =>
                 {
-                    row.RelativeColumn().Padding(5).Extend().Placeholder();
-                    row.RelativeColumn().Padding(5).Extend().Placeholder();
+                    grid.Columns(3);
+                    grid.Spacing(5);
+
+                    foreach (var _ in Enumerable.Range(0, 8))
+                        grid.Item().Height(50).Placeholder();
                 });
         }
         
@@ -167,7 +171,7 @@ namespace QuestPDF.Examples
                 });
         }
         
-        [ShowResult]
+        //[ShowResult]
         [ImageSize(300, 200)]
         public void GridExample(IContainer container)
         {
@@ -190,8 +194,95 @@ namespace QuestPDF.Examples
                     grid.Item(8).Background("#DDD").Height(50);
                 });
         }
+
+        //[ShowResult]
+        [ImageSize(300, 300)]
+        public void RandomColorMatrix(IContainer container)
+        {
+            container
+                .Padding(25)
+                .Grid(grid =>
+                {
+                    grid.Columns(5);
+                    
+                    Enumerable
+                        .Range(0, 25)
+                        .Select(x => Placeholders.BackgroundColor())
+                        .ToList()
+                        .ForEach(x => grid.Item().Height(50).Background(x));
+                });
+        }
         
-        [ShowResult]
+        //[ShowResult]
+        [ImageSize(450, 150)]
+        public void DefinedColors(IContainer container)
+        {
+            var colors = new[]
+            {
+                Colors.Green.Darken4,
+                Colors.Green.Darken3,
+                Colors.Green.Darken2,
+                Colors.Green.Darken1,
+                
+                Colors.Green.Medium,
+                
+                Colors.Green.Lighten1,
+                Colors.Green.Lighten2,
+                Colors.Green.Lighten3,
+                Colors.Green.Lighten4,
+                Colors.Green.Lighten5,
+                
+                Colors.Green.Accent1,
+                Colors.Green.Accent2,
+                Colors.Green.Accent3,
+                Colors.Green.Accent4,
+            };
+            
+            container
+                .Padding(25)
+                .Height(100)
+                .Row(row =>
+                {
+                    foreach (var color in colors)
+                        row.RelativeColumn().Background(color);
+                });
+        }
+        
+        //[ShowResult]
+        [ImageSize(500, 175)]
+        public void DefinedFonts(IContainer container)
+        {
+            var fonts = new[]
+            {
+                Fonts.Calibri,
+                Fonts.Candara,
+                Fonts.Arial,
+                Fonts.TimesNewRoman,
+                Fonts.Consolas,
+                Fonts.Tahoma,
+                Fonts.Impact,
+                Fonts.Trebuchet,
+                Fonts.ComicSans
+            };
+            
+            container
+                .Padding(25)
+                .Grid(grid =>
+                {
+                    grid.Columns(3);
+
+                    foreach (var font in fonts)
+                    {
+                        grid.Item()
+                            .Border(1)
+                            .BorderColor(Colors.Grey.Medium)
+                            .Padding(10)
+                            .Text(font, TextStyle.Default.FontType(font).Size(16));
+                    }
+                });
+        }
+        
+        //[ShowResult]
         [ImageSize(300, 300)]
         public void Layers(IContainer container)
         {
