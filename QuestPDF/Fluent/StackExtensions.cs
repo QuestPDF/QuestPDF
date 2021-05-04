@@ -8,61 +8,18 @@ namespace QuestPDF.Fluent
 {
     public class StackDescriptor
     {
-        private List<Element> Elements { get; } = new List<Element>();
-        private float StackSpacing { get; set; } = 0;
-        
+        internal Stack Stack { get; } = new Stack();
+
         public void Spacing(float value)
         {
-            StackSpacing = value;
+            Stack.Spacing = value;
         }
         
-        public IContainer Element()
+        public IContainer Item()
         {
             var container = new Container();
-            Elements.Add(container);
+            Stack.Children.Add(container);
             return container;
-        }
-        
-        public void Element(Action<IContainer> handler)
-        {
-            handler?.Invoke(Element());
-        }
-        
-        public void Element(IElement element)
-        {
-            Elements.Add(element as Element);
-        }
-
-        internal Element CreateStack()
-        {
-            if (Elements.Count == 0)
-                return new Empty();
-            
-            if (StackSpacing <= Size.Epsilon)
-                return new Stack
-                {
-                    Children = Elements
-                };
-            
-            var children = Elements
-                .Select(x => new Padding
-                {
-                    Bottom = StackSpacing,
-                    Child = x
-                })
-                .Cast<Element>()
-                .ToList();
-
-            var stack = new Stack
-            {
-                Children = children
-            };
-            
-            return new Padding
-            {
-                Bottom = -StackSpacing,
-                Child = stack
-            };
         }
     }
     
@@ -72,7 +29,7 @@ namespace QuestPDF.Fluent
         {
             var descriptor = new StackDescriptor();
             handler(descriptor);
-            element.Element(descriptor.CreateStack());
+            element.Component(descriptor.Stack);
         }
     }
 }

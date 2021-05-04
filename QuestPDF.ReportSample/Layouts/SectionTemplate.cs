@@ -17,18 +17,18 @@ namespace QuestPDF.ReportSample.Layouts
         {
             container
                 .EnsureSpace()
-                .Section(section =>
+                .Decoration(decoration =>
                 {
-                    section
+                    decoration
                         .Header()
                         .PaddingBottom(5)
                         .Text(Model.Title, Typography.Headline);
 
-                    section.Content().Border(0.75f).BorderColor(Colors.Grey.Medium).Stack(stack =>
+                    decoration.Content().Border(0.75f).BorderColor(Colors.Grey.Medium).Stack(stack =>
                     {
                         foreach (var part in Model.Parts)
                         {
-                            stack.Element().Row(row =>
+                            stack.Item().Row(row =>
                             {
                                 row.ConstantColumn(150).LabelCell().Text(part.Label, Typography.Normal);
                                 var frame = row.RelativeColumn().ValueCell();
@@ -59,8 +59,8 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 stack.Spacing(5);
                 
-                stack.Element().MaxWidth(250).AspectRatio(4 / 3f).Image(Placeholders.Image);
-                stack.Element().Text(model.Location.Format(), Typography.Normal);
+                stack.Item().MaxWidth(250).AspectRatio(4 / 3f).Image(Placeholders.Image);
+                stack.Item().Text(model.Location.Format(), Typography.Normal);
             });
         }
         
@@ -72,12 +72,12 @@ namespace QuestPDF.ReportSample.Layouts
                 return;
             }
 
-            container.Debug("Photo gallery").Grid(grid =>
+            container.Debug("Photos").Grid(grid =>
             {
                 grid.Spacing(5);
                 grid.Columns(3);
                 
-                model.Photos.ForEach(x => grid.Element().AspectRatio(4 / 3f).Image(Placeholders.Image));
+                model.Photos.ForEach(x => grid.Item().AspectRatio(4 / 3f).Image(Placeholders.Image));
             });
         }
     }

@@ -25,9 +25,11 @@ namespace QuestPDF.ReportSample
         [Test] 
         public void PerformanceBenchmark()
         {
+            // target document length should be around 100 pages
+            
             // test size
             const int testSize = 100;
-            const decimal performanceTarget = 5; // documents per second
+            const decimal performanceTarget = 1; // documents per second
 
             // create report models
             var reports = Enumerable

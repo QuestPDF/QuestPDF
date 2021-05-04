@@ -5,7 +5,7 @@ namespace QuestPDF.Infrastructure
 {
     internal abstract class ContainerElement : Element, IContainer
     {
-        internal Element? Child { get; set; } = new Empty();
+        internal Element? Child { get; set; } = Empty.Instance;
 
         IElement? IContainer.Child
         {

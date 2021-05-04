@@ -43,7 +43,7 @@ namespace QuestPDF.Examples
                 .Stack(column =>
                 {
                     column
-                        .Element()
+                        .Item()
                         .Height(100)
                         .Background("#FFF")
                         
@@ -55,7 +55,7 @@ namespace QuestPDF.Examples
                         .Background("#444");
                     
                     column
-                        .Element()
+                        .Item()
                         .Height(100)
                         .Background("#DDD")
                         
@@ -67,7 +67,7 @@ namespace QuestPDF.Examples
                         .Background("#222");
                     
                     column
-                        .Element()
+                        .Item()
                         .Height(100)
                         .Background("#BBB")
                         
@@ -86,7 +86,7 @@ namespace QuestPDF.Examples
                 .Stack(column =>
                 {
                     column
-                        .Element()
+                        .Item()
                         .Height(150)
                         .Row(row =>
                         {
@@ -108,7 +108,7 @@ namespace QuestPDF.Examples
                         });
                     
                     column
-                        .Element()
+                        .Item()
                         .Height(150)
                         .Row(row =>
                         {

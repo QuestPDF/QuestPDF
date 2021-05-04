@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
@@ -29,40 +30,40 @@ namespace QuestPDF.UnitTests
                 {
                     grid.AlignLeft();
                     
-                    grid.Element(6).Element(childA);
-                    grid.Element(4).Element(childB);
-                    grid.Element(4).Element(childC);
-                    grid.Element(2).Element(childD);
-                    grid.Element(8).Element(childE);
+                    grid.Item(6).Element(childA);
+                    grid.Item(4).Element(childB);
+                    grid.Item(4).Element(childC);
+                    grid.Item(2).Element(childD);
+                    grid.Item(8).Element(childE);
                 });
             
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Container().Stack(stack =>
             {
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(6).Element(childA);
-                    row.RelativeColumn(4).Element(childB);
-                    row.RelativeColumn(2).Element(new Empty());
+                    row.RelativeColumn(6).Container().Element(childA);
+                    row.RelativeColumn(4).Container().Element(childB);
+                    row.RelativeColumn(2);
                 });
                 
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(4).Element(childC);
-                    row.RelativeColumn(2).Element(childD);
-                    row.RelativeColumn(6).Element(new Empty());
+                    row.RelativeColumn(4).Container().Element(childC);
+                    row.RelativeColumn(2).Container().Element(childD);
+                    row.RelativeColumn(6);
                 });
                 
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(8).Element(childE);
-                    row.RelativeColumn(4).Element(new Empty());
+                    row.RelativeColumn(8).Container().Element(childE);
+                    row.RelativeColumn(4);
                 });
             });
             
-            structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
+            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
         }
         
         [Test]
@@ -83,43 +84,43 @@ namespace QuestPDF.UnitTests
                 {
                     grid.AlignCenter();
                     
-                    grid.Element(6).Element(childA);
-                    grid.Element(4).Element(childB);
-                    grid.Element(4).Element(childC);
-                    grid.Element(2).Element(childD);
-                    grid.Element(8).Element(childE);
+                    grid.Item(6).Element(childA);
+                    grid.Item(4).Element(childB);
+                    grid.Item(4).Element(childC);
+                    grid.Item(2).Element(childD);
+                    grid.Item(8).Element(childE);
                 });
             
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Container().Stack(stack =>
             {
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(1).Element(new Empty());
-                    row.RelativeColumn(6).Element(childA);
-                    row.RelativeColumn(4).Element(childB);
-                    row.RelativeColumn(1).Element(new Empty());
+                    row.RelativeColumn(1);
+                    row.RelativeColumn(6).Container().Element(childA);
+                    row.RelativeColumn(4).Container().Element(childB);
+                    row.RelativeColumn(1);
                 });
                 
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(3).Element(new Empty());
-                    row.RelativeColumn(4).Element(childC);
-                    row.RelativeColumn(2).Element(childD);
-                    row.RelativeColumn(3).Element(new Empty());
+                    row.RelativeColumn(3);
+                    row.RelativeColumn(4).Container().Element(childC);
+                    row.RelativeColumn(2).Container().Element(childD);
+                    row.RelativeColumn(3);
                 });
                 
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(2).Element(new Empty());
-                    row.RelativeColumn(8).Element(childE);
-                    row.RelativeColumn(2).Element(new Empty());
+                    row.RelativeColumn(2);
+                    row.RelativeColumn(8).Container().Element(childE);
+                    row.RelativeColumn(2);
                 });
             });
 
-            structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
+            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
         }
         
         [Test]
@@ -140,11 +141,11 @@ namespace QuestPDF.UnitTests
                 {
                     grid.AlignRight();
                     
-                    grid.Element(6).Element(childA);
-                    grid.Element(4).Element(childB);
-                    grid.Element(4).Element(childC);
-                    grid.Element(2).Element(childD);
-                    grid.Element(8).Element(childE);
+                    grid.Item(6).Element(childA);
+                    grid.Item(4).Element(childB);
+                    grid.Item(4).Element(childC);
+                    grid.Item(2).Element(childD);
+                    grid.Item(8).Element(childE);
                 });
             
             // assert
@@ -152,28 +153,98 @@ namespace QuestPDF.UnitTests
             
             expected.Container().Stack(stack =>
             {
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(2).Element(new Empty());
-                    row.RelativeColumn(6).Element(childA);
-                    row.RelativeColumn(4).Element(childB);
+                    row.RelativeColumn(2);
+                    row.RelativeColumn(6).Container().Element(childA);
+                    row.RelativeColumn(4).Container().Element(childB);
                 });
                 
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(6).Element(new Empty());
-                    row.RelativeColumn(4).Element(childC);
-                    row.RelativeColumn(2).Element(childD);
+                    row.RelativeColumn(6);
+                    row.RelativeColumn(4).Container().Element(childC);
+                    row.RelativeColumn(2).Container().Element(childD);
                 });
                 
-                stack.Element().Row(row =>
+                stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(4).Element(new Empty());
-                    row.RelativeColumn(8).Element(childE);
+                    row.RelativeColumn(4);
+                    row.RelativeColumn(8).Container().Element(childE);
                 });
             });
             
-            structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
+            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
+        }
+        
+        #endregion
+        
+        #region Spacing
+        
+        [Test]
+        public void Spacing()
+        {
+            // arrange
+            var structure = new Container();
+
+            var childA = TestPlan.CreateUniqueElement();
+            var childB = TestPlan.CreateUniqueElement();
+            var childC = TestPlan.CreateUniqueElement();
+            var childD = TestPlan.CreateUniqueElement();
+
+            // act
+            structure
+                .Grid(grid =>
+                {
+                    grid.Columns(16);
+                    grid.AlignCenter();
+                    
+                    grid.VerticalSpacing(20);
+                    grid.HorizontalSpacing(30);
+
+                    grid.Item(5).Element(childA);
+                    grid.Item(5).Element(childB);
+                    grid.Item(10).Element(childC);
+                    grid.Item(12).Element(childD);
+                });
+            
+            // assert
+            var expected = new Container();
+            
+            expected.Container().Stack(stack =>
+            {
+                stack.Spacing(20);
+                
+                stack.Item().Row(row =>
+                {
+                    row.Spacing(30);
+                    
+                    row.RelativeColumn(3);
+                    row.RelativeColumn(5).Container().Element(childA);
+                    row.RelativeColumn(5).Container().Element(childB);
+                    row.RelativeColumn(3);
+                });
+                
+                stack.Item().Row(row =>
+                {
+                    row.Spacing(30);
+                    
+                    row.RelativeColumn(3);
+                    row.RelativeColumn(10).Container().Element(childC);
+                    row.RelativeColumn(3);
+                });
+                
+                stack.Item().Row(row =>
+                {
+                    row.Spacing(30);
+                    
+                    row.RelativeColumn(2);
+                    row.RelativeColumn(12).Container().Element(childD);
+                    row.RelativeColumn(2);
+                });
+            });
+            
+            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties().AllowingInfiniteRecursion());
         }
         
         #endregion

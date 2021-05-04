@@ -1,85 +1,126 @@
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using IComponent = QuestPDF.Infrastructure.IComponent;
+using IContainer = QuestPDF.Infrastructure.IContainer;
 
 namespace QuestPDF.Elements
 {
-    internal class Stack : Element
+    internal class SimpleStack : Element
     {
-        public ICollection<Element?> Children { get; internal set; } = new List<Element?>();
-        private Queue<Element?> ChildrenQueue { get; set; } = new Queue<Element?>();
-        
-        private void Initialize()
-        {
-            if (ChildrenQueue.Count == 0)
-                ChildrenQueue = new Queue<Element>(Children.Where(x => x != null));
-        }
+        internal Element First { get; set; } = Empty.Instance;
+        internal Element Second { get; set; } = Empty.Instance;
+
+        internal bool IsFirstRendered { get; set; } = false;
         
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            Initialize();
+            var firstElement = IsFirstRendered ? Empty.Instance : First;
+            var firstSize = firstElement.Measure(availableSpace) as Size;
+
+            if (firstSize == null)
+                return new Wrap();
             
-            if(!ChildrenQueue.Any())
-                return new FullRender(Size.Zero);
+            if (firstSize is PartialRender partialRender)
+                return partialRender;
+                
+            var spaceForSecond = new Size(availableSpace.Width, availableSpace.Height - firstSize.Height);
+            var secondSize = Second.Measure(spaceForSecond) as Size;
 
-            var heightOnCurrentPage = 0f;
-            var maxWidth = 0f;
+            if (secondSize == null)
+                return new PartialRender(firstSize);
 
-            foreach (var renderer in ChildrenQueue)
-            {
-                var space = renderer.Measure(new Size(availableSpace.Width, availableSpace.Height - heightOnCurrentPage));
+            var totalWidth = Math.Max(firstSize.Width, secondSize.Width);
+            var totalHeight = firstSize.Height + secondSize.Height;
+            var targetSize = new Size(totalWidth, totalHeight);
 
-                if (space is Wrap)
-                {
-                    if (heightOnCurrentPage < Size.Epsilon)
-                        return new Wrap();
-                    
-                    return new PartialRender(maxWidth, heightOnCurrentPage);
-                }
-
-                var size = space as Size;
-                heightOnCurrentPage += size.Height;
-
-                if (size.Width > maxWidth)
-                    maxWidth = size.Width;
-
-                if (space is PartialRender)
-                    return new PartialRender(maxWidth, heightOnCurrentPage);
-            }
-            
-            return new FullRender(maxWidth, heightOnCurrentPage);
+            if (secondSize is PartialRender)
+                return new PartialRender(targetSize);
+                
+            return new FullRender(targetSize);
         }
 
         internal override void Draw(ICanvas canvas, Size availableSpace)
         {
-            Initialize();
+            var firstElement = IsFirstRendered ? Empty.Instance : First;
+
+            var firstMeasurement = firstElement.Measure(availableSpace);
+
+            if (firstMeasurement is FullRender)
+                IsFirstRendered = true;
+
+            var firstSize = firstMeasurement as Size;
+
+            if (firstSize != null)
+                firstElement.Draw(canvas, new Size(availableSpace.Width, firstSize.Height));
+
+            if (firstMeasurement is Wrap || firstMeasurement is PartialRender)
+                return;
+
+            var firstHeight = firstSize?.Height ?? 0;
+            var spaceForSecond = new Size(availableSpace.Width, availableSpace.Height - firstHeight);
+            var secondMeasurement = Second?.Measure(spaceForSecond) as Size;
+
+            if (secondMeasurement == null)
+                return;
+
+            canvas.Translate(new Position(0, firstHeight));
+            Second.Draw(canvas, new Size(availableSpace.Width, secondMeasurement.Height));
+            canvas.Translate(new Position(0, -firstHeight));
             
-            var topOffset = 0f;
+            if (secondMeasurement is FullRender)
+                IsFirstRendered = false;
+        }
+    }
+    
+    internal class Stack : IComponent
+    {
+        public ICollection<Element> Children { get; internal set; } = new List<Element>();
+        public float Spacing { get; set; } = 0;
+        
+        public void Compose(IContainer container)
+        {
+            var elements = AddSpacing(Spacing, Children);
 
-            while (ChildrenQueue.Any())
+            container
+                .PaddingBottom(-Spacing)    
+                .Element(BuildTree(elements.ToArray()));
+        }
+        
+        static ICollection<Element> AddSpacing(float spacing, ICollection<Element> elements)
+        {
+            if (spacing < Size.Epsilon)
+                return elements;
+                
+            return elements
+                .Select(x => new Padding
+                {
+                    Bottom = spacing,
+                    Child = x
+                })
+                .Cast<Element>()
+                .ToList();
+        }
+
+        static Element BuildTree(Span<Element> elements)
+        {
+            if (elements.IsEmpty)
+                return Empty.Instance;
+
+            if (elements.Length == 1)
+                return elements[0];
+
+            var half = elements.Length / 2;
+                
+            return new SimpleStack
             {
-                var child = ChildrenQueue.Peek();
-                
-                var restSpace = new Size(availableSpace.Width, availableSpace.Height - topOffset);
-                var space = child.Measure(restSpace);
-                
-                if (space is Wrap)
-                    break;
-
-                var size = space as Size;
-                
-                canvas.Translate(new Position(0, topOffset));
-                child.Draw(canvas, new Size(availableSpace.Width, size.Height));
-                canvas.Translate(new Position(0, -topOffset));
-                
-                topOffset += size.Height;
-
-                if (space is PartialRender)
-                    break;
-                
-                ChildrenQueue.Dequeue();
-            }
+                First = BuildTree(elements.Slice(0, half)),
+                Second = BuildTree(elements.Slice(half))
+            };
         }
     }
 }

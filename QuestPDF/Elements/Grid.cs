@@ -30,10 +30,10 @@ namespace QuestPDF.Elements
             
             container.Stack(stack =>
             {
-                stack.Spacing(HorizontalSpacing);
+                stack.Spacing(VerticalSpacing);
                 
                 while (ChildrenQueue.Any())
-                    stack.Element().Row(BuildRow);
+                    stack.Item().Row(BuildRow);
             });
         }
         

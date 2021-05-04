@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 
@@ -13,260 +10,226 @@ namespace QuestPDF.UnitTests
     public class StackTests
     {
         #region Measure
-        
+
         [Test]
-        public void Measure_NoChildren_Empty()
+        public void Measure_ReturnsWrap_WhenFirstChildWraps()
         {
             TestPlan
-                .For(x => new Stack())
-                .MeasureElement(new Size(500, 1000))
-                .CheckMeasureResult(new FullRender(Size.Zero));
-        }
-        
-        [Test]
-        public void Measure_ReturnsWrap_WhenPageable_AndAnyChildReturnsWrap()
-        {
-            TestPlan
-                .For(x => new Stack
+                .For(x => new SimpleStack
                 {
-                    Children = new []
-                    {
-                        x.CreateChild("a"),
-                        x.CreateChild("b"),
-                        x.CreateChild("c"),
-                        x.CreateChild("d")
-                    }
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
                 })
-                .MeasureElement(new Size(500, 1000))
-                .ExpectChildMeasure("a", expectedInput: new Size(500, 1000), returns: new FullRender(500, 200))
-                .ExpectChildMeasure("b", expectedInput: new Size(500, 800), returns: new FullRender(500, 300))
-                .ExpectChildMeasure("c", expectedInput: new Size(500, 500), returns: new Wrap())
-                .CheckMeasureResult(new PartialRender(500, 500));
-        }
-        
-        [Test]
-        public void Measure_ReturnsWrap_WhenPageable_AndFirstChildReturnsWrap()
-        {
-            TestPlan
-                .For(x => new Stack
-                {
-                    Children = new []
-                    {
-                        x.CreateChild("a"),
-                        x.CreateChild("b"),
-                        x.CreateChild("c")
-                    }
-                })
-                .MeasureElement(new Size(500, 1000))
-                .ExpectChildMeasure("a", expectedInput: new Size(500, 1000), returns: new Wrap())
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new Wrap())
                 .CheckMeasureResult(new Wrap());
         }
         
-        #endregion
-
-        #region Combined
-
         [Test]
-        public void WhenPageable_AndChildReturnsWrap()
+        public void Measure_ReturnsPartialRender_WhenFirstChildReturnsPartialRender()
         {
             TestPlan
-                .For(x => new Stack
+                .For(x => new SimpleStack
                 {
-                    Children = new[]
-                    {
-                        x.CreateChild("a"),
-                        x.CreateChild("b"),
-                        x.CreateChild("c")
-                    }
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
                 })
-
-                // page 1: measure
-                .MeasureElement(new Size(500, 1000))
-                .ExpectChildMeasure("a", expectedInput: new Size(500, 1000), returns: new FullRender(400, 200))
-                .ExpectChildMeasure("b", expectedInput: new Size(500, 800), returns: new Wrap())
-                .CheckMeasureResult(new PartialRender(500, 200))
-
-                // page 1: draw
-                .DrawElement(new Size(500, 1000))
-
-                .ExpectChildMeasure("a", expectedInput: new Size(500, 1000), returns: new FullRender(400, 200))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("a", new Size(500, 200))
-                .ExpectCanvasTranslate(0, 0)
-
-                .ExpectChildMeasure("b", expectedInput: new Size(500, 800), returns: new Wrap())
-
-                .CheckDrawResult()
-
-                // // page 2: measure
-                .MeasureElement(new Size(500, 900))
-                .ExpectChildMeasure("b", expectedInput: new Size(500, 900), returns: new FullRender(300, 200))
-                .ExpectChildMeasure("c", expectedInput: new Size(500, 700), returns: new FullRender(300, 300))
-                .CheckMeasureResult(new FullRender(500, 500))
-                
-                // page 2: draw
-                .DrawElement(new Size(500, 900))
-                
-                .ExpectChildMeasure("b", expectedInput: new Size(500, 900), returns: new FullRender(300, 200))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("b", new Size(500, 200))
-                .ExpectCanvasTranslate(0, 0)
-                
-                .ExpectChildMeasure("c", expectedInput: new Size(500, 700), returns: new FullRender(300, 300))
-                .ExpectCanvasTranslate(0, 200)
-                .ExpectChildDraw("c", new Size(500, 300))
-                .ExpectCanvasTranslate(0, -200)
-                
-                .CheckDrawResult();
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new PartialRender(300, 200))
+                .CheckMeasureResult(new PartialRender(300, 200));
         }
-
+        
         [Test]
-        public void WhenPageable_AndChildReturnsPartialRender()
+        public void Measure_ReturnsPartialRender_WhenSecondChildWraps()
         {
             TestPlan
-                .For(x => new Stack
+                .For(x => new SimpleStack
                 {
-                    Children = new[]
-                    {
-                        x.CreateChild("a"),
-                        x.CreateChild("b"),
-                        x.CreateChild("c")
-                    }
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
                 })
-
-                // page 1: measure
-                .MeasureElement(new Size(500, 1000))
-                .ExpectChildMeasure("a", expectedInput: new Size(500, 1000), returns: new FullRender(400, 200))
-                .ExpectChildMeasure("b", expectedInput: new Size(500, 800), returns: new PartialRender(300, 300))
-                .CheckMeasureResult(new PartialRender(500, 500))
-
-                // page 1: draw
-                .DrawElement(new Size(500, 1000))
-
-                .ExpectChildMeasure("a", expectedInput: new Size(500, 1000), returns: new FullRender(400, 200))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("a", new Size(500, 200))
-                .ExpectCanvasTranslate(0, 0)
-
-                .ExpectChildMeasure("b", expectedInput: new Size(500, 800), returns: new PartialRender(300, 300))
-                .ExpectCanvasTranslate(0, 200)
-                .ExpectChildDraw("b", new Size(500, 300))
-                .ExpectCanvasTranslate(0, -200)
-                
-                .CheckDrawResult()
-
-                // page 2: measure
-                .MeasureElement(new Size(500, 900))
-                .ExpectChildMeasure("b", expectedInput: new Size(500, 900), returns: new FullRender(300, 200))
-                .ExpectChildMeasure("c", expectedInput: new Size(500, 700), returns: new FullRender(300, 300))
-                .CheckMeasureResult(new FullRender(500, 500))
-                
-                // page 2: draw
-                .DrawElement(new Size(500, 900))
-                
-                .ExpectChildMeasure("b", expectedInput: new Size(500, 900), returns: new FullRender(300, 200))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("b", new Size(500, 200))
-                .ExpectCanvasTranslate(0, 0)
-                
-                .ExpectChildMeasure("c", expectedInput: new Size(500, 700), returns: new FullRender(300, 300))
-                .ExpectCanvasTranslate(0, 200)
-                .ExpectChildDraw("c", new Size(500, 300))
-                .ExpectCanvasTranslate(0, -200)
-                
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new FullRender(200, 100))
+                .ExpectChildMeasure("second", new Size(400, 200), new Wrap())
+                .CheckMeasureResult(new PartialRender(200, 100));
+        }
+        
+        [Test]
+        public void Measure_ReturnsPartialRender_WhenSecondChildReturnsPartialRender()
+        {
+            TestPlan
+                .For(x => new SimpleStack
+                {
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
+                })
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new FullRender(200, 100))
+                .ExpectChildMeasure("second", new Size(400, 200), new PartialRender(300, 150))
+                .CheckMeasureResult(new PartialRender(300, 250));
+        }
+        
+        [Test]
+        public void Measure_ReturnsFullRender_WhenSecondChildReturnsFullRender()
+        {
+            TestPlan
+                .For(x => new SimpleStack
+                {
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
+                })
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new FullRender(200, 100))
+                .ExpectChildMeasure("second", new Size(400, 200), new FullRender(100, 50))
+                .CheckMeasureResult(new FullRender(200, 150));
+        }
+        
+        [Test]
+        public void Measure_UsesEmpty_WhenFirstChildIsRendered()
+        {
+            TestPlan
+                .For(x => new SimpleStack
+                {
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second"),
+                    
+                    IsFirstRendered = true
+                })
+                .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure("second", new Size(400, 300), new FullRender(200, 300))
+                .CheckMeasureResult(new FullRender(200, 300));
+        }
+        
+        #endregion
+        
+        #region Draw
+        
+        [Test]
+        public void Draw_WhenFirstChildWraps()
+        {
+            TestPlan
+                .For(x => new SimpleStack
+                {
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new Wrap())
                 .CheckDrawResult();
         }
         
-        #endregion
-        
-        #region Spacing
-        
         [Test]
-        public void Fluent_WithoutSpacing()
+        public void Draw_WhenFirstChildPartiallyRenders()
         {
-            // arrange
-            var structure = new Container();
-
-            var childA = TestPlan.CreateUniqueElement();
-            var childB = TestPlan.CreateUniqueElement();
-            var childC = TestPlan.CreateUniqueElement();
-
-            // act
-            structure
-                .Stack(stack =>
+            TestPlan
+                .For(x => new SimpleStack
                 {
-                    stack.Spacing(0);
-
-                    stack.Element(childA);
-                    stack.Element(childB);
-                    stack.Element(childC);
-                });
-            
-            // assert
-            var expected = new Stack
-            {
-                Children = new List<Element>
-                {
-                    childA,
-                    childB,
-                    childC
-                }
-            };
-            
-            structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new PartialRender(200, 100))
+                .ExpectChildDraw("first", new Size(400, 100))
+                .CheckDrawResult();
         }
         
         [Test]
-        public void Fluent_WithSpacing()
+        public void Draw_WhenFirstChildFullyRenders_AndSecondChildWraps()
         {
-            // arrange
-            var structure = new Container();
-
-            var childA = TestPlan.CreateUniqueElement();
-            var childB = TestPlan.CreateUniqueElement();
-            var childC = TestPlan.CreateUniqueElement();
-
-            // act
-            structure
-                .Stack(stack =>
+            TestPlan
+                .For(x => new SimpleStack
                 {
-                    stack.Spacing(100);
-
-                    stack.Element(childA);
-                    stack.Element(childB);
-                    stack.Element(childC);
-                });
-            
-            // assert
-            var expected = new Padding
-            {
-                Bottom = -100,
-                Child = new Stack
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new FullRender(200, 100))
+                .ExpectChildDraw("first", new Size(400, 100))
+                .ExpectChildMeasure("second", new Size(400, 200), new Wrap())
+                .CheckDrawResult();
+        }
+        
+        [Test]
+        public void Draw_WhenFirstChildFullyRenders_AndSecondChildPartiallyRenders()
+        {
+            TestPlan
+                .For(x => new SimpleStack
                 {
-                    Children = new List<Element>
-                    {
-                        new Padding
-                        {
-                            Bottom = 100,
-                            Child = childA
-                        },
-                        new Padding
-                        {
-                            Bottom = 100,
-                            Child = childB
-                        },
-                        new Padding
-                        {
-                            Bottom = 100,
-                            Child = childC
-                        },
-                    }
-                }
-            };
-            
-            structure.Child.Should().BeEquivalentTo(expected, o => o.WithStrictOrdering().IncludingAllRuntimeProperties());
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new FullRender(200, 100))
+                .ExpectChildDraw("first", new Size(400, 100))
+                .ExpectChildMeasure("second", new Size(400, 200), new PartialRender(250, 150))
+                .ExpectCanvasTranslate(0, 100)
+                .ExpectChildDraw("second", new Size(400, 150))
+                .ExpectCanvasTranslate(0, -100)
+                .CheckDrawResult();
+        }
+        
+        [Test]
+        public void Draw_WhenFirstChildFullyRenders_AndSecondChildFullyRenders()
+        {
+            TestPlan
+                .For(x => new SimpleStack
+                {
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second")
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure("first", new Size(400, 300), new FullRender(200, 100))
+                .ExpectChildDraw("first", new Size(400, 100))
+                .ExpectChildMeasure("second", new Size(400, 200), new FullRender(250, 150))
+                .ExpectCanvasTranslate(0, 100)
+                .ExpectChildDraw("second", new Size(400, 150))
+                .ExpectCanvasTranslate(0, -100)
+                .CheckDrawResult();
+        }
+        
+        [Test]
+        public void Draw_UsesEmpty_WhenFirstChildIsRendered()
+        {
+            TestPlan
+                .For(x => new SimpleStack
+                {
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second"),
+                    
+                    IsFirstRendered = true
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure("second", new Size(400, 300), new PartialRender(200, 300))
+                .ExpectCanvasTranslate(0, 0)
+                .ExpectChildDraw("second", new Size(400, 300))
+                .ExpectCanvasTranslate(0, 0)
+                .CheckState<SimpleStack>(x => x.IsFirstRendered)
+                .CheckDrawResult();
+        }
+        
+        [Test]
+        public void Draw_TogglesFirstRenderedFlag_WhenSecondFullyRenders()
+        {
+            TestPlan
+                .For(x => new SimpleStack
+                {
+                    First = x.CreateChild("first"),
+                    Second = x.CreateChild("second"),
+                    
+                    IsFirstRendered = true
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure("second", new Size(400, 300), new FullRender(200, 300))
+                .ExpectCanvasTranslate(0, 0)
+                .ExpectChildDraw("second", new Size(400, 300))
+                .ExpectCanvasTranslate(0, 0)
+                .CheckDrawResult()
+                .CheckState<SimpleStack>(x => !x.IsFirstRendered);
         }
         
         #endregion
+        
+        // TODO: add tests for the spacing property
+        // TODO: add tests for the tree builder method
     }
 }

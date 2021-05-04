@@ -14,7 +14,7 @@ namespace QuestPDF.Fluent
             return container;
         }
 
-        public static T Element<T>(this IContainer element, T child) where T : IElement
+        internal static T Element<T>(this IContainer element, T child) where T : IElement
         {
             if (element?.Child != null && element.Child is Empty == false)
             {
@@ -33,12 +33,12 @@ namespace QuestPDF.Fluent
         
         public static void Element<TParent>(this TParent parent, Action<IContainer> handler) where TParent : IContainer
         {
-            handler(parent);
+            handler(parent.Container());
         }
         
         public static IContainer Element<TParent>(this TParent parent, Func<IContainer, IContainer> handler) where TParent : IContainer
         {
-            return handler(parent);
+            return handler(parent.Container()).Container();
         }
 
         public static void PageNumber(this IContainer element, string textFormat = "{number}", TextStyle? style = null)

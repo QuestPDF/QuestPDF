@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -10,10 +11,10 @@ namespace QuestPDF.Elements
         Append
     }
     
-    internal class Decoration : Element
+    internal class SimpleDecoration : Element
     {
-        public Element DecorationElement { get; set; } = new Empty();
-        public Element ContentElement { get; set; } = new Empty();
+        public Element DecorationElement { get; set; } = Empty.Instance;
+        public Element ContentElement { get; set; } = Empty.Instance;
         public DecorationType Type { get; set; } 
 
         internal override ISpacePlan Measure(Size availableSpace)
@@ -57,6 +58,28 @@ namespace QuestPDF.Elements
             canvas.Translate(new Position(0, translateHeight));
             second();
             canvas.Translate(new Position(0, -translateHeight));
+        }
+    }
+    
+    internal class Decoration : IComponent
+    {
+        public Element Header { get; set; } = Empty.Instance;
+        public Element Content { get; set; } = Empty.Instance;
+        public Element Footer { get; set; } = Empty.Instance;
+
+        public void Compose(IContainer container)
+        {
+            container.Element(new SimpleDecoration
+            {
+                Type = DecorationType.Prepend,
+                DecorationElement = Header,
+                ContentElement = new SimpleDecoration
+                {
+                    Type = DecorationType.Append,
+                    ContentElement = Content,
+                    DecorationElement = Footer
+                }
+            });
         }
     }
 }

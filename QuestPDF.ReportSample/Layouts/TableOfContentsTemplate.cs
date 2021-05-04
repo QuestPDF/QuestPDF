@@ -16,21 +16,21 @@ namespace QuestPDF.ReportSample.Layouts
         public void Compose(IContainer container)
         {
             container
-                .Section(section =>
+                .Decoration(decoration =>
                 {
-                    section
+                    decoration
                         .Header()
                         .PaddingBottom(5)
                         .Text("Table of contents", Typography.Headline);
 
-                    section.Content().Stack(stack =>
+                    decoration.Content().Stack(stack =>
                     {
                         stack.Spacing(5);
                         
                         for (var i = 0; i < Sections.Count; i++)
-                            stack.Element(c => DrawLink(c, i+1, Sections[i].Title));
+                            stack.Item().Element(c => DrawLink(c, i+1, Sections[i].Title));
 
-                        stack.Element(c => DrawLink(c, Sections.Count+1, "Photos"));
+                        stack.Item().Element(c => DrawLink(c, Sections.Count+1, "Photos"));
                     });
                 });
         }
