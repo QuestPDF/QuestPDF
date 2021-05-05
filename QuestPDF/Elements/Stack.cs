@@ -97,6 +97,7 @@ namespace QuestPDF.Elements
                 return elements;
                 
             return elements
+                .Where(x => !(x is Empty))
                 .Select(x => new Padding
                 {
                     Bottom = spacing,
