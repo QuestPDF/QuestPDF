@@ -16,6 +16,15 @@
 
 6) **Enjoy fast PDF generation** - QuestPDF is created upon SkiaSharp, a well-known graphical library, and converts your data into PDF documents. It offers a highly optimized layouting engine capable of generating over 1000 PDF files per minute per core. The entire process is thread-safe.
 
+## Support QuestPDF
+
+All great frameworks and libraries started from zero. Please help us to make QuestPDF a commonly known library and an obvious choice in case of generating PDF documents. It can be as easy as:
+- Giving this repository a star ⭐ so more people will know about it,
+- Observing 🤩 the library to know about each new realease,
+- Trying our sample project to see how easy it is to create an invoice 📊,
+- Sharing your thoughts 💬 with us and your colleagues,
+- Simply using it 👨‍💻 and suggesting new features,
+- Creating new features 🆕 for everybody.
 
 ## Installation
 
@@ -24,7 +33,6 @@ The library is available as a nuget package. You can install it as any other nug
 <a href="https://www.nuget.org/packages/QuestPDF/">
   <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/nuget.svg" width="200px">  
 </a>
-
 
 ## Documentation
 
@@ -53,8 +61,8 @@ public void Compose(IContainer container)
         .PaddingVertical(50)
         .Page(page =>
         {
-            page.Header(ComposeHeader);
-            page.Content(ComposeContent);
+            page.Header().Element(ComposeHeader);
+            page.Content().Element(ComposeContent);
             page.Footer().AlignCenter().PageNumber("Page {number}");
         });
 }
@@ -63,11 +71,11 @@ void ComposeHeader(IContainer container)
 {
     container.Row(row =>
     {
-        row.RelativeColumn().Stack(column =>
+        row.RelativeColumn().Stack(stack =>
         {
-            column.Element().Text($"Invoice #{Model.InvoiceNumber}", TextStyle.Default.Size(20).Bold());
-            column.Element().Text($"Issue date: {Model.IssueDate:d}");
-            column.Element().Text($"Due date: {Model.DueDate:d}");
+            stack.Item().Text($"Invoice #{Model.InvoiceNumber}", TextStyle.Default.Size(20).Bold());
+            stack.Item().Text($"Issue date: {Model.IssueDate:d}");
+            stack.Item().Text($"Due date: {Model.DueDate:d}");
         });
         
         row.ConstantColumn(100).Height(50).Placeholder();
