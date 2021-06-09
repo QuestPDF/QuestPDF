@@ -1,4 +1,5 @@
 using System.Net;
+using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -27,27 +28,32 @@ namespace QuestPDF.Examples
         }
     }
     
-    public class LoremPicsumExample : ExampleTestBase
+    public class LoremPicsumExample
     {
-        [ShowResult]
-        [ImageSize(350, 280)]
-        public void LoremPicsum(IContainer container)
+        [Test]
+        public void LoremPicsum()
         {
-            container
-                .Background("#FFF")
-                .Padding(25)
-                .Stack(column =>
+            RenderingTest
+                .Create()
+                .PageSize(350, 280)
+                .Render(container =>
                 {
-                    column.Spacing(10);
+                    container
+                        .Background("#FFF")
+                        .Padding(25)
+                        .Stack(column =>
+                        {
+                            column.Spacing(10);
 
-                    column
-                        .Item()
-                        .Component(new LoremPicsum(true));
+                            column
+                                .Item()
+                                .Component(new LoremPicsum(true));
                     
-                    column
-                        .Item()
-                        .AlignRight()
-                        .Text("From Lorem Picsum");
+                            column
+                                .Item()
+                                .AlignRight()
+                                .Text("From Lorem Picsum");
+                        });
                 });
         }
     }
