@@ -47,7 +47,7 @@ namespace QuestPDF.Drawing
         private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata)
             where TCanvas : ICanvas, IRenderingCanvas
         {
-            content.HandleVisitor(x => x.Initialize(pageContext, canvas));
+            content.HandleVisitor(x => x?.Initialize(pageContext, canvas));
             content.HandleVisitor(x => (x as IStateResettable)?.ResetState());
             
             canvas.BeginDocument();

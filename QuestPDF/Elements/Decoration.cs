@@ -19,8 +19,8 @@ namespace QuestPDF.Elements
 
         internal override void HandleVisitor(Action<Element?> visit)
         {
-            DecorationElement.HandleVisitor(visit);
-            ContentElement.HandleVisitor(visit);
+            DecorationElement?.HandleVisitor(visit);
+            ContentElement?.HandleVisitor(visit);
             
             base.HandleVisitor(visit);
         }

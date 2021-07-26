@@ -16,7 +16,7 @@ namespace QuestPDF.UnitTests
                 .For(x => new PageBreak())
                 
                 .MeasureElement(new Size(400, 300))
-                .CheckMeasureResult(new PartialRender(400, 300))
+                .CheckMeasureResult(new PartialRender(Size.Zero))
                 
                 .DrawElement(new Size(400, 300))
                 .CheckDrawResult()

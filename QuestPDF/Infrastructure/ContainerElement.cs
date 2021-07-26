@@ -17,7 +17,7 @@ namespace QuestPDF.Infrastructure
         internal override void HandleVisitor(Action<Element?> visit)
         {
             base.HandleVisitor(visit);
-            Child.HandleVisitor(visit);
+            Child?.HandleVisitor(visit);
         }
 
         internal override ISpacePlan Measure(Size availableSpace)
