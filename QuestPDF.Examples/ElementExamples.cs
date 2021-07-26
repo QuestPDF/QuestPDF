@@ -56,41 +56,41 @@ namespace QuestPDF.Examples
                 });
         }
         
-        [Test]
-        public void Page()
-        {
-            RenderingTest
-                .Create()
-                .PageSize(298, 421)
-                .Render(container =>
-                {
-                    container
-                        .Background("#FFF")
-                        .Padding(15)
-                        .Page(page =>
-                        {
-                            page.Header()
-                                .Height(60)
-                                .Background(Colors.Grey.Lighten1)
-                                .AlignCenter()
-                                .AlignMiddle()
-                                .Text("Header");
-                    
-                            page.Content()
-                                .Background(Colors.Grey.Lighten2)
-                                .AlignCenter()
-                                .AlignMiddle()
-                                .Text("Content");
-                        
-                            page.Footer()
-                                .Height(30)
-                                .Background(Colors.Grey.Lighten1)
-                                .AlignCenter()
-                                .AlignMiddle()
-                                .Text("Footer");
-                        });
-                });
-        }
+        // [Test]
+        // public void Page()
+        // {
+        //     RenderingTest
+        //         .Create()
+        //         .PageSize(298, 421)
+        //         .Render(container =>
+        //         {
+        //             container
+        //                 .Background("#FFF")
+        //                 .Padding(15)
+        //                 .Page(page =>
+        //                 {
+        //                     page.Header()
+        //                         .Height(60)
+        //                         .Background(Colors.Grey.Lighten1)
+        //                         .AlignCenter()
+        //                         .AlignMiddle()
+        //                         .Text("Header");
+        //             
+        //                     page.Content()
+        //                         .Background(Colors.Grey.Lighten2)
+        //                         .AlignCenter()
+        //                         .AlignMiddle()
+        //                         .Text("Content");
+        //                 
+        //                     page.Footer()
+        //                         .Height(30)
+        //                         .Background(Colors.Grey.Lighten1)
+        //                         .AlignCenter()
+        //                         .AlignMiddle()
+        //                         .Text("Footer");
+        //                 });
+        //         });
+        // }
         
         [Test]
         public void Row()
@@ -234,8 +234,8 @@ namespace QuestPDF.Examples
                         .AlignRight()
                         .Grid(grid =>
                         {
-                            grid.VerticalSpacing(15);
-                            grid.HorizontalSpacing(15);
+                            grid.VerticalSpacing(10);
+                            grid.HorizontalSpacing(10);
                             grid.AlignCenter();
                             grid.Columns(10); // 12 by default
 
@@ -322,40 +322,40 @@ namespace QuestPDF.Examples
                             layers
                                 .Layer()
                                 .AlignBottom()
-                                .PageNumber("Page {number}", TextStyle.Default.Size(16).Color(Colors.Green.Medium));
+                                .PageNumber("Page {pdf:currentPage}", TextStyle.Default.Size(16).Color(Colors.Green.Medium));
                         });
                 });
         }
 
-        [Test]
-        public void EnsureSpace()
-        {
-            RenderingTest
-                .Create()
-                .PageSize(300, 400)
-                .Render(container =>
-                {
-                    container
-                        .Padding(50)
-                        .Page(page =>
-                        {
-                            page.Header().PageNumber("Page {number}");
-                    
-                            page.Content().Height(300).Stack(content =>
-                            {
-                                content.Item().Height(200).Background(Colors.Grey.Lighten2);
-                        
-                                content.Item().EnsureSpace(100).Stack(stack =>
-                                {
-                                    stack.Spacing(10);
-                            
-                                    foreach (var _ in Enumerable.Range(0, 4))
-                                        stack.Item().Height(50).Background(Colors.Green.Lighten1);
-                                }); 
-                            });
-                        });
-                });
-        }
+        // [Test]
+        // public void EnsureSpace()
+        // {
+        //     RenderingTest
+        //         .Create()
+        //         .PageSize(300, 400)
+        //         .Render(container =>
+        //         {
+        //             container
+        //                 .Padding(50)
+        //                 .Page(page =>
+        //                 {
+        //                     page.Header().PageNumber("Page {pdf:currentPage}");
+        //             
+        //                     page.Content().Height(300).Stack(content =>
+        //                     {
+        //                         content.Item().Height(200).Background(Colors.Grey.Lighten2);
+        //                 
+        //                         content.Item().EnsureSpace(100).Stack(stack =>
+        //                         {
+        //                             stack.Spacing(10);
+        //                     
+        //                             foreach (var _ in Enumerable.Range(0, 4))
+        //                                 stack.Item().Height(50).Background(Colors.Green.Lighten1);
+        //                         }); 
+        //                     });
+        //                 });
+        //         });
+        // }
 
         [Test]
         public void RandomColorMatrix()

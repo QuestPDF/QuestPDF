@@ -16,6 +16,23 @@ namespace QuestPDF.Drawing
     {
         internal static void GeneratePdf(Stream stream, IDocument document)
         {
+            var metadata = document.GetMetadata();
+            var canvas = new PdfCanvas(stream, metadata);
+            RenderDocument(canvas, document);
+        }
+        
+        internal static ICollection<byte[]> GenerateImages(IDocument document)
+        {
+            var metadata = document.GetMetadata();
+            var canvas = new ImageCanvas(metadata);
+            RenderDocument(canvas, document);
+
+            return canvas.Images;
+        }
+
+        private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document)
+            where TCanvas : ICanvas, IRenderingCanvas
+        {
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
@@ -23,21 +40,11 @@ namespace QuestPDF.Drawing
             var metadata = document.GetMetadata();
             var pageContext = new PageContext();
 
-            var timer = new Stopwatch();
-            
-            timer.Start();
-            RenderDocument(pageContext, new FreeCanvas(), content, metadata);
-            
-            Console.WriteLine($"First rendering pass: {timer.Elapsed:g}");
-            timer.Restart();
-            
-            var canvas = new PdfCanvas(stream, metadata);
-            RenderDocument(pageContext, canvas, content, metadata);
-            
-            Console.WriteLine($"Second rendering pass: {timer.Elapsed:g}");
+            RenderPass(pageContext, new FreeCanvas(), content, metadata);
+            RenderPass(pageContext, canvas, content, metadata);
         }
-
-        private static void RenderDocument<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata)
+        
+        private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             content.HandleVisitor(x => x.Initialize(pageContext, canvas));
@@ -81,65 +88,6 @@ namespace QuestPDF.Drawing
             }
             
             canvas.EndDocument();
-        }
-        
-        internal static IEnumerable<byte[]> GenerateImages(IDocument document)
-        {
-            return null;
-            
-            // var container = new DocumentContainer();
-            // document.Compose(container);
-            // var content = container.Compose();
-            //
-            // var metadata = document.GetMetadata();
-            //
-            // var currentPage = 1;
-            //
-            // while (true)
-            // {
-            //     var spacePlan = content.Measure(null, Size.Max) as Size;
-            //     byte[] result;
-            //
-            //     if (spacePlan == null)
-            //         break;
-            //     
-            //     try
-            //     {
-            //         result = RenderPage(spacePlan, content);
-            //     }
-            //     catch (Exception exception)
-            //     {
-            //         throw new DocumentDrawingException("An exception occured during document drawing.", exception);
-            //     }
-            //
-            //     yield return result;
-            //
-            //     if (currentPage >= metadata.DocumentLayoutExceptionThreshold)
-            //     {
-            //         throw new DocumentLayoutException("Composed layout generates infinite document.");
-            //     }
-            //
-            //     if (spacePlan is FullRender)
-            //         break;
-            //
-            //     currentPage++;
-            // }
-
-            // byte[] RenderPage(Size size, Element element)
-            // {
-            //     // scale the result so it is more readable
-            //     var scalingFactor = metadata.RasterDpi / (float) PageSizes.PointsPerInch;
-            //     
-            //     var imageInfo = new SKImageInfo((int) (size.Width * scalingFactor), (int) (size.Height * scalingFactor));
-            //     using var surface = SKSurface.Create(imageInfo);
-            //     surface.Canvas.Scale(scalingFactor);
-            //
-            //     var canvas = new SkiaCanvasBase(surface.Canvas, new Dictionary<string, int>());
-            //     element?.Draw(canvas, size);
-            //
-            //     surface.Canvas.Save();
-            //     return surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).ToArray();
-            // }
         }
     }
 }

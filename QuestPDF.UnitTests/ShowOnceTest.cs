@@ -30,10 +30,10 @@ namespace QuestPDF.UnitTests
                 Child = child.Object
             };
 
-            element.Draw(null, Size.Zero);
-            element.Draw(null, Size.Zero);
+            element.Draw(Size.Zero);
+            element.Draw(Size.Zero);
             
-            child.Verify(x => x.Draw(It.IsAny<ICanvas>(), It.IsAny<Size>()), Times.Once);
+            child.Verify(x => x.Draw(It.IsAny<Size>()), Times.Once);
         }
         
         [Test]

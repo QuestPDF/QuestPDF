@@ -223,7 +223,7 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public TestPlan CheckDrawResult()
         {
-            Element.Draw(Canvas, OperationInput);
+            Element.Draw(OperationInput);
             return this;
         }
 

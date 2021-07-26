@@ -25,7 +25,7 @@ namespace QuestPDF.Elements
 
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            TextElement.Value = Regex.Replace(TextFormat, @"{pdf:[ \w]+}", "123");
+            TextElement.Value = GetText();
             return TextElement.Measure(availableSpace);
         }
 
@@ -39,9 +39,13 @@ namespace QuestPDF.Elements
         {
             var result = TextFormat;
             
+            // replace known locations
             foreach (var location in PageContext.GetRegisteredLocations())
                 result = result.Replace($"{{pdf:{location}}}", PageContext.GetLocationPage(location).ToString());
 
+            // placeholder unknown locations
+            result = Regex.Replace(result, @"{pdf:[ \w]+}", "123");
+            
             return result;
         }
     }
