@@ -15,7 +15,15 @@ namespace QuestPDF.Elements
     {
         public Element DecorationElement { get; set; } = Empty.Instance;
         public Element ContentElement { get; set; } = Empty.Instance;
-        public DecorationType Type { get; set; } 
+        public DecorationType Type { get; set; }
+
+        internal override void HandleVisitor(Action<Element?> visit)
+        {
+            DecorationElement.HandleVisitor(visit);
+            ContentElement.HandleVisitor(visit);
+            
+            base.HandleVisitor(visit);
+        }
 
         internal override ISpacePlan Measure(Size availableSpace)
         {
@@ -42,22 +50,22 @@ namespace QuestPDF.Elements
             throw new NotSupportedException();
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             var decorationSize = DecorationElement?.Measure(availableSpace) as Size ?? Size.Zero;
             var contentSize = new Size(availableSpace.Width, availableSpace.Height - decorationSize.Height);
 
             var translateHeight = Type == DecorationType.Prepend ? decorationSize.Height : contentSize.Height;
-            Action drawDecoration = () => DecorationElement?.Draw(canvas, new Size(availableSpace.Width, decorationSize.Height));
-            Action drawContent = () => ContentElement?.Draw(canvas, new Size (availableSpace.Width, contentSize.Height));
+            Action drawDecoration = () => DecorationElement?.Draw(new Size(availableSpace.Width, decorationSize.Height));
+            Action drawContent = () => ContentElement?.Draw(new Size (availableSpace.Width, contentSize.Height));
 
             var first = Type == DecorationType.Prepend ? drawDecoration : drawContent;
             var second = Type == DecorationType.Prepend ? drawContent : drawDecoration;
 
             first();
-            canvas.Translate(new Position(0, translateHeight));
+            Canvas.Translate(new Position(0, translateHeight));
             second();
-            canvas.Translate(new Position(0, -translateHeight));
+            Canvas.Translate(new Position(0, -translateHeight));
         }
     }
     

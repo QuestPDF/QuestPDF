@@ -6,15 +6,15 @@ namespace QuestPDF.Elements
     {
         public string Url { get; set; } = "https://www.questpdf.com";
         
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             var targetSize = Child?.Measure(availableSpace) as Size;
 
             if (targetSize == null)
                 return;
 
-            canvas.DrawExternalLink(Url, targetSize);
-            Child?.Draw(canvas, availableSpace);
+            Canvas.DrawExternalLink(Url, targetSize);
+            Child?.Draw(availableSpace);
         }
     }
 }

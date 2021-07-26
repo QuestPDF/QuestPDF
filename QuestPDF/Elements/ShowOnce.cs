@@ -3,10 +3,15 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class ShowOnce : ContainerElement
+    internal class ShowOnce : ContainerElement, IStateResettable
     {
         private bool IsRendered { get; set; }
-        
+
+        public void ResetState()
+        {
+            IsRendered = false;
+        }
+
         internal override ISpacePlan Measure(Size availableSpace)
         {
             if (Child == null || IsRendered)
@@ -15,7 +20,7 @@ namespace QuestPDF.Elements
             return Child.Measure(availableSpace);
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             if (Child == null || IsRendered)
                 return;
@@ -23,7 +28,7 @@ namespace QuestPDF.Elements
             if (Child.Measure(availableSpace) is FullRender)
                 IsRendered = true;
             
-            Child.Draw(canvas, availableSpace);
+            Child.Draw(availableSpace);
         }
     }
 }

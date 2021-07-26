@@ -41,7 +41,7 @@ namespace QuestPDF.Fluent
             return handler(parent.Container()).Container();
         }
 
-        public static void PageNumber(this IContainer element, string textFormat = "{number}", TextStyle? style = null)
+        public static void PageNumber(this IContainer element, string textFormat = "{pdf:currentPage} / {pdf:totalPages}", TextStyle? style = null)
         {
             element.Element(new PageNumber
             {

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples.Engine
@@ -43,8 +45,8 @@ namespace QuestPDF.Examples.Engine
         public void Render(Action<IContainer> content)
         {
             var container = new Container();
-            content.Invoke(container);
-
+            content(container);
+            
             Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
 
             var document = new SimpleDocument(container, Size);

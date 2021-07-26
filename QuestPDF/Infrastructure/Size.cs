@@ -8,6 +8,7 @@
         public float Height { get; }
         
         public static Size Zero => new Size(0, 0);
+        public static Size Max => new Size(14_400, 14_400);
 
         public Size(float width, float height)
         {

@@ -36,13 +36,13 @@ namespace QuestPDF.Elements
             throw new NotSupportedException();
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             if (Child == null)
                 return;
             
             var size = GetTargetSize(availableSpace);
-            Child?.Draw(canvas, size);
+            Child?.Draw(size);
         }
         
         private Size GetTargetSize(Size availableSpace)

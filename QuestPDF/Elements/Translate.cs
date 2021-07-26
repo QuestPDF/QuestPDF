@@ -8,15 +8,15 @@ namespace QuestPDF.Elements
         public float TranslateX { get; set; } = 1;
         public float TranslateY { get; set; } = 1;
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
-            var skiaCanvas = (canvas as Drawing.Canvas)?.SkiaCanvas;
+            var skiaCanvas = (Canvas as Drawing.SkiaCanvasBase)?.Canvas;
             
             if (skiaCanvas == null)
                 return;
             
             skiaCanvas.Translate(TranslateX, TranslateY);
-            base.Draw(canvas, availableSpace);
+            base.Draw(availableSpace);
             skiaCanvas.Translate(-TranslateX, -TranslateY);
         }
     }

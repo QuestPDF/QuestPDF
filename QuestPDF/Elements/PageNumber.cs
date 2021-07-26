@@ -1,3 +1,5 @@
+using System;
+using System.Text.RegularExpressions;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Infrastructure;
 using Size = QuestPDF.Infrastructure.Size;
@@ -7,33 +9,40 @@ namespace QuestPDF.Elements
     internal class PageNumber : Element
     {
         public string TextFormat { get; set; } = "";
-        public TextStyle? TextStyle { get; set; }
-        private Text? TextElement { get; set; }
-        
-        private int Number { get; set; } = 1;
+        private Text TextElement { get; set; } = new Text();
+
+        public TextStyle? TextStyle
+        {
+            get => TextElement?.Style;
+            set => TextElement.Style = value;
+        }
+
+        internal override void HandleVisitor(Action<Element?> visit)
+        {
+            TextElement.HandleVisitor(visit);
+            base.HandleVisitor(visit);
+        }
 
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            InitializeTextElement();
-
-            TextElement.Value = TextFormat.Replace("{number}", Number.ToString());
+            TextElement.Value = Regex.Replace(TextFormat, @"{pdf:[ \w]+}", "123");
             return TextElement.Measure(availableSpace);
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
-            InitializeTextElement();
-            
-            TextElement.Draw(canvas, availableSpace);
-            Number++;
+            TextElement.Value = GetText();
+            TextElement.Draw(availableSpace);
         }
 
-        private void InitializeTextElement()
+        private string GetText()
         {
-            TextElement ??= new Text()
-            {
-                Style = TextStyle
-            };
+            var result = TextFormat;
+            
+            foreach (var location in PageContext.GetRegisteredLocations())
+                result = result.Replace($"{{pdf:{location}}}", PageContext.GetLocationPage(location).ToString());
+
+            return result;
         }
     }
 }

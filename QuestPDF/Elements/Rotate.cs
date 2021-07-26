@@ -32,9 +32,9 @@ namespace QuestPDF.Elements
             throw new ArgumentException();
         }
         
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
-            var skiaCanvas = (canvas as Drawing.Canvas)?.SkiaCanvas;
+            var skiaCanvas = (Canvas as Drawing.SkiaCanvasBase)?.Canvas;
             
             if (skiaCanvas == null)
                 return;
@@ -48,7 +48,7 @@ namespace QuestPDF.Elements
                 skiaCanvas.Translate(0, availableSpace.Height);
             
             skiaCanvas.RotateRadians(TurnCount * (float) Math.PI / 2f);
-            Child?.Draw(canvas, availableSpace);
+            Child?.Draw(availableSpace);
             skiaCanvas.SetMatrix(currentMatrix);
         }
     }

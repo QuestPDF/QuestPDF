@@ -5,6 +5,6 @@ namespace QuestPDF.Infrastructure
     public interface IDocument
     {
         DocumentMetadata GetMetadata();
-        void Compose(IContainer container);
+        void Compose(IDocumentContainer container);
     }
 }
