@@ -11,7 +11,6 @@ namespace QuestPDF.Examples.Engine
     public class RenderingTest
     {
         private string FileNamePrefix = "test";
-        private decimal ImageDpi = 2;
         private Size Size { get; set; }
         
         private RenderingTest()
@@ -27,12 +26,6 @@ namespace QuestPDF.Examples.Engine
         public RenderingTest FileName(string fileName)
         {
             FileNamePrefix = fileName;
-            return this;
-        }
-        
-        public RenderingTest Dpi(decimal value = 2)
-        {
-            ImageDpi = value;
             return this;
         }
         

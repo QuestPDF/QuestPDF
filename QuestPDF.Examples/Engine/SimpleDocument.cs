@@ -8,6 +8,8 @@ namespace QuestPDF.Examples.Engine
 {
     public class SimpleDocument : IDocument
     {
+        public const int ImageScalingFactor = 2;
+        
         private IContainer Container { get; }
         private Size Size { get; }
 
@@ -21,7 +23,7 @@ namespace QuestPDF.Examples.Engine
         {
             return new DocumentMetadata()
             {
-                RasterDpi = PageSizes.PointsPerInch * 2,
+                RasterDpi = PageSizes.PointsPerInch * ImageScalingFactor,
                 DocumentLayoutExceptionThreshold = 10
             };
         }

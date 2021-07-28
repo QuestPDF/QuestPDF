@@ -41,13 +41,17 @@ namespace QuestPDF.Elements
 
             var currentMatrix = skiaCanvas.TotalMatrix;
 
-            if (NormalizedTurnCount % 4 == 1 || NormalizedTurnCount % 4 == 2)
+            if (NormalizedTurnCount == 1 || NormalizedTurnCount == 2)
                 skiaCanvas.Translate(availableSpace.Width, 0);
             
-            if (NormalizedTurnCount % 4 == 2  || NormalizedTurnCount % 4 == 3)
+            if (NormalizedTurnCount == 2  || NormalizedTurnCount == 3)
                 skiaCanvas.Translate(0, availableSpace.Height);
+
+            skiaCanvas.RotateRadians(NormalizedTurnCount * (float) Math.PI / 2f);
             
-            skiaCanvas.RotateRadians(TurnCount * (float) Math.PI / 2f);
+            if (NormalizedTurnCount == 1 || NormalizedTurnCount == 3)
+                availableSpace = new Size(availableSpace.Height, availableSpace.Width);
+            
             Child?.Draw(availableSpace);
             skiaCanvas.SetMatrix(currentMatrix);
         }

@@ -593,6 +593,8 @@ namespace QuestPDF.Examples
 
                                         return element;
                                     })
+                                    .Box()
+                                    .Background(Colors.Grey.Lighten1)
                                     .Text($"Rotated {turns * 90} degrees.", TextStyle.Default.Size(14));
                             }
                         });
@@ -634,6 +636,30 @@ namespace QuestPDF.Examples
                                     })
                                     .Text($"Flipped.", TextStyle.Default.Size(14));
                             }
+                        });
+                });
+        }
+        
+        [Test]
+        public void RotateInTable()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(200, 200)
+                .Render(container =>
+                {
+                    container
+                        .Border(2)
+                        .Row(row =>
+                        {
+                            row.ConstantColumn(25)
+                                .Border(1)
+                                .RotateLeft()
+                                .AlignCenter()
+                                .AlignMiddle()
+                                .Text("Sample text");
+                            
+                            row.RelativeColumn().Border(1).Padding(5).Text(Placeholders.Paragraph());
                         });
                 });
         }
