@@ -649,6 +649,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
+                        .Padding(10)
                         .Border(2)
                         .Row(row =>
                         {
@@ -660,6 +661,35 @@ namespace QuestPDF.Examples
                                 .Text("Sample text");
                             
                             row.RelativeColumn().Border(1).Padding(5).Text(Placeholders.Paragraph());
+                        });
+                });
+        }
+        
+        [Test]
+        public void Floating()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(400, 300)
+                .Render(container =>
+                {
+                    container
+                        .Padding(50)
+                        .Layers(layers =>
+                        {
+                            layers
+                                .PrimaryLayer()
+                                .Background(Colors.Green.Lighten4)
+                                .Extend();
+                            
+                            layers
+                                .Layer()
+                                .Rotate(17)
+                                .TranslateX(-100)
+                                .TranslateY(-50)
+                                .Width(200)
+                                .Height(100)
+                                .Background(Colors.Green.Medium);
                         });
                 });
         }

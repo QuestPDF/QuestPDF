@@ -31,7 +31,6 @@ namespace QuestPDF.Drawing
         public override void BeginPage(Size size)
         {
             var scalingFactor = Metadata.RasterDpi / (float) PageSizes.PointsPerInch;
-            
             var imageInfo = new SKImageInfo((int) (size.Width * scalingFactor), (int) (size.Height * scalingFactor));
             
             Surface = SKSurface.Create(imageInfo);

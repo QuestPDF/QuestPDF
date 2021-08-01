@@ -33,7 +33,7 @@ namespace QuestPDF.Examples.Engine
             container.Page(page =>
             {
                 page.Size(new PageSize(Size.Width, Size.Height));
-                page.Content().Container().Element(Container as Container);
+                page.Content().Container().Background(Colors.White).Element(Container as Container);
             });
         }
     }

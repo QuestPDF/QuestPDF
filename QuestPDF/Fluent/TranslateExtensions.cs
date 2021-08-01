@@ -13,12 +13,7 @@ namespace QuestPDF.Fluent
             
             return element.Element(translate);
         }
-        
-        public static IContainer Translate(this IContainer element, float value)
-        {
-            return element.TranslateX(value).TranslateY(value);
-        }
-        
+
         public static IContainer TranslateX(this IContainer element, float value)
         {
             return element.Translate(x => x.TranslateX = value);

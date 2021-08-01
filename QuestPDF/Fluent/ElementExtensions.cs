@@ -162,5 +162,10 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new Box());
         }
+        
+        public static IContainer Unconstrained(this IContainer element)
+        {
+            return element.Element(new Unconstrained());
+        }
     }
 }

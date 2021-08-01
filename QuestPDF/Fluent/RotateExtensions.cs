@@ -6,9 +6,9 @@ namespace QuestPDF.Fluent
 {
     public static class RotateExtensions
     {
-        private static IContainer Rotate(this IContainer element, Action<Rotate> handler)
+        private static IContainer SimpleRotate(this IContainer element, Action<SimpleRotate> handler)
         {
-            var scale = element as Rotate ?? new Rotate();
+            var scale = element as SimpleRotate ?? new SimpleRotate();
             handler(scale);
             
             return element.Element(scale);
@@ -16,12 +16,21 @@ namespace QuestPDF.Fluent
         
         public static IContainer RotateLeft(this IContainer element)
         {
-            return element.Rotate(x => x.TurnCount--);
+            return element.SimpleRotate(x => x.TurnCount--);
         }
         
         public static IContainer RotateRight(this IContainer element)
         {
-            return element.Rotate(x => x.TurnCount++);
+            return element.SimpleRotate(x => x.TurnCount++);
+        }
+        
+        /// <param name="angle">In degrees</param>
+        public static IContainer Rotate(this IContainer element, float angle)
+        {
+            return element.Element(new Rotate
+            {
+                Angle = angle
+            });
         }
     }
 }
