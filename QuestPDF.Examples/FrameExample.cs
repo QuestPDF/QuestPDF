@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -19,25 +20,30 @@ namespace QuestPDF.Examples
         public static IContainer ValueCell(this IContainer container) => container.Cell(false);
     }
     
-    public class FrameExample: ExampleTestBase
+    public class FrameExample
     {
-        [ImageSize(550, 400)]
-        [ShowResult]
+        [Test]
         public void Frame(IContainer container)
         {
-            container
-                .Background("#FFF")
-                .Padding(25)
-                .Stack(stack =>
+            RenderingTest
+                .Create()
+                .PageSize(550, 400)
+                .Render(container =>
                 {
-                    for(var i=1; i<=4; i++)
-                    {
-                        stack.Item().Row(row =>
+                    container
+                        .Background("#FFF")
+                        .Padding(25)
+                        .Stack(stack =>
                         {
-                            row.RelativeColumn(2).LabelCell().Text(Placeholders.Label());
-                            row.RelativeColumn(3).ValueCell().Text(Placeholders.Paragraph());
+                            for(var i=1; i<=4; i++)
+                            {
+                                stack.Item().Row(row =>
+                                {
+                                    row.RelativeColumn(2).LabelCell().Text(Placeholders.Label());
+                                    row.RelativeColumn(3).ValueCell().Text(Placeholders.Paragraph());
+                                });
+                            }
                         });
-                    }
                 });
         }
     }

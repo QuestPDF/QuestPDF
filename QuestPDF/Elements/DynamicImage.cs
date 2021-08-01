@@ -14,7 +14,7 @@ namespace QuestPDF.Elements
             return new FullRender(availableSpace.Width, availableSpace.Height);
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             var imageData = Source?.Invoke(availableSpace);
             
@@ -26,7 +26,8 @@ namespace QuestPDF.Elements
                 InternalImage = SKImage.FromEncodedData(imageData)
             };
             
-            imageElement.Draw(canvas, availableSpace);
+            imageElement.Initialize(PageContext, Canvas);
+            imageElement.Draw(availableSpace);
         }
     }
 }

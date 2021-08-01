@@ -11,9 +11,9 @@ namespace QuestPDF.Elements
     {
         public float Width { get; set; } = 1;
         
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
-            Child?.Draw(canvas, availableSpace);
+            Child?.Draw(availableSpace);
         }
     }
     
@@ -38,6 +38,14 @@ namespace QuestPDF.Elements
         internal Element Left { get; set; }
         internal Element Right { get; set; }
 
+        internal override void HandleVisitor(Action<Element?> visit)
+        {
+            Left.HandleVisitor(visit);
+            Right.HandleVisitor(visit);
+            
+            base.HandleVisitor(visit);
+        }
+
         internal override ISpacePlan Measure(Size availableSpace)
         {
             var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height)) as Size;
@@ -61,16 +69,16 @@ namespace QuestPDF.Elements
             return new FullRender(targetSize);
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height));
             var leftWidth = (leftMeasurement as Size)?.Width ?? 0;
             
-            Left.Draw(canvas, new Size(leftWidth, availableSpace.Height));
+            Left.Draw(new Size(leftWidth, availableSpace.Height));
             
-            canvas.Translate(new Position(leftWidth, 0));
-            Right.Draw(canvas, new Size(availableSpace.Width - leftWidth, availableSpace.Height));
-            canvas.Translate(new Position(-leftWidth, 0));
+            Canvas.Translate(new Position(leftWidth, 0));
+            Right.Draw(new Size(availableSpace.Width - leftWidth, availableSpace.Height));
+            Canvas.Translate(new Position(-leftWidth, 0));
         }
     }
     
@@ -78,15 +86,21 @@ namespace QuestPDF.Elements
     {
         public ICollection<RowElement> Children { get; internal set; } = new List<RowElement>();
         public float Spacing { get; set; } = 0;
-        
+
+        internal override void HandleVisitor(Action<Element?> visit)
+        {
+            Children.ToList().ForEach(x => x.HandleVisitor(visit));
+            base.HandleVisitor(visit);
+        }
+
         internal override ISpacePlan Measure(Size availableSpace)
         {
             return Compose(availableSpace.Width).Measure(availableSpace);
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
-            Compose(availableSpace.Width).Draw(canvas, availableSpace);
+            Compose(availableSpace.Width).Draw(availableSpace);
         }
         
         #region structure
@@ -95,7 +109,10 @@ namespace QuestPDF.Elements
         {
             var elements = AddSpacing(Children, Spacing);
             var rowElements = ReduceRows(elements, availableWidth);
-            return BuildTree(rowElements.ToArray());
+            var tree = BuildTree(rowElements.ToArray());
+            tree.HandleVisitor(x => x.Initialize(PageContext, Canvas));
+            
+            return tree;
         }
         
         private static ICollection<Element> ReduceRows(ICollection<RowElement> elements, float availableWidth)

@@ -41,7 +41,7 @@ namespace QuestPDF.Fluent
             return handler(parent.Container()).Container();
         }
 
-        public static void PageNumber(this IContainer element, string textFormat = "{number}", TextStyle? style = null)
+        public static void PageNumber(this IContainer element, string textFormat = "{pdf:currentPage} / {pdf:totalPages}", TextStyle? style = null)
         {
             element.Element(new PageNumber
             {
@@ -152,7 +152,7 @@ namespace QuestPDF.Fluent
         
         public static void Canvas(this IContainer element, DrawOnCanvas handler)
         {
-            element.Element(new Elements.Canvas
+            element.Element(new Canvas
             {
                 Handler = handler
             });

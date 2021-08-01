@@ -15,9 +15,9 @@ namespace QuestPDF.Elements
             return new FullRender(availableSpace);
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
-            var skiaCanvas = (canvas as Drawing.Canvas)?.SkiaCanvas;
+            var skiaCanvas = (Canvas as Drawing.SkiaCanvasBase)?.Canvas;
             
             if (Handler == null || skiaCanvas == null)
                 return;

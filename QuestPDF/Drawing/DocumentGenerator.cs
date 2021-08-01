@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -14,115 +16,78 @@ namespace QuestPDF.Drawing
     {
         internal static void GeneratePdf(Stream stream, IDocument document)
         {
-            var content = ElementExtensions.Create(document.Compose);
             var metadata = document.GetMetadata();
+            var canvas = new PdfCanvas(stream, metadata);
+            RenderDocument(canvas, document);
+        }
+        
+        internal static ICollection<byte[]> GenerateImages(IDocument document)
+        {
+            var metadata = document.GetMetadata();
+            var canvas = new ImageCanvas(metadata);
+            RenderDocument(canvas, document);
+
+            return canvas.Images;
+        }
+
+        private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document)
+            where TCanvas : ICanvas, IRenderingCanvas
+        {
+            var container = new DocumentContainer();
+            document.Compose(container);
+            var content = container.Compose();
             
-            using var pdf = SKDocument.CreatePdf(stream, MapMetadata(metadata));
-            var totalPages = 1;
+            var metadata = document.GetMetadata();
+            var pageContext = new PageContext();
+
+            RenderPass(pageContext, new FreeCanvas(), content, metadata);
+            RenderPass(pageContext, canvas, content, metadata);
+        }
+        
+        private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata)
+            where TCanvas : ICanvas, IRenderingCanvas
+        {
+            content.HandleVisitor(x => x?.Initialize(pageContext, canvas));
+            content.HandleVisitor(x => (x as IStateResettable)?.ResetState());
+            
+            canvas.BeginDocument();
+
+            var currentPage = 1;
             
             while(true)
             {
-                var spacePlan = content.Measure(metadata.Size);
+                pageContext.SetPageNumber(currentPage);
+                var spacePlan = content.Measure(Size.Max) as Size;
 
-                using var skiaCanvas = pdf.BeginPage(metadata.Size.Width, metadata.Size.Height);
-                var canvas = new Canvas(skiaCanvas);
+                if (spacePlan == null)
+                    break;
 
                 try
                 {
-                    content.Draw(canvas, metadata.Size);
+                    canvas.BeginPage(spacePlan);
+                    content.Draw(spacePlan);
                 }
                 catch (Exception exception)
                 {
-                    pdf.Close();
+                    canvas.EndDocument();
                     throw new DocumentDrawingException("An exception occured during document drawing.", exception);
                 }
 
-                pdf.EndPage();
+                canvas.EndPage();
 
-                if (totalPages >= metadata.DocumentLayoutExceptionThreshold)
+                if (currentPage >= documentMetadata.DocumentLayoutExceptionThreshold)
                 {
-                    pdf.Close();
+                    canvas.EndDocument();
                     throw new DocumentLayoutException("Composed layout generates infinite document.");
                 }
                 
                 if (spacePlan is FullRender)
                     break;
 
-                totalPages++;
+                currentPage++;
             }
             
-            pdf.Close();
-        }
-
-        internal static IEnumerable<byte[]> GenerateImages(IDocument document)
-        {
-            var content = ElementExtensions.Create(document.Compose);
-            var metadata = document.GetMetadata();
-
-            var totalPages = 1;
-
-            while (true)
-            {
-                var spacePlan = content.Measure(metadata.Size);
-                byte[] result;
-
-                try
-                {
-                    result = RenderPage(content);
-                }
-                catch (Exception exception)
-                {
-                    throw new DocumentDrawingException("An exception occured during document drawing.", exception);
-                }
-
-                yield return result;
-
-                if (totalPages >= metadata.DocumentLayoutExceptionThreshold)
-                {
-                    throw new DocumentLayoutException("Composed layout generates infinite document.");
-                }
-
-                if (spacePlan is FullRender)
-                    break;
-
-                totalPages++;
-            }
-
-            byte[] RenderPage(Element element)
-            {
-                // scale the result so it is more readable
-                var scalingFactor = metadata.RasterDpi / (float) PageSizes.PointsPerInch;
-                
-                var imageInfo = new SKImageInfo((int) (metadata.Size.Width * scalingFactor), (int) (metadata.Size.Height * scalingFactor));
-                using var surface = SKSurface.Create(imageInfo);
-                surface.Canvas.Scale(scalingFactor);
-
-                var canvas = new Canvas(surface.Canvas);
-                element?.Draw(canvas, metadata.Size);
-
-                surface.Canvas.Save();
-                return surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).ToArray();
-            }
-        }
-        
-        private static SKDocumentPdfMetadata MapMetadata(DocumentMetadata metadata)
-        {
-            return new SKDocumentPdfMetadata
-            {
-                Title = metadata.Title,
-                Author = metadata.Author,
-                Subject = metadata.Subject,
-                Keywords = metadata.Keywords,
-                Creator = metadata.Creator,
-                Producer = metadata.Producer,
-                
-                Creation = metadata.CreationDate,
-                Modified = metadata.ModifiedDate,
-                
-                RasterDpi = metadata.RasterDpi,
-                EncodingQuality = metadata.ImageQuality,
-                PdfA = metadata.PdfA
-            };
+            canvas.EndDocument();
         }
     }
 }

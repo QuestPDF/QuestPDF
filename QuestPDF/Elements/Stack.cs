@@ -10,13 +10,26 @@ using IContainer = QuestPDF.Infrastructure.IContainer;
 
 namespace QuestPDF.Elements
 {
-    internal class SimpleStack : Element
+    internal class SimpleStack : Element, IStateResettable
     {
         internal Element First { get; set; } = Empty.Instance;
         internal Element Second { get; set; } = Empty.Instance;
 
         internal bool IsFirstRendered { get; set; } = false;
+
+        internal override void HandleVisitor(Action<Element?> visit)
+        {
+            First?.HandleVisitor(visit);
+            Second?.HandleVisitor(visit);
+            
+            base.HandleVisitor(visit);
+        }
         
+        public void ResetState()
+        {
+            IsFirstRendered = false;
+        }
+
         internal override ISpacePlan Measure(Size availableSpace)
         {
             var firstElement = IsFirstRendered ? Empty.Instance : First;
@@ -44,7 +57,7 @@ namespace QuestPDF.Elements
             return new FullRender(targetSize);
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             var firstElement = IsFirstRendered ? Empty.Instance : First;
 
@@ -56,7 +69,7 @@ namespace QuestPDF.Elements
             var firstSize = firstMeasurement as Size;
 
             if (firstSize != null)
-                firstElement.Draw(canvas, new Size(availableSpace.Width, firstSize.Height));
+                firstElement.Draw(new Size(availableSpace.Width, firstSize.Height));
 
             if (firstMeasurement is Wrap || firstMeasurement is PartialRender)
                 return;
@@ -68,9 +81,9 @@ namespace QuestPDF.Elements
             if (secondMeasurement == null)
                 return;
 
-            canvas.Translate(new Position(0, firstHeight));
-            Second.Draw(canvas, new Size(availableSpace.Width, secondMeasurement.Height));
-            canvas.Translate(new Position(0, -firstHeight));
+            Canvas.Translate(new Position(0, firstHeight));
+            Second.Draw(new Size(availableSpace.Width, secondMeasurement.Height));
+            Canvas.Translate(new Position(0, -firstHeight));
             
             if (secondMeasurement is FullRender)
                 IsFirstRendered = false;

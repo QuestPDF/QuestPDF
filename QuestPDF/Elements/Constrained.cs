@@ -44,13 +44,13 @@ namespace QuestPDF.Elements
             throw new NotSupportedException();
         }
         
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             var available = new Size(
                 MathHelpers.Min(MaxWidth, availableSpace.Width),
                 MathHelpers.Min(MaxHeight, availableSpace.Height));
             
-            Child?.Draw(canvas, available);
+            Child?.Draw(available);
         }
     }
     

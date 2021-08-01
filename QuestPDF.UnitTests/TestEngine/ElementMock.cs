@@ -11,6 +11,6 @@ namespace QuestPDF.UnitTests.TestEngine
         public Action<Size> DrawFunc { get; set; }
 
         internal override ISpacePlan Measure(Size availableSpace) => MeasureFunc(availableSpace);
-        internal override void Draw(ICanvas canvas, Size availableSpace) => DrawFunc(availableSpace);
+        internal override void Draw(Size availableSpace) => DrawFunc(availableSpace);
     }
 }

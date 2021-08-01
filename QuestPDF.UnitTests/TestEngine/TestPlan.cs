@@ -205,6 +205,8 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public TestPlan CheckMeasureResult(ISpacePlan expected)
         {
+            Element.HandleVisitor(x => x?.Initialize(null, Canvas));
+            
             var actual = Element.Measure(OperationInput);
             
             Assert.AreEqual(expected.GetType(), actual.GetType());
@@ -223,7 +225,8 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public TestPlan CheckDrawResult()
         {
-            Element.Draw(Canvas, OperationInput);
+            Element.HandleVisitor(x => x?.Initialize(null, Canvas));
+            Element.Draw(OperationInput);
             return this;
         }
 

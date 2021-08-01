@@ -6,7 +6,6 @@ namespace QuestPDF.Drawing
 {
     public class DocumentMetadata
     {
-        public Size Size { get; set; } = PageSizes.A4;
         public int ImageQuality { get; set; } = 101;
         public int RasterDpi { get; set; } = 72;
         public bool PdfA { get; set; }

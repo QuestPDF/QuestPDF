@@ -7,10 +7,10 @@ namespace QuestPDF.Elements
     {
         public string Color { get; set; } = Colors.Black;
         
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
-            canvas.DrawRectangle(Position.Zero, availableSpace, Color);
-            Child?.Draw(canvas, availableSpace);
+            Canvas.DrawRectangle(Position.Zero, availableSpace, Color);
+            Child?.Draw(availableSpace);
         }
     }
 }

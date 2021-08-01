@@ -1,5 +1,7 @@
 ﻿using System;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -8,6 +10,56 @@ namespace QuestPDF.Fluent
     {
         internal Page Page { get; } = new Page();
 
+        public void Size(PageSize pageSize)
+        {
+            Page.MinSize = pageSize;
+            Page.MaxSize = pageSize;
+        }
+
+        public void ContinuousSize(float width)
+        {
+            Page.MinSize = new PageSize(width, 0);
+            Page.MaxSize = new PageSize(width, Infrastructure.Size.Max.Height);
+        }
+
+        public void MarginLeft(float value)
+        {
+            Page.MarginLeft = value;
+        }
+        
+        public void MarginRight(float value)
+        {
+            Page.MarginRight = value;
+        }
+        
+        public void MarginTop(float value)
+        {
+            Page.MarginTop = value;
+        }
+        
+        public void MarginBottom(float value)
+        {
+            Page.MarginBottom = value;
+        }
+        
+        public void MarginVertical(float value)
+        {
+            MarginTop(value);
+            MarginBottom(value);
+        }
+        
+        public void MarginHorizontal(float value)
+        {
+            MarginLeft(value);
+            MarginRight(value);
+        }
+        
+        public void Margin(float value)
+        {
+            MarginVertical(value);
+            MarginHorizontal(value);
+        }
+        
         public IContainer Header()
         {
             var container = new Container();
@@ -32,11 +84,14 @@ namespace QuestPDF.Fluent
     
     public static class PageExtensions
     {
-        public static void Page(this IContainer document, Action<PageDescriptor> handler)
+        public static IDocumentContainer Page(this IDocumentContainer document, Action<PageDescriptor> handler)
         {
             var descriptor = new PageDescriptor();
             handler(descriptor);
-            document.Component(descriptor.Page);
+            
+            (document as DocumentContainer).Pages.Add(descriptor.Page);
+            
+            return document;
         }
     }
 }

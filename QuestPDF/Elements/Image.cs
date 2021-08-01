@@ -18,12 +18,12 @@ namespace QuestPDF.Elements
             return new FullRender(availableSpace);
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             if (InternalImage == null)
                 return;
 
-            canvas.DrawImage(InternalImage, Position.Zero, availableSpace);
+            Canvas.DrawImage(InternalImage, Position.Zero, availableSpace);
         }
     }
 }

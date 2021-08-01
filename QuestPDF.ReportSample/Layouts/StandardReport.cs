@@ -18,21 +18,34 @@ namespace QuestPDF.ReportSample.Layouts
         {
             return new DocumentMetadata()
             {
-                Title = Model.Title,
-                Size = PageSizes.A4
+                Title = Model.Title
             };
         }
 
-        public void Compose(IContainer container)
+        public void Compose(IDocumentContainer container)
         {
             container
-                .PaddingVertical(40)
-                .PaddingHorizontal(50)
+                // .Page(page =>
+                // {
+                //     page.MarginVertical(40);
+                //     page.MarginHorizontal(50);
+                //     
+                //     page.ContinuousSize(PageSizes.A4.Width);
+                //         
+                //     page.Header().Element(ComposeHeader);
+                //     page.Content().Element(ComposeContent);
+                //     page.Footer().AlignCenter().PageNumber("Page A {number}");
+                // })
                 .Page(page =>
                 {
+                    page.MarginVertical(40);
+                    page.MarginHorizontal(50);
+                    
+                    page.Size(PageSizes.A4);
+                        
                     page.Header().Element(ComposeHeader);
                     page.Content().Element(ComposeContent);
-                    page.Footer().AlignCenter().PageNumber("Page {number}");
+                    page.Footer().AlignCenter().PageNumber();
                 });
         }
 

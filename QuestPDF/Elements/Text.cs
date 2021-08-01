@@ -32,22 +32,22 @@ namespace QuestPDF.Elements
             return new FullRender(realWidth, realHeight);
         }
 
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
             var lines = BreakLines(availableSpace.Width);
             
             var offsetTop = 0f;
             var offsetLeft = GetLeftOffset();
 
-            canvas.Translate(new Position(0, Style.Size));
+            Canvas.Translate(new Position(0, Style.Size));
             
             foreach (var line in lines)
             {
-                canvas.DrawText(line, new Position(offsetLeft, offsetTop), Style);
+                Canvas.DrawText(line, new Position(offsetLeft, offsetTop), Style);
                 offsetTop += LineHeight;
             }
             
-            canvas.Translate(new Position(0, -Style.Size));
+            Canvas.Translate(new Position(0, -Style.Size));
 
             float GetLeftOffset()
             {

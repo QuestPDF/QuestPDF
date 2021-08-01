@@ -1,4 +1,5 @@
-﻿using QuestPDF.Drawing.SpacePlan;
+﻿using System;
+using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
 
 namespace QuestPDF.Infrastructure
@@ -13,14 +14,20 @@ namespace QuestPDF.Infrastructure
             set => Child = value as Element;
         }
 
+        internal override void HandleVisitor(Action<Element?> visit)
+        {
+            base.HandleVisitor(visit);
+            Child?.HandleVisitor(visit);
+        }
+
         internal override ISpacePlan Measure(Size availableSpace)
         {
             return Child?.Measure(availableSpace) ?? new FullRender(Size.Zero);
         }
         
-        internal override void Draw(ICanvas canvas, Size availableSpace)
+        internal override void Draw(Size availableSpace)
         {
-            Child?.Draw(canvas, availableSpace);
+            Child?.Draw(availableSpace);
         }
     }
 }
