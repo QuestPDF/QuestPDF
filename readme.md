@@ -54,16 +54,19 @@ For tutorial, documentation and API reference, please visit [the QuestPDF docume
 Here you can find an example code showing how easy is to write and understand the fluent API:
 
 ```csharp
-public void Compose(IContainer container)
-{
+public void Compose(IDocumentContainer container)
+{               
     container
-        .PaddingHorizontal(50)
-        .PaddingVertical(50)
         .Page(page =>
         {
+            page.MarginVertical(60);
+            page.MarginHorizontal(40);
+            
+            page.Size(PageSizes.A4);
+                
             page.Header().Element(ComposeHeader);
             page.Content().Element(ComposeContent);
-            page.Footer().AlignCenter().PageNumber("Page {number}");
+            page.Footer().AlignCenter().PageNumber();
         });
 }
 

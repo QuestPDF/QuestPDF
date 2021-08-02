@@ -25,17 +25,6 @@ namespace QuestPDF.ReportSample.Layouts
         public void Compose(IDocumentContainer container)
         {
             container
-                // .Page(page =>
-                // {
-                //     page.MarginVertical(40);
-                //     page.MarginHorizontal(50);
-                //     
-                //     page.ContinuousSize(PageSizes.A4.Width);
-                //         
-                //     page.Header().Element(ComposeHeader);
-                //     page.Content().Element(ComposeContent);
-                //     page.Footer().AlignCenter().PageNumber("Page A {number}");
-                // })
                 .Page(page =>
                 {
                     page.MarginVertical(40);
