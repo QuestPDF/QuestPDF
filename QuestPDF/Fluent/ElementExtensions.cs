@@ -104,7 +104,7 @@ namespace QuestPDF.Fluent
                 style.Alignment = alignment.Horizontal;
             }
             
-            element.Element(new Text()
+            element.Element(new Text
             {
                 Value = text.ToString(),
                 Style = style

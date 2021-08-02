@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
@@ -23,7 +24,7 @@ namespace QuestPDF.Examples.Engine
             return new RenderingTest();
         }
 
-        public RenderingTest FileName(string fileName)
+        public RenderingTest FileName([CallerMemberName] string fileName = "test")
         {
             FileNamePrefix = fileName;
             return this;

@@ -21,7 +21,12 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            Child?.Draw(Size.Max);
+            var measurement = Child?.Measure(Size.Max) as Size;
+            
+            if (measurement == null)
+                return;
+
+            Child?.Draw(measurement);
         }
     }
 }

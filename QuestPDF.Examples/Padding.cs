@@ -13,6 +13,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(200, 150)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -35,6 +36,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(200, 150)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -58,6 +60,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(200, 150)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -108,6 +111,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(200, 150)
+                .FileName()
                 .Render(container =>
                 {
                     container

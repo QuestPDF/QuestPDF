@@ -16,32 +16,32 @@ namespace QuestPDF.Fluent
         
         public static IContainer Scale(this IContainer element, float value)
         {
-            return element.ScaleX(value).ScaleY(value);
+            return element.ScaleHorizontal(value).ScaleVertical(value);
         }
         
-        public static IContainer ScaleX(this IContainer element, float value)
+        public static IContainer ScaleHorizontal(this IContainer element, float value)
         {
             return element.Scale(x => x.ScaleX = value);
         }
         
-        public static IContainer FlipX(this IContainer element)
+        public static IContainer FlipHorizontal(this IContainer element)
         {
-            return element.ScaleX(-1);
+            return element.ScaleHorizontal(-1);
         }
         
-        public static IContainer ScaleY(this IContainer element, float value)
+        public static IContainer ScaleVertical(this IContainer element, float value)
         {
             return element.Scale(x => x.ScaleY = value);
         }
         
-        public static IContainer FlipY(this IContainer element)
+        public static IContainer FlipVertical(this IContainer element)
         {
-            return element.ScaleY(-1);
+            return element.ScaleVertical(-1);
         }
         
         public static IContainer FlipOver(this IContainer element)
         {
-            return element.FlipX().FlipY();
+            return element.FlipHorizontal().FlipVertical();
         }
     }
 }

@@ -39,6 +39,10 @@ namespace QuestPDF.Fluent
             foreach (var imageData in document.GenerateImages())
             {
                 var path = filePath(index);
+                
+                if (File.Exists(path))
+                    File.Delete(path);
+                
                 File.WriteAllBytes(path, imageData);
                 index++;
             }

@@ -5,8 +5,8 @@ namespace QuestPDF.Elements
 {
     internal class Translate : ContainerElement
     {
-        public float TranslateX { get; set; } = 1;
-        public float TranslateY { get; set; } = 1;
+        public float TranslateX { get; set; } = 0;
+        public float TranslateY { get; set; } = 0;
 
         internal override void Draw(Size availableSpace)
         {

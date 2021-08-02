@@ -18,6 +18,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(200, 150)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -33,6 +34,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(300, 300)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -55,49 +57,14 @@ namespace QuestPDF.Examples
                         });
                 });
         }
-        
-        // [Test]
-        // public void Page()
-        // {
-        //     RenderingTest
-        //         .Create()
-        //         .PageSize(298, 421)
-        //         .Render(container =>
-        //         {
-        //             container
-        //                 .Background("#FFF")
-        //                 .Padding(15)
-        //                 .Page(page =>
-        //                 {
-        //                     page.Header()
-        //                         .Height(60)
-        //                         .Background(Colors.Grey.Lighten1)
-        //                         .AlignCenter()
-        //                         .AlignMiddle()
-        //                         .Text("Header");
-        //             
-        //                     page.Content()
-        //                         .Background(Colors.Grey.Lighten2)
-        //                         .AlignCenter()
-        //                         .AlignMiddle()
-        //                         .Text("Content");
-        //                 
-        //                     page.Footer()
-        //                         .Height(30)
-        //                         .Background(Colors.Grey.Lighten1)
-        //                         .AlignCenter()
-        //                         .AlignMiddle()
-        //                         .Text("Footer");
-        //                 });
-        //         });
-        // }
-        
+
         [Test]
         public void Row()
         {
             RenderingTest
                 .Create()
                 .PageSize(740, 200)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -138,6 +105,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(740, 200)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -159,6 +127,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(500, 360)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -181,6 +150,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(210, 210)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -203,6 +173,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(300, 200)
+                .FileName()
                 .Render(container =>
                 {
                     var text = "";
@@ -225,6 +196,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(400, 230)
+                .FileName()
                 .Render(container =>
                 {
                     var textStyle = TextStyle.Default.Size(14);
@@ -259,6 +231,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(300, 200)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -288,6 +261,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(400, 250)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -363,6 +337,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(300, 300)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -407,6 +382,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(450, 150)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -439,6 +415,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(500, 175)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -465,6 +442,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(300, 300)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -504,6 +482,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(300, 150)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -523,21 +502,25 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(400, 400)
+                .PageSize(400, 250)
+                .FileName()
                 .Render(container =>
                 {
-                    var style = TextStyle.Default.Size(20);
-            
                     container
-                        .Background("#FFF")
                         .Padding(25)
                         .Stack(stack =>
                         {
-                            stack.Spacing(5);
-                            stack.Item().Background(Placeholders.BackgroundColor()).Scale(0.5f).Text("Smaller text", style);
-                            stack.Item().Background(Placeholders.BackgroundColor()).Text("Normal text", style);
-                            stack.Item().Background(Placeholders.BackgroundColor()).Scale(2f).Text("Bigger text", style);
-                            stack.Item().Background(Placeholders.BackgroundColor()).Scale(-1.5f).Text("Flipped text", style);
+                            var scales = new[] { 0.75f, 1f, 1.25f, 1.5f };
+
+                            foreach (var scale in scales)
+                            {
+                                stack
+                                    .Item()
+                                    .Border(1)
+                                    .Scale(scale)
+                                    .Padding(10)
+                                    .Text($"Content with {scale} scale.", TextStyle.Default.Size(20));
+                            }
                         });
                 });
         }
@@ -547,31 +530,39 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(500, 300)
+                .PageSize(300, 200)
+                .FileName()
                 .Render(container =>
                 {
                     container
                         .Background("#FFF")
-                        .Padding(25)
                         .Box()
-                        .Background(Colors.Green.Lighten4)
-                        .Padding(5)
+                        
+                        .Padding(25)
+                        
+                        .Background(Colors.Green.Lighten3)
+                        
                         .TranslateX(15)
                         .TranslateY(15)
-                        .Text("Text outside of bounds");
+                        
+                        .Border(2)
+                        .BorderColor(Colors.Green.Darken1)
+                        
+                        .Padding(50)
+                        .Text("Moved text", TextStyle.Default.Size(25));
                 });
         }
 
         [Test]
-        public void Rotate()
+        public void ConstrainedRotate()
         {
             RenderingTest
                 .Create()
-                .PageSize(450, 450)
+                .PageSize(350, 350)
+                .FileName()
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
                         .Padding(20)
                         .Grid(grid =>
                         {
@@ -581,11 +572,10 @@ namespace QuestPDF.Examples
                             foreach (var turns in Enumerable.Range(0, 4))
                             {
                                 grid.Item()
-                                    .Width(200)
-                                    .Height(200)
-                                    .Background(Colors.Grey.Lighten3)
+                                    .Width(150)
+                                    .Height(150)
+                                    .Background(Colors.Grey.Lighten2)
                                     .Padding(10)
-                                    //.Box()
                                     .Element(element =>
                                     {
                                         foreach (var x in Enumerable.Range(0, turns))
@@ -594,23 +584,83 @@ namespace QuestPDF.Examples
                                         return element;
                                     })
                                     .Box()
-                                    .Background(Colors.Grey.Lighten1)
-                                    .Text($"Rotated {turns * 90} degrees.", TextStyle.Default.Size(14));
+                                    .Background(Colors.White)
+                                    .Padding(10)
+                                    .Text($"Rotated {turns * 90}°", TextStyle.Default.Size(16));
                             }
                         });
                 });
         }
         
         [Test]
+        public void FreeRotate()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(300, 300)
+                .FileName()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .Background(Colors.Grey.Lighten2)
+                        
+                        .AlignCenter()
+                        .AlignMiddle()
+                        
+                        
+                        .Background(Colors.White)
+                        
+                        .Rotate(30)
+
+                        .Width(100)
+                        .Height(100)
+                        .Background(Colors.Blue.Medium);
+                });
+        }
+        
+        [Test]
+        public void FreeRotateCenter()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(300, 300)
+                .FileName()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .Background(Colors.Grey.Lighten2)
+                        
+                        .AlignCenter()
+                        .AlignMiddle()
+                        
+                        .Background(Colors.White)
+                        
+                        .TranslateX(50)
+                        .TranslateY(50)
+                        
+                        .Rotate(30)
+
+                        .TranslateX(-50)
+                        .TranslateY(-50)
+                        
+                        .Width(100)
+                        .Height(100)
+                        .Background(Colors.Blue.Medium);
+                });
+        }
+
+        [Test]
         public void Flip()
         {
             RenderingTest
                 .Create()
-                .PageSize(450, 450)
+                .PageSize(350, 350)
+                .FileName()
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
                         .Padding(20)
                         .Grid(grid =>
                         {
@@ -620,21 +670,24 @@ namespace QuestPDF.Examples
                             foreach (var turns in Enumerable.Range(0, 4))
                             {
                                 grid.Item()
-                                    .Width(200)
-                                    .Height(200)
+                                    .Width(150)
+                                    .Height(150)
                                     .Background(Colors.Grey.Lighten3)
                                     .Padding(10)
                                     .Element(element =>
                                     {
                                         if (turns == 1 || turns == 2)
-                                            element = element.FlipX();
+                                            element = element.FlipHorizontal();
 
                                         if (turns == 2 || turns == 3)
-                                            element = element.FlipY();
+                                            element = element.FlipVertical();
                                         
                                         return element;
                                     })
-                                    .Text($"Flipped.", TextStyle.Default.Size(14));
+                                    .Box()
+                                    .Background(Colors.White)
+                                    .Padding(10)
+                                    .Text($"Flipped {turns}", TextStyle.Default.Size(16));
                             }
                         });
                 });
@@ -646,6 +699,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(200, 200)
+                .FileName()
                 .Render(container =>
                 {
                     container
@@ -666,30 +720,38 @@ namespace QuestPDF.Examples
         }
         
         [Test]
-        public void Floating()
+        public void Unconstrained()
         {
             RenderingTest
                 .Create()
-                .PageSize(400, 300)
+                .PageSize(400, 350)
+                .FileName()
                 .Render(container =>
                 {
                     container
-                        .Padding(50)
-                        .Layers(layers =>
+                        .Padding(25)
+                        .PaddingLeft(75)
+                        .Stack(stack =>
                         {
-                            layers
-                                .PrimaryLayer()
-                                .Background(Colors.Green.Lighten4)
-                                .Extend();
+                            stack.Item().Width(300).Height(150).Background(Colors.Blue.Lighten4);
                             
-                            layers
-                                .Layer()
-                                .Rotate(17)
-                                .TranslateX(-100)
+                            stack
+                                .Item()
+                                
+                                // creates an infinite space for its child
+                                .Unconstrained()
+                                
+                                // moves the child up and left
+                                .TranslateX(-50)
                                 .TranslateY(-50)
-                                .Width(200)
+                                
+                                // limits the space for the child
+                                .Width(100)
                                 .Height(100)
-                                .Background(Colors.Green.Medium);
+                                
+                                .Background(Colors.Blue.Darken1);
+                            
+                            stack.Item().Width(300).Height(150).Background(Colors.Blue.Lighten3);
                         });
                 });
         }
