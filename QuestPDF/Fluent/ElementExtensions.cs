@@ -92,25 +92,7 @@ namespace QuestPDF.Fluent
                 MinHeight = minHeight
             });
         }
-        
-        public static void Text(this IContainer element, object text, TextStyle? style = null)
-        {
-            text ??= string.Empty;
-            style ??= TextStyle.Default;
 
-            if (element is Alignment alignment)
-            {
-                style = style.Clone();
-                style.Alignment = alignment.Horizontal;
-            }
-            
-            element.Element(new Text
-            {
-                Value = text.ToString(),
-                Style = style
-            });
-        }
-        
         public static void PageBreak(this IContainer element)
         {
             element.Element(new PageBreak());

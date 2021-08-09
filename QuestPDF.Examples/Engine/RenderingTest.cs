@@ -9,10 +9,17 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples.Engine
 {
+    public enum RenderingTestResult
+    {
+        Pdf,
+        Images
+    }
+    
     public class RenderingTest
     {
         private string FileNamePrefix = "test";
         private Size Size { get; set; }
+        private RenderingTestResult ResultType { get; set; } = RenderingTestResult.Images;
         
         private RenderingTest()
         {
@@ -35,18 +42,39 @@ namespace QuestPDF.Examples.Engine
             Size = new Size(width, height);
             return this;
         }
+
+        public RenderingTest ProducePdf()
+        {
+            ResultType = RenderingTestResult.Pdf;
+            return this;
+        }
+        
+        public RenderingTest ProduceImages()
+        {
+            ResultType = RenderingTestResult.Images;
+            return this;
+        }
         
         public void Render(Action<IContainer> content)
         {
             var container = new Container();
             content(container);
             
-            Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
-
             var document = new SimpleDocument(container, Size);
-            document.GenerateImages(fileNameSchema);
 
-            Process.Start("explorer", fileNameSchema(0));
+            if (ResultType == RenderingTestResult.Images)
+            {
+                Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
+                document.GenerateImages(fileNameSchema);
+                Process.Start("explorer", fileNameSchema(0));
+            }
+
+            if (ResultType == RenderingTestResult.Pdf)
+            {
+                var fileName = $"{FileNamePrefix}.pdf";
+                document.GeneratePdf(fileName);
+                Process.Start("explorer", fileName);
+            }
         }
     }
 }
