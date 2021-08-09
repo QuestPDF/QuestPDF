@@ -502,25 +502,49 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(400, 250)
+                .PageSize(300, 175)
                 .FileName()
                 .Render(container =>
                 {
                     container
-                        .Padding(25)
-                        .Stack(stack =>
+                        .Background(Colors.White)
+                        .Padding(10)
+                        .Decoration(decoration =>
                         {
-                            var scales = new[] { 0.75f, 1f, 1.25f, 1.5f };
+                            var headerFontStyle = TextStyle
+                                .Default
+                                .Size(20)
+                                .Color(Colors.Blue.Darken2)
+                                .SemiBold();
+    
+                            decoration
+                                .Header()
+                                .PaddingBottom(10)
+                                .Text("Example: scale component", headerFontStyle);
+    
+                            decoration
+                                .Content()
+                                .Stack(stack =>
+                                {
+                                    var scales = new[] { 0.8f, 0.9f, 1.1f, 1.2f };
 
-                            foreach (var scale in scales)
-                            {
-                                stack
-                                    .Item()
-                                    .Border(1)
-                                    .Scale(scale)
-                                    .Padding(10)
-                                    .Text($"Content with {scale} scale.", TextStyle.Default.Size(20));
-                            }
+                                    foreach (var scale in scales)
+                                    {
+                                        var fontColor = scale <= 1f
+                                            ? Colors.Red.Lighten4
+                                            : Colors.Green.Lighten4;
+
+                                        var fontStyle = TextStyle.Default.Size(16);
+                
+                                        stack
+                                            .Item()
+                                            .Border(1)
+                                            .Background(fontColor)
+                                            .Scale(scale)
+                                            .Padding(5)
+                                            .Text($"Content with {scale} scale.", fontStyle);
+                                    }
+                                });
                         });
                 });
         }

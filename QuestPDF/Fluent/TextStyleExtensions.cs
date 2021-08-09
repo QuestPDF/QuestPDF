@@ -18,6 +18,11 @@ namespace QuestPDF.Fluent
             return style.Mutate(x => x.Color = value);
         }
         
+        public static TextStyle BackgroundColor(this TextStyle style, string value)
+        {
+            return style.Mutate(x => x.BackgroundColor = value);
+        }
+        
         public static TextStyle FontType(this TextStyle style, string value)
         {
             return style.Mutate(x => x.FontType = value);
@@ -37,7 +42,17 @@ namespace QuestPDF.Fluent
         {
             return style.Mutate(x => x.IsItalic = value);
         }
-
+        
+        public static TextStyle Stroked(this TextStyle style, bool value = true)
+        {
+            return style.Mutate(x => x.IsStroked = value);
+        }
+        
+        public static TextStyle Underlined(this TextStyle style, bool value = true)
+        {
+            return style.Mutate(x => x.IsUnderlined = value);
+        }
+        
         #region Alignmnet
         
         public static TextStyle Alignment(this TextStyle style, HorizontalAlignment value)
