@@ -12,11 +12,11 @@ namespace QuestPDF.Examples
         {
             return container
                 .Border(1)
-                .Background(dark ? "#EEE" : "#FFF")
+                .Background(dark ? Colors.Grey.Lighten2 : Colors.White)
                 .Padding(10);
         }
         
-        public static IContainer LabelCell(this IContainer container) => container.Cell(true);
+        public static void LabelCell(this IContainer container, string text) => container.Cell(true).Text(text, TextStyle.Default.Medium());
         public static IContainer ValueCell(this IContainer container) => container.Cell(false);
     }
     
@@ -40,7 +40,7 @@ namespace QuestPDF.Examples
                             {
                                 stack.Item().Row(row =>
                                 {
-                                    row.RelativeColumn(2).LabelCell().Text(Placeholders.Label());
+                                    row.RelativeColumn(2).LabelCell(Placeholders.Label());
                                     row.RelativeColumn(3).ValueCell().Text(Placeholders.Paragraph());
                                 });
                             }

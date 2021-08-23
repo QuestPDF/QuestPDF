@@ -755,5 +755,83 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+        public void ComplexLayout()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 225)
+                .FileName()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .Stack(stack =>
+                        {
+                            stack.Item().Row(row =>
+                            {
+                                row.RelativeColumn().LabelCell("Label 1");
+                                
+                                row.RelativeColumn(3).Grid(grid =>
+                                {
+                                    grid.Columns(3);
+                                    
+                                    grid.Item(2).LabelCell("Label 2");
+                                    grid.Item().LabelCell("Label 3");
+                                    
+                                    grid.Item(2).ValueCell().Text("Value 2");
+                                    grid.Item().ValueCell().Text("Value 3");
+                                });
+                            });
+                            
+                            stack.Item().Row(row =>
+                            {
+                                row.RelativeColumn().ValueCell().Text("Value 1");
+                                
+                                row.RelativeColumn(3).Grid(grid =>
+                                {
+                                    grid.Columns(3);
+                                    
+                                    grid.Item().LabelCell("Label 4");
+                                    grid.Item(2).LabelCell("Label 5");
+                                    
+                                    grid.Item().ValueCell().Text("Value 4");
+                                    grid.Item(2).ValueCell().Text("Value 5");
+                                });
+                            });
+                            
+                            stack.Item().Row(row =>
+                            {
+                                row.RelativeColumn().LabelCell("Label 6");
+                                row.RelativeColumn().ValueCell().Text("Value 6");
+                            });
+                        });
+                });
+        }
+        
+        [Test]
+        public void DomainSpecificLanguage()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(600, 310)
+                .FileName()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .Grid(grid =>
+                        {
+                            grid.Columns(10);
+                            
+                            for(var i=1; i<=4; i++)
+                            {
+                                grid.Item(2).LabelCell(Placeholders.Label());
+                                grid.Item(3).ValueCell().Image(Placeholders.Image(200, 150));
+                            }
+                        });
+                });
+        }
     }
 }
