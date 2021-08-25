@@ -4,6 +4,7 @@ using System.Text.Json;
 using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine.Operations;
 
@@ -245,9 +246,9 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public static Element CreateUniqueElement()
         {
-            return new Text
+            return new DynamicImage
             {
-                Value = Guid.NewGuid().ToString("N")
+                Source = Placeholders.Image
             };
         }
     }

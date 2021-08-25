@@ -37,10 +37,15 @@ namespace QuestPDF.Examples.Engine
             return this;
         }
         
+        public RenderingTest PageSize(Size size)
+        {
+            Size = size;
+            return this;
+        }
+        
         public RenderingTest PageSize(int width, int height)
         {
-            Size = new Size(width, height);
-            return this;
+            return PageSize(new Size(width, height));
         }
 
         public RenderingTest ProducePdf()

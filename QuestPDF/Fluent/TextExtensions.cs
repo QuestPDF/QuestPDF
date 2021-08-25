@@ -8,31 +8,35 @@ namespace QuestPDF.Fluent
 {
     public class TextDescriptor
     {
-        internal ICollection<Element> Elements = new List<Element>();
+        private TextBlock TextBlock { get; }
         
-        internal TextDescriptor()
+        internal TextDescriptor(TextBlock textBlock)
         {
-            
+            TextBlock = textBlock;
+        }
+        
+        public void AlignLeft()
+        {
+            TextBlock.Alignment = HorizontalAlignment.Left;
+        }
+        
+        public void AlignCenter()
+        {
+            TextBlock.Alignment = HorizontalAlignment.Center;
+        }
+        
+        public void AlignRight()
+        {
+            TextBlock.Alignment = HorizontalAlignment.Right;
         }
         
         public void Span(string text, TextStyle? style = null)
         {
-            text.Split(' ')
-                .Select(x => $"{x} ")
-                .Select(x => new TextItem
-                {
-                    Value = x,
-                    Style = style ?? TextStyle.Default
-                })
-                .ToList()
-                .ForEach(Elements.Add);
-        }
-
-        public IContainer Element()
-        {
-            var container = new Container();
-            Elements.Add(container);
-            return container;
+            TextBlock.Children.Add(new TextItem
+            {
+                Text = text,
+                Style = style ?? TextStyle.Default
+            });
         }
     }
     
@@ -40,13 +44,15 @@ namespace QuestPDF.Fluent
     {
         public static void Text(this IContainer element, Action<TextDescriptor> content)
         {
-            var descriptor = new TextDescriptor();
-            content?.Invoke(descriptor);
+            var textBlock = new TextBlock();
 
-            element.Element(new TextBlock()
-            {
-                Children = descriptor.Elements.ToList()
-            });
+            if (element is Alignment alignment)
+                textBlock.Alignment = alignment.Horizontal;
+            
+            var descriptor = new TextDescriptor(textBlock);
+            content?.Invoke(descriptor);
+            
+            element.Element(textBlock);
         }
         
         public static void Text(this IContainer element, object text, TextStyle? style = null)

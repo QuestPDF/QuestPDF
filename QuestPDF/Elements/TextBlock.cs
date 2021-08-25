@@ -1,19 +1,45 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
+    internal class TextLineElement
+    {
+        public TextItem Element { get; set; }
+        public TextMeasurementResult Measurement { get; set; }
+    }
+
+    internal class TextLine
+    {
+        public ICollection<TextLineElement> Elements { get; set; }
+
+        public float TextHeight => Elements.Max(x => x.Measurement.Height);
+        public float LineHeight => Elements.Max(x => x.Element.Style.LineHeight * x.Measurement.Height);
+        
+        public float Ascent => Elements.Min(x => x.Measurement.Ascent) - (LineHeight - TextHeight) / 2;
+        public float Descent => Elements.Max(x => x.Measurement.Descent) + (LineHeight - TextHeight) / 2;
+
+        public float Width => Elements.Sum(x => x.Measurement.Width);
+    }
+    
     internal class TextBlock : Element, IStateResettable
     {
-        public List<Element> Children { get; set; } = new List<Element>();
-        public Queue<Element> ChildrenQueue { get; set; } = new Queue<Element>();
-        
+        public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
+        public List<TextItem> Children { get; set; } = new List<TextItem>();
+
+        public Queue<TextItem> RenderingQueue { get; set; }
+        public int CurrentElementIndex { get; set; }
+
         public void ResetState()
         {
-            ChildrenQueue = new Queue<Element>(Children);
+            RenderingQueue = new Queue<TextItem>(Children);
+            CurrentElementIndex = 0;
         }
         
         internal override void HandleVisitor(Action<Element?> visit)
@@ -24,132 +50,163 @@ namespace QuestPDF.Elements
         
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            return new FullRender(availableSpace);
-            
-            if (!ChildrenQueue.Any())
-                return new FullRender(Size.Zero);
-
-            if (Children.Count < 50)
+            if (!RenderingQueue.Any())
                 return new FullRender(Size.Zero);
             
-            var items = SelectItemsForCurrentLine(availableSpace);
+            var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height);
 
-            if (items == null)
+            if (!lines.Any())
+                return new PartialRender(Size.Zero);
+            
+            var width = lines.Max(x => x.Width);
+            var height = lines.Sum(x => x.LineHeight);
+
+            if (width > availableSpace.Width || height > availableSpace.Height)
                 return new Wrap();
 
-            var totalWidth = items.Sum(x => x.Measurement.Width);
-            var totalHeight = items.Max(x => x.Measurement.Height);
+            var fullyRenderedItemsCount = lines
+                .SelectMany(x => x.Elements)
+                .GroupBy(x => x.Element)
+                .Count(x => x.Any(y => y.Measurement.IsLast));
             
-            return new PartialRender(totalWidth, totalHeight);
+            if (fullyRenderedItemsCount == RenderingQueue.Count)
+                return new FullRender(width, height);
             
-            return new FullRender(Size.Zero);
-            return CreateParent(availableSpace).Measure(availableSpace);
+            return new PartialRender(width, height);
         }
 
         internal override void Draw(Size availableSpace)
         {
-            while (true)
-            {
-                if (!ChildrenQueue.Any())
-                    return;
-                
-                var items = SelectItemsForCurrentLine(availableSpace);
+            var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
             
-                if (items == null)
-                    return;
+            if (!lines.Any())
+                return;
+            
+            var heightOffset = 0f;
+            var widthOffset = 0f;
+            
+            foreach (var line in lines)
+            {
+                widthOffset = 0f;
 
-                var totalWidth = items.Sum(x => x.Measurement.Width);
-                var totalHeight = items.Max(x => x.Measurement.Height);
-                
-                var spaceBetween = (availableSpace.Width - totalWidth) / (items.Count - 1);
+                var emptySpace = availableSpace.Width - line.Width;
 
-                var offset = items
-                    .Select(x => x.Measurement)
-                    .Cast<TextRender>()
-                    .Where(x => x != null)
-                    .Select(x => x.Ascent)
-                    .Select(Math.Abs)
-                    .Max();
+                if (Alignment == HorizontalAlignment.Center)
+                    emptySpace /= 2f;
+
+                if (Alignment != HorizontalAlignment.Left)
+                    Canvas.Translate(new Position(emptySpace, 0));
                 
-                Canvas.Translate(new Position(0, offset));
-                
-                foreach (var item in items)
+                Canvas.Translate(new Position(0, -line.Ascent));
+            
+                foreach (var item in line.Elements)
                 {
-                    item.Element.Draw(availableSpace);
-                    Canvas.Translate(new Position(item.Measurement.Width + spaceBetween, 0));
+                    var textDrawingRequest = new TextDrawingRequest
+                    {
+                        StartIndex = item.Measurement.StartIndex,
+                        EndIndex = item.Measurement.EndIndex,
+                        
+                        TextSize = new Size(item.Measurement.Width, line.LineHeight),
+                        TotalAscent = line.Ascent
+                    };
+                
+                    item.Element.Draw(textDrawingRequest);
+                
+                    Canvas.Translate(new Position(item.Measurement.Width, 0));
+                    widthOffset += item.Measurement.Width;
                 }
             
-                Canvas.Translate(new Position(-availableSpace.Width - spaceBetween, totalHeight - offset));
-            
-                items.ForEach(x => ChildrenQueue.Dequeue());
-            }
-        }
-
-        Container CreateParent(Size availableSpace)
-        {
-            var children = Children
-                .Select(x => new
-                {
-                    Element = x,
-                    Measurement = x.Measure(Size.Max) as Size
-                })
-                .Select(x => new GridElement()
-                {
-                    Child = x.Element,
-                    Columns = (int)x.Measurement.Width + 1
-                })
-                .ToList();
-            
-            var grid = new Grid()
-            {
-                Alignment = HorizontalAlignment.Left,
-                ColumnsCount = (int)availableSpace.Width,
-                Children = children
-            };
-
-            var container = new Container();
-            grid.Compose(container);
-            container.HandleVisitor(x => x.Initialize(PageContext, Canvas));
-
-            return container;
-        }
-
-        private List<MeasuredElement>? SelectItemsForCurrentLine(Size availableSpace)
-        {
-            var totalWidth = 0f;
-
-            var items = ChildrenQueue
-                .Select(x => new MeasuredElement
-                {
-                    Element = x,
-                    Measurement = x.Measure(Size.Max) as FullRender
-                })
-                .TakeWhile(x =>
-                {
-                    if (x.Measurement == null)
-                        return false;
-                    
-                    if (totalWidth + x.Measurement.Width > availableSpace.Width)
-                        return false;
-
-                    totalWidth += x.Measurement.Width;
-                    return true;
-                })
-                .ToList();
-
-            if (items.Any(x => x.Measurement == null))
-                return null;
+                if (Alignment != HorizontalAlignment.Right)
+                    Canvas.Translate(new Position(emptySpace, 0));
                 
-            if (items.Max(x => x.Measurement.Height) > availableSpace.Height)
-                return null;
+                Canvas.Translate(new Position(-line.Width - emptySpace, line.Ascent));
 
-            return items;
+                Canvas.Translate(new Position(0, line.LineHeight));
+                heightOffset += line.LineHeight;
+            }
+            
+            Canvas.Translate(new Position(0, -heightOffset));
+            
+            lines
+                .SelectMany(x => x.Elements)
+                .GroupBy(x => x.Element)
+                .Where(x => x.Any(y => y.Measurement.IsLast))
+                .Select(x => x.Key)
+                .ToList()
+                .ForEach(x => RenderingQueue.Dequeue());
+
+            var lastElementMeasurement = lines.Last().Elements.Last().Measurement;
+            CurrentElementIndex = lastElementMeasurement.IsLast ? 0 : (lastElementMeasurement.EndIndex + 1);
+            
+            if (!RenderingQueue.Any())
+                ResetState();
         }
 
-        private class MeasuredElement
+        public IEnumerable<TextLine> DivideTextItemsIntoLines(float availableWidth, float availableHeight)
         {
-            public Element Element { get; set; }
-            public FullRender? Measurement { get; set; }
+            var queue = new Queue<TextItem>(RenderingQueue);
+            var currentItemIndex = CurrentElementIndex;
+            var currentHeight = 0f;
+
+            while (queue.Any())
+            {
+                var line = GetNextLine();
+                
+                if (!line.Elements.Any())
+                    yield break;
+                
+                if (currentHeight + line.LineHeight > availableHeight)
+                    yield break;
+
+                currentHeight += line.LineHeight;
+                yield return line;
+            }
+
+            TextLine GetNextLine()
+            {
+                var currentWidth = 0f;
+
+                var currentLineElements = new List<TextLineElement>();
+            
+                while (true)
+                {
+                    if (!queue.Any())
+                        break;
+
+                    var currentElement = queue.Peek();
+                    
+                    var measurementRequest = new TextMeasurementRequest
+                    {
+                        StartIndex = currentItemIndex,
+                        AvailableWidth = availableWidth - currentWidth
+                    };
+                
+                    var measurementResponse = currentElement.MeasureText(measurementRequest);
+                
+                    if (measurementResponse == null)
+                        break;
+                    
+                    currentLineElements.Add(new TextLineElement
+                    {
+                        Element = currentElement,
+                        Measurement = measurementResponse
+                    });
+
+                    currentWidth += measurementResponse.Width;
+                    currentItemIndex = measurementResponse.EndIndex + 1;
+                    
+                    if (!measurementResponse.IsLast)
+                        break;
+
+                    currentItemIndex = 0;
+                    queue.Dequeue();
+                }
+
+                return new TextLine
+                {
+                    Elements = currentLineElements
+                };
+            }
         }
     }
 }

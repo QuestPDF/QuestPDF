@@ -42,15 +42,7 @@ namespace QuestPDF.Drawing
                     Color = SKColor.Parse(style.Color),
                     Typeface = GetTypeface(style),
                     TextSize = style.Size,
-                    TextEncoding = SKTextEncoding.Utf32,
-                    
-                    TextAlign = style.Alignment switch
-                    {
-                        HorizontalAlignment.Left => SKTextAlign.Left,
-                        HorizontalAlignment.Center => SKTextAlign.Center,
-                        HorizontalAlignment.Right => SKTextAlign.Right,
-                        _ => SKTextAlign.Left
-                    }
+                    TextEncoding = SKTextEncoding.Utf32
                 };
             }
 
