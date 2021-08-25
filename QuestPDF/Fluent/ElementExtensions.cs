@@ -46,7 +46,7 @@ namespace QuestPDF.Fluent
             element.Element(new PageNumber
             {
                 TextFormat = textFormat,
-                TextStyle = style ?? TextStyle.Default
+                //TextStyle = style ?? TextStyle.Default // TODO
             });
         }
         

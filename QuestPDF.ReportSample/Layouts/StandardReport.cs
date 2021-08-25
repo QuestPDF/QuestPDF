@@ -59,10 +59,10 @@ namespace QuestPDF.ReportSample.Layouts
                         
                     foreach (var field in Model.HeaderFields)
                     {
-                        grid.Item().Stack(row =>
-                        {   
-                            row.Item().AlignLeft().Text(field.Label, Typography.Normal.SemiBold());
-                            row.Item().Text(field.Value, Typography.Normal);
+                        grid.Item().Text(text =>
+                        {
+                            text.Span($"{field.Label}: ", Typography.Normal.SemiBold());
+                            text.Span(field.Value, Typography.Normal);
                         });
                     }
                 });

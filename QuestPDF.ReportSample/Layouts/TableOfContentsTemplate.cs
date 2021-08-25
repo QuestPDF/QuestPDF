@@ -43,7 +43,7 @@ namespace QuestPDF.ReportSample.Layouts
                 {
                     row.ConstantColumn(25).Text($"{number}.", Typography.Normal);
                     row.RelativeColumn().Text(locationName, Typography.Normal);
-                    row.ConstantColumn(150).AlignRight().PageNumber($"Page {{pdf:{locationName}}}", Typography.Normal.AlignRight());
+                    row.ConstantColumn(150).AlignRight().PageNumber($"Page {{pdf:{locationName}}}");
                 });
         }
     }

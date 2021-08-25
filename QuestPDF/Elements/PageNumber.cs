@@ -9,30 +9,31 @@ namespace QuestPDF.Elements
     internal class PageNumber : Element
     {
         public string TextFormat { get; set; } = "";
-        private Text TextElement { get; set; } = new Text();
+        //private Text TextElement { get; set; } = new Text();
 
-        public TextStyle? TextStyle
-        {
-            get => TextElement?.Style;
-            set => TextElement.Style = value;
-        }
+        // public TextStyle? TextStyle
+        // {
+        //     get => TextElement?.Style;
+        //     set => TextElement.Style = value;
+        // }
 
         internal override void HandleVisitor(Action<Element?> visit)
         {
-            TextElement?.HandleVisitor(visit);
+            //TextElement?.HandleVisitor(visit);
             base.HandleVisitor(visit);
         }
 
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            TextElement.Value = GetText();
-            return TextElement.Measure(availableSpace);
+            //TextElement.Value = GetText();
+            //return TextElement.Measure(availableSpace);
+            return new FullRender(Size.Zero);
         }
 
         internal override void Draw(Size availableSpace)
         {
-            TextElement.Value = GetText();
-            TextElement.Draw(availableSpace);
+            //TextElement.Value = GetText();
+            //TextElement.Draw(availableSpace);
         }
 
         private string GetText()

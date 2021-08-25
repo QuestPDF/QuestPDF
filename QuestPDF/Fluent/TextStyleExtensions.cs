@@ -52,31 +52,7 @@ namespace QuestPDF.Fluent
         {
             return style.Mutate(x => x.IsUnderlined = value);
         }
-        
-        #region Alignmnet
-        
-        public static TextStyle Alignment(this TextStyle style, HorizontalAlignment value)
-        {
-            return style.Mutate(x => x.Alignment = value);
-        }
-        
-        public static TextStyle AlignLeft(this TextStyle style)
-        {
-            return style.Alignment(HorizontalAlignment.Left);
-        }
-        
-        public static TextStyle AlignCenter(this TextStyle style)
-        {
-            return style.Alignment(HorizontalAlignment.Center);
-        }
-        
-        public static TextStyle AlignRight(this TextStyle style)
-        {
-            return style.Alignment(HorizontalAlignment.Right);
-        }
-        
-        #endregion
-        
+
         #region Weight
         
         public static TextStyle Weight(this TextStyle style, FontWeight weight)

@@ -155,25 +155,25 @@ namespace QuestPDF.Helpers
 
         private static readonly string[] BackgroundColors =
         {
-            Colors.Red.Lighten2,
-            Colors.Pink.Lighten2,
-            Colors.Purple.Lighten2,
-            Colors.DeepPurple.Lighten2,
-            Colors.Indigo.Lighten2,
-            Colors.Blue.Lighten2,
-            Colors.LightBlue.Lighten2,
-            Colors.Cyan.Lighten2,
-            Colors.Teal.Lighten2,
-            Colors.Green.Lighten2,
-            Colors.LightGreen.Lighten2,
-            Colors.Lime.Lighten2,
-            Colors.Yellow.Lighten2,
-            Colors.Amber.Lighten2,
-            Colors.Orange.Lighten2,
-            Colors.DeepOrange.Lighten2,
-            Colors.Brown.Lighten2,
-            Colors.Grey.Lighten2,
-            Colors.BlueGrey.Lighten2
+            Colors.Red.Lighten3,
+            Colors.Pink.Lighten3,
+            Colors.Purple.Lighten3,
+            Colors.DeepPurple.Lighten3,
+            Colors.Indigo.Lighten3,
+            Colors.Blue.Lighten3,
+            Colors.LightBlue.Lighten3,
+            Colors.Cyan.Lighten3,
+            Colors.Teal.Lighten3,
+            Colors.Green.Lighten3,
+            Colors.LightGreen.Lighten3,
+            Colors.Lime.Lighten3,
+            Colors.Yellow.Lighten3,
+            Colors.Amber.Lighten3,
+            Colors.Orange.Lighten3,
+            Colors.DeepOrange.Lighten3,
+            Colors.Brown.Lighten3,
+            Colors.Grey.Lighten3,
+            Colors.BlueGrey.Lighten3
         };
         
         public static string BackgroundColor()

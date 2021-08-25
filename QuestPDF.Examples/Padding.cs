@@ -50,7 +50,8 @@ namespace QuestPDF.Examples
                 
                         .Background("FFF")
                         .Padding(5)
-                        .Text("Sample text", TextStyle.Default.FontType("Segoe UI emoji").Alignment(HorizontalAlignment.Center));
+                        .AlignCenter()
+                        .Text("Sample text", TextStyle.Default.FontType("Segoe UI emoji"));
                 });
         }
         
