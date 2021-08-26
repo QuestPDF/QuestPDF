@@ -17,9 +17,12 @@ namespace QuestPDF.Infrastructure
 
         public static TextStyle Default => new TextStyle();
 
+        private string? KeyCache { get; set; }
+        
         public override string ToString()
         {
-            return $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{FontWeight}|{IsItalic}|{IsStroked}|{IsUnderlined}";
+            KeyCache ??= $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{FontWeight}|{IsItalic}|{IsStroked}|{IsUnderlined}";
+            return KeyCache;
         }
 
         internal TextStyle Clone() => (TextStyle)MemberwiseClone();

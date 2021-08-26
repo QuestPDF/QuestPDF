@@ -31,4 +31,62 @@ Max: 19876,00
 Avg: 18622,44
 ```
 
+## Text Style Key Caching
 
+Attempts:
+
+```
+Attempt 0: 17140,00
+Attempt 1: 16146,00
+Attempt 2: 16345,00
+Attempt 3: 16428,00
+Attempt 4: 17203,00
+Attempt 5: 16890,00
+Attempt 6: 17450,00
+Attempt 7: 16455,00
+Attempt 8: 16553,00
+Attempt 9: 17281,00
+Attempt 10: 16688,00
+Attempt 11: 16459,00
+Attempt 12: 17245,00
+Attempt 13: 17346,00
+Attempt 14: 16514,00
+Attempt 15: 16427,00
+```
+
+Results:
+
+```
+Min: 16146,00
+Max: 17450,00
+Avg: 16785,62
+```
+
+## Font Metrics Caching
+
+```
+Attempt 0: 13906,00
+Attempt 1: 13510,00
+Attempt 2: 13570,00
+Attempt 3: 13442,00
+Attempt 4: 13580,00
+Attempt 5: 13421,00
+Attempt 6: 13470,00
+Attempt 7: 13456,00
+Attempt 8: 13672,00
+Attempt 9: 14489,00
+Attempt 10: 13543,00
+Attempt 11: 13685,00
+Attempt 12: 13469,00
+Attempt 13: 13586,00
+Attempt 14: 13423,00
+Attempt 15: 13487,00
+```
+
+Results:
+
+```
+Min: 13421,00
+Max: 14489,00
+Avg: 13606,81
+```

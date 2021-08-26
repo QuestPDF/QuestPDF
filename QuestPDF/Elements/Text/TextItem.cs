@@ -60,6 +60,7 @@ namespace QuestPDF.Elements.Text
         public TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
             var paint = Style.ToPaint();
+            var fontMetrics = Style.ToFontMetrics();
             
             // start breaking text from requested position
             var text = Text.Substring(request.StartIndex);
@@ -88,8 +89,8 @@ namespace QuestPDF.Elements.Text
             {
                 Width = width,
                 
-                Ascent = paint.FontMetrics.Ascent,
-                Descent = paint.FontMetrics.Descent,
+                Ascent = fontMetrics.Ascent,
+                Descent = fontMetrics.Descent,
      
                 LineHeight = Style.LineHeight,
                 
@@ -101,7 +102,7 @@ namespace QuestPDF.Elements.Text
         
         public void Draw(TextDrawingRequest request)
         {
-            var fontMetrics = Style.ToPaint().FontMetrics;
+            var fontMetrics = Style.ToFontMetrics();
 
             var text = Text.Substring(request.StartIndex, request.EndIndex - request.StartIndex);
             
