@@ -7,7 +7,8 @@ namespace QuestPDF.Drawing
 {
     internal static class CanvasCache
     {
-        private static ConcurrentDictionary<string, SKPaint> Paints = new ConcurrentDictionary<string, SKPaint>();
+        internal static ConcurrentDictionary<string, SKPaint> Paints = new ConcurrentDictionary<string, SKPaint>();
+        private static ConcurrentDictionary<string, SKFontMetrics> FontMetrics = new ConcurrentDictionary<string, SKFontMetrics>();
         private static ConcurrentDictionary<string, SKPaint> ColorPaint = new ConcurrentDictionary<string, SKPaint>();
 
         internal static SKPaint ColorToPaint(this string color)
@@ -41,6 +42,11 @@ namespace QuestPDF.Drawing
             }
         }
 
+        internal static SKFontMetrics ToFontMetrics(this TextStyle style)
+        {
+            return FontMetrics.GetOrAdd(style.ToString(), key => style.ToPaint().FontMetrics);
+        }
+        
         internal static TextMeasurement BreakText(this TextStyle style, string text, float availableWidth)
         {
             var index = (int)style.ToPaint().BreakText(text, availableWidth, out var width);

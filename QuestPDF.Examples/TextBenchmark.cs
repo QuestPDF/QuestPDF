@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using QuestPDF.Drawing;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -22,11 +23,15 @@ namespace QuestPDF.Examples
             
             var chapters = GetChapters().ToList();
 
-            var results = PerformTest(16).ToList();
+            var results = PerformTest(1).ToList();
+            
+            var a = CanvasCache.Paints;
             
             Console.WriteLine($"Min: {results.Min():F}");
             Console.WriteLine($"Max: {results.Max():F}");
             Console.WriteLine($"Avg: {results.Average():F}");
+
+            
 
             IEnumerable<(string title, string content)> GetChapters()
             {
