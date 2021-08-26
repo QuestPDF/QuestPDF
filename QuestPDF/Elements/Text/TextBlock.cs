@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 using QuestPDF.Drawing.SpacePlan;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace QuestPDF.Elements
+namespace QuestPDF.Elements.Text
 {
     internal class TextLineElement
     {
-        public TextItem Element { get; set; }
+        public ITextElement Element { get; set; }
         public TextMeasurementResult Measurement { get; set; }
     }
 
@@ -20,7 +17,7 @@ namespace QuestPDF.Elements
         public ICollection<TextLineElement> Elements { get; set; }
 
         public float TextHeight => Elements.Max(x => x.Measurement.Height);
-        public float LineHeight => Elements.Max(x => x.Element.Style.LineHeight * x.Measurement.Height);
+        public float LineHeight => Elements.Max(x => x.Measurement.LineHeight * x.Measurement.Height);
         
         public float Ascent => Elements.Min(x => x.Measurement.Ascent) - (LineHeight - TextHeight) / 2;
         public float Descent => Elements.Max(x => x.Measurement.Descent) + (LineHeight - TextHeight) / 2;
@@ -31,23 +28,17 @@ namespace QuestPDF.Elements
     internal class TextBlock : Element, IStateResettable
     {
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
-        public List<TextItem> Children { get; set; } = new List<TextItem>();
+        public List<ITextElement> Children { get; set; } = new List<ITextElement>();
 
-        public Queue<TextItem> RenderingQueue { get; set; }
+        public Queue<ITextElement> RenderingQueue { get; set; }
         public int CurrentElementIndex { get; set; }
 
         public void ResetState()
         {
-            RenderingQueue = new Queue<TextItem>(Children);
+            RenderingQueue = new Queue<ITextElement>(Children);
             CurrentElementIndex = 0;
         }
-        
-        internal override void HandleVisitor(Action<Element?> visit)
-        {
-            Children.ForEach(x => x?.HandleVisitor(visit));
-            base.HandleVisitor(visit);
-        }
-        
+
         internal override ISpacePlan Measure(Size availableSpace)
         {
             if (!RenderingQueue.Any())
@@ -103,6 +94,9 @@ namespace QuestPDF.Elements
                 {
                     var textDrawingRequest = new TextDrawingRequest
                     {
+                        Canvas = Canvas,
+                        PageContext = PageContext,
+                        
                         StartIndex = item.Measurement.StartIndex,
                         EndIndex = item.Measurement.EndIndex,
                         
@@ -144,7 +138,7 @@ namespace QuestPDF.Elements
 
         public IEnumerable<TextLine> DivideTextItemsIntoLines(float availableWidth, float availableHeight)
         {
-            var queue = new Queue<TextItem>(RenderingQueue);
+            var queue = new Queue<ITextElement>(RenderingQueue);
             var currentItemIndex = CurrentElementIndex;
             var currentHeight = 0f;
 
@@ -177,11 +171,14 @@ namespace QuestPDF.Elements
                     
                     var measurementRequest = new TextMeasurementRequest
                     {
+                        Canvas = Canvas,
+                        PageContext = PageContext,
+                        
                         StartIndex = currentItemIndex,
                         AvailableWidth = availableWidth - currentWidth
                     };
                 
-                    var measurementResponse = currentElement.MeasureText(measurementRequest);
+                    var measurementResponse = currentElement.Measure(measurementRequest);
                 
                     if (measurementResponse == null)
                         break;
@@ -193,7 +190,7 @@ namespace QuestPDF.Elements
                     });
 
                     currentWidth += measurementResponse.Width;
-                    currentItemIndex = measurementResponse.EndIndex + 1;
+                    currentItemIndex = measurementResponse.EndIndex;
                     
                     if (!measurementResponse.IsLast)
                         break;

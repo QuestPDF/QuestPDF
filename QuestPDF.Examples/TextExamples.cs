@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
@@ -30,9 +32,11 @@ namespace QuestPDF.Examples
                             text.Span("Then something bigger. ", TextStyle.Default.Size(28).Color(Colors.DeepOrange.Darken2).BackgroundColor(Colors.Yellow.Lighten3).Underlined());
                             text.Span("And tiny teeny-tiny. ", TextStyle.Default.Size(6));
                             text.Span("Stroked text also works fine. ", TextStyle.Default.Size(14).Stroked().BackgroundColor(Colors.Grey.Lighten4));
+                            //text.NewLine();
                             text.Span("Is it time for lorem  ipsum? ", TextStyle.Default.Size(12).Underlined().BackgroundColor(Colors.Grey.Lighten3));
                             text.Span(Placeholders.LoremIpsum(), TextStyle.Default.Size(12));
                             
+                            //text.NewLine();
                             text.Span("And now some colors: ", TextStyle.Default.Size(16).Color(Colors.Green.Medium));
                             
                             foreach (var i in Enumerable.Range(1, 100))

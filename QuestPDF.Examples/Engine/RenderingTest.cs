@@ -19,6 +19,7 @@ namespace QuestPDF.Examples.Engine
     {
         private string FileNamePrefix = "test";
         private Size Size { get; set; }
+        private bool ShowResult { get; set; }
         private RenderingTestResult ResultType { get; set; } = RenderingTestResult.Images;
         
         private RenderingTest()
@@ -59,26 +60,37 @@ namespace QuestPDF.Examples.Engine
             ResultType = RenderingTestResult.Images;
             return this;
         }
+
+        public RenderingTest ShowResults()
+        {
+            ShowResult = true;
+            return this;
+        }
         
         public void Render(Action<IContainer> content)
         {
             var container = new Container();
             content(container);
-            
-            var document = new SimpleDocument(container, Size);
+
+            var maxPages = ResultType == RenderingTestResult.Pdf ? 1000 : 10;
+            var document = new SimpleDocument(container, Size, maxPages);
 
             if (ResultType == RenderingTestResult.Images)
             {
                 Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
                 document.GenerateImages(fileNameSchema);
-                Process.Start("explorer", fileNameSchema(0));
+                
+                if (ShowResult)
+                    Process.Start("explorer", fileNameSchema(0));
             }
 
             if (ResultType == RenderingTestResult.Pdf)
             {
                 var fileName = $"{FileNamePrefix}.pdf";
                 document.GeneratePdf(fileName);
-                Process.Start("explorer", fileName);
+                
+                if (ShowResult)
+                    Process.Start("explorer", fileName);
             }
         }
     }
