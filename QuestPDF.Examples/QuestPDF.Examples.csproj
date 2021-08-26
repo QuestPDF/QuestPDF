@@ -17,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="LibreBarcode39-Regular.ttf">
+      <None Update="quo-vadis.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

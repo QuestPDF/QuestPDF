@@ -12,11 +12,13 @@ namespace QuestPDF.Examples.Engine
         
         private IContainer Container { get; }
         private Size Size { get; }
+        private int MaxPages { get; }
 
-        public SimpleDocument(IContainer container, Size size)
+        public SimpleDocument(IContainer container, Size size, int maxPages)
         {
             Container = container;
             Size = size;
+            MaxPages = maxPages;
         }
         
         public DocumentMetadata GetMetadata()
@@ -24,7 +26,7 @@ namespace QuestPDF.Examples.Engine
             return new DocumentMetadata()
             {
                 RasterDpi = PageSizes.PointsPerInch * ImageScalingFactor,
-                DocumentLayoutExceptionThreshold = 10
+                DocumentLayoutExceptionThreshold = MaxPages
             };
         }
         
