@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Infrastructure;
@@ -57,8 +58,16 @@ namespace QuestPDF.Elements.Text
         public string Text { get; set; }
         public TextStyle Style { get; set; } = new TextStyle();
 
+        private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache =
+            new Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?>();
+
         public TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
+            var cacheKey = (request.StartIndex, request.AvailableWidth);
+            
+            if (MeasureCache.ContainsKey(cacheKey))
+                return MeasureCache[cacheKey];
+            
             var paint = Style.ToPaint();
             var fontMetrics = Style.ToFontMetrics();
             
@@ -85,7 +94,7 @@ namespace QuestPDF.Elements.Text
             // measure final text
             var width = paint.MeasureText(text);
             
-            return new TextMeasurementResult
+            var result = new TextMeasurementResult
             {
                 Width = width,
                 
@@ -98,6 +107,9 @@ namespace QuestPDF.Elements.Text
                 EndIndex = request.StartIndex + breakingIndex,
                 TotalIndex = Text.Length
             };
+
+            MeasureCache[cacheKey] = result;
+            return result;
         }
         
         public void Draw(TextDrawingRequest request)
