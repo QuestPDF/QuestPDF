@@ -38,6 +38,14 @@ namespace QuestPDF.Fluent
         {
             Spacing = value;
         }
+
+        private void AddItemToLastTextBlock(ITextElement element)
+        {
+            if (!TextBlocks.Any())
+                TextBlocks.Add(new TextBlock());
+            
+            TextBlocks.Last().Children.Add(element);
+        }
         
         public void Span(string text, TextStyle? style = null)
         {
@@ -55,10 +63,7 @@ namespace QuestPDF.Fluent
                 })
                 .ToList();
 
-            if (!TextBlocks.Any())
-                TextBlocks.Add(new TextBlock());
-            
-            TextBlocks.First().Children.Add(items.First());
+            AddItemToLastTextBlock(items.First());
 
             items
                 .Skip(1)
@@ -79,10 +84,7 @@ namespace QuestPDF.Fluent
         {
             style ??= DefaultStyle;
             
-            if (!TextBlocks.Any())
-                TextBlocks.Add(new TextBlock());
-            
-            TextBlocks.First().Children.Add(new PageNumberTextItem()
+            AddItemToLastTextBlock(new PageNumberTextItem()
             {
                 Style = style,
                 SlotName = slotName
@@ -108,10 +110,7 @@ namespace QuestPDF.Fluent
         {
             style ??= DefaultStyle;
             
-            if (!TextBlocks.Any())
-                TextBlocks.Add(new TextBlock());
-            
-            TextBlocks.First().Children.Add(new InternalLinkTextItem
+            AddItemToLastTextBlock(new InternalLinkTextItem
             {
                 Style = style,
                 Text = text,
@@ -123,15 +122,24 @@ namespace QuestPDF.Fluent
         {
             style ??= DefaultStyle;
             
-            if (!TextBlocks.Any())
-                TextBlocks.Add(new TextBlock());
-            
-            TextBlocks.First().Children.Add(new ExternalLinkTextItem
+            AddItemToLastTextBlock(new ExternalLinkTextItem
             {
                 Style = style,
                 Text = text,
                 Url = url
             });
+        }
+        
+        public IContainer Element()
+        {
+            var container = new Container();
+                
+            AddItemToLastTextBlock(new ElementTextItem
+            {
+                Element = container
+            });
+            
+            return container.Box();
         }
         
         internal void Compose(IContainer container)
