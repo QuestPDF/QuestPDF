@@ -1,6 +1,4 @@
 using System;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
 {

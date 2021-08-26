@@ -1,6 +1,5 @@
 using System;
 using QuestPDF.Drawing.SpacePlan;
-using QuestPDF.Elements;
 
 namespace QuestPDF.Infrastructure
 {

@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 namespace QuestPDF.Examples
 {

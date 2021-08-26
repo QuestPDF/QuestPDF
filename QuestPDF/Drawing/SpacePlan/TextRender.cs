@@ -1,6 +1,4 @@
-﻿using QuestPDF.Infrastructure;
-
-namespace QuestPDF.Drawing.SpacePlan
+﻿namespace QuestPDF.Drawing.SpacePlan
 {
     internal class TextRender : FullRender
     {
