@@ -165,4 +165,64 @@ namespace QuestPDF.Elements.Text
             };
         }
     }
+
+    internal class InternalLinkTextItem : ITextElement
+    {
+        public TextStyle Style { get; set; } = new TextStyle();
+        public string Text { get; set; }
+        public string LocationName { get; set; }
+        
+        public TextMeasurementResult? Measure(TextMeasurementRequest request)
+        {
+            return GetItem().MeasureWithoutCache(request);
+        }
+
+        public void Draw(TextDrawingRequest request)
+        {
+            request.Canvas.Translate(new Position(0, request.TotalAscent));
+            request.Canvas.DrawLocationLink(LocationName, new Size(request.TextSize.Width, request.TextSize.Height));
+            request.Canvas.Translate(new Position(0, -request.TotalAscent));
+            
+            GetItem().Draw(request);
+        }
+
+        private TextItem GetItem()
+        {
+            return new TextItem
+            {
+                Style = Style,
+                Text = Text
+            };
+        }
+    }
+    
+    internal class ExternalLinkTextItem : ITextElement
+    {
+        public TextStyle Style { get; set; } = new TextStyle();
+        public string Text { get; set; }
+        public string Url { get; set; }
+        
+        public TextMeasurementResult? Measure(TextMeasurementRequest request)
+        {
+            return GetItem().MeasureWithoutCache(request);
+        }
+
+        public void Draw(TextDrawingRequest request)
+        {
+            request.Canvas.Translate(new Position(0, request.TotalAscent));
+            request.Canvas.DrawExternalLink(Url, new Size(request.TextSize.Width, request.TextSize.Height));
+            request.Canvas.Translate(new Position(0, -request.TotalAscent));
+            
+            GetItem().Draw(request);
+        }
+
+        private TextItem GetItem()
+        {
+            return new TextItem
+            {
+                Style = Style,
+                Text = Text
+            };
+        }
+    }
 }

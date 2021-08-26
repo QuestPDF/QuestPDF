@@ -127,6 +127,8 @@ namespace QuestPDF.Examples
                                 stack.Item().PageBreak();
 
                                 Chapters(stack);
+
+                                stack.Item().Element(Summary);
                             });
 
                         decoration.Footer().Element(Footer);
@@ -141,8 +143,8 @@ namespace QuestPDF.Examples
                     .AlignBottom()
                     .Stack(stack =>
                     {
-                        stack.Item().Text("Quo Vadis", TextStyle.Default.Size(72).Bold().Color(Colors.Blue.Darken2));
-                        stack.Item().Text("Henryk Sienkiewicz", TextStyle.Default.Size(24).Color(Colors.Grey.Darken2));
+                        stack.Item().Debug().Text("Quo Vadis", TextStyle.Default.Size(72).Bold().Color(Colors.Blue.Darken2));
+                        stack.Item().Debug().Text("Henryk Sienkiewicz", TextStyle.Default.Size(24).Color(Colors.Grey.Darken2));
                     });
             }
 
@@ -150,8 +152,7 @@ namespace QuestPDF.Examples
             {
                 container.Stack(stack =>
                 {
-                    stack.Item().Text("Table of contents", subtitleStyle);
-                    stack.Item().PaddingTop(10).PaddingBottom(50).BorderBottom(1).BorderColor(Colors.Grey.Lighten2).ExtendHorizontal();
+                    SectionTitle(stack, "Table of contents");
                     
                     foreach (var chapter in chapters)
                     {
@@ -176,8 +177,7 @@ namespace QuestPDF.Examples
             {
                 container.Stack(stack =>
                 {
-                    stack.Item().Location(title).Text(title, subtitleStyle);
-                    stack.Item().PaddingTop(10).PaddingBottom(50).BorderBottom(1).BorderColor(Colors.Grey.Lighten2).ExtendHorizontal();
+                    SectionTitle(stack, title);
   
                     stack.Item().Text(text =>
                     {
@@ -189,6 +189,29 @@ namespace QuestPDF.Examples
                 });
             }
 
+            void Summary(IContainer container)
+            {
+                container.Stack(stack =>
+                {
+                    SectionTitle(stack, "Acknowledgements");
+                    
+                    stack.Item().Text(text =>
+                    {
+                        text.DefaultTextStyle(normalStyle);
+                        
+                        text.Span("This document was generated based on the book available on the ");
+                        text.ExternalLocation("wolnelektury.pl", "https://wolnelektury.pl/", normalStyle.Color(Colors.Blue.Medium).Underlined());
+                        text.Span(" website. Thank you!");
+                    });
+                });
+            }
+
+            void SectionTitle(StackDescriptor stack, string text)
+            {
+                stack.Item().Location(text).Text(text, subtitleStyle);
+                stack.Item().PaddingTop(10).PaddingBottom(50).BorderBottom(1).BorderColor(Colors.Grey.Lighten2).ExtendHorizontal();
+            }
+            
             void Footer(IContainer container)
             {
                 container
