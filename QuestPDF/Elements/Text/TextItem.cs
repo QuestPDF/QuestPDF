@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using QuestPDF.Drawing;
-using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Infrastructure;
 using Size = QuestPDF.Infrastructure.Size;
 
@@ -28,10 +27,8 @@ namespace QuestPDF.Elements.Text
         
         public int StartIndex { get; set; }
         public int EndIndex { get; set; }
-        
         public int TotalIndex { get; set; }
 
-        public bool HasContent => StartIndex < EndIndex;
         public bool IsLast => EndIndex == TotalIndex;
     }
 
@@ -65,9 +62,14 @@ namespace QuestPDF.Elements.Text
         {
             var cacheKey = (request.StartIndex, request.AvailableWidth);
             
-            if (MeasureCache.ContainsKey(cacheKey))
-                return MeasureCache[cacheKey];
+            if (!MeasureCache.ContainsKey(cacheKey))
+                MeasureCache[cacheKey] = MeasureWithoutCache(request);
             
+            return MeasureCache[cacheKey];
+        }
+        
+        internal TextMeasurementResult? MeasureWithoutCache(TextMeasurementRequest request)
+        {
             var paint = Style.ToPaint();
             var fontMetrics = Style.ToFontMetrics();
             
@@ -94,7 +96,7 @@ namespace QuestPDF.Elements.Text
             // measure final text
             var width = paint.MeasureText(text);
             
-            var result = new TextMeasurementResult
+            return new TextMeasurementResult
             {
                 Width = width,
                 
@@ -107,9 +109,6 @@ namespace QuestPDF.Elements.Text
                 EndIndex = request.StartIndex + breakingIndex,
                 TotalIndex = Text.Length
             };
-
-            MeasureCache[cacheKey] = result;
-            return result;
         }
         
         public void Draw(TextDrawingRequest request)
@@ -143,7 +142,7 @@ namespace QuestPDF.Elements.Text
         
         public TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
-            return GetItem(request.PageContext).Measure(request);
+            return GetItem(request.PageContext).MeasureWithoutCache(request);
         }
 
         public void Draw(TextDrawingRequest request)

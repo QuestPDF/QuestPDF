@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing.SpacePlan;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements

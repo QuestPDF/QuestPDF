@@ -1,5 +1,4 @@
-﻿using System;
-using QuestPDF.Helpers;
+﻿using QuestPDF.Helpers;
 
 namespace QuestPDF.Infrastructure
 {
