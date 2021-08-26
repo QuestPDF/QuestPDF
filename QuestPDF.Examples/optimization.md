@@ -90,3 +90,32 @@ Min: 13421,00
 Max: 14489,00
 Avg: 13606,81
 ```
+
+## Caching Text Measurement Results
+
+```
+Attempt 0: 2507,00
+Attempt 1: 2022,00
+Attempt 2: 2033,00
+Attempt 3: 2034,00
+Attempt 4: 2061,00
+Attempt 5: 2058,00
+Attempt 6: 2056,00
+Attempt 7: 2035,00
+Attempt 8: 2042,00
+Attempt 9: 2348,00
+Attempt 10: 2650,00
+Attempt 11: 2503,00
+Attempt 12: 2423,00
+Attempt 13: 2084,00
+Attempt 14: 2064,00
+Attempt 15: 2044,00
+```
+
+Results:
+
+```
+Min: 2022,00
+Max: 2650,00
+Avg: 2185,25
+```

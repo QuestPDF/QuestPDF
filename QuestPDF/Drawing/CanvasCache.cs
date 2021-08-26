@@ -46,16 +46,5 @@ namespace QuestPDF.Drawing
         {
             return FontMetrics.GetOrAdd(style.ToString(), key => style.ToPaint().FontMetrics);
         }
-        
-        internal static TextMeasurement BreakText(this TextStyle style, string text, float availableWidth)
-        {
-            var index = (int)style.ToPaint().BreakText(text, availableWidth, out var width);
-            
-            return new TextMeasurement()
-            {
-                LineIndex = index,
-                FragmentWidth = width
-            };
-        }
     }
 }

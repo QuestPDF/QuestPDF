@@ -22,16 +22,12 @@ namespace QuestPDF.Examples
             var normalStyle = TextStyle.Default.Size(14);
             
             var chapters = GetChapters().ToList();
-
-            var results = PerformTest(1).ToList();
-            
-            var a = CanvasCache.Paints;
-            
+  
+            var results = PerformTest(16).ToList();
+ 
             Console.WriteLine($"Min: {results.Min():F}");
             Console.WriteLine($"Max: {results.Max():F}");
             Console.WriteLine($"Avg: {results.Average():F}");
-
-            
 
             IEnumerable<(string title, string content)> GetChapters()
             {
