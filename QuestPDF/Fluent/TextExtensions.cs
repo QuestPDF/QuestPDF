@@ -10,9 +10,15 @@ namespace QuestPDF.Fluent
     public class TextDescriptor
     {
         private ICollection<TextBlock> TextBlocks { get; } = new List<TextBlock>();
+        private TextStyle DefaultStyle { get; set; } = TextStyle.Default;
         private HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         private float Spacing { get; set; } = 0f;
 
+        public void DefaultTextStyle(TextStyle style)
+        {
+            DefaultStyle = style;
+        }
+        
         public void AlignLeft()
         {
             Alignment = HorizontalAlignment.Left;
@@ -35,7 +41,7 @@ namespace QuestPDF.Fluent
         
         public void Span(string text, TextStyle? style = null)
         {
-            style ??= TextStyle.Default;
+            style ??= DefaultStyle;
             
             if (string.IsNullOrWhiteSpace(text))
                 return;
@@ -71,7 +77,7 @@ namespace QuestPDF.Fluent
 
         private void PageNumber(string slotName, TextStyle? style = null)
         {
-            style ??= TextStyle.Default;
+            style ??= DefaultStyle;
             
             if (!TextBlocks.Any())
                 TextBlocks.Add(new TextBlock());
@@ -98,8 +104,40 @@ namespace QuestPDF.Fluent
             PageNumber(locationName, style);
         }
         
+        public void InternalLocation(string text, string locationName, TextStyle? style = null)
+        {
+            style ??= DefaultStyle;
+            
+            if (!TextBlocks.Any())
+                TextBlocks.Add(new TextBlock());
+            
+            TextBlocks.First().Children.Add(new InternalLinkTextItem
+            {
+                Style = style,
+                Text = text,
+                LocationName = locationName
+            });
+        }
+        
+        public void ExternalLocation(string text, string url, TextStyle? style = null)
+        {
+            style ??= DefaultStyle;
+            
+            if (!TextBlocks.Any())
+                TextBlocks.Add(new TextBlock());
+            
+            TextBlocks.First().Children.Add(new ExternalLinkTextItem
+            {
+                Style = style,
+                Text = text,
+                Url = url
+            });
+        }
+        
         internal void Compose(IContainer container)
         {
+            TextBlocks.ToList().ForEach(x => x.Alignment = Alignment);
+            
             container.Stack(stack =>
             {
                 stack.Spacing(Spacing);

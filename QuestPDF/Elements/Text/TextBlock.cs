@@ -148,7 +148,7 @@ namespace QuestPDF.Elements.Text
                 if (!line.Elements.Any())
                     yield break;
                 
-                if (currentHeight + line.LineHeight > availableHeight)
+                if (currentHeight + line.LineHeight > availableHeight + Size.Epsilon)
                     yield break;
 
                 currentHeight += line.LineHeight;
