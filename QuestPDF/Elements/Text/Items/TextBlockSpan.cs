@@ -6,7 +6,7 @@ using Size = QuestPDF.Infrastructure.Size;
 
 namespace QuestPDF.Elements.Text.Items
 {
-    internal class TextItem : ITextBlockElement
+    internal class TextBlockSpan : ITextBlockItem
     {
         public string Text { get; set; }
         public TextStyle Style { get; set; } = new TextStyle();
@@ -39,12 +39,17 @@ namespace QuestPDF.Elements.Text.Items
             // break text only on spaces
             if (breakingIndex < text.Length)
             {
-                breakingIndex = text.Substring(0, breakingIndex).LastIndexOf(" ");
+                var lastSpaceIndex = text.Substring(0, breakingIndex).LastIndexOf(" ");
 
-                if (breakingIndex <= 0)
-                    return null;
-
-                breakingIndex += 1;
+                if (lastSpaceIndex <= 0)
+                {
+                    if (!request.IsFirstLineElement)
+                        return null;
+                }
+                else
+                {
+                    breakingIndex = lastSpaceIndex + 1;
+                }
             }
 
             text = text.Substring(0, breakingIndex);

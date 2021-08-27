@@ -31,7 +31,9 @@ namespace QuestPDF.Examples
                             text.Span("Then something bigger. ", TextStyle.Default.Size(28).Color(Colors.DeepOrange.Darken2).BackgroundColor(Colors.Yellow.Lighten3).Underlined());
                             text.Span("And tiny teeny-tiny. ", TextStyle.Default.Size(6));
                             text.Span("Stroked text also works fine. ", TextStyle.Default.Size(14).Stroked().BackgroundColor(Colors.Grey.Lighten4));
-                                
+                               
+                            text.Span("0123456789-0123456789-0123456789-0123456789-0123456789-0123456789-0123456789", TextStyle.Default.Size(18));
+                            
                             text.NewLine();
                             text.Span("Is it time for lorem  ipsum? ", TextStyle.Default.Size(12).Underlined().BackgroundColor(Colors.Grey.Lighten3));
                             text.Span(Placeholders.LoremIpsum(), TextStyle.Default.Size(12));

@@ -128,7 +128,7 @@ namespace QuestPDF.Examples
 
                                 Chapters(stack);
 
-                                stack.Item().Element(Summary);
+                                stack.Item().Element(Acknowledgements);
                             });
 
                         decoration.Footer().Element(Footer);
@@ -152,7 +152,7 @@ namespace QuestPDF.Examples
             {
                 container.Stack(stack =>
                 {
-                    SectionTitle(stack, "Table of contents");
+                    SectionTitle(stack, "Spis treści");
                     
                     foreach (var chapter in chapters)
                     {
@@ -189,19 +189,19 @@ namespace QuestPDF.Examples
                 });
             }
 
-            void Summary(IContainer container)
+            void Acknowledgements(IContainer container)
             {
                 container.Stack(stack =>
                 {
-                    SectionTitle(stack, "Acknowledgements");
+                    SectionTitle(stack, "Podziękowania");
                     
                     stack.Item().Text(text =>
                     {
                         text.DefaultTextStyle(normalStyle);
                         
-                        text.Span("This document was generated based on the book available on the ");
+                        text.Span("Ten dokument został wygenerowany na podstawie książki w formacie TXT opublikowanej w serwisie ");
                         text.ExternalLocation("wolnelektury.pl", "https://wolnelektury.pl/", normalStyle.Color(Colors.Blue.Medium).Underlined());
-                        text.Span(" website. Thank you!");
+                        text.Span(". Dziękuję za wspieranie polskiego czytelnictwa!");
                     });
                 });
             }

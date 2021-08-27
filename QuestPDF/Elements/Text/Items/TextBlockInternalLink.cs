@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
 {
-    internal class TextBlockInternalLink : ITextBlockElement
+    internal class TextBlockInternalLink : ITextBlockItem
     {
         public TextStyle Style { get; set; } = new TextStyle();
         public string Text { get; set; }
@@ -23,9 +23,9 @@ namespace QuestPDF.Elements.Text.Items
             GetItem().Draw(request);
         }
 
-        private TextItem GetItem()
+        private TextBlockSpan GetItem()
         {
-            return new TextItem
+            return new TextBlockSpan
             {
                 Style = Style,
                 Text = Text
