@@ -51,12 +51,9 @@ namespace QuestPDF.Fluent
         public void Span(string text, TextStyle? style = null)
         {
             style ??= DefaultStyle;
-            
-            if (string.IsNullOrWhiteSpace(text))
-                return;
-            
+ 
             var items = text
-                .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
+                .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
                 .Select(x => new TextBlockSpan
                 {
                     Text = x,
