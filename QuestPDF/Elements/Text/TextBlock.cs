@@ -1,40 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Elements.Text.Calculation;
+using QuestPDF.Elements.Text.Items;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text
 {
-    internal class TextLineElement
-    {
-        public ITextElement Element { get; set; }
-        public TextMeasurementResult Measurement { get; set; }
-    }
-
-    internal class TextLine
-    {
-        public ICollection<TextLineElement> Elements { get; set; }
-
-        public float TextHeight => Elements.Max(x => x.Measurement.Height);
-        public float LineHeight => Elements.Max(x => x.Measurement.LineHeight * x.Measurement.Height);
-        
-        public float Ascent => Elements.Min(x => x.Measurement.Ascent) - (LineHeight - TextHeight) / 2;
-        public float Descent => Elements.Max(x => x.Measurement.Descent) + (LineHeight - TextHeight) / 2;
-
-        public float Width => Elements.Sum(x => x.Measurement.Width);
-    }
-    
     internal class TextBlock : Element, IStateResettable
     {
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
-        public List<ITextElement> Children { get; set; } = new List<ITextElement>();
+        public List<ITextBlockElement> Children { get; set; } = new List<ITextBlockElement>();
 
-        public Queue<ITextElement> RenderingQueue { get; set; }
+        public Queue<ITextBlockElement> RenderingQueue { get; set; }
         public int CurrentElementIndex { get; set; }
 
         public void ResetState()
         {
-            RenderingQueue = new Queue<ITextElement>(Children);
+            RenderingQueue = new Queue<ITextBlockElement>(Children);
             CurrentElementIndex = 0;
         }
 
@@ -137,7 +120,7 @@ namespace QuestPDF.Elements.Text
 
         public IEnumerable<TextLine> DivideTextItemsIntoLines(float availableWidth, float availableHeight)
         {
-            var queue = new Queue<ITextElement>(RenderingQueue);
+            var queue = new Queue<ITextBlockElement>(RenderingQueue);
             var currentItemIndex = CurrentElementIndex;
             var currentHeight = 0f;
 

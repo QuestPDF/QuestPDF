@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
+using QuestPDF.Elements.Text.Items;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -39,7 +40,7 @@ namespace QuestPDF.Fluent
             Spacing = value;
         }
 
-        private void AddItemToLastTextBlock(ITextElement element)
+        private void AddItemToLastTextBlock(ITextBlockElement element)
         {
             if (!TextBlocks.Any())
                 TextBlocks.Add(new TextBlock());
@@ -69,7 +70,7 @@ namespace QuestPDF.Fluent
                 .Skip(1)
                 .Select(x => new TextBlock
                 {   
-                    Children = new List<ITextElement> { x }
+                    Children = new List<ITextBlockElement> { x }
                 })
                 .ToList()
                 .ForEach(TextBlocks.Add);
@@ -84,7 +85,7 @@ namespace QuestPDF.Fluent
         {
             style ??= DefaultStyle;
             
-            AddItemToLastTextBlock(new PageNumberTextItem()
+            AddItemToLastTextBlock(new TextBlockPageNumber()
             {
                 Style = style,
                 SlotName = slotName
@@ -110,7 +111,7 @@ namespace QuestPDF.Fluent
         {
             style ??= DefaultStyle;
             
-            AddItemToLastTextBlock(new InternalLinkTextItem
+            AddItemToLastTextBlock(new TextBlockInternalLink
             {
                 Style = style,
                 Text = text,
@@ -122,7 +123,7 @@ namespace QuestPDF.Fluent
         {
             style ??= DefaultStyle;
             
-            AddItemToLastTextBlock(new ExternalLinkTextItem
+            AddItemToLastTextBlock(new TextBlockExternalLink
             {
                 Style = style,
                 Text = text,
@@ -134,7 +135,7 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
                 
-            AddItemToLastTextBlock(new ElementTextItem
+            AddItemToLastTextBlock(new TextBlockElement
             {
                 Element = container
             });
