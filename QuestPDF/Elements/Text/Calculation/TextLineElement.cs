@@ -4,7 +4,7 @@ namespace QuestPDF.Elements.Text.Items
 {
     internal class TextLineElement
     {
-        public ITextBlockElement Element { get; set; }
+        public ITextBlockItem Item { get; set; }
         public TextMeasurementResult Measurement { get; set; }
     }
 }

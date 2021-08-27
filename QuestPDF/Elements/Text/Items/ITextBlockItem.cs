@@ -2,7 +2,7 @@
 
 namespace QuestPDF.Elements.Text.Items
 {
-    internal interface ITextBlockElement
+    internal interface ITextBlockItem
     {
         TextMeasurementResult? Measure(TextMeasurementRequest request);
         void Draw(TextDrawingRequest request);

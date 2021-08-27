@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
 {
-    internal class TextBlockPageNumber : ITextBlockElement
+    internal class TextBlockPageNumber : ITextBlockItem
     {
         public TextStyle Style { get; set; } = new TextStyle();
         public string SlotName { get; set; }
@@ -18,7 +18,7 @@ namespace QuestPDF.Elements.Text.Items
             GetItem(request.PageContext).Draw(request);
         }
 
-        private TextItem GetItem(IPageContext context)
+        private TextBlockSpan GetItem(IPageContext context)
         {
             var pageNumberPlaceholder = 123;
             
@@ -26,7 +26,7 @@ namespace QuestPDF.Elements.Text.Items
                 ? context.GetLocationPage(SlotName)
                 : pageNumberPlaceholder;
             
-            return new TextItem
+            return new TextBlockSpan
             {
                 Style = Style,
                 Text = pageNumber.ToString()

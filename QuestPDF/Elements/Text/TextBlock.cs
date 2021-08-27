@@ -10,14 +10,14 @@ namespace QuestPDF.Elements.Text
     internal class TextBlock : Element, IStateResettable
     {
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
-        public List<ITextBlockElement> Children { get; set; } = new List<ITextBlockElement>();
+        public List<ITextBlockItem> Children { get; set; } = new List<ITextBlockItem>();
 
-        public Queue<ITextBlockElement> RenderingQueue { get; set; }
+        public Queue<ITextBlockItem> RenderingQueue { get; set; }
         public int CurrentElementIndex { get; set; }
 
         public void ResetState()
         {
-            RenderingQueue = new Queue<ITextBlockElement>(Children);
+            RenderingQueue = new Queue<ITextBlockItem>(Children);
             CurrentElementIndex = 0;
         }
 
@@ -39,7 +39,7 @@ namespace QuestPDF.Elements.Text
 
             var fullyRenderedItemsCount = lines
                 .SelectMany(x => x.Elements)
-                .GroupBy(x => x.Element)
+                .GroupBy(x => x.Item)
                 .Count(x => x.Any(y => y.Measurement.IsLast));
             
             if (fullyRenderedItemsCount == RenderingQueue.Count)
@@ -86,7 +86,7 @@ namespace QuestPDF.Elements.Text
                         TotalAscent = line.Ascent
                     };
                 
-                    item.Element.Draw(textDrawingRequest);
+                    item.Item.Draw(textDrawingRequest);
                 
                     Canvas.Translate(new Position(item.Measurement.Width, 0));
                     widthOffset += item.Measurement.Width;
@@ -105,7 +105,7 @@ namespace QuestPDF.Elements.Text
             
             lines
                 .SelectMany(x => x.Elements)
-                .GroupBy(x => x.Element)
+                .GroupBy(x => x.Item)
                 .Where(x => x.Any(y => y.Measurement.IsLast))
                 .Select(x => x.Key)
                 .ToList()
@@ -120,7 +120,7 @@ namespace QuestPDF.Elements.Text
 
         public IEnumerable<TextLine> DivideTextItemsIntoLines(float availableWidth, float availableHeight)
         {
-            var queue = new Queue<ITextBlockElement>(RenderingQueue);
+            var queue = new Queue<ITextBlockItem>(RenderingQueue);
             var currentItemIndex = CurrentElementIndex;
             var currentHeight = 0f;
 
@@ -157,7 +157,8 @@ namespace QuestPDF.Elements.Text
                         PageContext = PageContext,
                         
                         StartIndex = currentItemIndex,
-                        AvailableWidth = availableWidth - currentWidth
+                        AvailableWidth = availableWidth - currentWidth,
+                        IsFirstLineElement = !currentLineElements.Any()
                     };
                 
                     var measurementResponse = currentElement.Measure(measurementRequest);
@@ -167,7 +168,7 @@ namespace QuestPDF.Elements.Text
                     
                     currentLineElements.Add(new TextLineElement
                     {
-                        Element = currentElement,
+                        Item = currentElement,
                         Measurement = measurementResponse
                     });
 

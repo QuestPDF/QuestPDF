@@ -40,12 +40,12 @@ namespace QuestPDF.Fluent
             Spacing = value;
         }
 
-        private void AddItemToLastTextBlock(ITextBlockElement element)
+        private void AddItemToLastTextBlock(ITextBlockItem item)
         {
             if (!TextBlocks.Any())
                 TextBlocks.Add(new TextBlock());
             
-            TextBlocks.Last().Children.Add(element);
+            TextBlocks.Last().Children.Add(item);
         }
         
         public void Span(string text, TextStyle? style = null)
@@ -57,7 +57,7 @@ namespace QuestPDF.Fluent
             
             var items = text
                 .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => new TextItem
+                .Select(x => new TextBlockSpan
                 {
                     Text = x,
                     Style = style
@@ -70,7 +70,7 @@ namespace QuestPDF.Fluent
                 .Skip(1)
                 .Select(x => new TextBlock
                 {   
-                    Children = new List<ITextBlockElement> { x }
+                    Children = new List<ITextBlockItem> { x }
                 })
                 .ToList()
                 .ForEach(TextBlocks.Add);
