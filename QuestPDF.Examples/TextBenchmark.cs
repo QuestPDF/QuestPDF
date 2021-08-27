@@ -143,8 +143,8 @@ namespace QuestPDF.Examples
                     .AlignBottom()
                     .Stack(stack =>
                     {
-                        stack.Item().Debug().Text("Quo Vadis", TextStyle.Default.Size(72).Bold().Color(Colors.Blue.Darken2));
-                        stack.Item().Debug().Text("Henryk Sienkiewicz", TextStyle.Default.Size(24).Color(Colors.Grey.Darken2));
+                        stack.Item().Text("Quo Vadis", TextStyle.Default.Size(72).Bold().Color(Colors.Blue.Darken2));
+                        stack.Item().Text("Henryk Sienkiewicz", TextStyle.Default.Size(24).Color(Colors.Grey.Darken2));
                     });
             }
 

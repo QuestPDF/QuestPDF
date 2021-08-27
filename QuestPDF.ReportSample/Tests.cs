@@ -28,7 +28,7 @@ namespace QuestPDF.ReportSample
             // target document length should be around 100 pages
             
             // test size
-            const int testSize = 25;
+            const int testSize = 10;
             const decimal performanceTarget = 1; // documents per second
 
             // create report models

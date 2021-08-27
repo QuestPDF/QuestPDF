@@ -4,7 +4,7 @@
 
 Attempts:
 
-```angular2html
+```
 Attempt 0: 18389,00
 Attempt 1: 18627,00
 Attempt 2: 19745,00

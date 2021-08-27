@@ -295,7 +295,7 @@ namespace QuestPDF.Examples
                             layers
                                 .Layer()
                                 .AlignBottom()
-                                .PageNumber("Page {pdf:currentPage}", TextStyle.Default.Size(16).Color(Colors.Green.Medium));
+                                .Text(text => text.CurrentPageNumber(TextStyle.Default.Size(16).Color(Colors.Green.Medium)));
                         });
                 });
         }
