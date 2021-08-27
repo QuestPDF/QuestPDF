@@ -18,8 +18,8 @@ namespace QuestPDF.ReportSample
                 HeaderFields = HeaderFields(),
                 
                 LogoData = Helpers.GetImage("Logo.png"),
-                Sections = Enumerable.Range(0, 50).Select(x => GenerateSection()).ToList(),
-                Photos = Enumerable.Range(0, 30).Select(x => GetReportPhotos()).ToList()
+                Sections = Enumerable.Range(0, 40).Select(x => GenerateSection()).ToList(),
+                Photos = Enumerable.Range(0, 25).Select(x => GetReportPhotos()).ToList()
             };
 
             List<ReportHeaderField> HeaderFields()

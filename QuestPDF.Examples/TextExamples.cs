@@ -37,7 +37,7 @@ namespace QuestPDF.Examples
                             text.Span(Placeholders.LoremIpsum(), TextStyle.Default.Size(12));
                             
                             text.Span("Before element - ");
-                            text.Element().PaddingBottom(-10).Background(Colors.Red.Lighten4).Width(50).Height(20);
+                            text.Element().PaddingBottom(-10).Background(Colors.Red.Lighten4).Height(20).PaddingHorizontal(5).AlignMiddle().Text("Text inside text", TextStyle.Default.Size(8));
                             text.Span(" - end of element.");
                             
                             text.NewLine();
