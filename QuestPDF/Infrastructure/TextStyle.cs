@@ -1,4 +1,5 @@
 ﻿using QuestPDF.Helpers;
+using System.Collections.Generic;
 
 namespace QuestPDF.Infrastructure
 {
@@ -13,6 +14,12 @@ namespace QuestPDF.Infrastructure
         internal bool IsItalic { get; set; } = false;
 
         public static TextStyle Default => new TextStyle();
+
+        internal static Dictionary<string, SkiaSharp.SKTypeface> ConfiguredTypefaces = new Dictionary<string, SkiaSharp.SKTypeface>();
+        public static void ConfigureFontType(string fontType, SkiaSharp.SKTypeface typeFace)
+        {
+            ConfiguredTypefaces[fontType] = typeFace;
+        }
         
         public override string ToString()
         {

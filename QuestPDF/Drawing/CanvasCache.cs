@@ -22,22 +22,24 @@ namespace QuestPDF.Drawing
                 };
             }
         }
-        
+
         internal static SKPaint ToPaint(this TextStyle style)
         {
             return Paints.GetOrAdd(style.ToString(), key => Convert(style));
-            
+
             static SKPaint Convert(TextStyle style)
             {
                 var slant = style.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
-                
+
                 return new SKPaint
                 {
                     Color = SKColor.Parse(style.Color),
-                    Typeface = SKTypeface.FromFamilyName(style.FontType, (int)style.FontWeight, (int)SKFontStyleWidth.Normal, slant),
+                    Typeface = TextStyle.ConfiguredTypefaces.TryGetValue(style.FontType, out SKTypeface typeFace) ?
+                        typeFace :
+                        SKTypeface.FromFamilyName(style.FontType, (int)style.FontWeight, (int)SKFontStyleWidth.Normal, slant),
                     TextSize = style.Size,
                     TextEncoding = SKTextEncoding.Utf32,
-                    
+
                     TextAlign = style.Alignment switch
                     {
                         HorizontalAlignment.Left => SKTextAlign.Left,
@@ -52,7 +54,7 @@ namespace QuestPDF.Drawing
         internal static TextMeasurement BreakText(this TextStyle style, string text, float availableWidth)
         {
             var index = (int)style.ToPaint().BreakText(text, availableWidth, out var width);
-            
+
             return new TextMeasurement()
             {
                 LineIndex = index,
