@@ -28,9 +28,18 @@ namespace QuestPDF.Elements.Text.Items
         {
             var paint = Style.ToPaint();
             var fontMetrics = Style.ToFontMetrics();
+
+            if (Text.Length == 0)
+            {
+                return new TextMeasurementResult
+                {
+                    Width = request.AvailableWidth
+                };
+            }
             
             // start breaking text from requested position
             var text = Text.Substring(request.StartIndex);
+            
             var breakingIndex = (int)paint.BreakText(text, request.AvailableWidth);
 
             if (breakingIndex <= 0)
