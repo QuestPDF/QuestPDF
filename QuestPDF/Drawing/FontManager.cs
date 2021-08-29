@@ -1,15 +1,23 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.IO;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal static class CanvasCache
+    public static class FontManager
     {
+        private static ConcurrentDictionary<string, SKTypeface> Typefaces = new ConcurrentDictionary<string, SKTypeface>();
         private static ConcurrentDictionary<string, SKPaint> Paints = new ConcurrentDictionary<string, SKPaint>();
         private static ConcurrentDictionary<string, SKPaint> ColorPaint = new ConcurrentDictionary<string, SKPaint>();
 
+        public static void RegisterFontType(string fontName, Stream stream)
+        {
+            Typefaces.TryAdd(fontName, SKTypeface.FromStream(stream));
+        }
+        
         internal static SKPaint ColorToPaint(this string color)
         {
             return ColorPaint.GetOrAdd(color, Convert);
@@ -29,12 +37,10 @@ namespace QuestPDF.Drawing
             
             static SKPaint Convert(TextStyle style)
             {
-                var slant = style.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
-                
                 return new SKPaint
                 {
                     Color = SKColor.Parse(style.Color),
-                    Typeface = SKTypeface.FromFamilyName(style.FontType, (int)style.FontWeight, (int)SKFontStyleWidth.Normal, slant),
+                    Typeface = GetTypeface(style),
                     TextSize = style.Size,
                     TextEncoding = SKTextEncoding.Utf32,
                     
@@ -46,6 +52,17 @@ namespace QuestPDF.Drawing
                         _ => SKTextAlign.Left
                     }
                 };
+            }
+
+            static SKTypeface GetTypeface(TextStyle style)
+            {
+                if (Typefaces.TryGetValue(style.FontType, out var result))
+                    return result;
+                
+                var slant = style.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
+                
+                return SKTypeface.FromFamilyName(style.FontType, (int)style.FontWeight, (int)SKFontStyleWidth.Normal, slant) 
+                       ?? throw new ArgumentException($"The typeface {style.FontType} could not be found.");
             }
         }
 

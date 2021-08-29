@@ -16,4 +16,10 @@
       <ProjectReference Include="..\QuestPDF\QuestPDF.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="LibreBarcode39-Regular.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
