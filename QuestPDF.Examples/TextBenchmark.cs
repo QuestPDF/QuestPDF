@@ -181,7 +181,7 @@ namespace QuestPDF.Examples
   
                     stack.Item().Text(text =>
                     {
-                        text.ParagraphSpacing(10);
+                        text.ParagraphSpacing(5);
                         text.Span(content, normalStyle);
                     });
                     
