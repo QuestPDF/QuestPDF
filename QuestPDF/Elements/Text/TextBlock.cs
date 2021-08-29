@@ -34,7 +34,7 @@ namespace QuestPDF.Elements.Text
             var width = lines.Max(x => x.Width);
             var height = lines.Sum(x => x.LineHeight);
 
-            if (width > availableSpace.Width || height > availableSpace.Height)
+            if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
                 return new Wrap();
 
             var fullyRenderedItemsCount = lines

@@ -74,7 +74,7 @@ namespace QuestPDF.Elements
                 return;
 
             var firstHeight = firstSize?.Height ?? 0;
-            var spaceForSecond = new Size(availableSpace.Width, availableSpace.Height - firstHeight + Size.Epsilon);
+            var spaceForSecond = new Size(availableSpace.Width, availableSpace.Height - firstHeight);
             var secondMeasurement = Second?.Measure(spaceForSecond) as Size;
 
             if (secondMeasurement == null)
