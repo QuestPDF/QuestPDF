@@ -18,10 +18,10 @@ namespace QuestPDF.Fluent
         {
             if (element?.Child != null && element.Child is Empty == false)
             {
-                var message = $"Container {element.GetType().Name} already contains an {element.Child.GetType().Name} child. " +
-                              $"Tried to assign {child?.GetType()?.Name}." +
-                              $"You should not assign multiple elements to single-child containers.";
-                
+                var message = "You should not assign multiple child elements to a single-child container. " +
+                              "This may happen when a container variable is used outside of its scope/closure OR the container is used in multiple fluent API chains OR the container is used incorrectly in a loop. " +
+                              "This exception is thrown to help you detect that some part of the code is overriding fragments of the document layout with a new content - essentially destroying existing content.";
+
                 throw new DocumentComposeException(message);
             }
 

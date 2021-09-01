@@ -12,14 +12,24 @@ namespace QuestPDF.Fluent
 
         public void Size(PageSize pageSize)
         {
-            Page.MinSize = pageSize;
-            Page.MaxSize = pageSize;
+            MinSize(pageSize);
+            MaxSize(pageSize);
         }
-
+        
         public void ContinuousSize(float width)
         {
-            Page.MinSize = new PageSize(width, 0);
-            Page.MaxSize = new PageSize(width, Infrastructure.Size.Max.Height);
+            MinSize(new PageSize(width, 0));
+            MaxSize(new PageSize(width, Infrastructure.Size.Max.Height));
+        }
+
+        public void MinSize(PageSize pageSize)
+        {
+            Page.MinSize = pageSize;
+        }
+        
+        public void MaxSize(PageSize pageSize)
+        {
+            Page.MaxSize = pageSize;
         }
 
         public void MarginLeft(float value)

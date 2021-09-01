@@ -1,3 +1,4 @@
+using System;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -36,9 +37,20 @@ namespace QuestPDF.Elements
                 .Decoration(decoration =>
                 {
                     decoration.Header().Element(Header);
-                    decoration.Content().Extend().Element(Content);
+                    
+                    decoration
+                        .Content()
+                        .Element(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
+                        .Element(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
+                        .Element(Content);
+                    
                     decoration.Footer().Element(Footer);
                 });
+
+            bool IsClose(float x, float y)
+            {
+                return Math.Abs(x - y) < Size.Epsilon;
+            }
         }
     }
 }
