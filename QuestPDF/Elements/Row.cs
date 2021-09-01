@@ -7,29 +7,31 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal abstract class RowElement : ContainerElement
+    internal abstract class RowElement : Constrained
     {
-        public float Width { get; set; } = 1;
+        public float Size { get; protected set;  }
         
-        internal override void Draw(Size availableSpace)
+        public void SetWidth(float width)
         {
-            Child?.Draw(availableSpace);
+            MinWidth = width;
+            MaxWidth = width;
         }
     }
     
     internal class ConstantRowElement : RowElement
     {
-        public ConstantRowElement(float width)
+        public ConstantRowElement(float size)
         {
-            Width = width;
+            Size = size;
+            SetWidth(size);
         }
     }
     
     internal class RelativeRowElement : RowElement
     {
-        public RelativeRowElement(float width)
+        public RelativeRowElement(float size)
         {
-            Width = width;
+            Size = size;
         }
     }
     
@@ -84,70 +86,61 @@ namespace QuestPDF.Elements
     
     internal class Row : Element
     {
-        public ICollection<RowElement> Children { get; internal set; } = new List<RowElement>();
         public float Spacing { get; set; } = 0;
-
+        
+        public ICollection<RowElement> Children { get; internal set; } = new List<RowElement>();
+        private Element? RootElement { get; set; }
+        
         internal override void HandleVisitor(Action<Element?> visit)
         {
-            Children.ToList().ForEach(x => x.HandleVisitor(visit));
+            if (RootElement == null)
+                ComposeTree();
+            
+            RootElement.HandleVisitor(visit);
             base.HandleVisitor(visit);
         }
 
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            return Compose(availableSpace.Width).Measure(availableSpace);
+            UpdateElementsWidth(availableSpace.Width);
+            return RootElement.Measure(availableSpace);
         }
 
         internal override void Draw(Size availableSpace)
         {
-            Compose(availableSpace.Width).Draw(availableSpace);
+            UpdateElementsWidth(availableSpace.Width);
+            RootElement.Draw(availableSpace);
         }
         
         #region structure
         
-        private Element Compose(float availableWidth)
+        private void ComposeTree()
         {
-            var elements = AddSpacing(Children, Spacing);
-            var rowElements = ReduceRows(elements, availableWidth);
-            var tree = BuildTree(rowElements.ToArray());
-            tree.HandleVisitor(x => x.Initialize(PageContext, Canvas));
+            Children = AddSpacing(Children, Spacing);
             
-            return tree;
+            var elements = Children.Cast<Element>().ToArray();
+            RootElement = BuildTree(elements);
         }
-        
-        private static ICollection<Element> ReduceRows(ICollection<RowElement> elements, float availableWidth)
+
+        private void UpdateElementsWidth(float availableWidth)
         {
-            var constantWidth = elements
+            var constantWidth = Children
                 .Where(x => x is ConstantRowElement)
                 .Cast<ConstantRowElement>()
-                .Sum(x => x.Width);
+                .Sum(x => x.Size);
         
-            var relativeWidth = elements
+            var relativeWidth = Children
                 .Where(x => x is RelativeRowElement)
                 .Cast<RelativeRowElement>()
-                .Sum(x => x.Width);
+                .Sum(x => x.Size);
 
             var widthPerRelativeUnit = (availableWidth - constantWidth) / relativeWidth;
             
-            return elements
-                .Select(x =>
-                {
-                    if (x is RelativeRowElement r)
-                        return new ConstantRowElement(r.Width * widthPerRelativeUnit)
-                        {
-                            Child = x.Child
-                        };
-                    
-                    return x;
-                })
-                .Select(x => new Constrained
-                {
-                    MinWidth = x.Width,
-                    MaxWidth = x.Width,
-                    Child = x.Child
-                })
-                .Cast<Element>()
-                .ToList();
+            Children
+                .Where(x => x is RelativeRowElement)
+                .Cast<RelativeRowElement>()
+                .ToList()
+                .ForEach(x => x.SetWidth(x.Size * widthPerRelativeUnit));
         }
         
         private static ICollection<RowElement> AddSpacing(ICollection<RowElement> elements, float spacing)
