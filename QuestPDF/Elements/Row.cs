@@ -48,6 +48,12 @@ namespace QuestPDF.Elements
             base.HandleVisitor(visit);
         }
 
+        internal override void CreateProxy(Func<Element?, Element?> create)
+        {
+            Left = create(Left);
+            Right = create(Right);
+        }
+        
         internal override ISpacePlan Measure(Size availableSpace)
         {
             var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height)) as Size;

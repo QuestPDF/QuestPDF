@@ -19,6 +19,11 @@ namespace QuestPDF.Infrastructure
             PageContext = pageContext;
             Canvas = canvas;
         }
+
+        internal virtual void CreateProxy(Func<Element?, Element?> create)
+        {
+            
+        }
         
         internal abstract ISpacePlan Measure(Size availableSpace);
         internal abstract void Draw(Size availableSpace);

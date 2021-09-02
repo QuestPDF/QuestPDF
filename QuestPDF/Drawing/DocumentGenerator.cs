@@ -40,6 +40,8 @@ namespace QuestPDF.Drawing
             var metadata = document.GetMetadata();
             var pageContext = new PageContext();
 
+            ApplyElementProxy<CacheProxy>(content);
+            
             RenderPass(pageContext, new FreeCanvas(), content, metadata);
             RenderPass(pageContext, canvas, content, metadata);
         }
@@ -88,6 +90,14 @@ namespace QuestPDF.Drawing
             }
             
             canvas.EndDocument();
+        }
+
+        private static void ApplyElementProxy<TProxy>(Container content) where TProxy : ElementProxy, new()
+        {
+            content.HandleVisitor(x => x.CreateProxy(y => new TProxy()
+            {
+                Child = y
+            }));
         }
     }
 }

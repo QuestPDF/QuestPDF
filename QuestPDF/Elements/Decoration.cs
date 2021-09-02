@@ -25,6 +25,12 @@ namespace QuestPDF.Elements
             base.HandleVisitor(visit);
         }
 
+        internal override void CreateProxy(Func<Element, Element> create)
+        {
+            DecorationElement = create(DecorationElement);
+            ContentElement = create(ContentElement);
+        }
+
         internal override ISpacePlan Measure(Size availableSpace)
         {
             var decorationMeasure = DecorationElement?.Measure(availableSpace);

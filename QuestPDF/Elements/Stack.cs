@@ -30,6 +30,12 @@ namespace QuestPDF.Elements
             IsFirstRendered = false;
         }
 
+        internal override void CreateProxy(Func<Element?, Element?> create)
+        {
+            First = create(First);
+            Second = create(Second);
+        }
+        
         internal override ISpacePlan Measure(Size availableSpace)
         {
             var firstElement = IsFirstRendered ? Empty.Instance : First;

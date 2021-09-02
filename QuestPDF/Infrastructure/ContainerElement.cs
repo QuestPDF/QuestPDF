@@ -16,8 +16,13 @@ namespace QuestPDF.Infrastructure
 
         internal override void HandleVisitor(Action<Element?> visit)
         {
-            base.HandleVisitor(visit);
             Child?.HandleVisitor(visit);
+            base.HandleVisitor(visit);
+        }
+
+        internal override void CreateProxy(Func<Element?, Element?> create)
+        {
+            Child = create(Child);
         }
 
         internal override ISpacePlan Measure(Size availableSpace)
