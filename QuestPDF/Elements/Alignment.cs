@@ -1,4 +1,5 @@
 using System;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -13,16 +14,16 @@ namespace QuestPDF.Elements
             if (Child == null)
                 return;
             
-            var childSize = Child.Measure(availableSpace) as Size;
+            var childSize = base.Measure(availableSpace);
             
-            if (childSize == null)
+            if (childSize.Type == SpacePlanType.Wrap)
                 return;
             
             var top = GetTopOffset(availableSpace, childSize);
             var left = GetLeftOffset(availableSpace, childSize);
             
             Canvas.Translate(new Position(left, top));
-            Child.Draw(childSize);
+            base.Draw(childSize);
             Canvas.Translate(new Position(-left, -top));
         }
         

@@ -16,7 +16,7 @@ namespace QuestPDF.Elements
             var currentMatrix = skiaCanvas.TotalMatrix;
             
             skiaCanvas.RotateDegrees(Angle);
-            Child?.Draw(availableSpace);
+            base.Draw(availableSpace);
             skiaCanvas.SetMatrix(currentMatrix);
         }
     }

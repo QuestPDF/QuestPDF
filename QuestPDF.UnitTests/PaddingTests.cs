@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
@@ -34,8 +34,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(GetPadding)
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(340, 260), new FullRender(140, 60))
-                .CheckMeasureResult(new FullRender(200, 100));
+                .ExpectChildMeasure(new Size(340, 260), SpacePlan.FullRender(140, 60))
+                .CheckMeasureResult(SpacePlan.FullRender(200, 100));
         } 
         
         [Test]
@@ -44,7 +44,7 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(GetPadding)
                 .MeasureElement(new Size(50, 300))
-                .CheckMeasureResult(new Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -53,7 +53,7 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(GetPadding)
                 .MeasureElement(new Size(20, 300))
-                .CheckMeasureResult(new Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -62,8 +62,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(GetPadding)
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(340, 260), new PartialRender(40, 160))
-                .CheckMeasureResult(new PartialRender(100, 200));
+                .ExpectChildMeasure(new Size(340, 260), SpacePlan.PartialRender(40, 160))
+                .CheckMeasureResult(SpacePlan.PartialRender(100, 200));
         }
         
         [Test]
@@ -72,8 +72,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(GetPadding)
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(340, 260), new Wrap())
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure(new Size(340, 260), SpacePlan.Wrap())
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]

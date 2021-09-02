@@ -10,7 +10,7 @@ namespace QuestPDF.Elements
         internal override void Draw(Size availableSpace)
         {
             Canvas.DrawRectangle(Position.Zero, availableSpace, Color);
-            Child?.Draw(availableSpace);
+            base.Draw(availableSpace);
         }
     }
 }

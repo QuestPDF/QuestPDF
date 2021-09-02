@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -26,7 +26,7 @@ namespace QuestPDF.UnitTests
                     InternalImage = GenerateImage(400, 300)
                 })
                 .MeasureElement(new Size(300, 200))
-                .CheckMeasureResult(new FullRender(300, 200));
+                .CheckMeasureResult(SpacePlan.FullRender(300, 200));
         }
         
         [Test]
@@ -55,7 +55,7 @@ namespace QuestPDF.UnitTests
                     return container;
                 })
                 .MeasureElement(new Size(300, 200))
-                .CheckMeasureResult(new FullRender(300, 100));;
+                .CheckMeasureResult(SpacePlan.FullRender(300, 100));;
         }
         
         SKImage GenerateImage(int width, int height)

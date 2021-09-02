@@ -1,18 +1,18 @@
-﻿using QuestPDF.Drawing.SpacePlan;
+﻿using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
     internal class ShowEntire : ContainerElement
     {
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
-            var childMeasurement = Child?.Measure(availableSpace) ?? new FullRender(Size.Zero);
+            var childMeasurement = base.Measure(availableSpace);
 
-            if (childMeasurement is FullRender)
+            if (childMeasurement.Type == SpacePlanType.FullRender)
                 return childMeasurement;
 
-            return new Wrap();
+            return SpacePlan.Wrap();
         }
     }
 }

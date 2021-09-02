@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -9,37 +9,36 @@ namespace QuestPDF.Elements
     {
         public float? MinWidth { get; set; }
         public float? MaxWidth { get; set; }
-        
+
         public float? MinHeight { get; set; }
         public float? MaxHeight { get; set; }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             if (MinWidth > availableSpace.Width + Size.Epsilon)
-                return new Wrap();
+                return SpacePlan.Wrap();
             
             if (MinHeight > availableSpace.Height + Size.Epsilon)
-                return new Wrap();
+                return SpacePlan.Wrap();
             
             var available = new Size(
-                MathHelpers.Min(MaxWidth, availableSpace.Width),
-                MathHelpers.Min(MaxHeight, availableSpace.Height));
+                LimitMin(availableSpace.Width, MaxWidth),
+                LimitMin(availableSpace.Height, MaxHeight));
 
-            var measurement = Child?.Measure(available) ?? new FullRender(Size.Zero);
-            var size = measurement as Size;
+            var measurement = base.Measure(available);
 
-            if (measurement is Wrap)
-                return new Wrap();
+            if (measurement.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap();
             
             var actualSize = new Size(
-                MathHelpers.Max(MinWidth, size.Width),
-                MathHelpers.Max(MinHeight, size.Height));
+                LimitMax(measurement.Width, MinWidth),
+                LimitMax(measurement.Height, MinHeight));
             
-            if (size is FullRender)
-                return new FullRender(actualSize);
+            if (measurement.Type == SpacePlanType.FullRender)
+                return SpacePlan.FullRender(actualSize);
             
-            if (size is PartialRender)
-                return new PartialRender(actualSize);
+            if (measurement.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(actualSize);
             
             throw new NotSupportedException();
         }
@@ -47,23 +46,20 @@ namespace QuestPDF.Elements
         internal override void Draw(Size availableSpace)
         {
             var available = new Size(
-                MathHelpers.Min(MaxWidth, availableSpace.Width),
-                MathHelpers.Min(MaxHeight, availableSpace.Height));
+                LimitMin(availableSpace.Width, MaxWidth),
+                LimitMin(availableSpace.Height, MaxHeight));
             
-            Child?.Draw(available);
+            base.Draw(available);
         }
-    }
-    
-    static class MathHelpers
-    {
-        public static float Min(params float?[] values)
+
+        private float LimitMin(float value, float? limit)
         {
-            return values.Where(x => x.HasValue).Min().Value;
+            return limit.HasValue ? Math.Min(value, limit.Value) : value;
         }
         
-        public static float Max(params float?[] values)
+        private float LimitMax(float value, float? limit)
         {
-            return values.Where(x => x.HasValue).Max().Value;
+            return limit.HasValue ? Math.Max(value, limit.Value) : value;
         }
     }
 }

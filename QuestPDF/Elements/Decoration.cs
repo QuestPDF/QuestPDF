@@ -1,5 +1,5 @@
 using System;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
@@ -31,34 +31,34 @@ namespace QuestPDF.Elements
             ContentElement = create(ContentElement);
         }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
-            var decorationMeasure = DecorationElement?.Measure(availableSpace);
+            var decorationMeasure = DecorationElement.Measure(availableSpace);
             
-            if (decorationMeasure is Wrap || decorationMeasure is PartialRender)
-                return new Wrap();
+            if (decorationMeasure.Type == SpacePlanType.Wrap || decorationMeasure.Type == SpacePlanType.PartialRender)
+                return SpacePlan.Wrap();
 
-            var decorationSize = decorationMeasure as Size ?? Size.Zero;
-            var contentMeasure = ContentElement?.Measure(new Size(availableSpace.Width, availableSpace.Height - decorationSize.Height)) ?? new FullRender(Size.Zero);
+            var decorationSize = decorationMeasure;
+            var contentMeasure = ContentElement.Measure(new Size(availableSpace.Width, availableSpace.Height - decorationSize.Height));
             
-            if (contentMeasure is Wrap)
-                return new Wrap();
+            if (contentMeasure.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap();
 
-            var contentSize = contentMeasure as Size ?? Size.Zero;
+            var contentSize = contentMeasure;
             var resultSize = new Size(availableSpace.Width, decorationSize.Height + contentSize.Height);
             
-            if (contentSize is PartialRender)
-                return new PartialRender(resultSize);
+            if (contentSize.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(resultSize);
             
-            if (contentSize is FullRender)
-                return new FullRender(resultSize);
+            if (contentSize.Type == SpacePlanType.FullRender)
+                return SpacePlan.FullRender(resultSize);
             
             throw new NotSupportedException();
         }
 
         internal override void Draw(Size availableSpace)
         {
-            var decorationSize = DecorationElement?.Measure(availableSpace) as Size ?? Size.Zero;
+            var decorationSize = DecorationElement.Measure(availableSpace);
             var contentSize = new Size(availableSpace.Width, availableSpace.Height - decorationSize.Height);
 
             var translateHeight = Type == DecorationType.Prepend ? decorationSize.Height : contentSize.Height;

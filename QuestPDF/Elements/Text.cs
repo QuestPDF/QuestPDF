@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
-using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Infrastructure;
 using Size = QuestPDF.Infrastructure.Size;
 
@@ -15,7 +14,7 @@ namespace QuestPDF.Elements
 
         private float LineHeight => Style.Size * Style.LineHeight;
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             var lines = BreakLines(availableSpace.Width);
             
@@ -27,9 +26,9 @@ namespace QuestPDF.Elements
             var realHeight = lines.Count * LineHeight;
             
             if (realHeight > availableSpace.Height + Size.Epsilon)
-                return new Wrap();
+                return SpacePlan.Wrap();
             
-            return new FullRender(realWidth, realHeight);
+            return SpacePlan.FullRender(realWidth, realHeight);
         }
 
         internal override void Draw(Size availableSpace)

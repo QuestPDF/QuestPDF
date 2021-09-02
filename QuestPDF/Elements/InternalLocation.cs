@@ -22,7 +22,7 @@ namespace QuestPDF.Elements
                 IsRendered = true;
             }
             
-            Child?.Draw(availableSpace);
+            base.Draw(availableSpace);
         }
     }
 }

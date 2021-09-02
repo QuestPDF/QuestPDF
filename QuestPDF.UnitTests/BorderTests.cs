@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -27,8 +27,8 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
-                .CheckMeasureResult( new FullRender(new Size(100, 50)));
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: SpacePlan.FullRender(new Size(100, 50)))
+                .CheckMeasureResult( SpacePlan.FullRender(new Size(100, 50)));
         }
         
         [Test]

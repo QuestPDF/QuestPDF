@@ -1,32 +1,31 @@
-﻿using System;
-using QuestPDF.Drawing.SpacePlan;
+﻿using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
     internal class Unconstrained : ContainerElement
     {
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
-            var childSize = Child?.Measure(Size.Max) ?? new FullRender(Size.Zero);
+            var childSize = base.Measure(Size.Max);
             
-            if (childSize is PartialRender)
-                return new PartialRender(Size.Zero);
+            if (childSize.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(0, 0);
             
-            if (childSize is FullRender)
-                return new FullRender(Size.Zero);
+            if (childSize.Type == SpacePlanType.FullRender)
+                return SpacePlan.FullRender(0, 0);
             
             return childSize;
         }
 
         internal override void Draw(Size availableSpace)
         {
-            var measurement = Child?.Measure(Size.Max) as Size;
+            var measurement = base.Measure(Size.Max);
             
-            if (measurement == null)
+            if (measurement.Type == SpacePlanType.Wrap)
                 return;
 
-            Child?.Draw(measurement);
+            base.Draw(measurement);
         }
     }
 }

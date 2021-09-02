@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Linq;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -10,24 +9,24 @@ namespace QuestPDF.Elements
         public int TurnCount { get; set; }
         public int NormalizedTurnCount => (TurnCount % 4 + 4) % 4;
         
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             if (NormalizedTurnCount == 0 || NormalizedTurnCount == 2)
                 return base.Measure(availableSpace);
             
             availableSpace = new Size(availableSpace.Height, availableSpace.Width);
-            var childSpace = base.Measure(availableSpace) as Size;
+            var childSpace = base.Measure(availableSpace);
 
-            if (childSpace == null)
-                return new Wrap();
+            if (childSpace.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap();
 
             var targetSpace = new Size(childSpace.Height, childSpace.Width);
 
-            if (childSpace is FullRender)
-                return new FullRender(targetSpace);
+            if (childSpace.Type == SpacePlanType.FullRender)
+                return SpacePlan.FullRender(targetSpace);
             
-            if (childSpace is PartialRender)
-                return new PartialRender(targetSpace);
+            if (childSpace.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(targetSpace);
 
             throw new ArgumentException();
         }
@@ -52,7 +51,7 @@ namespace QuestPDF.Elements
             if (NormalizedTurnCount == 1 || NormalizedTurnCount == 3)
                 availableSpace = new Size(availableSpace.Height, availableSpace.Width);
             
-            Child?.Draw(availableSpace);
+            base.Draw(availableSpace);
             skiaCanvas.SetMatrix(currentMatrix);
         }
     }

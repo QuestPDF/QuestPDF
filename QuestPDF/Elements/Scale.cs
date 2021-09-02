@@ -1,5 +1,5 @@
 ﻿using System;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -9,26 +9,26 @@ namespace QuestPDF.Elements
         public float ScaleX { get; set; } = 1;
         public float ScaleY { get; set; } = 1;
         
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             var targetSpace = new Size(
                 Math.Abs(availableSpace.Width / ScaleX), 
                 Math.Abs(availableSpace.Height / ScaleY));
             
-            var measure = base.Measure(targetSpace) as Size;
+            var measure = base.Measure(targetSpace);
 
-            if (measure == null)
-                return new Wrap();
+            if (measure.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap();
 
             var targetSize = new Size(
                 Math.Abs(measure.Width * ScaleX), 
                 Math.Abs(measure.Height * ScaleY));
 
-            if (measure is PartialRender)
-                return new PartialRender(targetSize);
+            if (measure.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(targetSize);
             
-            if (measure is FullRender)
-                return new FullRender(targetSize);
+            if (measure.Type == SpacePlanType.FullRender)
+                return SpacePlan.FullRender(targetSize);
             
             throw new ArgumentException();
         }
@@ -53,7 +53,7 @@ namespace QuestPDF.Elements
                 skiaCanvas.Translate(0, availableSpace.Height);
             
             skiaCanvas.Scale(ScaleX, ScaleY);
-            Child?.Draw(targetSpace);
+            base.Draw(targetSpace);
             skiaCanvas.SetMatrix(currentMatrix);
         }
     }

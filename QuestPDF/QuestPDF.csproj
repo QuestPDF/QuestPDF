@@ -36,4 +36,8 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Drawing\SpacePlan" />
+    </ItemGroup>
+
 </Project>

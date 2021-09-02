@@ -1,4 +1,5 @@
-﻿using QuestPDF.Infrastructure;
+﻿using QuestPDF.Drawing;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
@@ -6,12 +7,12 @@ namespace QuestPDF.Elements
     {
         internal override void Draw(Size availableSpace)
         {
-            var targetSize = Child?.Measure(availableSpace) as Size;
+            var targetSize = base.Measure(availableSpace);
             
-            if (targetSize == null)
+            if (targetSize.Type == SpacePlanType.Wrap)
                 return;
             
-            Child?.Draw(targetSize);
+            base.Draw(targetSize);
         }
     }
 }

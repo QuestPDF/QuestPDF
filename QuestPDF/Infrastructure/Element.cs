@@ -1,6 +1,5 @@
 using System;
-using QuestPDF.Drawing.SpacePlan;
-using QuestPDF.Elements;
+using QuestPDF.Drawing;
 
 namespace QuestPDF.Infrastructure
 {
@@ -25,7 +24,7 @@ namespace QuestPDF.Infrastructure
             
         }
         
-        internal abstract ISpacePlan Measure(Size availableSpace);
+        internal abstract SpacePlan Measure(Size availableSpace);
         internal abstract void Draw(Size availableSpace);
     }
 }

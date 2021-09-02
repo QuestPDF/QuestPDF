@@ -1,4 +1,4 @@
-namespace QuestPDF.Drawing.SpacePlan
+namespace QuestPDF.Drawing
 {
     internal struct TextMeasurement
     {

@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
@@ -19,8 +19,8 @@ namespace QuestPDF.UnitTests
                     MinHeight = 200
                 })
                 .MeasureElement(new Size(400, 100))
-                .ExpectChildMeasure(new Size(400, 100), new Wrap())
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure(new Size(400, 100), SpacePlan.Wrap())
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -33,8 +33,8 @@ namespace QuestPDF.UnitTests
                     MinHeight = 200
                 })
                 .MeasureElement(new Size(400, 100))
-                .ExpectChildMeasure(new Size(400, 100), new PartialRender(300, 50))
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure(new Size(400, 100), SpacePlan.PartialRender(300, 50))
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -47,8 +47,8 @@ namespace QuestPDF.UnitTests
                     MinHeight = 200
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(400, 300), new PartialRender(300, 250))
-                .CheckMeasureResult(new PartialRender(300, 250));
+                .ExpectChildMeasure(new Size(400, 300), SpacePlan.PartialRender(300, 250))
+                .CheckMeasureResult(SpacePlan.PartialRender(300, 250));
         }
         
         [Test]
@@ -61,8 +61,8 @@ namespace QuestPDF.UnitTests
                     MinHeight = 200
                 })
                 .MeasureElement(new Size(400, 100))
-                .ExpectChildMeasure(new Size(400, 100), new FullRender(300, 50))
-                .CheckMeasureResult(new FullRender(300, 50));
+                .ExpectChildMeasure(new Size(400, 100), SpacePlan.FullRender(300, 50))
+                .CheckMeasureResult(SpacePlan.FullRender(300, 50));
         }
         
         [Test]
@@ -75,8 +75,8 @@ namespace QuestPDF.UnitTests
                     MinHeight = 200
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(400, 300), new FullRender(300, 250))
-                .CheckMeasureResult(new FullRender(300, 250));
+                .ExpectChildMeasure(new Size(400, 300), SpacePlan.FullRender(300, 250))
+                .CheckMeasureResult(SpacePlan.FullRender(300, 250));
         }
     }
 }

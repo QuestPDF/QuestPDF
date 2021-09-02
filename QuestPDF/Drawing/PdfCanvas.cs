@@ -25,10 +25,10 @@ namespace QuestPDF.Drawing
 
         public override void EndDocument()
         {
-            Canvas.Dispose();
+            Canvas?.Dispose();
             
-            Document.Close();
-            Document.Dispose();
+            Document?.Close();
+            Document?.Dispose();
         }
 
         public override void BeginPage(Size size)

@@ -1,4 +1,4 @@
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -13,9 +13,9 @@ namespace QuestPDF.Elements
             InternalImage?.Dispose();
         }
         
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
-            return new FullRender(availableSpace);
+            return SpacePlan.FullRender(availableSpace);
         }
 
         internal override void Draw(Size availableSpace)

@@ -1,4 +1,4 @@
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -12,12 +12,12 @@ namespace QuestPDF.Elements
             IsRendered = false;
         }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             if (Child == null || IsRendered)
-                return new FullRender(Size.Zero);
+                return SpacePlan.FullRender(0, 0);
             
-            return Child.Measure(availableSpace);
+            return base.Measure(availableSpace);
         }
 
         internal override void Draw(Size availableSpace)
@@ -25,10 +25,10 @@ namespace QuestPDF.Elements
             if (Child == null || IsRendered)
                 return;
             
-            if (Child.Measure(availableSpace) is FullRender)
+            if (base.Measure(availableSpace).Type == SpacePlanType.FullRender)
                 IsRendered = true;
             
-            Child.Draw(availableSpace);
+            base.Draw(availableSpace);
         }
     }
 }

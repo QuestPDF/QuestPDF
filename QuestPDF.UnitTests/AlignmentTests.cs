@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
@@ -27,7 +27,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .DrawElement(new Size(1000, 500))
-                .ExpectChildMeasure(expectedInput: new Size(1000, 500), returns: new PartialRender(new Size(400, 200)))
+                .ExpectChildMeasure(expectedInput: new Size(1000, 500), returns: SpacePlan.PartialRender(new Size(400, 200)))
                 .ExpectCanvasTranslate(new Position(300, 150))
                 .ExpectChildDraw(new Size(400, 200))
                 .ExpectCanvasTranslate(new Position(-300, -150))
@@ -46,7 +46,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: SpacePlan.FullRender(new Size(100, 50)))
                 .ExpectCanvasTranslate(new Position(0, 125))
                 .ExpectChildDraw(new Size(100, 50))
                 .ExpectCanvasTranslate(new Position(0, -125))
@@ -65,7 +65,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: SpacePlan.FullRender(new Size(100, 50)))
                 .ExpectCanvasTranslate(new Position(150, 250))
                 .ExpectChildDraw(new Size(100, 50))
                 .ExpectCanvasTranslate(new Position(-150, -250))
@@ -84,7 +84,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: new FullRender(new Size(100, 50)))
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: SpacePlan.FullRender(new Size(100, 50)))
                 .ExpectCanvasTranslate(new Position(300, 0))
                 .ExpectChildDraw(new Size(100, 50))
                 .ExpectCanvasTranslate(new Position(-300, 0))

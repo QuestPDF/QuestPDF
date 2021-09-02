@@ -1,4 +1,4 @@
-﻿using QuestPDF.Drawing.SpacePlan;
+﻿using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -8,12 +8,12 @@ namespace QuestPDF.Elements
         public const float DefaultMinHeight = 150;
         public float MinHeight { get; set; } = DefaultMinHeight;
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             var measurement = base.Measure(availableSpace);
 
-            if (measurement is PartialRender && availableSpace.Height < MinHeight)
-                return new Wrap();
+            if (measurement.Type == SpacePlanType.PartialRender && availableSpace.Height < MinHeight)
+                return SpacePlan.Wrap();
 
             return measurement;
         }

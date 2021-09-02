@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -21,7 +21,7 @@ namespace QuestPDF.Elements
             base.HandleVisitor(visit);
         }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             return Children
                 .Single(x => x.IsPrimary)
@@ -31,7 +31,7 @@ namespace QuestPDF.Elements
         internal override void Draw(Size availableSpace)
         {
             Children
-                .Where(x => x.Measure(availableSpace) is Size)
+                .Where(x => x.Measure(availableSpace).Type != SpacePlanType.Wrap)
                 .ToList()
                 .ForEach(x => x.Draw(availableSpace));
         }

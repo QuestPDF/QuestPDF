@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.UnitTests.TestEngine
@@ -10,7 +10,7 @@ namespace QuestPDF.UnitTests.TestEngine
         internal static void MeasureWithoutChild<T>(this T element) where T : ContainerElement
         {
             element.Child = null;
-            element.Measure(Size.Zero).Should().BeEquivalentTo(new FullRender(Size.Zero));
+            element.Measure(Size.Zero).Should().BeEquivalentTo(SpacePlan.FullRender(0, 0));
         }
         
         internal static void DrawWithoutChild<T>(this T element) where T : ContainerElement

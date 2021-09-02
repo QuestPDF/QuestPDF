@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuestPDF.Drawing.SpacePlan;
-using QuestPDF.Fluent;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -54,33 +53,33 @@ namespace QuestPDF.Elements
             Right = create(Right);
         }
         
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
-            var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height)) as Size;
+            var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height));
             
-            if (leftMeasurement == null)
-                return new Wrap();
+            if (leftMeasurement.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap();
             
-            var rightMeasurement = Right.Measure(new Size(availableSpace.Width - leftMeasurement.Width, availableSpace.Height)) as Size;
+            var rightMeasurement = Right.Measure(new Size(availableSpace.Width - leftMeasurement.Width, availableSpace.Height));
 
-            if (rightMeasurement == null)
-                return new Wrap();
+            if (rightMeasurement.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap();
             
             var totalWidth = leftMeasurement.Width + rightMeasurement.Width;
             var totalHeight = Math.Max(leftMeasurement.Height, rightMeasurement.Height);
 
             var targetSize = new Size(totalWidth, totalHeight);
 
-            if (leftMeasurement is PartialRender || rightMeasurement is PartialRender)
-                return new PartialRender(targetSize);
+            if (leftMeasurement.Type == SpacePlanType.PartialRender || rightMeasurement.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(targetSize);
             
-            return new FullRender(targetSize);
+            return SpacePlan.FullRender(targetSize);
         }
 
         internal override void Draw(Size availableSpace)
         {
             var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height));
-            var leftWidth = (leftMeasurement as Size)?.Width ?? 0;
+            var leftWidth = leftMeasurement.Width;
             
             Left.Draw(new Size(leftWidth, availableSpace.Height));
             
@@ -106,7 +105,7 @@ namespace QuestPDF.Elements
             base.HandleVisitor(visit);
         }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             UpdateElementsWidth(availableSpace.Width);
             return RootElement.Measure(availableSpace);

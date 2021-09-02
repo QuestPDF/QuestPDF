@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine.Operations;
@@ -158,12 +158,12 @@ namespace QuestPDF.UnitTests.TestEngine
             return this;
         }
         
-        public TestPlan ExpectChildMeasure(Size expectedInput, ISpacePlan returns)
+        public TestPlan ExpectChildMeasure(Size expectedInput, SpacePlan returns)
         {
             return ExpectChildMeasure(DefaultChildName, expectedInput, returns);
         }
         
-        public TestPlan ExpectChildMeasure(string child, Size expectedInput, ISpacePlan returns)
+        public TestPlan ExpectChildMeasure(string child, Size expectedInput, SpacePlan returns)
         {
             return AddOperation(new ChildMeasureOperationBase(child, expectedInput, returns));
         }
@@ -203,22 +203,17 @@ namespace QuestPDF.UnitTests.TestEngine
             return AddOperation(new CanvasDrawImageOperationBase(position, size));
         }
         
-        public TestPlan CheckMeasureResult(ISpacePlan expected)
+        public TestPlan CheckMeasureResult(SpacePlan expected)
         {
             Element.HandleVisitor(x => x?.Initialize(null, Canvas));
             
             var actual = Element.Measure(OperationInput);
             
             Assert.AreEqual(expected.GetType(), actual.GetType());
-
-            var expectedSize = expected as Size;
-            var actualSize = actual as Size;
-
-            if (expectedSize != null)
-            {
-                Assert.AreEqual(expectedSize.Width, actualSize.Width, "Measure: width");
-                Assert.AreEqual(expectedSize.Height, actualSize.Height, "Measure: height");
-            }
+            
+            Assert.AreEqual(expected.Width, actual.Width, "Measure: width");
+            Assert.AreEqual(expected.Height, actual.Height, "Measure: height");
+            Assert.AreEqual(expected.Type, actual.Type, "Measure: height");
             
             return this;
         }

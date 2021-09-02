@@ -1,5 +1,5 @@
 using System;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -11,30 +11,30 @@ namespace QuestPDF.Elements
         public float Bottom { get; set; }
         public float Left { get; set; }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             if (Child == null)
-                return new FullRender(Size.Zero);
+                return SpacePlan.FullRender(0, 0);
             
             var internalSpace = InternalSpace(availableSpace);
 
             if (internalSpace.Width < 0 || internalSpace.Height < 0)
-                return new Wrap();
+                return SpacePlan.Wrap();
             
-            var measure = Child.Measure(internalSpace) as Size;
+            var measure = base.Measure(internalSpace);
 
-            if (measure == null)
-                return new Wrap();
+            if (measure.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap();
 
             var newSize = new Size(
                 measure.Width + Left + Right,
                 measure.Height + Top + Bottom);
             
-            if (measure is PartialRender)
-                return new PartialRender(newSize);
+            if (measure.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(newSize);
             
-            if (measure is FullRender)
-                return new FullRender(newSize);
+            if (measure.Type == SpacePlanType.FullRender)
+                return SpacePlan.FullRender(newSize);
             
             throw new NotSupportedException();
         }
@@ -47,7 +47,7 @@ namespace QuestPDF.Elements
             var internalSpace = InternalSpace(availableSpace);
             
             Canvas.Translate(new Position(Left, Top));
-            Child?.Draw(internalSpace);
+            base.Draw(internalSpace);
             Canvas.Translate(new Position(-Left, -Top));
         }
 

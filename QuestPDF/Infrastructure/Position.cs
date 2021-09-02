@@ -1,9 +1,9 @@
 ﻿namespace QuestPDF.Infrastructure
 {
-    internal class Position
+    internal readonly struct Position
     {
-        public float X { get; set; }
-        public float Y { get; set; }
+        public readonly float X;
+        public readonly float Y;
 
         public static Position Zero => new Position(0, 0);
         

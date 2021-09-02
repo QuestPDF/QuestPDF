@@ -1,7 +1,5 @@
 ﻿using System;
-using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Infrastructure;
-using IContainer = System.ComponentModel.IContainer;
 
 namespace QuestPDF.Drawing
 {
@@ -13,22 +11,22 @@ namespace QuestPDF.Drawing
     internal class CacheProxy : ElementProxy
     {
         public Size? AvailableSpace { get; set; }
-        public ISpacePlan? MeasurementResult { get; set; }
+        public SpacePlan? MeasurementResult { get; set; }
         
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             if (MeasurementResult != null &&
                 AvailableSpace != null &&
-                IsClose(AvailableSpace.Width, availableSpace.Width) &&
-                IsClose(AvailableSpace.Height, availableSpace.Height))
+                IsClose(AvailableSpace.Value.Width, availableSpace.Width) &&
+                IsClose(AvailableSpace.Value.Height, availableSpace.Height))
             {
-                return MeasurementResult;
+                return MeasurementResult.Value;
             }
 
             AvailableSpace = availableSpace;
-            MeasurementResult = Child?.Measure(availableSpace) ?? new FullRender(Size.Zero);
+            MeasurementResult = base.Measure(availableSpace);
 
-            return MeasurementResult;
+            return MeasurementResult.Value;
         }
 
         internal override void Draw(Size availableSpace)
@@ -43,10 +41,5 @@ namespace QuestPDF.Drawing
         {
             return Math.Abs(x - y) < Size.Epsilon;
         }
-    }
-
-    internal class DebugProxy : ElementProxy
-    {
-        
     }
 }

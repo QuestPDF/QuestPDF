@@ -3,15 +3,21 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Helpers
 {
-    public class PageSize : Size
+    public class PageSize
     {
-        public PageSize(float width, float height) : base(width, height)
+        public readonly float Width;
+        public readonly float Height;
+        
+        public PageSize(float width, float height)
         {
-
+            Width = width;
+            Height = height;
         }
+
+        public static implicit operator Size(PageSize pageSize) => new Size(pageSize.Width, pageSize.Height);
     }
 
-    public static class PageSizes
+    public struct PageSizes
     {
         public const int PointsPerInch = 72;
 

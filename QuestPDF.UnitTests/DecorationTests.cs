@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
@@ -22,8 +22,8 @@ namespace QuestPDF.UnitTests
                     ContentElement = x.CreateChild("content")
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("decoration", new Size(400, 300), new Wrap())
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure("decoration", new Size(400, 300), SpacePlan.Wrap())
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -37,8 +37,8 @@ namespace QuestPDF.UnitTests
                     ContentElement = x.CreateChild("content")
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("decoration", new Size(400, 300), new PartialRender(300, 200))
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure("decoration", new Size(400, 300), SpacePlan.PartialRender(300, 200))
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -52,9 +52,9 @@ namespace QuestPDF.UnitTests
                     ContentElement = x.CreateChild("content")
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("decoration", new Size(400, 300), new FullRender(300, 100))
-                .ExpectChildMeasure("content", new Size(400, 200), new Wrap())
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure("decoration", new Size(400, 300), SpacePlan.FullRender(300, 100))
+                .ExpectChildMeasure("content", new Size(400, 200), SpacePlan.Wrap())
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -68,9 +68,9 @@ namespace QuestPDF.UnitTests
                     ContentElement = x.CreateChild("content")
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("decoration", new Size(400, 300), new FullRender(300, 100))
-                .ExpectChildMeasure("content", new Size(400, 200), new PartialRender(200, 150))
-                .CheckMeasureResult(new PartialRender(400, 250));
+                .ExpectChildMeasure("decoration", new Size(400, 300), SpacePlan.FullRender(300, 100))
+                .ExpectChildMeasure("content", new Size(400, 200), SpacePlan.PartialRender(200, 150))
+                .CheckMeasureResult(SpacePlan.PartialRender(400, 250));
         }
         
         [Test]
@@ -84,9 +84,9 @@ namespace QuestPDF.UnitTests
                     ContentElement = x.CreateChild("content")
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("decoration", new Size(400, 300), new FullRender(300, 100))
-                .ExpectChildMeasure("content", new Size(400, 200), new FullRender(200, 150))
-                .CheckMeasureResult(new FullRender(400, 250));
+                .ExpectChildMeasure("decoration", new Size(400, 300), SpacePlan.FullRender(300, 100))
+                .ExpectChildMeasure("content", new Size(400, 200), SpacePlan.FullRender(200, 150))
+                .CheckMeasureResult(SpacePlan.FullRender(400, 250));
         }
         
         #endregion
@@ -104,7 +104,7 @@ namespace QuestPDF.UnitTests
                     ContentElement = x.CreateChild("content")
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("decoration", new Size(400, 300), new FullRender(300, 100))
+                .ExpectChildMeasure("decoration", new Size(400, 300), SpacePlan.FullRender(300, 100))
                 .ExpectChildDraw("decoration", new Size(400, 100))
                 .ExpectCanvasTranslate(0, 100)
                 .ExpectChildDraw("content", new Size(400, 200))
@@ -123,7 +123,7 @@ namespace QuestPDF.UnitTests
                     ContentElement = x.CreateChild("content")
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("decoration", new Size(400, 300), new FullRender(300, 100))
+                .ExpectChildMeasure("decoration", new Size(400, 300), SpacePlan.FullRender(300, 100))
                 .ExpectChildDraw("content", new Size(400, 200))
                 .ExpectCanvasTranslate(0, 200)
                 .ExpectChildDraw("decoration", new Size(400, 100))

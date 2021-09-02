@@ -1,5 +1,5 @@
 using System;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -9,20 +9,20 @@ namespace QuestPDF.Elements
         public bool ExtendVertical { get; set; }
         public bool ExtendHorizontal { get; set; }
         
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
-            var childSize = Child?.Measure(availableSpace) ?? new FullRender(Size.Zero);
+            var childSize = base.Measure(availableSpace);
 
-            if (childSize is Wrap)
+            if (childSize.Type == SpacePlanType.Wrap)
                 return childSize;
             
-            var targetSize = GetTargetSize(availableSpace, childSize as Size);
+            var targetSize = GetTargetSize(availableSpace, childSize);
             
-            if (childSize is PartialRender)
-                return new PartialRender(targetSize);
+            if (childSize.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(targetSize);
             
-            if (childSize is FullRender)
-                return new FullRender(targetSize);
+            if (childSize.Type == SpacePlanType.FullRender)
+                return SpacePlan.FullRender(targetSize);
             
             throw new NotSupportedException();
         }

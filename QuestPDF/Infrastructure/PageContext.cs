@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using QuestPDF.Elements;
 
 namespace QuestPDF.Infrastructure
 {

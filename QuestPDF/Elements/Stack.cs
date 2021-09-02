@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using IComponent = QuestPDF.Infrastructure.IComponent;
@@ -36,31 +35,31 @@ namespace QuestPDF.Elements
             Second = create(Second);
         }
         
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             var firstElement = IsFirstRendered ? Empty.Instance : First;
-            var firstSize = firstElement.Measure(availableSpace) as Size;
+            var firstSize = firstElement.Measure(availableSpace);
 
-            if (firstSize == null)
-                return new Wrap();
+            if (firstSize.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap();
             
-            if (firstSize is PartialRender partialRender)
-                return partialRender;
+            if (firstSize.Type == SpacePlanType.PartialRender)
+                return firstSize;
                 
             var spaceForSecond = new Size(availableSpace.Width, availableSpace.Height - firstSize.Height);
-            var secondSize = Second.Measure(spaceForSecond) as Size;
+            var secondSize = Second.Measure(spaceForSecond);
 
-            if (secondSize == null)
-                return new PartialRender(firstSize);
+            if (secondSize.Type == SpacePlanType.Wrap)
+                return SpacePlan.PartialRender(firstSize);
 
             var totalWidth = Math.Max(firstSize.Width, secondSize.Width);
             var totalHeight = firstSize.Height + secondSize.Height;
             var targetSize = new Size(totalWidth, totalHeight);
 
-            if (secondSize is PartialRender)
-                return new PartialRender(targetSize);
+            if (secondSize.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(targetSize);
                 
-            return new FullRender(targetSize);
+            return SpacePlan.FullRender(targetSize);
         }
 
         internal override void Draw(Size availableSpace)
@@ -69,29 +68,29 @@ namespace QuestPDF.Elements
 
             var firstMeasurement = firstElement.Measure(availableSpace);
 
-            if (firstMeasurement is FullRender)
+            if (firstMeasurement.Type == SpacePlanType.FullRender)
                 IsFirstRendered = true;
 
-            var firstSize = firstMeasurement as Size;
+            var firstSize = firstMeasurement;
 
-            if (firstSize != null)
+            if (firstSize.Type != SpacePlanType.Wrap)
                 firstElement.Draw(new Size(availableSpace.Width, firstSize.Height));
 
-            if (firstMeasurement is Wrap || firstMeasurement is PartialRender)
+            if (firstMeasurement.Type == SpacePlanType.Wrap || firstMeasurement.Type == SpacePlanType.PartialRender)
                 return;
 
-            var firstHeight = firstSize?.Height ?? 0;
+            var firstHeight = firstSize.Height;
             var spaceForSecond = new Size(availableSpace.Width, availableSpace.Height - firstHeight);
-            var secondMeasurement = Second?.Measure(spaceForSecond) as Size;
+            var secondMeasurement = Second.Measure(spaceForSecond);
 
-            if (secondMeasurement == null)
+            if (secondMeasurement.Type == SpacePlanType.Wrap)
                 return;
 
             Canvas.Translate(new Position(0, firstHeight));
             Second.Draw(new Size(availableSpace.Width, secondMeasurement.Height));
             Canvas.Translate(new Position(0, -firstHeight));
             
-            if (secondMeasurement is FullRender)
+            if (secondMeasurement.Type == SpacePlanType.FullRender)
                 IsFirstRendered = false;
         }
     }

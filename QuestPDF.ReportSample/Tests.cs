@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.ReportSample.Layouts;
 
@@ -45,7 +46,7 @@ namespace QuestPDF.ReportSample
             var sw = new Stopwatch();
             
             sw.Start();
-            var totalSize = reports.Select(x => x.GeneratePdf()).Sum(x => (long)x.Length);
+            var totalSize = MethodToOptimize();
             sw.Stop();
 
             // show summary
@@ -59,6 +60,11 @@ namespace QuestPDF.ReportSample
 
             if (speed < performanceTarget)
                 throw new Exception("Rendering algorithm is too slow.");
+
+            long MethodToOptimize()
+            {
+                return reports.Select(x => x.GeneratePdf()).Sum(x => (long)x.Length);
+            }
         }
     }
 }

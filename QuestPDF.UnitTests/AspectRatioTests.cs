@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
@@ -26,8 +26,8 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 201))
-                .ExpectChildMeasure(new Size(400, 200), new FullRender(100, 50))
-                .CheckMeasureResult(new FullRender(400, 200));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
+                .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
         
         [Test]
@@ -41,8 +41,8 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 201))
-                .ExpectChildMeasure(new Size(400, 200), new PartialRender(100, 50))
-                .CheckMeasureResult(new PartialRender(400, 200));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.PartialRender(100, 50))
+                .CheckMeasureResult(SpacePlan.PartialRender(400, 200));
         }
         
         [Test]
@@ -56,8 +56,8 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 201))
-                .ExpectChildMeasure(new Size(400, 200), new Wrap())
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.Wrap())
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -71,8 +71,8 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 201))
-                .ExpectChildMeasure(new Size(400, 200), new FullRender(100, 50))
-                .CheckMeasureResult(new FullRender(400, 200));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
+                .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
 
         [Test]
@@ -86,7 +86,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 199))
-                .CheckMeasureResult(new Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -100,8 +100,8 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(401, 200))
-                .ExpectChildMeasure(new Size(400, 200), new FullRender(100, 50))
-                .CheckMeasureResult(new FullRender(400, 200));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
+                .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
         
         [Test]
@@ -115,7 +115,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(399, 200))
-                .CheckMeasureResult(new Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -129,8 +129,8 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(400, 200), new FullRender(100, 50))
-                .CheckMeasureResult(new FullRender(400, 200));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
+                .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
         
         [Test]
@@ -144,8 +144,8 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(500, 200))
-                .ExpectChildMeasure(new Size(400, 200), new FullRender(100, 50))
-                .CheckMeasureResult(new FullRender(400, 200));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
+                .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
         
         [Test]

@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Equivalency;
 using NUnit.Framework;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;

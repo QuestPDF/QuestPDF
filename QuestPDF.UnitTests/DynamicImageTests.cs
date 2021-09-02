@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
@@ -20,7 +20,7 @@ namespace QuestPDF.UnitTests
                     Source = GenerateImage
                 })
                 .MeasureElement(new Size(300, 200))
-                .CheckMeasureResult(new FullRender(300, 200));
+                .CheckMeasureResult(SpacePlan.FullRender(300, 200));
         }
         
         [Test]
@@ -51,7 +51,7 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Draw_PassesCorrectSizeToSource()
         {
-            Size passedSize = null;
+            Size passedSize = default;
 
             TestPlan
                 .For(x => new DynamicImage

@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
@@ -24,8 +24,8 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure(new Size(400, 200), new Wrap())
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.Wrap())
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -39,8 +39,8 @@ namespace QuestPDF.UnitTests
                     ExtendVertical = true
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure(new Size(400, 200), new PartialRender(300, 100))
-                .CheckMeasureResult(new PartialRender(400, 200));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.PartialRender(300, 100))
+                .CheckMeasureResult(SpacePlan.PartialRender(400, 200));
         }
         
         [Test]
@@ -54,8 +54,8 @@ namespace QuestPDF.UnitTests
                     ExtendVertical = true
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure(new Size(400, 200), new FullRender(300, 100))
-                .CheckMeasureResult(new FullRender(400, 200));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(300, 100))
+                .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
         
         [Test]
@@ -69,8 +69,8 @@ namespace QuestPDF.UnitTests
                     ExtendVertical = false
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure(new Size(400, 200), new FullRender(100, 100))
-                .CheckMeasureResult(new FullRender(400, 100));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 100))
+                .CheckMeasureResult(SpacePlan.FullRender(400, 100));
         }
         
         [Test]
@@ -84,8 +84,8 @@ namespace QuestPDF.UnitTests
                     ExtendVertical = true
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure(new Size(400, 200), new FullRender(100, 100))
-                .CheckMeasureResult(new FullRender(100, 200));
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 100))
+                .CheckMeasureResult(SpacePlan.FullRender(100, 200));
         }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using Size = QuestPDF.Infrastructure.Size;
 
@@ -23,7 +23,7 @@ namespace QuestPDF.Elements
             base.HandleVisitor(visit);
         }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             TextElement.Value = GetText();
             return TextElement.Measure(availableSpace);

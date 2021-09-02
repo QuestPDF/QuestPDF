@@ -1,4 +1,4 @@
-﻿using QuestPDF.Drawing.SpacePlan;
+﻿using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.UnitTests.TestEngine.Operations
@@ -7,9 +7,9 @@ namespace QuestPDF.UnitTests.TestEngine.Operations
     {
         public string ChildId { get; }
         public Size Input { get; }
-        public ISpacePlan Output { get; }
+        public SpacePlan Output { get; }
 
-        public ChildMeasureOperationBase(string childId, Size input, ISpacePlan output)
+        public ChildMeasureOperationBase(string childId, Size input, SpacePlan output)
         {
             ChildId = childId;
             Input = input;

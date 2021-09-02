@@ -1,5 +1,5 @@
 using System;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -9,29 +9,29 @@ namespace QuestPDF.Elements
         public float Ratio { get; set; } = 1;
         public AspectRatioOption Option { get; set; } = AspectRatioOption.FitWidth;
         
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             if(Child == null)
-                return new FullRender(Size.Zero);
+                return SpacePlan.FullRender(0, 0);
             
             var targetSize = GetTargetSize(availableSpace);
             
             if (targetSize.Height > availableSpace.Height + Size.Epsilon)
-                return new Wrap();
+                return SpacePlan.Wrap();
             
             if (targetSize.Width > availableSpace.Width + Size.Epsilon)
-                return new Wrap();
+                return SpacePlan.Wrap();
 
-            var childSize = Child.Measure(targetSize);
+            var childSize = base.Measure(targetSize);
 
-            if (childSize is Wrap)
-                return new Wrap();
+            if (childSize.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap();
 
-            if (childSize is PartialRender)
-                return new PartialRender(targetSize);
+            if (childSize.Type == SpacePlanType.PartialRender)
+                return SpacePlan.PartialRender(targetSize);
 
-            if (childSize is FullRender)
-                return new FullRender(targetSize);
+            if (childSize.Type == SpacePlanType.FullRender)
+                return SpacePlan.FullRender(targetSize);
             
             throw new NotSupportedException();
         }
@@ -42,7 +42,7 @@ namespace QuestPDF.Elements
                 return;
             
             var size = GetTargetSize(availableSpace);
-            Child?.Draw(size);
+            base.Draw(size);
         }
         
         private Size GetTargetSize(Size availableSpace)
