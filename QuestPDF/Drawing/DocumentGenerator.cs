@@ -35,13 +35,14 @@ namespace QuestPDF.Drawing
             var metadata = document.GetMetadata();
             var pageContext = new PageContext();
 
-            ApplyElementProxy<CacheProxy>(content);
-            
-            RenderPass(pageContext, new FreeCanvas(), content, metadata);
-            RenderPass(pageContext, canvas, content, metadata);
+            //ApplyCaching(content);
+            var debuggingState = ApplyDebugging(content);
+
+            RenderPass(pageContext, new FreeCanvas(), content, metadata, debuggingState);
+            RenderPass(pageContext, canvas, content, metadata, debuggingState);
         }
         
-        private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata)
+        internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata, DebuggingState? debuggingState)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             content.HandleVisitor(x => x?.Initialize(pageContext, canvas));
@@ -54,10 +55,15 @@ namespace QuestPDF.Drawing
             while(true)
             {
                 pageContext.SetPageNumber(currentPage);
+                debuggingState?.Reset();
+                
                 var spacePlan = content.Measure(Size.Max);
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
-                    break;
+                {
+                    canvas.EndDocument();
+                    throw new DocumentDrawingException("An exception occured during document drawing.");
+                }
 
                 try
                 {
@@ -87,12 +93,24 @@ namespace QuestPDF.Drawing
             canvas.EndDocument();
         }
 
-        private static void ApplyElementProxy<TProxy>(Container content) where TProxy : ElementProxy, new()
+        private static void ApplyCaching(Container content)
         {
-            content.HandleVisitor(x => x.CreateProxy(y => new TProxy()
+            content.HandleVisitor(x => x.CreateProxy(y => new CacheProxy
             {
                 Child = y
             }));
+        }
+        
+        private static DebuggingState ApplyDebugging(Container content)
+        {
+            var debuggingState = new DebuggingState();
+            
+            content.HandleVisitor(x => x.CreateProxy(y => new DebuggingProxy(debuggingState)
+            {
+                Child = y
+            }));
+
+            return debuggingState;
         }
     }
 }

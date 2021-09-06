@@ -57,5 +57,10 @@ namespace QuestPDF.Elements
                 availableSpace.Width - Left - Right,
                 availableSpace.Height - Top - Bottom);
         }
+        
+        public override string ToString()
+        {
+            return $"Padding: Top({Top}) Right({Right}) Bottom({Bottom}) Left({Left})";
+        }
     }
 }

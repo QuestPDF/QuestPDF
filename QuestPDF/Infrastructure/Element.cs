@@ -26,5 +26,10 @@ namespace QuestPDF.Infrastructure
         
         internal abstract SpacePlan Measure(Size availableSpace);
         internal abstract void Draw(Size availableSpace);
+
+        public override string ToString()
+        {
+            return GetType().Name;
+        }
     }
 }

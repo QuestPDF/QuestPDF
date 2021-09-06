@@ -24,6 +24,11 @@ namespace QuestPDF.Elements
             Size = size;
             SetWidth(size);
         }
+        
+        public override string ToString()
+        {
+            return $"RowColumn: Constant({Size})";
+        }
     }
     
     internal class RelativeRowElement : RowElement
@@ -31,6 +36,11 @@ namespace QuestPDF.Elements
         public RelativeRowElement(float size)
         {
             Size = size;
+        }
+        
+        public override string ToString()
+        {
+            return $"RowColumn: Relative({Size})";
         }
     }
     

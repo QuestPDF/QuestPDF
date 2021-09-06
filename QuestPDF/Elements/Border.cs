@@ -36,5 +36,10 @@ namespace QuestPDF.Elements
                 new Size(Right, availableSpace.Height + Top/2 + Bottom/2), 
                 Color);
         }
+
+        public override string ToString()
+        {
+            return $"Border: Top({Top}) Right({Right}) Bottom({Bottom}) Left({Left}) Color({Color})";
+        }
     }
 }
