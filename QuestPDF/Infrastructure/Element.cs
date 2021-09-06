@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 
 namespace QuestPDF.Infrastructure
@@ -27,9 +29,9 @@ namespace QuestPDF.Infrastructure
         internal abstract SpacePlan Measure(Size availableSpace);
         internal abstract void Draw(Size availableSpace);
 
-        public override string ToString()
+        protected virtual IEnumerable<string> GetDebugInformation()
         {
-            return GetType().Name;
+            yield break;
         }
     }
 }

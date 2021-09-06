@@ -22,7 +22,7 @@ namespace QuestPDF.Fluent
                 var existingValue = Component.GetPropertyValue(selector);
 
                 if (existingValue != null)
-                    throw new DocumentComposeException($"The slot {selector.GetPropertyName()} of the component {(typeof( T).Name)} was already used.");
+                    throw new DocumentComposeException($"The slot {selector.GetPropertyName()} of the component {(typeof(T).Name)} was already used.");
 
                 var slot = new Slot();
                 Component.SetPropertyValue(selector, slot);
@@ -55,7 +55,10 @@ namespace QuestPDF.Fluent
         {
             var descriptor = new ComponentDescriptor<T>(component);
             handler?.Invoke(descriptor);
-            
+
+            if (System.Diagnostics.Debugger.IsAttached)
+                element = element.DebugPointer(component.GetType().Name, highlight: false);
+
             component.Compose(element.Container());
         }
         

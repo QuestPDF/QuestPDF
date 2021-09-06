@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
         Append
     }
     
-    internal class SimpleDecoration : Element
+    internal class BinaryDecoration : Element
     {
         public Element DecorationElement { get; set; } = Empty.Instance;
         public Element ContentElement { get; set; } = Empty.Instance;
@@ -83,11 +83,11 @@ namespace QuestPDF.Elements
 
         public void Compose(IContainer container)
         {
-            container.Element(new SimpleDecoration
+            container.Element(new BinaryDecoration
             {
                 Type = DecorationType.Prepend,
                 DecorationElement = Header,
-                ContentElement = new SimpleDecoration
+                ContentElement = new BinaryDecoration
                 {
                     Type = DecorationType.Append,
                     ContentElement = Content,

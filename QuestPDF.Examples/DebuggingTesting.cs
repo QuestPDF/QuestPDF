@@ -23,8 +23,8 @@ namespace QuestPDF.Examples
                         {
                             grid.Spacing(15);
                     
-                            grid.Item().Background(Colors.Grey.Medium).Height(50);
-                            grid.Item().Background(Colors.Grey.Lighten1).Height(1000); // <-- problem
+                            grid.Item().Background(Colors.Grey.Medium).Text(Placeholders.LoremIpsum());
+                            grid.Item().DebugPointer("Test").Background(Colors.Grey.Lighten1).Height(1000); // <-- problem
                             grid.Item().Background(Colors.Grey.Lighten2).Height(150);
                         });
                 });

@@ -5,7 +5,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Elements
 {
-    internal class Debug : IComponent
+    internal class DebugArea : IComponent
     {
         public IElement? Child { get; set; }
         
@@ -30,7 +30,7 @@ namespace QuestPDF.Elements
                         .Box()
                         .Background(Colors.White)
                         .Padding(2)
-                        .Text(Text, TextStyle.Default.Color(Color).FontType("Consolas").Size(8));
+                        .Text(Text, TextStyle.Default.Color(Color).FontType(Fonts.Consolas).Size(8));
                 });
         }
     }

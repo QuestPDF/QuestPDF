@@ -66,13 +66,13 @@ namespace QuestPDF.ReportSample.Layouts
         
         void PhotosElement(IContainer container, ReportSectionPhotos model)
         {
-            if (model.Photos.Count == 0)
+            if (model.Photos.Count == 0) 
             {
                 container.Text("No photos", Typography.Normal);
                 return;
             }
 
-            container.Debug("Photos").Grid(grid =>
+            container.DebugArea("Photos").Grid(grid =>
             {
                 grid.Spacing(5);
                 grid.Columns(3);

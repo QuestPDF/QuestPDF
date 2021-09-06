@@ -4,6 +4,8 @@ namespace QuestPDF.Drawing.Exceptions
 {
     public class DocumentLayoutException : Exception
     {
+        public string ElementTrace { get; set; }
+        
         public DocumentLayoutException()
         {
             

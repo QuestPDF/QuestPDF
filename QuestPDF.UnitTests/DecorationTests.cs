@@ -15,7 +15,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsWrap_WhenDecorationReturnsWrap()
         {
             TestPlan
-                .For(x => new SimpleDecoration
+                .For(x => new BinaryDecoration
                 {
                     Type = DecorationType.Append,
                     DecorationElement = x.CreateChild("decoration"),
@@ -30,7 +30,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsWrap_WhenDecorationReturnsPartialRender()
         {
             TestPlan
-                .For(x => new SimpleDecoration
+                .For(x => new BinaryDecoration
                 {
                     Type = DecorationType.Append,
                     DecorationElement = x.CreateChild("decoration"),
@@ -45,7 +45,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsWrap_WhenContentReturnsWrap()
         {
             TestPlan
-                .For(x => new SimpleDecoration
+                .For(x => new BinaryDecoration
                 {
                     Type = DecorationType.Append,
                     DecorationElement = x.CreateChild("decoration"),
@@ -61,7 +61,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsPartialRender_WhenContentReturnsPartialRender()
         {
             TestPlan
-                .For(x => new SimpleDecoration
+                .For(x => new BinaryDecoration
                 {
                     Type = DecorationType.Append,
                     DecorationElement = x.CreateChild("decoration"),
@@ -77,7 +77,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsFullRender_WhenContentReturnsFullRender()
         {
             TestPlan
-                .For(x => new SimpleDecoration
+                .For(x => new BinaryDecoration
                 {
                     Type = DecorationType.Append,
                     DecorationElement = x.CreateChild("decoration"),
@@ -97,7 +97,7 @@ namespace QuestPDF.UnitTests
         public void Draw_Prepend()
         {
             TestPlan
-                .For(x => new SimpleDecoration
+                .For(x => new BinaryDecoration
                 {
                     Type = DecorationType.Prepend,
                     DecorationElement = x.CreateChild("decoration"),
@@ -116,7 +116,7 @@ namespace QuestPDF.UnitTests
         public void Draw_Append()
         {
             TestPlan
-                .For(x => new SimpleDecoration
+                .For(x => new BinaryDecoration
                 {
                     Type = DecorationType.Append,
                     DecorationElement = x.CreateChild("decoration"),

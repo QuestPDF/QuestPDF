@@ -9,7 +9,7 @@ using IContainer = QuestPDF.Infrastructure.IContainer;
 
 namespace QuestPDF.Elements
 {
-    internal class SimpleStack : Element, IStateResettable
+    internal class BinaryStack : Element, IStateResettable
     {
         internal Element First { get; set; } = Empty.Instance;
         internal Element Second { get; set; } = Empty.Instance;
@@ -135,7 +135,7 @@ namespace QuestPDF.Elements
 
             var half = elements.Length / 2;
                 
-            return new SimpleStack
+            return new BinaryStack
             {
                 First = BuildTree(elements.Slice(0, half)),
                 Second = BuildTree(elements.Slice(half))

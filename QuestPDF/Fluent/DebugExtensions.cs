@@ -6,11 +6,11 @@ namespace QuestPDF.Fluent
 {
     public static class DebugExtensions
     {
-        public static IContainer Debug(this IContainer parent, string text, string color)
+        public static IContainer DebugArea(this IContainer parent, string text, string color)
         {
             var container = new Container();
 
-            parent.Component(new Debug
+            parent.Component(new DebugArea
             {
                 Child = container,
                 Text = text,
@@ -20,14 +20,32 @@ namespace QuestPDF.Fluent
             return container;
         }
         
-        public static IContainer Debug(this IContainer parent, string text)
+        public static IContainer DebugArea(this IContainer parent, string text)
         {
-            return parent.Debug(text, Colors.Red.Medium);
+            return parent.DebugArea(text, Colors.Red.Medium);
         }
 
-        public static IContainer Debug(this IContainer parent)
+        public static IContainer DebugArea(this IContainer parent)
         {
-            return parent.Debug(string.Empty, Colors.Red.Medium);
+            return parent.DebugArea(string.Empty, Colors.Red.Medium);
+        }
+        
+        /// <summary>
+        /// Creates a virtual element that is visible on the elements trace when the layout overflow exception is thrown.
+        /// This can be used to easily identify elements inside the elements trace tree and faster find issue root cause.
+        /// </summary>
+        public static IContainer DebugPointer(this IContainer parent, string elementTraceText)
+        {
+            return parent.DebugPointer(elementTraceText, true);
+        }
+        
+        internal static IContainer DebugPointer(this IContainer parent, string elementTraceText, bool highlight)
+        {
+            return parent.Element(new DebugPointer
+            {
+                Target = elementTraceText,
+                Highlight = highlight
+            });
         }
     }
 }

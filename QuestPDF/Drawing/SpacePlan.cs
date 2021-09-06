@@ -3,13 +3,6 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
 {
-    public enum SpacePlanType
-    {
-        Wrap,
-        PartialRender,
-        FullRender
-    }
-    
     public readonly struct SpacePlan
     {
         public readonly SpacePlanType Type;
@@ -35,7 +28,10 @@ namespace QuestPDF.Drawing
 
         public override string ToString()
         {
-            return $"{Type}({Width:N2};{Height:N2})";
+            if (Type == SpacePlanType.Wrap)
+                return Type.ToString();
+            
+            return $"{Type} | width {Width:N2} | height {Height:N2}";
         }
 
         public static implicit operator Size(SpacePlan spacePlan)

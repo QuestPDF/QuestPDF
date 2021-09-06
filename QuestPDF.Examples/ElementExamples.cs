@@ -155,7 +155,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(25)
-                        .Debug("Grid example", Colors.Blue.Medium)
+                        .DebugArea("Grid example", Colors.Blue.Medium)
                         .Grid(grid =>
                         {
                             grid.Columns(3);

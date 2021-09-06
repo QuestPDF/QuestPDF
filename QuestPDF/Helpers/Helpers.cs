@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace QuestPDF.Helpers
 {
@@ -34,6 +35,11 @@ namespace QuestPDF.Helpers
         {
             var property = selector.ToPropertyInfo() ?? throw new Exception("Expected property with getter and setter.");
             property?.SetValue(target, value);
+        }
+
+        internal static string PrettifyName(this string text)
+        {
+            return Regex.Replace(text, @"([a-z])([A-Z])", "$1 $2");
         }
     }
 }

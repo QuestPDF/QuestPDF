@@ -24,11 +24,6 @@ namespace QuestPDF.Elements
             Size = size;
             SetWidth(size);
         }
-        
-        public override string ToString()
-        {
-            return $"RowColumn: Constant({Size})";
-        }
     }
     
     internal class RelativeRowElement : RowElement
@@ -37,14 +32,9 @@ namespace QuestPDF.Elements
         {
             Size = size;
         }
-        
-        public override string ToString()
-        {
-            return $"RowColumn: Relative({Size})";
-        }
     }
     
-    internal class SimpleRow : Element
+    internal class BinaryRow : Element
     {
         internal Element Left { get; set; }
         internal Element Right { get; set; }
@@ -179,7 +169,7 @@ namespace QuestPDF.Elements
 
             var half = elements.Length / 2;
             
-            return new SimpleRow
+            return new BinaryRow
             {
                 Left = BuildTree(elements.Slice(0, half)),
                 Right = BuildTree(elements.Slice(half))

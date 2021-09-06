@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
+using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
@@ -35,8 +36,16 @@ namespace QuestPDF.Drawing
             var metadata = document.GetMetadata();
             var pageContext = new PageContext();
 
-            //ApplyCaching(content);
-            var debuggingState = ApplyDebugging(content);
+            DebuggingState debuggingState = null;
+
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                debuggingState = ApplyDebugging(content);
+            }
+            else
+            {
+                ApplyCaching(content);
+            }
 
             RenderPass(pageContext, new FreeCanvas(), content, metadata, debuggingState);
             RenderPass(pageContext, canvas, content, metadata, debuggingState);
@@ -62,7 +71,7 @@ namespace QuestPDF.Drawing
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
                     canvas.EndDocument();
-                    throw new DocumentDrawingException("An exception occured during document drawing.");
+                    ThrowLayoutException();
                 }
 
                 try
@@ -81,7 +90,7 @@ namespace QuestPDF.Drawing
                 if (currentPage >= documentMetadata.DocumentLayoutExceptionThreshold)
                 {
                     canvas.EndDocument();
-                    throw new DocumentLayoutException("Composed layout generates infinite document.");
+                    ThrowLayoutException();
                 }
                 
                 if (spacePlan.Type == SpacePlanType.FullRender)
@@ -91,6 +100,14 @@ namespace QuestPDF.Drawing
             }
             
             canvas.EndDocument();
+
+            void ThrowLayoutException()
+            {
+                throw new DocumentLayoutException("Composed layout generates infinite document.")
+                {
+                    ElementTrace = debuggingState?.BuildTrace() ?? "Debug trace is available only in the DEBUG mode."
+                };
+            }
         }
 
         private static void ApplyCaching(Container content)

@@ -15,7 +15,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsWrap_WhenLeftChildReturnsWrap()
         {
             TestPlan
-                .For(x => new SimpleRow
+                .For(x => new BinaryRow
                 {
                     Left = x.CreateChild("left"),
                     Right = x.CreateChild("right")
@@ -29,7 +29,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsWrap_WhenRightChildReturnsWrap()
         {
             TestPlan
-                .For(x => new SimpleRow
+                .For(x => new BinaryRow
                 {
                     Left = x.CreateChild("left"),
                     Right = x.CreateChild("right")
@@ -44,7 +44,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsPartialRender_WhenLeftChildReturnsPartialRender()
         {
             TestPlan
-                .For(x => new SimpleRow
+                .For(x => new BinaryRow
                 {
                     Left = x.CreateChild("left"),
                     Right = x.CreateChild("right")
@@ -59,7 +59,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsPartialRender_WhenRightChildReturnsPartialRender()
         {
             TestPlan
-                .For(x => new SimpleRow
+                .For(x => new BinaryRow
                 {
                     Left = x.CreateChild("left"),
                     Right = x.CreateChild("right")
@@ -74,7 +74,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsFullRender_WhenBothChildrenReturnFullRender()
         {
             TestPlan
-                .For(x => new SimpleRow
+                .For(x => new BinaryRow
                 {
                     Left = x.CreateChild("left"),
                     Right = x.CreateChild("right")
@@ -93,7 +93,7 @@ namespace QuestPDF.UnitTests
         public void Draw()
         {
             TestPlan
-                .For(x => new SimpleRow
+                .For(x => new BinaryRow
                 {
                     Left = x.CreateChild("left"),
                     Right = x.CreateChild("right")
