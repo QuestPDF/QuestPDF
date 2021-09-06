@@ -1,37 +1,37 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Running;
+using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NUnit.Framework;
 using QuestPDF.Drawing;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using QuestPDF.ReportSample.Layouts;
 
 namespace QuestPDF.ReportSample
 {
-    public class ReportGeneration
+    [SimpleJob(RunStrategy.Monitoring, launchCount: 0, warmupCount: 1, targetCount: 100)]
+    [MinColumn, MaxColumn, MeanColumn, MedianColumn]
+    public class PerformanceTests
     {
         private StandardReport Report { get; set; }
+
+        [Test]
+        public void Run()
+        {
+            BenchmarkRunner.Run<PerformanceTests>();
+        }
         
-        [SetUp]
-        public void SetUp()
+        [IterationSetup]
+        public void GenerateReportData()
         {
             var model = DataSource.GetReport();
             Report = new StandardReport(model);
         }
-        
-        [Test] 
-        public void GenerateAndShow()
-        {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
-            Report.GeneratePdf(path);
-            
-            Process.Start("explorer.exe", path);
-        }
-        
-        [Test] 
-        public void Profile()
+
+        [Benchmark]
+        public void GenerationTest()
         {
             var container = new DocumentContainer();
             Report.Compose(container);

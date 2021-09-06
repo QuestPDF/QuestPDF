@@ -6,7 +6,7 @@ namespace QuestPDF.ReportSample
 {
     public static class Helpers
     {
-        public static Random Random { get; } = new Random();
+        public static Random Random { get; } = new Random(1);
         
         public static string GetTestItem(string path) => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", path);
 
