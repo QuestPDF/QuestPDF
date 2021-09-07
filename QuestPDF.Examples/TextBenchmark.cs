@@ -93,7 +93,7 @@ namespace QuestPDF.Examples
                 var lineFrom = chapterPointers[index];
                 var lineTo = chapterPointers[index + 1] - 1;
                     
-                var lines = book.Skip(lineFrom + 1).Take(lineTo - lineFrom);
+                var lines = book.Skip(lineFrom + 1).Take(lineTo - lineFrom).Where(x => !string.IsNullOrWhiteSpace(x));
                 var content = string.Join(Environment.NewLine, lines);
 
                 yield return new BookChapter
@@ -158,7 +158,7 @@ namespace QuestPDF.Examples
                     {
                         stack.Item().InternalLink(chapter.Title).Row(row =>
                         {
-                            row.RelativeColumn().Text(chapter.Title);
+                            row.RelativeColumn().Text(chapter.Title, normalStyle);
                             row.ConstantColumn(100).AlignRight().Text(text => text.PageNumberOfLocation(chapter.Title, normalStyle));
                         });
                     }
