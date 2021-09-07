@@ -18,7 +18,7 @@
 
     <ItemGroup>
       <None Update="quo-vadis.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
 

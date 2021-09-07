@@ -26,19 +26,30 @@ namespace QuestPDF.Elements.Text.Items
         
         internal TextMeasurementResult? MeasureWithoutCache(TextMeasurementRequest request)
         {
+            const char space = ' ';
+            
             var paint = Style.ToPaint();
             var fontMetrics = Style.ToFontMetrics();
 
+            var startIndex = request.StartIndex;
+            
+            while (startIndex + 1 < Text.Length && Text[startIndex] == space)
+                startIndex++;
+            
             if (Text.Length == 0)
             {
                 return new TextMeasurementResult
                 {
-                    Width = request.AvailableWidth
+                    Width = 0,
+                    
+                    LineHeight = Style.LineHeight,
+                    Ascent = fontMetrics.Ascent,
+                    Descent = fontMetrics.Descent
                 };
             }
             
             // start breaking text from requested position
-            var text = Text.Substring(request.StartIndex);
+            var text = Text.Substring(startIndex);
             
             var breakingIndex = (int)paint.BreakText(text, request.AvailableWidth);
 
@@ -48,7 +59,7 @@ namespace QuestPDF.Elements.Text.Items
             // break text only on spaces
             if (breakingIndex < text.Length)
             {
-                var lastSpaceIndex = text.Substring(0, breakingIndex).LastIndexOf(" ");
+                var lastSpaceIndex = text.Substring(0, breakingIndex).LastIndexOf(space) - 1;
 
                 if (lastSpaceIndex <= 0)
                 {
@@ -62,6 +73,12 @@ namespace QuestPDF.Elements.Text.Items
             }
 
             text = text.Substring(0, breakingIndex);
+
+            var endIndex = startIndex + breakingIndex;
+            var nextIndex = endIndex;
+
+            while (nextIndex + 1 < Text.Length && Text[nextIndex] == space)
+                nextIndex++;
             
             // measure final text
             var width = paint.MeasureText(text);
@@ -75,8 +92,9 @@ namespace QuestPDF.Elements.Text.Items
      
                 LineHeight = Style.LineHeight,
                 
-                StartIndex = request.StartIndex,
-                EndIndex = request.StartIndex + breakingIndex,
+                StartIndex = startIndex,
+                EndIndex = endIndex,
+                NextIndex = nextIndex,
                 TotalIndex = Text.Length
             };
         }

@@ -112,7 +112,7 @@ namespace QuestPDF.Elements.Text
                 .ForEach(x => RenderingQueue.Dequeue());
 
             var lastElementMeasurement = lines.Last().Elements.Last().Measurement;
-            CurrentElementIndex = lastElementMeasurement.IsLast ? 0 : (lastElementMeasurement.EndIndex + 1);
+            CurrentElementIndex = lastElementMeasurement.IsLast ? 0 : lastElementMeasurement.NextIndex;
             
             if (!RenderingQueue.Any())
                 ResetState();
@@ -173,7 +173,7 @@ namespace QuestPDF.Elements.Text
                     });
 
                     currentWidth += measurementResponse.Width;
-                    currentItemIndex = measurementResponse.EndIndex;
+                    currentItemIndex = measurementResponse.NextIndex;
                     
                     if (!measurementResponse.IsLast)
                         break;
