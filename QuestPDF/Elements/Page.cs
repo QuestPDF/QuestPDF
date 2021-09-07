@@ -36,15 +36,22 @@ namespace QuestPDF.Elements
                 
                 .Decoration(decoration =>
                 {
-                    decoration.Header().Element(Header);
+                    decoration
+                        .Header()
+                        .DebugPointer("Page header")
+                        .Element(Header);
                     
                     decoration
                         .Content()
                         .Element(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
                         .Element(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
+                        .DebugPointer("Page content")
                         .Element(Content);
                     
-                    decoration.Footer().Element(Footer);
+                    decoration
+                        .Footer()
+                        .DebugPointer("Page footer")
+                        .Element(Footer);
                 });
 
             bool IsClose(float x, float y)
