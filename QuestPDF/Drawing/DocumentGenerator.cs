@@ -77,7 +77,7 @@ namespace QuestPDF.Drawing
                 if (currentPage >= documentMetadata.DocumentLayoutExceptionThreshold)
                 {
                     canvas.EndDocument();
-                    ThrowLayoutException();
+                    throw new DocumentLayoutException("Composed layout generates infinite document.");
                 }
                 
                 if (spacePlan is FullRender)
