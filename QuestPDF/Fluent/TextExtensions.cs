@@ -5,6 +5,7 @@ using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Infrastructure;
+using static System.String;
 
 namespace QuestPDF.Fluent
 {
@@ -53,6 +54,7 @@ namespace QuestPDF.Fluent
             style ??= DefaultStyle;
  
             var items = text
+                .Replace("\r", string.Empty)
                 .Split(new[] { '\n' }, StringSplitOptions.None)
                 .Select(x => new TextBlockSpan
                 {
