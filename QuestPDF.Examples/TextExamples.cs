@@ -89,9 +89,34 @@ namespace QuestPDF.Examples
                 });
         }
 
-        T MyFunc<T>(T arg)
+        [Test]
+        public void PageNumber()
         {
-            return arg;
+            RenderingTest
+                .Create()
+                .PageSize(500, 400)
+                .FileName()
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Box()
+                        .Border(1)
+                        .Padding(10)
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(TextStyle.Default);
+                            text.AlignLeft();
+                            text.ParagraphSpacing(10);
+
+                            text.Span("This is page number ");
+                            text.CurrentPageNumber();
+                            text.Span(" out of ");
+                            text.TotalPages();
+                        });
+                });
         }
     }
 }
