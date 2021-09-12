@@ -53,7 +53,7 @@ namespace QuestPDF.Fluent
             style ??= DefaultStyle;
  
             var items = text
-                .Split(new[] { Environment.NewLine }, StringSplitOptions.None)
+                .Split(new[] { '\n' }, StringSplitOptions.None)
                 .Select(x => new TextBlockSpan
                 {
                     Text = x,
@@ -73,7 +73,12 @@ namespace QuestPDF.Fluent
                 .ForEach(TextBlocks.Add);
         }
 
-        public void NewLine()
+        public void Line(string text)
+        {
+            Span(Environment.NewLine + text);
+        }
+        
+        public void EmptyLine()
         {
             Span(Environment.NewLine);
         }

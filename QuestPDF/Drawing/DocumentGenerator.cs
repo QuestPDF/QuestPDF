@@ -55,8 +55,11 @@ namespace QuestPDF.Drawing
                 pageContext.SetPageNumber(currentPage);
                 var spacePlan = content.Measure(Size.Max) as Size;
 
-                if (spacePlan == null)
-                    break;
+                if (spacePlan == null) 
+                {
+                    canvas.EndDocument();
+                    ThrowLayoutException();
+                }
 
                 try
                 {
@@ -74,7 +77,7 @@ namespace QuestPDF.Drawing
                 if (currentPage >= documentMetadata.DocumentLayoutExceptionThreshold)
                 {
                     canvas.EndDocument();
-                    throw new DocumentLayoutException("Composed layout generates infinite document.");
+                    ThrowLayoutException();
                 }
                 
                 if (spacePlan is FullRender)
@@ -84,6 +87,11 @@ namespace QuestPDF.Drawing
             }
             
             canvas.EndDocument();
+            
+            void ThrowLayoutException()
+            {
+                throw new DocumentLayoutException("Composed layout generates infinite document.");
+            }
         }
     }
 }
