@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements.Text.Calculation;
@@ -62,14 +63,9 @@ namespace QuestPDF.Elements.Text
             {
                 widthOffset = 0f;
 
-                var emptySpace = availableSpace.Width - line.Width;
+                var alignmentOffset = GetAlignmentOffset(line.Width);
 
-                if (Alignment == HorizontalAlignment.Center)
-                    emptySpace /= 2f;
-
-                if (Alignment != HorizontalAlignment.Left)
-                    Canvas.Translate(new Position(emptySpace, 0));
-                
+                Canvas.Translate(new Position(alignmentOffset, 0));
                 Canvas.Translate(new Position(0, -line.Ascent));
             
                 foreach (var item in line.Elements)
@@ -92,12 +88,10 @@ namespace QuestPDF.Elements.Text
                     widthOffset += item.Measurement.Width;
                 }
             
-                if (Alignment != HorizontalAlignment.Right)
-                    Canvas.Translate(new Position(emptySpace, 0));
-                
-                Canvas.Translate(new Position(-line.Width - emptySpace, line.Ascent));
-
+                Canvas.Translate(new Position(-alignmentOffset, 0));
+                Canvas.Translate(new Position(-line.Width, line.Ascent));
                 Canvas.Translate(new Position(0, line.LineHeight));
+                
                 heightOffset += line.LineHeight;
             }
             
@@ -116,6 +110,22 @@ namespace QuestPDF.Elements.Text
             
             if (!RenderingQueue.Any())
                 ResetState();
+
+            float GetAlignmentOffset(float lineWidth)
+            {
+                if (Alignment == HorizontalAlignment.Left)
+                    return 0;
+
+                var emptySpace = availableSpace.Width - lineWidth;
+
+                if (Alignment == HorizontalAlignment.Right)
+                    return emptySpace;
+
+                if (Alignment == HorizontalAlignment.Center)
+                    return emptySpace / 2;
+
+                throw new ArgumentException();
+            }
         }
 
         public IEnumerable<TextLine> DivideTextItemsIntoLines(float availableWidth, float availableHeight)

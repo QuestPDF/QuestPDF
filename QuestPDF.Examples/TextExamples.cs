@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
@@ -14,19 +15,52 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(PageSizes.A4)
+                .PageSize(500, 400)
                 .FileName()
-                .ProducePdf()
+                .ProduceImages()
                 .ShowResults()
                 .Render(container =>
                 {
                     container
-                        .Padding(20)
+                        .Padding(10)
                         .Box()
                         .Border(1)
-                        .Padding(5)
+                        .Padding(10)
                         .Text(text =>
                         {
+                            text.DefaultTextStyle(TextStyle.Default);
+                            text.AlignLeft();
+                            text.ParagraphSpacing(10);
+                            
+                            text.Span(Placeholders.LoremIpsum());
+                            
+                            text.NewLine();
+                            
+                            text.Span("This text is a normal text, ");
+                            text.Span("this is a bold text, ", TextStyle.Default.Bold());
+                            text.Span("this is a red and underlined text, ", TextStyle.Default.Color(Colors.Red.Medium).Underlined());
+                            text.Span("and this is slightly bigger text.", TextStyle.Default.Size(16));
+                            
+                            text.NewLine();
+                            
+                            text.Span("The new text element also supports injecting custom content between words: ");
+                            text.Element().PaddingBottom(-10).Height(16).Width(32).Image(Placeholders.Image);
+                            text.Span(".");
+                            
+                            text.NewLine();
+                            
+                            text.Span("This is page number ");
+                            text.CurrentPageNumber();
+                            text.Span(" out of ");
+                            text.TotalPages();
+                            
+                            text.NewLine();
+                            
+                            text.ExternalLocation("Please visit QuestPDF website", "https://www.questpdf.com");
+                            
+                            text.NewLine();
+                            
+                            /*
                             text.Span("Let's start with bold text. ", TextStyle.Default.Bold().BackgroundColor(Colors.Grey.Lighten3).Size(16));
                             text.Span("Then something bigger. ", TextStyle.Default.Size(28).Color(Colors.DeepOrange.Darken2).BackgroundColor(Colors.Yellow.Lighten3).Underlined());
                             text.Span("And tiny \r\n teeny-tiny. ", TextStyle.Default.Size(6));
@@ -50,9 +84,14 @@ namespace QuestPDF.Examples
                             // foreach (var i in Enumerable.Range(1, 100))
                             // {
                             //     text.Span($"{i}: {Placeholders.Sentence()} ", TextStyle.Default.Size(12 + i / 5).LineHeight(2.75f - i / 50f).Color(Placeholders.Color()).BackgroundColor(Placeholders.BackgroundColor()));   
-                            // }
+                            // }*/
                         });
                 });
+        }
+
+        T MyFunc<T>(T arg)
+        {
+            return arg;
         }
     }
 }
