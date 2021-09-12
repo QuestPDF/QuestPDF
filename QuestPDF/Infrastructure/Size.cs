@@ -30,13 +30,5 @@
             if (obj.GetType() != this.GetType()) return false;
             return Equals((Size) obj);
         }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return (Width.GetHashCode() * 397) ^ Height.GetHashCode();
-            }
-        }
     }
 }
