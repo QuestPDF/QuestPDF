@@ -27,7 +27,7 @@ namespace QuestPDF.Elements.Text
             if (!RenderingQueue.Any())
                 return new FullRender(Size.Zero);
             
-            var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height);
+            var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
 
             if (!lines.Any())
                 return new PartialRender(Size.Zero);
@@ -51,7 +51,7 @@ namespace QuestPDF.Elements.Text
 
         internal override void Draw(Size availableSpace)
         {
-            var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height + Size.Epsilon).ToList();
+            var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
             
             if (!lines.Any())
                 return;
