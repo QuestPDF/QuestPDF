@@ -33,8 +33,12 @@ namespace QuestPDF.Elements.Text.Items
 
             var startIndex = request.StartIndex;
             
-            while (startIndex + 1 < Text.Length && Text[startIndex] == space)
-                startIndex++;
+            if (request.IsFirstLineElement)
+            {
+                while (startIndex + 1 < Text.Length && Text[startIndex] == space)
+                    startIndex++;
+            }
+
             
             if (Text.Length == 0)
             {
