@@ -192,10 +192,7 @@ namespace QuestPDF.Elements.Text
                     queue.Dequeue();
                 }
 
-                return new TextLine
-                {
-                    Elements = currentLineElements
-                };
+                return TextLine.From(currentLineElements);
             }
         }
     }

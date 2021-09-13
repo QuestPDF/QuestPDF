@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
@@ -35,7 +36,7 @@ namespace QuestPDF.Examples
 
                             text.Span(Placeholders.LoremIpsum());
 
-                            text.Line("This is target text that does not show up. > This is a short sentence that will be wrapped into second line hopefully, right? <");
+                            text.Line($"This is target text that does not show up. {DateTime.UtcNow:T} > This is a short sentence that will be wrapped into second line hopefully, right? <");
                         });
                 });
         }
