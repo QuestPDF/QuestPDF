@@ -39,7 +39,6 @@ namespace QuestPDF.Elements.Text.Items
                     startIndex++;
             }
 
-            
             if (Text.Length == 0)
             {
                 return new TextMeasurementResult

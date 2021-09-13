@@ -10,6 +10,7 @@ namespace QuestPDF.Drawing
     public static class FontManager
     {
         private static ConcurrentDictionary<string, SKTypeface> Typefaces = new ConcurrentDictionary<string, SKTypeface>();
+        private static ConcurrentDictionary<string, SKFontMetrics> FontMetrics = new ConcurrentDictionary<string, SKFontMetrics>();
         private static ConcurrentDictionary<string, SKPaint> Paints = new ConcurrentDictionary<string, SKPaint>();
         private static ConcurrentDictionary<string, SKPaint> ColorPaint = new ConcurrentDictionary<string, SKPaint>();
 
@@ -58,15 +59,9 @@ namespace QuestPDF.Drawing
             }
         }
 
-        internal static TextMeasurement BreakText(this TextStyle style, string text, float availableWidth)
+        internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
-            var index = (int)style.ToPaint().BreakText(text, availableWidth, out var width);
-            
-            return new TextMeasurement()
-            {
-                LineIndex = index,
-                FragmentWidth = width
-            };
+            return FontMetrics.GetOrAdd(style.ToString(), key => style.ToPaint().FontMetrics);
         }
     }
 }
