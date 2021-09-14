@@ -115,11 +115,11 @@ namespace QuestPDF.Elements.Text.Items
             request.Canvas.DrawText(text, Position.Zero, Style);
 
             // draw underline
-            if (Style.IsUnderlined && fontMetrics.UnderlinePosition.HasValue)
+            if (Style.HasUnderline && fontMetrics.UnderlinePosition.HasValue)
                 DrawLine(fontMetrics.UnderlinePosition.Value, fontMetrics.UnderlineThickness.Value);
             
             // draw stroke
-            if (Style.IsStroked && fontMetrics.StrikeoutPosition.HasValue)
+            if (Style.HasStrikethrough && fontMetrics.StrikeoutPosition.HasValue)
                 DrawLine(fontMetrics.StrikeoutPosition.Value, fontMetrics.StrikeoutThickness.Value);
 
             void DrawLine(float offset, float thickness)

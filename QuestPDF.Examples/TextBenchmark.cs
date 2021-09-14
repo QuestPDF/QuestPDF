@@ -200,7 +200,7 @@ namespace QuestPDF.Examples
                         text.DefaultTextStyle(normalStyle);
                         
                         text.Span("Ten dokument został wygenerowany na podstawie książki w formacie TXT opublikowanej w serwisie ");
-                        text.ExternalLocation("wolnelektury.pl", "https://wolnelektury.pl/", normalStyle.Color(Colors.Blue.Medium).Underlined());
+                        text.ExternalLocation("wolnelektury.pl", "https://wolnelektury.pl/", normalStyle.Color(Colors.Blue.Medium).Underline());
                         text.Span(". Dziękuję za wspieranie polskiego czytelnictwa!");
                     });
                 });

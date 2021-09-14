@@ -37,7 +37,7 @@ namespace QuestPDF.Examples
 
                             text.Line(Placeholders.LoremIpsum());
 
-                            text.Span($"This is target text that does not show up. {DateTime.UtcNow:T} > This is a short sentence that will be wrapped into second line hopefully, right? <", TextStyle.Default.Underlined());
+                            text.Span($"This is target text that does not show up. {DateTime.UtcNow:T} > This is a short sentence that will be wrapped into second line hopefully, right? <", TextStyle.Default.Underline());
                         });
                 });
         }
@@ -102,7 +102,7 @@ namespace QuestPDF.Examples
 
                             text.Span("This text is a normal text, ");
                             text.Span("this is a bold text, ", TextStyle.Default.Bold());
-                            text.Span("this is a red and underlined text, ", TextStyle.Default.Color(Colors.Red.Medium).Underlined());
+                            text.Span("this is a red and underlined text, ", TextStyle.Default.Color(Colors.Red.Medium).Underline());
                             text.Span("and this is slightly bigger text.", TextStyle.Default.Size(16));
 
                             text.EmptyLine();
@@ -162,7 +162,7 @@ namespace QuestPDF.Examples
 
                             text.Span("This text is a normal text, ");
                             text.Span("this is a bold text, ", TextStyle.Default.Bold());
-                            text.Span("this is a red and underlined text, ", TextStyle.Default.Color(Colors.Red.Medium).Underlined());
+                            text.Span("this is a red and underlined text, ", TextStyle.Default.Color(Colors.Red.Medium).Underline());
                             text.Span("and this is slightly bigger text.", TextStyle.Default.Size(16));
                             
                             text.Span("The new text element also supports injecting custom content between words: ");

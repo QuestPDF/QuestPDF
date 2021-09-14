@@ -43,14 +43,14 @@ namespace QuestPDF.Fluent
             return style.Mutate(x => x.IsItalic = value);
         }
         
-        public static TextStyle Stroked(this TextStyle style, bool value = true)
+        public static TextStyle Strikethrough(this TextStyle style, bool value = true)
         {
-            return style.Mutate(x => x.IsStroked = value);
+            return style.Mutate(x => x.HasStrikethrough = value);
         }
         
-        public static TextStyle Underlined(this TextStyle style, bool value = true)
+        public static TextStyle Underline(this TextStyle style, bool value = true)
         {
-            return style.Mutate(x => x.IsUnderlined = value);
+            return style.Mutate(x => x.HasUnderline = value);
         }
 
         #region Weight

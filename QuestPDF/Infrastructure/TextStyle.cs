@@ -11,8 +11,8 @@ namespace QuestPDF.Infrastructure
         internal float LineHeight { get; set; } = 1.2f;
         internal FontWeight FontWeight { get; set; } = FontWeight.Normal;
         internal bool IsItalic { get; set; } = false;
-        internal bool IsStroked { get; set; } = false;
-        internal bool IsUnderlined { get; set; } = false;
+        internal bool HasStrikethrough { get; set; } = false;
+        internal bool HasUnderline { get; set; } = false;
 
         public static TextStyle Default => new TextStyle();
 
@@ -20,7 +20,7 @@ namespace QuestPDF.Infrastructure
         
         public override string ToString()
         {
-            KeyCache ??= $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{FontWeight}|{IsItalic}|{IsStroked}|{IsUnderlined}";
+            KeyCache ??= $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{FontWeight}|{IsItalic}|{HasStrikethrough}|{HasUnderline}";
             return KeyCache;
         }
 
