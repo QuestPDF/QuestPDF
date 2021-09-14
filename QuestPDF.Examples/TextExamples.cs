@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
@@ -34,9 +35,39 @@ namespace QuestPDF.Examples
                             text.AlignLeft();
                             text.ParagraphSpacing(10);
 
-                            text.Span(Placeholders.LoremIpsum());
+                            text.Line(Placeholders.LoremIpsum());
 
-                            text.Line($"This is target text that does not show up. {DateTime.UtcNow:T} > This is a short sentence that will be wrapped into second line hopefully, right? <");
+                            text.Span($"This is target text that does not show up. {DateTime.UtcNow:T} > This is a short sentence that will be wrapped into second line hopefully, right? <", TextStyle.Default.Underlined());
+                        });
+                });
+        }
+        
+        [Test]
+        public void TextStack()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(PageSizes.A4)
+                .FileName()
+                .ProducePdf()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(20)
+                        .Padding(10)
+                        .Box()
+                        .Border(1)
+                        .Padding(5)
+                        .Padding(10)
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(TextStyle.Default);
+                            text.AlignLeft();
+                            text.ParagraphSpacing(10);
+                            
+                            foreach (var i in Enumerable.Range(1, 100))
+                                text.Line($"{i}: {Placeholders.Paragraph()}");
                         });
                 });
         }

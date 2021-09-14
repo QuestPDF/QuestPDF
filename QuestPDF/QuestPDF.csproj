@@ -22,7 +22,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SkiaSharp" Version="2.80.2" />
+      <PackageReference Include="SkiaSharp" Version="2.80.3" />
     </ItemGroup>
 
     <ItemGroup>

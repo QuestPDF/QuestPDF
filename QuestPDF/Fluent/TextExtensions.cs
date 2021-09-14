@@ -77,7 +77,7 @@ namespace QuestPDF.Fluent
 
         public void Line(string text)
         {
-            Span(Environment.NewLine + text);
+            Span(text + Environment.NewLine);
         }
         
         public void EmptyLine()

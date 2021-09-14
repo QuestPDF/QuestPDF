@@ -15,10 +15,18 @@ namespace QuestPDF.Elements.Text.Calculation
         public float Ascent { get; private set; }
         public float Descent { get; private set; }
 
-        public float Width { get; private set; } 
-
+        public float Width { get; private set; }
+        
         public static TextLine From(ICollection<TextLineElement> elements)
         {
+            if (elements.Count == 0)
+            {
+                return new TextLine
+                {
+                    Elements = elements
+                };
+            }
+            
             var textHeight = elements.Max(x => x.Measurement.Height);
             var lineHeight = elements.Max(x => x.Measurement.LineHeight * x.Measurement.Height);
             
