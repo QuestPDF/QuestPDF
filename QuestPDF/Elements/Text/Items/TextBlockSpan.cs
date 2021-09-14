@@ -54,15 +54,18 @@ namespace QuestPDF.Elements.Text.Items
             // start breaking text from requested position
             var text = Text.Substring(startIndex);
             
-            var breakingIndex = (int)paint.BreakText(text, request.AvailableWidth);
+            var textLength = (int)paint.BreakText(text, request.AvailableWidth);
 
-            if (breakingIndex <= 0)
+            if (textLength <= 0)
                 return null;
+
+            if (textLength < text.Length && text[textLength] == space)
+                textLength++;
             
             // break text only on spaces
-            if (breakingIndex < text.Length)
+            if (textLength < text.Length)
             {
-                var lastSpaceIndex = text.Substring(0, breakingIndex).LastIndexOf(space) - 1;
+                var lastSpaceIndex = text.Substring(0, textLength).LastIndexOf(space) - 1;
 
                 if (lastSpaceIndex <= 0)
                 {
@@ -71,13 +74,13 @@ namespace QuestPDF.Elements.Text.Items
                 }
                 else
                 {
-                    breakingIndex = lastSpaceIndex + 1;
+                    textLength = lastSpaceIndex + 1;
                 }
             }
 
-            text = text.Substring(0, breakingIndex);
+            text = text.Substring(0, textLength);
 
-            var endIndex = startIndex + breakingIndex;
+            var endIndex = startIndex + textLength;
             var nextIndex = endIndex;
 
             while (nextIndex + 1 < Text.Length && Text[nextIndex] == space)
