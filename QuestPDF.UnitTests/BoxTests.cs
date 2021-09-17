@@ -10,6 +10,9 @@ namespace QuestPDF.UnitTests
     public class BoxTests
     {
         [Test]
+        public void Measure() => SimpleContainerTests.Measure<Box>();
+        
+        [Test]
         public void Draw_Wrap()
         {
             TestPlan

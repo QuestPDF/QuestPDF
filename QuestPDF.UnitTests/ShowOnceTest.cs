@@ -11,27 +11,7 @@ namespace QuestPDF.UnitTests
     public class ShowOnceTest
     {
         [Test]
-        public void ShouldRenderOnce_WhenRenderingCalledMultipleTimes()
-        {
-            var child = new Mock<Element>();
-            
-            child
-                .Setup(x => x.Measure(It.IsAny<Size>()))
-                .Returns(() => new FullRender(Size.Zero));
-
-            var element = new ShowOnce()
-            {
-                Child = child.Object
-            };
-
-            element.Draw(Size.Zero);
-            element.Draw(Size.Zero);
-            
-            child.Verify(x => x.Draw(It.IsAny<Size>()), Times.Once);
-        }
-        
-        [Test]
-        public void Draw_HorizontalRight_VerticalTop()
+        public void Draw()
         {
             TestPlan
                 .For(x => new ShowOnce()

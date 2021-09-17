@@ -81,5 +81,8 @@ namespace QuestPDF.UnitTests
                 .ExpectChildMeasure(new Size(400, 200), new FullRender(100, 100))
                 .CheckMeasureResult(new FullRender(100, 200));
         }
+
+        [Test]
+        public void Draw() => SimpleContainerTests.Draw<Extend>();
     }
 }

@@ -10,6 +10,9 @@ namespace QuestPDF.UnitTests
     public class RotateTests
     {
         [Test]
+        public void Measure() => SimpleContainerTests.Measure<Rotate>();
+
+        [Test]
         public void Draw()
         {
             TestPlan

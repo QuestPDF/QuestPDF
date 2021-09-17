@@ -10,6 +10,8 @@ namespace QuestPDF.UnitTests
     public class AlignmentTests
     {
         [Test]
+        public void Measure() => SimpleContainerTests.Measure<Alignment>();
+        [Test]
         public void Draw_HorizontalCenter_VerticalCenter()
         {
             TestPlan

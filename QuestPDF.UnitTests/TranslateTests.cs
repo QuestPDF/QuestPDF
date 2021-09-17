@@ -10,6 +10,9 @@ namespace QuestPDF.UnitTests
     public class TranslateTests
     {
         [Test]
+        public void Measure() => SimpleContainerTests.Measure<Translate>();
+        
+        [Test]
         public void Draw()
         {
             TestPlan

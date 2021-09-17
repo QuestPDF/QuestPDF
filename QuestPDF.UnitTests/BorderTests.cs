@@ -11,6 +11,9 @@ namespace QuestPDF.UnitTests
     public class BorderTests
     {
         [Test]
+        public void Measure() => SimpleContainerTests.Measure<Border>();
+        
+        [Test]
         public void ComponentShouldNotAffectLayout()
         {
             TestPlan
