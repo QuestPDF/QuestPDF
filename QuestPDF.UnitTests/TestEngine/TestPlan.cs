@@ -55,6 +55,23 @@ namespace QuestPDF.UnitTests.TestEngine
                     
                     //position.Should().BeEquivalentTo(expected.Position);
                 },
+                RotateFunc = angle =>
+                {
+                    var expected = GetExpected<CanvasRotateOperation>();
+
+                    Assert.AreEqual(expected.Angle, angle, "Rotate angle");
+                    
+                    //position.Should().BeEquivalentTo(expected.Position);
+                },
+                ScaleFunc = (scaleX, scaleY) =>
+                {
+                    var expected = GetExpected<CanvasScaleOperation>();
+
+                    Assert.AreEqual(expected.ScaleX, scaleX, "Scale X");
+                    Assert.AreEqual(expected.ScaleY, scaleY, "Scale Y");
+                    
+                    //position.Should().BeEquivalentTo(expected.Position);
+                },
                 DrawRectFunc = (position, size, color) =>
                 {
                     var expected = GetExpected<CanvasDrawRectangleOperationBase>();
@@ -188,6 +205,16 @@ namespace QuestPDF.UnitTests.TestEngine
             return AddOperation(new CanvasTranslateOperationBase(new Position(left, top)));
         }
 
+        public TestPlan ExpectCanvasScale(float scaleX, float scaleY)
+        {
+            return AddOperation(new CanvasScaleOperation(scaleX, scaleY));
+        }
+        
+        public TestPlan ExpectCanvasRotate(float angle)
+        {
+            return AddOperation(new CanvasRotateOperation(angle));
+        }
+        
         public TestPlan ExpectCanvasDrawRectangle(Position position, Size size, string color)
         {
             return AddOperation(new CanvasDrawRectangleOperationBase(position, size, color));

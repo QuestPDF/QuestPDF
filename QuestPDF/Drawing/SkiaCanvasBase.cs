@@ -54,5 +54,15 @@ namespace QuestPDF.Drawing
         {
             Canvas.DrawNamedDestinationAnnotation(new SKPoint(0, 0), locationName);
         }
+
+        public void Rotate(float angle)
+        {
+            Canvas.RotateDegrees(angle);
+        }
+
+        public void Scale(float scaleX, float scaleY)
+        {
+            Canvas.Scale(scaleX, scaleY);
+        }
     }
 }
