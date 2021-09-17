@@ -10,12 +10,6 @@ namespace QuestPDF.UnitTests
     public class ConstrainedTests
     {
         [Test]
-        public void Measure_ShouldHandleNullChild() => new Constrained().MeasureWithoutChild();
-        
-        [Test]
-        public void Draw_ShouldHandleNullChild() => new Constrained().DrawWithoutChild();
-
-        [Test]
         public void Measure_MinHeight_ExpectWrap()
         {
             TestPlan

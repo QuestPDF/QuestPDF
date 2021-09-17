@@ -11,9 +11,6 @@ namespace QuestPDF.UnitTests
     public class BorderTests
     {
         [Test]
-        public void Measure_ShouldHandleNullChild() => new Border().MeasureWithoutChild();
-
-        [Test]
         public void ComponentShouldNotAffectLayout()
         {
             TestPlan

@@ -11,12 +11,6 @@ namespace QuestPDF.UnitTests
     public class ShowOnceTest
     {
         [Test]
-        public void Measure_ShouldHandleNullChild() => new ShowOnce().MeasureWithoutChild();
-        
-        [Test]
-        public void Draw_ShouldHandleNullChild() => new ShowOnce().DrawWithoutChild();
-
-        [Test]
         public void ShouldRenderOnce_WhenRenderingCalledMultipleTimes()
         {
             var child = new Mock<Element>();

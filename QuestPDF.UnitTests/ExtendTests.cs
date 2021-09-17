@@ -10,12 +10,6 @@ namespace QuestPDF.UnitTests
     public class ExtendTests
     {
         [Test]
-        public void Measure_ShouldHandleNullChild() => new Extend().MeasureWithoutChild();
-        
-        [Test]
-        public void Draw_ShouldHandleNullChild() => new Extend().DrawWithoutChild();
-        
-        [Test]
         public void Measure_ReturnsWrap_WhenChildReturnsWrap()
         {
             TestPlan
