@@ -12,6 +12,7 @@ namespace QuestPDF.UnitTests
             AssertionOptions.AssertEquivalencyUsing(options => options
                 .IncludingNestedObjects()
                 .IncludingInternalProperties()
+                .IncludingInternalFields()
                 .AllowingInfiniteRecursion()
                 .RespectingRuntimeTypes()
                 .WithTracing()

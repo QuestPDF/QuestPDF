@@ -2,9 +2,9 @@
 
 namespace QuestPDF.UnitTests.TestEngine.Operations
 {
-    public class ElementMeasureOperationBase : OperationBase
+    public class ElementMeasureOperation : OperationBase
     {
-        public ElementMeasureOperationBase(Size input)
+        public ElementMeasureOperation(Size input)
         {
             
         }
