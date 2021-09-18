@@ -63,7 +63,7 @@ namespace QuestPDF.UnitTests
                 });
             });
             
-            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
+            structure.Should().BeEquivalentTo(expected);
         }
         
         [Test]
@@ -120,7 +120,7 @@ namespace QuestPDF.UnitTests
                 });
             });
 
-            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
+            structure.Should().BeEquivalentTo(expected);
         }
         
         [Test]
@@ -174,7 +174,7 @@ namespace QuestPDF.UnitTests
                 });
             });
             
-            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
+            structure.Should().BeEquivalentTo(expected);
         }
         
         #endregion
@@ -244,7 +244,7 @@ namespace QuestPDF.UnitTests
                 });
             });
             
-            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties().AllowingInfiniteRecursion());
+            structure.Should().BeEquivalentTo(expected);
         }
         
         #endregion
