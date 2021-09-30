@@ -6,6 +6,7 @@ using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine.Operations;
 
@@ -253,11 +254,9 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public static Element CreateUniqueElement()
         {
-            var value = Random.Next(0x1000000);
-            
-            return new Background
+            return new DynamicImage
             {
-                Color = $"#{value:X6}"
+                Source = Placeholders.Image
             };
         }
 

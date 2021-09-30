@@ -28,13 +28,13 @@ namespace QuestPDF.ReportSample.Layouts
                     {
                         foreach (var part in Model.Parts)
                         {
-                            stack.Item().Row(row =>
+                            stack.Item().EnsureSpace(25).Row(row =>
                             {
                                 row.ConstantColumn(150).LabelCell().Text(part.Label, Typography.Normal);
                                 var frame = row.RelativeColumn().ValueCell();
                             
                                 if (part is ReportSectionText text)
-                                    frame.Text(text.Text, Typography.Normal);
+                                    frame.ShowEntire().Text(text.Text, Typography.Normal);
                         
                                 if (part is ReportSectionMap map)
                                     frame.Element(x => MapElement(x, map));

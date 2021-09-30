@@ -1,14 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
@@ -81,7 +77,7 @@ namespace QuestPDF.Drawing
                 if (currentPage >= documentMetadata.DocumentLayoutExceptionThreshold)
                 {
                     canvas.EndDocument();
-                    ThrowLayoutException();
+                    throw new DocumentLayoutException("Composed layout generates infinite document.");
                 }
                 
                 if (spacePlan is FullRender)

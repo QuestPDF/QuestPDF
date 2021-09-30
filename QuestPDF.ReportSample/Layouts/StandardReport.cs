@@ -34,7 +34,15 @@ namespace QuestPDF.ReportSample.Layouts
                         
                     page.Header().Element(ComposeHeader);
                     page.Content().Element(ComposeContent);
-                    page.Footer().AlignCenter().PageNumber();
+                    
+                    page.Footer().AlignCenter().Text(text =>
+                    {
+                        text.DefaultTextStyle(Typography.Normal);
+                        
+                        text.CurrentPageNumber();
+                        text.Span(" / ");
+                        text.TotalPages();
+                    });
                 });
         }
 
@@ -59,10 +67,10 @@ namespace QuestPDF.ReportSample.Layouts
                         
                     foreach (var field in Model.HeaderFields)
                     {
-                        grid.Item().Stack(row =>
-                        {   
-                            row.Item().AlignLeft().Text(field.Label, Typography.Normal.SemiBold());
-                            row.Item().Text(field.Value, Typography.Normal);
+                        grid.Item().Text(text =>
+                        {
+                            text.Span($"{field.Label}: ", Typography.Normal.SemiBold());
+                            text.Span(field.Value, Typography.Normal);
                         });
                     }
                 });
@@ -76,6 +84,8 @@ namespace QuestPDF.ReportSample.Layouts
                 stack.Spacing(20);
 
                 stack.Item().Component(new TableOfContentsTemplate(Model.Sections));
+                
+                stack.Item().PageBreak();
                 
                 foreach (var section in Model.Sections)
                     stack.Item().Location(section.Title).Component(new SectionTemplate(section));
