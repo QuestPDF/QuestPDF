@@ -4,7 +4,7 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2021.10.0</Version>
+        <Version>2021.10.1</Version>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.</PackageDescription>
         <PackageReleaseNotes>Enhanced text rendering capabilities. Improved rendering performance.</PackageReleaseNotes>
         <LangVersion>8</LangVersion>

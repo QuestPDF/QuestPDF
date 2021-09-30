@@ -75,6 +75,11 @@ namespace QuestPDF.Fluent
                 .ForEach(TextBlocks.Add);
         }
 
+        public void Line(string text, TextStyle? style = null)
+        {
+            Span(text + Environment.NewLine, style);
+        }
+        
         public void Line(string text)
         {
             Span(text + Environment.NewLine);
@@ -144,7 +149,7 @@ namespace QuestPDF.Fluent
                 Element = container
             });
             
-            return container.Box();
+            return container.AlignBottom().Box();
         }
         
         internal void Compose(IContainer container)

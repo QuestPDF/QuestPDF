@@ -12,6 +12,92 @@ namespace QuestPDF.Examples
     public class TextExamples
     {
         [Test]
+        public void SimpleTextBlock()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 300)
+                .FileName()
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(5)
+                        .Box()
+                        .Border(1)
+                        .Padding(10)
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(TextStyle.Default.Size(20));
+                            text.Span("This is a normal text, followed by an ");
+                            text.Span("underlined red text.", TextStyle.Default.Size(20).Color(Colors.Red.Medium).Underline());
+                        });
+                });
+        }
+        
+        [Test]
+        public void ParagraphSpacing()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 300)
+                .FileName()
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(5)
+                        .Box()
+                        .Border(1)
+                        .Padding(10)
+                        .Text(text =>
+                        {
+                            text.ParagraphSpacing(10);
+    
+                            foreach (var i in Enumerable.Range(1, 3))
+                            {
+                                text.Span($"Paragraph {i}: ", TextStyle.Default.SemiBold());
+                                text.Line(Placeholders.Paragraph());
+                            }
+                        });
+                });
+        }
+        
+        [Test]
+        public void CustomElement()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 200)
+                .FileName()
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(5)
+                        .Box()
+                        .Border(1)
+                        .Padding(10)
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(TextStyle.Default.Size(20));
+                            text.Span("This is a random image aligned to the baseline: ");
+                            
+                            text.Element()
+                                .PaddingBottom(-6)
+                                .Height(24)
+                                .Width(48)
+                                .Image(Placeholders.Image);
+                            
+                            text.Span(".");
+                        });
+                });
+        }
+        
+        [Test]
         public void TextElements()
         {
             RenderingTest
