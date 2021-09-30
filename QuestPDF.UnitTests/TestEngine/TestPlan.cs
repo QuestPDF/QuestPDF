@@ -254,9 +254,15 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public static Element CreateUniqueElement()
         {
-            return new DynamicImage
+            return new Constrained
             {
-                Source = Placeholders.Image
+                MinWidth = 90,
+                MinHeight = 60,
+                
+                Child = new DynamicImage
+                {
+                    Source = Placeholders.Image
+                }
             };
         }
 

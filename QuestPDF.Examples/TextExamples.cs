@@ -37,7 +37,7 @@ namespace QuestPDF.Examples
 
                             text.Line(Placeholders.LoremIpsum());
 
-                            text.Span($"This is target text that does not show up. {DateTime.UtcNow:T} > This is a short sentence that will be wrapped into second line hopefully, right? <", TextStyle.Default.Underline());
+                            text.Span($"This is target text that should show up. {DateTime.UtcNow:T} > This is a short sentence that will be wrapped into second line hopefully, right? <", TextStyle.Default.Underline());
                         });
                 });
         }
@@ -174,8 +174,6 @@ namespace QuestPDF.Examples
                             foreach (var i in Enumerable.Range(1, 100))
                             {
                                 text.Line($"{i}: {Placeholders.Paragraph()}");
-                                
-                                text.EmptyLine();
 
                                 text.ExternalLocation("Please visit QuestPDF website", "https://www.questpdf.com");
                                 
@@ -183,6 +181,8 @@ namespace QuestPDF.Examples
                                 text.CurrentPageNumber();
                                 text.Span(" out of ");
                                 text.TotalPages();
+                                
+                                text.EmptyLine();
                             }
                         });
                 });

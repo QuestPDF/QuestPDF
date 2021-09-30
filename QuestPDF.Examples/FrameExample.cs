@@ -23,12 +23,13 @@ namespace QuestPDF.Examples
     public class FrameExample
     {
         [Test]
-        public void Frame(IContainer container)
+        public void Frame()
         {
             RenderingTest
                 .Create()
                 .PageSize(550, 400)
                 .FileName()
+                .ShowResults()
                 .Render(container =>
                 {
                     container
