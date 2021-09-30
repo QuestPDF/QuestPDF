@@ -55,7 +55,7 @@ Here you can find an example code showing how easy is to write and understand th
 
 **General document structure** with header, content and footer:
 
-```
+```csharp
 public void Compose(IDocumentContainer container)
 {
     container
@@ -78,7 +78,7 @@ public void Compose(IDocumentContainer container)
 
 **The header area** consists of basic invoice information along with a logo placeholder.
 
-```
+```csharp
 void ComposeHeader(IContainer container)
 {
     var titleTextStyle = TextStyle.Default.Size(20).SemiBold().Color(Colors.Blue.Medium);
@@ -109,7 +109,7 @@ void ComposeHeader(IContainer container)
 
 Implementation of **the content area** that contains seller and customer details, then listing of all bought products, then a comments section.
 
-```
+```csharp
 void ComposeContent(IContainer container)
 {
     container.PaddingVertical(40).Stack(column => 
@@ -141,7 +141,7 @@ void ComposeContent(IContainer container)
 
 **The table and comments** codes are extracted into separate methods to increase clarity:
 
-```
+```csharp
 void ComposeTable(IContainer container)
 {
     var headerStyle = TextStyle.Default.SemiBold();
@@ -185,7 +185,7 @@ void ComposeTable(IContainer container)
 }
 ```
 
-```
+```csharp
 void ComposeComments(IContainer container)
 {
     container.ShowEntire().Background(Colors.Grey.Lighten3).Padding(10).Stack(message => 
@@ -199,7 +199,7 @@ void ComposeComments(IContainer container)
 
 **The address details section** is implemented using components. This way the code can be easily reused for both seller and customer:
 
-```
+```csharp
 public class AddressComponent : IComponent
 {
     private string Title { get; }
