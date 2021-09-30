@@ -13,5 +13,8 @@ namespace QuestPDF.Infrastructure
         void DrawExternalLink(string url, Size size);
         void DrawLocationLink(string locationName, Size size);
         void DrawLocation(string locationName);
+        
+        void Rotate(float angle);
+        void Scale(float scaleX, float scaleY);
     }
 }

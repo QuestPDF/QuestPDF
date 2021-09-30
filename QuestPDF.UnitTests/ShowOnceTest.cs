@@ -1,5 +1,4 @@
-﻿using Moq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
@@ -11,33 +10,7 @@ namespace QuestPDF.UnitTests
     public class ShowOnceTest
     {
         [Test]
-        public void Measure_ShouldHandleNullChild() => new ShowOnce().MeasureWithoutChild();
-        
-        [Test]
-        public void Draw_ShouldHandleNullChild() => new ShowOnce().DrawWithoutChild();
-
-        [Test]
-        public void ShouldRenderOnce_WhenRenderingCalledMultipleTimes()
-        {
-            var child = new Mock<Element>();
-            
-            child
-                .Setup(x => x.Measure(It.IsAny<Size>()))
-                .Returns(() => new FullRender(Size.Zero));
-
-            var element = new ShowOnce()
-            {
-                Child = child.Object
-            };
-
-            element.Draw(Size.Zero);
-            element.Draw(Size.Zero);
-            
-            child.Verify(x => x.Draw(It.IsAny<Size>()), Times.Once);
-        }
-        
-        [Test]
-        public void Draw_HorizontalRight_VerticalTop()
+        public void Draw()
         {
             TestPlan
                 .For(x => new ShowOnce()

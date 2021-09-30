@@ -10,12 +10,6 @@ namespace QuestPDF.UnitTests
     public class ExtendTests
     {
         [Test]
-        public void Measure_ShouldHandleNullChild() => new Extend().MeasureWithoutChild();
-        
-        [Test]
-        public void Draw_ShouldHandleNullChild() => new Extend().DrawWithoutChild();
-        
-        [Test]
         public void Measure_ReturnsWrap_WhenChildReturnsWrap()
         {
             TestPlan
@@ -87,5 +81,8 @@ namespace QuestPDF.UnitTests
                 .ExpectChildMeasure(new Size(400, 200), new FullRender(100, 100))
                 .CheckMeasureResult(new FullRender(100, 200));
         }
+
+        [Test]
+        public void Draw() => SimpleContainerTests.Draw<Extend>();
     }
 }

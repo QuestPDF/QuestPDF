@@ -10,12 +10,6 @@ namespace QuestPDF.UnitTests
     public class AspectRatioTests
     {
         [Test]
-        public void Measure_ShouldHandleNullChild() => new AspectRatio().MeasureWithoutChild();
-        
-        [Test]
-        public void Draw_ShouldHandleNullChild() => new AspectRatio().DrawWithoutChild();
-        
-        [Test]
         public void Measure_FitWidth_EnoughSpace_FullRender()
         {
             TestPlan

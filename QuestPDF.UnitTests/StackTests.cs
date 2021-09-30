@@ -1,6 +1,8 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 
@@ -229,7 +231,81 @@ namespace QuestPDF.UnitTests
         
         #endregion
         
-        // TODO: add tests for the spacing property
-        // TODO: add tests for the tree builder method
+        #region Structure
+        
+        [Test]
+        public void Structure_Simple()
+        { 
+            // arrange
+            var childA = TestPlan.CreateUniqueElement();
+            var childB = TestPlan.CreateUniqueElement();
+            var childC = TestPlan.CreateUniqueElement();
+            var childD = TestPlan.CreateUniqueElement();
+            var childE = TestPlan.CreateUniqueElement();
+
+            const int spacing = 20;
+            
+            // act
+            var structure = new Container();
+            
+            structure.Stack(stack =>
+            {
+                stack.Spacing(spacing);
+                
+                stack.Item().Element(childA);
+                stack.Item().Element(childB);
+                stack.Item().Element(childC);
+                stack.Item().Element(childD);
+                stack.Item().Element(childE);
+            });
+            
+            // assert
+            var expected = new Padding
+            {
+                Bottom = -spacing,
+
+                Child = new SimpleStack
+                {
+                    First = new SimpleStack
+                    {
+                        First = new Padding
+                        {
+                            Bottom = spacing,
+                            Child = childA
+                        },
+                        Second = new Padding
+                        {
+                            Bottom = spacing,
+                            Child = childB
+                        }
+                    },
+                    Second = new SimpleStack
+                    {
+                        First = new Padding
+                        {
+                            Bottom = spacing,
+                            Child = childC
+                        },
+                        Second = new SimpleStack
+                        {
+                            First = new Padding
+                            {
+                                Bottom = spacing,
+                                Child = childD
+                            },
+                            Second = new Padding
+                            {
+                                Bottom = spacing,
+                                Child = childE
+                            }
+                        }
+                    }
+                }
+            };
+
+            TestPlan.CompareOperations(structure, expected);
+        }
+        
+        #endregion
     }
 }

@@ -10,14 +10,11 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            var skiaCanvas = (Canvas as Drawing.SkiaCanvasBase)?.Canvas;
+            var translate = new Position(TranslateX, TranslateY);
             
-            if (skiaCanvas == null)
-                return;
-            
-            skiaCanvas.Translate(TranslateX, TranslateY);
+            Canvas.Translate(translate);
             base.Draw(availableSpace);
-            skiaCanvas.Translate(-TranslateX, -TranslateY);
+            Canvas.Translate(translate.Reverse());
         }
     }
 }

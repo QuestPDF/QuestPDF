@@ -581,7 +581,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(350, 350)
+                .PageSize(650, 450)
                 .FileName()
                 .Render(container =>
                 {
@@ -595,8 +595,8 @@ namespace QuestPDF.Examples
                             foreach (var turns in Enumerable.Range(0, 4))
                             {
                                 grid.Item()
-                                    .Width(150)
-                                    .Height(150)
+                                    .Width(300)
+                                    .Height(200)
                                     .Background(Colors.Grey.Lighten2)
                                     .Padding(10)
                                     .Element(element =>

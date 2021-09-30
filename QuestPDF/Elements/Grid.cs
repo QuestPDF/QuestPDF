@@ -16,7 +16,7 @@ namespace QuestPDF.Elements
     {
         public const int DefaultColumnsCount = 12;
         
-        public List<GridElement> Children { get; set; } = new List<GridElement>();
+        public List<GridElement> Children { get; } = new List<GridElement>();
         public Queue<GridElement> ChildrenQueue { get; set; } = new Queue<GridElement>();
         public int ColumnsCount { get; set; } = DefaultColumnsCount;
 
