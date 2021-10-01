@@ -97,7 +97,7 @@ namespace QuestPDF.Elements
     
     internal class Stack : IComponent
     {
-        public ICollection<Element> Children { get; internal set; } = new List<Element>();
+        public ICollection<Element> Children { get; } = new List<Element>();
         public float Spacing { get; set; } = 0;
         
         public void Compose(IContainer container)

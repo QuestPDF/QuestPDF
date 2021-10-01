@@ -10,11 +10,7 @@ namespace QuestPDF.UnitTests
     public class AlignmentTests
     {
         [Test]
-        public void Measure_ShouldHandleNullChild() => new Alignment().MeasureWithoutChild();
-        
-        [Test]
-        public void Draw_ShouldHandleNullChild() => new Alignment().DrawWithoutChild();
-
+        public void Measure() => SimpleContainerTests.Measure<Alignment>();
         [Test]
         public void Draw_HorizontalCenter_VerticalCenter()
         {

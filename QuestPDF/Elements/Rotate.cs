@@ -8,16 +8,9 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            var skiaCanvas = (Canvas as Drawing.SkiaCanvasBase)?.Canvas;
-            
-            if (skiaCanvas == null)
-                return;
-            
-            var currentMatrix = skiaCanvas.TotalMatrix;
-            
-            skiaCanvas.RotateDegrees(Angle);
-            base.Draw(availableSpace);
-            skiaCanvas.SetMatrix(currentMatrix);
+            Canvas.Rotate(Angle);
+            Child?.Draw(availableSpace);
+            Canvas.Rotate(-Angle);
         }
     }
 }

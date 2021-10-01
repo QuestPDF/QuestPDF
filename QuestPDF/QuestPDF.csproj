@@ -4,9 +4,9 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2021.9.2</Version>
+        <Version>2021.10.1</Version>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.</PackageDescription>
-        <PackageReleaseNotes>Added support for registering custom fonts from a stream. Fixed continuous page setting. Improved exception messages.</PackageReleaseNotes>
+        <PackageReleaseNotes>Enhanced text rendering capabilities. Improved rendering performance.</PackageReleaseNotes>
         <LangVersion>8</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageIcon>Logo.png</PackageIcon>
@@ -15,14 +15,14 @@
         <RepositoryUrl>https://github.com/QuestPDF/library.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
-        <PackageTags>pdf file export generate generation tool create creation render portable document format quest html library converter free</PackageTags>
+        <PackageTags>pdf file export generate generation tool create creation render portable document format quest html library converter open source free standard core</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net462;netstandard2.0;netcoreapp2.0;netcoreapp3.0</TargetFrameworks>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SkiaSharp" Version="2.80.2" />
+      <PackageReference Include="SkiaSharp" Version="2.80.3" />
     </ItemGroup>
 
     <ItemGroup>

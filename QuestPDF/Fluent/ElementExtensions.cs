@@ -40,15 +40,6 @@ namespace QuestPDF.Fluent
         {
             return handler(parent.Container()).Container();
         }
-
-        public static void PageNumber(this IContainer element, string textFormat = "{pdf:currentPage} / {pdf:totalPages}", TextStyle? style = null)
-        {
-            element.Element(new PageNumber
-            {
-                TextFormat = textFormat,
-                TextStyle = style ?? TextStyle.Default
-            });
-        }
         
         public static IContainer AspectRatio(this IContainer element, float ratio, AspectRatioOption option = AspectRatioOption.FitWidth)
         {
@@ -92,25 +83,7 @@ namespace QuestPDF.Fluent
                 MinHeight = minHeight
             });
         }
-        
-        public static void Text(this IContainer element, object text, TextStyle? style = null)
-        {
-            text ??= string.Empty;
-            style ??= TextStyle.Default;
 
-            if (element is Alignment alignment)
-            {
-                style = style.Clone();
-                style.Alignment = alignment.Horizontal;
-            }
-            
-            element.Element(new Text
-            {
-                Value = text.ToString(),
-                Style = style
-            });
-        }
-        
         public static void PageBreak(this IContainer element)
         {
             element.Element(new PageBreak());

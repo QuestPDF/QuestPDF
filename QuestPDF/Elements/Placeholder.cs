@@ -18,16 +18,15 @@ namespace QuestPDF.Elements
         {
             container
                 .Background(Colors.Grey.Lighten2)
+                .Padding(5)
                 .AlignMiddle()
                 .AlignCenter()
-                .Padding(5)
-                .MaxHeight(32)
                 .Element(x =>
                 {
                     if (string.IsNullOrWhiteSpace(Text))
-                        x.Image(ImageData, ImageScaling.FitArea);
+                        x.MaxHeight(32).Image(ImageData, ImageScaling.FitArea);
                     else
-                        x.Text(Text, TextStyle.Default.Size(14).SemiBold());
+                        x.Text(Text, TextStyle.Default.Size(14));
                 });
         }
     }

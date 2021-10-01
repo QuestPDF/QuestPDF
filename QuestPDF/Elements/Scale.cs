@@ -35,26 +35,21 @@ namespace QuestPDF.Elements
         
         internal override void Draw(Size availableSpace)
         {
-            var skiaCanvas = (Canvas as Drawing.SkiaCanvasBase)?.Canvas;
-            
-            if (skiaCanvas == null)
-                return;
-            
             var targetSpace = new Size(
                 Math.Abs(availableSpace.Width / ScaleX), 
                 Math.Abs(availableSpace.Height / ScaleY));
 
-            var currentMatrix = skiaCanvas.TotalMatrix;
+            var translate = new Position(
+                ScaleX < 0 ? availableSpace.Width : 0,
+                ScaleY < 0 ? availableSpace.Height : 0);
             
-            if (ScaleX < 0)
-                skiaCanvas.Translate(availableSpace.Width, 0);
+            Canvas.Translate(translate);
+            Canvas.Scale(ScaleX, ScaleY);
             
-            if (ScaleY < 0)
-                skiaCanvas.Translate(0, availableSpace.Height);
-            
-            skiaCanvas.Scale(ScaleX, ScaleY);
-            base.Draw(targetSpace);
-            skiaCanvas.SetMatrix(currentMatrix);
+            Child?.Draw(targetSpace);
+             
+            Canvas.Scale(1/ScaleX, 1/ScaleY);
+            Canvas.Translate(translate.Reverse());
         }
     }
 }

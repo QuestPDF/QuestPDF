@@ -9,12 +9,6 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class PaddingTests
     {
-        [Test]
-        public void Measure_ShouldHandleNullChild() => new Padding().MeasureWithoutChild();
-        
-        [Test]
-        public void Draw_ShouldHandleNullChild() => new Padding().DrawWithoutChild();
-        
         private Padding GetPadding(TestPlan plan)
         {
             return new Padding()

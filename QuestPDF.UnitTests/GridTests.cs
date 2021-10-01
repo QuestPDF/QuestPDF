@@ -39,30 +39,30 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Container().Stack(stack =>
+            expected.Stack(stack =>
             {
                 stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(6).Container().Element(childA);
-                    row.RelativeColumn(4).Container().Element(childB);
+                    row.RelativeColumn(6).Element(childA);
+                    row.RelativeColumn(4).Element(childB);
                     row.RelativeColumn(2);
                 });
                 
                 stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(4).Container().Element(childC);
-                    row.RelativeColumn(2).Container().Element(childD);
+                    row.RelativeColumn(4).Element(childC);
+                    row.RelativeColumn(2).Element(childD);
                     row.RelativeColumn(6);
                 });
                 
                 stack.Item().Row(row =>
                 {
-                    row.RelativeColumn(8).Container().Element(childE);
+                    row.RelativeColumn(8).Element(childE);
                     row.RelativeColumn(4);
                 });
             });
             
-            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
+            TestPlan.CompareOperations(structure, expected);
         }
         
         [Test]
@@ -93,33 +93,33 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Container().Stack(stack =>
+            expected.Stack(stack =>
             {
                 stack.Item().Row(row =>
                 {
                     row.RelativeColumn(1);
-                    row.RelativeColumn(6).Container().Element(childA);
-                    row.RelativeColumn(4).Container().Element(childB);
+                    row.RelativeColumn(6).Element(childA);
+                    row.RelativeColumn(4).Element(childB);
                     row.RelativeColumn(1);
                 });
                 
                 stack.Item().Row(row =>
                 {
                     row.RelativeColumn(3);
-                    row.RelativeColumn(4).Container().Element(childC);
-                    row.RelativeColumn(2).Container().Element(childD);
+                    row.RelativeColumn(4).Element(childC);
+                    row.RelativeColumn(2).Element(childD);
                     row.RelativeColumn(3);
                 });
                 
                 stack.Item().Row(row =>
                 {
                     row.RelativeColumn(2);
-                    row.RelativeColumn(8).Container().Element(childE);
+                    row.RelativeColumn(8).Element(childE);
                     row.RelativeColumn(2);
                 });
             });
 
-            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
+            TestPlan.CompareOperations(structure, expected);
         }
         
         [Test]
@@ -150,30 +150,30 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Container().Stack(stack =>
+            expected.Stack(stack =>
             {
                 stack.Item().Row(row =>
                 {
                     row.RelativeColumn(2);
-                    row.RelativeColumn(6).Container().Element(childA);
-                    row.RelativeColumn(4).Container().Element(childB);
+                    row.RelativeColumn(6).Element(childA);
+                    row.RelativeColumn(4).Element(childB);
                 });
                 
                 stack.Item().Row(row =>
                 {
                     row.RelativeColumn(6);
-                    row.RelativeColumn(4).Container().Element(childC);
-                    row.RelativeColumn(2).Container().Element(childD);
+                    row.RelativeColumn(4).Element(childC);
+                    row.RelativeColumn(2).Element(childD);
                 });
                 
                 stack.Item().Row(row =>
                 {
                     row.RelativeColumn(4);
-                    row.RelativeColumn(8).Container().Element(childE);
+                    row.RelativeColumn(8).Element(childE);
                 });
             });
             
-            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties());
+            TestPlan.CompareOperations(structure, expected);
         }
         
         #endregion
@@ -210,7 +210,7 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Container().Stack(stack =>
+            expected.Stack(stack =>
             {
                 stack.Spacing(20);
                 
@@ -219,8 +219,8 @@ namespace QuestPDF.UnitTests
                     row.Spacing(30);
                     
                     row.RelativeColumn(3);
-                    row.RelativeColumn(5).Container().Element(childA);
-                    row.RelativeColumn(5).Container().Element(childB);
+                    row.RelativeColumn(5).Element(childA);
+                    row.RelativeColumn(5).Element(childB);
                     row.RelativeColumn(3);
                 });
                 
@@ -229,7 +229,7 @@ namespace QuestPDF.UnitTests
                     row.Spacing(30);
                     
                     row.RelativeColumn(3);
-                    row.RelativeColumn(10).Container().Element(childC);
+                    row.RelativeColumn(10).Element(childC);
                     row.RelativeColumn(3);
                 });
                 
@@ -238,12 +238,12 @@ namespace QuestPDF.UnitTests
                     row.Spacing(30);
                     
                     row.RelativeColumn(2);
-                    row.RelativeColumn(12).Container().Element(childD);
+                    row.RelativeColumn(12).Element(childD);
                     row.RelativeColumn(2);
                 });
             });
             
-            structure.Should().BeEquivalentTo(expected, o => o.WithTracing().WithAutoConversion().WithStrictOrdering().IncludingAllRuntimeProperties().AllowingInfiniteRecursion());
+            TestPlan.CompareOperations(structure, expected);
         }
         
         #endregion

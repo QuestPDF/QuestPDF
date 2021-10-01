@@ -66,6 +66,16 @@ namespace QuestPDF.Drawing
             
         }
 
+        public void Rotate(float angle)
+        {
+            
+        }
+
+        public void Scale(float scaleX, float scaleY)
+        {
+            
+        }
+
         #endregion
     }
 }

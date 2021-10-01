@@ -10,8 +10,8 @@ namespace QuestPDF.UnitTests
     public class BackgroundTests
     {
         [Test]
-        public void Measure_ShouldHandleNullChild() => new Background().MeasureWithoutChild();
-
+        public void Measure() => SimpleContainerTests.Measure<Background>();
+        
         [Test]
         public void Draw_ShouldHandleNullChild()
         {

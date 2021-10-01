@@ -47,5 +47,8 @@ namespace QuestPDF.UnitTests
                 .ExpectChildMeasure(new Size(400, 300), SpacePlan.FullRender(300, 200))
                 .CheckMeasureResult(SpacePlan.FullRender(300, 200));
         }
+        
+        [Test]
+        public void Draw() => SimpleContainerTests.Draw<ShowEntire>();
     }
 }
