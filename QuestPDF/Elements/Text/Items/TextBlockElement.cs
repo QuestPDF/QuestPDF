@@ -1,4 +1,4 @@
-﻿using QuestPDF.Drawing.SpacePlan;
+﻿using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Infrastructure;
 
@@ -15,16 +15,14 @@ namespace QuestPDF.Elements.Text.Items
 
             var measurement = Element.Measure(new Size(request.AvailableWidth, Size.Max.Height));
 
-            if (measurement is Wrap || measurement is PartialRender)
+            if (measurement.Type != SpacePlanType.FullRender)
                 return null;
-
-            var elementSize = measurement as Size;
             
             return new TextMeasurementResult
             {
-                Width = elementSize.Width,
+                Width = measurement.Width,
                 
-                Ascent = -elementSize.Height,
+                Ascent = -measurement.Height,
                 Descent = 0,
                 
                 LineHeight = 1,

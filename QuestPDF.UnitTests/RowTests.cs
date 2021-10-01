@@ -184,11 +184,11 @@ namespace QuestPDF.UnitTests
             });
             
             // assert
-            var expected = new SimpleRow
+            var expected = new BinaryRow
             {
-                Left = new SimpleRow
+                Left = new BinaryRow
                 {
-                    Left = new SimpleRow
+                    Left = new BinaryRow
                     {
                         Left = new Constrained
                         {
@@ -202,7 +202,7 @@ namespace QuestPDF.UnitTests
                             MaxWidth = 25
                         }
                     },
-                    Right = new SimpleRow
+                    Right = new BinaryRow
                     {
                         Left = new Constrained
                         {
@@ -217,9 +217,9 @@ namespace QuestPDF.UnitTests
                         }
                     }
                 },
-                Right = new SimpleRow
+                Right = new BinaryRow
                 {
-                    Left = new SimpleRow
+                    Left = new BinaryRow
                     {
                         Left = new Constrained
                         {
@@ -233,7 +233,7 @@ namespace QuestPDF.UnitTests
                             MaxWidth = 25
                         }
                     },
-                    Right = new SimpleRow
+                    Right = new BinaryRow
                     {
                         Left = new Constrained
                         {
@@ -241,7 +241,7 @@ namespace QuestPDF.UnitTests
                             MaxWidth = 200,
                             Child = childD
                         },
-                        Right = new SimpleRow
+                        Right = new BinaryRow
                         {
                             Left = new Constrained
                             {

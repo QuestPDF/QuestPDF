@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Infrastructure;
@@ -22,21 +22,21 @@ namespace QuestPDF.Elements.Text
             CurrentElementIndex = 0;
         }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             if (!RenderingQueue.Any())
-                return new FullRender(Size.Zero);
+                return SpacePlan.FullRender(Size.Zero);
             
             var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
 
             if (!lines.Any())
-                return new PartialRender(Size.Zero);
+                return SpacePlan.PartialRender(Size.Zero);
             
             var width = lines.Max(x => x.Width);
             var height = lines.Sum(x => x.LineHeight);
 
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
-                return new Wrap();
+                return SpacePlan.Wrap();
 
             var fullyRenderedItemsCount = lines
                 .SelectMany(x => x.Elements)
@@ -44,9 +44,9 @@ namespace QuestPDF.Elements.Text
                 .Count(x => x.Any(y => y.Measurement.IsLast));
             
             if (fullyRenderedItemsCount == RenderingQueue.Count)
-                return new FullRender(width, height);
+                return SpacePlan.FullRender(width, height);
             
-            return new PartialRender(width, height);
+            return SpacePlan.PartialRender(width, height);
         }
 
         internal override void Draw(Size availableSpace)

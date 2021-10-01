@@ -1,5 +1,5 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
@@ -22,8 +22,8 @@ namespace QuestPDF.UnitTests
                     ScaleY = 2
                 })
                 .MeasureElement(new Size(900, 800))
-                .ExpectChildMeasure(new Size(300, 400), new Wrap())
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure(new Size(300, 400), SpacePlan.Wrap())
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -37,8 +37,8 @@ namespace QuestPDF.UnitTests
                     ScaleY = 2
                 })
                 .MeasureElement(new Size(900, 800))
-                .ExpectChildMeasure(new Size(300, 400), new PartialRender(200, 350))
-                .CheckMeasureResult(new PartialRender(600, 700));
+                .ExpectChildMeasure(new Size(300, 400), SpacePlan.PartialRender(200, 350))
+                .CheckMeasureResult(SpacePlan.PartialRender(600, 700));
         }
         
         [Test]
@@ -52,8 +52,8 @@ namespace QuestPDF.UnitTests
                     ScaleY = 2
                 })
                 .MeasureElement(new Size(900, 800))
-                .ExpectChildMeasure(new Size(300, 400), new FullRender(250, 300))
-                .CheckMeasureResult(new FullRender(750, 600));
+                .ExpectChildMeasure(new Size(300, 400), SpacePlan.FullRender(250, 300))
+                .CheckMeasureResult(SpacePlan.FullRender(750, 600));
         }
         
         [Test]
@@ -67,8 +67,8 @@ namespace QuestPDF.UnitTests
                     ScaleY = 1
                 })
                 .MeasureElement(new Size(800, 600))
-                .ExpectChildMeasure(new Size(400, 600), new FullRender(300, 500))
-                .CheckMeasureResult(new FullRender(600, 500));
+                .ExpectChildMeasure(new Size(400, 600), SpacePlan.FullRender(300, 500))
+                .CheckMeasureResult(SpacePlan.FullRender(600, 500));
         }
         
         [Test]
@@ -82,8 +82,8 @@ namespace QuestPDF.UnitTests
                     ScaleY = -3
                 })
                 .MeasureElement(new Size(800, 600))
-                .ExpectChildMeasure(new Size(800, 200), new FullRender(800, 100))
-                .CheckMeasureResult(new FullRender(800, 300));
+                .ExpectChildMeasure(new Size(800, 200), SpacePlan.FullRender(800, 100))
+                .CheckMeasureResult(SpacePlan.FullRender(800, 300));
         }
         
         #endregion

@@ -6,6 +6,8 @@ using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+using QuestPDF.UnitTests.TestEngine.Operations;
 
 namespace QuestPDF.UnitTests.TestEngine
 {
@@ -270,10 +272,10 @@ namespace QuestPDF.UnitTests.TestEngine
             
             var canvas = new FreeCanvas();
             value.HandleVisitor(x => x.Initialize(null, canvas));
-            var valueMeasure = value.Measure(availableSpace);
+            var valueMeasure = value.Measure(availableSpace.Value);
             
             expected.HandleVisitor(x => x.Initialize(null, canvas));
-            var expectedMeasure = expected.Measure(availableSpace);
+            var expectedMeasure = expected.Measure(availableSpace.Value);
             
             valueMeasure.Should().BeEquivalentTo(expectedMeasure);
         }
@@ -284,11 +286,11 @@ namespace QuestPDF.UnitTests.TestEngine
             
             var valueCanvas = new OperationRecordingCanvas();
             value.HandleVisitor(x => x.Initialize(null, valueCanvas));
-            value.Draw(availableSpace);
+            value.Draw(availableSpace.Value);
             
             var expectedCanvas = new OperationRecordingCanvas();
             expected.HandleVisitor(x => x.Initialize(null, expectedCanvas));
-            expected.Draw(availableSpace);
+            expected.Draw(availableSpace.Value);
             
             valueCanvas.Operations.Should().BeEquivalentTo(expectedCanvas.Operations);
         }

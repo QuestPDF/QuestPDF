@@ -3,13 +3,13 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.UnitTests.TestEngine.Operations
 {
-    internal class ChildMeasureOperationBase : OperationBase
+    internal class ChildMeasureOperation : OperationBase
     {
         public string ChildId { get; }
         public Size Input { get; }
         public SpacePlan Output { get; }
 
-        public ChildMeasureOperationBase(string childId, Size input, SpacePlan output)
+        public ChildMeasureOperation(string childId, Size input, SpacePlan output)
         {
             ChildId = childId;
             Input = input;
