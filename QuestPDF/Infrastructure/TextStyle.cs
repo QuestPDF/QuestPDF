@@ -34,24 +34,29 @@ namespace QuestPDF.Infrastructure
         private static TextStyle DefaultTextStyleCache = new TextStyle();
         public static TextStyle Default => DefaultTextStyleCache;
 
-        internal void ApplyGlobalStyle(TextStyle global)
+        internal void ApplyGlobalStyle(TextStyle globalStyle)
         {
             if (HasGlobalStyleApplied)
                 return;
             
             HasGlobalStyleApplied = true;
 
-            Color ??= global.Color;
-            BackgroundColor ??= global.BackgroundColor;
-            FontType ??= global.FontType;
-            Size ??= global.Size;
-            LineHeight ??= global.LineHeight;
-            FontWeight ??= global.FontWeight;
-            IsItalic ??= global.IsItalic;
-            HasStrikethrough ??= global.HasStrikethrough;
-            HasUnderline ??= global.HasUnderline;
+            ApplyParentStyle(globalStyle);
             
             Key ??= $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{FontWeight}|{IsItalic}|{HasStrikethrough}|{HasUnderline}";
+        }
+        
+        internal void ApplyParentStyle(TextStyle parentStyle)
+        {
+            Color ??= parentStyle.Color;
+            BackgroundColor ??= parentStyle.BackgroundColor;
+            FontType ??= parentStyle.FontType;
+            Size ??= parentStyle.Size;
+            LineHeight ??= parentStyle.LineHeight;
+            FontWeight ??= parentStyle.FontWeight;
+            IsItalic ??= parentStyle.IsItalic;
+            HasStrikethrough ??= parentStyle.HasStrikethrough;
+            HasUnderline ??= parentStyle.HasUnderline;
         }
 
         internal TextStyle Clone()

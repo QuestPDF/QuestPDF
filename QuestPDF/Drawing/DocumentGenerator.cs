@@ -98,7 +98,7 @@ namespace QuestPDF.Drawing
             }
         }
 
-        private static void ApplyDefaultTextStyle(Container content, TextStyle documentDefaultTextStyle)
+        private static void ApplyDefaultTextStyle(Element content, TextStyle documentDefaultTextStyle)
         {
             documentDefaultTextStyle.ApplyGlobalStyle(TextStyle.LibraryDefault);
             
