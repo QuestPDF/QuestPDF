@@ -1,4 +1,5 @@
 ﻿using QuestPDF.Elements.Text.Calculation;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
 {

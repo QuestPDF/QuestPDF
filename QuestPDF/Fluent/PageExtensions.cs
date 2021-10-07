@@ -94,6 +94,12 @@ namespace QuestPDF.Fluent
     
     public static class PageExtensions
     {
+        public static IDocumentContainer DefaultTextStyle(this IDocumentContainer document, TextStyle textStyle)
+        {
+            (document as DocumentContainer).DefaultTextStyle = textStyle;
+            return document;
+        }
+        
         public static IDocumentContainer Page(this IDocumentContainer document, Action<PageDescriptor> handler)
         {
             var descriptor = new PageDescriptor();

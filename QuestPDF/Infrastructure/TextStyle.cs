@@ -4,26 +4,61 @@ namespace QuestPDF.Infrastructure
 {
     public class TextStyle
     {
-        internal string Color { get; set; } = Colors.Black;
-        internal string BackgroundColor { get; set; } = Colors.Transparent;
-        internal string FontType { get; set; } = "Calibri";
-        internal float Size { get; set; } = 12;
-        internal float LineHeight { get; set; } = 1.2f;
-        internal FontWeight FontWeight { get; set; } = FontWeight.Normal;
-        internal bool IsItalic { get; set; } = false;
-        internal bool HasStrikethrough { get; set; } = false;
-        internal bool HasUnderline { get; set; } = false;
-
-        public static TextStyle Default => new TextStyle();
-
-        private string? KeyCache { get; set; }
+        internal bool HasGlobalStyleApplied { get; private set; }
         
-        public override string ToString()
+        internal string? Color { get; set; }
+        internal string? BackgroundColor { get; set; }
+        internal string? FontType { get; set; }
+        internal float? Size { get; set; }
+        internal float? LineHeight { get; set; }
+        internal FontWeight? FontWeight { get; set; }
+        internal bool? IsItalic { get; set; }
+        internal bool? HasStrikethrough { get; set; }
+        internal bool? HasUnderline { get; set; }
+
+        internal string? Key { get; private set; }
+        
+        internal static TextStyle LibraryDefault => new TextStyle
         {
-            KeyCache ??= $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{FontWeight}|{IsItalic}|{HasStrikethrough}|{HasUnderline}";
-            return KeyCache;
+            Color = Colors.Black,
+            BackgroundColor = Colors.Transparent,
+            FontType = Fonts.Calibri,
+            Size = 12,
+            LineHeight = 1.2f,
+            FontWeight = Infrastructure.FontWeight.Normal,
+            IsItalic = false,
+            HasStrikethrough = false,
+            HasUnderline = false
+        };
+
+        private static TextStyle DefaultTextStyleCache = new TextStyle();
+        public static TextStyle Default => DefaultTextStyleCache;
+
+        internal void ApplyGlobalStyle(TextStyle global)
+        {
+            if (HasGlobalStyleApplied)
+                return;
+            
+            HasGlobalStyleApplied = true;
+
+            Color ??= global.Color;
+            BackgroundColor ??= global.BackgroundColor;
+            FontType ??= global.FontType;
+            Size ??= global.Size;
+            LineHeight ??= global.LineHeight;
+            FontWeight ??= global.FontWeight;
+            IsItalic ??= global.IsItalic;
+            HasStrikethrough ??= global.HasStrikethrough;
+            HasUnderline ??= global.HasUnderline;
+            
+            Key ??= $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{FontWeight}|{IsItalic}|{HasStrikethrough}|{HasUnderline}";
         }
 
-        internal TextStyle Clone() => (TextStyle)MemberwiseClone();
+        internal TextStyle Clone()
+        {
+            var clone = (TextStyle)MemberwiseClone();
+            clone.HasGlobalStyleApplied = false;
+            return clone;
+        }
     }
 }

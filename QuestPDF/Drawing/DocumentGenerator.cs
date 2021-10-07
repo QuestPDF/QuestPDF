@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.SpacePlan;
 using QuestPDF.Elements;
+using QuestPDF.Elements.Text;
+using QuestPDF.Elements.Text.Items;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
@@ -36,6 +39,7 @@ namespace QuestPDF.Drawing
             var metadata = document.GetMetadata();
             var pageContext = new PageContext();
 
+            ApplyDefaultTextStyle(content, container.DefaultTextStyle);
             RenderPass(pageContext, new FreeCanvas(), content, metadata);
             RenderPass(pageContext, canvas, content, metadata);
         }
@@ -92,6 +96,23 @@ namespace QuestPDF.Drawing
             {
                 throw new DocumentLayoutException("Composed layout generates infinite document.");
             }
+        }
+
+        private static void ApplyDefaultTextStyle(Container content, TextStyle documentDefaultTextStyle)
+        {
+            documentDefaultTextStyle.ApplyGlobalStyle(TextStyle.LibraryDefault);
+            
+            content.HandleVisitor(element =>
+            {
+                var text = element as TextBlock;
+                
+                if (text == null)
+                    return;
+                
+                foreach (var child in text.Children)
+                   if (child is TextBlockSpan span)
+                       span.Style.ApplyGlobalStyle(documentDefaultTextStyle);
+            });
         }
     }
 }

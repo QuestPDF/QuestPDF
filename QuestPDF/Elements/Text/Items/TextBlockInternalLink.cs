@@ -3,33 +3,22 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
 {
-    internal class TextBlockInternalLink : ITextBlockItem
+    internal class TextBlockInternalLink : TextBlockSpan
     {
-        public TextStyle Style { get; set; } = new TextStyle();
-        public string Text { get; set; }
         public string LocationName { get; set; }
         
-        public TextMeasurementResult? Measure(TextMeasurementRequest request)
+        public override TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
-            return GetItem().MeasureWithoutCache(request);
+            return MeasureWithoutCache(request);
         }
 
-        public void Draw(TextDrawingRequest request)
+        public override void Draw(TextDrawingRequest request)
         {
             request.Canvas.Translate(new Position(0, request.TotalAscent));
             request.Canvas.DrawLocationLink(LocationName, new Size(request.TextSize.Width, request.TextSize.Height));
             request.Canvas.Translate(new Position(0, -request.TotalAscent));
             
-            GetItem().Draw(request);
-        }
-
-        private TextBlockSpan GetItem()
-        {
-            return new TextBlockSpan
-            {
-                Style = Style,
-                Text = Text
-            };
+            base.Draw(request);
         }
     }
 }
