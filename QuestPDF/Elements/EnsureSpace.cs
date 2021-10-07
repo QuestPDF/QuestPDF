@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class EnsureSpace : ContainerElement
+    internal class EnsureSpace : ContainerElement, ICacheable
     {
         public const float DefaultMinHeight = 150;
         public float MinHeight { get; set; } = DefaultMinHeight;

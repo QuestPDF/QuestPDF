@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class AspectRatio : ContainerElement
+    internal class AspectRatio : ContainerElement, ICacheable
     {
         public float Ratio { get; set; } = 1;
         public AspectRatioOption Option { get; set; } = AspectRatioOption.FitWidth;

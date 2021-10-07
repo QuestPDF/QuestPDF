@@ -112,20 +112,21 @@ namespace QuestPDF.Drawing
 
         private static void ApplyCaching(Container content)
         {
-            content.HandleVisitor(x => x.CreateProxy(y => new CacheProxy
+            content.HandleVisitor(x =>
             {
-                Child = y
-            }));
+                if (x is ICacheable)
+                    x.CreateProxy(y => new CacheProxy(y));
+            });
         }
-        
+
         private static DebuggingState ApplyDebugging(Container content)
         {
             var debuggingState = new DebuggingState();
-            
-            content.HandleVisitor(x => x.CreateProxy(y => new DebuggingProxy(debuggingState)
+
+            content.HandleVisitor(x =>
             {
-                Child = y
-            }));
+                x.CreateProxy(y => new DebuggingProxy(debuggingState, x));
+            });
 
             return debuggingState;
         }

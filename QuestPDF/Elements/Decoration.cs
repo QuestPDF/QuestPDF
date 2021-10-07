@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
         Append
     }
     
-    internal class BinaryDecoration : Element
+    internal class BinaryDecoration : Element, ICacheable
     {
         public Element DecorationElement { get; set; } = Empty.Instance;
         public Element ContentElement { get; set; } = Empty.Instance;

@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Constrained : ContainerElement
+    internal class Constrained : ContainerElement, ICacheable
     {
         public float? MinWidth { get; set; }
         public float? MaxWidth { get; set; }

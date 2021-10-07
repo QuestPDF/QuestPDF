@@ -6,9 +6,10 @@ namespace QuestPDF.Drawing.Proxy
     {
         private DebuggingState DebuggingState { get; }
 
-        public DebuggingProxy(DebuggingState debuggingState)
+        public DebuggingProxy(DebuggingState debuggingState, Element child)
         {
             DebuggingState = debuggingState;
+            Child = child;
         }
         
         internal override SpacePlan Measure(Size availableSpace)

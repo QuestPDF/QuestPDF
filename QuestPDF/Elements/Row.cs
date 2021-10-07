@@ -34,7 +34,7 @@ namespace QuestPDF.Elements
         }
     }
     
-    internal class BinaryRow : Element
+    internal class BinaryRow : Element, ICacheable
     {
         internal Element Left { get; set; }
         internal Element Right { get; set; }

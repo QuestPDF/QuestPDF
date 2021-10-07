@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Running;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
@@ -20,7 +21,11 @@ namespace QuestPDF.ReportSample
         [Test]
         public void Run()
         {
-            BenchmarkRunner.Run<PerformanceTests>();
+            var configuration = ManualConfig
+                .Create(DefaultConfig.Instance)
+                .WithOptions(ConfigOptions.DisableOptimizationsValidator);
+            
+            BenchmarkRunner.Run<PerformanceTests>(configuration);
         }
         
         [IterationSetup]

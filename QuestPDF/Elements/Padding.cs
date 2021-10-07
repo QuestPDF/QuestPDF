@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Padding : ContainerElement
+    internal class Padding : ContainerElement, ICacheable
     {
         public float Top { get; set; }
         public float Right { get; set; }

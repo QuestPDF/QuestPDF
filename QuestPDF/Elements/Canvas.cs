@@ -6,7 +6,7 @@ namespace QuestPDF.Elements
 {
     public delegate void DrawOnCanvas(SKCanvas canvas, Size availableSpace);
     
-    internal class Canvas : Element
+    internal class Canvas : Element, ICacheable
     {
         public DrawOnCanvas Handler { get; set; }
         

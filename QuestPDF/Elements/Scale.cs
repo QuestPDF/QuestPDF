@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Scale : ContainerElement
+    internal class Scale : ContainerElement, ICacheable
     {
         public float ScaleX { get; set; } = 1;
         public float ScaleY { get; set; } = 1;

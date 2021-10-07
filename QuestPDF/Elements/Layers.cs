@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
         public bool IsPrimary { get; set; }
     }
     
-    internal class Layers : Element
+    internal class Layers : Element, ICacheable
     {
         public List<Layer> Children { get; set; } = new List<Layer>();
         

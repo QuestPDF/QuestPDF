@@ -7,6 +7,11 @@ namespace QuestPDF.Drawing.Proxy
     {
         public Size? AvailableSpace { get; set; }
         public SpacePlan? MeasurementResult { get; set; }
+
+        public CacheProxy(Element child)
+        {
+            Child = child;
+        }
         
         internal override SpacePlan Measure(Size availableSpace)
         {

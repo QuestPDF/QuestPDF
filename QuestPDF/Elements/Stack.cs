@@ -9,7 +9,7 @@ using IContainer = QuestPDF.Infrastructure.IContainer;
 
 namespace QuestPDF.Elements
 {
-    internal class BinaryStack : Element, IStateResettable
+    internal class BinaryStack : Element, IStateResettable, ICacheable
     {
         internal Element First { get; set; } = Empty.Instance;
         internal Element Second { get; set; } = Empty.Instance;

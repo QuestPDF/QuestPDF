@@ -4,7 +4,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Elements
 {
-    internal class Image : Element
+    internal class Image : Element, ICacheable
     {
         public SKImage? InternalImage { get; set; }
 

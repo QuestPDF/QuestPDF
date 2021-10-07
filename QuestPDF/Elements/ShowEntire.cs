@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class ShowEntire : ContainerElement
+    internal class ShowEntire : ContainerElement, ICacheable
     {
         internal override SpacePlan Measure(Size availableSpace)
         {
