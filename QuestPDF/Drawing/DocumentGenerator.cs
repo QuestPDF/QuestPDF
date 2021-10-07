@@ -108,10 +108,15 @@ namespace QuestPDF.Drawing
                 
                 if (text == null)
                     return;
-                
+
                 foreach (var child in text.Children)
-                   if (child is TextBlockSpan span)
-                       span.Style.ApplyGlobalStyle(documentDefaultTextStyle);
+                {
+                    if (child is TextBlockSpan textSpan)
+                        textSpan.Style.ApplyGlobalStyle(documentDefaultTextStyle);
+
+                    if (child is TextBlockElement textElement)
+                        ApplyDefaultTextStyle(textElement.Element, documentDefaultTextStyle);
+                }
             });
         }
     }
