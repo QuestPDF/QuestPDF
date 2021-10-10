@@ -41,9 +41,9 @@ namespace QuestPDF.ReportSample.Layouts
                 .InternalLink(locationName)
                 .Row(row =>
                 {
-                    row.ConstantColumn(25).Text($"{number}.", Typography.Normal);
-                    row.RelativeColumn().Text(locationName, Typography.Normal);
-                    row.ConstantColumn(150).AlignRight().Text(text => text.PageNumberOfLocation(locationName, Typography.Normal));
+                    row.ConstantColumn(25).Text($"{number}.");
+                    row.RelativeColumn().Text(locationName);
+                    row.ConstantColumn(150).AlignRight().Text(text => text.PageNumberOfLocation(locationName));
                 });
         }
     }

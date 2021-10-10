@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
@@ -13,7 +14,7 @@ namespace QuestPDF.Fluent
     {
         private ICollection<TextBlock> TextBlocks { get; } = new List<TextBlock>();
         private TextStyle DefaultStyle { get; set; } = TextStyle.Default;
-        private HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
+        internal HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         private float Spacing { get; set; } = 0f;
 
         public void DefaultTextStyle(TextStyle style)
@@ -51,7 +52,7 @@ namespace QuestPDF.Fluent
         
         public void Span(string text, TextStyle? style = null)
         {
-            style ??= DefaultStyle;
+            style ??= TextStyle.Default;
  
             var items = text
                 .Replace("\r", string.Empty)
@@ -92,7 +93,7 @@ namespace QuestPDF.Fluent
 
         private void PageNumber(string slotName, TextStyle? style = null)
         {
-            style ??= DefaultStyle;
+            style ??= TextStyle.Default;
             
             AddItemToLastTextBlock(new TextBlockPageNumber()
             {
@@ -118,7 +119,7 @@ namespace QuestPDF.Fluent
         
         public void InternalLocation(string text, string locationName, TextStyle? style = null)
         {
-            style ??= DefaultStyle;
+            style ??= TextStyle.Default;
             
             AddItemToLastTextBlock(new TextBlockInternalLink
             {
@@ -130,7 +131,7 @@ namespace QuestPDF.Fluent
         
         public void ExternalLocation(string text, string url, TextStyle? style = null)
         {
-            style ??= DefaultStyle;
+            style ??= TextStyle.Default;
             
             AddItemToLastTextBlock(new TextBlockExternalLink
             {
@@ -156,6 +157,9 @@ namespace QuestPDF.Fluent
         {
             TextBlocks.ToList().ForEach(x => x.Alignment = Alignment);
             
+            foreach (var textBlockSpan in TextBlocks.SelectMany(x => x.Children).Where(x => x is TextBlockSpan).Cast<TextBlockSpan>())
+                textBlockSpan.Style.ApplyParentStyle(DefaultStyle);
+
             container.Stack(stack =>
             {
                 stack.Spacing(Spacing);
@@ -170,12 +174,11 @@ namespace QuestPDF.Fluent
     {
         public static void Text(this IContainer element, Action<TextDescriptor> content)
         {
-            var textBlock = new TextBlock();
-
-            if (element is Alignment alignment)
-                textBlock.Alignment = alignment.Horizontal;
-            
             var descriptor = new TextDescriptor();
+            
+            if (element is Alignment alignment)
+                descriptor.Alignment = alignment.Horizontal;
+            
             content?.Invoke(descriptor);
             descriptor.Compose(element);
         }
