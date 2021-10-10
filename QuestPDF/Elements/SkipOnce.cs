@@ -5,16 +5,16 @@ namespace QuestPDF.Elements
 {
     internal class SkipOnce : ContainerElement, IStateResettable
     {
-        private bool firstPageWasSkiped;
+        private bool FirstPageWasSkipped { get; set; }
 
         public void ResetState()
         {
-            firstPageWasSkiped = false;
+            FirstPageWasSkipped = false;
         }
 
         internal override ISpacePlan Measure(Size availableSpace)
         {
-            if (Child == null || !firstPageWasSkiped)
+            if (Child == null || !FirstPageWasSkipped)
                 return new FullRender(Size.Zero);
 
             return Child.Measure(availableSpace);
@@ -25,10 +25,10 @@ namespace QuestPDF.Elements
             if (Child == null)
                 return;
 
-            if (firstPageWasSkiped)
+            if (FirstPageWasSkipped)
                 Child.Draw(availableSpace);
 
-            firstPageWasSkiped = true;
+            FirstPageWasSkipped = true;
         }
     }
 }
