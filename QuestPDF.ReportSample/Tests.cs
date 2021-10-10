@@ -57,8 +57,8 @@ namespace QuestPDF.ReportSample
             Console.WriteLine($"Time per document: {performance:N} ms");
             Console.WriteLine($"Documents per second: {speed:N} d/s");
 
-            //if (speed < performanceTarget)
-            //    throw new Exception("Rendering algorithm is too slow.");
+            if (speed < performanceTarget)
+                throw new Exception("Rendering algorithm is too slow.");
         }
     }
 }

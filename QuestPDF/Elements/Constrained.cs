@@ -22,8 +22,8 @@ namespace QuestPDF.Elements
                 return new Wrap();
             
             var available = new Size(
-                MathHelpers.Min(MaxWidth, availableSpace.Width),
-                MathHelpers.Min(MaxHeight, availableSpace.Height));
+                Min(MaxWidth, availableSpace.Width),
+                Min(MaxHeight, availableSpace.Height));
 
             var measurement = Child?.Measure(available) ?? new FullRender(Size.Zero);
             var size = measurement as Size;
@@ -32,8 +32,8 @@ namespace QuestPDF.Elements
                 return new Wrap();
             
             var actualSize = new Size(
-                MathHelpers.Max(MinWidth, size.Width),
-                MathHelpers.Max(MinHeight, size.Height));
+                Max(MinWidth, size.Width),
+                Max(MinHeight, size.Height));
             
             if (size is FullRender)
                 return new FullRender(actualSize);
@@ -47,23 +47,20 @@ namespace QuestPDF.Elements
         internal override void Draw(Size availableSpace)
         {
             var available = new Size(
-                MathHelpers.Min(MaxWidth, availableSpace.Width),
-                MathHelpers.Min(MaxHeight, availableSpace.Height));
+                Min(MaxWidth, availableSpace.Width),
+                Min(MaxHeight, availableSpace.Height));
             
             Child?.Draw(available);
         }
-    }
-    
-    static class MathHelpers
-    {
-        public static float Min(params float?[] values)
+        
+        private static float Min(float? x, float y)
         {
-            return values.Where(x => x.HasValue).Min().Value;
+            return x.HasValue ? Math.Min(x.Value, y) : y; 
         }
         
-        public static float Max(params float?[] values)
+        private static float Max(float? x, float y)
         {
-            return values.Where(x => x.HasValue).Max().Value;
+            return x.HasValue ? Math.Max(x.Value, y) : y;
         }
     }
 }

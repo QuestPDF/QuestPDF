@@ -32,9 +32,8 @@ namespace QuestPDF.Infrastructure
             HasUnderline = false
         };
 
-        private static TextStyle DefaultTextStyleCache = new TextStyle();
-        public static TextStyle Default => DefaultTextStyleCache;
-
+        public static TextStyle Default => new TextStyle();
+        
         internal void ApplyGlobalStyle(TextStyle globalStyle)
         {
             if (HasGlobalStyleApplied)
@@ -43,7 +42,6 @@ namespace QuestPDF.Infrastructure
             HasGlobalStyleApplied = true;
 
             ApplyParentStyle(globalStyle);
-            
             Key ??= $"{Color}|{BackgroundColor}|{FontType}|{Size}|{LineHeight}|{FontWeight}|{IsItalic}|{HasStrikethrough}|{HasUnderline}";
         }
         

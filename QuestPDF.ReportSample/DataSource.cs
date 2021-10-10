@@ -7,9 +7,6 @@ namespace QuestPDF.ReportSample
 {
     public static class DataSource
     {
-        public static int SectionCounter { get; set; }
-        public static int FieldCounter { get; set; }
-        
         public static ReportModel GetReport()
         {
             return new ReportModel
