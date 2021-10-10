@@ -37,8 +37,11 @@ The library is available as a nuget package. You can install it as any other nug
 ## Documentation
 
 **[Release notes and roadmap](https://www.questpdf.com/documentation/releases.html)** - everything that is planned for future library iterations, description of new features and information about potential breaking changes.
+
 **[Getting started tutorial](https://www.questpdf.com/documentation/getting-started.html)** - a short and easy to follow tutorial showing how to design an invoice document under 200 lines of code.
+
 **[API Reference](https://www.questpdf.com/documentation/api-reference.html)** - a detailed description of behavior of all available components and how to use them with C# Fluent API.
+
 **[Patterns and practices](https://www.questpdf.com/documentation/patterns-and-practices.html#document-metadata)** - everything that may help you designing great reports and reusable code that is easy to maintain.
 
 ## Example invoice
