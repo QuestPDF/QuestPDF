@@ -81,7 +81,7 @@ namespace QuestPDF.Drawing
                 if (currentPage >= documentMetadata.DocumentLayoutExceptionThreshold)
                 {
                     canvas.EndDocument();
-                    throw new DocumentLayoutException("Composed layout generates infinite document.");
+                    ThrowLayoutException();
                 }
                 
                 if (spacePlan is FullRender)
@@ -94,7 +94,12 @@ namespace QuestPDF.Drawing
             
             void ThrowLayoutException()
             {
-                throw new DocumentLayoutException("Composed layout generates infinite document.");
+                throw new DocumentLayoutException(
+                    $"Composed layout generates infinite document. This may happen in two cases. " +
+                    $"1) Your document and its layout configuration is correct but the content takes more than {documentMetadata.DocumentLayoutExceptionThreshold} pages. " +
+                    $"In this case, please increase the value {nameof(DocumentMetadata)}.{nameof(DocumentMetadata.DocumentLayoutExceptionThreshold)} property configured in the {nameof(IDocument.GetMetadata)} method. " +
+                    $"2) The layout configuration of your document is invalid. Some of the elements require more space than is provided." +
+                    $"Please analyze your documents structure to detect this element and fix its size constraints.");
             }
         }
 
