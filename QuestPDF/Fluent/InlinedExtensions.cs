@@ -8,11 +8,7 @@ namespace QuestPDF.Fluent
 {
     public class InlinedDescriptor
     {
-        private ICollection<Element> Children = new List<Element>();
-        private float VerticalSpacingValue { get; set; }
-        private VerticalAlignment BaselineAlignmentValue { get; set; }
-        private float HorizontalSpacingValue { get; set; }
-        private HorizontalAlignment HorizontalAlignmentValue { get; set; }
+        internal Inlined Inlined { get; } = new Inlined();
         
         public void Spacing(float value)
         {
@@ -20,51 +16,24 @@ namespace QuestPDF.Fluent
             HorizontalSpacing(value);
         }
         
-        public void VerticalSpacing(float value) => VerticalSpacingValue = value;
-        public void HorizontalSpacing(float value) => HorizontalSpacingValue = value;
+        public void VerticalSpacing(float value) => Inlined.VerticalSpacing = value;
+        public void HorizontalSpacing(float value) => Inlined.HorizontalSpacing = value;
 
-        public void BaselineTop() => BaselineAlignmentValue = VerticalAlignment.Top;
-        public void BaselineMiddle() => BaselineAlignmentValue = VerticalAlignment.Middle;
-        public void BaselineBottom() => BaselineAlignmentValue = VerticalAlignment.Bottom;
+        public void BaselineTop() => Inlined.BaselineAlignment = VerticalAlignment.Top;
+        public void BaselineMiddle() => Inlined.BaselineAlignment = VerticalAlignment.Middle;
+        public void BaselineBottom() => Inlined.BaselineAlignment = VerticalAlignment.Bottom;
 
-        public void AlignLeft() => HorizontalAlignmentValue = HorizontalAlignment.Left;
-        public void AlignCenter() => HorizontalAlignmentValue = HorizontalAlignment.Center;
-        public void AlignRight() => HorizontalAlignmentValue = HorizontalAlignment.Right;
+        public void AlignLeft() => Inlined.ElementsAlignment = InlinedAlignment.Left;
+        public void AlignCenter() => Inlined.ElementsAlignment = InlinedAlignment.Center;
+        public void AlignRight() => Inlined.ElementsAlignment = InlinedAlignment.Right;
+        public void AlignJustify() => Inlined.ElementsAlignment = InlinedAlignment.Justify;
+        public void AlignSpaceAround() => Inlined.ElementsAlignment = InlinedAlignment.SpaceAround;
         
         public IContainer Item()
         {
-            var container = new Container();
-            Children.Add(container);
+            var container = new InlinedElement();
+            Inlined.Elements.Add(container);
             return container;
-        }
-
-        internal Element Compose()
-        {
-            var elements = Children
-                .Select(x => new InlinedElement
-                {
-                    Child = new Padding
-                    {
-                        Left = HorizontalSpacingValue,
-                        Top = VerticalSpacingValue,
-                        Child = x
-                    }
-                })
-                .ToList();
-            
-            return new Padding
-            {
-                Left = -HorizontalSpacingValue,
-                Top = -VerticalSpacingValue,
-                
-                Child = new Inlined
-                {
-                    Elements = elements,
-                    
-                    HorizontalAlignment = HorizontalAlignmentValue,
-                    BaselineAlignment = BaselineAlignmentValue
-                }
-            };
         }
     }
     
@@ -75,7 +44,7 @@ namespace QuestPDF.Fluent
             var descriptor = new InlinedDescriptor();
             handler(descriptor);
             
-            element.Element(descriptor.Compose());
+            element.Element(descriptor.Inlined);
         }
     }
 }

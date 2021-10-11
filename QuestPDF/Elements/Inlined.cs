@@ -8,7 +8,24 @@ namespace QuestPDF.Elements
 {
     internal class InlinedElement : Container
     {
-        public ISpacePlan? Size { get; set; }
+        public ISpacePlan? MeasureCache { get; set; }
+
+        internal override ISpacePlan Measure(Size availableSpace)
+        {
+            // TODO: once element caching proxy is introduces, this can be removed
+            
+            MeasureCache ??= Child.Measure(Size.Max);
+            return MeasureCache;
+        }
+    }
+
+    internal enum InlinedAlignment
+    {
+        Left,
+        Center,
+        Right,
+        Justify,
+        SpaceAround
     }
     
     internal class Inlined : Element, IStateResettable
@@ -16,12 +33,14 @@ namespace QuestPDF.Elements
         public List<InlinedElement> Elements { get; internal set; } = new List<InlinedElement>();
         private Queue<InlinedElement> ChildrenQueue { get; set; }
 
-        internal HorizontalAlignment HorizontalAlignment { get; set; }
+        internal float VerticalSpacing { get; set; }
+        internal float HorizontalSpacing { get; set; }
+        
+        internal InlinedAlignment ElementsAlignment { get; set; }
         internal VerticalAlignment BaselineAlignment { get; set; }
         
         public void ResetState()
         {
-            Elements.ForEach(x => x.Size ??= x.Measure(Size.Max));
             ChildrenQueue = new Queue<InlinedElement>(Elements);
         }
         
@@ -41,10 +60,17 @@ namespace QuestPDF.Elements
             if (!lines.Any())
                 return new Wrap();
 
-            var lineSizes = lines.Select(GetLineSize).ToList();
+            var lineSizes = lines
+                .Select(line =>
+                {
+                    var size = GetLineSize(line);
+                    var heightWithSpacing = size.Height + (line.Count - 1) * HorizontalSpacing;
+                    return new Size(size.Width, heightWithSpacing);
+                })
+                .ToList();
             
             var width = lineSizes.Max(x => x.Width);
-            var height = lineSizes.Sum(x => x.Height);
+            var height = lineSizes.Sum(x => x.Height) + (lines.Count - 1) * VerticalSpacing;
             var targetSize = new Size(width, height);
 
             var isPartiallyRendered = lines.Sum(x => x.Count) != ChildrenQueue.Count;
@@ -62,11 +88,11 @@ namespace QuestPDF.Elements
             
             foreach (var line in lines)
             {
-                var height = line.Select(x => x.Size as Size).Where(x => x != null).Max(x => x.Height);
+                var height = line.Select(x => x.Measure(Size.Max) as Size).Where(x => x != null).Max(x => x.Height);
                 DrawLine(line);
 
-                topOffset += height;
-                Canvas.Translate(new Position(0, height));
+                topOffset += height + VerticalSpacing;
+                Canvas.Translate(new Position(0, height + VerticalSpacing));
             }
             
             Canvas.Translate(new Position(0, -topOffset));
@@ -75,36 +101,62 @@ namespace QuestPDF.Elements
             void DrawLine(ICollection<InlinedElement> elements)
             {
                 var lineSize = GetLineSize(elements);
-                
+
+                var elementOffset = ElementOffset();
                 var leftOffset = AlignOffset();
                 Canvas.Translate(new Position(leftOffset, 0));
                 
                 foreach (var element in elements)
                 {
-                    var size = element.Size as Size;
+                    var size = element.Measure(Size.Max) as Size;
                     var baselineOffset = BaselineOffset(size, lineSize.Height);
                     
                     Canvas.Translate(new Position(0, baselineOffset));
                     element.Draw(size);
                     Canvas.Translate(new Position(0, -baselineOffset));
 
-                    leftOffset += size.Width;
-                    Canvas.Translate(new Position(size.Width, 0));
+                    leftOffset += size.Width + elementOffset;
+                    Canvas.Translate(new Position(size.Width + elementOffset, 0));
                 }
                 
                 Canvas.Translate(new Position(-leftOffset, 0));
 
-                float AlignOffset()
+                float ElementOffset()
                 {
-                    if (HorizontalAlignment == HorizontalAlignment.Left)
+                    var difference = availableSpace.Width - lineSize.Width;
+
+                    if (elements.Count == 1)
                         return 0;
 
-                    var difference = availableSpace.Width - lineSize.Width;
+                    if (ElementsAlignment == InlinedAlignment.Justify)
+                        return difference / (elements.Count - 1);
                     
-                    if (HorizontalAlignment == HorizontalAlignment.Center)
+                    if (ElementsAlignment == InlinedAlignment.SpaceAround)
+                        return difference / (elements.Count + 1);
+                    
+                    return HorizontalSpacing;
+                }
+
+                float AlignOffset()
+                {
+                    if (ElementsAlignment == InlinedAlignment.Left)
+                        return 0;
+                    
+                    if (ElementsAlignment == InlinedAlignment.Justify)
+                        return 0;
+                    
+                    if (ElementsAlignment == InlinedAlignment.SpaceAround)
+                        return elementOffset;
+
+                    var difference = availableSpace.Width - lineSize.Width - (elements.Count - 1) * HorizontalSpacing;
+                    
+                    if (ElementsAlignment == InlinedAlignment.Center)
                         return difference / 2;
 
-                    return difference;
+                    if (ElementsAlignment == InlinedAlignment.Right)
+                        return difference;
+
+                    return 0;
                 }
                 
                 float BaselineOffset(Size elementSize, float lineHeight)
@@ -125,7 +177,7 @@ namespace QuestPDF.Elements
         Size GetLineSize(ICollection<InlinedElement> elements)
         {
             var sizes = elements
-                .Select(x => x.Size as Size)
+                .Select(x => x.Measure(Size.Max) as Size)
                 .Where(x => x != null)
                 .ToList();
             
@@ -151,14 +203,14 @@ namespace QuestPDF.Elements
                     break;
 
                 var height = line
-                    .Select(x => x.Size as Size)
+                    .Select(x => x.Measure(availableSize) as Size)
                     .Where(x => x != null)
                     .Max(x => x.Height);
                 
-                if (topOffset + height > availableSize.Height)
+                if (topOffset + height > availableSize.Height + Size.Epsilon)
                     break;
 
-                topOffset += height;
+                topOffset += height + VerticalSpacing;
                 result.Add(line);
             }
 
@@ -167,7 +219,7 @@ namespace QuestPDF.Elements
             ICollection<InlinedElement> GetNextLine()
             {
                 var result = new List<InlinedElement>();
-                var leftOffset = 0f;
+                var leftOffset = GetInitialAlignmentOffset();
                 
                 while (true)
                 {
@@ -175,20 +227,30 @@ namespace QuestPDF.Elements
                         break;
                     
                     var element = queue.Peek();
-                    var size = element.Size as Size;
+                    var size = element.Measure(Size.Max) as Size;
                     
                     if (size == null)
                         break;
                     
-                    if (leftOffset + size.Width > availableSize.Width)
+                    if (leftOffset + size.Width > availableSize.Width + Size.Epsilon)
                         break;
 
                     queue.Dequeue();
-                    leftOffset += size.Width;
+                    leftOffset += size.Width + HorizontalSpacing;
                     result.Add(element);    
                 }
 
                 return result;
+            }
+
+            float GetInitialAlignmentOffset()
+            {
+                // this method makes sure that the spacing between elements is no lesser than configured
+                
+                if (ElementsAlignment == InlinedAlignment.SpaceAround)
+                    return HorizontalSpacing * 2;
+
+                return 0;
             }
         }
     }

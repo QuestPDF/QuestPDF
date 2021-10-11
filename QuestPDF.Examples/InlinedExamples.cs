@@ -4,6 +4,7 @@ using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
@@ -14,7 +15,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(800, 575)
+                .PageSize(800, 650)
                 .FileName()
                 .ProduceImages()
                 .ShowResults()
@@ -22,26 +23,61 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(25)
-                        .Border(1)
-                        .Background(Colors.Grey.Lighten2)
-                        .Inlined(inlined =>
+                        .Decoration(decoration =>
                         {
-                            inlined.Spacing(25);
-                            
-                            inlined.AlignCenter();
-                            inlined.BaselineMiddle();
-
-                            var random = new Random();
-                            
-                            foreach (var _ in Enumerable.Range(0, 50))
+                            decoration.Header().Text(text =>
                             {
-                                inlined
-                                    .Item()
-                                    .Border(1)
-                                    .Width(random.Next(1, 5) * 25)
-                                    .Height(random.Next(1, 5) * 25)
-                                    .Background(Placeholders.BackgroundColor());
-                            }
+                                text.DefaultTextStyle(TextStyle.Default.Size(20));
+                                
+                                text.CurrentPageNumber();
+                                text.Span(" / ");
+                                text.TotalPages();
+                            });
+                            
+                            decoration
+                                .Content()
+                                .PaddingTop(25)
+                                //.Box()
+                                .Border(1)
+                                .Background(Colors.Grey.Lighten2)
+                                .Inlined(inlined =>
+                                {
+                                    inlined.Spacing(25);
+
+                                    inlined.AlignSpaceAround();
+                                    inlined.BaselineMiddle();
+
+                                    var random = new Random(123);
+
+                                    foreach (var _ in Enumerable.Range(0, 50))
+                                    {
+                                        var width = random.Next(2, 7);
+                                        var height = random.Next(2, 7);
+
+                                        var sizeText = $"{width}×{height}";
+                                        
+                                        inlined
+                                            .Item()
+                                            .Border(1)
+                                            .Width(width * 25)
+                                            .Height(height * 25)
+                                            .Background(Placeholders.BackgroundColor())
+                                            .Layers(layers =>
+                                            {
+                                                layers.Layer().Grid(grid =>
+                                                {
+                                                    grid.Columns(width);
+                                                    Enumerable.Range(0, width * height).ToList().ForEach(x => grid.Item().Border(1).BorderColor(Colors.White).Width(25).Height(25));
+                                                });
+                                                
+                                                layers
+                                                    .PrimaryLayer()
+                                                    .AlignCenter()
+                                                    .AlignMiddle()
+                                                    .Text(sizeText, TextStyle.Default.Size(15));
+                                            });
+                                    }
+                                });
                         });
                 });
         }
