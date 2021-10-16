@@ -55,7 +55,7 @@ namespace QuestPDF.ReportSample.Layouts
                     row.Spacing(50);
                     
                     row.RelativeColumn().PaddingTop(-10).Text(Model.Title, Typography.Title);
-                    row.ConstantColumn(150).ExternalLink("https://www.questpdf.com").Image(Model.LogoData);
+                    row.ConstantColumn(150).ExternalLink("https://www.questpdf.com").Background(Colors.Grey.Lighten3);
                 });
 
                 stack.Item().ShowOnce().PaddingVertical(15).Border(1f).BorderColor(Colors.Grey.Lighten1).ExtendHorizontal();

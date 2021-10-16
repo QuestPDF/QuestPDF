@@ -30,14 +30,14 @@ namespace QuestPDF.ReportSample.Layouts
             container
                 .Row(row =>
                 {
-                    row.RelativeColumn(2).AspectRatio(4 / 3f).Image(Placeholders.Image);
+                    row.RelativeColumn(2).AspectRatio(4 / 3f).Background(Colors.Grey.Lighten3);
 
                     row.RelativeColumn().PaddingLeft(5).Stack(stack =>
                     {
                         stack.Spacing(7f);
                         
-                        stack.Item().AspectRatio(4 / 3f).Image(Placeholders.Image);
-                        stack.Item().AspectRatio(4 / 3f).Image(Placeholders.Image);
+                        stack.Item().AspectRatio(4 / 3f).Background(Colors.Grey.Lighten3);
+                        stack.Item().AspectRatio(4 / 3f).Background(Colors.Grey.Lighten3);
                     });
                 });
         }
