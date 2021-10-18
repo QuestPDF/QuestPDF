@@ -28,10 +28,5 @@ namespace QuestPDF.Infrastructure
         
         internal abstract SpacePlan Measure(Size availableSpace);
         internal abstract void Draw(Size availableSpace);
-
-        protected virtual IEnumerable<string> GetDebugInformation()
-        {
-            yield break;
-        }
     }
 }

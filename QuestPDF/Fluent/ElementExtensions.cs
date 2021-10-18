@@ -41,6 +41,16 @@ namespace QuestPDF.Fluent
             return handler(parent.Container()).Container();
         }
         
+        public static void Dynamic<TDynamic>(this IContainer element) where TDynamic : IDynamic, new()
+        {
+            element.Dynamic(new TDynamic());
+        }
+        
+        public static void Dynamic(this IContainer element, IDynamic dynamicElement)
+        {
+            element.Element(new DynamicHost(dynamicElement));
+        }
+        
         public static IContainer AspectRatio(this IContainer element, float ratio, AspectRatioOption option = AspectRatioOption.FitWidth)
         {
             return element.Element(new AspectRatio
