@@ -125,7 +125,7 @@ namespace QuestPDF.Drawing
 
             content.HandleVisitor(x =>
             {
-                x.CreateProxy(y => new DebuggingProxy(debuggingState, x));
+                x.CreateProxy(y => new DebuggingProxy(debuggingState, y));
             });
 
             return debuggingState;
