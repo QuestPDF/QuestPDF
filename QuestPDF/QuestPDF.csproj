@@ -15,7 +15,7 @@
         <RepositoryUrl>https://github.com/QuestPDF/library.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
-        <PackageTags>pdf file export generate generation tool create creation render portable document format quest html library converter open source free standard core</PackageTags>
+        <PackageTags>pdf report file export generate generation tool create creation render portable document format quest html library converter open source free standard core</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net462;netstandard2.0;netcoreapp2.0;netcoreapp3.0</TargetFrameworks>
