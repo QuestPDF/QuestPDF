@@ -41,12 +41,12 @@ namespace QuestPDF.Fluent
             return handler(parent.Container()).Container();
         }
         
-        public static void Dynamic<TDynamic>(this IContainer element) where TDynamic : IDynamic, new()
+        public static void Dynamic<TDynamic>(this IContainer element) where TDynamic : IDynamicComponent, new()
         {
             element.Dynamic(new TDynamic());
         }
         
-        public static void Dynamic(this IContainer element, IDynamic dynamicElement)
+        public static void Dynamic(this IContainer element, IDynamicComponent dynamicElement)
         {
             element.Element(new DynamicHost(dynamicElement));
         }

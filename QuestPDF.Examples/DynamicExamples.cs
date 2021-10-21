@@ -9,68 +9,123 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
-    public class TableWithSubtotals : IDynamic
+    public class OrderItem
     {
-        private ICollection<int> Values { get; }
-        private Queue<int> ValuesQueue { get; set; }
-
-        public TableWithSubtotals(ICollection<int> values)
+        public string ItemName { get; set; } = Placeholders.Label();
+        public int Price { get; set; } = Placeholders.Random.Next(1, 11) * 10;
+        public int Count { get; set; } = Placeholders.Random.Next(1, 11);
+    }
+    
+    public class OrdersTable : IDynamicComponent
+    {
+        private ICollection<OrderItem> Items { get; }
+        private ICollection<OrderItem> ItemsLeft { get; set; }
+        
+        public OrdersTable(ICollection<OrderItem> items)
         {
-            Values = values;
+            Items = items;
         }
         
-        public void Reset()
+        public void Compose(DynamicContext context, IDynamicContainer container)
         {
-            ValuesQueue = new Queue<int>(Values);
+            if (context.Operation == DynamicLayoutOperation.Reset)
+            {
+                ItemsLeft = new List<OrderItem>(Items);
+                return;
+            }
+
+            var header = ComposeHeader(context);
+            var sampleFooter = ComposeFooter(context, Enumerable.Empty<OrderItem>());
+            var decorationHeight = header.Size.Height + sampleFooter.Size.Height;
+            
+            var rows = GetItemsForPage(context, decorationHeight).ToList();
+            var footer = ComposeFooter(context, rows.Select(x => x.Item));
+
+            if (ItemsLeft.Count > rows.Count)
+                container.HasMoreContent();
+            
+            if (context.Operation == DynamicLayoutOperation.Draw)
+                ItemsLeft = ItemsLeft.Skip(rows.Count).ToList();
+
+            container.Box().Decoration(decoration =>
+            {
+                decoration.Header().Element(header);
+                
+                decoration.Content().Box().Stack(stack =>
+                {
+                    foreach (var row in rows)
+                        stack.Item().Element(row.Element);
+                });
+
+                decoration.Footer().Element(footer);
+            });
         }
 
-        public bool Compose(DynamicContext context, IContainer container)
+        private IDynamicElement ComposeHeader(DynamicContext context)
         {
-            var internalQueue = new Queue<int>(ValuesQueue);
-            
-            container.Box().Border(2).Background(Colors.Grey.Lighten3).Stack(stack =>
+            return context.CreateElement(element =>
             {
-                var summaryHeight = 40f;
-                
-                var totalHeight = summaryHeight;
-                var total = 0;
-                
-                while (internalQueue.Any())
-                {
-                    var value = internalQueue.Peek();
-
-                    var structure = context.Content(content =>
+                element
+                    .BorderBottom(1)
+                    .BorderColor(Colors.Grey.Darken2)
+                    .Padding(5)
+                    .Row(row =>
                     {
-                        content
-                            .Padding(10)
-                            .Text(value);
+                        var textStyle = TextStyle.Default.SemiBold();
+
+                        row.ConstantColumn(30).Text("#", textStyle);
+                        row.RelativeColumn().Text("Item name", textStyle);
+                        row.ConstantColumn(50).AlignRight().Text("Count", textStyle);
+                        row.ConstantColumn(50).AlignRight().Text("Price", textStyle);
+                        row.ConstantColumn(50).AlignRight().Text("Total", textStyle);
                     });
-
-                    var structureHeight = structure.Measure().Height;
-
-                    if (totalHeight + structureHeight > context.AvailableSize.Height)
-                        break;
-
-                    totalHeight += structureHeight;
-                    total += value;
-
-                    stack.Item().Border(1).Element(structure);
-                    internalQueue.Dequeue();
-                }
-                
-                stack
-                    .Item()
-                    .ShowEntire()
-                    .Border(2)
-                    .Background(Colors.Grey.Lighten1)
-                    .Padding(10)
-                    .Text($"Total: {total}", TextStyle.Default.SemiBold());
             });
+        }
+        
+        private IDynamicElement ComposeFooter(DynamicContext context, IEnumerable<OrderItem> items)
+        {
+            var total = items.Sum(x => x.Count * x.Price);
 
-            if (context.IsDrawStep)
-                ValuesQueue = internalQueue;
+            return context.CreateElement(element =>
+            {
+                element
+                    .Padding(5)
+                    .AlignRight()
+                    .Text($"Subtotal: {total}$", TextStyle.Default.Size(14).SemiBold());
+            });
+        }
+        
+        private IEnumerable<(OrderItem Item, IDynamicElement Element)> GetItemsForPage(DynamicContext context, float decorationHeight)
+        {
+            var totalHeight = decorationHeight;
+            var counter = Items.Count - ItemsLeft.Count + 1;
             
-            return internalQueue.Any();
+            foreach (var orderItem in ItemsLeft)
+            {
+                var element = context.CreateElement(content =>
+                {
+                    content
+                        .BorderBottom(1)
+                        .BorderColor(Colors.Grey.Lighten2)
+                        .Padding(5)
+                        .Row(row =>
+                        {
+                            row.ConstantColumn(30).Text(counter++);
+                            row.RelativeColumn().Text(orderItem.ItemName);
+                            row.ConstantColumn(50).AlignRight().Text(orderItem.Count);
+                            row.ConstantColumn(50).AlignRight().Text($"{orderItem.Price}$");
+                            row.ConstantColumn(50).AlignRight().Text($"{orderItem.Count*orderItem.Price}$");
+                        });
+                });
+
+                var elementHeight = element.Size.Height;
+                    
+                if (totalHeight + elementHeight > context.AvailableSize.Height)
+                    break;
+                    
+                totalHeight += elementHeight;
+                yield return (orderItem, element);
+            }
         }
     }
     
@@ -81,12 +136,12 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(300, 500)
+                .PageSize(PageSizes.A5)
                 .FileName()
                 .ShowResults()
                 .Render(container =>
                 {
-                    var values = Enumerable.Range(0, 15).ToList();
+                    var items = Enumerable.Range(0, 25).Select(x => new OrderItem()).ToList();
                     
                     container
                         .Background(Colors.White)
@@ -107,7 +162,7 @@ namespace QuestPDF.Examples
                             
                             decoration
                                 .Content()
-                                .Dynamic(new TableWithSubtotals(values));
+                                .Dynamic(new OrdersTable(items));
                         });
                 });
         }

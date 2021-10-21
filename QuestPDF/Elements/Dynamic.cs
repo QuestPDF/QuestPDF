@@ -1,72 +1,56 @@
 ﻿using System;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
     internal class DynamicHost : Element, IStateResettable
     {
-        private IDynamic Child { get; }
+        private IDynamicComponent Child { get; }
 
-        public DynamicHost(IDynamic child)
+        public DynamicHost(IDynamicComponent child)
         {
             Child = child;
         }
 
         public void ResetState()
         {
-            Child.Reset();
+            GetContent(Size.Zero, DynamicLayoutOperation.Reset);
         }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            var content = GetContent(availableSpace, false);
-            var measurement = content.element.Measure(availableSpace);
+            var content = GetContent(availableSpace, DynamicLayoutOperation.Measure);
+            var measurement = content.Measure(availableSpace);
 
-            if (measurement.Type == SpacePlanType.FullRender)
-                return content.hasMore ? SpacePlan.PartialRender(measurement) : measurement;
-
-            return measurement;
+            if (measurement.Type != SpacePlanType.FullRender)
+                throw new DocumentLayoutException("Dynamic component generated content that does not fit on a single page.");
+            
+            return content.HasMoreContent 
+                ? SpacePlan.PartialRender(measurement) 
+                : SpacePlan.FullRender(measurement);
         }
 
         internal override void Draw(Size availableSpace)
         {
-            GetContent(availableSpace, true).element.Draw(availableSpace);
+            GetContent(availableSpace, DynamicLayoutOperation.Draw).Draw(availableSpace);
         }
 
-        (Element element, bool hasMore) GetContent(Size availableSize, bool isDrawState)
+        DynamicContainer GetContent(Size availableSize, DynamicLayoutOperation operation)
         {
             var context = new DynamicContext
             {
+                PageNumber = PageContext.GetLocationPage(Infrastructure.PageContext.CurrentPageSlot),
                 PageContext = PageContext,
                 Canvas = Canvas,
                 
                 AvailableSize = availableSize,
-                IsDrawStep = isDrawState
+                Operation = operation
             };
             
-            var container = new Container();
-            var hasMore = Child.Compose(context, container);
-            
-            container.HandleVisitor(x => x?.Initialize(PageContext, Canvas));
-            container.HandleVisitor(x => (x as IStateResettable)?.ResetState());
-            
-            return (container, hasMore);
-        }
-    }
-    
-    public class DynamicContext
-    {
-        internal IPageContext PageContext { get; set; }
-        internal ICanvas Canvas { get; set; }
-        
-        public Size AvailableSize { get; internal set; }
-        public bool IsDrawStep { get; internal set; }
-        
-        public IDynamicElement Content(Action<IContainer> content)
-        {
-            var container = new DynamicElement(() => AvailableSize);
-            content(container);
+            var container = new DynamicContainer();
+            Child.Compose(context, container);
             
             container.HandleVisitor(x => x?.Initialize(PageContext, Canvas));
             container.HandleVisitor(x => (x as IStateResettable)?.ResetState());
@@ -75,23 +59,62 @@ namespace QuestPDF.Elements
         }
     }
 
+    public enum DynamicLayoutOperation
+    {
+        Reset,
+        Measure,
+        Draw
+    }
+    
+    public class DynamicContext
+    {
+        internal IPageContext PageContext { get; set; }
+        internal ICanvas Canvas { get; set; }
+        
+        public int PageNumber { get; internal set; }
+        public Size AvailableSize { get; internal set; }
+        public DynamicLayoutOperation Operation { get; internal set; }
+        
+        public IDynamicElement CreateElement(Action<IContainer> content)
+        {
+            var container = new DynamicElement();
+            content(container);
+            
+            container.HandleVisitor(x => x?.Initialize(PageContext, Canvas));
+            container.HandleVisitor(x => (x as IStateResettable)?.ResetState());
+
+            container.Size = container.Measure(AvailableSize);
+            
+            return container;
+        }
+    }
+
+    public interface IDynamicContainer : IContainer
+    {
+        
+    }
+
+    internal class DynamicContainer : Container, IDynamicContainer
+    {
+        internal bool HasMoreContent { get; set; }
+    }
+
+    public static class DynamicContainerExtensions
+    {
+        public static IDynamicContainer HasMoreContent(this IDynamicContainer container)
+        {
+            (container as DynamicContainer).HasMoreContent = true;
+            return container;
+        }
+    }
+    
     public interface IDynamicElement : IElement
     {
-        Size Measure();
+        Size Size { get; }
     }
 
     internal class DynamicElement : ContainerElement, IDynamicElement
     {
-        private Func<Size> AvailableSizeSource { get; }
-
-        public DynamicElement(Func<Size> availableSizeSource)
-        {
-            AvailableSizeSource = availableSizeSource;
-        }
-        
-        Size IDynamicElement.Measure()
-        {
-            return Measure(AvailableSizeSource());
-        }
+        public Size Size { get; internal set; }
     }
 }

@@ -7,7 +7,7 @@ namespace QuestPDF.Helpers
 {
     public static class Placeholders
     {
-        private static Random Random = new Random();
+        public static readonly Random Random = new Random();
         
         #region Word Cache
 
