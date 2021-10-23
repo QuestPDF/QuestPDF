@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
@@ -16,7 +17,6 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(800, 650)
-                .FileName()
                 .ProduceImages()
                 .ShowResults()
                 .Render(container =>
@@ -80,6 +80,43 @@ namespace QuestPDF.Examples
                                 });
                         });
                 });
+        }
+        
+        [Test]
+        public void Inline_AlignLeft_BaselineBottom()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(400, 250)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(20)
+                        .Border(1)
+                        .Background(Colors.Grey.Lighten3)
+                        .Inlined(inlined =>
+                        {
+                            inlined.VerticalSpacing(50);
+                            inlined.HorizontalSpacing(20);
+                            inlined.AlignSpaceAround();
+                            inlined.BaselineTop();
+
+                            foreach (var _ in Enumerable.Range(0, 20))
+                                inlined.Item().Element(RandomBlock);
+                        });
+                });
+
+            void RandomBlock(IContainer container)
+            {
+                container
+                    .Width(Placeholders.Random.Next(1, 5) * 20)
+                    .Height(Placeholders.Random.Next(1, 5) * 20)
+                    .Border(1)
+                    .BorderColor(Colors.Grey.Darken2)
+                    .Background(Placeholders.BackgroundColor());
+            }
         }
     }
 }

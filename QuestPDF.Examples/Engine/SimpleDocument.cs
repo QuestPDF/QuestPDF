@@ -1,4 +1,5 @@
-﻿using QuestPDF.Drawing;
+﻿using System;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -10,14 +11,12 @@ namespace QuestPDF.Examples.Engine
     {
         public const int ImageScalingFactor = 2;
         
-        private IContainer Container { get; }
-        private Size Size { get; }
+        private Action<IDocumentContainer> Content { get; }
         private int MaxPages { get; }
 
-        public SimpleDocument(IContainer container, Size size, int maxPages)
+        public SimpleDocument(Action<IDocumentContainer> content, int maxPages)
         {
-            Container = container;
-            Size = size;
+            Content = content;
             MaxPages = maxPages;
         }
         
@@ -32,11 +31,7 @@ namespace QuestPDF.Examples.Engine
         
         public void Compose(IDocumentContainer container)
         {
-            container.Page(page =>
-            {
-                page.Size(new PageSize(Size.Width, Size.Height));
-                page.Content().Container().Background(Colors.White).Element(Container as Container);
-            });
+            Content(container);
         }
     }
 }

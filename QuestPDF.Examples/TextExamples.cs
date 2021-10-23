@@ -17,7 +17,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(500, 300)
-                .FileName()
+                
                 .ProduceImages()
                 .ShowResults()
                 .Render(container =>
@@ -42,7 +42,6 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(500, 300)
-                .FileName()
                 .ProduceImages()
                 .ShowResults()
                 .Render(container =>
@@ -71,7 +70,6 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(500, 200)
-                .FileName()
                 .ProduceImages()
                 .ShowResults()
                 .Render(container =>
@@ -103,7 +101,6 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(PageSizes.A4)
-                .FileName()
                 .ProducePdf()
                 .ShowResults()
                 .Render(container =>
@@ -134,7 +131,6 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(PageSizes.A4)
-                .FileName()
                 .ProducePdf()
                 .ShowResults()
                 .Render(container =>
@@ -164,7 +160,6 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(PageSizes.A4)
-                .FileName()
                 .ProducePdf()
                 .ShowResults()
                 .Render(container =>
@@ -228,7 +223,6 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(PageSizes.A4)
-                .FileName()
                 .ProducePdf()
                 .ShowResults()
                 .Render(container =>

@@ -1,0 +1,47 @@
+﻿using NUnit.Framework;
+using QuestPDF.Examples.Engine;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+
+namespace QuestPDF.Examples
+{
+    public class SkipOnceExample
+    {
+        [Test]
+        public void SkipOnce()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(20);
+                        page.Size(PageSizes.A7.Landscape());
+                        page.Background(Colors.White);
+        
+                        page.Header().Stack(stack =>
+                        {
+                            stack.Item().ShowOnce().Text("This header is visible on the first page.");
+                            stack.Item().SkipOnce().Text("This header is visible on the second page and all following.");
+                        });
+                        
+                        page.Content()
+                            .PaddingVertical(10)
+                            .Text(Placeholders.Paragraphs(), TextStyle.Default.Color(Colors.Grey.Medium));
+                        
+                        page.Footer().Text(text =>
+                        {
+                            text.Span("Page ");
+                            text.CurrentPageNumber();
+                            text.Span(" out of ");
+                            text.TotalPages();
+                        });
+                    });
+                });
+        }
+    }
+}
