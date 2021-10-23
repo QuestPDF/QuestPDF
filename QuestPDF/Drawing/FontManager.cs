@@ -34,7 +34,7 @@ namespace QuestPDF.Drawing
         
         internal static SKPaint ToPaint(this TextStyle style)
         {
-            return Paints.GetOrAdd(style.ToString(), key => Convert(style));
+            return Paints.GetOrAdd(style.Key, key => Convert(style));
             
             static SKPaint Convert(TextStyle style)
             {
@@ -42,7 +42,7 @@ namespace QuestPDF.Drawing
                 {
                     Color = SKColor.Parse(style.Color),
                     Typeface = GetTypeface(style),
-                    TextSize = style.Size,
+                    TextSize = (style.Size ?? 12),
                     TextEncoding = SKTextEncoding.Utf32
                 };
             }
@@ -52,16 +52,16 @@ namespace QuestPDF.Drawing
                 if (Typefaces.TryGetValue(style.FontType, out var result))
                     return result;
                 
-                var slant = style.IsItalic ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
+                var slant = (style.IsItalic ?? false) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
                 
-                return SKTypeface.FromFamilyName(style.FontType, (int)style.FontWeight, (int)SKFontStyleWidth.Normal, slant) 
+                return SKTypeface.FromFamilyName(style.FontType, (int)(style.FontWeight ?? FontWeight.Normal), (int)SKFontStyleWidth.Normal, slant) 
                        ?? throw new ArgumentException($"The typeface {style.FontType} could not be found.");
             }
         }
 
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
-            return FontMetrics.GetOrAdd(style.ToString(), key => style.ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(style.Key, key => style.ToPaint().FontMetrics);
         }
     }
 }

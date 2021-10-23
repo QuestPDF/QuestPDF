@@ -27,6 +27,8 @@ namespace QuestPDF.ReportSample.Layouts
             container
                 .Page(page =>
                 {
+                    page.DefaultTextStyle(Typography.Normal);
+                    
                     page.MarginVertical(40);
                     page.MarginHorizontal(50);
                     
@@ -37,8 +39,6 @@ namespace QuestPDF.ReportSample.Layouts
                     
                     page.Footer().AlignCenter().Text(text =>
                     {
-                        text.DefaultTextStyle(Typography.Normal);
-                        
                         text.CurrentPageNumber();
                         text.Span(" / ");
                         text.TotalPages();
@@ -69,8 +69,8 @@ namespace QuestPDF.ReportSample.Layouts
                     {
                         grid.Item().Text(text =>
                         {
-                            text.Span($"{field.Label}: ", Typography.Normal.SemiBold());
-                            text.Span(field.Value, Typography.Normal);
+                            text.Span($"{field.Label}: ", TextStyle.Default.SemiBold());
+                            text.Span(field.Value);
                         });
                     }
                 });

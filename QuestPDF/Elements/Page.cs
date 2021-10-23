@@ -1,4 +1,5 @@
 using System;
+using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -7,6 +8,8 @@ namespace QuestPDF.Elements
 {
     internal class Page : IComponent
     {
+        public TextStyle DefaultTextStyle { get; set; } = new TextStyle();
+        
         public Size MinSize { get; set; } = PageSizes.A4;
         public Size MaxSize { get; set; } = PageSizes.A4;
 
@@ -15,6 +18,8 @@ namespace QuestPDF.Elements
         public float MarginTop { get; set; }
         public float MarginBottom { get; set; }
 
+        public string BackgroundColor { get; set; } = Colors.Transparent;
+        
         public Element Header { get; set; } = Empty.Instance;
         public Element Content { get; set; } = Empty.Instance;
         public Element Footer { get; set; } = Empty.Instance;
@@ -22,12 +27,13 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
-
                 .MinWidth(MinSize.Width)
                 .MinHeight(MinSize.Height)
                 
                 .MaxWidth(MaxSize.Width)
                 .MaxHeight(MaxSize.Height)
+                
+                .Background(BackgroundColor)
      
                 .PaddingLeft(MarginLeft)
                 .PaddingRight(MarginRight)
@@ -47,6 +53,8 @@ namespace QuestPDF.Elements
                     decoration.Footer().Element(Footer);
                 });
 
+            (container as Element).ApplyDefaultTextStyle(DefaultTextStyle);
+            
             bool IsClose(float x, float y)
             {
                 return Math.Abs(x - y) < Size.Epsilon;

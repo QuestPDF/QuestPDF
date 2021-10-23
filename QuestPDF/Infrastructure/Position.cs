@@ -2,10 +2,10 @@
 {
     internal class Position
     {
-        public float X { get; set; }
-        public float Y { get; set; }
+        public float X { get; }
+        public float Y { get; }
 
-        public static Position Zero => new Position(0, 0);
+        public static Position Zero { get; } = new Position(0, 0);
         
         public Position(float x, float y)
         {

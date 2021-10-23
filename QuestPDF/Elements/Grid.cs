@@ -2,7 +2,6 @@
 using System.Linq;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
-using static QuestPDF.Infrastructure.HorizontalAlignment;
 
 namespace QuestPDF.Elements
 {
@@ -20,7 +19,7 @@ namespace QuestPDF.Elements
         public Queue<GridElement> ChildrenQueue { get; set; } = new Queue<GridElement>();
         public int ColumnsCount { get; set; } = DefaultColumnsCount;
 
-        public HorizontalAlignment Alignment { get; set; } = Left;
+        public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         public float VerticalSpacing { get; set; } = 0;
         public float HorizontalSpacing { get; set; } = 0;
         
@@ -62,15 +61,15 @@ namespace QuestPDF.Elements
             var emptySpace = ColumnsCount - columnsWidth;
             var hasEmptySpace = emptySpace >= Size.Epsilon;
 
-            if (Alignment == Center)
+            if (Alignment == HorizontalAlignment.Center)
                 emptySpace /= 2;
             
-            if (hasEmptySpace && Alignment != Left)
+            if (hasEmptySpace && Alignment != HorizontalAlignment.Left)
                 row.RelativeColumn(emptySpace);
                 
             elements.ForEach(x => row.RelativeColumn(x.Columns).Element(x.Child));
 
-            if (hasEmptySpace && Alignment != Right)
+            if (hasEmptySpace && Alignment != HorizontalAlignment.Right)
                 row.RelativeColumn(emptySpace);
         }
     }

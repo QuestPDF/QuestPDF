@@ -70,6 +70,16 @@ namespace QuestPDF.Fluent
             MarginHorizontal(value);
         }
         
+        public void DefaultTextStyle(TextStyle textStyle)
+        {
+            Page.DefaultTextStyle = textStyle;
+        }
+        
+        public void Background(string color)
+        {
+            Page.BackgroundColor = color;
+        }
+        
         public IContainer Header()
         {
             var container = new Container();

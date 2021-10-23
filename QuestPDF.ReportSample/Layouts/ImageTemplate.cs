@@ -1,5 +1,6 @@
 using System;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ReportSample.Layouts
@@ -24,7 +25,7 @@ namespace QuestPDF.ReportSample.Layouts
         {
             container
                 .AspectRatio(AspectRatio)
-                .Background("#EEEEEE")
+                .Background(Colors.Grey.Lighten3)
                 .Image(Source(Size.Zero));
         }
     }

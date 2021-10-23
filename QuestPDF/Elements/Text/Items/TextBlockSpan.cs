@@ -14,7 +14,7 @@ namespace QuestPDF.Elements.Text.Items
         private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache =
             new Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?>();
 
-        public TextMeasurementResult? Measure(TextMeasurementRequest request)
+        public virtual TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
             var cacheKey = (request.StartIndex, request.AvailableWidth);
             
@@ -45,7 +45,7 @@ namespace QuestPDF.Elements.Text.Items
                 {
                     Width = 0,
                     
-                    LineHeight = Style.LineHeight,
+                    LineHeight = Style.LineHeight ?? 1,
                     Ascent = fontMetrics.Ascent,
                     Descent = fontMetrics.Descent
                 };
@@ -96,7 +96,7 @@ namespace QuestPDF.Elements.Text.Items
                 Ascent = fontMetrics.Ascent,
                 Descent = fontMetrics.Descent,
      
-                LineHeight = Style.LineHeight,
+                LineHeight = Style.LineHeight ?? 1,
                 
                 StartIndex = startIndex,
                 EndIndex = endIndex,
@@ -105,7 +105,7 @@ namespace QuestPDF.Elements.Text.Items
             };
         }
         
-        public void Draw(TextDrawingRequest request)
+        public virtual void Draw(TextDrawingRequest request)
         {
             var fontMetrics = Style.ToFontMetrics();
 
@@ -115,12 +115,12 @@ namespace QuestPDF.Elements.Text.Items
             request.Canvas.DrawText(text, Position.Zero, Style);
 
             // draw underline
-            if (Style.HasUnderline && fontMetrics.UnderlinePosition.HasValue)
-                DrawLine(fontMetrics.UnderlinePosition.Value, fontMetrics.UnderlineThickness.Value);
+            if ((Style.HasUnderline ?? false) && fontMetrics.UnderlinePosition.HasValue)
+                DrawLine(fontMetrics.UnderlinePosition.Value, fontMetrics.UnderlineThickness ?? 1);
             
             // draw stroke
-            if (Style.HasStrikethrough && fontMetrics.StrikeoutPosition.HasValue)
-                DrawLine(fontMetrics.StrikeoutPosition.Value, fontMetrics.StrikeoutThickness.Value);
+            if ((Style.HasStrikethrough ?? false) && fontMetrics.StrikeoutPosition.HasValue)
+                DrawLine(fontMetrics.StrikeoutPosition.Value, fontMetrics.StrikeoutThickness ?? 1);
 
             void DrawLine(float offset, float thickness)
             {
