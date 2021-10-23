@@ -9,7 +9,6 @@ namespace QuestPDF.Drawing
 {
     internal class DocumentContainer : IDocumentContainer
     {
-        internal TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;
         internal List<IComponent> Pages { get; set; } = new List<IComponent>();
         
         internal Container Compose()

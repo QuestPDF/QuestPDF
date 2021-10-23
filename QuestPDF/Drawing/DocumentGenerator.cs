@@ -39,7 +39,6 @@ namespace QuestPDF.Drawing
             var metadata = document.GetMetadata();
             var pageContext = new PageContext();
 
-            ApplyDefaultTextStyle(content, container.DefaultTextStyle);
             RenderPass(pageContext, new FreeCanvas(), content, metadata);
             RenderPass(pageContext, canvas, content, metadata);
         }
@@ -103,7 +102,7 @@ namespace QuestPDF.Drawing
             }
         }
 
-        private static void ApplyDefaultTextStyle(Element content, TextStyle documentDefaultTextStyle)
+        internal static void ApplyDefaultTextStyle(this Element content, TextStyle documentDefaultTextStyle)
         {
             documentDefaultTextStyle.ApplyGlobalStyle(TextStyle.LibraryDefault);
             

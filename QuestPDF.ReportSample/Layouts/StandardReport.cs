@@ -25,9 +25,10 @@ namespace QuestPDF.ReportSample.Layouts
         public void Compose(IDocumentContainer container)
         {
             container
-                .DefaultTextStyle(Typography.Normal)
                 .Page(page =>
                 {
+                    page.DefaultTextStyle(Typography.Normal);
+                    
                     page.MarginVertical(40);
                     page.MarginHorizontal(50);
                     
