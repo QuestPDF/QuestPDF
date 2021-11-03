@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
+using QuestPDF.Elements.Text;
+using QuestPDF.Elements.Text.Items;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
@@ -107,6 +110,12 @@ namespace QuestPDF.Drawing
                 {
                     ElementTrace = debuggingState?.BuildTrace() ?? "Debug trace is available only in the DEBUG mode."
                 };
+                throw new DocumentLayoutException(
+                    $"Composed layout generates infinite document. This may happen in two cases. " +
+                    $"1) Your document and its layout configuration is correct but the content takes more than {documentMetadata.DocumentLayoutExceptionThreshold} pages. " +
+                    $"In this case, please increase the value {nameof(DocumentMetadata)}.{nameof(DocumentMetadata.DocumentLayoutExceptionThreshold)} property configured in the {nameof(IDocument.GetMetadata)} method. " +
+                    $"2) The layout configuration of your document is invalid. Some of the elements require more space than is provided." +
+                    $"Please analyze your documents structure to detect this element and fix its size constraints.");
             }
         }
 
@@ -129,6 +138,28 @@ namespace QuestPDF.Drawing
             });
 
             return debuggingState;
+        }
+
+        internal static void ApplyDefaultTextStyle(this Element content, TextStyle documentDefaultTextStyle)
+        {
+            documentDefaultTextStyle.ApplyGlobalStyle(TextStyle.LibraryDefault);
+            
+            content.HandleVisitor(element =>
+            {
+                var text = element as TextBlock;
+                
+                if (text == null)
+                    return;
+
+                foreach (var child in text.Children)
+                {
+                    if (child is TextBlockSpan textSpan)
+                        textSpan.Style.ApplyGlobalStyle(documentDefaultTextStyle);
+
+                    if (child is TextBlockElement textElement)
+                        ApplyDefaultTextStyle(textElement.Element, documentDefaultTextStyle);
+                }
+            });
         }
     }
 }

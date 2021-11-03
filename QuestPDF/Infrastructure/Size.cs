@@ -7,8 +7,8 @@
         public readonly float Width;
         public readonly float Height;
         
-        public static Size Zero => new Size(0, 0);
-        public static Size Max => new Size(14_400, 14_400);
+        public static Size Zero { get; } = new Size(0, 0);
+        public static Size Max { get; } = new Size(14_400, 14_400);
 
         public Size(float width, float height)
         {
@@ -16,6 +16,6 @@
             Height = height;
         }
         
-        public override string ToString() => $"{Width:N2} {Height:N2}";
+        public override string ToString() => $"(W: {Width}, H: {Height})";
     }
 }

@@ -3,34 +3,31 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
 {
-    internal class TextBlockPageNumber : ITextBlockItem
+    internal class TextBlockPageNumber : TextBlockSpan
     {
-        public TextStyle Style { get; set; } = new TextStyle();
         public string SlotName { get; set; }
         
-        public TextMeasurementResult? Measure(TextMeasurementRequest request)
+        public override TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
-            return GetItem(request.PageContext).MeasureWithoutCache(request);
+            SetPageNumber(request.PageContext);
+            return MeasureWithoutCache(request);
         }
 
-        public void Draw(TextDrawingRequest request)
+        public override void Draw(TextDrawingRequest request)
         {
-            GetItem(request.PageContext).Draw(request);
+            SetPageNumber(request.PageContext);
+            base.Draw(request);
         }
 
-        private TextBlockSpan GetItem(IPageContext context)
+        private void SetPageNumber(IPageContext context)
         {
             var pageNumberPlaceholder = 123;
             
             var pageNumber = context.GetRegisteredLocations().Contains(SlotName)
                 ? context.GetLocationPage(SlotName)
                 : pageNumberPlaceholder;
-            
-            return new TextBlockSpan
-            {
-                Style = Style,
-                Text = pageNumber.ToString()
-            };
+
+            Text = pageNumber.ToString();
         }
     }
 }

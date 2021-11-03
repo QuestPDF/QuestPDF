@@ -66,7 +66,7 @@ namespace QuestPDF.UnitTests
                 .ExpectCanvasDrawImage(Position.Zero, new Size(400, 300))
                 .CheckDrawResult();
             
-            passedSize.Should().Be(new Size(400, 300));
+            passedSize.Should().BeEquivalentTo(new Size(400, 300));
         }
         
         byte[] GenerateImage(Size size)

@@ -4,9 +4,9 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2021.10.1</Version>
+        <Version>2021.11.0-beta3</Version>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.</PackageDescription>
-        <PackageReleaseNotes>Enhanced text rendering capabilities. Improved rendering performance.</PackageReleaseNotes>
+        <PackageReleaseNotes>Implemented new elements: SkipOnce and Inlined. Added possibility to define global, page-wide test style. Improved exception handling experience.</PackageReleaseNotes>
         <LangVersion>8</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageIcon>Logo.png</PackageIcon>
@@ -15,10 +15,12 @@
         <RepositoryUrl>https://github.com/QuestPDF/library.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
-        <PackageTags>pdf file export generate generation tool create creation render portable document format quest html library converter open source free standard core</PackageTags>
+        <PackageTags>pdf report file export generate generation tool create creation render portable document format quest html library converter open source free standard core</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net462;netstandard2.0;netcoreapp2.0;netcoreapp3.0</TargetFrameworks>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
     <ItemGroup>

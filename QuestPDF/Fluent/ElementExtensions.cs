@@ -70,7 +70,12 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new ShowOnce());
         }
-        
+
+        public static IContainer SkipOnce(this IContainer element)
+        {
+            return element.Element(new SkipOnce());
+        }
+
         public static IContainer ShowEntire(this IContainer element)
         {
             return element.Element(new ShowEntire());

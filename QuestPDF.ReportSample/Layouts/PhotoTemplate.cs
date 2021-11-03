@@ -30,14 +30,14 @@ namespace QuestPDF.ReportSample.Layouts
             container
                 .Row(row =>
                 {
-                    row.RelativeColumn(2).AspectRatio(4 / 3f).Background(Colors.Grey.Lighten3);
+                    row.RelativeColumn(2).AspectRatio(4 / 3f).Component<ImagePlaceholder>();
 
                     row.RelativeColumn().PaddingLeft(5).Stack(stack =>
                     {
                         stack.Spacing(7f);
                         
-                        stack.Item().AspectRatio(4 / 3f).Background(Colors.Grey.Lighten3);
-                        stack.Item().AspectRatio(4 / 3f).Background(Colors.Grey.Lighten3);
+                        stack.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>();
+                        stack.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>();
                     });
                 });
         }
@@ -48,13 +48,13 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 grid.Columns(6);
                 
-                grid.Item().LabelCell().Text("Date", Typography.Normal);
-                grid.Item(2).ValueCell().Text(Model.Date?.ToString("g") ?? string.Empty, Typography.Normal);
-                grid.Item().LabelCell().Text("Location", Typography.Normal);
-                grid.Item(2).ValueCell().Text(Model.Location.Format(), Typography.Normal);
+                grid.Item().LabelCell().Text("Date");
+                grid.Item(2).ValueCell().Text(Model.Date?.ToString("g") ?? string.Empty);
+                grid.Item().LabelCell().Text("Location");
+                grid.Item(2).ValueCell().Text(Model.Location.Format());
                 
-                grid.Item().LabelCell().Text("Comments", Typography.Normal);
-                grid.Item(5).ValueCell().Text(Model.Comments, Typography.Normal);
+                grid.Item().LabelCell().Text("Comments");
+                grid.Item(5).ValueCell().Text(Model.Comments);
             });
         }
     }

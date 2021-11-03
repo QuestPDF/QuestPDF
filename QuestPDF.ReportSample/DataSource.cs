@@ -7,9 +7,6 @@ namespace QuestPDF.ReportSample
 {
     public static class DataSource
     {
-        public static int SectionCounter { get; set; }
-        public static int FieldCounter { get; set; }
-        
         public static ReportModel GetReport()
         {
             return new ReportModel
@@ -116,8 +113,8 @@ namespace QuestPDF.ReportSample
                     Date = DateTime.Now - TimeSpan.FromDays(Helpers.Random.NextDouble() * 100),
                     Location = Helpers.RandomLocation(),
 
-                    MapContextSource = x => Placeholders.Image(400, 300),
-                    MapDetailsSource = x => Placeholders.Image(400, 300)
+                    MapContextSource = Placeholders.Image,
+                    MapDetailsSource = Placeholders.Image
                 };
             }
         }

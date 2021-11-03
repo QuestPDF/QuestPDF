@@ -21,7 +21,6 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(PageSizes.A4)
-                .FileName()
                 .ProducePdf()
                 .ShowResults()
                 .Render(x => ComposeBook(x, chapters));
@@ -43,8 +42,7 @@ namespace QuestPDF.Examples
                 RenderingTest
                     .Create()
                     .PageSize(PageSizes.A4)
-                    .FileName()
-                    .ProducePdf()
+                        .ProducePdf()
                     .Render(x => ComposeBook(x, chapters));
             }
 

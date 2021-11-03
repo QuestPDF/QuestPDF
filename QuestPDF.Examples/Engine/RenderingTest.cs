@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples.Engine
@@ -17,6 +18,7 @@ namespace QuestPDF.Examples.Engine
     {
         private string FileNamePrefix = "test";
         private Size Size { get; set; }
+        private int? MaxPagesThreshold { get; set; }
         private bool ShowResult { get; set; }
         private RenderingTestResult ResultType { get; set; } = RenderingTestResult.Images;
         
@@ -25,12 +27,12 @@ namespace QuestPDF.Examples.Engine
             
         }
 
-        public static RenderingTest Create()
+        public static RenderingTest Create([CallerMemberName] string fileName = "test")
         {
-            return new RenderingTest();
+            return new RenderingTest().FileName(fileName);
         }
 
-        public RenderingTest FileName([CallerMemberName] string fileName = "test")
+        public RenderingTest FileName(string fileName)
         {
             FileNamePrefix = fileName;
             return this;
@@ -67,12 +69,31 @@ namespace QuestPDF.Examples.Engine
         
         public void Render(Action<IContainer> content)
         {
-            var container = new Container();
-            content(container);
+            RenderDocument(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Size(new PageSize(Size.Width, Size.Height));
+                    page.Content().Container().Background(Colors.White).Element(content);
+                });
+            });
+        }
+        
+        public void MaxPages(int value)
+        {
+            MaxPagesThreshold = value;
+        }
 
-            var maxPages = ResultType == RenderingTestResult.Pdf ? 1000 : 10;
-            var document = new SimpleDocument(container, Size, maxPages);
+        public void RenderDocument(Action<IDocumentContainer> content)
+        {
+            MaxPagesThreshold ??= ResultType == RenderingTestResult.Pdf ? 1000 : 10;
+            var document = new SimpleDocument(content, MaxPagesThreshold.Value);
 
+            Render(document);
+        }
+        
+        private void Render(IDocument document)
+        {
             if (ResultType == RenderingTestResult.Images)
             {
                 Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";

@@ -33,6 +33,8 @@ namespace QuestPDF.ReportSample
         [Test] 
         public void Profile()
         {
+            ImagePlaceholder.Solid = true;
+            
             var container = new DocumentContainer();
             Report.Compose(container);
             var content = container.Compose();

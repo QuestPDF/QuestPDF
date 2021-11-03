@@ -22,8 +22,8 @@ namespace QuestPDF.Elements
                 return SpacePlan.Wrap();
             
             var available = new Size(
-                LimitMin(availableSpace.Width, MaxWidth),
-                LimitMin(availableSpace.Height, MaxHeight));
+                Min(MaxWidth, availableSpace.Width),
+                Min(MaxHeight, availableSpace.Height));
 
             var measurement = base.Measure(available);
 
@@ -31,8 +31,8 @@ namespace QuestPDF.Elements
                 return SpacePlan.Wrap();
             
             var actualSize = new Size(
-                LimitMax(measurement.Width, MinWidth),
-                LimitMax(measurement.Height, MinHeight));
+                Max(MinWidth, measurement.Width),
+                Max(MinHeight, measurement.Height));
             
             if (measurement.Type == SpacePlanType.FullRender)
                 return SpacePlan.FullRender(actualSize);
@@ -46,20 +46,20 @@ namespace QuestPDF.Elements
         internal override void Draw(Size availableSpace)
         {
             var available = new Size(
-                LimitMin(availableSpace.Width, MaxWidth),
-                LimitMin(availableSpace.Height, MaxHeight));
+                Min(MaxWidth, availableSpace.Width),
+                Min(MaxHeight, availableSpace.Height));
             
-            base.Draw(available);
-        }
-
-        private float LimitMin(float value, float? limit)
-        {
-            return limit.HasValue ? Math.Min(value, limit.Value) : value;
+            Child?.Draw(available);
         }
         
-        private float LimitMax(float value, float? limit)
+        private static float Min(float? x, float y)
         {
-            return limit.HasValue ? Math.Max(value, limit.Value) : value;
+            return x.HasValue ? Math.Min(x.Value, y) : y; 
+        }
+        
+        private static float Max(float? x, float y)
+        {
+            return x.HasValue ? Math.Max(x.Value, y) : y;
         }
     }
 }

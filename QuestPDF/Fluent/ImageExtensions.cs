@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
@@ -7,12 +9,29 @@ namespace QuestPDF.Fluent
 {
     public static class ImageExtensions
     {
-        public static void Image(this IContainer parent, byte[] data, ImageScaling scaling = ImageScaling.FitWidth)
+        public static void Image(this IContainer parent, byte[] imageData, ImageScaling scaling = ImageScaling.FitWidth)
         {
-            if (data == null)
-                return;
+            var image = SKImage.FromEncodedData(imageData);
+            parent.Image(image, scaling);
+        }
+        
+        public static void Image(this IContainer parent, string filePath, ImageScaling scaling = ImageScaling.FitWidth)
+        {
+            var image = SKImage.FromEncodedData(filePath);
+            parent.Image(image, scaling);
+        }
+        
+        public static void Image(this IContainer parent, Stream fileStream, ImageScaling scaling = ImageScaling.FitWidth)
+        {
+            var image = SKImage.FromEncodedData(fileStream);
+            parent.Image(image, scaling);
+        }
+        
+        private static void Image(this IContainer parent, SKImage image, ImageScaling scaling = ImageScaling.FitWidth)
+        {
+            if (image == null)
+                throw new DocumentComposeException("Cannot load or decode provided image.");
             
-            var image = SKImage.FromEncodedData(data);
             var aspectRatio = image.Width / (float)image.Height;
             
             var imageElement = new Image

@@ -8,6 +8,6 @@ namespace QuestPDF.ReportSample
     {
         public static TextStyle Title => TextStyle.Default.FontType(Fonts.Calibri).Color(Colors.Blue.Darken3).Size(26).Black();
         public static TextStyle Headline => TextStyle.Default.FontType(Fonts.Calibri).Color(Colors.Blue.Medium).Size(16).SemiBold();
-        public static TextStyle Normal => TextStyle.Default.FontType(Fonts.Calibri).Color(Colors.Black).Size(11).LineHeight(1.1f);
+        public static TextStyle Normal => TextStyle.Default.FontType(Fonts.Verdana).Color(Colors.Black).Size(10).LineHeight(1.2f);
     }
 }

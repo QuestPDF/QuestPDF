@@ -30,11 +30,11 @@ namespace QuestPDF.ReportSample.Layouts
                         {
                             stack.Item().EnsureSpace(25).Row(row =>
                             {
-                                row.ConstantColumn(150).LabelCell().Text(part.Label, Typography.Normal);
+                                row.ConstantColumn(150).LabelCell().Text(part.Label);
                                 var frame = row.RelativeColumn().ValueCell();
                             
                                 if (part is ReportSectionText text)
-                                    frame.ShowEntire().Text(text.Text, Typography.Normal);
+                                    frame.ShowEntire().Text(text.Text);
                         
                                 if (part is ReportSectionMap map)
                                     frame.Element(x => MapElement(x, map));
@@ -51,7 +51,7 @@ namespace QuestPDF.ReportSample.Layouts
         {
             if (model.ImageSource == null || model.Location == null)
             {
-                container.Text("No location provided", Typography.Normal);
+                container.Text("No location provided");
                 return;
             }
 
@@ -59,25 +59,25 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 stack.Spacing(5);
                 
-                stack.Item().MaxWidth(250).AspectRatio(4 / 3f).Background(Colors.Grey.Lighten3);
-                stack.Item().Text(model.Location.Format(), Typography.Normal);
+                stack.Item().MaxWidth(250).AspectRatio(4 / 3f).Component<ImagePlaceholder>();
+                stack.Item().Text(model.Location.Format());
             });
         }
         
         void PhotosElement(IContainer container, ReportSectionPhotos model)
         {
-            if (model.Photos.Count == 0) 
+            if (model.Photos.Count == 0)
             {
                 container.Text("No photos", Typography.Normal);
                 return;
             }
 
-            container.DebugArea("Photos").Grid(grid =>
+            container.Debug("Photos").Grid(grid =>
             {
                 grid.Spacing(5);
                 grid.Columns(3);
                 
-                model.Photos.ForEach(x => grid.Item().AspectRatio(4 / 3f).Background(Colors.Grey.Lighten3));
+                model.Photos.ForEach(x => grid.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>());
             });
         }
     }
