@@ -50,8 +50,11 @@ namespace QuestPDF.Fluent
             TextBlocks.Last().Children.Add(item);
         }
         
-        public void Span(string text, TextStyle? style = null)
+        public void Span(string? text, TextStyle? style = null)
         {
+            if (IsNullOrEmpty(text))
+                return;
+            
             style ??= TextStyle.Default;
  
             var items = text
@@ -76,16 +79,12 @@ namespace QuestPDF.Fluent
                 .ForEach(TextBlocks.Add);
         }
 
-        public void Line(string text, TextStyle? style = null)
+        public void Line(string? text, TextStyle? style = null)
         {
+            text ??= string.Empty;
             Span(text + Environment.NewLine, style);
         }
-        
-        public void Line(string text)
-        {
-            Span(text + Environment.NewLine);
-        }
-        
+
         public void EmptyLine()
         {
             Span(Environment.NewLine);
@@ -93,6 +92,9 @@ namespace QuestPDF.Fluent
 
         private void PageNumber(string slotName, TextStyle? style = null)
         {
+            if (IsNullOrEmpty(slotName))
+                throw new ArgumentException(nameof(slotName));
+            
             style ??= TextStyle.Default;
             
             AddItemToLastTextBlock(new TextBlockPageNumber()
@@ -114,11 +116,20 @@ namespace QuestPDF.Fluent
         
         public void PageNumberOfLocation(string locationName, TextStyle? style = null)
         {
+            if (IsNullOrEmpty(locationName))
+                throw new ArgumentException(nameof(locationName));
+            
             PageNumber(locationName, style);
         }
         
-        public void InternalLocation(string text, string locationName, TextStyle? style = null)
+        public void InternalLocation(string? text, string locationName, TextStyle? style = null)
         {
+            if (IsNullOrEmpty(text))
+                return;
+            
+            if (IsNullOrEmpty(locationName))
+                throw new ArgumentException(nameof(locationName));
+
             style ??= TextStyle.Default;
             
             AddItemToLastTextBlock(new TextBlockInternalLink
@@ -129,8 +140,14 @@ namespace QuestPDF.Fluent
             });
         }
         
-        public void ExternalLocation(string text, string url, TextStyle? style = null)
+        public void ExternalLocation(string? text, string url, TextStyle? style = null)
         {
+            if (IsNullOrEmpty(text))
+                return;
+            
+            if (IsNullOrEmpty(url))
+                throw new ArgumentException(nameof(url));
+            
             style ??= TextStyle.Default;
             
             AddItemToLastTextBlock(new TextBlockExternalLink
@@ -183,9 +200,9 @@ namespace QuestPDF.Fluent
             descriptor.Compose(element);
         }
         
-        public static void Text(this IContainer element, object text, TextStyle? style = null)
+        public static void Text(this IContainer element, object? text, TextStyle? style = null)
         {
-            element.Text(x => x.Span(text.ToString(), style));
+            element.Text(x => x.Span(text?.ToString(), style));
         }
     }
 }
