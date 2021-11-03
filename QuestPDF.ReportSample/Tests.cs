@@ -15,7 +15,7 @@ namespace QuestPDF.ReportSample
         {
             var reportModel = DataSource.GetReport();
             var report = new StandardReport(reportModel);
-            
+
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
             report.GeneratePdf(path);
             
@@ -23,13 +23,16 @@ namespace QuestPDF.ReportSample
         }
 
         [Test] 
-        public void PerformanceBenchmark()
+         public void PerformanceBenchmark()
         {
             // target document length should be around 100 pages
             
             // test size
             const int testSize = 10;
             const decimal performanceTarget = 1; // documents per second
+            
+            // generating placeholder images is slow, for benchmarking reasons, replace images with simple colorful boxes
+            ImagePlaceholder.Solid = true;
 
             // create report models
             var reports = Enumerable
@@ -45,9 +48,14 @@ namespace QuestPDF.ReportSample
             var sw = new Stopwatch();
             
             sw.Start();
-            var totalSize = reports.Select(x => x.GeneratePdf()).Sum(x => (long)x.Length);
+            var totalSize = BenchmarkAndGenerate();
             sw.Stop();
 
+            long BenchmarkAndGenerate()
+            {
+                return reports.Select(x => x.GeneratePdf()).Sum(x => (long)x.Length);;
+            }
+            
             // show summary
             Console.WriteLine($"Total size: {totalSize:N0} bytes");
             

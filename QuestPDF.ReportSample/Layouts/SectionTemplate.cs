@@ -59,7 +59,7 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 stack.Spacing(5);
                 
-                stack.Item().MaxWidth(250).AspectRatio(4 / 3f).Image(Placeholders.Image);
+                stack.Item().MaxWidth(250).AspectRatio(4 / 3f).Component<ImagePlaceholder>();
                 stack.Item().Text(model.Location.Format());
             });
         }
@@ -77,7 +77,7 @@ namespace QuestPDF.ReportSample.Layouts
                 grid.Spacing(5);
                 grid.Columns(3);
                 
-                model.Photos.ForEach(x => grid.Item().AspectRatio(4 / 3f).Image(Placeholders.Image));
+                model.Photos.ForEach(x => grid.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>());
             });
         }
     }

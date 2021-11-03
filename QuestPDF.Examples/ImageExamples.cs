@@ -21,8 +21,14 @@ namespace QuestPDF.Examples
                     page.Padding(25).Stack(stack =>
                     {
                         stack.Spacing(25);
-                        stack.Item().Image(File.ReadAllBytes("logo.png"));
+                        
                         stack.Item().Image("logo.png");
+
+                        var binaryData = File.ReadAllBytes("logo.png");
+                        stack.Item().Image(binaryData);
+                        
+                        using var stream = new FileStream("logo.png", FileMode.Open);
+                        stack.Item().Image(stream);
                     });
                 });
         }
