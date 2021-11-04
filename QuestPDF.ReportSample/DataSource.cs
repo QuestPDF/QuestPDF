@@ -86,7 +86,6 @@ namespace QuestPDF.ReportSample
                 return new ReportSectionMap
                 {
                     Label = "Location",
-                    ImageSource = Placeholders.Image,
                     Location = Helpers.RandomLocation()
                 };
             }
@@ -96,10 +95,7 @@ namespace QuestPDF.ReportSample
                 return new ReportSectionPhotos
                 {    
                     Label = "Photos",
-                    Photos = Enumerable
-                        .Range(0, Helpers.Random.Next(1, 15))
-                        .Select(x => Placeholders.Image(400, 300))
-                        .ToList()
+                    PhotoCount = Helpers.Random.Next(1, 15)
                 };
             }
 
@@ -107,14 +103,9 @@ namespace QuestPDF.ReportSample
             {
                 return new ReportPhoto()
                 {
-                    PhotoData = Placeholders.Image(800, 600),
-
                     Comments = Placeholders.Sentence(),
                     Date = DateTime.Now - TimeSpan.FromDays(Helpers.Random.NextDouble() * 100),
-                    Location = Helpers.RandomLocation(),
-
-                    MapContextSource = Placeholders.Image,
-                    MapDetailsSource = Placeholders.Image
+                    Location = Helpers.RandomLocation()
                 };
             }
         }

@@ -13,7 +13,6 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(500, 360)
-                .FileName()
                 .Render(container =>
                 {
                     container

@@ -1,3 +1,4 @@
+using System.Linq;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -49,7 +50,7 @@ namespace QuestPDF.ReportSample.Layouts
         
         void MapElement(IContainer container, ReportSectionMap model)
         {
-            if (model.ImageSource == null || model.Location == null)
+            if (model.Location == null)
             {
                 container.Text("No location provided");
                 return;
@@ -66,18 +67,21 @@ namespace QuestPDF.ReportSample.Layouts
         
         void PhotosElement(IContainer container, ReportSectionPhotos model)
         {
-            if (model.Photos.Count == 0)
+            if (model.PhotoCount == 0)
             {
                 container.Text("No photos", Typography.Normal);
                 return;
             }
 
-            container.Debug("Photos").Grid(grid =>
+            container.DebugArea("Photos").Grid(grid =>
             {
                 grid.Spacing(5);
                 grid.Columns(3);
                 
-                model.Photos.ForEach(x => grid.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>());
+                Enumerable
+                    .Range(0, model.PhotoCount)
+                    .ToList()
+                    .ForEach(x => grid.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>());
             });
         }
     }

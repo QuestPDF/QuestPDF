@@ -44,22 +44,16 @@ namespace QuestPDF.ReportSample
     
     public class ReportSectionMap : ReportSectionElement
     {
-        public Func<Size, byte[]> ImageSource { get; set; }
         public Location Location { get; set; }
     }
 
     public class ReportSectionPhotos : ReportSectionElement
     {
-        public List<byte[]> Photos { get; set; }
+        public int PhotoCount { get; set; }
     }
 
     public class ReportPhoto
-    { 
-        public byte[] PhotoData { get; set; }
-        
-        public Func<Size, byte[]> MapDetailsSource { get; set; }
-        public Func<Size, byte[]> MapContextSource { get; set; }
-        
+    {
         public Location Location { get; set; }
         
         public DateTime? Date { get; set; }

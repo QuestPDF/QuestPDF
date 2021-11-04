@@ -16,7 +16,7 @@ using QuestPDF.ReportSample.Layouts;
 
 namespace QuestPDF.ReportSample
 {
-    [SimpleJob(RunStrategy.Monitoring, launchCount: 0, warmupCount: 1, targetCount: 100)]
+    [SimpleJob(RunStrategy.Monitoring, launchCount: 0, warmupCount: 1, targetCount: 256)]
     [MinColumn, MaxColumn, MeanColumn, MedianColumn]
     public class PerformanceTests
     {
@@ -27,6 +27,8 @@ namespace QuestPDF.ReportSample
         [Test]
         public void Run()
         {
+            ImagePlaceholder.Solid = true;
+            
             var configuration = ManualConfig
                 .Create(DefaultConfig.Instance)
                 .WithOptions(ConfigOptions.DisableOptimizationsValidator);
@@ -37,6 +39,8 @@ namespace QuestPDF.ReportSample
         [IterationSetup]
         public void GenerateReportData()
         {
+            ImagePlaceholder.Solid = true;
+            
             var model = DataSource.GetReport();
             var report = new StandardReport(model);
             Metadata = report.GetMetadata();

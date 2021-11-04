@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuestPDF.Drawing.SpacePlan;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
     internal class InlinedElement : Container
     {
-        public ISpacePlan? MeasureCache { get; set; }
+        public SpacePlan? MeasureCache { get; set; }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             // TODO: once element caching proxy is introduces, this can be removed
             
             MeasureCache ??= Child.Measure(Size.Max);
-            return MeasureCache;
+            return MeasureCache.Value;
         }
     }
 
@@ -50,15 +50,15 @@ namespace QuestPDF.Elements
             base.HandleVisitor(visit);
         }
 
-        internal override ISpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(Size availableSpace)
         {
             if (!ChildrenQueue.Any())
-                return new FullRender(Size.Zero);
+                return SpacePlan.FullRender(Size.Zero);
             
             var lines = Compose(availableSpace);
 
             if (!lines.Any())
-                return new Wrap();
+                return SpacePlan.Wrap();
 
             var lineSizes = lines
                 .Select(line =>
@@ -76,9 +76,9 @@ namespace QuestPDF.Elements
             var isPartiallyRendered = lines.Sum(x => x.Count) != ChildrenQueue.Count;
 
             if (isPartiallyRendered)
-                return new PartialRender(targetSize);
+                return SpacePlan.PartialRender(targetSize);
             
-            return new FullRender(targetSize);
+            return SpacePlan.FullRender(targetSize);
         }
 
         internal override void Draw(Size availableSpace)
@@ -88,7 +88,11 @@ namespace QuestPDF.Elements
             
             foreach (var line in lines)
             {
-                var height = line.Select(x => x.Measure(Size.Max) as Size).Where(x => x != null).Max(x => x.Height);
+                var height = line
+                    .Select(x => x.Measure(Size.Max))
+                    .Where(x => x.Type != SpacePlanType.Wrap)
+                    .Max(x => x.Height);
+                
                 DrawLine(line);
 
                 topOffset += height + VerticalSpacing;
@@ -108,7 +112,7 @@ namespace QuestPDF.Elements
                 
                 foreach (var element in elements)
                 {
-                    var size = element.Measure(Size.Max) as Size;
+                    var size = element.Measure(Size.Max);
                     var baselineOffset = BaselineOffset(size, lineSize.Height);
                     
                     Canvas.Translate(new Position(0, baselineOffset));
@@ -177,8 +181,8 @@ namespace QuestPDF.Elements
         Size GetLineSize(ICollection<InlinedElement> elements)
         {
             var sizes = elements
-                .Select(x => x.Measure(Size.Max) as Size)
-                .Where(x => x != null)
+                .Select(x => x.Measure(Size.Max))
+                .Where(x => x.Type != SpacePlanType.Wrap)
                 .ToList();
             
             var width = sizes.Sum(x => x.Width);
@@ -203,8 +207,8 @@ namespace QuestPDF.Elements
                     break;
 
                 var height = line
-                    .Select(x => x.Measure(availableSize) as Size)
-                    .Where(x => x != null)
+                    .Select(x => x.Measure(availableSize))
+                    .Where(x => x.Type != SpacePlanType.Wrap)
                     .Max(x => x.Height);
                 
                 if (topOffset + height > availableSize.Height + Size.Epsilon)
@@ -227,9 +231,9 @@ namespace QuestPDF.Elements
                         break;
                     
                     var element = queue.Peek();
-                    var size = element.Measure(Size.Max) as Size;
+                    var size = element.Measure(Size.Max);
                     
-                    if (size == null)
+                    if (size.Type == SpacePlanType.Wrap)
                         break;
                     
                     if (leftOffset + size.Width > availableSize.Width + Size.Epsilon)

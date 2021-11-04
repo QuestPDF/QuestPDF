@@ -17,8 +17,12 @@ namespace QuestPDF.ReportSample
         [SetUp]
         public void SetUp()
         {
+            ImagePlaceholder.Solid = true;
+            
             var model = DataSource.GetReport();
             Report = new StandardReport(model);
+            
+            ImagePlaceholder.Solid = true;
         }
         
         [Test] 
@@ -33,8 +37,6 @@ namespace QuestPDF.ReportSample
         [Test] 
         public void Profile()
         {
-            ImagePlaceholder.Solid = true;
-            
             var container = new DocumentContainer();
             Report.Compose(container);
             var content = container.Compose();

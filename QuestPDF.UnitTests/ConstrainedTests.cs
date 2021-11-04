@@ -104,7 +104,7 @@ namespace QuestPDF.UnitTests
                     MinWidth = 100
                 })
                 .MeasureElement(new Size(50, 400))
-                .CheckMeasureResult(new Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         [Test]
@@ -117,8 +117,8 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(200, 400))
-                .ExpectChildMeasure(new Size(200, 400), new FullRender(50, 400))
-                .CheckMeasureResult(new FullRender(100, 400));
+                .ExpectChildMeasure(new Size(200, 400), SpacePlan.FullRender(50, 400))
+                .CheckMeasureResult(SpacePlan.FullRender(100, 400));
         }
         
         [Test]
@@ -131,8 +131,8 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(200, 400))
-                .ExpectChildMeasure(new Size(200, 400), new FullRender(150, 400))
-                .CheckMeasureResult(new FullRender(150, 400));
+                .ExpectChildMeasure(new Size(200, 400), SpacePlan.FullRender(150, 400))
+                .CheckMeasureResult(SpacePlan.FullRender(150, 400));
         }
         
         [Test]
@@ -144,7 +144,7 @@ namespace QuestPDF.UnitTests
                     MaxWidth = 100
                 })
                 .MeasureElement(new Size(150, 400))
-                .CheckMeasureResult(new FullRender(0, 0));
+                .CheckMeasureResult(SpacePlan.FullRender(0, 0));
         }
         
         [Test]
@@ -157,8 +157,8 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(200, 400))
-                .ExpectChildMeasure(new Size(100, 400), new PartialRender(75, 400))
-                .CheckMeasureResult(new PartialRender(75, 400));
+                .ExpectChildMeasure(new Size(100, 400), SpacePlan.PartialRender(75, 400))
+                .CheckMeasureResult(SpacePlan.PartialRender(75, 400));
         }
         
         [Test]
@@ -171,8 +171,8 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(200, 400))
-                .ExpectChildMeasure(new Size(100, 400), new Wrap())
-                .CheckMeasureResult(new Wrap());
+                .ExpectChildMeasure(new Size(100, 400), SpacePlan.Wrap())
+                .CheckMeasureResult(SpacePlan.Wrap());
         }
         
         #endregion
