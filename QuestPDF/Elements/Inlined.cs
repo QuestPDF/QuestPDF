@@ -64,8 +64,9 @@ namespace QuestPDF.Elements
                 .Select(line =>
                 {
                     var size = GetLineSize(line);
-                    var heightWithSpacing = size.Height + (line.Count - 1) * HorizontalSpacing;
-                    return new Size(size.Width, heightWithSpacing);
+
+                    var widthWithSpacing = size.Width + (line.Count - 1) * HorizontalSpacing;
+                    return new Size(widthWithSpacing, size.Height);
                 })
                 .ToList();
             

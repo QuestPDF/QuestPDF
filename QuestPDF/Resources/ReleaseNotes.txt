@@ -15,3 +15,5 @@
 - Improved text element: it does not throw an exception when an argument is null.
 
 - All new releases of QuestPDF will contain symbol packages. Let's welcome simplified debugging experience 🎉
+
+- 2021.11.4 - Fixed the Inlined element not rendering properly in some cases. 

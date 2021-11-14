@@ -87,23 +87,24 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(400, 250)
+                .PageSize(800, 600)
                 .ProduceImages()
                 .ShowResults()
                 .Render(container =>
                 {
                     container
                         .Padding(20)
+                        .Box()
                         .Border(1)
-                        .Background(Colors.Grey.Lighten3)
+                        .Background(Colors.Grey.Lighten4)
                         .Inlined(inlined =>
                         {
                             inlined.VerticalSpacing(50);
-                            inlined.HorizontalSpacing(20);
-                            inlined.AlignSpaceAround();
-                            inlined.BaselineTop();
+                            inlined.HorizontalSpacing(25);
+                            inlined.AlignRight();
+                            inlined.BaselineMiddle();
 
-                            foreach (var _ in Enumerable.Range(0, 20))
+                            foreach (var _ in Enumerable.Range(0, 100))
                                 inlined.Item().Element(RandomBlock);
                         });
                 });
