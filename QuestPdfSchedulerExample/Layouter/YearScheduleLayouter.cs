@@ -76,7 +76,15 @@ namespace QuestPdfSchedulerExample.Layouter
 
         private string BackgroundColorOfDay(SchedulerDay day)
         {
-            return Colors.Transparent;
+            if (!string.IsNullOrWhiteSpace(day.HolyDayName))
+                return Colors.Red.Lighten3;
+
+            return day.Day.DayOfWeek switch
+            {
+                DayOfWeek.Sunday => Colors.BlueGrey.Lighten3,
+                DayOfWeek.Saturday => Colors.BlueGrey.Lighten4,
+                _ => Colors.Transparent,
+            };
         }
 
         public DocumentMetadata GetMetadata()
