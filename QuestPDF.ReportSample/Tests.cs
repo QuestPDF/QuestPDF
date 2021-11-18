@@ -22,11 +22,18 @@ namespace QuestPDF.ReportSample
         }
         
         [Test] 
-        public void GenerateAndShow()
+        public void GenerateAndShowPdf()
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
             Report.GeneratePdf(path);
-            
+            Process.Start("explorer.exe", path);
+        }
+        
+        [Test] 
+        public void GenerateAndShowXps()
+        {
+            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.xps");
+            Report.GenerateXps(path);
             Process.Start("explorer.exe", path);
         }
         
