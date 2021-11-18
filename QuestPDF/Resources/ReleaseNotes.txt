@@ -1,0 +1,1 @@
+﻿- Added support for generating documents in the XPS file format.

@@ -8,6 +8,8 @@ namespace QuestPDF.Fluent
 {
     public static class GenerateExtensions
     {
+        #region PDF
+        
         public static byte[] GeneratePdf(this IDocument document)
         {
             using var stream = new MemoryStream();
@@ -26,6 +28,32 @@ namespace QuestPDF.Fluent
             DocumentGenerator.GeneratePdf(stream, document);
         }
         
+        #endregion
+        
+        public static byte[] GenerateXps(this IDocument document)
+        {
+            using var stream = new MemoryStream();
+            document.GenerateXps(stream);
+            return stream.ToArray();
+        }
+        
+        public static void GenerateXps(this IDocument document, string filePath)
+        {
+            using var stream = new FileStream(filePath, FileMode.Create);
+            document.GenerateXps(stream);
+        }
+
+        public static void GenerateXps(this IDocument document, Stream stream)
+        {
+            DocumentGenerator.GenerateXps(stream, document);
+        }
+        
+        #region XPS
+        
+        #endregion
+
+        #region Images
+
         public static IEnumerable<byte[]> GenerateImages(this IDocument document)
         {
             return DocumentGenerator.GenerateImages(document);
@@ -47,5 +75,7 @@ namespace QuestPDF.Fluent
                 index++;
             }
         }
+
+        #endregion
     }
 }

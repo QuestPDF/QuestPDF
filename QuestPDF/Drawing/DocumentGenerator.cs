@@ -20,6 +20,13 @@ namespace QuestPDF.Drawing
             RenderDocument(canvas, document);
         }
         
+        internal static void GenerateXps(Stream stream, IDocument document)
+        {
+            var metadata = document.GetMetadata();
+            var canvas = new XpsCanvas(stream, metadata);
+            RenderDocument(canvas, document);
+        }
+        
         internal static ICollection<byte[]> GenerateImages(IDocument document)
         {
             var metadata = document.GetMetadata();

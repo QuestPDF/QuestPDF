@@ -4,42 +4,12 @@ using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal class PdfCanvas : SkiaCanvasBase
+    internal class PdfCanvas : SkiaDocumentCanvasBase
     {
-        private SKDocument Document { get; }
-
-        public PdfCanvas(Stream stream, DocumentMetadata documentMetadata)
-        {
-            Document = SKDocument.CreatePdf(stream, MapMetadata(documentMetadata));
-        }
-
-        ~PdfCanvas()
-        {
-            Document.Dispose();
-        }
-        
-        public override void BeginDocument()
+        public PdfCanvas(Stream stream, DocumentMetadata documentMetadata) 
+            : base(SKDocument.CreatePdf(stream, MapMetadata(documentMetadata)))
         {
             
-        }
-
-        public override void EndDocument()
-        {
-            Canvas?.Dispose();
-            
-            Document?.Close();
-            Document?.Dispose();
-        }
-
-        public override void BeginPage(Size size)
-        {
-            Canvas = Document.BeginPage(size.Width, size.Height);
-        }
-
-        public override void EndPage()
-        {
-            Document.EndPage();
-            Canvas.Dispose();
         }
         
         private static SKDocumentPdfMetadata MapMetadata(DocumentMetadata metadata)
