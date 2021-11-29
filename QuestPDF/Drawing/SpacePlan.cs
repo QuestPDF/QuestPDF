@@ -31,7 +31,7 @@ namespace QuestPDF.Drawing
             if (Type == SpacePlanType.Wrap)
                 return Type.ToString();
             
-            return $"{Type} | width {Width:N2} | height {Height:N2}";
+            return $"{Type} (Width: {Width:N2}, Height: {Height:N2})";
         }
 
         public static implicit operator Size(SpacePlan spacePlan)

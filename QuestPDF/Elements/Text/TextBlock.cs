@@ -13,8 +13,10 @@ namespace QuestPDF.Elements.Text
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         public List<ITextBlockItem> Children { get; set; } = new List<ITextBlockItem>();
 
-        public Queue<ITextBlockItem> RenderingQueue { get; set; }
-        public int CurrentElementIndex { get; set; }
+        public string Text => string.Join(" ", Children.Where(x => x is TextBlockSpan).Cast<TextBlockSpan>().Select(x => x.Text));
+        
+        private Queue<ITextBlockItem> RenderingQueue { get; set; }
+        private int CurrentElementIndex { get; set; }
 
         public void ResetState()
         {

@@ -22,9 +22,9 @@ namespace QuestPDF.Elements
             if (Handler == null || skiaCanvas == null)
                 return;
 
-            var currentMatrix = skiaCanvas.TotalMatrix;
+            var originalMatrix = skiaCanvas.TotalMatrix;
             Handler.Invoke(skiaCanvas, availableSpace);
-            skiaCanvas.SetMatrix(currentMatrix);
+            skiaCanvas.SetMatrix(originalMatrix);
         }
     }
 }

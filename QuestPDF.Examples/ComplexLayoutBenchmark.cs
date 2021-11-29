@@ -16,8 +16,7 @@ namespace QuestPDF.Examples
                 .PageSize(PageSizes.A4)
                 .ProducePdf()
                 .ShowResults()
-                .Render(x => x.Image(new byte[] { 1, 2, 3 }));
-                //.Render(x => GenerateStructure(x, 16));
+                .Render(x => GenerateStructure(x, 16));
         }
 
         private void GenerateStructure(IContainer container, int level)
@@ -33,7 +32,7 @@ namespace QuestPDF.Examples
             if (level % 3 == 0)
             {
                 container
-                    .Border(level / 10f)
+                    .Border(level / 4f)
                     .BorderColor(Colors.Black)
                     .Row(row =>
                     {
@@ -44,7 +43,7 @@ namespace QuestPDF.Examples
             else
             {
                 container
-                    .Border(level / 10f)
+                    .Border(level / 4f)
                     .BorderColor(Colors.Black)
                     .Stack(stack =>
                     {

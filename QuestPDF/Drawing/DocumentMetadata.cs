@@ -23,7 +23,10 @@ namespace QuestPDF.Drawing
         /// (likely due to infinite layout), the exception is thrown.
         /// </summary>
         public int DocumentLayoutExceptionThreshold { get; set; } = 250;
-        
+
+        public bool ApplyCaching { get; set; } = !System.Diagnostics.Debugger.IsAttached;
+        public bool ApplyDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
+
         public static DocumentMetadata Default => new DocumentMetadata();
     }
 }

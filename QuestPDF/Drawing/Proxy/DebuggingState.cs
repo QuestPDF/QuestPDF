@@ -109,7 +109,7 @@ namespace QuestPDF.Drawing.Proxy
                         Value = x.GetValue(element)
                     })
                     .Where(x => !(x.Value is IElement))
-                    .Where(x => !(x.Value is IEnumerable<IElement>))
+                    .Where(x => !(x.Value is IEnumerable))
                     .Where(x => !(x.Value is TextStyle))
                     .Select(x => $"{x.Property}: {FormatValue(x.Value)}");
 

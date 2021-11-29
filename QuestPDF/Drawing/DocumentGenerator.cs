@@ -46,16 +46,10 @@ namespace QuestPDF.Drawing
             var metadata = document.GetMetadata();
             var pageContext = new PageContext();
 
-            DebuggingState debuggingState = null;
-
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                debuggingState = ApplyDebugging(content);
-            }
-            else
-            {
+            var debuggingState = metadata.ApplyDebugging ? ApplyDebugging(content) : null;
+            
+            if (metadata.ApplyCaching)
                 ApplyCaching(content);
-            }
 
             RenderPass(pageContext, new FreeCanvas(), content, metadata, debuggingState);
             RenderPass(pageContext, canvas, content, metadata, debuggingState);

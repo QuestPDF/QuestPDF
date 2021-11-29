@@ -1,3 +1,4 @@
+using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
@@ -43,19 +44,41 @@ namespace QuestPDF.Examples
 
             RenderingTest
                 .Create()
-                .PageSize(300, 300)
+                .PageSize(400, 600)
+                .ProduceImages()
                 .ShowResults()
                 .Render(container =>
                 {
-                    container.Extend().Canvas((canvas, size) => 
-                    {
-                        var bar = new BarChart
+                    container
+                        .Background(Colors.White)
+                        .Padding(25)
+                        .Stack(stack =>
                         {
-                            Entries = entries,
-                            IsAnimated = false,
-                        };
-                        bar.Draw(canvas, (int)size.Width, (int)size.Height);
-                    });
+                            stack
+                                .Item()
+                                .PaddingBottom(10)
+                                .Text("Chart example", TextStyle.Default.Size(20).SemiBold().Color(Colors.Blue.Medium));
+                            
+                            stack
+                                .Item()
+                                .Border(1)
+                                .ExtendHorizontal()
+                                .Height(300)
+                                .Canvas((canvas, size) =>
+                                {
+                                    var chart = new BarChart
+                                    {
+                                        Entries = entries,
+       
+                                        LabelOrientation = Orientation.Horizontal,
+                                        ValueLabelOrientation = Orientation.Horizontal,
+                                        
+                                        IsAnimated = false,
+                                    };
+                                    
+                                    chart.DrawContent(canvas, (int)size.Width, (int)size.Height);
+                                });
+                        });
                 });
         }
     }
