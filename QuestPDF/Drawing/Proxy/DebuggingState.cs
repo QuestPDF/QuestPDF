@@ -76,7 +76,7 @@ namespace QuestPDF.Drawing.Proxy
                     title += debugPointer.Highlight ? " 🌟" : string.Empty;
                 }
                 
-                if (item.SpacePlan.Type == SpacePlanType.Wrap)
+                if (item.SpacePlan.Type != SpacePlanType.FullRender)
                     title = "🔥 " + title;
 
                 builder.AppendLine(indent + title);
@@ -109,7 +109,7 @@ namespace QuestPDF.Drawing.Proxy
                         Value = x.GetValue(element)
                     })
                     .Where(x => !(x.Value is IElement))
-                    .Where(x => !(x.Value is IEnumerable))
+                    .Where(x => x.Value is string || !(x.Value is IEnumerable))
                     .Where(x => !(x.Value is TextStyle))
                     .Select(x => $"{x.Property}: {FormatValue(x.Value)}");
 

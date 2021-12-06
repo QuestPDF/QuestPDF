@@ -16,16 +16,47 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background(Colors.White)
-                        .Padding(15)
-                        .Grid(grid =>
+                        .Padding(10)
+                        .Width(100)
+                        .Background(Colors.Grey.Lighten3)
+                        .DebugPointer("Example debug pointer")
+                        .Stack(x =>
                         {
-                            grid.Spacing(15);
-                    
-                            grid.Item().Background(Colors.Grey.Medium).Text(Placeholders.LoremIpsum());
-                            grid.Item().DebugPointer("Test").Background(Colors.Grey.Lighten1).Height(1000); // <-- problem
-                            grid.Item().Background(Colors.Grey.Lighten2).Height(150);
+                            x.Item().Text("Test");
+                            x.Item().Width(150);
                         });
+                });
+        }
+        
+        [Test]
+        public void Simple()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 360)
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Width(100)
+                        .Background(Colors.Grey.Lighten3)
+                        .Width(150)
+                        .Text("Test");
+                });
+        }
+        
+        [Test]
+        public void DebugPointer()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 360)
+                .Render(container =>
+                {
+                    container
+                        .Width(100)
+                        .DebugPointer("Example debug pointer")
+                        .Width(150);
                 });
         }
     }
