@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using NUnit.Framework;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -36,12 +37,15 @@ namespace QuestPDF.Examples
         [Test]
         public void Exception()
         {
-            RenderingTest
-                .Create()
-                .PageSize(PageSizes.A5)
-                .ProducePdf()
-                .ShowResults()
-                .Render(page => page.Image("non_existent.png"));
+            Assert.Throws<DocumentComposeException>(() =>
+            {
+                RenderingTest
+                    .Create()
+                    .PageSize(PageSizes.A2)
+                    .ProducePdf()
+                    .ShowResults()
+                    .Render(page => page.Image("non_existent.png"));
+            });
         }
     }
 }
