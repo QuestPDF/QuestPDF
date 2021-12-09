@@ -50,8 +50,8 @@ namespace QuestPDF.Helpers
         public static PageSize EnvDL => new PageSize(311.9f, 623.7f);
 
         public static PageSize Executive => new PageSize(522, 756);
-        public static PageSize Legal => new PageSize(612.4f, 1009.3f);
-        public static PageSize Letter => new PageSize(612.4f, 791);
+        public static PageSize Legal => new PageSize(612, 1008);
+        public static PageSize Letter => new PageSize(612, 792);
 
         public static PageSize ARCH_A => new PageSize(649.2f, 864.7f);
         public static PageSize ARCH_B => new PageSize(864.7f, 1295.6f);
