@@ -34,11 +34,20 @@ namespace QuestPDF.Elements
         }
     }
     
-    internal class BinaryRow : Element, ICacheable
+    internal class BinaryRow : Element, ICacheable, IStateResettable
     {
         internal Element Left { get; set; }
         internal Element Right { get; set; }
 
+        private bool IsLeftRendered { get; set; } 
+        private bool IsRightRendered { get; set; } 
+        
+        public void ResetState()
+        {
+            IsLeftRendered = false;
+            IsRightRendered = false;
+        }
+        
         internal override void HandleVisitor(Action<Element?> visit)
         {
             Left.HandleVisitor(visit);
@@ -52,27 +61,34 @@ namespace QuestPDF.Elements
             Left = create(Left);
             Right = create(Right);
         }
-        
+
         internal override SpacePlan Measure(Size availableSpace)
         {
             var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height));
             
             if (leftMeasurement.Type == SpacePlanType.Wrap)
                 return SpacePlan.Wrap();
+
+            if (leftMeasurement.Type == SpacePlanType.FullRender)
+                IsLeftRendered = true;
             
             var rightMeasurement = Right.Measure(new Size(availableSpace.Width - leftMeasurement.Width, availableSpace.Height));
 
             if (rightMeasurement.Type == SpacePlanType.Wrap)
                 return SpacePlan.Wrap();
             
+            if (leftMeasurement.Type == SpacePlanType.FullRender)
+                IsRightRendered = true;
+            
             var totalWidth = leftMeasurement.Width + rightMeasurement.Width;
             var totalHeight = Math.Max(leftMeasurement.Height, rightMeasurement.Height);
 
             var targetSize = new Size(totalWidth, totalHeight);
 
-            if (leftMeasurement.Type == SpacePlanType.PartialRender || rightMeasurement.Type == SpacePlanType.PartialRender)
+            if ((!IsLeftRendered && leftMeasurement.Type == SpacePlanType.PartialRender) || 
+                (!IsRightRendered && rightMeasurement.Type == SpacePlanType.PartialRender))
                 return SpacePlan.PartialRender(targetSize);
-            
+
             return SpacePlan.FullRender(targetSize);
         }
 

@@ -67,6 +67,12 @@ namespace QuestPDF.Examples.Engine
             return this;
         }
         
+        public RenderingTest MaxPages(int value)
+        {
+            MaxPagesThreshold = value;
+            return this;
+        }
+        
         public void Render(Action<IContainer> content)
         {
             RenderDocument(container =>
@@ -77,11 +83,6 @@ namespace QuestPDF.Examples.Engine
                     page.Content().Container().Background(Colors.White).Element(content);
                 });
             });
-        }
-        
-        public void MaxPages(int value)
-        {
-            MaxPagesThreshold = value;
         }
 
         public void RenderDocument(Action<IDocumentContainer> content)
