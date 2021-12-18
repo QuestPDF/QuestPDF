@@ -6,31 +6,21 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal abstract class RowElement : Constrained
+    internal class RowElement : Constrained
     {
-        public float Size { get; protected set;  }
+        public float ConstantSize { get; set;  }
+        public float RelativeSize { get; set;  }
+
+        public RowElement(float constantSize, float relativeSize)
+        {
+            ConstantSize = constantSize;
+            RelativeSize = relativeSize;
+        }
         
         public void SetWidth(float width)
         {
             MinWidth = width;
             MaxWidth = width;
-        }
-    }
-    
-    internal class ConstantRowElement : RowElement
-    {
-        public ConstantRowElement(float size)
-        {
-            Size = size;
-            SetWidth(size);
-        }
-    }
-    
-    internal class RelativeRowElement : RowElement
-    {
-        public RelativeRowElement(float size)
-        {
-            Size = size;
         }
     }
     
@@ -145,23 +135,15 @@ namespace QuestPDF.Elements
 
         private void UpdateElementsWidth(float availableWidth)
         {
-            var constantWidth = Children
-                .Where(x => x is ConstantRowElement)
-                .Cast<ConstantRowElement>()
-                .Sum(x => x.Size);
-        
-            var relativeWidth = Children
-                .Where(x => x is RelativeRowElement)
-                .Cast<RelativeRowElement>()
-                .Sum(x => x.Size);
+            var constantWidth = Children.Sum(x => x.ConstantSize);
+            var relativeWidth = Children.Sum(x => x.RelativeSize);
 
             var widthPerRelativeUnit = (availableWidth - constantWidth) / relativeWidth;
             
-            Children
-                .Where(x => x is RelativeRowElement)
-                .Cast<RelativeRowElement>()
-                .ToList()
-                .ForEach(x => x.SetWidth(x.Size * widthPerRelativeUnit));
+            foreach (var row in Children)
+            {
+                row.SetWidth(row.ConstantSize + row.RelativeSize * widthPerRelativeUnit);
+            }
         }
         
         private static ICollection<RowElement> AddSpacing(ICollection<RowElement> elements, float spacing)
@@ -170,7 +152,7 @@ namespace QuestPDF.Elements
                 return elements;
             
             return elements
-                .SelectMany(x => new[] { new ConstantRowElement(spacing), x })
+                .SelectMany(x => new[] { new RowElement(spacing, 0), x })
                 .Skip(1)
                 .ToList();
         }
