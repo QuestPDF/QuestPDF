@@ -8,8 +8,8 @@ namespace QuestPDF.Elements
 {
     internal class RowElement : Constrained
     {
-        public float ConstantSize { get; set;  }
-        public float RelativeSize { get; set;  }
+        public float ConstantSize { get; }
+        public float RelativeSize { get; }
 
         public RowElement(float constantSize, float relativeSize)
         {
@@ -138,7 +138,7 @@ namespace QuestPDF.Elements
             var constantWidth = Children.Sum(x => x.ConstantSize);
             var relativeWidth = Children.Sum(x => x.RelativeSize);
 
-            var widthPerRelativeUnit = (availableWidth - constantWidth) / relativeWidth;
+            var widthPerRelativeUnit = (relativeWidth > 0) ? (availableWidth - constantWidth) / relativeWidth : 0;
             
             foreach (var row in Children)
             {

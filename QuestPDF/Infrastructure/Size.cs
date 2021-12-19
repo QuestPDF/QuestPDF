@@ -3,6 +3,7 @@
     public readonly struct Size
     {
         public const float Epsilon = 0.001f;
+        public const float Infinity = float.PositiveInfinity;
 
         public readonly float Width;
         public readonly float Height;
