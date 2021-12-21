@@ -61,5 +61,10 @@ namespace QuestPDF.Drawing
         {
             Canvas.Scale(scaleX, scaleY);
         }
+
+        public void DrawObject(object Object, Position position, Size size)
+        {
+            throw new System.NotImplementedException($"{nameof(SkiaCanvasBase)} does not currently implement drawing for ObjectElement");
+        }
     }
 }
