@@ -7,6 +7,7 @@ namespace QuestPDF.Elements
     internal class ObjectElement : Element, ICacheable
     {
         public object? Object { get; set; }
+        public AspectRatioOption SpaceFitBehavior { get; set; }
 
         internal override SpacePlan Measure(Size availableSpace)
         {
