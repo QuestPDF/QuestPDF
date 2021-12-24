@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using QuestPDF.Elements;
+using QuestPDF.Elements.Table;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -50,7 +52,7 @@ namespace QuestPDF.Fluent
             Table.Spacing = value;
         }
 
-        public ITableCellContainer Cell()
+        public ITableCellContainer Cell(int row = 1, int column = 1, int rowSpan = 1, int columnsSpan = 1)
         {
             var cell = new TableCell();
             Table.Children.Add(cell);
@@ -66,6 +68,8 @@ namespace QuestPDF.Fluent
             var descriptor = new TableDescriptor(table);
         
             handler(descriptor);
+            table.PlanCellPositions();
+            
             element.Element(table);
         }
     }

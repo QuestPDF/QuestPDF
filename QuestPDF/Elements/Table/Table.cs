@@ -1,55 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using QuestPDF.Drawing;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
-namespace QuestPDF.Elements
+namespace QuestPDF.Elements.Table
 {
-    internal class TableColumnDefinition
-    {
-        public float ConstantSize { get;  }
-        public float RelativeSize { get; }
-
-        internal float Width { get; set; }
-
-        public TableColumnDefinition(float constantSize, float relativeSize)
-        {
-            ConstantSize = constantSize;
-            RelativeSize = relativeSize;
-        }
-    }
-    
-    public interface ITableCellContainer : IContainer
-    {
-            
-    }
-    
-    internal class TableCell : Container, ITableCellContainer
-    {
-        public int Row { get; set; } = 1;
-        public int RowSpan { get; set; } = 1;
-
-        public int Column { get; set; } = 1;
-        public int ColumnSpan { get; set; } = 1;
-    }
-
-    internal class TableRenderingPlan
-    {
-        public Size Size { get; set; }
-        public List<TableCellRenderingCommand> CellRenderingCommands { get; set; }
-        public int MaxRowRendered { get; set; }
-    }
-    
-    internal class TableCellRenderingCommand
-    {
-        public TableCell Cell { get; set; }
-        public Size Size { get; set; }
-        public Position Offset { get; set; }
-    }
-    
     internal class Table : Element, IStateResettable
     {
         public ICollection<TableColumnDefinition> Columns { get; } = new List<TableColumnDefinition>();
@@ -210,26 +166,6 @@ namespace QuestPDF.Elements
         int GetRowsCount()
         {
             return Children.Max(x => x.Row + x.RowSpan);
-        }
-    }
-    
-    internal static class EnumerableExtensions
-    {
-        public static IEnumerable<T> Scan<T>(this IEnumerable<T> input, Func<T, T, T> accumulate)
-        {
-            using var enumerator = input.GetEnumerator();
-            
-            if (!enumerator.MoveNext())
-                yield break;
-            
-            var state = enumerator.Current;
-            yield return state;
-            
-            while (enumerator.MoveNext())
-            {
-                state = accumulate(state, enumerator.Current);
-                yield return state;
-            }
         }
     }
 }

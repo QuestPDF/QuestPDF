@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
@@ -9,7 +10,7 @@ namespace QuestPDF.Examples
 {
     public class TableExamples
     {
-        public static Random Random { get; } = new Random(0);
+        public static Random Random { get; } = new Random();
         
         [Test]
         public void Example()
@@ -24,8 +25,7 @@ namespace QuestPDF.Examples
                     container
                         .Padding(25)
                         .Box()
-                        .Border(2)
-                        .MaxHeight(500)
+                        .Border(2) 
                         .Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
@@ -36,40 +36,96 @@ namespace QuestPDF.Examples
                                 columns.ConstantColumn(200);
                             });
 
-                            table.Cell().Row(1).Column(1).ColumnSpan(2).Element(CreateBox("A"));
-                            table.Cell().Row(1).Column(3).Element(CreateBox("B"));
-                            table.Cell().Row(1).Column(4).Element(CreateBox("C"));
+                            table.Cell().ColumnSpan(2).Element(CreateBox("A"));
+                            table.Cell().Element(CreateBox("B"));
+                            table.Cell().Element(CreateBox("C"));
                             
-                            table.Cell().Row(2).Column(1).Element(CreateBox("D"));
-                            table.Cell().Row(2).RowSpan(2).Column(2).Element(CreateBox("E"));
-                            table.Cell().Row(2).RowSpan(3).Column(3).ColumnSpan(2).Element(CreateBox("F"));
+                            table.Cell().Element(CreateBox("D"));
+                            table.Cell().RowSpan(2).Element(CreateBox("E"));
+                            table.Cell().RowSpan(3).ColumnSpan(2).Element(CreateBox("F"));
                             
-                            table.Cell().Row(3).RowSpan(2).Column(1).Element(CreateBox("G"));
-                            table.Cell().Row(4).RowSpan(2).Column(2).Element(CreateBox("H"));
-                            table.Cell().Row(5).Column(3).Element(CreateBox("I"));
-                            table.Cell().Row(5).Column(4).Element(CreateBox("J"));
-                            table.Cell().Row(5).RowSpan(2).Column(1).Element(CreateBox("K"));
-                            table.Cell().Row(6).Column(2).ColumnSpan(2).Element(CreateBox("L"));
-                            table.Cell().Row(6).Column(4).Element(CreateBox("M"));
+                            table.Cell().RowSpan(2).Element(CreateBox("G"));
+                            table.Cell().RowSpan(2).Element(CreateBox("H"));
+                            table.Cell().Element(CreateBox("I"));
+                            table.Cell().Element(CreateBox("J"));
+                            table.Cell().RowSpan(2).Element(CreateBox("K"));
+                            table.Cell().ColumnSpan(2).Element(CreateBox("L"));
+                            table.Cell().Element(CreateBox("M"));
+                            
+                            // table.Cell().Row(1).Column(1).ColumnSpan(2).Element(CreateBox("A"));
+                            // table.Cell().Row(1).Column(3).Element(CreateBox("B"));
+                            // table.Cell().Row(1).Column(4).Element(CreateBox("C"));
+                            //
+                            // table.Cell().Row(2).Column(1).Element(CreateBox("D"));
+                            // table.Cell().Row(2).RowSpan(2).Column(2).Element(CreateBox("E"));
+                            // table.Cell().Row(2).RowSpan(3).Column(3).ColumnSpan(2).Element(CreateBox("F"));
+                            //
+                            // table.Cell().Row(3).RowSpan(2).Column(1).Element(CreateBox("G"));
+                            // table.Cell().Row(4).RowSpan(2).Column(2).Element(CreateBox("H"));
+                            // table.Cell().Row(5).Column(3).Element(CreateBox("I"));
+                            // table.Cell().Row(5).Column(4).Element(CreateBox("J"));
+                            // table.Cell().Row(5).RowSpan(2).Column(1).Element(CreateBox("K"));
+                            // table.Cell().Row(6).Column(2).ColumnSpan(2).Element(CreateBox("L"));
+                            // table.Cell().Row(6).Column(4).Element(CreateBox("M"));
                         });
                 });
-
-            Action<IContainer> CreateBox(string label)
-            {
-                return container =>
+        }
+        
+        [Test]
+        public void PerformanceTest()
+        {
+            RenderingTest
+                .Create()
+                .ProducePdf()
+                .PageSize(1000, 2000)
+                .MaxPages(1000)
+                .ShowResults()
+                .Render(container =>
                 {
-                    var height = Random.Next(2, 7) * 25;
-                    
                     container
-                        .Border(1)
-                        .Background(Placeholders.BackgroundColor())
-                        .AlignCenter()
-                        .AlignMiddle()
-                        .Border(1)
-                        .MinHeight(height)
-                        .Text($"{label}: {height}");
-                };
-            }
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                foreach (var size in Enumerable.Range(0, 10))
+                                    columns.ConstantColumn(100);
+                            });
+
+                            foreach (var i in Enumerable.Range(1, 10000))
+                            {
+                                table
+                                    .Cell()
+                                    .RowSpan((uint)Random.Next(1, 5))
+                                    .ColumnSpan((uint)Random.Next(1, 5))
+                                    .Element(CreateBox(i.ToString()));
+                            }
+                        });
+                });
+        }
+        
+        private Action<IContainer> CreateBox(string label)
+        {
+            return container =>
+            {
+                var height = Random.Next(2, 7) * 25;
+                    
+                container
+                    .Border(1)
+                    .Background(Placeholders.BackgroundColor())
+                    .Layers(layers =>
+                    {
+                        layers
+                            .PrimaryLayer()
+                            .ExtendHorizontal()
+                            .Height(height);
+                            
+                        layers
+                            .Layer()
+                            .AlignCenter()
+                            .AlignMiddle()
+                            .Text($"{label}: {height}px");
+                    });
+            };
         }
     }
 }
