@@ -8,8 +8,8 @@ namespace QuestPDF.Elements.Table
 {
     internal class Table : Element, IStateResettable
     {
-        public ICollection<TableColumnDefinition> Columns { get; } = new List<TableColumnDefinition>();
-        public ICollection<TableCell> Children { get; } = new List<TableCell>();
+        public List<TableColumnDefinition> Columns { get; } = new List<TableColumnDefinition>();
+        public List<TableCell> Children { get; } = new List<TableCell>();
         public float Spacing { get; set; }
         
         public int CurrentRow { get; set; }
@@ -67,13 +67,29 @@ namespace QuestPDF.Elements.Table
         {
             var cellRenderingCommands = new List<TableCellRenderingCommand>();
             
+            var cellOffsets = new float[Columns.Count + 1];
+            cellOffsets[0] = 0;
+            
+            Enumerable
+                .Range(1, cellOffsets.Length - 1)
+                .ToList()
+                .ForEach(x => cellOffsets[x] = Columns[x - 1].Width + cellOffsets[x - 1]);
+            
             // update row heights
             var rowsCount = GetRowsCount();
             var rowBottomOffsets = new float[rowsCount];
             var childrenToTry = Children.Where(x => x.Row >= CurrentRow).OrderBy(x => x.Row);
+
+            var currentRow = CurrentRow;
             
             foreach (var child in childrenToTry)
             {
+                if (currentRow < child.Row)
+                {
+                    rowBottomOffsets[currentRow] = Math.Max(rowBottomOffsets[currentRow], rowBottomOffsets[currentRow-1]);
+                    currentRow = child.Row;
+                }
+                
                 var rowIndex = child.Row - 1;
                 
                 var topOffset = 0f;
@@ -86,12 +102,10 @@ namespace QuestPDF.Elements.Table
                 
                 var targetRowId = child.Row + child.RowSpan - 2; // -1 because indexing starts at 0, -1 because rowSpan starts at 1
                 rowBottomOffsets[targetRowId] = Math.Max(rowBottomOffsets[targetRowId], cellBottomOffset);
+                
+                //if (targetRowId > 1 && rowBottomOffsets[targetRowId - 1] > availableSpace.Height)
+                //    break;
             }
-            
-            Enumerable
-                .Range(1, rowsCount - 1)
-                .ToList()
-                .ForEach(x => rowBottomOffsets[x] = Math.Max(rowBottomOffsets[x], rowBottomOffsets[x-1]));
             
             var rowHeights = new float[rowsCount];
             rowHeights[0] = rowBottomOffsets[0];
@@ -107,17 +121,17 @@ namespace QuestPDF.Elements.Table
             
             var totalHeight = rowHeights.Sum();
             var totalWidth = Columns.Sum(x => x.Width);
-
+            
             foreach (var cell in Children)
             {
-                if (!IsCellVisible(cell, rowsToDisplay))
+                if (cell.Row >= CurrentRow && cell.Row > rowsToDisplay)
                     continue;
 
-                var leftOffset = GetCellWidthOffset(cell);
-                var topOffset = rowHeights.Take(cell.Row - 1).Sum();
+                var leftOffset = cellOffsets[cell.Column - 1];
+                var topOffset = cell.Row == 1 ? 0 : rowBottomOffsets[cell.Row - 2];
 
                 var width = GetCellWidth(cell);
-                var height = rowHeights.Skip(cell.Row - 1).Take(cell.RowSpan).Sum();
+                var height = Enumerable.Range(cell.Row - 1, cell.RowSpan).TakeWhile(x => x < rowHeights.Length).Select(x => rowHeights[x]).Sum();
 
                 cellRenderingCommands.Add(new TableCellRenderingCommand()
                 {
@@ -134,14 +148,9 @@ namespace QuestPDF.Elements.Table
                 MaxRowRendered = rowsToDisplay
             };
             
-            float GetCellWidthOffset(TableCell cell)
-            {
-                return Columns.Take(cell.Column - 1).Select(x => x.Width).DefaultIfEmpty(0).Sum();
-            }
-
             float GetCellWidth(TableCell cell)
             {
-                return Columns.Skip(cell.Column - 1).Take(cell.ColumnSpan).Sum(x => x.Width);   
+                return cellOffsets[cell.Column + cell.ColumnSpan - 1] - cellOffsets[cell.Column - 1];
             }
             
             Size GetCellSize(TableCell cell)
@@ -155,11 +164,6 @@ namespace QuestPDF.Elements.Table
                     return new Size(width, Size.Infinity);
 
                 return measurement;
-            }
-
-            bool IsCellVisible(TableCell cell, int maxRow)
-            {
-                return cell.Row <= maxRow;
             }
         }
         

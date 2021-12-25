@@ -20,6 +20,8 @@ namespace QuestPDF.Examples.Engine
         private Size Size { get; set; }
         private int? MaxPagesThreshold { get; set; }
         private bool ShowResult { get; set; }
+        private bool ApplyCaching { get; set; }
+        private bool ApplyDebugging { get; set; }
         private RenderingTestResult ResultType { get; set; } = RenderingTestResult.Images;
         
         private RenderingTest()
@@ -73,6 +75,18 @@ namespace QuestPDF.Examples.Engine
             return this;
         }
         
+        public RenderingTest EnableCaching(bool value = true)
+        {
+            ApplyCaching = value;
+            return this;
+        }
+        
+        public RenderingTest EnableDebugging(bool value = true)
+        {
+            ApplyDebugging = value;
+            return this;
+        }
+        
         public void Render(Action<IContainer> content)
         {
             RenderDocument(container =>
@@ -88,7 +102,7 @@ namespace QuestPDF.Examples.Engine
         public void RenderDocument(Action<IDocumentContainer> content)
         {
             MaxPagesThreshold ??= ResultType == RenderingTestResult.Pdf ? 1000 : 10;
-            var document = new SimpleDocument(content, MaxPagesThreshold.Value);
+            var document = new SimpleDocument(content, MaxPagesThreshold.Value, ApplyCaching, ApplyDebugging);
 
             Render(document);
         }

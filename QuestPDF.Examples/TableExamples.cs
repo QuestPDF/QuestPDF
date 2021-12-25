@@ -77,12 +77,15 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .ProducePdf()
-                .PageSize(1000, 2000)
+                .PageSize(1002, 2002)
                 .MaxPages(1000)
+                .EnableCaching()
+                .EnableDebugging(false)
                 .ShowResults()
                 .Render(container =>
                 {
                     container
+                        .Padding(1)
                         .Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
@@ -91,7 +94,7 @@ namespace QuestPDF.Examples
                                     columns.ConstantColumn(100);
                             });
 
-                            foreach (var i in Enumerable.Range(1, 10000))
+                            foreach (var i in Enumerable.Range(1, 10_000))
                             {
                                 table
                                     .Cell()
@@ -110,14 +113,17 @@ namespace QuestPDF.Examples
                 var height = Random.Next(2, 7) * 25;
                     
                 container
-                    .Border(1)
+                    .Border(2)
                     .Background(Placeholders.BackgroundColor())
                     .Layers(layers =>
                     {
                         layers
                             .PrimaryLayer()
-                            .ExtendHorizontal()
-                            .Height(height);
+                            .AlignCenter()
+                            .AlignMiddle()
+                            .Height(height)
+                            .Width(80)
+                            .Border(1);
                             
                         layers
                             .Layer()
