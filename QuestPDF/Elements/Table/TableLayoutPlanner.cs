@@ -35,6 +35,9 @@ namespace QuestPDF.Elements.Table
 
                 foreach (var location in GenerateCoordinates(columnsCount, currentLocation))
                 {
+                    if (location.x + cell.ColumnSpan - 1 > columnsCount)
+                        continue;
+                    
                     cell.Column = location.x;
                     cell.Row = location.y;
                     
