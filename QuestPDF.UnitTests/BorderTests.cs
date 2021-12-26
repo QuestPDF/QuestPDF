@@ -1,9 +1,11 @@
-﻿using NUnit.Framework;
+﻿using System.Drawing;
+using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
+using Size = QuestPDF.Infrastructure.Size;
 
 namespace QuestPDF.UnitTests
 {
@@ -32,7 +34,29 @@ namespace QuestPDF.UnitTests
         }
         
         [Test]
-        public void Draw_HorizontalRight_VerticalTop()
+        public void Draw_SameWidths_Optimized()
+        {
+            TestPlan
+                .For(x => new Border
+                {
+                    Top = 10,
+                    Right = 10,
+                    Bottom = 10,
+                    Left = 10,
+                    
+                    Color = Colors.Red.Medium,
+                    
+                    Child = x.CreateChild()
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildDraw(new Size(400, 300))
+                .ExpectCanvasDrawStrokedRectangle(new Size(400, 300), Colors.Red.Medium, 10)
+                .ExpectChildDraw(new Size(400, 300))
+                .CheckDrawResult();
+        }
+        
+        [Test]
+        public void Draw_VariousWidths()
         {
             TestPlan
                 .For(x => new Border
@@ -48,10 +72,10 @@ namespace QuestPDF.UnitTests
                 })
                 .DrawElement(new Size(400, 300))
                 .ExpectChildDraw(new Size(400, 300))
-                .ExpectCanvasDrawRectangle(new Position(-20, -5), new Size(430, 10), Colors.Red.Medium) // top
-                .ExpectCanvasDrawRectangle(new Position(-20, -5), new Size(40, 320), Colors.Red.Medium) // left
-                .ExpectCanvasDrawRectangle(new Position(-20, 285), new Size(430, 30), Colors.Red.Medium) // bottom
-                .ExpectCanvasDrawRectangle(new Position(390, -5), new Size(20, 320), Colors.Red.Medium) // right
+                .ExpectCanvasDrawFilledRectangle(new Position(-20, -5), new Size(430, 10), Colors.Red.Medium) // top
+                .ExpectCanvasDrawFilledRectangle(new Position(-20, -5), new Size(40, 320), Colors.Red.Medium) // left
+                .ExpectCanvasDrawFilledRectangle(new Position(-20, 285), new Size(430, 30), Colors.Red.Medium) // bottom
+                .ExpectCanvasDrawFilledRectangle(new Position(390, -5), new Size(20, 320), Colors.Red.Medium) // right
                 .ExpectChildDraw(new Size(400, 300))
                 .CheckDrawResult();
         }

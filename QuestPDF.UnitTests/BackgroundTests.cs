@@ -21,7 +21,7 @@ namespace QuestPDF.UnitTests
                     Color = Colors.Red.Medium
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectCanvasDrawRectangle(new Position(0, 0), new Size(400, 300), Colors.Red.Medium)
+                .ExpectCanvasDrawFilledRectangle(new Position(0, 0), new Size(400, 300), Colors.Red.Medium)
                 .CheckDrawResult();
         }
         
@@ -35,7 +35,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .DrawElement(new Size(400, 300))
-                .ExpectCanvasDrawRectangle(new Position(0, 0), new Size(400, 300), Colors.Red.Medium)
+                .ExpectCanvasDrawFilledRectangle(new Position(0, 0), new Size(400, 300), Colors.Red.Medium)
                 .ExpectChildDraw(new Size(400, 300))
                 .CheckDrawResult();
         }

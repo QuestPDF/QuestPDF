@@ -36,7 +36,12 @@ namespace QuestPDF.Drawing
             
         }
 
-        public void DrawRectangle(Position vector, Size size, string color)
+        public void DrawFilledRectangle(Position vector, Size size, string color)
+        {
+            
+        }
+        
+        public void DrawStrokedRectangle(Size size, string color, float width)
         {
             
         }

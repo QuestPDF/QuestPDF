@@ -70,17 +70,27 @@ namespace QuestPDF.UnitTests.TestEngine
                     Assert.AreEqual(expected.ScaleX, scaleX, "Scale X");
                     Assert.AreEqual(expected.ScaleY, scaleY, "Scale Y");
                 },
-                DrawRectFunc = (position, size, color) =>
+                DrawFilledRectangleFunc = (position, size, color) =>
                 {
-                    var expected = GetExpected<CanvasDrawRectangleOperation>();
+                    var expected = GetExpected<CanvasDrawFilledRectangleOperation>();
                     
-                    Assert.AreEqual(expected.Position.X, position.X, "Draw rectangle: X");
-                    Assert.AreEqual(expected.Position.Y, position.Y, "Draw rectangle: Y");
+                    Assert.AreEqual(expected.Position.X, position.X, "Draw filled rectangle: X");
+                    Assert.AreEqual(expected.Position.Y, position.Y, "Draw filled rectangle: Y");
                     
-                    Assert.AreEqual(expected.Size.Width, size.Width, "Draw rectangle: width");
-                    Assert.AreEqual(expected.Size.Height, size.Height, "Draw rectangle: height");
+                    Assert.AreEqual(expected.Size.Width, size.Width, "Draw filled rectangle: width");
+                    Assert.AreEqual(expected.Size.Height, size.Height, "Draw filled rectangle: height");
                     
-                    Assert.AreEqual(expected.Color, color, "Draw rectangle: color");
+                    Assert.AreEqual(expected.Color, color, "Draw filled rectangle: color");
+                },
+                DrawStrokedRectangleFunc = (size, color, width) =>
+                {
+                    var expected = GetExpected<CanvasDrawStrokedRectangleOperation>();
+
+                    Assert.AreEqual(expected.Size.Width, size.Width, "Draw stroked rectangle: width");
+                    Assert.AreEqual(expected.Size.Height, size.Height, "Draw stroked rectangle: height");
+                    
+                    Assert.AreEqual(expected.Color, color, "Draw stroked rectangle: color");
+                    Assert.AreEqual(expected.Width, width, "Draw stroked rectangle: width");
                 },
                 DrawTextFunc = (text, position, style) => 
                 {
@@ -196,9 +206,14 @@ namespace QuestPDF.UnitTests.TestEngine
             return AddOperation(new CanvasRotateOperation(angle));
         }
         
-        public TestPlan ExpectCanvasDrawRectangle(Position position, Size size, string color)
+        public TestPlan ExpectCanvasDrawFilledRectangle(Position position, Size size, string color)
         {
-            return AddOperation(new CanvasDrawRectangleOperation(position, size, color));
+            return AddOperation(new CanvasDrawFilledRectangleOperation(position, size, color));
+        }
+        
+        public TestPlan ExpectCanvasDrawStrokedRectangle(Size size, string color, float width)
+        {
+            return AddOperation(new CanvasDrawStrokedRectangleOperation(size, color, width));
         }
         
         public TestPlan ExpectCanvasDrawText(string text, Position position, TextStyle style)

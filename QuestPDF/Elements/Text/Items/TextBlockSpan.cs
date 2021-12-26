@@ -111,7 +111,7 @@ namespace QuestPDF.Elements.Text.Items
 
             var text = Text.Substring(request.StartIndex, request.EndIndex - request.StartIndex);
             
-            request.Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
+            request.Canvas.DrawFilledRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
             request.Canvas.DrawText(text, Position.Zero, Style);
 
             // draw underline
@@ -124,7 +124,7 @@ namespace QuestPDF.Elements.Text.Items
 
             void DrawLine(float offset, float thickness)
             {
-                request.Canvas.DrawRectangle(new Position(0, offset - thickness / 2f), new Size(request.TextSize.Width, thickness), Style.Color);
+                request.Canvas.DrawFilledRectangle(new Position(0, offset - thickness / 2f), new Size(request.TextSize.Width, thickness), Style.Color);
             }
         }
     }

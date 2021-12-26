@@ -18,13 +18,19 @@ namespace QuestPDF.Drawing
             Canvas.Translate(vector.X, vector.Y);
         }
 
-        public void DrawRectangle(Position vector, Size size, string color)
+        public void DrawFilledRectangle(Position vector, Size size, string color)
         {
             if (size.Width < Size.Epsilon || size.Height < Size.Epsilon)
                 return;
 
-            var paint = color.ColorToPaint();
+            var paint = SkiaCache.GetRectangleFillPaint(color);
             Canvas.DrawRect(vector.X, vector.Y, size.Width, size.Height, paint);
+        }
+        
+        public void DrawStrokedRectangle(Size size, string color, float width)
+        {
+            var paint = SkiaCache.GetRectangleStrokePaint(color, width);
+            Canvas.DrawRect(0, 0, size.Width, size.Height, paint);
         }
 
         public void DrawText(string text, Position vector, TextStyle style)

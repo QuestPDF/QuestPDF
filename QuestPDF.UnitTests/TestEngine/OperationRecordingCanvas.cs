@@ -14,7 +14,8 @@ namespace QuestPDF.UnitTests.TestEngine
         public void Rotate(float angle) => Operations.Add(new CanvasRotateOperation(angle));
         public void Scale(float scaleX, float scaleY) => Operations.Add(new CanvasScaleOperation(scaleX, scaleY));
 
-        public void DrawRectangle(Position vector, Size size, string color) => Operations.Add(new CanvasDrawRectangleOperation(vector, size, color));
+        public void DrawFilledRectangle(Position vector, Size size, string color) => Operations.Add(new CanvasDrawFilledRectangleOperation(vector, size, color));
+        public void DrawStrokedRectangle(Size size, string color, float width) => Operations.Add(new CanvasDrawStrokedRectangleOperation(size, color, width));
         public void DrawText(string text, Position position, TextStyle style) => Operations.Add(new CanvasDrawTextOperation(text, position, style));
         public void DrawImage(SKImage image, Position position, Size size) => Operations.Add(new CanvasDrawImageOperation(position, size));
         
