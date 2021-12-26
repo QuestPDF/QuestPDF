@@ -24,6 +24,8 @@ namespace QuestPDF.ReportSample
         [Test] 
         public void GenerateAndShowPdf()
         {
+            ImagePlaceholder.Solid = true;
+        
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
             Report.GeneratePdf(path);
             Process.Start("explorer.exe", path);

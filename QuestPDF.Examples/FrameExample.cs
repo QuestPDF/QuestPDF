@@ -13,11 +13,12 @@ namespace QuestPDF.Examples
             return container
                 .Border(1)
                 .Background(dark ? Colors.Grey.Lighten2 : Colors.White)
-                .Padding(10);
+                .Padding(5);
         }
         
-        public static void LabelCell(this IContainer container, string text) => container.Cell(true).Text(text, TextStyle.Default.Medium());
+        public static void LabelCell(this IContainer container, string text) => container.Cell(true).Text(text, TextStyle.Default.SemiBold());
         public static IContainer ValueCell(this IContainer container) => container.Cell(false);
+        public static void ValueCell(this IContainer container, string text) => container.ValueCell().Text(text, TextStyle.Default);
     }
     
     public class FrameExample
@@ -36,7 +37,7 @@ namespace QuestPDF.Examples
                         .Padding(25)
                         .Stack(stack =>
                         {
-                            for(var i=1; i<=4; i++)
+                            for(var i = 1; i <= 4; i++)
                             {
                                 stack.Item().Row(row =>
                                 {

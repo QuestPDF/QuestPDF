@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
@@ -12,7 +13,9 @@ namespace QuestPDF.Elements.Table
         public List<TableCell> Children { get; } = new List<TableCell>();
         public float Spacing { get; set; }
         
-        public int CurrentRow { get; set; }
+        private TableCell[][] OrderedChildren { get; set; }
+        private int RowsCount { get; set; }
+        private int CurrentRow { get; set; }
         
         internal override void HandleVisitor(Action<Element?> visit)
         {
@@ -22,6 +25,21 @@ namespace QuestPDF.Elements.Table
         
         public void ResetState()
         {
+            if (RowsCount == default)
+                RowsCount = Children.Max(x => x.Row + x.RowSpan);
+
+            if (OrderedChildren == default)
+            {
+                var groups = Children
+                    .GroupBy(x => x.Row)
+                    .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Column).ToArray());
+            
+                OrderedChildren = Enumerable
+                    .Range(0, RowsCount)
+                    .Select(x => groups.TryGetValue(x, out var output) ? output : Array.Empty<TableCell>())
+                    .ToArray();   
+            }
+
             CurrentRow = 1;
         }
         
@@ -31,7 +49,7 @@ namespace QuestPDF.Elements.Table
             
             var layout = PlanLayout(availableSpace);
 
-            return layout.MaxRowRendered < GetRowsCount() 
+            return layout.MaxRowRendered < RowsCount
                 ? SpacePlan.PartialRender(layout.Size) 
                 : SpacePlan.FullRender(layout.Size);
         }
@@ -75,22 +93,29 @@ namespace QuestPDF.Elements.Table
                 .ToList()
                 .ForEach(x => cellOffsets[x] = Columns[x - 1].Width + cellOffsets[x - 1]);
             
+            
+            
             // update row heights
-            var rowsCount = GetRowsCount();
+            var rowsCount = RowsCount;
             var rowBottomOffsets = new float[rowsCount];
-            var childrenToTry = Children.Where(x => x.Row >= CurrentRow).OrderBy(x => x.Row);
+            var childrenToTry = Enumerable.Range(CurrentRow - 1, RowsCount - CurrentRow).SelectMany(x => OrderedChildren[x]);
 
             var currentRow = CurrentRow;
             
             foreach (var child in childrenToTry)
             {
-                if (currentRow < child.Row)
+                if (child.Row > currentRow)
                 {
-                    rowBottomOffsets[currentRow] = Math.Max(rowBottomOffsets[currentRow], rowBottomOffsets[currentRow-1]);
+                    if (rowBottomOffsets[currentRow - 1] > availableSpace.Height + Single.Epsilon)
+                        break;
+                    
                     currentRow = child.Row;
                 }
-                
+
                 var rowIndex = child.Row - 1;
+                
+                if (rowIndex > 1)
+                    rowBottomOffsets[rowIndex] = Math.Max(rowBottomOffsets[rowIndex], rowBottomOffsets[rowIndex-1]);
                 
                 var topOffset = 0f;
 
@@ -102,10 +127,12 @@ namespace QuestPDF.Elements.Table
                 
                 var targetRowId = child.Row + child.RowSpan - 2; // -1 because indexing starts at 0, -1 because rowSpan starts at 1
                 rowBottomOffsets[targetRowId] = Math.Max(rowBottomOffsets[targetRowId], cellBottomOffset);
-                
-                //if (targetRowId > 1 && rowBottomOffsets[targetRowId - 1] > availableSpace.Height)
-                //    break;
             }
+            
+            Enumerable
+                .Range(1, rowsCount - 1)
+                .ToList()
+                .ForEach(x => rowBottomOffsets[x] = Math.Max(rowBottomOffsets[x], rowBottomOffsets[x-1]));
             
             var rowHeights = new float[rowsCount];
             rowHeights[0] = rowBottomOffsets[0];
@@ -165,11 +192,6 @@ namespace QuestPDF.Elements.Table
 
                 return measurement;
             }
-        }
-        
-        int GetRowsCount()
-        {
-            return Children.Max(x => x.Row + x.RowSpan);
         }
     }
 }
