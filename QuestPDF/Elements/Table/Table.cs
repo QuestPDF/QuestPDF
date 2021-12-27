@@ -2,11 +2,38 @@
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
 {
+    /// <summary>
+    /// This dictionary allows to access key that does not exist.
+    /// Instead of throwing an exception, it returns a default value.
+    /// </summary>
+    internal class DynamicDictionary<TKey, TValue>
+    {
+        private TValue Default { get; }
+        private IDictionary<TKey, TValue> Dictionary { get; } = new Dictionary<TKey, TValue>();
+
+        public DynamicDictionary()
+        {
+            
+        }
+        
+        public DynamicDictionary(TValue defaultValue)
+        {
+            Default = defaultValue;
+        }
+        
+        public TValue this[TKey key]
+        {
+            get => Dictionary.TryGetValue(key, out var value) ? value : Default;
+            set => Dictionary[key] = value;
+        }
+
+        public List<KeyValuePair<TKey, TValue>> Items => Dictionary.ToList();
+    }
+    
     internal class Table : Element, IStateResettable
     {
         public List<TableColumnDefinition> Columns { get; } = new List<TableColumnDefinition>();
@@ -26,7 +53,7 @@ namespace QuestPDF.Elements.Table
         public void ResetState()
         {
             if (RowsCount == default)
-                RowsCount = Children.Max(x => x.Row + x.RowSpan);
+                RowsCount = Children.Max(x => x.Row + x.RowSpan - 1);
 
             if (OrderedChildren == default)
             {
@@ -35,7 +62,7 @@ namespace QuestPDF.Elements.Table
                     .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Column).ToArray());
             
                 OrderedChildren = Enumerable
-                    .Range(0, RowsCount)
+                    .Range(0, RowsCount + 1)
                     .Select(x => groups.TryGetValue(x, out var output) ? output : Array.Empty<TableCell>())
                     .ToArray();   
             }
@@ -93,12 +120,9 @@ namespace QuestPDF.Elements.Table
                 .ToList()
                 .ForEach(x => cellOffsets[x] = Columns[x - 1].Width + cellOffsets[x - 1]);
             
-            
-            
             // update row heights
-            var rowsCount = RowsCount;
-            var rowBottomOffsets = new float[rowsCount];
-            var childrenToTry = Enumerable.Range(CurrentRow - 1, RowsCount - CurrentRow).SelectMany(x => OrderedChildren[x]);
+            var rowBottomOffsets = new DynamicDictionary<int, float>();
+            var childrenToTry = Enumerable.Range(CurrentRow, RowsCount - CurrentRow + 1).SelectMany(x => OrderedChildren[x]);
 
             var currentRow = CurrentRow;
             
@@ -106,59 +130,47 @@ namespace QuestPDF.Elements.Table
             {
                 if (child.Row > currentRow)
                 {
+                    rowBottomOffsets[currentRow] = Math.Max(rowBottomOffsets[currentRow], rowBottomOffsets[currentRow - 1]);
+                        
                     if (rowBottomOffsets[currentRow - 1] > availableSpace.Height + Single.Epsilon)
                         break;
                     
                     currentRow = child.Row;
                 }
 
-                var rowIndex = child.Row - 1;
-                
-                if (rowIndex > 1)
-                    rowBottomOffsets[rowIndex] = Math.Max(rowBottomOffsets[rowIndex], rowBottomOffsets[rowIndex-1]);
-                
-                var topOffset = 0f;
-
-                if (rowIndex > 0)
-                    topOffset = rowBottomOffsets[rowIndex - 1]; // look at previous row
+                var topOffset = rowBottomOffsets[child.Row - 1];
                 
                 var height = GetCellSize(child).Height;
                 var cellBottomOffset = height + topOffset;
                 
-                var targetRowId = child.Row + child.RowSpan - 2; // -1 because indexing starts at 0, -1 because rowSpan starts at 1
+                var targetRowId = child.Row + child.RowSpan - 1; // -1 because rowSpan starts at 1
                 rowBottomOffsets[targetRowId] = Math.Max(rowBottomOffsets[targetRowId], cellBottomOffset);
             }
+
+            var rowHeights = new DynamicDictionary<int, float>();
             
             Enumerable
-                .Range(1, rowsCount - 1)
-                .ToList()
-                .ForEach(x => rowBottomOffsets[x] = Math.Max(rowBottomOffsets[x], rowBottomOffsets[x-1]));
-            
-            var rowHeights = new float[rowsCount];
-            rowHeights[0] = rowBottomOffsets[0];
-            
-            Enumerable
-                .Range(1, rowsCount - 1)
+                .Range(CurrentRow, rowBottomOffsets.Items.Count)
                 .ToList()
                 .ForEach(x => rowHeights[x] = rowBottomOffsets[x] - rowBottomOffsets[x-1]);
             
             // find rows count to render in this pass
-            var rowsToDisplay = rowHeights.Scan((x, y) => x + y).Count(x => x <= availableSpace.Height + Size.Epsilon);
-            rowHeights = rowHeights.Take(rowsToDisplay).ToArray();
-            
-            var totalHeight = rowHeights.Sum();
-            var totalWidth = Columns.Sum(x => x.Width);
-            
-            foreach (var cell in Children)
-            {
-                if (cell.Row >= CurrentRow && cell.Row > rowsToDisplay)
-                    continue;
+            var maxRowToDisplay = rowBottomOffsets.Items.Where(x => x.Value <= availableSpace.Height + Size.Epsilon).Max(x => x.Key);
 
+            var totalHeight = rowHeights.Items.Where(x => x.Key <= maxRowToDisplay).Sum(x => x.Value);
+            var totalWidth = Columns.Sum(x => x.Width);
+
+            var childrenToDraw = Enumerable
+                .Range(CurrentRow, maxRowToDisplay - CurrentRow + 1)
+                .SelectMany(x => OrderedChildren[x]);
+            
+            foreach (var cell in childrenToDraw)
+            {
                 var leftOffset = cellOffsets[cell.Column - 1];
-                var topOffset = cell.Row == 1 ? 0 : rowBottomOffsets[cell.Row - 2];
+                var topOffset = cell.Row == 1 ? 0 : rowBottomOffsets[cell.Row - 1];
 
                 var width = GetCellWidth(cell);
-                var height = Enumerable.Range(cell.Row - 1, cell.RowSpan).TakeWhile(x => x < rowHeights.Length).Select(x => rowHeights[x]).Sum();
+                var height = Enumerable.Range(cell.Row, cell.RowSpan).Select(x => rowHeights[x]).Sum();
 
                 cellRenderingCommands.Add(new TableCellRenderingCommand()
                 {
@@ -172,7 +184,7 @@ namespace QuestPDF.Elements.Table
             {
                 Size = new Size(totalWidth, totalHeight),
                 CellRenderingCommands = cellRenderingCommands,
-                MaxRowRendered = rowsToDisplay
+                MaxRowRendered = maxRowToDisplay
             };
             
             float GetCellWidth(TableCell cell)

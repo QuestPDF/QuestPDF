@@ -103,7 +103,7 @@ namespace QuestPDF.Examples
                 .ProducePdf()
                 .PageSize(PageSizes.A4)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 100));
+                .Render(container => GeneratePerformanceStructure(container, 2));
         }
         
         [Test]
@@ -117,7 +117,7 @@ namespace QuestPDF.Examples
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 1000));
+                .Render(container => GeneratePerformanceStructure(container, 100));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)
@@ -136,16 +136,16 @@ namespace QuestPDF.Examples
                         columns.RelativeColumn();
                     });
 
-                    foreach (var _ in Enumerable.Range(0, repeats))
+                    foreach (var i in Enumerable.Range(0, repeats))
                     {
                         table.Cell().RowSpan(3).LabelCell("Project");
                         table.Cell().RowSpan(3).ValueCell(Placeholders.Sentence());
                 
+                        table.Cell().LabelCell("Report number");
+                        table.Cell().ValueCell(i.ToString());
+                        
                         table.Cell().LabelCell("Date");
                         table.Cell().ValueCell(Placeholders.ShortDate());
-                
-                        table.Cell().LabelCell("Report number");
-                        table.Cell().ValueCell(Placeholders.Integer());
 
                         table.Cell().LabelCell("Inspector");
                         table.Cell().ValueCell("Marcin Ziąbek");
@@ -179,8 +179,6 @@ namespace QuestPDF.Examples
                 
                         table.Cell().LabelCell("Remarks");
                         table.Cell().ColumnSpan(3).ValueCell(Placeholders.Paragraph());
-
-                        table.Cell().ColumnSpan(4).BorderBottom(2);
                     }
                 });
         }
