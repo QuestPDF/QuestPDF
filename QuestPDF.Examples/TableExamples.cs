@@ -103,7 +103,7 @@ namespace QuestPDF.Examples
                 .ProducePdf()
                 .PageSize(PageSizes.A4)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 2));
+                .Render(container => GeneratePerformanceStructure(container, 10));
         }
         
         [Test]
@@ -117,7 +117,7 @@ namespace QuestPDF.Examples
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 100));
+                .Render(container => GeneratePerformanceStructure(container, 250));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)

@@ -7,5 +7,7 @@ namespace QuestPDF.Elements.Table
 
         public int Column { get; set; } = 1;
         public int ColumnSpan { get; set; } = 1;
+        
+        public bool IsRendered { get; set; }
     }
 }
