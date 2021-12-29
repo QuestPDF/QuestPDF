@@ -67,6 +67,7 @@ namespace QuestPDF.Elements.Table
                     .ToArray();   
             }
 
+            Children.ForEach(x => x.IsRendered = false);
             CurrentRow = 1;
         }
         
@@ -89,6 +90,11 @@ namespace QuestPDF.Elements.Table
             
             foreach (var command in layout.CellRenderingCommands)
             {
+                var measurementResult = command.Cell.Measure(command.Size);
+
+                if (measurementResult.Type == SpacePlanType.FullRender)
+                    command.Cell.IsRendered = true;
+                
                 Canvas.Translate(command.Offset);
                 command.Cell.Draw(command.Size);
                 Canvas.Translate(command.Offset.Reverse());
@@ -123,11 +129,15 @@ namespace QuestPDF.Elements.Table
             // update row heights
             var rowBottomOffsets = new DynamicDictionary<int, float>();
             var childrenToTry = Enumerable.Range(CurrentRow, RowsCount - CurrentRow + 1).SelectMany(x => OrderedChildren[x]);
-
+            
+            var maxRenderingRow = RowsCount;
             var currentRow = CurrentRow;
             
             foreach (var child in childrenToTry)
             {
+                if (child.Row > maxRenderingRow)
+                    break;
+                
                 if (child.Row > currentRow)
                 {
                     rowBottomOffsets[currentRow] = Math.Max(rowBottomOffsets[currentRow], rowBottomOffsets[currentRow - 1]);
@@ -139,9 +149,21 @@ namespace QuestPDF.Elements.Table
                 }
 
                 var topOffset = rowBottomOffsets[child.Row - 1];
+                var availableHeight = availableSpace.Height - topOffset;
                 
-                var height = GetCellSize(child).Height;
-                var cellBottomOffset = height + topOffset;
+                var cellSize = GetCellSize(child, availableHeight);
+
+                if (cellSize.Type == SpacePlanType.PartialRender)
+                {
+                    maxRenderingRow = Math.Min(maxRenderingRow, child.Row + child.RowSpan - 1);
+                }
+                
+                if (cellSize.Type == SpacePlanType.Wrap)
+                {
+                    maxRenderingRow = Math.Min(maxRenderingRow, child.Row - 1);
+                }
+                
+                var cellBottomOffset = cellSize.Height + topOffset;
                 
                 var targetRowId = child.Row + child.RowSpan - 1; // -1 because rowSpan starts at 1
                 rowBottomOffsets[targetRowId] = Math.Max(rowBottomOffsets[targetRowId], cellBottomOffset);
@@ -155,13 +177,11 @@ namespace QuestPDF.Elements.Table
                 .ForEach(x => rowHeights[x] = rowBottomOffsets[x] - rowBottomOffsets[x-1]);
             
             // find rows count to render in this pass
-            var maxRowToDisplay = rowBottomOffsets.Items.Where(x => x.Value <= availableSpace.Height + Size.Epsilon).Max(x => x.Key);
-
-            var totalHeight = rowHeights.Items.Where(x => x.Key <= maxRowToDisplay).Sum(x => x.Value);
+            var totalHeight = rowHeights.Items.Where(x => x.Key <= maxRenderingRow).Sum(x => x.Value);
             var totalWidth = Columns.Sum(x => x.Width);
 
             var childrenToDraw = Enumerable
-                .Range(CurrentRow, maxRowToDisplay - CurrentRow + 1)
+                .Range(CurrentRow, maxRenderingRow - CurrentRow + 1)
                 .SelectMany(x => OrderedChildren[x]);
             
             foreach (var cell in childrenToDraw)
@@ -184,7 +204,7 @@ namespace QuestPDF.Elements.Table
             {
                 Size = new Size(totalWidth, totalHeight),
                 CellRenderingCommands = cellRenderingCommands,
-                MaxRowRendered = maxRowToDisplay
+                MaxRowRendered = maxRenderingRow
             };
             
             float GetCellWidth(TableCell cell)
@@ -192,17 +212,12 @@ namespace QuestPDF.Elements.Table
                 return cellOffsets[cell.Column + cell.ColumnSpan - 1] - cellOffsets[cell.Column - 1];
             }
             
-            Size GetCellSize(TableCell cell)
+            SpacePlan GetCellSize(TableCell cell, float availableHeight)
             {
                 var width = GetCellWidth(cell);
-                var cellSize = new Size(width, Size.Max.Height);
+                var cellSize = new Size(width, availableHeight);
 
-                var measurement = cell.Measure(cellSize);
-
-                if (measurement.Type == SpacePlanType.Wrap)
-                    return new Size(width, Size.Infinity);
-
-                return measurement;
+                return cell.Measure(cellSize);
             }
         }
     }
