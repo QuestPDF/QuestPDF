@@ -17,5 +17,7 @@
         {
             return new Position(-X, -Y);
         }
+        
+        public override string ToString() => $"(Left: {X:N3}, Top: {Y:N3})";
     }
 }

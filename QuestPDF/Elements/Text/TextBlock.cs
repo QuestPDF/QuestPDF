@@ -32,7 +32,7 @@ namespace QuestPDF.Elements.Text
             var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
 
             if (!lines.Any())
-                return SpacePlan.PartialRender(Size.Zero);
+                return SpacePlan.Wrap();
             
             var width = lines.Max(x => x.Width);
             var height = lines.Sum(x => x.LineHeight);
