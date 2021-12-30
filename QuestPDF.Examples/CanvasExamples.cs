@@ -15,8 +15,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(400, 600)
-                .ProducePdf()
+                .ProduceImages()
                 .ShowResults()
                 .Render(container =>
                 {
@@ -34,7 +33,8 @@ namespace QuestPDF.Examples
                                 {
                                     Color = SKColor.Parse(Colors.Black),
                                     IsStroke = true,
-                                    StrokeWidth = 1
+                                    StrokeWidth = 1,
+                                    IsAntialias = true
                                 };
                                 
                                 canvas.DrawRoundRect(0, 0, size.Width, size.Height, 20, 20, paint);
