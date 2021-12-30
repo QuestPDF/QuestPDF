@@ -17,103 +17,13 @@ namespace QuestPDF.Examples
         public static Random Random { get; } = new Random();
 
         [Test]
-        public void Example()
-        {
-            RenderingTest
-                .Create()
-                .ProduceImages()
-                .PageSize(PageSizes.A4)
-                .ShowResults()
-                .Render(container =>
-                {
-                    container
-                        .Padding(25)
-                        .Box()
-                        .Border(2) 
-                        .Table(table =>
-                        {
-                            table.ColumnsDefinition(columns =>
-                            {
-                                columns.ConstantColumn(100);
-                                columns.RelativeColumn();
-                                columns.ConstantColumn(100);
-                                columns.ConstantColumn(200);
-                            });
-
-                            table.Cell().ColumnSpan(2).Element(CreateBox("A"));
-                            table.Cell().Element(CreateBox("B"));
-                            table.Cell().Element(CreateBox("C"));
-                            
-                            table.Cell().Element(CreateBox("D"));
-                            table.Cell().RowSpan(2).Element(CreateBox("E"));
-                            table.Cell().RowSpan(3).ColumnSpan(2).Element(CreateBox("F"));
-                            
-                            table.Cell().RowSpan(2).Element(CreateBox("G"));
-                            table.Cell().RowSpan(2).Element(CreateBox("H"));
-                            table.Cell().Element(CreateBox("I"));
-                            table.Cell().Element(CreateBox("J"));
-                            table.Cell().RowSpan(2).Element(CreateBox("K"));
-                            table.Cell().ColumnSpan(2).Element(CreateBox("L"));
-                            table.Cell().Element(CreateBox("M"));
-                        });
-                });
-        }
-        
-        [Test]
-        public void TreeTable()
-        {
-            RenderingTest
-                .Create()
-                .ProducePdf()
-                .PageSize(PageSizes.A4)
-                .ShowResults()
-                .Render(container =>
-                {
-                    container
-                        .Padding(25)
-                        .Box()
-                        .Border(2) 
-                        .Table(table =>
-                        {
-                            table.ColumnsDefinition(columns =>
-                            {
-                                columns.RelativeColumn(100);
-                                columns.RelativeColumn(100);
-                                columns.RelativeColumn(100);
-                            });
-
-                            table.Cell().RowSpan(4).Element(CreateBox("A"));
-                            
-                            table.Cell().RowSpan(2).Element(CreateBox("B"));
-                            table.Cell().Element(CreateBox("C"));
-                            table.Cell().Element(CreateBox("D"));
-                            
-                            table.Cell().RowSpan(2).Element(CreateBox("E"));
-                            table.Cell().Element(CreateBox("F"));
-                            table.Cell().Element(CreateBox("G"));
-                        });
-                });
-        }
-        
-        [Test]
         public void TemperatureReport()
         {
             RenderingTest
                 .Create()
                 .ProducePdf()
                 .PageSize(PageSizes.A4)
-                .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 10));
-        }
-        
-        [Test]
-        public void TemperatureReport_PerformanceTest()
-        {
-            RenderingTest
-                .Create()
-                .ProducePdf()
-                .PageSize(PageSizes.A4)
-                .MaxPages(10000)
+                .MaxPages(10_000)
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
@@ -183,21 +93,6 @@ namespace QuestPDF.Examples
                         table.Cell().ColumnSpan(3).ValueCell(Placeholders.Paragraph());
                     }
                 });
-        }
-        
-        private Action<IContainer> CreateBox(string label)
-        {
-            return container =>
-            {
-                var height = Random.Next(2, 6) * 10;
-                    
-                container
-                    .Background(Placeholders.BackgroundColor())
-                    // .AlignCenter()
-                    // .AlignMiddle()
-                    .Height(height);
-                    // .Text($"{label}: {height}px");
-            };
         }
     }
 }
