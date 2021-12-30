@@ -174,13 +174,13 @@ namespace QuestPDF.Elements.Table
 
                     var cellSize = cell.Measure(availableCellSize);
 
-                    // corner case: cell within the row is not fully rendered, do not attempt to render next row
+                    // corner case: if cell within the row is not fully rendered, do not attempt to render next row
                     if (cellSize.Type == SpacePlanType.PartialRender)
                     {
                         maxRenderingRow = Math.Min(maxRenderingRow, cell.Row + cell.RowSpan - 1);
                     }
                     
-                    // corner case: cell within the row want to wrap to the next page, do not attempt to render this row
+                    // corner case: if cell within the row want to wrap to the next page, do not attempt to render this row
                     if (cellSize.Type == SpacePlanType.Wrap)
                     {
                         maxRenderingRow = Math.Min(maxRenderingRow, cell.Row - 1);
@@ -201,7 +201,7 @@ namespace QuestPDF.Elements.Table
                     });
                 }
 
-                // corner case: reject cell if other cells within the same rows are rejected
+                // corner case: reject cell if other cells within the same row are rejected
                 return commands.Where(x => x.Cell.Row <= maxRenderingRow).ToList();
             }
             

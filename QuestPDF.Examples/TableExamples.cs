@@ -27,7 +27,7 @@ namespace QuestPDF.Examples
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 1));
+                .Render(container => GeneratePerformanceStructure(container, 10));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)
