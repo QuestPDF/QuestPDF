@@ -117,17 +117,17 @@ namespace QuestPDF.Examples
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 2500));
+                .Render(container => GeneratePerformanceStructure(container, 250));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)
         {
             container
                 .Padding(25)
-                .Background(Colors.Blue.Lighten2)
+                //.Background(Colors.Blue.Lighten2)
                 .Box()
                 .Border(1)
-                .Background(Colors.Red.Lighten2)
+                //.Background(Colors.Red.Lighten2)
                 .Table(table =>
                 {
                     table.ColumnsDefinition(columns =>
