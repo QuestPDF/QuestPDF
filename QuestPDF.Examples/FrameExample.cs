@@ -12,9 +12,9 @@ namespace QuestPDF.Examples
         {
             return container
                 .Border(1)
-                .Background(dark ? Colors.Grey.Lighten2 : Colors.White)
-                .Padding(5)
-                .EnsureSpace(10);
+                .BorderColor(Colors.Grey.Medium)
+                .Background(dark ? Colors.Grey.Lighten3 : Colors.White)
+                .Padding(5);
         }
         
         public static void LabelCell(this IContainer container, string text) => container.Cell(true).Text(text, TextStyle.Default.SemiBold());

@@ -117,15 +117,17 @@ namespace QuestPDF.Examples
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 250));
+                .Render(container => GeneratePerformanceStructure(container, 2500));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)
         {
             container
                 .Padding(25)
+                .Background(Colors.Blue.Lighten2)
                 .Box()
-                .Border(2) 
+                .Border(1)
+                .Background(Colors.Red.Lighten2)
                 .Table(table =>
                 {
                     table.ColumnsDefinition(columns =>
@@ -139,7 +141,7 @@ namespace QuestPDF.Examples
                     foreach (var i in Enumerable.Range(0, repeats))
                     {
                         table.Cell().RowSpan(3).LabelCell("Project");
-                        table.Cell().RowSpan(3).ValueCell(Placeholders.Sentence());
+                        table.Cell().RowSpan(3).ShowEntire().ValueCell(Placeholders.Sentence());
                 
                         table.Cell().LabelCell("Report number");
                         table.Cell().ValueCell(i.ToString());
