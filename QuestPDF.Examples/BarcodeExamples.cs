@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using System.IO;
+using NUnit.Framework;
+using QuestPDF.Drawing;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -6,25 +8,24 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
-    [TestFixture]
     public class BarcodeExamples
     {
         [Test]
-        public void Barcode()
+        public void Example()
         {
+            FontManager.RegisterFontType("LibreBarcode39", File.OpenRead("LibreBarcode39-Regular.ttf"));
+            
             RenderingTest
                 .Create()
-                .PageSize(300, 300)
+                .PageSize(400, 100)
+                .ShowResults()
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
-                        .Padding(25)
-                        .Stack(stack =>
-                        {
-                            stack.Item().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Text("Barcode Example");
-                            stack.Item().Border(1).Padding(5).AlignCenter().Text("*123456789*", TextStyle.Default.FontType("CarolinaBar-Demo-25E2").Size(20));
-                        });
+                        .Background(Colors.White)
+                        .AlignCenter()
+                        .AlignMiddle()
+                        .Text("*QuestPDF*", TextStyle.Default.FontType("LibreBarcode39").Size(64));
                 });
         }
     }
