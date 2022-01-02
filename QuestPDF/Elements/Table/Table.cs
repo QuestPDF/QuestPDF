@@ -205,10 +205,12 @@ namespace QuestPDF.Elements.Table
                 return commands.Where(x => x.Cell.Row <= maxRenderingRow).ToList();
             }
             
-            // if two cells end up on the same row (a.Row + a.RowSpan = b.Row + b.RowSpan),
+            // corner sase: if two cells end up on the same row (a.Row + a.RowSpan = b.Row + b.RowSpan),
             // bottom edges of their bounding boxes should be at the same level
             static void AdjustCellSizes(float tableHeight, ICollection<TableCellRenderingCommand> commands)
             {
+                // TODO: this is wrong
+                // should use GroupBy(x => x.Row + x.RowSpan) and determine target height
                 foreach (var command in commands)
                 {
                     var height = tableHeight - command.Offset.Y;
@@ -216,7 +218,7 @@ namespace QuestPDF.Elements.Table
                 }
             }
             
-            // all cells, that are last ones in their respective columns, should take all remaining space
+            // corner sase: all cells, that are last ones in their respective columns, should take all remaining space
             static void AdjustLastCellSizes(float tableHeight, ICollection<TableCellRenderingCommand> commands)
             {
                 var columnsCount = commands.Select(x => x.Cell).Max(x => x.Column + x.ColumnSpan - 1);
