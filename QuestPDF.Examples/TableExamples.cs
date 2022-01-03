@@ -21,13 +21,13 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .ProduceImages()
+                .ProducePdf()
                 .PageSize(PageSizes.A4)
                 .MaxPages(10_000)
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 10));
+                .Render(container => GeneratePerformanceStructure(container, 1000));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)

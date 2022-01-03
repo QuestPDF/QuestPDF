@@ -116,7 +116,7 @@ namespace QuestPDF.Elements.Table
             var commands = GetRenderingCommands();
             var tableHeight = commands.Max(cell => cell.Offset.Y + cell.Size.Height);
             
-            AdjustCellSizes(tableHeight, commands);
+            AdjustCellSizes(commands);
             AdjustLastCellSizes(tableHeight, commands);
 
             return commands;
@@ -207,15 +207,17 @@ namespace QuestPDF.Elements.Table
             
             // corner sase: if two cells end up on the same row (a.Row + a.RowSpan = b.Row + b.RowSpan),
             // bottom edges of their bounding boxes should be at the same level
-            static void AdjustCellSizes(float tableHeight, ICollection<TableCellRenderingCommand> commands)
+            static void AdjustCellSizes(ICollection<TableCellRenderingCommand> commands)
             {
-                // TODO: this is wrong
-                // should use GroupBy(x => x.Row + x.RowSpan) and determine target height
-                foreach (var command in commands)
-                {
-                    var height = tableHeight - command.Offset.Y;
-                    command.Size = new Size(command.Size.Width, height);
-                }
+                commands
+                    .GroupBy(x => x.Cell.Row + x.Cell.RowSpan)
+                    .ToList()
+                    .ForEach(group =>
+                    {
+                        var groupCells = group.ToList();
+                        var bottomBorderOffset = groupCells.Max(x => x.Offset.Y + x.Size.Height);
+                        groupCells.ForEach(x => x.Size = new Size(x.Size.Width, bottomBorderOffset - x.Offset.Y));
+                    });
             }
             
             // corner sase: all cells, that are last ones in their respective columns, should take all remaining space
