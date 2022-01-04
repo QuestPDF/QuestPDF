@@ -145,5 +145,13 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new Unconstrained());
         }
+        
+        public static IContainer DefaultTextStyle(this IContainer element, TextStyle textStyle)
+        {
+            return element.Element(new DefaultTextStyle
+            {
+                TextStyle = textStyle
+            });
+        }
     }
 }

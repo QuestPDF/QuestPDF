@@ -40,6 +40,8 @@ namespace QuestPDF.Elements
                 .PaddingTop(MarginTop)
                 .PaddingBottom(MarginBottom)
                 
+                .DefaultTextStyle(DefaultTextStyle)
+                
                 .Decoration(decoration =>
                 {
                     decoration
@@ -60,8 +62,6 @@ namespace QuestPDF.Elements
                         .Element(Footer);
                 });
 
-            (container as Element).ApplyDefaultTextStyle(DefaultTextStyle);
-            
             bool IsClose(float x, float y)
             {
                 return Math.Abs(x - y) < Size.Epsilon;
