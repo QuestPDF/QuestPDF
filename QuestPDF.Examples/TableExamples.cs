@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Drawing;
@@ -14,10 +16,330 @@ namespace QuestPDF.Examples
 {
     public class TableExamples
     {
-        public static Random Random { get; } = new Random();
+        [Test]
+        public void Simple()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(320, 100)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.ConstantColumn(50);
+                                columns.ConstantColumn(100);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(3);
+                            });
+
+                            table.Cell().ColumnSpan(4).LabelCell("Total width: 300px");
+                            table.Cell().ValueCell("50px");
+                            table.Cell().ValueCell("100px");
+                            table.Cell().ValueCell("100px");
+                            table.Cell().ValueCell("150px");
+                        });
+                });
+        }
+        
+        [Test]
+        public void BasicPlacement()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(220, 220)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Box()
+                        .Border(1)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            table.Cell().Row(1).Column(4).TextBox("A");
+                            table.Cell().Row(2).Column(2).TextBox("B");
+                            table.Cell().Row(3).Column(3).TextBox("C");
+                            table.Cell().Row(4).Column(1).TextBox("D");
+                        });
+                });
+        }
+        
+        [Test]
+        public void PartialAutoPlacement()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(220, 220)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Box()
+                        .Border(1)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            table.Cell().TextBox("A");
+                            table.Cell().Row(2).Column(2).TextBox("B");
+                            table.Cell().TextBox("C");
+                            table.Cell().Row(3).Column(3).TextBox("D");
+                            table.Cell().ColumnSpan(2).TextBox("E");
+                        });
+                });
+        }
+        
+        [Test]
+        public void ExtendLastCellsToTableBottom()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(170, 300)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Box()
+                        .Border(1)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+                            
+                            table.ExtendLastCellsToTableBottom();
+
+                            table.Cell().Row(1).Column(1).TextBox("A");
+                            table.Cell().Row(3).Column(1).TextBox("B");
+                            table.Cell().Row(2).Column(2).TextBox("C");
+                            table.Cell().Row(3).Column(3).TextBox("D");
+                        });
+                });
+        }
+        
+        [Test]
+        public void Overlapping()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(170, 300)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Box()
+                        .Border(1)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            table.Cell().RowSpan(2).ColumnSpan(2).Background(Colors.Green.Lighten3);
+                            table.Cell().Background(Colors.Blue.Lighten3).MinHeight(50);
+                            table.Cell().Row(2).Column(2).ColumnSpan(2).Background(Colors.Red.Lighten3).MinHeight(50);
+                        });
+                });
+        }
+        
+        [Test]
+        public void Spans()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(220, 220)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            table.Cell().RowSpan(2).ColumnSpan(2).TextBox("1");
+                            table.Cell().ColumnSpan(2).TextBox("2");
+                            table.Cell().TextBox("3");
+                            table.Cell().TextBox("4");
+                            table.Cell().RowSpan(2).TextBox("5");
+                            table.Cell().ColumnSpan(2).TextBox("6");
+                            table.Cell().RowSpan(2).TextBox("7");
+                            table.Cell().TextBox("8");
+                            table.Cell().TextBox("9");
+                        });
+                });
+        }
 
         [Test]
-        public void TemperatureReport()
+        public void Stability()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(300, 300)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            table.Cell().RowSpan(4).TextBox("1");
+                            
+                            table.Cell().RowSpan(2).TextBox("2");
+                            table.Cell().RowSpan(1).TextBox("3");
+                            table.Cell().RowSpan(1).TextBox("4");
+                            
+                            table.Cell().RowSpan(2).TextBox("5");
+                            table.Cell().RowSpan(1).TextBox("6");
+                            table.Cell().RowSpan(1).TextBox("7");
+                        });
+                });
+        }
+        
+        [Test]
+        public void TableHeader()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(500, 300)
+                .ShowResults()
+                .Render(container =>
+                {
+                    var pageSizes = new List<(string name, float width, float height)>()
+                    {
+                        ("Letter", 8.5f, 11),
+                        ("Legal", 8.5f, 14),
+                        ("Ledger", 11, 17),
+                        ("Tabloid", 17, 11),
+                    };
+
+                    const int inchesToPoints = 72;
+                    
+                    container
+                        .Padding(10)
+                        .Box()
+                        .Border(1)
+                        .Decoration(decoration =>
+                        {
+                            decoration
+                                .Header()
+                                .DefaultTextStyle(TextStyle.Default.SemiBold())
+                                .Table(table =>
+                                {
+                                    table.ColumnsDefinition(DefineTableColumns);
+                                    table.DefaultCellStyle(cell => DefineDefaultCellStyle(cell, Colors.Grey.Lighten3));
+                                    
+                                    table.Cell().RowSpan(2).ExtendHorizontal().AlignLeft().Text("Document type");
+                                    
+                                    table.Cell().ColumnSpan(2).Text("Inches");
+                                    table.Cell().ColumnSpan(2).Text("Points");
+                                    
+                                    table.Cell().Text("Width");
+                                    table.Cell().Text("Height");
+                                    
+                                    table.Cell().Text("Width");
+                                    table.Cell().Text("Height");
+                                });
+                            
+                            decoration
+                                .Content()
+                                .Table(table =>
+                                {
+                                    table.ColumnsDefinition(DefineTableColumns);
+                                    table.DefaultCellStyle(cell => DefineDefaultCellStyle(cell, Colors.White));
+                                    
+                                    foreach (var page in pageSizes)
+                                    {
+                                        table.Cell().ExtendHorizontal().AlignLeft().Text(page.name);
+                                        
+                                        // inches
+                                        table.Cell().Text(page.width);
+                                        table.Cell().Text(page.height);
+                                        
+                                        // points
+                                        table.Cell().Text(page.width * inchesToPoints);
+                                        table.Cell().Text(page.height * inchesToPoints);
+                                    }
+                                });
+
+                            void DefineTableColumns(TableColumnsDefinitionDescriptor columns)
+                            {
+                                columns.RelativeColumn();
+                                
+                                columns.ConstantColumn(75);
+                                columns.ConstantColumn(75);
+                                
+                                columns.ConstantColumn(75);
+                                columns.ConstantColumn(75);
+                            }
+
+                            IContainer DefineDefaultCellStyle(IContainer container, string backgroundColor)
+                            {
+                                return container
+                                    .Border(1)
+                                    .BorderColor(Colors.Grey.Darken1)
+                                    .Background(backgroundColor)
+                                    .PaddingVertical(5)
+                                    .PaddingHorizontal(10)
+                                    .AlignCenter()
+                                    .AlignMiddle();
+                            }
+                        });
+                });
+        }
+        
+        [Test]
+        public void PerformanceText_TemperatureReport()
         {
             RenderingTest
                 .Create()
@@ -27,7 +349,7 @@ namespace QuestPDF.Examples
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 1000));
+                .Render(container => GeneratePerformanceStructure(container, 100));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)
@@ -93,6 +415,21 @@ namespace QuestPDF.Examples
                         table.Cell().ColumnSpan(3).ValueCell(Placeholders.Paragraph());
                     }
                 });
+        }
+    }
+    
+    public static class TableTestsExtensions
+    {
+        public static void TextBox(this IContainer container, string text)
+        {
+            container
+                .Border(1)
+                .Background(Colors.Grey.Lighten3)
+                .MinWidth(50)
+                .MinHeight(50)
+                .AlignCenter()
+                .AlignMiddle()
+                .Text(text, TextStyle.Default.Size(16));
         }
     }
 }

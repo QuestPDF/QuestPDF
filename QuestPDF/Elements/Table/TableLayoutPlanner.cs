@@ -5,7 +5,7 @@ using QuestPDF.Fluent;
 
 namespace QuestPDF.Elements.Table
 {
-    static class TableLayoutPlanner
+    static class TableLayoutValidator
     {
         public static void PlanCellPositions(this Table table)
         {
@@ -79,7 +79,7 @@ namespace QuestPDF.Elements.Table
 
         private static bool HasLocation(this TableCell cell)
         {
-            return cell.Row != 1 && cell.Column != 1;
+            return cell.Row != 1 || cell.Column != 1;
         }
     }
 }

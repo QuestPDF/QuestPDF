@@ -15,15 +15,15 @@ namespace QuestPDF.Fluent
         
         public IContainer ConstantColumn(float width)
         {
-            return ComplexColumn(constantWidth: width);
+            return Column(constantWidth: width);
         }
         
         public IContainer RelativeColumn(float width = 1)
         {
-            return ComplexColumn(relativeWidth: width);
+            return Column(relativeWidth: width);
         }
         
-        public IContainer ComplexColumn(float constantWidth = 0, float relativeWidth = 0)
+        public IContainer Column(float constantWidth = 0, float relativeWidth = 0)
         {
             var element = new RowElement(constantWidth, relativeWidth);
             

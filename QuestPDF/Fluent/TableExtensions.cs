@@ -6,11 +6,11 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class TableDefinitionDescriptor
+    public class TableColumnsDefinitionDescriptor
     {
         private Table Table { get; }
 
-        internal TableDefinitionDescriptor(Table table)
+        internal TableColumnsDefinitionDescriptor(Table table)
         {
             Table = table;
         }
@@ -35,28 +35,45 @@ namespace QuestPDF.Fluent
     public class TableDescriptor
     {
         private Table Table { get; }
+        private Func<IContainer, IContainer> DefaultCellStyleFunc { get; set; } = x => x;
 
         internal TableDescriptor(Table table)
         {
             Table = table;
         }
         
-        public void ColumnsDefinition(Action<TableDefinitionDescriptor> handler)
+        public void ColumnsDefinition(Action<TableColumnsDefinitionDescriptor> handler)
         {
-            var descriptor = new TableDefinitionDescriptor(Table);
+            var descriptor = new TableColumnsDefinitionDescriptor(Table);
             handler(descriptor);
         }
         
-        public void Spacing(float value)
+        public void ExtendLastCellsToTableBottom()
         {
-            Table.Spacing = value;
+            Table.ExtendLastCellsToTableBottom = true;
         }
 
-        public ITableCellContainer Cell(int row = 1, int column = 1, int rowSpan = 1, int columnsSpan = 1)
+        public void DefaultCellStyle(Func<IContainer, IContainer> mapper)
+        {
+            DefaultCellStyleFunc = mapper;
+        }
+
+        public ITableCellContainer Cell()
         {
             var cell = new TableCell();
             Table.Children.Add(cell);
             return cell;
+        }
+
+        internal void ApplyDefaultCellStyle()
+        {
+            foreach (var cell in Table.Children)
+            {
+                var container = new Container();
+                DefaultCellStyleFunc(container).Element(cell.Child);
+                
+                cell.Child = container;
+            }
         }
     }
     
@@ -65,11 +82,14 @@ namespace QuestPDF.Fluent
         public static void Table(this IContainer element, Action<TableDescriptor> handler)
         {
             var table = new Table();
-            var descriptor = new TableDescriptor(table);
-        
-            handler(descriptor);
-            table.PlanCellPositions();
             
+            var descriptor = new TableDescriptor(table);
+            handler(descriptor);
+            descriptor.ApplyDefaultCellStyle();
+
+            table.PlanCellPositions();
+            table.ValidateCellPositions();
+
             element.Element(table);
         }
     }

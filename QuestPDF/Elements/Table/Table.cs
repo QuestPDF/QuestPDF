@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
@@ -11,13 +13,14 @@ namespace QuestPDF.Elements.Table
     {
         public List<TableColumnDefinition> Columns { get; } = new List<TableColumnDefinition>();
         public List<TableCell> Children { get; } = new List<TableCell>();
-        public float Spacing { get; set; }
+        public bool ExtendLastCellsToTableBottom { get; set; }
         
         // cache for efficient cell finding
         // index of first array - number of row
         // nested array - collection of all cells starting at given row
         private TableCell[][] OrderedChildren { get; set; }
         
+        private int StartingRowsCount { get; set; }
         private int RowsCount { get; set; }
         private int CurrentRow { get; set; }
         
@@ -29,8 +32,11 @@ namespace QuestPDF.Elements.Table
         
         public void ResetState()
         {
+            if (StartingRowsCount == default)
+                StartingRowsCount = Children.Select(x => x.Row).DefaultIfEmpty(0).Max();
+            
             if (RowsCount == default)
-                RowsCount = Children.Max(x => x.Row + x.RowSpan - 1);
+                RowsCount = Children.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
 
             if (OrderedChildren == default)
             {
@@ -50,6 +56,9 @@ namespace QuestPDF.Elements.Table
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (!Children.Any())
+                return SpacePlan.FullRender(Size.Zero);
+            
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
@@ -63,7 +72,7 @@ namespace QuestPDF.Elements.Table
             if (tableSize.Width > availableSpace.Width + Size.Epsilon)
                 return SpacePlan.Wrap();
 
-            return FindLastRenderedRow(renderingCommands) == RowsCount 
+            return FindLastRenderedRow(renderingCommands) == StartingRowsCount 
                 ? SpacePlan.FullRender(tableSize) 
                 : SpacePlan.PartialRender(tableSize);
         }
@@ -86,7 +95,7 @@ namespace QuestPDF.Elements.Table
             CurrentRow = FindLastRenderedRow(renderingCommands) + 1;
         }
 
-        private static int FindLastRenderedRow(ICollection<TableCellRenderingCommand> commands)
+        private int FindLastRenderedRow(ICollection<TableCellRenderingCommand> commands)
         {
             return commands
                 .GroupBy(x => x.Cell.Row)
@@ -114,10 +123,14 @@ namespace QuestPDF.Elements.Table
             var columnOffsets = GetColumnLeftOffsets(Columns);
             
             var commands = GetRenderingCommands();
+
+            if (!commands.Any())
+                return commands;
+            
             var tableHeight = commands.Max(cell => cell.Offset.Y + cell.Size.Height);
             
-            AdjustCellSizes(commands);
-            AdjustLastCellSizes(tableHeight, commands);
+            if (ExtendLastCellsToTableBottom)
+                AdjustLastCellSizes(tableHeight, commands);
 
             return commands;
 
@@ -154,6 +167,9 @@ namespace QuestPDF.Elements.Table
                             
                         if (rowBottomOffsets[currentRow - 1] > availableSpace.Height + Size.Epsilon)
                             break;
+
+                        foreach (var row in Enumerable.Range(cell.Row, cell.Row - currentRow))
+                            rowBottomOffsets[row] = rowBottomOffsets[row - 1];
                         
                         currentRow = cell.Row;
                     }
@@ -201,23 +217,30 @@ namespace QuestPDF.Elements.Table
                     });
                 }
 
+                if (!commands.Any())
+                    return commands;
+
+                var maxRow = commands.Select(x => x.Cell).Max(x => x.Row + x.RowSpan);
+
+                foreach (var row in Enumerable.Range(currentRow + 1, maxRow - currentRow))
+                    rowBottomOffsets[row] = rowBottomOffsets[row - 1];
+                
+                AdjustCellSizes(commands, rowBottomOffsets);
+                
                 // corner case: reject cell if other cells within the same row are rejected
                 return commands.Where(x => x.Cell.Row <= maxRenderingRow).ToList();
             }
             
             // corner sase: if two cells end up on the same row (a.Row + a.RowSpan = b.Row + b.RowSpan),
             // bottom edges of their bounding boxes should be at the same level
-            static void AdjustCellSizes(ICollection<TableCellRenderingCommand> commands)
+            static void AdjustCellSizes(ICollection<TableCellRenderingCommand> commands, DynamicDictionary<int, float> rowBottomOffsets)
             {
-                commands
-                    .GroupBy(x => x.Cell.Row + x.Cell.RowSpan)
-                    .ToList()
-                    .ForEach(group =>
-                    {
-                        var groupCells = group.ToList();
-                        var bottomBorderOffset = groupCells.Max(x => x.Offset.Y + x.Size.Height);
-                        groupCells.ForEach(x => x.Size = new Size(x.Size.Width, bottomBorderOffset - x.Offset.Y));
-                    });
+                foreach (var command in commands)
+                {
+                    var lastRow = command.Cell.Row + command.Cell.RowSpan - 1;
+                    var height = rowBottomOffsets[lastRow] - command.Offset.Y;
+                    command.Size = new Size(command.Size.Width, height);
+                }
             }
             
             // corner sase: all cells, that are last ones in their respective columns, should take all remaining space
