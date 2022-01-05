@@ -105,7 +105,7 @@ namespace QuestPDF.Elements
             if (RootElement == null)
                 ComposeTree();
 
-            return Items;
+            yield return RootElement;
         }
 
         internal override SpacePlan Measure(Size availableSpace)
