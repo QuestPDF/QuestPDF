@@ -20,7 +20,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(25)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Stack(stack =>
                         {

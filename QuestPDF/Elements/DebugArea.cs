@@ -27,7 +27,7 @@ namespace QuestPDF.Elements
                         .Layer()
                         .ShowIf(!string.IsNullOrWhiteSpace(Text))
                         .AlignCenter()
-                        .Box()
+                        .MinimalBox()
                         .Background(Colors.White)
                         .Padding(2)
                         .Text(Text, TextStyle.Default.Color(Color).FontType(Fonts.Consolas).Size(8));

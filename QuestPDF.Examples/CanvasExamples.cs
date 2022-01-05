@@ -23,7 +23,7 @@ namespace QuestPDF.Examples
                     container
                         .Background(Colors.Grey.Lighten2)
                         .Padding(25)
-                        .Box()
+                        .MinimalBox()
                         .Layers(layers =>
                         {
                             layers.Layer().Canvas((canvas, size) =>
