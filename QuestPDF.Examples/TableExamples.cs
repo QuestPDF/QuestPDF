@@ -17,37 +17,6 @@ namespace QuestPDF.Examples
     public class TableExamples
     {
         [Test]
-        public void Simple()
-        {
-            RenderingTest
-                .Create()
-                .ProduceImages()
-                .PageSize(320, 100)
-                .ShowResults()
-                .Render(container =>
-                {
-                    container
-                        .Padding(10)
-                        .Table(table =>
-                        {
-                            table.ColumnsDefinition(columns =>
-                            {
-                                columns.ConstantColumn(50);
-                                columns.ConstantColumn(100);
-                                columns.RelativeColumn(2);
-                                columns.RelativeColumn(3);
-                            });
-
-                            table.Cell().ColumnSpan(4).LabelCell("Total width: 300px");
-                            table.Cell().ValueCell("50px");
-                            table.Cell().ValueCell("100px");
-                            table.Cell().ValueCell("100px");
-                            table.Cell().ValueCell("150px");
-                        });
-                });
-        }
-        
-        [Test]
         public void BasicPlacement()
         {
             RenderingTest
@@ -71,14 +40,102 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn();
                             });
 
-                            table.Cell().Row(1).Column(4).TextBox("A");
-                            table.Cell().Row(2).Column(2).TextBox("B");
-                            table.Cell().Row(3).Column(3).TextBox("C");
-                            table.Cell().Row(4).Column(1).TextBox("D");
+                            // by using the custom element, we can reuse the same style
+                            table.Cell().Row(1).Column(4).Element(x => TextContent(x, "A"));
+                            table.Cell().Row(2).Column(2).Element(x => TextContent(x, "A"));
+                            table.Cell().Row(3).Column(3).Element(x => TextContent(x, "A"));
+                            table.Cell().Row(4).Column(1).Element(x => TextContent(x, "A"));
+
+                            static void TextContent(IContainer container, string text)
+                            {
+                                container
+                                    .Border(1)
+                                    .Background(Colors.Grey.Lighten3)
+                                    .MinWidth(50)
+                                    .MinHeight(50)
+                                    .AlignCenter()
+                                    .AlignMiddle()
+                                    .Text(text);
+                            }
                         });
                 });
         }
         
+        [Test]
+        public void DefaultCellStyle()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(220, 120)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Box()
+                        .Border(1)
+                        .DefaultTextStyle(TextStyle.Default.Size(16))
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            table.DefaultCellStyle(cell =>
+                            {
+                                return cell
+                                    .Border(1)
+                                    .Background(Colors.Grey.Lighten3)
+                                    .MinWidth(50)
+                                    .MinHeight(50)
+                                    .AlignCenter()
+                                    .AlignMiddle();
+                            });
+                            
+                            table.Cell().Row(1).Column(1).Text("A");
+                            table.Cell().Row(2).Column(2).Text("B");
+                            table.Cell().Row(1).Column(3).Text("C");
+                            table.Cell().Row(2).Column(4).Text("D");
+                        });
+                });
+        }
+        
+        [Test]
+        public void ColumnsDefinition()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(320, 80)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.ConstantColumn(50);
+                                columns.ConstantColumn(100);
+                                columns.RelativeColumn(2);
+                                columns.RelativeColumn(3);
+                            });
+
+                            table.Cell().ColumnSpan(4).LabelCell("Total width: 300px");
+                            table.Cell().ValueCell("50px");
+                            table.Cell().ValueCell("100px");
+                            table.Cell().ValueCell("100px");
+                            table.Cell().ValueCell("150px");
+                        });
+                });
+        }
+
         [Test]
         public void PartialAutoPlacement()
         {
@@ -118,7 +175,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .ProduceImages()
-                .PageSize(170, 300)
+                .PageSize(170, 170)
                 .ShowResults()
                 .Render(container =>
                 {
@@ -151,7 +208,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .ProduceImages()
-                .PageSize(170, 300)
+                .PageSize(170, 120)
                 .ShowResults()
                 .Render(container =>
                 {
@@ -251,16 +308,20 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .ProduceImages()
-                .PageSize(500, 300)
+                .PageSize(500, 200)
                 .ShowResults()
+                .EnableDebugging()
                 .Render(container =>
                 {
-                    var pageSizes = new List<(string name, float width, float height)>()
+                    var pageSizes = new List<(string name, double width, double height)>()
                     {
-                        ("Letter", 8.5f, 11),
+                        ("Letter (ANSI A)", 8.5f, 11),
                         ("Legal", 8.5f, 14),
-                        ("Ledger", 11, 17),
-                        ("Tabloid", 17, 11),
+                        ("Ledger (ANSI B)", 11, 17),
+                        ("Tabloid (ANSI B)", 17, 11),
+                        ("ANSI C", 22, 17),
+                        ("ANSI D", 34, 22),
+                        ("ANSI E", 44, 34)
                     };
 
                     const int inchesToPoints = 72;
@@ -311,7 +372,7 @@ namespace QuestPDF.Examples
                                         table.Cell().Text(page.height * inchesToPoints);
                                     }
                                 });
-
+   
                             void DefineTableColumns(TableColumnsDefinitionDescriptor columns)
                             {
                                 columns.RelativeColumn();
@@ -343,13 +404,13 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .ProducePdf()
+                .ProduceImages()
                 .PageSize(PageSizes.A4)
                 .MaxPages(10_000)
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 100));
+                .Render(container => GeneratePerformanceStructure(container, 1));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)
@@ -369,6 +430,8 @@ namespace QuestPDF.Examples
                         columns.ConstantColumn(100);
                         columns.RelativeColumn();
                     });
+                    
+                    table.ExtendLastCellsToTableBottom();
 
                     foreach (var i in Enumerable.Range(0, repeats))
                     {

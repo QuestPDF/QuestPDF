@@ -92,6 +92,11 @@ namespace QuestPDF.Elements.Table
             }
 
             CurrentRow = FindLastRenderedRow(renderingCommands) + 1;
+            
+            var isFullRender = FindLastRenderedRow(renderingCommands) == StartingRowsCount;
+            
+            if (isFullRender)
+                ResetState();
         }
 
         private int FindLastRenderedRow(ICollection<TableCellRenderingCommand> commands)
@@ -184,7 +189,7 @@ namespace QuestPDF.Elements.Table
                     var topOffset = rowBottomOffsets[cell.Row - 1];
                     
                     var availableWidth = GetCellWidth(cell);
-                    var availableHeight = availableSpace.Height - topOffset + Size.Epsilon;
+                    var availableHeight = availableSpace.Height - topOffset;
                     var availableCellSize = new Size(availableWidth, availableHeight);
 
                     var cellSize = cell.Measure(availableCellSize);
@@ -221,9 +226,12 @@ namespace QuestPDF.Elements.Table
 
                 var maxRow = commands.Select(x => x.Cell).Max(x => x.Row + x.RowSpan);
 
-                foreach (var row in Enumerable.Range(currentRow + 1, maxRow - currentRow))
-                    rowBottomOffsets[row] = rowBottomOffsets[row - 1];
-                
+                if (maxRow > currentRow)
+                {
+                    foreach (var row in Enumerable.Range(currentRow + 1, maxRow - currentRow))
+                        rowBottomOffsets[row] = rowBottomOffsets[row - 1];   
+                }
+
                 AdjustCellSizes(commands, rowBottomOffsets);
                 
                 // corner case: reject cell if other cells within the same row are rejected
