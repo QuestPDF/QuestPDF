@@ -327,7 +327,7 @@ namespace QuestPDF.Examples
                             {
                                 return container
                                     .Border(1)
-                                    .BorderColor(Colors.Grey.Darken1)
+                                    .BorderColor(Colors.Grey.Lighten1)
                                     .Background(backgroundColor)
                                     .PaddingVertical(5)
                                     .PaddingHorizontal(10)
