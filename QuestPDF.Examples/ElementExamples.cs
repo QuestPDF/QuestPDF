@@ -474,7 +474,7 @@ namespace QuestPDF.Examples
                         .Padding(15)
                         .Border(4)
                         .BorderColor(Colors.Blue.Medium)
-                        //.Box()
+                        //.MinimalBox()
                         .Background(Colors.Grey.Lighten2)
                         .Padding(15)
                         .Text("Test of the \n box element", TextStyle.Default.Size(20));
@@ -542,7 +542,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Background("#FFF")
-                        .Box()
+                        .MinimalBox()
                         
                         .Padding(25)
                         
@@ -588,7 +588,7 @@ namespace QuestPDF.Examples
 
                                         return element;
                                     })
-                                    .Box()
+                                    .MinimalBox()
                                     .Background(Colors.White)
                                     .Padding(10)
                                     .Text($"Rotated {turns * 90}°", TextStyle.Default.Size(16));
@@ -686,7 +686,7 @@ namespace QuestPDF.Examples
                                         
                                         return element;
                                     })
-                                    .Box()
+                                    .MinimalBox()
                                     .Background(Colors.White)
                                     .Padding(10)
                                     .Text($"Flipped {turns}", TextStyle.Default.Size(16));

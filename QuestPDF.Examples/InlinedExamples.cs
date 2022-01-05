@@ -37,7 +37,7 @@ namespace QuestPDF.Examples
                             decoration
                                 .Content()
                                 .PaddingTop(25)
-                                //.Box()
+                                //.MinimalBox()
                                 .Border(1)
                                 .Background(Colors.Grey.Lighten2)
                                 .Inlined(inlined =>
@@ -94,7 +94,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(20)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Background(Colors.Grey.Lighten4)
                         .Inlined(inlined =>

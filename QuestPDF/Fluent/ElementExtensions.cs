@@ -136,9 +136,16 @@ namespace QuestPDF.Fluent
             });
         }
         
+        // TODO: deprecated Box method in QuestPDF 2022.1
+        [Obsolete("This element has been renamed. Please use the MinimalBox method.")]
         public static IContainer Box(this IContainer element)
         {
-            return element.Element(new Box());
+            return element.Element(new MinimalBox());
+        }
+        
+        public static IContainer MinimalBox(this IContainer element)
+        {
+            return element.Element(new MinimalBox());
         }
         
         public static IContainer Unconstrained(this IContainer element)

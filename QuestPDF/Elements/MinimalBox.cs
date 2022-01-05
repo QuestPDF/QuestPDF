@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Box : ContainerElement
+    internal class MinimalBox : ContainerElement
     {
         internal override void Draw(Size availableSpace)
         {

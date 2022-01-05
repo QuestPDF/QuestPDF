@@ -10,13 +10,13 @@ namespace QuestPDF.UnitTests
     public class BoxTests
     {
         [Test]
-        public void Measure() => SimpleContainerTests.Measure<Box>();
+        public void Measure() => SimpleContainerTests.Measure<MinimalBox>();
         
         [Test]
         public void Draw_Wrap()
         {
             TestPlan
-                .For(x => new Box
+                .For(x => new MinimalBox
                 {
                     Child = x.CreateChild()
                 })
@@ -29,7 +29,7 @@ namespace QuestPDF.UnitTests
         public void Measure_PartialRender()
         {
             TestPlan
-                .For(x => new Box
+                .For(x => new MinimalBox
                 {
                     Child = x.CreateChild()
                 })
@@ -43,7 +43,7 @@ namespace QuestPDF.UnitTests
         public void Measure_FullRender()
         {
             TestPlan
-                .For(x => new Box
+                .For(x => new MinimalBox
                 {
                     Child = x.CreateChild()
                 })

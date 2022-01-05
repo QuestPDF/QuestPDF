@@ -28,7 +28,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Table(table =>
                         {
@@ -61,7 +61,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .DefaultTextStyle(TextStyle.Default.Size(16))
                         .Table(table =>
@@ -125,7 +125,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Table(table =>
                         {
@@ -158,7 +158,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Table(table =>
                         {
@@ -193,7 +193,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Table(table =>
                         {
@@ -307,7 +307,7 @@ namespace QuestPDF.Examples
                     
                     container
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Decoration(decoration =>
                         {
@@ -400,7 +400,7 @@ namespace QuestPDF.Examples
             container
                 .Padding(25)
                 //.Background(Colors.Blue.Lighten2)
-                .Box()
+                .MinimalBox()
                 .Border(1)
                 //.Background(Colors.Red.Lighten2)
                 .Table(table =>

@@ -167,7 +167,7 @@ namespace QuestPDF.Fluent
                 Element = container
             });
             
-            return container.AlignBottom().Box();
+            return container.AlignBottom().MinimalBox();
         }
         
         internal void Compose(IContainer container)

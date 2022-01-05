@@ -24,7 +24,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(5)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Padding(10)
                         .Text(text =>
@@ -48,7 +48,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(5)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Padding(10)
                         .Text(text =>
@@ -76,7 +76,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(5)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Padding(10)
                         .Text(text =>
@@ -108,7 +108,7 @@ namespace QuestPDF.Examples
                     container
                         .Padding(20)
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Padding(5)
                         .Padding(10)
@@ -138,7 +138,7 @@ namespace QuestPDF.Examples
                     container
                         .Padding(20)
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Padding(5)
                         .Padding(10)
@@ -167,7 +167,7 @@ namespace QuestPDF.Examples
                     container
                         .Padding(20)
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Padding(5)
                         .Padding(10)
@@ -230,7 +230,7 @@ namespace QuestPDF.Examples
                     container
                         .Padding(20)
                         .Padding(10)
-                        .Box()
+                        .MinimalBox()
                         .Border(1)
                         .Padding(5)
                         .Padding(10)
