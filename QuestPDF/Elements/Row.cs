@@ -38,14 +38,12 @@ namespace QuestPDF.Elements
             IsRightRendered = false;
         }
         
-        internal override void HandleVisitor(Action<Element?> visit)
+        internal override IEnumerable<Element?> GetChildren()
         {
-            Left.HandleVisitor(visit);
-            Right.HandleVisitor(visit);
-            
-            base.HandleVisitor(visit);
+            yield return Left;
+            yield return Right;
         }
-
+        
         internal override void CreateProxy(Func<Element?, Element?> create)
         {
             Left = create(Left);
@@ -99,16 +97,15 @@ namespace QuestPDF.Elements
     {
         public float Spacing { get; set; } = 0;
         
-        public ICollection<RowElement> Children { get; internal set; } = new List<RowElement>();
+        public ICollection<RowElement> Items { get; internal set; } = new List<RowElement>();
         private Element? RootElement { get; set; }
-        
-        internal override void HandleVisitor(Action<Element?> visit)
+
+        internal override IEnumerable<Element?> GetChildren()
         {
             if (RootElement == null)
                 ComposeTree();
-            
-            RootElement.HandleVisitor(visit);
-            base.HandleVisitor(visit);
+
+            return Items;
         }
 
         internal override SpacePlan Measure(Size availableSpace)
@@ -127,20 +124,20 @@ namespace QuestPDF.Elements
         
         private void ComposeTree()
         {
-            Children = AddSpacing(Children, Spacing);
+            Items = AddSpacing(Items, Spacing);
             
-            var elements = Children.Cast<Element>().ToArray();
+            var elements = Items.Cast<Element>().ToArray();
             RootElement = BuildTree(elements);
         }
 
         private void UpdateElementsWidth(float availableWidth)
         {
-            var constantWidth = Children.Sum(x => x.ConstantSize);
-            var relativeWidth = Children.Sum(x => x.RelativeSize);
+            var constantWidth = Items.Sum(x => x.ConstantSize);
+            var relativeWidth = Items.Sum(x => x.RelativeSize);
 
             var widthPerRelativeUnit = (relativeWidth > 0) ? (availableWidth - constantWidth) / relativeWidth : 0;
             
-            foreach (var row in Children)
+            foreach (var row in Items)
             {
                 row.SetWidth(row.ConstantSize + row.RelativeSize * widthPerRelativeUnit);
             }

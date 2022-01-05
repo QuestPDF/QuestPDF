@@ -44,12 +44,11 @@ namespace QuestPDF.Elements
             ChildrenQueue = new Queue<InlinedElement>(Elements);
         }
         
-        internal override void HandleVisitor(Action<Element?> visit)
+        internal override IEnumerable<Element?> GetChildren()
         {
-            Elements.ForEach(x => x.HandleVisitor(visit));
-            base.HandleVisitor(visit);
+            return Elements;
         }
-
+        
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!ChildrenQueue.Any())

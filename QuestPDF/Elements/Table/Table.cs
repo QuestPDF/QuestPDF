@@ -12,51 +12,50 @@ namespace QuestPDF.Elements.Table
     internal class Table : Element, IStateResettable
     {
         public List<TableColumnDefinition> Columns { get; } = new List<TableColumnDefinition>();
-        public List<TableCell> Children { get; } = new List<TableCell>();
+        public List<TableCell> Cells { get; } = new List<TableCell>();
         public bool ExtendLastCellsToTableBottom { get; set; }
         
         // cache for efficient cell finding
         // index of first array - number of row
         // nested array - collection of all cells starting at given row
-        private TableCell[][] OrderedChildren { get; set; }
+        private TableCell[][] OrderedCells { get; set; }
         
         private int StartingRowsCount { get; set; }
         private int RowsCount { get; set; }
         private int CurrentRow { get; set; }
         
-        internal override void HandleVisitor(Action<Element?> visit)
+        internal override IEnumerable<Element?> GetChildren()
         {
-            Children.ToList().ForEach(x => x.HandleVisitor(visit));
-            base.HandleVisitor(visit);
+            return Cells;
         }
-        
+
         public void ResetState()
         {
             if (StartingRowsCount == default)
-                StartingRowsCount = Children.Select(x => x.Row).DefaultIfEmpty(0).Max();
+                StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
             
             if (RowsCount == default)
-                RowsCount = Children.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
+                RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
 
-            if (OrderedChildren == default)
+            if (OrderedCells == default)
             {
-                var groups = Children
+                var groups = Cells
                     .GroupBy(x => x.Row)
                     .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Column).ToArray());
             
-                OrderedChildren = Enumerable
+                OrderedCells = Enumerable
                     .Range(0, RowsCount + 1)
                     .Select(x => groups.TryGetValue(x, out var output) ? output : Array.Empty<TableCell>())
                     .ToArray();   
             }
 
-            Children.ForEach(x => x.IsRendered = false);
+            Cells.ForEach(x => x.IsRendered = false);
             CurrentRow = 1;
         }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (!Children.Any())
+            if (!Cells.Any())
                 return SpacePlan.FullRender(Size.Zero);
             
             UpdateColumnsWidth(availableSpace.Width);
@@ -149,16 +148,16 @@ namespace QuestPDF.Elements.Table
             {
                 var rowBottomOffsets = new DynamicDictionary<int, float>();
                 
-                var childrenToTry = Enumerable
+                var cellsToTry = Enumerable
                     .Range(CurrentRow, RowsCount - CurrentRow + 1)
-                    .SelectMany(x => OrderedChildren[x]);
+                    .SelectMany(x => OrderedCells[x]);
             
                 var currentRow = CurrentRow;
                 var maxRenderingRow = RowsCount;
                 
                 var commands = new List<TableCellRenderingCommand>();
                 
-                foreach (var cell in childrenToTry)
+                foreach (var cell in cellsToTry)
                 {
                     // update position of previous row
                     if (cell.Row > currentRow)

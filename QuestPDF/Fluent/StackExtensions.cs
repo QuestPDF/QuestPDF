@@ -16,7 +16,7 @@ namespace QuestPDF.Fluent
         public IContainer Item()
         {
             var container = new Container();
-            Stack.Children.Add(container);
+            Stack.Items.Add(container);
             return container;
         }
     }

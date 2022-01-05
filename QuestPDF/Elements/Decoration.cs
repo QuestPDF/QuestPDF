@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -17,12 +18,10 @@ namespace QuestPDF.Elements
         public Element ContentElement { get; set; } = Empty.Instance;
         public DecorationType Type { get; set; }
 
-        internal override void HandleVisitor(Action<Element?> visit)
+        internal override IEnumerable<Element?> GetChildren()
         {
-            DecorationElement?.HandleVisitor(visit);
-            ContentElement?.HandleVisitor(visit);
-            
-            base.HandleVisitor(visit);
+            yield return DecorationElement;
+            yield return ContentElement;
         }
 
         internal override void CreateProxy(Func<Element, Element> create)

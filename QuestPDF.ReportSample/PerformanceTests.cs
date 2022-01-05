@@ -11,6 +11,7 @@ using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.ReportSample.Layouts;
 
@@ -55,7 +56,7 @@ namespace QuestPDF.ReportSample
             var sw = new Stopwatch();
             sw.Start();
 
-            Content.HandleVisitor(x =>
+            Content.VisitChildren(x =>
             {
                 if (x is ICacheable)
                     x.CreateProxy(y => new CacheProxy(y));

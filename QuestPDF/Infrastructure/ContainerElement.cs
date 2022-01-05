@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
 
@@ -14,10 +15,9 @@ namespace QuestPDF.Infrastructure
             set => Child = value as Element;
         }
 
-        internal override void HandleVisitor(Action<Element?> visit)
+        internal override IEnumerable<Element?> GetChildren()
         {
-            Child?.HandleVisitor(visit);
-            base.HandleVisitor(visit);
+            yield return Child;
         }
 
         internal override void CreateProxy(Func<Element?, Element?> create)

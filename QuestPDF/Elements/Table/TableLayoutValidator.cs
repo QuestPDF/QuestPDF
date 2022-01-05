@@ -10,7 +10,7 @@ namespace QuestPDF.Elements.Table
     {
         public static void ValidateCellPositions(this Table table)
         {
-            ValidateCellPositions(table.Columns.Count, table.Children);
+            ValidateCellPositions(table.Columns.Count, table.Cells);
         }
         
         private static void ValidateCellPositions(int columnsCount, ICollection<TableCell> cells)

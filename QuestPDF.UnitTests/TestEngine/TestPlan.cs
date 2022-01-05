@@ -213,7 +213,7 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public TestPlan CheckMeasureResult(SpacePlan expected)
         {
-            Element.HandleVisitor(x => x?.Initialize(null, Canvas));
+            Element.VisitChildren(x => x?.Initialize(null, Canvas));
             
             var actual = Element.Measure(OperationInput);
             
@@ -228,7 +228,7 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public TestPlan CheckDrawResult()
         {
-            Element.HandleVisitor(x => x?.Initialize(null, Canvas));
+            Element.VisitChildren(x => x?.Initialize(null, Canvas));
             Element.Draw(OperationInput);
             return this;
         }
@@ -271,10 +271,10 @@ namespace QuestPDF.UnitTests.TestEngine
             availableSpace ??= new Size(400, 300);
             
             var canvas = new FreeCanvas();
-            value.HandleVisitor(x => x.Initialize(null, canvas));
+            value.VisitChildren(x => x.Initialize(null, canvas));
             var valueMeasure = value.Measure(availableSpace.Value);
             
-            expected.HandleVisitor(x => x.Initialize(null, canvas));
+            expected.VisitChildren(x => x.Initialize(null, canvas));
             var expectedMeasure = expected.Measure(availableSpace.Value);
             
             valueMeasure.Should().BeEquivalentTo(expectedMeasure);
@@ -285,11 +285,11 @@ namespace QuestPDF.UnitTests.TestEngine
             availableSpace ??= new Size(400, 300);
             
             var valueCanvas = new OperationRecordingCanvas();
-            value.HandleVisitor(x => x.Initialize(null, valueCanvas));
+            value.VisitChildren(x => x.Initialize(null, valueCanvas));
             value.Draw(availableSpace.Value);
             
             var expectedCanvas = new OperationRecordingCanvas();
-            expected.HandleVisitor(x => x.Initialize(null, expectedCanvas));
+            expected.VisitChildren(x => x.Initialize(null, expectedCanvas));
             expected.Draw(availableSpace.Value);
             
             valueCanvas.Operations.Should().BeEquivalentTo(expectedCanvas.Operations);

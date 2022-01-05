@@ -7,6 +7,8 @@ using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
@@ -42,6 +44,7 @@ namespace QuestPDF.Drawing
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
+            ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
             
             var metadata = document.GetMetadata();
             var pageContext = new PageContext();
@@ -58,8 +61,8 @@ namespace QuestPDF.Drawing
         internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata, DebuggingState? debuggingState)
             where TCanvas : ICanvas, IRenderingCanvas
         {
-            content.HandleVisitor(x => x?.Initialize(pageContext, canvas));
-            content.HandleVisitor(x => (x as IStateResettable)?.ResetState());
+            content.VisitChildren(x => x?.Initialize(pageContext, canvas));
+            content.VisitChildren(x => (x as IStateResettable)?.ResetState());
             
             canvas.BeginDocument();
 
@@ -122,7 +125,7 @@ namespace QuestPDF.Drawing
 
         private static void ApplyCaching(Container content)
         {
-            content.HandleVisitor(x =>
+            content.VisitChildren(x =>
             {
                 if (x is ICacheable)
                     x.CreateProxy(y => new CacheProxy(y));
@@ -133,7 +136,7 @@ namespace QuestPDF.Drawing
         {
             var debuggingState = new DebuggingState();
 
-            content.HandleVisitor(x =>
+            content.VisitChildren(x =>
             {
                 x.CreateProxy(y => new DebuggingProxy(debuggingState, y));
             });
@@ -141,26 +144,38 @@ namespace QuestPDF.Drawing
             return debuggingState;
         }
 
-        internal static void ApplyDefaultTextStyle(this Element content, TextStyle documentDefaultTextStyle)
+        private static void ApplyDefaultTextStyle(this Element? content, TextStyle documentDefaultTextStyle)
         {
-            documentDefaultTextStyle.ApplyGlobalStyle(TextStyle.LibraryDefault);
+            if (content == null)
+                return;
             
-            content.HandleVisitor(element =>
+            if (content is TextBlock textBlock)
             {
-                var text = element as TextBlock;
-                
-                if (text == null)
-                    return;
-
-                foreach (var child in text.Children)
+                foreach (var textBlockItem in textBlock.Items)
                 {
-                    if (child is TextBlockSpan textSpan)
+                    if (textBlockItem is TextBlockSpan textSpan)
+                    {
                         textSpan.Style.ApplyGlobalStyle(documentDefaultTextStyle);
-
-                    if (child is TextBlockElement textElement)
+                    }
+                    else if (textBlockItem is TextBlockElement textElement)
+                    {
                         ApplyDefaultTextStyle(textElement.Element, documentDefaultTextStyle);
+                    }
                 }
-            });
+                
+                return;
+            }
+
+            var targetTextStyle = documentDefaultTextStyle;
+            
+            if (content is DefaultTextStyle defaultTextStyleElement)
+            {
+                defaultTextStyleElement.TextStyle.ApplyParentStyle(documentDefaultTextStyle);
+                targetTextStyle = defaultTextStyleElement.TextStyle;
+            }
+            
+            foreach (var child in content.GetChildren())
+                ApplyDefaultTextStyle(child, targetTextStyle);
         }
     }
 }

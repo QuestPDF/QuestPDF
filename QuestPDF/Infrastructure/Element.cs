@@ -10,9 +10,9 @@ namespace QuestPDF.Infrastructure
         internal IPageContext PageContext { get; set; }
         internal ICanvas Canvas { get; set; }
         
-        internal virtual void HandleVisitor(Action<Element?> visit)
+        internal virtual IEnumerable<Element?> GetChildren()
         {
-            visit(this);
+            yield break;
         }
 
         internal void Initialize(IPageContext pageContext, ICanvas canvas)
