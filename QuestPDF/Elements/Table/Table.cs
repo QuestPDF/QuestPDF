@@ -173,7 +173,7 @@ namespace QuestPDF.Elements.Table
                             break;
 
                         foreach (var row in Enumerable.Range(cell.Row, cell.Row - currentRow))
-                            rowBottomOffsets[row] = rowBottomOffsets[row - 1];
+                            rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);
                         
                         currentRow = cell.Row;
                     }
@@ -226,11 +226,8 @@ namespace QuestPDF.Elements.Table
 
                 var maxRow = commands.Select(x => x.Cell).Max(x => x.Row + x.RowSpan);
 
-                if (maxRow > currentRow)
-                {
-                    foreach (var row in Enumerable.Range(currentRow + 1, maxRow - currentRow))
-                        rowBottomOffsets[row] = rowBottomOffsets[row - 1];   
-                }
+                foreach (var row in Enumerable.Range(CurrentRow, maxRow - CurrentRow))
+                    rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);   
 
                 AdjustCellSizes(commands, rowBottomOffsets);
                 
@@ -246,7 +243,9 @@ namespace QuestPDF.Elements.Table
                 {
                     var lastRow = command.Cell.Row + command.Cell.RowSpan - 1;
                     var height = rowBottomOffsets[lastRow] - command.Offset.Y;
+                    
                     command.Size = new Size(command.Size.Width, height);
+                    command.Offset = new Position(command.Offset.X, rowBottomOffsets[command.Cell.Row - 1]);
                 }
             }
             

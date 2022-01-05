@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Table;
 using QuestPDF.Infrastructure;
@@ -35,7 +36,6 @@ namespace QuestPDF.Fluent
     public class TableDescriptor
     {
         private Table Table { get; }
-        private Func<IContainer, IContainer> DefaultCellStyleFunc { get; set; } = x => x;
 
         internal TableDescriptor(Table table)
         {
@@ -52,28 +52,12 @@ namespace QuestPDF.Fluent
         {
             Table.ExtendLastCellsToTableBottom = true;
         }
-
-        public void DefaultCellStyle(Func<IContainer, IContainer> mapper)
-        {
-            DefaultCellStyleFunc = mapper;
-        }
-
+        
         public ITableCellContainer Cell()
         {
             var cell = new TableCell();
             Table.Cells.Add(cell);
             return cell;
-        }
-
-        internal void ApplyDefaultCellStyle()
-        {
-            foreach (var cell in Table.Cells)
-            {
-                var container = new Container();
-                DefaultCellStyleFunc(container).Element(cell.Child);
-                
-                cell.Child = container;
-            }
         }
     }
     
@@ -85,7 +69,6 @@ namespace QuestPDF.Fluent
             
             var descriptor = new TableDescriptor(table);
             handler(descriptor);
-            descriptor.ApplyDefaultCellStyle();
 
             table.PlanCellPositions();
             table.ValidateCellPositions();
