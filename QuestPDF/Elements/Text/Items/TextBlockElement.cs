@@ -1,5 +1,6 @@
 ﻿using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
@@ -10,8 +11,8 @@ namespace QuestPDF.Elements.Text.Items
         
         public TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
-            Element.HandleVisitor(x => (x as IStateResettable)?.ResetState());
-            Element.HandleVisitor(x => x.Initialize(request.PageContext, request.Canvas));
+            Element.VisitChildren(x => (x as IStateResettable)?.ResetState());
+            Element.VisitChildren(x => x.Initialize(request.PageContext, request.Canvas));
 
             var measurement = Element.Measure(new Size(request.AvailableWidth, Size.Max.Height));
 
@@ -35,8 +36,8 @@ namespace QuestPDF.Elements.Text.Items
 
         public void Draw(TextDrawingRequest request)
         {
-            Element.HandleVisitor(x => (x as IStateResettable)?.ResetState());
-            Element.HandleVisitor(x => x.Initialize(request.PageContext, request.Canvas));
+            Element.VisitChildren(x => (x as IStateResettable)?.ResetState());
+            Element.VisitChildren(x => x.Initialize(request.PageContext, request.Canvas));
             
             request.Canvas.Translate(new Position(0, request.TotalAscent));
             Element.Draw(new Size(request.TextSize.Width, -request.TotalAscent));

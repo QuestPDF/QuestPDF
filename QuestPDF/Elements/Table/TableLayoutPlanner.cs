@@ -9,7 +9,7 @@ namespace QuestPDF.Elements.Table
     {
         public static void PlanCellPositions(this Table table)
         {
-            PlanCellPositions(table.Columns.Count, table.Children);
+            PlanCellPositions(table.Columns.Count, table.Cells);
         }
         
         private static void PlanCellPositions(int columnsCount, ICollection<TableCell> cells)

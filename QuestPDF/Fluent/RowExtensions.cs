@@ -27,7 +27,7 @@ namespace QuestPDF.Fluent
         {
             var element = new RowElement(constantWidth, relativeWidth);
             
-            Row.Children.Add(element);
+            Row.Items.Add(element);
             return element;
         }
     }

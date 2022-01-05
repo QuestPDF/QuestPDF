@@ -15,12 +15,11 @@ namespace QuestPDF.Elements
     {
         public List<Layer> Children { get; set; } = new List<Layer>();
         
-        internal override void HandleVisitor(Action<Element?> visit)
+        internal override IEnumerable<Element?> GetChildren()
         {
-            Children.ForEach(x => x.HandleVisitor(visit));
-            base.HandleVisitor(visit);
+            return Children;
         }
-
+        
         internal override SpacePlan Measure(Size availableSpace)
         {
             return Children

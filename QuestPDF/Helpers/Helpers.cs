@@ -1,8 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Helpers
 {
@@ -40,6 +42,14 @@ namespace QuestPDF.Helpers
         internal static string PrettifyName(this string text)
         {
             return Regex.Replace(text, @"([a-z])([A-Z])", "$1 $2");
+        }
+
+        internal static void VisitChildren(this Element? element, Action<Element?> handler)
+        {
+            handler(element);
+
+            foreach (var child in element.GetChildren().Where(x => x != null))
+                VisitChildren(child, handler);
         }
     }
 }

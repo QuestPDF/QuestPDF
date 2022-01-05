@@ -61,13 +61,13 @@ namespace QuestPDF.Fluent
         public ITableCellContainer Cell()
         {
             var cell = new TableCell();
-            Table.Children.Add(cell);
+            Table.Cells.Add(cell);
             return cell;
         }
 
         internal void ApplyDefaultCellStyle()
         {
-            foreach (var cell in Table.Children)
+            foreach (var cell in Table.Cells)
             {
                 var container = new Container();
                 DefaultCellStyleFunc(container).Element(cell.Child);

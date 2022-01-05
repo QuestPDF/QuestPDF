@@ -16,14 +16,12 @@ namespace QuestPDF.Elements
 
         internal bool IsFirstRendered { get; set; } = false;
 
-        internal override void HandleVisitor(Action<Element?> visit)
+        internal override IEnumerable<Element?> GetChildren()
         {
-            First?.HandleVisitor(visit);
-            Second?.HandleVisitor(visit);
-            
-            base.HandleVisitor(visit);
+            yield return First;
+            yield return Second;
         }
-        
+
         public void ResetState()
         {
             IsFirstRendered = false;
@@ -97,12 +95,12 @@ namespace QuestPDF.Elements
     
     internal class Stack : IComponent
     {
-        public ICollection<Element> Children { get; } = new List<Element>();
+        public ICollection<Element> Items { get; } = new List<Element>();
         public float Spacing { get; set; } = 0;
         
         public void Compose(IContainer container)
         {
-            var elements = AddSpacing(Spacing, Children);
+            var elements = AddSpacing(Spacing, Items);
 
             container
                 .PaddingBottom(-Spacing)    

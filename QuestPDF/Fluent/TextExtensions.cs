@@ -47,7 +47,7 @@ namespace QuestPDF.Fluent
             if (!TextBlocks.Any())
                 TextBlocks.Add(new TextBlock());
             
-            TextBlocks.Last().Children.Add(item);
+            TextBlocks.Last().Items.Add(item);
         }
         
         public void Span(string? text, TextStyle? style = null)
@@ -73,7 +73,7 @@ namespace QuestPDF.Fluent
                 .Skip(1)
                 .Select(x => new TextBlock
                 {   
-                    Children = new List<ITextBlockItem> { x }
+                    Items = new List<ITextBlockItem> { x }
                 })
                 .ToList()
                 .ForEach(TextBlocks.Add);
@@ -173,11 +173,8 @@ namespace QuestPDF.Fluent
         internal void Compose(IContainer container)
         {
             TextBlocks.ToList().ForEach(x => x.Alignment = Alignment);
-            
-            foreach (var textBlockSpan in TextBlocks.SelectMany(x => x.Children).Where(x => x is TextBlockSpan).Cast<TextBlockSpan>())
-                textBlockSpan.Style.ApplyParentStyle(DefaultStyle);
 
-            container.Stack(stack =>
+            container.DefaultTextStyle(DefaultStyle).Stack(stack =>
             {
                 stack.Spacing(Spacing);
 
