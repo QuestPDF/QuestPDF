@@ -1,2 +1,7 @@
-﻿- Implemented the table rendering algorithm,
-- Improved text rendering behaviour.
+﻿Introduced new element: `Table` - a great way to construct complex document structures, e.g. reports. This element covers all cases offered by combination of the `Stack` and the `Row` elements. Additionally, it provides support for more complex layouts and corner cases. Updating to the `Table` element can greatly simplify your code 😁
+
+Other changes:
+- Added new element `DefaultTextStyle` - it allows set new text style to all its children,
+- Improved the default paging behavior for the `Row` element. In some minor corner cases it might cause infinite layout exceptions and confuse developers.
+- Improved the `Row` element: added new type of column that combines constant and relative widths.
+- Fixed default page sizes for: Letter and Legal.
