@@ -25,6 +25,8 @@ namespace QuestPDF.Elements.Table
                         .Where(x => x.Row + x.RowSpan > currentLocation.y)
                         .ToList();
                 }
+
+                SetPartialLocation(cell);
                 
                 if (cell.HasLocation())
                 {
@@ -77,9 +79,21 @@ namespace QuestPDF.Elements.Table
             return neighbours.Any(cell.CollidesWith);
         }
 
+        private static void SetPartialLocation(this TableCell cell)
+        {
+            if (cell.Row == default && cell.Column == default)
+                return;
+
+            if (cell.Row == default)
+                cell.Row = 1;
+            
+            if (cell.Column == default)
+                cell.Column = 1;
+        }
+        
         private static bool HasLocation(this TableCell cell)
         {
-            return cell.Row != 1 || cell.Column != 1;
+            return cell.Row != 0 && cell.Column != 0;
         }
     }
 }

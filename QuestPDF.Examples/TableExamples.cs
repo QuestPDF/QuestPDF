@@ -40,23 +40,11 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn();
                             });
 
-                            // by using the custom element, we can reuse the same style
-                            table.Cell().Row(1).Column(4).Element(x => TextContent(x, "A"));
-                            table.Cell().Row(2).Column(2).Element(x => TextContent(x, "A"));
-                            table.Cell().Row(3).Column(3).Element(x => TextContent(x, "A"));
-                            table.Cell().Row(4).Column(1).Element(x => TextContent(x, "A"));
-
-                            static void TextContent(IContainer container, string text)
-                            {
-                                container
-                                    .Border(1)
-                                    .Background(Colors.Grey.Lighten3)
-                                    .MinWidth(50)
-                                    .MinHeight(50)
-                                    .AlignCenter()
-                                    .AlignMiddle()
-                                    .Text(text);
-                            }
+                            // by using custom 'Element' method, we can reuse visual configuration
+                            table.Cell().Row(1).Column(4).Element(Block).Text("A");
+                            table.Cell().Row(2).Column(2).Element(Block).Text("B");
+                            table.Cell().Row(3).Column(3).Element(Block).Text("C");
+                            table.Cell().Row(4).Column(1).Element(Block).Text("D");
                         });
                 });
         }
@@ -86,21 +74,10 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn();
                             });
 
-                            table.DefaultCellStyle(cell =>
-                            {
-                                return cell
-                                    .Border(1)
-                                    .Background(Colors.Grey.Lighten3)
-                                    .MinWidth(50)
-                                    .MinHeight(50)
-                                    .AlignCenter()
-                                    .AlignMiddle();
-                            });
-                            
-                            table.Cell().Row(1).Column(1).Text("A");
-                            table.Cell().Row(2).Column(2).Text("B");
-                            table.Cell().Row(1).Column(3).Text("C");
-                            table.Cell().Row(2).Column(4).Text("D");
+                            table.Cell().Row(1).Column(1).Element(Block).Text("A");
+                            table.Cell().Row(2).Column(2).Element(Block).Text("B");
+                            table.Cell().Row(1).Column(3).Element(Block).Text("C");
+                            table.Cell().Row(2).Column(4).Element(Block).Text("D");
                         });
                 });
         }
@@ -160,17 +137,52 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn();
                             });
 
-                            table.Cell().TextBox("A");
-                            table.Cell().Row(2).Column(2).TextBox("B");
-                            table.Cell().TextBox("C");
-                            table.Cell().Row(3).Column(3).TextBox("D");
-                            table.Cell().ColumnSpan(2).TextBox("E");
+                            table.Cell().Element(Block).Text("A");
+                            table.Cell().Row(2).Column(2).Element(Block).Text("B");
+                            table.Cell().Element(Block).Text("C");
+                            table.Cell().Row(3).Column(3).Element(Block).Text("D");
+                            table.Cell().ColumnSpan(2).Element(Block).Text("E");
                         });
                 });
         }
         
         [Test]
         public void ExtendLastCellsToTableBottom()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(220, 170)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .Box()
+                        .Border(1)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+                            
+                            table.ExtendLastCellsToTableBottom();
+
+                            table.Cell().Row(1).Column(1).Element(Block).Text("A");
+                            table.Cell().Row(3).Column(1).Element(Block).Text("B");
+                            table.Cell().Row(2).Column(2).Element(Block).Text("C");
+                            table.Cell().Row(3).Column(3).Element(Block).Text("D");
+                            table.Cell().Row(2).RowSpan(2).Column(4).Element(Block).Text("E");
+                        });
+                });
+        }
+        
+        [Test]
+        public void Overlapping()
         {
             RenderingTest
                 .Create()
@@ -191,43 +203,10 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
                             });
-                            
-                            table.ExtendLastCellsToTableBottom();
 
-                            table.Cell().Row(1).Column(1).TextBox("A");
-                            table.Cell().Row(3).Column(1).TextBox("B");
-                            table.Cell().Row(2).Column(2).TextBox("C");
-                            table.Cell().Row(3).Column(3).TextBox("D");
-                        });
-                });
-        }
-        
-        [Test]
-        public void Overlapping()
-        {
-            RenderingTest
-                .Create()
-                .ProduceImages()
-                .PageSize(170, 120)
-                .ShowResults()
-                .Render(container =>
-                {
-                    container
-                        .Padding(10)
-                        .Box()
-                        .Border(1)
-                        .Table(table =>
-                        {
-                            table.ColumnsDefinition(columns =>
-                            {
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                                columns.RelativeColumn();
-                            });
-
-                            table.Cell().RowSpan(2).ColumnSpan(2).Background(Colors.Green.Lighten3);
-                            table.Cell().Background(Colors.Blue.Lighten3).MinHeight(50);
-                            table.Cell().Row(2).Column(2).ColumnSpan(2).Background(Colors.Red.Lighten3).MinHeight(50);
+                            table.Cell().Row(1).RowSpan(3).Column(1).ColumnSpan(3).Background(Colors.Grey.Lighten3).MinHeight(150);
+                            table.Cell().Row(1).RowSpan(2).Column(1).ColumnSpan(2).Background(Colors.Grey.Lighten1).MinHeight(100);
+                            table.Cell().Row(3).Column(3).Background(Colors.Grey.Darken1).MinHeight(50);
                         });
                 });
         }
@@ -254,15 +233,15 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn();
                             });
 
-                            table.Cell().RowSpan(2).ColumnSpan(2).TextBox("1");
-                            table.Cell().ColumnSpan(2).TextBox("2");
-                            table.Cell().TextBox("3");
-                            table.Cell().TextBox("4");
-                            table.Cell().RowSpan(2).TextBox("5");
-                            table.Cell().ColumnSpan(2).TextBox("6");
-                            table.Cell().RowSpan(2).TextBox("7");
-                            table.Cell().TextBox("8");
-                            table.Cell().TextBox("9");
+                            table.Cell().RowSpan(2).ColumnSpan(2).Element(Block).Text("1");
+                            table.Cell().ColumnSpan(2).Element(Block).Text("2");
+                            table.Cell().Element(Block).Text("3");
+                            table.Cell().Element(Block).Text("4");
+                            table.Cell().RowSpan(2).Element(Block).Text("5");
+                            table.Cell().ColumnSpan(2).Element(Block).Text("6");
+                            table.Cell().RowSpan(2).Element(Block).Text("7");
+                            table.Cell().Element(Block).Text("8");
+                            table.Cell().Element(Block).Text("9");
                         });
                 });
         }
@@ -289,15 +268,15 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn();
                             });
 
-                            table.Cell().RowSpan(4).TextBox("1");
+                            table.Cell().RowSpan(4).Element(Block).Text("1");
                             
-                            table.Cell().RowSpan(2).TextBox("2");
-                            table.Cell().RowSpan(1).TextBox("3");
-                            table.Cell().RowSpan(1).TextBox("4");
+                            table.Cell().RowSpan(2).Element(Block).Text("2");
+                            table.Cell().RowSpan(1).Element(Block).Text("3");
+                            table.Cell().RowSpan(1).Element(Block).Text("4");
                             
-                            table.Cell().RowSpan(2).TextBox("5");
-                            table.Cell().RowSpan(1).TextBox("6");
-                            table.Cell().RowSpan(1).TextBox("7");
+                            table.Cell().RowSpan(2).Element(Block).Text("5");
+                            table.Cell().RowSpan(1).Element(Block).Text("6");
+                            table.Cell().RowSpan(1).Element(Block).Text("7");
                         });
                 });
         }
@@ -332,24 +311,38 @@ namespace QuestPDF.Examples
                         .Border(1)
                         .Decoration(decoration =>
                         {
+                            IContainer DefaultCellStyle(IContainer container, string backgroundColor)
+                            {
+                                return container
+                                    .Border(1)
+                                    .BorderColor(Colors.Grey.Lighten1)
+                                    .Background(backgroundColor)
+                                    .PaddingVertical(5)
+                                    .PaddingHorizontal(10)
+                                    .AlignCenter()
+                                    .AlignMiddle();
+                            }
+                            
                             decoration
                                 .Header()
                                 .DefaultTextStyle(TextStyle.Default.SemiBold())
                                 .Table(table =>
                                 {
                                     table.ColumnsDefinition(DefineTableColumns);
-                                    table.DefaultCellStyle(cell => DefineDefaultCellStyle(cell, Colors.Grey.Lighten3));
                                     
-                                    table.Cell().RowSpan(2).ExtendHorizontal().AlignLeft().Text("Document type");
+                                    table.Cell().RowSpan(2).Element(CellStyle).ExtendHorizontal().AlignLeft().Text("Document type");
                                     
-                                    table.Cell().ColumnSpan(2).Text("Inches");
-                                    table.Cell().ColumnSpan(2).Text("Points");
+                                    table.Cell().ColumnSpan(2).Element(CellStyle).Text("Inches");
+                                    table.Cell().ColumnSpan(2).Element(CellStyle).Text("Points");
                                     
-                                    table.Cell().Text("Width");
-                                    table.Cell().Text("Height");
+                                    table.Cell().Element(CellStyle).Text("Width");
+                                    table.Cell().Element(CellStyle).Text("Height");
                                     
-                                    table.Cell().Text("Width");
-                                    table.Cell().Text("Height");
+                                    table.Cell().Element(CellStyle).Text("Width");
+                                    table.Cell().Element(CellStyle).Text("Height");
+
+                                    // you can extend already existing styles by creating additional methods
+                                    IContainer CellStyle(IContainer container) => DefaultCellStyle(container, Colors.Grey.Lighten3); 
                                 });
                             
                             decoration
@@ -357,19 +350,20 @@ namespace QuestPDF.Examples
                                 .Table(table =>
                                 {
                                     table.ColumnsDefinition(DefineTableColumns);
-                                    table.DefaultCellStyle(cell => DefineDefaultCellStyle(cell, Colors.White));
                                     
                                     foreach (var page in pageSizes)
                                     {
-                                        table.Cell().ExtendHorizontal().AlignLeft().Text(page.name);
+                                        table.Cell().Element(CellStyle).ExtendHorizontal().AlignLeft().Text(page.name);
                                         
                                         // inches
-                                        table.Cell().Text(page.width);
-                                        table.Cell().Text(page.height);
+                                        table.Cell().Element(CellStyle).Text(page.width);
+                                        table.Cell().Element(CellStyle).Text(page.height);
                                         
                                         // points
-                                        table.Cell().Text(page.width * inchesToPoints);
-                                        table.Cell().Text(page.height * inchesToPoints);
+                                        table.Cell().Element(CellStyle).Text(page.width * inchesToPoints);
+                                        table.Cell().Element(CellStyle).Text(page.height * inchesToPoints);
+                                        
+                                        IContainer CellStyle(IContainer container) => DefaultCellStyle(container, Colors.White); 
                                     }
                                 });
    
@@ -383,18 +377,6 @@ namespace QuestPDF.Examples
                                 columns.ConstantColumn(75);
                                 columns.ConstantColumn(75);
                             }
-
-                            IContainer DefineDefaultCellStyle(IContainer container, string backgroundColor)
-                            {
-                                return container
-                                    .Border(1)
-                                    .BorderColor(Colors.Grey.Lighten1)
-                                    .Background(backgroundColor)
-                                    .PaddingVertical(5)
-                                    .PaddingHorizontal(10)
-                                    .AlignCenter()
-                                    .AlignMiddle();
-                            }
                         });
                 });
         }
@@ -404,13 +386,13 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .ProduceImages()
+                .ProducePdf()
                 .PageSize(PageSizes.A4)
                 .MaxPages(10_000)
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 1));
+                .Render(container => GeneratePerformanceStructure(container, 1000));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)
@@ -479,20 +461,17 @@ namespace QuestPDF.Examples
                     }
                 });
         }
-    }
-    
-    public static class TableTestsExtensions
-    {
-        public static void TextBox(this IContainer container, string text)
+        
+        // this method uses a higher order function to define a custom and dynamic style
+        static IContainer Block(IContainer container)
         {
-            container
+            return container
                 .Border(1)
                 .Background(Colors.Grey.Lighten3)
                 .MinWidth(50)
                 .MinHeight(50)
                 .AlignCenter()
-                .AlignMiddle()
-                .Text(text, TextStyle.Default.Size(16));
+                .AlignMiddle();
         }
     }
 }
