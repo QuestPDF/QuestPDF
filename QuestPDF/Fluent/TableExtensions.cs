@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Table;
@@ -9,12 +12,7 @@ namespace QuestPDF.Fluent
 {
     public class TableColumnsDefinitionDescriptor
     {
-        private Table Table { get; }
-
-        internal TableColumnsDefinitionDescriptor(Table table)
-        {
-            Table = table;
-        }
+        internal List<TableColumnDefinition> Columns { get; } = new();
         
         public void ConstantColumn(float width)
         {
@@ -29,35 +27,95 @@ namespace QuestPDF.Fluent
         public void ComplexColumn(float constantWidth = 0, float relativeWidth = 0)
         {
             var columnDefinition = new TableColumnDefinition(constantWidth, relativeWidth);
-            Table.Columns.Add(columnDefinition);
+            Columns.Add(columnDefinition);
         }
     }
 
-    public class TableDescriptor
+    public class TableCellDescriptor
     {
-        private Table Table { get; }
+        private ICollection<TableCell> Cells { get; }
 
-        internal TableDescriptor(Table table)
+        internal TableCellDescriptor(ICollection<TableCell> cells)
         {
-            Table = table;
-        }
-        
-        public void ColumnsDefinition(Action<TableColumnsDefinitionDescriptor> handler)
-        {
-            var descriptor = new TableColumnsDefinitionDescriptor(Table);
-            handler(descriptor);
-        }
-        
-        public void ExtendLastCellsToTableBottom()
-        {
-            Table.ExtendLastCellsToTableBottom = true;
+            Cells = cells;
         }
         
         public ITableCellContainer Cell()
         {
             var cell = new TableCell();
-            Table.Cells.Add(cell);
+            Cells.Add(cell);
             return cell;
+        }
+    }
+    
+    public class TableDescriptor
+    {
+        internal List<TableColumnDefinition> Columns { get; private set; }
+
+        private Table HeaderTable { get; } = new();
+        private Table ContentTable { get; } = new();
+        private Table FooterTable { get; } = new();
+
+        public void ColumnsDefinition(Action<TableColumnsDefinitionDescriptor> handler)
+        {
+            var descriptor = new TableColumnsDefinitionDescriptor();
+            handler(descriptor);
+
+            HeaderTable.Columns = descriptor.Columns;
+            ContentTable.Columns = descriptor.Columns;
+            FooterTable.Columns = descriptor.Columns;
+        }
+        
+        public void ExtendLastCellsToTableBottom()
+        {
+            ContentTable.ExtendLastCellsToTableBottom = true;
+        }
+        
+        public void Header(Action<TableCellDescriptor> handler)
+        {
+            var descriptor = new TableCellDescriptor(HeaderTable.Cells);
+            handler(descriptor);
+        }
+        
+        public void Footer(Action<TableCellDescriptor> handler)
+        {
+            var descriptor = new TableCellDescriptor(FooterTable.Cells);
+            handler(descriptor);
+        }
+        
+        public ITableCellContainer Cell()
+        {
+            var cell = new TableCell();
+            ContentTable.Cells.Add(cell);
+            return cell;
+        }
+
+        internal IElement CreateElement()
+        {
+            var container = new Container();
+
+            ConfigureTable(HeaderTable);
+            ConfigureTable(ContentTable);
+            ConfigureTable(FooterTable);
+            
+            container
+                .Decoration(decoration =>
+                {
+                    decoration.Header().Element(HeaderTable);
+                    decoration.Content().Element(ContentTable);
+                    decoration.Footer().Element(FooterTable);
+                });
+
+            return container;
+        }
+
+        private static void ConfigureTable(Table table)
+        {
+            if (!table.Columns.Any())
+                throw new DocumentComposeException($"Table should have at least one column. Please call the '{nameof(ColumnsDefinition)}' method to define columns.");
+            
+            table.PlanCellPositions();
+            table.ValidateCellPositions();
         }
     }
     
@@ -65,15 +123,9 @@ namespace QuestPDF.Fluent
     {
         public static void Table(this IContainer element, Action<TableDescriptor> handler)
         {
-            var table = new Table();
-            
-            var descriptor = new TableDescriptor(table);
+            var descriptor = new TableDescriptor();
             handler(descriptor);
-
-            table.PlanCellPositions();
-            table.ValidateCellPositions();
-
-            element.Element(table);
+            element.Element(descriptor.CreateElement());
         }
     }
 

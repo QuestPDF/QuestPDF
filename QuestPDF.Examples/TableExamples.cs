@@ -309,7 +309,7 @@ namespace QuestPDF.Examples
                         .Padding(10)
                         .MinimalBox()
                         .Border(1)
-                        .Decoration(decoration =>
+                        .Table(table =>
                         {
                             IContainer DefaultCellStyle(IContainer container, string backgroundColor)
                             {
@@ -323,51 +323,7 @@ namespace QuestPDF.Examples
                                     .AlignMiddle();
                             }
                             
-                            decoration
-                                .Header()
-                                .DefaultTextStyle(TextStyle.Default.SemiBold())
-                                .Table(table =>
-                                {
-                                    table.ColumnsDefinition(DefineTableColumns);
-                                    
-                                    table.Cell().RowSpan(2).Element(CellStyle).ExtendHorizontal().AlignLeft().Text("Document type");
-                                    
-                                    table.Cell().ColumnSpan(2).Element(CellStyle).Text("Inches");
-                                    table.Cell().ColumnSpan(2).Element(CellStyle).Text("Points");
-                                    
-                                    table.Cell().Element(CellStyle).Text("Width");
-                                    table.Cell().Element(CellStyle).Text("Height");
-                                    
-                                    table.Cell().Element(CellStyle).Text("Width");
-                                    table.Cell().Element(CellStyle).Text("Height");
-
-                                    // you can extend already existing styles by creating additional methods
-                                    IContainer CellStyle(IContainer container) => DefaultCellStyle(container, Colors.Grey.Lighten3); 
-                                });
-                            
-                            decoration
-                                .Content()
-                                .Table(table =>
-                                {
-                                    table.ColumnsDefinition(DefineTableColumns);
-                                    
-                                    foreach (var page in pageSizes)
-                                    {
-                                        table.Cell().Element(CellStyle).ExtendHorizontal().AlignLeft().Text(page.name);
-                                        
-                                        // inches
-                                        table.Cell().Element(CellStyle).Text(page.width);
-                                        table.Cell().Element(CellStyle).Text(page.height);
-                                        
-                                        // points
-                                        table.Cell().Element(CellStyle).Text(page.width * inchesToPoints);
-                                        table.Cell().Element(CellStyle).Text(page.height * inchesToPoints);
-                                        
-                                        IContainer CellStyle(IContainer container) => DefaultCellStyle(container, Colors.White); 
-                                    }
-                                });
-   
-                            void DefineTableColumns(TableColumnsDefinitionDescriptor columns)
+                            table.ColumnsDefinition(columns =>
                             {
                                 columns.RelativeColumn();
                                 
@@ -376,6 +332,38 @@ namespace QuestPDF.Examples
                                 
                                 columns.ConstantColumn(75);
                                 columns.ConstantColumn(75);
+                            });
+                            
+                            table.Header(header =>
+                            {
+                                header.Cell().RowSpan(2).Element(CellStyle).ExtendHorizontal().AlignLeft().Text("Document type");
+                                    
+                                header.Cell().ColumnSpan(2).Element(CellStyle).Text("Inches");
+                                header.Cell().ColumnSpan(2).Element(CellStyle).Text("Points");
+                                    
+                                header.Cell().Element(CellStyle).Text("Width");
+                                header.Cell().Element(CellStyle).Text("Height");
+                                    
+                                header.Cell().Element(CellStyle).Text("Width");
+                                header.Cell().Element(CellStyle).Text("Height");
+
+                                // you can extend already existing styles by creating additional methods
+                                IContainer CellStyle(IContainer container) => DefaultCellStyle(container, Colors.Grey.Lighten3); 
+                            });
+        
+                            foreach (var page in pageSizes)
+                            {
+                                table.Cell().Element(CellStyle).ExtendHorizontal().AlignLeft().Text(page.name);
+                                        
+                                // inches
+                                table.Cell().Element(CellStyle).Text(page.width);
+                                table.Cell().Element(CellStyle).Text(page.height);
+                                        
+                                // points
+                                table.Cell().Element(CellStyle).Text(page.width * inchesToPoints);
+                                table.Cell().Element(CellStyle).Text(page.height * inchesToPoints);
+                                        
+                                IContainer CellStyle(IContainer container) => DefaultCellStyle(container, Colors.White); 
                             }
                         });
                 });

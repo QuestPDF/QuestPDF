@@ -11,8 +11,8 @@ namespace QuestPDF.Elements.Table
 {
     internal class Table : Element, IStateResettable
     {
-        public List<TableColumnDefinition> Columns { get; } = new List<TableColumnDefinition>();
-        public List<TableCell> Cells { get; } = new List<TableCell>();
+        public List<TableColumnDefinition> Columns { get; set; } = new List<TableColumnDefinition>();
+        public List<TableCell> Cells { get; set; } = new List<TableCell>();
         public bool ExtendLastCellsToTableBottom { get; set; }
         
         // cache for efficient cell finding
