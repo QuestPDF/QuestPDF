@@ -160,5 +160,10 @@ namespace QuestPDF.Fluent
                 TextStyle = textStyle
             });
         }
+        
+        public static IContainer PreventPaging(this IContainer element)
+        {
+            return element.Element(new PreventPaging());
+        }
     }
 }
