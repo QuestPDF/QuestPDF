@@ -165,5 +165,10 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new PreventPaging());
         }
+        
+        public static IContainer ScaleToFit(this IContainer element)
+        {
+            return element.Element(new ScaleToFit());
+        }
     }
 }
