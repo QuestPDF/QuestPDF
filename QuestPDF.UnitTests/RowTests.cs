@@ -102,6 +102,7 @@ namespace QuestPDF.UnitTests
                 .DrawElement(new Size(400, 300))
                 .ExpectChildMeasure("left", new Size(400, 300), SpacePlan.FullRender(250, 150))
                 .ExpectChildDraw("left", new Size(250, 300))
+                .ExpectChildMeasure("right", new Size(150, 300), SpacePlan.FullRender(150, 200))
                 .ExpectCanvasTranslate(250, 0)
                 .ExpectChildDraw("right", new Size(150, 300))
                 .ExpectCanvasTranslate(-250, 0)

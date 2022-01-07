@@ -15,7 +15,7 @@ namespace QuestPDF.Infrastructure
             yield break;
         }
 
-        internal void Initialize(IPageContext pageContext, ICanvas canvas)
+        internal virtual void Initialize(IPageContext pageContext, ICanvas canvas)
         {
             PageContext = pageContext;
             Canvas = canvas;

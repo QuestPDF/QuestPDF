@@ -50,6 +50,39 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        public void PagingSupport()
+        {
+            RenderingTest
+                .Create()
+                .ProducePdf()
+                .PageSize(420, 220)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .MinimalBox()
+                        .Border(1)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
+                            });
+
+                            // by using custom 'Element' method, we can reuse visual configuration
+                            table.Cell().Element(Block).Text(Placeholders.Label());
+                            table.Cell().Element(Block).Text(Placeholders.Label());
+                            table.Cell().Element(Block).Text(Placeholders.Paragraph());
+                            table.Cell().Element(Block).Text(Placeholders.Label());
+                        });
+                });
+        }
+        
+        [Test]
         public void DefaultCellStyle()
         {
             RenderingTest
@@ -217,7 +250,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .ProduceImages()
-                .PageSize(220, 220)
+                .PageSize(220, 170)
                 .ShowResults()
                 .Render(container =>
                 {
@@ -380,7 +413,7 @@ namespace QuestPDF.Examples
                 .EnableCaching()
                 .EnableDebugging(false)
                 .ShowResults()
-                .Render(container => GeneratePerformanceStructure(container, 1000));
+                .Render(container => GeneratePerformanceStructure(container, 250));
         }
         
         public static void GeneratePerformanceStructure(IContainer container, int repeats)
@@ -456,8 +489,10 @@ namespace QuestPDF.Examples
             return container
                 .Border(1)
                 .Background(Colors.Grey.Lighten3)
+                .ShowOnce()
                 .MinWidth(50)
                 .MinHeight(50)
+                .Padding(10)
                 .AlignCenter()
                 .AlignMiddle();
         }

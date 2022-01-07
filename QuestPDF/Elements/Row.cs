@@ -57,17 +57,11 @@ namespace QuestPDF.Elements
             if (leftMeasurement.Type == SpacePlanType.Wrap)
                 return SpacePlan.Wrap();
 
-            if (leftMeasurement.Type == SpacePlanType.FullRender)
-                IsLeftRendered = true;
-            
             var rightMeasurement = Right.Measure(new Size(availableSpace.Width - leftMeasurement.Width, availableSpace.Height));
 
             if (rightMeasurement.Type == SpacePlanType.Wrap)
                 return SpacePlan.Wrap();
-            
-            if (leftMeasurement.Type == SpacePlanType.FullRender)
-                IsRightRendered = true;
-            
+
             var totalWidth = leftMeasurement.Width + rightMeasurement.Width;
             var totalHeight = Math.Max(leftMeasurement.Height, rightMeasurement.Height);
 
@@ -82,14 +76,23 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height));
-            var leftWidth = leftMeasurement.Width;
+            var leftSpace = new Size(availableSpace.Width, availableSpace.Height);
+            var leftMeasurement = Left.Measure(leftSpace);
+
+            if (leftMeasurement.Type == SpacePlanType.FullRender)
+                IsLeftRendered = true;
             
-            Left.Draw(new Size(leftWidth, availableSpace.Height));
+            Left.Draw(new Size(leftMeasurement.Width, availableSpace.Height));
+
+            var rightSpace = new Size(availableSpace.Width - leftMeasurement.Width, availableSpace.Height);
+            var rightMeasurement = Right.Measure(rightSpace);
             
-            Canvas.Translate(new Position(leftWidth, 0));
-            Right.Draw(new Size(availableSpace.Width - leftWidth, availableSpace.Height));
-            Canvas.Translate(new Position(-leftWidth, 0));
+            if (rightMeasurement.Type == SpacePlanType.FullRender)
+                IsRightRendered = true;
+            
+            Canvas.Translate(new Position(leftMeasurement.Width, 0));
+            Right.Draw(rightSpace);
+            Canvas.Translate(new Position(-leftMeasurement.Width, 0));
         }
     }
     

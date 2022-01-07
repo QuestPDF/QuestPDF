@@ -15,14 +15,18 @@ namespace QuestPDF.Elements.Table
         public List<TableCell> Cells { get; set; } = new List<TableCell>();
         public bool ExtendLastCellsToTableBottom { get; set; }
         
-        // cache for efficient cell finding
-        // index of first array - number of row
-        // nested array - collection of all cells starting at given row
-        private TableCell[][] OrderedCells { get; set; }
-        
         private int StartingRowsCount { get; set; }
         private int RowsCount { get; set; }
         private int CurrentRow { get; set; }
+        
+        internal override void Initialize(IPageContext pageContext, ICanvas canvas)
+        {
+            StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
+            RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
+            Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
+
+            base.Initialize(pageContext, canvas);
+        }
         
         internal override IEnumerable<Element?> GetChildren()
         {
@@ -31,24 +35,6 @@ namespace QuestPDF.Elements.Table
 
         public void ResetState()
         {
-            if (StartingRowsCount == default)
-                StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
-            
-            if (RowsCount == default)
-                RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
-
-            if (OrderedCells == default)
-            {
-                var groups = Cells
-                    .GroupBy(x => x.Row)
-                    .ToDictionary(x => x.Key, x => x.OrderBy(y => y.Column).ToArray());
-            
-                OrderedCells = Enumerable
-                    .Range(0, RowsCount + 1)
-                    .Select(x => groups.TryGetValue(x, out var output) ? output : Array.Empty<TableCell>())
-                    .ToArray();   
-            }
-
             Cells.ForEach(x => x.IsRendered = false);
             CurrentRow = 1;
         }
@@ -85,6 +71,9 @@ namespace QuestPDF.Elements.Table
             {
                 if (command.Measurement.Type == SpacePlanType.FullRender)
                     command.Cell.IsRendered = true;
+
+                if (command.Measurement.Type == SpacePlanType.Wrap)
+                    continue;
                 
                 Canvas.Translate(command.Offset);
                 command.Cell.Draw(command.Size);
@@ -103,7 +92,7 @@ namespace QuestPDF.Elements.Table
         {
             return commands
                 .GroupBy(x => x.Cell.Row)
-                .Where(x => x.All(y => y.Measurement.Type == SpacePlanType.FullRender))
+                .Where(x => x.All(y => y.Cell.IsRendered || y.Measurement.Type == SpacePlanType.FullRender))
                 .Select(x => x.Key)
                 .DefaultIfEmpty(0)
                 .Max();
@@ -152,15 +141,11 @@ namespace QuestPDF.Elements.Table
             ICollection<TableCellRenderingCommand> GetRenderingCommands()
             {
                 var rowBottomOffsets = new DynamicDictionary<int, float>();
+                var commands = new List<TableCellRenderingCommand>();
                 
-                var cellsToTry = Enumerable
-                    .Range(CurrentRow, RowsCount - CurrentRow + 1)
-                    .SelectMany(x => OrderedCells[x]);
-            
+                var cellsToTry = Cells.Where(x => x.Row + x.RowSpan - 1 >= CurrentRow);
                 var currentRow = CurrentRow;
                 var maxRenderingRow = RowsCount;
-                
-                var commands = new List<TableCellRenderingCommand>();
                 
                 foreach (var cell in cellsToTry)
                 {
@@ -181,10 +166,7 @@ namespace QuestPDF.Elements.Table
                     // cell visibility optimizations
                     if (cell.Row > maxRenderingRow)
                         break;
-                    
-                    if (cell.IsRendered)
-                        continue;
-                    
+
                     // calculate cell position / size
                     var topOffset = rowBottomOffsets[cell.Row - 1];
                     
