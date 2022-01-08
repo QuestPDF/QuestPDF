@@ -31,22 +31,22 @@ namespace QuestPDF.Fluent
         
         public static IContainer PaddingTop(this IContainer element, float value)
         {
-            return element.Padding(x => x.Top = value);
+            return element.Padding(x => x.Top += value);
         }
         
         public static IContainer PaddingBottom(this IContainer element, float value)
         {
-            return element.Padding(x => x.Bottom = value);
+            return element.Padding(x => x.Bottom += value);
         }
         
         public static IContainer PaddingLeft(this IContainer element, float value)
         {
-            return element.Padding(x => x.Left = value);
+            return element.Padding(x => x.Left += value);
         }
         
         public static IContainer PaddingRight(this IContainer element, float value)
         {
-            return element.Padding(x => x.Right = value);
+            return element.Padding(x => x.Right += value);
         }
     }
 }
