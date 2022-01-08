@@ -1,98 +1,102 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal enum DecorationType
+    internal class DecorationItemRenderingCommand
     {
-        Prepend,
-        Append
+        public Element Element { get; set; }
+        public SpacePlan Measurement { get; set; }
+        public Size Size { get; set; }
+        public Position Offset { get; set; }
     }
     
-    internal class BinaryDecoration : Element, ICacheable
+    internal class Decoration : Element, ICacheable
     {
-        public Element DecorationElement { get; set; } = Empty.Instance;
-        public Element ContentElement { get; set; } = Empty.Instance;
-        public DecorationType Type { get; set; }
+        internal Element Header { get; set; } = new Empty();
+        internal Element Content { get; set; } = new Empty();
+        internal Element Footer { get; set; } = new Empty();
 
         internal override IEnumerable<Element?> GetChildren()
         {
-            yield return DecorationElement;
-            yield return ContentElement;
+            yield return Header;
+            yield return Content;
+            yield return Footer;
         }
-
-        internal override void CreateProxy(Func<Element, Element> create)
+        
+        internal override void CreateProxy(Func<Element?, Element?> create)
         {
-            DecorationElement = create(DecorationElement);
-            ContentElement = create(ContentElement);
+            Header = create(Header);
+            Content = create(Content);
+            Footer = create(Footer);
         }
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            var decorationMeasure = DecorationElement.Measure(availableSpace);
-            
-            if (decorationMeasure.Type == SpacePlanType.Wrap || decorationMeasure.Type == SpacePlanType.PartialRender)
+            var renderingCommands = PlanLayout(availableSpace);
+
+            if (renderingCommands.Any(x => x.Measurement.Type == SpacePlanType.Wrap))
                 return SpacePlan.Wrap();
 
-            var decorationSize = decorationMeasure;
-            var contentMeasure = ContentElement.Measure(new Size(availableSpace.Width, availableSpace.Height - decorationSize.Height));
+            var width = renderingCommands.Max(x => x.Size.Width);
+            var height = renderingCommands.Sum(x => x.Size.Height);
+            var size = new Size(width, height);
             
-            if (contentMeasure.Type == SpacePlanType.Wrap)
+            if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();
+            
+            var willBeFullyRendered = renderingCommands.All(x => x.Measurement.Type == SpacePlanType.FullRender);
 
-            var contentSize = contentMeasure;
-            var resultSize = new Size(availableSpace.Width, decorationSize.Height + contentSize.Height);
-            
-            if (contentSize.Type == SpacePlanType.PartialRender)
-                return SpacePlan.PartialRender(resultSize);
-            
-            if (contentSize.Type == SpacePlanType.FullRender)
-                return SpacePlan.FullRender(resultSize);
-            
-            throw new NotSupportedException();
+            return willBeFullyRendered
+                ? SpacePlan.FullRender(size)
+                : SpacePlan.PartialRender(size);
         }
 
         internal override void Draw(Size availableSpace)
         {
-            var decorationSize = DecorationElement.Measure(availableSpace);
-            var contentSize = new Size(availableSpace.Width, availableSpace.Height - decorationSize.Height);
-
-            var translateHeight = Type == DecorationType.Prepend ? decorationSize.Height : contentSize.Height;
-            Action drawDecoration = () => DecorationElement?.Draw(new Size(availableSpace.Width, decorationSize.Height));
-            Action drawContent = () => ContentElement?.Draw(new Size (availableSpace.Width, contentSize.Height));
-
-            var first = Type == DecorationType.Prepend ? drawDecoration : drawContent;
-            var second = Type == DecorationType.Prepend ? drawContent : drawDecoration;
-
-            first();
-            Canvas.Translate(new Position(0, translateHeight));
-            second();
-            Canvas.Translate(new Position(0, -translateHeight));
-        }
-    }
-    
-    internal class Decoration : IComponent
-    {
-        public Element Header { get; set; } = Empty.Instance;
-        public Element Content { get; set; } = Empty.Instance;
-        public Element Footer { get; set; } = Empty.Instance;
-
-        public void Compose(IContainer container)
-        {
-            container.Element(new BinaryDecoration
+            foreach (var command in PlanLayout(availableSpace))
             {
-                Type = DecorationType.Prepend,
-                DecorationElement = Header,
-                ContentElement = new BinaryDecoration
-                {
-                    Type = DecorationType.Append,
-                    ContentElement = Content,
-                    DecorationElement = Footer
-                }
-            });
+                Canvas.Translate(command.Offset);
+                command.Element.Draw(command.Size);
+                Canvas.Translate(command.Offset.Reverse());
+            }
+        }
+
+        private IEnumerable<DecorationItemRenderingCommand> PlanLayout(Size availableSpace)
+        {
+            var headerMeasurement = Header.Measure(availableSpace);
+            var footerMeasurement = Footer.Measure(availableSpace);
+            
+            var contentSpace = new Size(availableSpace.Width, availableSpace.Height - headerMeasurement.Height - footerMeasurement.Height);
+            var contentMeasurement = Content.Measure(contentSpace);
+
+            yield return new DecorationItemRenderingCommand
+            {
+                Element = Header,
+                Measurement = headerMeasurement,
+                Size = new Size(availableSpace.Width, headerMeasurement.Height),
+                Offset = Position.Zero
+            };
+            
+            yield return new DecorationItemRenderingCommand
+            {
+                Element = Content,
+                Measurement = contentMeasurement,
+                Size = new Size(availableSpace.Width, contentMeasurement.Height),
+                Offset = new Position(0, headerMeasurement.Height)
+            };
+
+            yield return new DecorationItemRenderingCommand
+            {
+                Element = Footer,
+                Measurement = footerMeasurement,
+                Size = new Size(availableSpace.Width, footerMeasurement.Height),
+                Offset = new Position(0, headerMeasurement.Height + contentMeasurement.Height)
+            };
         }
     }
 }

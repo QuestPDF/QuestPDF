@@ -23,10 +23,10 @@ namespace QuestPDF.Examples
                         page.Size(PageSizes.A7.Landscape());
                         page.Background(Colors.White);
         
-                        page.Header().Stack(stack =>
+                        page.Header().Column(column =>
                         {
-                            stack.Item().ShowOnce().Text("This header is visible on the first page.");
-                            stack.Item().SkipOnce().Text("This header is visible on the second page and all following.");
+                            column.Item().ShowOnce().Text("This header is visible on the first page.");
+                            column.Item().SkipOnce().Text("This header is visible on the second page and all following.");
                         });
                         
                         page.Content()

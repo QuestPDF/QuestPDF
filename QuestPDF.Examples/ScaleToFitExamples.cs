@@ -19,13 +19,13 @@ namespace QuestPDF.Examples
                 .ShowResults()
                 .Render(container =>
                 {
-                    container.Padding(25).Stack(stack =>
+                    container.Padding(25).Column(column =>
                     {
                         var text = Placeholders.Paragraph();
 
                         foreach (var i in Enumerable.Range(0, 16))
                         {
-                            stack
+                            column
                                 .Item()
                                 .MinimalBox()
                                 .Border(1)

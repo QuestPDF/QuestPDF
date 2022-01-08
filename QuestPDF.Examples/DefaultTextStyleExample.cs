@@ -13,7 +13,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .ProduceImages()
+                .ProducePdf()
                 .ShowResults()
                 .RenderDocument(container =>
                 {
@@ -26,11 +26,11 @@ namespace QuestPDF.Examples
                         page.Size(PageSizes.A4);
                         page.Background(Colors.White);
         
-                        page.Content().Stack(stack =>
+                        page.Content().Column(column =>
                         {
-                            stack.Item().Text(Placeholders.Sentence());
+                            column.Item().Text(Placeholders.Sentence());
                         
-                            stack.Item().Text(text =>
+                            column.Item().Text(text =>
                             {
                                 // text in this block is additionally semibold
                                 text.DefaultTextStyle(TextStyle.Default.SemiBold());

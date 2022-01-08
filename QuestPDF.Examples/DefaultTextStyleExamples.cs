@@ -24,12 +24,12 @@ namespace QuestPDF.Examples
                     container
                         .Padding(10)
                         .DefaultTextStyle(TextStyle.Default.Bold().Underline())
-                        .Stack(stack =>
+                        .Column(column =>
                         { 
-                            stack.Item().Text("Default style applies to all children", TextStyle.Default);
-                            stack.Item().Text("You can override certain styles", TextStyle.Default.Underline(false).Color(Colors.Green.Darken2));
+                            column.Item().Text("Default style applies to all children", TextStyle.Default);
+                            column.Item().Text("You can override certain styles", TextStyle.Default.Underline(false).Color(Colors.Green.Darken2));
                             
-                            stack.Item().PaddingTop(10).Border(1).Grid(grid =>
+                            column.Item().PaddingTop(10).Border(1).Grid(grid =>
                             {
                                 grid.Columns(4);
 

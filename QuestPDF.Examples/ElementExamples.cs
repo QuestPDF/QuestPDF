@@ -66,27 +66,27 @@ namespace QuestPDF.Examples
                     container
                         .Background("#FFF")
                         .Padding(20)
-                        .Stack(stack =>
+                        .Column(column =>
                         {
-                            stack.Item()
+                            column.Item()
                                 .PaddingBottom(10)
                                 .AlignCenter()
                                 .Text("This Row element is 700pt wide");
 
-                            stack.Item().Row(row =>
+                            column.Item().Row(row =>
                             {
-                                row.ConstantColumn(100)
+                                row.ConstantItem(100)
                                     .Background(Colors.Grey.Lighten1)
                                     .Padding(10)
                                     .ExtendVertical()
                                     .Text("This column is 100 pt wide");
 
-                                row.RelativeColumn()
+                                row.RelativeItem()
                                     .Background(Colors.Grey.Lighten2)
                                     .Padding(10)
                                     .Text("This column takes 1/3 of the available space (200pt)");
 
-                                row.RelativeColumn(2)
+                                row.RelativeItem(2)
                                     .Background(Colors.Grey.Lighten3)
                                     .Padding(10)
                                     .Text("This column takes 2/3 of the available space (400pt)");
@@ -109,15 +109,15 @@ namespace QuestPDF.Examples
                         .Row(row =>
                         {
                             row.Spacing(20);
-                            row.RelativeColumn(2).Border(1).Background(Colors.Grey.Lighten1);
-                            row.RelativeColumn(3).Border(1).Background(Colors.Grey.Lighten2);
-                            row.RelativeColumn(4).Border(1).Background(Colors.Grey.Lighten3);
+                            row.RelativeItem(2).Border(1).Background(Colors.Grey.Lighten1);
+                            row.RelativeItem(3).Border(1).Background(Colors.Grey.Lighten2);
+                            row.RelativeItem(4).Border(1).Background(Colors.Grey.Lighten3);
                         });
                 });
         }
     
         [Test]
-        public void Stack()
+        public void column()
         {
             RenderingTest
                 .Create()
@@ -127,13 +127,13 @@ namespace QuestPDF.Examples
                     container
                         .Background("#FFF")
                         .Padding(15)
-                        .Stack(stack =>
+                        .Column(column =>
                         {
-                            stack.Spacing(15);
+                            column.Spacing(15);
                     
-                            stack.Item().Background(Colors.Grey.Medium).Height(50);
-                            stack.Item().Background(Colors.Grey.Lighten1).Height(100);
-                            stack.Item().Background(Colors.Grey.Lighten2).Height(150);
+                            column.Item().Background(Colors.Grey.Medium).Height(50);
+                            column.Item().Background(Colors.Grey.Lighten1).Height(100);
+                            column.Item().Background(Colors.Grey.Lighten2).Height(150);
                         });
                 });
         }
@@ -267,12 +267,12 @@ namespace QuestPDF.Examples
                             layers
                                 .PrimaryLayer()
                                 .Padding(25)
-                                .Stack(stack =>
+                                .Column(column =>
                                 {
-                                    stack.Spacing(5);
+                                    column.Spacing(5);
                             
                                     foreach (var _ in Enumerable.Range(0, 7))
-                                        stack.Item().Text(Placeholders.Sentence());
+                                        column.Item().Text(Placeholders.Sentence());
                                 });
                         
                             // layer above the main content    
@@ -304,16 +304,16 @@ namespace QuestPDF.Examples
         //                 {
         //                     page.Header().PageNumber("Page {pdf:currentPage}");
         //             
-        //                     page.Content().Height(300).Stack(content =>
+        //                     page.Content().Height(300).column(content =>
         //                     {
         //                         content.Item().Height(200).Background(Colors.Grey.Lighten2);
         //                 
-        //                         content.Item().EnsureSpace(100).Stack(stack =>
+        //                         content.Item().EnsureSpace(100).column(column =>
         //                         {
-        //                             stack.Spacing(10);
+        //                             column.Spacing(10);
         //                     
         //                             foreach (var _ in Enumerable.Range(0, 4))
-        //                                 stack.Item().Height(50).Background(Colors.Green.Lighten1);
+        //                                 column.Item().Height(50).Background(Colors.Green.Lighten1);
         //                         }); 
         //                     });
         //                 });
@@ -378,7 +378,7 @@ namespace QuestPDF.Examples
                         .Row(row =>
                         {
                             foreach (var color in colors)
-                                row.RelativeColumn().Background(color);
+                                row.RelativeItem().Background(color);
                         });
                 });
         }
@@ -437,10 +437,10 @@ namespace QuestPDF.Examples
                         {
                             layers.Layer().Text("Something else");
                     
-                            layers.PrimaryLayer().Stack(stack =>
+                            layers.PrimaryLayer().Column(column =>
                             {
-                                stack.Item().PaddingTop(20).Text("Text 1");
-                                stack.Item().PaddingTop(40).Text("Text 2");
+                                column.Item().PaddingTop(20).Text("Text 1");
+                                column.Item().PaddingTop(40).Text("Text 2");
                             });
                     
                             layers.Layer().Canvas((canvas, size) =>
@@ -507,7 +507,7 @@ namespace QuestPDF.Examples
     
                             decoration
                                 .Content()
-                                .Stack(stack =>
+                                .Column(column =>
                                 {
                                     var scales = new[] { 0.8f, 0.9f, 1.1f, 1.2f };
 
@@ -519,7 +519,7 @@ namespace QuestPDF.Examples
 
                                         var fontStyle = TextStyle.Default.Size(16);
                 
-                                        stack
+                                        column
                                             .Item()
                                             .Border(1)
                                             .Background(fontColor)
@@ -708,14 +708,14 @@ namespace QuestPDF.Examples
                         .Border(2)
                         .Row(row =>
                         {
-                            row.ConstantColumn(25)
+                            row.ConstantItem(25)
                                 .Border(1)
                                 .RotateLeft()
                                 .AlignCenter()
                                 .AlignMiddle()
                                 .Text("Sample text");
                             
-                            row.RelativeColumn().Border(1).Padding(5).Text(Placeholders.Paragraph());
+                            row.RelativeItem().Border(1).Padding(5).Text(Placeholders.Paragraph());
                         });
                 });
         }
@@ -731,11 +731,11 @@ namespace QuestPDF.Examples
                     container
                         .Padding(25)
                         .PaddingLeft(75)
-                        .Stack(stack =>
+                        .Column(column =>
                         {
-                            stack.Item().Width(300).Height(150).Background(Colors.Blue.Lighten4);
+                            column.Item().Width(300).Height(150).Background(Colors.Blue.Lighten4);
                             
-                            stack
+                            column
                                 .Item()
                                 
                                 // creates an infinite space for its child
@@ -751,7 +751,7 @@ namespace QuestPDF.Examples
                                 
                                 .Background(Colors.Blue.Darken1);
                             
-                            stack.Item().Width(300).Height(150).Background(Colors.Blue.Lighten3);
+                            column.Item().Width(300).Height(150).Background(Colors.Blue.Lighten3);
                         });
                 });
         }
@@ -766,13 +766,13 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(25)
-                        .Stack(stack =>
+                        .Column(column =>
                         {
-                            stack.Item().Row(row =>
+                            column.Item().Row(row =>
                             {
-                                row.RelativeColumn().LabelCell("Label 1");
+                                row.RelativeItem().LabelCell("Label 1");
                                 
-                                row.RelativeColumn(3).Grid(grid =>
+                                row.RelativeItem(3).Grid(grid =>
                                 {
                                     grid.Columns(3);
                                     
@@ -784,11 +784,11 @@ namespace QuestPDF.Examples
                                 });
                             });
                             
-                            stack.Item().Row(row =>
+                            column.Item().Row(row =>
                             {
-                                row.RelativeColumn().ValueCell().Text("Value 1");
+                                row.RelativeItem().ValueCell().Text("Value 1");
                                 
-                                row.RelativeColumn(3).Grid(grid =>
+                                row.RelativeItem(3).Grid(grid =>
                                 {
                                     grid.Columns(3);
                                     
@@ -800,10 +800,10 @@ namespace QuestPDF.Examples
                                 });
                             });
                             
-                            stack.Item().Row(row =>
+                            column.Item().Row(row =>
                             {
-                                row.RelativeColumn().LabelCell("Label 6");
-                                row.RelativeColumn().ValueCell().Text("Value 6");
+                                row.RelativeItem().LabelCell("Label 6");
+                                row.RelativeItem().ValueCell().Text("Value 6");
                             });
                         });
                 });

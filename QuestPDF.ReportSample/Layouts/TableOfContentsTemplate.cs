@@ -23,14 +23,14 @@ namespace QuestPDF.ReportSample.Layouts
                         .PaddingBottom(5)
                         .Text("Table of contents", Typography.Headline);
 
-                    decoration.Content().Stack(stack =>
+                    decoration.Content().Column(column =>
                     {
-                        stack.Spacing(5);
+                        column.Spacing(5);
                         
                         for (var i = 0; i < Sections.Count; i++)
-                            stack.Item().Element(c => DrawLink(c, i+1, Sections[i].Title));
+                            column.Item().Element(c => DrawLink(c, i+1, Sections[i].Title));
 
-                        stack.Item().Element(c => DrawLink(c, Sections.Count+1, "Photos"));
+                        column.Item().Element(c => DrawLink(c, Sections.Count+1, "Photos"));
                     });
                 });
         }
@@ -41,9 +41,9 @@ namespace QuestPDF.ReportSample.Layouts
                 .InternalLink(locationName)
                 .Row(row =>
                 {
-                    row.ConstantColumn(25).Text($"{number}.");
-                    row.RelativeColumn().Text(locationName);
-                    row.ConstantColumn(150).AlignRight().Text(text => text.PageNumberOfLocation(locationName));
+                    row.ConstantItem(25).Text($"{number}.");
+                    row.RelativeItem().Text(locationName);
+                    row.ConstantItem(150).AlignRight().Text(text => text.PageNumberOfLocation(locationName));
                 });
         }
     }

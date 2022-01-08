@@ -9,7 +9,8 @@ using IContainer = QuestPDF.Infrastructure.IContainer;
 
 namespace QuestPDF.Elements
 {
-    internal class BinaryStack : Element, IStateResettable, ICacheable
+    // TODO: remove
+    internal class Binarycolumn : Element, IStateResettable, ICacheable
     {
         internal Element First { get; set; } = Empty.Instance;
         internal Element Second { get; set; } = Empty.Instance;
@@ -93,7 +94,8 @@ namespace QuestPDF.Elements
         }
     }
     
-    internal class Stack : IComponent
+    // TODO: remove
+    internal class column : IComponent
     {
         public ICollection<Element> Items { get; } = new List<Element>();
         public float Spacing { get; set; } = 0;
@@ -133,7 +135,7 @@ namespace QuestPDF.Elements
 
             var half = elements.Length / 2;
                 
-            return new BinaryStack
+            return new Binarycolumn
             {
                 First = BuildTree(elements.Slice(0, half)),
                 Second = BuildTree(elements.Slice(half))

@@ -63,7 +63,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Stack(column =>
+                        .Column(column =>
                         {
                             column
                                 .Item()
@@ -113,14 +113,14 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Stack(column =>
+                        .Column(column =>
                         {
                             column
                                 .Item()
                                 .Height(150)
                                 .Row(row =>
                                 {
-                                    row.RelativeColumn()
+                                    row.RelativeItem()
                                         .Extend()
                                         .Background("FFF")
 
@@ -128,7 +128,7 @@ namespace QuestPDF.Examples
                                         .Width(50)
                                         .Background("444");
                             
-                                    row.RelativeColumn()
+                                    row.RelativeItem()
                                         .Extend()
                                         .Background("BBB")
 
@@ -142,7 +142,7 @@ namespace QuestPDF.Examples
                                 .Height(150)
                                 .Row(row =>
                                 {
-                                    row.RelativeColumn()
+                                    row.RelativeItem()
                                         .Extend()
                                         .Background("BBB")
 
@@ -150,7 +150,7 @@ namespace QuestPDF.Examples
                                         .Width(50)
                                         .Background("444");
                             
-                                    row.RelativeColumn()
+                                    row.RelativeItem()
                                         .Extend()
                                         .Background("BBB")
 

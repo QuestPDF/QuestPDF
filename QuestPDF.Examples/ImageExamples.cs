@@ -19,17 +19,17 @@ namespace QuestPDF.Examples
                 .ShowResults()
                 .Render(page =>
                 {
-                    page.Padding(25).Stack(stack =>
+                    page.Padding(25).Column(column =>
                     {
-                        stack.Spacing(25);
+                        column.Spacing(25);
                         
-                        stack.Item().Image("logo.png");
+                        column.Item().Image("logo.png");
 
                         var binaryData = File.ReadAllBytes("logo.png");
-                        stack.Item().Image(binaryData);
+                        column.Item().Image(binaryData);
                         
                         using var stream = new FileStream("logo.png", FileMode.Open);
-                        stack.Item().Image(stream);
+                        column.Item().Image(stream);
                     });
                 });
         }

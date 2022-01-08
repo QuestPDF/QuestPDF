@@ -26,18 +26,18 @@ namespace QuestPDF.Examples
                         page.Margin(30);
                         page.Background(Colors.White);
                         
-                        page.Header().Stack(stack =>
+                        page.Header().Column(column =>
                         {
-                            stack.Item().ShowOnce().Background(Colors.Blue.Lighten2).Height(60);
-                            stack.Item().SkipOnce().Background(Colors.Green.Lighten2).Height(40);
+                            column.Item().ShowOnce().Background(Colors.Blue.Lighten2).Height(60);
+                            column.Item().SkipOnce().Background(Colors.Green.Lighten2).Height(40);
                         });
                         
-                        page.Content().PaddingVertical(10).Stack(stack =>
+                        page.Content().PaddingVertical(10).Column(column =>
                         {
-                            stack.Spacing(10);
+                            column.Spacing(10);
 
                             foreach (var _ in Enumerable.Range(0, 13))
-                                stack.Item().Background(Colors.Grey.Lighten2).Height(40);
+                                column.Item().Background(Colors.Grey.Lighten2).Height(40);
                         });
                         
                         page.Footer().AlignCenter().Text(text =>

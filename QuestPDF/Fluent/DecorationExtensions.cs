@@ -52,7 +52,7 @@ namespace QuestPDF.Fluent
             var descriptor = new DecorationDescriptor();
             handler(descriptor);
             
-            element.Component(descriptor.Decoration);
+            element.Element(descriptor.Decoration);
         }
     }
 }

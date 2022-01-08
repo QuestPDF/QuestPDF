@@ -6,29 +6,52 @@ namespace QuestPDF.Fluent
 {
     public class RowDescriptor
     {
-        internal Row Row { get; } = new Row();
+        internal Row Row { get; } = new();
 
         public void Spacing(float value)
         {
             Row.Spacing = value;
         }
-        
-        public IContainer ConstantColumn(float width)
+
+        private IContainer Item(RowItemType type, float size = 0)
         {
-            return Column(constantWidth: width);
-        }
-        
-        public IContainer RelativeColumn(float width = 1)
-        {
-            return Column(relativeWidth: width);
-        }
-        
-        public IContainer Column(float constantWidth = 0, float relativeWidth = 0)
-        {
-            var element = new RowElement(constantWidth, relativeWidth);
+            var element = new RowItem
+            {
+                Type = type,
+                Size = size
+            };
             
             Row.Items.Add(element);
             return element;
+        }
+        
+        // TODO: deprecated Box method in QuestPDF 2022.2
+        [Obsolete("This element has been renamed. Please use the RelativeItem method.")]
+        public IContainer RelativeColumn(float size = 1)
+        {
+            return Item(RowItemType.Relative, size);
+        }
+        
+        // TODO: deprecated Box method in QuestPDF 2022.2
+        [Obsolete("This element has been renamed. Please use the ConstantItem method.")]
+        public IContainer ConstantColumn(float size)
+        {
+            return Item(RowItemType.Constant, size);
+        }
+
+        public IContainer RelativeItem(float size = 1)
+        {
+            return Item(RowItemType.Relative, size);
+        }
+        
+        public IContainer ConstantItem(float size)
+        {
+            return Item(RowItemType.Constant, size);
+        }
+
+        public IContainer AutoItem()
+        {
+            return Item(RowItemType.Auto);
         }
     }
     

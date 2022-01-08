@@ -71,15 +71,15 @@ void ComposeHeader(IContainer container)
     container.Row(row =>
     {
         {
-            stack.Item().Text($"Invoice #{Model.InvoiceNumber}", titleStyle);
+            column.Item().Text($"Invoice #{Model.InvoiceNumber}", titleStyle);
 
-            stack.Item().Text(text =>
+            column.Item().Text(text =>
             {
                 text.Span("Issue date: ", TextStyle.Default.SemiBold());
                 text.Span($"{Model.IssueDate:d}");
             });
 
-            stack.Item().Text(text =>
+            column.Item().Text(text =>
             {
                 text.Span("Due date: ", TextStyle.Default.SemiBold());
                 text.Span($"{Model.DueDate:d}");
@@ -97,7 +97,7 @@ Implementation of **the content area** that contains seller and customer details
 ```csharp
 void ComposeContent(IContainer container)
 {
-    container.PaddingVertical(40).Stack(column => 
+    container.PaddingVertical(40).column(column => 
     {
         column.Spacing(20);
         
@@ -147,7 +147,7 @@ void ComposeTable(IContainer container)
         // content
         decoration
             .Content()
-            .Stack(column =>
+            .column(column =>
             {
                 foreach (var item in Model.Items)
                 {
@@ -174,7 +174,7 @@ void ComposeTable(IContainer container)
 ```csharp
 void ComposeComments(IContainer container)
 {
-    container.ShowEntire().Background(Colors.Grey.Lighten3).Padding(10).Stack(message => 
+    container.ShowEntire().Background(Colors.Grey.Lighten3).Padding(10).column(message => 
     {
         message.Spacing(5);
         message.Item().Text("Comments", TextStyle.Default.Size(14).SemiBold());
@@ -200,7 +200,7 @@ public class AddressComponent : IComponent
     
     public void Compose(IContainer container)
     {
-        container.ShowEntire().Stack(column =>
+        container.ShowEntire().column(column =>
         {
             column.Spacing(5);
 

@@ -8,7 +8,7 @@ using QuestPDF.UnitTests.TestEngine;
 namespace QuestPDF.UnitTests
 {
     [TestFixture]
-    public class StackTests
+    public class columnTests
     {
         #region Measure
 
@@ -16,7 +16,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsWrap_WhenFirstChildWraps()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -30,7 +30,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsPartialRender_WhenFirstChildReturnsPartialRender()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -44,7 +44,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsPartialRender_WhenSecondChildWraps()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -59,7 +59,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsPartialRender_WhenSecondChildReturnsPartialRender()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -74,7 +74,7 @@ namespace QuestPDF.UnitTests
         public void Measure_ReturnsFullRender_WhenSecondChildReturnsFullRender()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -89,7 +89,7 @@ namespace QuestPDF.UnitTests
         public void Measure_UsesEmpty_WhenFirstChildIsRendered()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second"),
@@ -109,7 +109,7 @@ namespace QuestPDF.UnitTests
         public void Draw_WhenFirstChildWraps()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -123,7 +123,7 @@ namespace QuestPDF.UnitTests
         public void Draw_WhenFirstChildPartiallyRenders()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -138,7 +138,7 @@ namespace QuestPDF.UnitTests
         public void Draw_WhenFirstChildFullyRenders_AndSecondChildWraps()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -154,7 +154,7 @@ namespace QuestPDF.UnitTests
         public void Draw_WhenFirstChildFullyRenders_AndSecondChildPartiallyRenders()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -173,7 +173,7 @@ namespace QuestPDF.UnitTests
         public void Draw_WhenFirstChildFullyRenders_AndSecondChildFullyRenders()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second")
@@ -192,7 +192,7 @@ namespace QuestPDF.UnitTests
         public void Draw_UsesEmpty_WhenFirstChildIsRendered()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second"),
@@ -204,7 +204,7 @@ namespace QuestPDF.UnitTests
                 .ExpectCanvasTranslate(0, 0)
                 .ExpectChildDraw("second", new Size(400, 300))
                 .ExpectCanvasTranslate(0, 0)
-                .CheckState<BinaryStack>(x => x.IsFirstRendered)
+                .CheckState<Binarycolumn>(x => x.IsFirstRendered)
                 .CheckDrawResult();
         }
         
@@ -212,7 +212,7 @@ namespace QuestPDF.UnitTests
         public void Draw_TogglesFirstRenderedFlag_WhenSecondFullyRenders()
         {
             TestPlan
-                .For(x => new BinaryStack
+                .For(x => new Binarycolumn
                 {
                     First = x.CreateChild("first"),
                     Second = x.CreateChild("second"),
@@ -225,7 +225,7 @@ namespace QuestPDF.UnitTests
                 .ExpectChildDraw("second", new Size(400, 300))
                 .ExpectCanvasTranslate(0, 0)
                 .CheckDrawResult()
-                .CheckState<BinaryStack>(x => !x.IsFirstRendered);
+                .CheckState<Binarycolumn>(x => !x.IsFirstRendered);
         }
         
         #endregion
@@ -247,15 +247,15 @@ namespace QuestPDF.UnitTests
             // act
             var structure = new Container();
             
-            structure.Stack(stack =>
+            structure.Column(column =>
             {
-                stack.Spacing(spacing);
+                column.Spacing(spacing);
                 
-                stack.Item().Element(childA);
-                stack.Item().Element(childB);
-                stack.Item().Element(childC);
-                stack.Item().Element(childD);
-                stack.Item().Element(childE);
+                column.Item().Element(childA);
+                column.Item().Element(childB);
+                column.Item().Element(childC);
+                column.Item().Element(childD);
+                column.Item().Element(childE);
             });
             
             // assert
@@ -263,9 +263,9 @@ namespace QuestPDF.UnitTests
             {
                 Bottom = -spacing,
 
-                Child = new BinaryStack
+                Child = new Binarycolumn
                 {
-                    First = new BinaryStack
+                    First = new Binarycolumn
                     {
                         First = new Padding
                         {
@@ -278,14 +278,14 @@ namespace QuestPDF.UnitTests
                             Child = childB
                         }
                     },
-                    Second = new BinaryStack
+                    Second = new Binarycolumn
                     {
                         First = new Padding
                         {
                             Bottom = spacing,
                             Child = childC
                         },
-                        Second = new BinaryStack
+                        Second = new Binarycolumn
                         {
                             First = new Padding
                             {

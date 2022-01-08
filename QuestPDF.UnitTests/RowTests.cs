@@ -132,11 +132,11 @@ namespace QuestPDF.UnitTests
             {
                 row.Spacing(spacing);
                 
-                row.ConstantColumn(150).Element(childA);
-                row.ConstantColumn(250).Element(childB);
-                row.RelativeColumn(1).Element(childC);
-                row.RelativeColumn(2).Element(childD);
-                row.RelativeColumn(3).Element(childE);
+                row.ConstantItem(150).Element(childA);
+                row.ConstantItem(250).Element(childB);
+                row.RelativeItem(1).Element(childC);
+                row.RelativeItem(2).Element(childD);
+                row.RelativeItem(3).Element(childE);
             });
             
             // assert
@@ -146,11 +146,11 @@ namespace QuestPDF.UnitTests
             {
                 row.Spacing(spacing);
                 
-                row.ConstantColumn(150).Element(childA);
-                row.ConstantColumn(250).Element(childB);
-                row.ConstantColumn(100).Element(childC);
-                row.ConstantColumn(200).Element(childD);
-                row.ConstantColumn(300).Element(childE);
+                row.ConstantItem(150).Element(childA);
+                row.ConstantItem(250).Element(childB);
+                row.ConstantItem(100).Element(childC);
+                row.ConstantItem(200).Element(childD);
+                row.ConstantItem(300).Element(childE);
             });
             
             TestPlan.CompareOperations(value, expected, availableSpace);
@@ -176,11 +176,11 @@ namespace QuestPDF.UnitTests
             {
                 row.Spacing(spacing);
                 
-                row.ConstantColumn(150).Element(childA);
-                row.ConstantColumn(200).Element(childB);
-                row.ConstantColumn(250).Element(childC);
-                row.RelativeColumn(2).Element(childD);
-                row.RelativeColumn(3).Element(childE);
+                row.ConstantItem(150).Element(childA);
+                row.ConstantItem(200).Element(childB);
+                row.ConstantItem(250).Element(childC);
+                row.RelativeItem(2).Element(childD);
+                row.RelativeItem(3).Element(childE);
             });
             
             // assert
