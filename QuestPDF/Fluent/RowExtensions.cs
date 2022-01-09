@@ -23,7 +23,7 @@ namespace QuestPDF.Fluent
             return Column(relativeWidth: width);
         }
         
-        public IContainer Column(float constantWidth = 0, float relativeWidth = 0)
+        private IContainer Column(float constantWidth = 0, float relativeWidth = 0)
         {
             var element = new RowElement(constantWidth, relativeWidth);
             

@@ -3,5 +3,4 @@
 Other changes:
 - Added new element `DefaultTextStyle` - it allows set new text style to all its children,
 - Improved the default paging behavior for the `Row` element. In some minor corner cases it might cause infinite layout exceptions and confuse developers.
-- Improved the `Row` element: added new type of column that combines constant and relative widths.
 - Fixed default page sizes for: Letter and Legal.

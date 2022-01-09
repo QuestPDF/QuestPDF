@@ -38,9 +38,9 @@ namespace QuestPDF.Examples
                             {
                                 row.ConstantColumn(100).ValueCell("100px");
                                 row.ConstantColumn(50).ValueCell("50px");
-                                row.Column(constantWidth: 100, relativeWidth: 4).ValueCell("350px");
-                                row.RelativeColumn(2).ValueCell("100px");
-                                row.RelativeColumn(1).ValueCell("50px");
+                                row.RelativeColumn(3).ValueCell("300px");
+                                row.RelativeColumn(1).ValueCell("100px");
+                                row.ConstantColumn(50).ValueCell("50px");
                             });
                         });
                 });
