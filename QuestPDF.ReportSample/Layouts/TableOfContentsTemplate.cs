@@ -19,7 +19,7 @@ namespace QuestPDF.ReportSample.Layouts
                 .Decoration(decoration =>
                 {
                     decoration
-                        .Header()
+                        .Before()
                         .PaddingBottom(5)
                         .Text("Table of contents", Typography.Headline);
 

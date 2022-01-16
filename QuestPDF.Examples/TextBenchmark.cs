@@ -129,7 +129,7 @@ namespace QuestPDF.Examples
                                 column.Item().Element(Acknowledgements);
                             });
 
-                        decoration.Footer().Element(Footer);
+                        decoration.After().Element(Footer);
                     });
             }
             

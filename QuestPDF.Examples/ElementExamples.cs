@@ -40,7 +40,7 @@ namespace QuestPDF.Examples
                         .Decoration(decoration =>
                         {
                             decoration
-                                .Header()
+                                .Before()
                                 .Background(Colors.Grey.Medium)
                                 .Padding(10)
                                 .Text("Notes", TextStyle.Default.Size(16).Color("#FFF"));
@@ -501,7 +501,7 @@ namespace QuestPDF.Examples
                                 .SemiBold();
     
                             decoration
-                                .Header()
+                                .Before()
                                 .PaddingBottom(10)
                                 .Text("Example: scale component", headerFontStyle);
     

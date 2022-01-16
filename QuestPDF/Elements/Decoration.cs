@@ -17,22 +17,22 @@ namespace QuestPDF.Elements
     
     internal class Decoration : Element, ICacheable
     {
-        internal Element Header { get; set; } = new Empty();
+        internal Element Before { get; set; } = new Empty();
         internal Element Content { get; set; } = new Empty();
-        internal Element Footer { get; set; } = new Empty();
+        internal Element After { get; set; } = new Empty();
 
         internal override IEnumerable<Element?> GetChildren()
         {
-            yield return Header;
+            yield return Before;
             yield return Content;
-            yield return Footer;
+            yield return After;
         }
         
         internal override void CreateProxy(Func<Element?, Element?> create)
         {
-            Header = create(Header);
+            Before = create(Before);
             Content = create(Content);
-            Footer = create(Footer);
+            After = create(After);
         }
 
         internal override SpacePlan Measure(Size availableSpace)
@@ -68,17 +68,17 @@ namespace QuestPDF.Elements
 
         private IEnumerable<DecorationItemRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var headerMeasurement = Header.Measure(availableSpace);
-            var footerMeasurement = Footer.Measure(availableSpace);
+            var beforeMeasurement = Before.Measure(availableSpace);
+            var afterMeasurement = After.Measure(availableSpace);
             
-            var contentSpace = new Size(availableSpace.Width, availableSpace.Height - headerMeasurement.Height - footerMeasurement.Height);
+            var contentSpace = new Size(availableSpace.Width, availableSpace.Height - beforeMeasurement.Height - afterMeasurement.Height);
             var contentMeasurement = Content.Measure(contentSpace);
 
             yield return new DecorationItemRenderingCommand
             {
-                Element = Header,
-                Measurement = headerMeasurement,
-                Size = new Size(availableSpace.Width, headerMeasurement.Height),
+                Element = Before,
+                Measurement = beforeMeasurement,
+                Size = new Size(availableSpace.Width, beforeMeasurement.Height),
                 Offset = Position.Zero
             };
             
@@ -87,15 +87,15 @@ namespace QuestPDF.Elements
                 Element = Content,
                 Measurement = contentMeasurement,
                 Size = new Size(availableSpace.Width, contentMeasurement.Height),
-                Offset = new Position(0, headerMeasurement.Height)
+                Offset = new Position(0, beforeMeasurement.Height)
             };
 
             yield return new DecorationItemRenderingCommand
             {
-                Element = Footer,
-                Measurement = footerMeasurement,
-                Size = new Size(availableSpace.Width, footerMeasurement.Height),
-                Offset = new Position(0, headerMeasurement.Height + contentMeasurement.Height)
+                Element = After,
+                Measurement = afterMeasurement,
+                Size = new Size(availableSpace.Width, afterMeasurement.Height),
+                Offset = new Position(0, beforeMeasurement.Height + contentMeasurement.Height)
             };
         }
     }

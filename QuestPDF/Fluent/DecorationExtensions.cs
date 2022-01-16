@@ -8,16 +8,16 @@ namespace QuestPDF.Fluent
     {
         internal Decoration Decoration { get; } = new Decoration();
         
-        public IContainer Header()
+        public IContainer Before()
         {
             var container = new Container();
-            Decoration.Header = container;
+            Decoration.Before = container;
             return container;
         }
         
-        public void Header(Action<IContainer> handler)
+        public void Before(Action<IContainer> handler)
         {
-            handler?.Invoke(Header());
+            handler?.Invoke(Before());
         }
         
         public IContainer Content()
@@ -32,17 +32,45 @@ namespace QuestPDF.Fluent
             handler?.Invoke(Content());
         }
         
-        public IContainer Footer()
+        public IContainer After()
         {
             var container = new Container();
-            Decoration.Footer = container;
+            Decoration.After = container;
             return container;
         }
         
-        public void Footer(Action<IContainer> handler)
+        public void After(Action<IContainer> handler)
         {
-            handler?.Invoke(Footer());
+            handler?.Invoke(After());
         }
+
+        #region Obsolete
+
+        // public IContainer Header()
+        // {
+        //     var container = new Container();
+        //     Decoration.Before = container;
+        //     return container;
+        // }
+        //
+        // public void Header(Action<IContainer> handler)
+        // {
+        //     handler?.Invoke(Header());
+        // }
+        //
+        // public IContainer Footer()
+        // {
+        //     var container = new Container();
+        //     Decoration.After = container;
+        //     return container;
+        // }
+        //
+        // public void Footer(Action<IContainer> handler)
+        // {
+        //     handler?.Invoke(Footer());
+        // }
+
+        #endregion
     }
     
     public static class DecorationExtensions

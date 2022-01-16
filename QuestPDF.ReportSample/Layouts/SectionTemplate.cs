@@ -21,7 +21,7 @@ namespace QuestPDF.ReportSample.Layouts
                 .Decoration(decoration =>
                 {
                     decoration
-                        .Header()
+                        .Before()
                         .PaddingBottom(5)
                         .Text(Model.Title, Typography.Headline);
 

@@ -101,9 +101,9 @@ namespace QuestPDF.Fluent
             container
                 .Decoration(decoration =>
                 {
-                    decoration.Header().Element(HeaderTable);
+                    decoration.Before().Element(HeaderTable);
                     decoration.Content().Element(ContentTable);
-                    decoration.Footer().Element(FooterTable);
+                    decoration.After().Element(FooterTable);
                 });
 
             return container;

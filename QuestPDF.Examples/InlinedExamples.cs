@@ -25,7 +25,7 @@ namespace QuestPDF.Examples
                         .Padding(25)
                         .Decoration(decoration =>
                         {
-                            decoration.Header().Text(text =>
+                            decoration.Before().Text(text =>
                             {
                                 text.DefaultTextStyle(TextStyle.Default.Size(20));
                                 
