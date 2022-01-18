@@ -37,9 +37,9 @@ namespace QuestPDF.Fluent
             Alignment = HorizontalAlignment.Right;
         }
 
-        public void ParagraphSpacing(float value)
+        public void ParagraphSpacing(float value, Unit unit = Unit.Point)
         {
-            Spacing = value;
+            Spacing = value.ToPoints(unit);
         }
 
         private void AddItemToLastTextBlock(ITextBlockItem item)

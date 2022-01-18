@@ -10,14 +10,21 @@ namespace QuestPDF.Fluent
     {
         internal Inlined Inlined { get; } = new Inlined();
         
-        public void Spacing(float value)
+        public void Spacing(float value, Unit unit = Unit.Point)
         {
-            VerticalSpacing(value);
-            HorizontalSpacing(value);
+            VerticalSpacing(value, unit);
+            HorizontalSpacing(value, unit);
         }
         
-        public void VerticalSpacing(float value) => Inlined.VerticalSpacing = value;
-        public void HorizontalSpacing(float value) => Inlined.HorizontalSpacing = value;
+        public void VerticalSpacing(float value, Unit unit = Unit.Point)
+        {
+            Inlined.VerticalSpacing = value.ToPoints(unit);
+        }
+
+        public void HorizontalSpacing(float value, Unit unit = Unit.Point)
+        {
+            Inlined.HorizontalSpacing = value.ToPoints(unit);
+        }
 
         public void BaselineTop() => Inlined.BaselineAlignment = VerticalAlignment.Top;
         public void BaselineMiddle() => Inlined.BaselineAlignment = VerticalAlignment.Middle;

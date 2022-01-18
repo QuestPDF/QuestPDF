@@ -25,8 +25,9 @@ namespace QuestPDF.Examples
                         static void Block(IContainer container)
                         {
                             container
-                                .Width(100)
-                                .Height(100)
+                                .Width(72)
+                                .Height(3.5f)
+                                .Height(1.5f)
                                 .Background(Placeholders.BackgroundColor());
                         }
                     });

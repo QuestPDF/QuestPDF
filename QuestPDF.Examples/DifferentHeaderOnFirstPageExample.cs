@@ -23,7 +23,7 @@ namespace QuestPDF.Examples
                     container.Page(page =>
                     {
                         page.Size(PageSizes.A6);
-                        page.Margin(30);
+                        page.Margin(5);
                         page.Background(Colors.White);
                         
                         page.Header().Column(column =>

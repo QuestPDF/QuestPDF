@@ -9,7 +9,7 @@ namespace QuestPDF.Examples
     public class DebuggingTesting
     {
         [Test]
-        public void column()
+        public void Column()
         {
             Assert.Throws<DocumentLayoutException>(() =>
             {

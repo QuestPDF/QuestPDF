@@ -14,14 +14,14 @@ namespace QuestPDF.Fluent
             return element.Element(translate);
         }
 
-        public static IContainer TranslateX(this IContainer element, float value)
+        public static IContainer TranslateX(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Translate(x => x.TranslateX += value);
+            return element.Translate(x => x.TranslateX += value.ToPoints(unit));
         }
         
-        public static IContainer TranslateY(this IContainer element, float value)
+        public static IContainer TranslateY(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Translate(x => x.TranslateY += value);
+            return element.Translate(x => x.TranslateY += value.ToPoints(unit));
         }
     }
 }

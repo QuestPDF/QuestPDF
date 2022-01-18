@@ -18,14 +18,14 @@ namespace QuestPDF.Fluent
             return line;
         }
         
-        public static ILine LineVertical(this IContainer element, float size)
+        public static ILine LineVertical(this IContainer element, float size, Unit unit = Unit.Point)
         {
-            return element.Line(LineType.Vertical, size);
+            return element.Line(LineType.Vertical, size.ToPoints(unit));
         }
         
-        public static ILine LineHorizontal(this IContainer element, float size)
+        public static ILine LineHorizontal(this IContainer element, float size, Unit unit = Unit.Point)
         {
-            return element.Line(LineType.Horizontal, size);
+            return element.Line(LineType.Horizontal, size.ToPoints(unit));
         }
         
         public static void LineColor(this ILine descriptor, string value)

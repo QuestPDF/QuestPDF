@@ -44,9 +44,9 @@ namespace QuestPDF.Fluent
             return Item(RowItemType.Relative, size);
         }
         
-        public IContainer ConstantItem(float size)
+        public IContainer ConstantItem(float size, Unit unit = Unit.Point)
         {
-            return Item(RowItemType.Constant, size);
+            return Item(RowItemType.Constant, size.ToPoints(unit));
         }
 
         public IContainer AutoItem()
