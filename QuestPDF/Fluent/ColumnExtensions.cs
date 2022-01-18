@@ -28,8 +28,7 @@ namespace QuestPDF.Fluent
     
     public static class ColumnExtensions
     {
-        // TODO: deprecated Box method in QuestPDF 2022.2
-        [Obsolete("This element has been renamed. Please use the Column method.")]
+        [Obsolete("This element has been renamed since version 2022.2. Please use the 'Column' method.")]
         public static void Stack(this IContainer element, Action<ColumnDescriptor> handler)
         {
             element.Column(handler);

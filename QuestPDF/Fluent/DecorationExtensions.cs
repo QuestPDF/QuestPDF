@@ -46,8 +46,7 @@ namespace QuestPDF.Fluent
 
         #region Obsolete
 
-        // TODO: deprecated Box method in QuestPDF 2022.2
-        [Obsolete("This element has been renamed. Please use the Before method.")]
+        [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
         public IContainer Header()
         {
             var container = new Container();
@@ -55,15 +54,13 @@ namespace QuestPDF.Fluent
             return container;
         }
         
-        // TODO: deprecated Box method in QuestPDF 2022.2
-        [Obsolete("This element has been renamed. Please use the Before method.")]
+        [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
         public void Header(Action<IContainer> handler)
         {
             handler?.Invoke(Header());
         }
         
-        // TODO: deprecated Box method in QuestPDF 2022.2
-        [Obsolete("This element has been renamed. Please use the After method.")]
+        [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
         public IContainer Footer()
         {
             var container = new Container();
@@ -71,8 +68,7 @@ namespace QuestPDF.Fluent
             return container;
         }
         
-        // TODO: deprecated Box method in QuestPDF 2022.2
-        [Obsolete("This element has been renamed. Please use the After method.")]
+        [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
         public void Footer(Action<IContainer> handler)
         {
             handler?.Invoke(Footer());

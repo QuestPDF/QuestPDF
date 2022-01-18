@@ -25,15 +25,13 @@ namespace QuestPDF.Fluent
             return element;
         }
         
-        // TODO: deprecated Box method in QuestPDF 2022.2
-        [Obsolete("This element has been renamed. Please use the RelativeItem method.")]
+        [Obsolete("This element has been renamed since version 2022.2. Please use the RelativeItem method.")]
         public IContainer RelativeColumn(float size = 1)
         {
             return Item(RowItemType.Relative, size);
         }
         
-        // TODO: deprecated Box method in QuestPDF 2022.2
-        [Obsolete("This element has been renamed. Please use the ConstantItem method.")]
+        [Obsolete("This element has been renamed since version 2022.2. Please use the ConstantItem method.")]
         public IContainer ConstantColumn(float size)
         {
             return Item(RowItemType.Constant, size);
