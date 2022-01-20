@@ -70,8 +70,10 @@ namespace QuestPDF.Elements
                 if (command.Measurement.Type == SpacePlanType.FullRender)
                     command.ColumnItem.IsRendered = true;
 
+                var targetSize = new Size(availableSpace.Width, command.Size.Height);
+                
                 Canvas.Translate(command.Offset);
-                command.ColumnItem.Draw(command.Size);
+                command.ColumnItem.Draw(targetSize);
                 Canvas.Translate(command.Offset.Reverse());
             }
             
