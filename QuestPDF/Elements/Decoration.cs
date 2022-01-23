@@ -11,7 +11,6 @@ namespace QuestPDF.Elements
     {
         public Element Element { get; set; }
         public SpacePlan Measurement { get; set; }
-        public Size Size { get; set; }
         public Position Offset { get; set; }
     }
     
@@ -42,8 +41,8 @@ namespace QuestPDF.Elements
             if (renderingCommands.Any(x => x.Measurement.Type == SpacePlanType.Wrap))
                 return SpacePlan.Wrap();
 
-            var width = renderingCommands.Max(x => x.Size.Width);
-            var height = renderingCommands.Sum(x => x.Size.Height);
+            var width = renderingCommands.Max(x => x.Measurement.Width);
+            var height = renderingCommands.Sum(x => x.Measurement.Height);
             var size = new Size(width, height);
             
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
@@ -58,18 +57,32 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            foreach (var command in PlanLayout(availableSpace))
+            var renderingCommands = PlanLayout(availableSpace).ToList();
+            var width = renderingCommands.Max(x => x.Measurement.Width);
+            
+            foreach (var command in renderingCommands)
             {
+                var elementSize = new Size(width, command.Measurement.Height);
+                
                 Canvas.Translate(command.Offset);
-                command.Element.Draw(command.Size);
+                command.Element.Draw(elementSize);
                 Canvas.Translate(command.Offset.Reverse());
             }
         }
 
         private IEnumerable<DecorationItemRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var beforeMeasurement = Before.Measure(availableSpace);
-            var afterMeasurement = After.Measure(availableSpace);
+            SpacePlan GetDecorationMeasurement(Element element)
+            {
+                var measurement = element.Measure(availableSpace);
+                
+                return measurement.Type == SpacePlanType.FullRender 
+                    ? measurement 
+                    : SpacePlan.Wrap();
+            }
+            
+            var beforeMeasurement = GetDecorationMeasurement(Before);
+            var afterMeasurement = GetDecorationMeasurement(After);
             
             var contentSpace = new Size(availableSpace.Width, availableSpace.Height - beforeMeasurement.Height - afterMeasurement.Height);
             var contentMeasurement = Content.Measure(contentSpace);
@@ -78,7 +91,6 @@ namespace QuestPDF.Elements
             {
                 Element = Before,
                 Measurement = beforeMeasurement,
-                Size = new Size(availableSpace.Width, beforeMeasurement.Height),
                 Offset = Position.Zero
             };
             
@@ -86,7 +98,6 @@ namespace QuestPDF.Elements
             {
                 Element = Content,
                 Measurement = contentMeasurement,
-                Size = new Size(availableSpace.Width, contentMeasurement.Height),
                 Offset = new Position(0, beforeMeasurement.Height)
             };
 
@@ -94,7 +105,6 @@ namespace QuestPDF.Elements
             {
                 Element = After,
                 Measurement = afterMeasurement,
-                Size = new Size(availableSpace.Width, afterMeasurement.Height),
                 Offset = new Position(0, beforeMeasurement.Height + contentMeasurement.Height)
             };
         }
