@@ -109,7 +109,7 @@ namespace QuestPDF.Elements
                 return;
 
             var widthPerRelativeUnit = (availableWidth - constantWidth - spacingWidth) / relativeWidth;
-
+            
             foreach (var item in Items.Where(x => x.Type == RowItemType.Relative))
                 item.Width = item.Size * widthPerRelativeUnit;
         }
@@ -146,12 +146,12 @@ namespace QuestPDF.Elements
 
             var rowHeight = renderingCommands.Where(x => !x.RowItem.IsRendered).Max(x => x.Measurement.Height);
             
-            renderingCommands.ForEach(command =>
+            foreach (var command in renderingCommands)
             {
                 command.Size = new Size(command.Size.Width, rowHeight);
                 command.Measurement = command.RowItem.Measure(command.Size);
-            });
- 
+            }
+            
             return renderingCommands;
         }
     }

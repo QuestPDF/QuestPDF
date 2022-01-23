@@ -37,7 +37,7 @@ namespace QuestPDF.Elements
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            var renderingCommands = PlanLayout(availableSpace);
+            var renderingCommands = PlanLayout(availableSpace).ToList();
 
             if (renderingCommands.Any(x => x.Measurement.Type == SpacePlanType.Wrap))
                 return SpacePlan.Wrap();

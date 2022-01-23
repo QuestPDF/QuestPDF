@@ -11,8 +11,6 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class ColumnTests
     {
-        #region Measure
-
         private Column CreateColumnWithTwoItems(TestPlan testPlan)
         {
             return new Column
@@ -38,6 +36,8 @@ namespace QuestPDF.UnitTests
             return column;
         }
         
+        #region Measure
+
         [Test]
         public void Measure_ReturnsWrap_WhenFirstChildWraps()
         {
