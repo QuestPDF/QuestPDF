@@ -160,6 +160,11 @@ namespace QuestPDF.Fluent
             });
         }
 
+        public static IContainer StopPaging(this IContainer element)
+        {
+            return element.Element(new StopPaging());
+        }
+        
         public static IContainer ScaleToFit(this IContainer element)
         {
             return element.Element(new ScaleToFit());
