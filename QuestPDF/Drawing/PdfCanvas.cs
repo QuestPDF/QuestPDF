@@ -7,7 +7,7 @@ namespace QuestPDF.Drawing
     internal class PdfCanvas : SkiaDocumentCanvasBase
     {
         public PdfCanvas(Stream stream, DocumentMetadata documentMetadata) 
-            : base(SKDocument.CreatePdf(new WriteStreamWrapper(stream), MapMetadata(documentMetadata)))
+            : base(SKDocument.CreatePdf(stream, MapMetadata(documentMetadata)))
         {
             
         }
