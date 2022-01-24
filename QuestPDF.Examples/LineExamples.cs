@@ -37,12 +37,12 @@ namespace QuestPDF.Examples
                 .ShowResults()
                 .Render(container => 
                 {
-                    container.Padding(25).Row(row =>
+                    container.Padding(25).Inlined(inlined =>
                     {
-                        row.Spacing(25);
-                        // row.AutoItem().Text("Above text");
-                        // row.AutoItem().LineVertical(1).LineColor(Colors.Blue.Accent1);
-                        // row.AutoItem().Text("Below text");
+                        inlined.Spacing(5);
+                        inlined.Item().Text("Above text");
+                        inlined.Item().LineVertical(1).LineColor(Colors.Blue.Accent1);
+                        inlined.Item().Text("Below text");
                     });
                 });
         }

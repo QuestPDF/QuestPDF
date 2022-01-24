@@ -8,15 +8,7 @@ namespace QuestPDF.Elements
 {
     internal class InlinedElement : Container
     {
-        public SpacePlan? MeasureCache { get; set; }
 
-        internal override SpacePlan Measure(Size availableSpace)
-        {
-            // TODO: once element caching proxy is introduces, this can be removed
-            
-            MeasureCache ??= Child.Measure(Size.Max);
-            return MeasureCache.Value;
-        }
     }
 
     internal enum InlinedAlignment
@@ -112,8 +104,11 @@ namespace QuestPDF.Elements
                 
                 foreach (var element in elements)
                 {
-                    var size = element.Measure(Size.Max);
+                    var size = (Size)element.Measure(Size.Max);
                     var baselineOffset = BaselineOffset(size, lineSize.Height);
+
+                    if (size.Height == 0)
+                        size = new Size(size.Width, lineSize.Height);
                     
                     Canvas.Translate(new Position(0, baselineOffset));
                     element.Draw(size);
@@ -132,48 +127,39 @@ namespace QuestPDF.Elements
                     if (elements.Count == 1)
                         return 0;
 
-                    if (ElementsAlignment == InlinedAlignment.Justify)
-                        return difference / (elements.Count - 1);
-                    
-                    if (ElementsAlignment == InlinedAlignment.SpaceAround)
-                        return difference / (elements.Count + 1);
-                    
-                    return HorizontalSpacing;
+                    return ElementsAlignment switch
+                    {
+                        InlinedAlignment.Justify => difference / (elements.Count - 1),
+                        InlinedAlignment.SpaceAround => difference / (elements.Count + 1),
+                        _ => HorizontalSpacing
+                    };
                 }
 
                 float AlignOffset()
                 {
-                    if (ElementsAlignment == InlinedAlignment.Left)
-                        return 0;
-                    
-                    if (ElementsAlignment == InlinedAlignment.Justify)
-                        return 0;
-                    
-                    if (ElementsAlignment == InlinedAlignment.SpaceAround)
-                        return elementOffset;
-
                     var difference = availableSpace.Width - lineSize.Width - (elements.Count - 1) * HorizontalSpacing;
-                    
-                    if (ElementsAlignment == InlinedAlignment.Center)
-                        return difference / 2;
 
-                    if (ElementsAlignment == InlinedAlignment.Right)
-                        return difference;
-
-                    return 0;
+                    return ElementsAlignment switch
+                    {
+                        InlinedAlignment.Left => 0,
+                        InlinedAlignment.Justify => 0,
+                        InlinedAlignment.SpaceAround => elementOffset,
+                        InlinedAlignment.Center => difference / 2,
+                        InlinedAlignment.Right => difference,
+                        _ => 0
+                    };
                 }
                 
                 float BaselineOffset(Size elementSize, float lineHeight)
                 {
-                    if (BaselineAlignment == VerticalAlignment.Top)
-                        return 0;
-
                     var difference = lineHeight - elementSize.Height;
-                    
-                    if (BaselineAlignment == VerticalAlignment.Middle)
-                        return difference / 2;
 
-                    return difference;
+                    return BaselineAlignment switch
+                    {
+                        VerticalAlignment.Top => 0,
+                        VerticalAlignment.Middle => difference / 2,
+                        _ => difference
+                    };
                 }
             }
         }
@@ -250,11 +236,12 @@ namespace QuestPDF.Elements
             float GetInitialAlignmentOffset()
             {
                 // this method makes sure that the spacing between elements is no lesser than configured
-                
-                if (ElementsAlignment == InlinedAlignment.SpaceAround)
-                    return HorizontalSpacing * 2;
 
-                return 0;
+                return ElementsAlignment switch
+                {
+                    InlinedAlignment.SpaceAround => HorizontalSpacing * 2,
+                    _ => 0
+                };
             }
         }
     }
