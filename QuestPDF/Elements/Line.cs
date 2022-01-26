@@ -1,4 +1,5 @@
 ﻿using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -16,9 +17,9 @@ namespace QuestPDF.Elements
     
     internal class Line : Element, ILine, ICacheable
     {
-        public LineType Type { get; set; }
-        public string Color { get; set; }
-        public float Size { get; set; }
+        public LineType Type { get; set; } = LineType.Vertical;
+        public string Color { get; set; } = Colors.Black;
+        public float Size { get; set; } = 1;
         
         internal override SpacePlan Measure(Size availableSpace)
         {
