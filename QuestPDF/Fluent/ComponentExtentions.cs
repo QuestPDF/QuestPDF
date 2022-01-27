@@ -1,41 +1,53 @@
 using System;
 using System.Linq.Expressions;
 using QuestPDF.Drawing.Exceptions;
+using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    class ComponentDescriptor<T> where T : IComponent
+    internal class ComponentDescriptor<TComponent> where TComponent : IComponent
     {
-        public T Component { get; }
+        public TComponent Component { get; }
         
-        public ComponentDescriptor(T component)
+        public ComponentDescriptor(TComponent component)
         {
             Component = component;
         }
 
-        public IContainer Slot(Expression<Func<T, ISlot>> selector)
+        public IContainer Slot(Expression<Func<TComponent, ISlot>> selector)
         {
-            try
+            AssureThatTheSlotIsNotConfiguredYet(selector);
+                
+            var slot = new Slot();
+            Component.SetPropertyValue(selector, slot);
+            return slot;
+        }
+        
+        public void Slot<TArgument>(Expression<Func<TComponent, ISlot<TArgument>>> selector, Action<TArgument, IContainer> handler)
+        {
+            AssureThatTheSlotIsNotConfiguredYet(selector);
+            
+            var slot = new Slot<TArgument>
             {
-                var existingValue = Component.GetPropertyValue(selector);
+                GetContent = argument =>
+                {
+                    var container = new Container();
+                    handler(argument, container);
+                    return container;
+                }
+            };
+            
+            Component.SetPropertyValue(selector, slot);
+        }
 
-                if (existingValue != null)
-                    throw new DocumentComposeException($"The slot {selector.GetPropertyName()} of the component {(typeof(T).Name)} was already used.");
+        private void AssureThatTheSlotIsNotConfiguredYet<TSlot>(Expression<Func<TComponent, TSlot>> selector) where TSlot : class
+        {
+            var existingValue = Component.GetPropertyValue(selector);
 
-                var slot = new Slot();
-                Component.SetPropertyValue(selector, slot);
-                return slot;
-            }
-            catch (DocumentComposeException)
-            {
-                throw;
-            }
-            catch
-            {
-                throw new DocumentComposeException("Every slot in a component should be a public property with getter and setter.");
-            }
+            if (existingValue != null)
+                throw new DocumentComposeException($"The slot {selector.GetPropertyName()} of the component {(typeof(TComponent).Name)} was already used.");
         }
     }
     
@@ -51,7 +63,7 @@ namespace QuestPDF.Fluent
             element.Component(new T(), null);
         }
 
-        static void Component<T>(this IContainer element, T component, Action<ComponentDescriptor<T>>? handler = null) where T : IComponent
+        internal static void Component<T>(this IContainer element, T component, Action<ComponentDescriptor<T>>? handler = null) where T : IComponent
         {
             var descriptor = new ComponentDescriptor<T>(component);
             handler?.Invoke(descriptor);
@@ -62,14 +74,20 @@ namespace QuestPDF.Fluent
             component.Compose(element.Container());
         }
         
-        static void Component<T>(this IContainer element, Action<ComponentDescriptor<T>>? handler = null) where T : IComponent, new()
+        internal static void Component<T>(this IContainer element, Action<ComponentDescriptor<T>>? handler = null) where T : IComponent, new()
         {
             element.Component(new T(), handler);
         }
 
-        static void Slot(this IContainer element, ISlot slot)
+        internal static void Slot(this IContainer element, ISlot slot)
         {
             var child = (slot as Slot)?.Child;
+            element.Element(child);
+        }
+        
+        internal static void Slot<TArgument>(this IContainer element, ISlot<TArgument> slot, TArgument argument)
+        {
+            var child = (slot as Slot<TArgument>)?.GetContent(argument) ?? Empty.Instance;
             element.Element(child);
         }
     }
