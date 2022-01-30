@@ -17,11 +17,11 @@ namespace QuestPDF.ReportSample.Layouts
         {
             container
                 .ShowEntire()
-                .Stack(stack =>
+                .Column(column =>
                 {
-                    stack.Spacing(5);
-                    stack.Item().Element(PhotoWithMaps);
-                    stack.Item().Element(PhotoDetails);
+                    column.Spacing(5);
+                    column.Item().Element(PhotoWithMaps);
+                    column.Item().Element(PhotoDetails);
                 });
         }
         
@@ -30,14 +30,14 @@ namespace QuestPDF.ReportSample.Layouts
             container
                 .Row(row =>
                 {
-                    row.RelativeColumn(2).AspectRatio(4 / 3f).Component<ImagePlaceholder>();
+                    row.RelativeItem(2).AspectRatio(4 / 3f).Component<ImagePlaceholder>();
 
-                    row.RelativeColumn().PaddingLeft(5).Stack(stack =>
+                    row.RelativeItem().PaddingLeft(5).Column(column =>
                     {
-                        stack.Spacing(7f);
+                        column.Spacing(7f);
                         
-                        stack.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>();
-                        stack.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>();
+                        column.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>();
+                        column.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>();
                     });
                 });
         }

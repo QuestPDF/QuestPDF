@@ -27,12 +27,12 @@ namespace QuestPDF.Elements
         {
             ChildrenQueue = new Queue<GridElement>(Children);
             
-            container.Stack(stack =>
+            container.Column(column =>
             {
-                stack.Spacing(VerticalSpacing);
+                column.Spacing(VerticalSpacing);
                 
                 while (ChildrenQueue.Any())
-                    stack.Item().Row(BuildRow);
+                    column.Item().Row(BuildRow);
             });
         }
         
@@ -65,12 +65,12 @@ namespace QuestPDF.Elements
                 emptySpace /= 2;
             
             if (hasEmptySpace && Alignment != HorizontalAlignment.Left)
-                row.RelativeColumn(emptySpace);
+                row.RelativeItem(emptySpace);
                 
-            elements.ForEach(x => row.RelativeColumn(x.Columns).Element(x.Child));
+            elements.ForEach(x => row.RelativeItem(x.Columns).Element(x.Child));
 
             if (hasEmptySpace && Alignment != HorizontalAlignment.Right)
-                row.RelativeColumn(emptySpace);
+                row.RelativeItem(emptySpace);
         }
     }
 }

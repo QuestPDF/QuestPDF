@@ -36,8 +36,8 @@ namespace QuestPDF.Examples
                     .BorderColor(Colors.Black)
                     .Row(row =>
                     {
-                        row.RelativeColumn().Element(x => GenerateStructure(x, level));
-                        row.RelativeColumn().Element(x => GenerateStructure(x, level));
+                        row.RelativeItem().Element(x => GenerateStructure(x, level));
+                        row.RelativeItem().Element(x => GenerateStructure(x, level));
                     });
             }
             else
@@ -45,10 +45,10 @@ namespace QuestPDF.Examples
                 container
                     .Border(level / 4f)
                     .BorderColor(Colors.Black)
-                    .Stack(stack =>
+                    .Column(column =>
                     {
-                        stack.Item().Element(x => GenerateStructure(x, level));
-                        stack.Item().Element(x => GenerateStructure(x, level));
+                        column.Item().Element(x => GenerateStructure(x, level));
+                        column.Item().Element(x => GenerateStructure(x, level));
                     });
             }
         }

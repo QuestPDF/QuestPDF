@@ -149,41 +149,40 @@ void ComposeTable(IContainer container)
 {
     var headerStyle = TextStyle.Default.SemiBold();
     
-    container.Decoration(decoration =>
+    container.Table(table =>
     {
-        // header
-        decoration.Header().BorderBottom(1).Padding(5).Row(row => 
+        table.ColumnsDefinition(columns =>
         {
-            row.ConstantColumn(25).Text("#", headerStyle);
-            row.RelativeColumn(3).Text("Product", headerStyle);
-            row.RelativeColumn().AlignRight().Text("Unit price", headerStyle);
-            row.RelativeColumn().AlignRight().Text("Quantity", headerStyle);
-            row.RelativeColumn().AlignRight().Text("Total", headerStyle);
+            columns.ConstantColumn(25);
+            columns.RelativeColumn(3);
+            columns.RelativeColumn();
+            columns.RelativeColumn();
+            columns.RelativeColumn();
         });
-
-        // content
-        decoration
-            .Content()
-            .Stack(column =>
-            {
-                foreach (var item in Model.Items)
-                {
-                    column
-                    .Item()
-                    .ShowEntire()
-                    .BorderBottom(1)
-                    .BorderColor(Colors.Grey.Lighten2)
-                    .Padding(5)
-                    .Row(row => 
-                    {
-                        row.ConstantColumn(25).Text(Model.Items.IndexOf(item) + 1);
-                        row.RelativeColumn(3).Text(item.Name);
-                        row.RelativeColumn().AlignRight().Text($"{item.Price}$");
-                        row.RelativeColumn().AlignRight().Text(item.Quantity);
-                        row.RelativeColumn().AlignRight().Text($"{item.Price * item.Quantity}$");
-                    });
-                }
-            });
+        
+        table.Header(header =>
+        {
+            header.Cell().Text("#", headerStyle);
+            header.Cell().Text("Product", headerStyle);
+            header.Cell().AlignRight().Text("Unit price", headerStyle);
+            header.Cell().AlignRight().Text("Quantity", headerStyle);
+            header.Cell().AlignRight().Text("Total", headerStyle);
+            
+            header.Cell().ColumnSpan(5)
+                  .PaddingVertical(5).BorderBottom(1).BorderColor(Colors.Black);
+        });
+        
+        foreach (var item in Model.Items)
+        {
+            table.Cell().Text(Model.Items.IndexOf(item) + 1);
+            table.Cell().Text(item.Name);
+            table.Cell().AlignRight().Text($"{item.Price}$");
+            table.Cell().AlignRight().Text(item.Quantity);
+            table.Cell().AlignRight().Text($"{item.Price * item.Quantity}$");
+            
+            table.Cell().ColumnSpan(5)
+                 .PaddingVertical(5).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+        }
     });
 }
 ```

@@ -9,7 +9,7 @@ namespace QuestPDF.Examples
     public class DebuggingTesting
     {
         [Test]
-        public void Stack()
+        public void Column()
         {
             Assert.Throws<DocumentLayoutException>(() =>
             {
@@ -23,7 +23,7 @@ namespace QuestPDF.Examples
                             .Width(100)
                             .Background(Colors.Grey.Lighten3)
                             .DebugPointer("Example debug pointer")
-                            .Stack(x =>
+                            .Column(x =>
                             {
                                 x.Item().Text("Test");
                                 x.Item().Width(150);

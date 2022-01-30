@@ -8,10 +8,10 @@ namespace QuestPDF.Helpers
         public readonly float Width;
         public readonly float Height;
         
-        public PageSize(float width, float height)
+        public PageSize(float width, float height, Unit unit = Unit.Point)
         {
-            Width = width;
-            Height = height;
+            Width = width.ToPoints(unit);
+            Height = height.ToPoints(unit);
         }
 
         public static implicit operator Size(PageSize pageSize) => new Size(pageSize.Width, pageSize.Height);

@@ -14,9 +14,9 @@ namespace QuestPDF.Fluent
     {
         internal List<TableColumnDefinition> Columns { get; } = new();
         
-        public void ConstantColumn(float width)
+        public void ConstantColumn(float width, Unit unit = Unit.Point)
         {
-            ComplexColumn(constantWidth: width);
+            ComplexColumn(constantWidth: width.ToPoints(unit));
         }
         
         public void RelativeColumn(float width = 1)
@@ -24,7 +24,7 @@ namespace QuestPDF.Fluent
             ComplexColumn(relativeWidth: width);
         }
         
-        public void ComplexColumn(float constantWidth = 0, float relativeWidth = 0)
+        private void ComplexColumn(float constantWidth = 0, float relativeWidth = 0)
         {
             var columnDefinition = new TableColumnDefinition(constantWidth, relativeWidth);
             Columns.Add(columnDefinition);
@@ -101,9 +101,9 @@ namespace QuestPDF.Fluent
             container
                 .Decoration(decoration =>
                 {
-                    decoration.Header().Element(HeaderTable);
+                    decoration.Before().Element(HeaderTable);
                     decoration.Content().Element(ContentTable);
-                    decoration.Footer().Element(FooterTable);
+                    decoration.After().Element(FooterTable);
                 });
 
             return container;

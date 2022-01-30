@@ -25,15 +25,15 @@ namespace QuestPDF.Examples
                         
                         page.Header().Text("With ensure space", TextStyle.Default.SemiBold());
                         
-                        page.Content().Stack(stack =>
+                        page.Content().Column(column =>
                         {
-                            stack
+                            column
                                 .Item()
                                 .ExtendHorizontal()
                                 .Height(75)
                                 .Background(Colors.Grey.Lighten2);
                             
-                            stack
+                            column
                                 .Item()
                                 .EnsureSpace(100)
                                 .Text(Placeholders.LoremIpsum());

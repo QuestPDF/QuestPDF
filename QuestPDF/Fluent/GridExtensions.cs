@@ -8,20 +8,20 @@ namespace QuestPDF.Fluent
     {
         internal Grid Grid { get; } = new Grid();
         
-        public void Spacing(float value)
+        public void Spacing(float value, Unit unit = Unit.Point)
         {
-            VerticalSpacing(value);
-            HorizontalSpacing(value);
+            VerticalSpacing(value, unit);
+            HorizontalSpacing(value, unit);
         }
         
-        public void VerticalSpacing(float value)
+        public void VerticalSpacing(float value, Unit unit = Unit.Point)
         {
-            Grid.VerticalSpacing = value;
+            Grid.VerticalSpacing = value.ToPoints(unit);
         }
          
-        public void HorizontalSpacing(float value)
+        public void HorizontalSpacing(float value, Unit unit = Unit.Point)
         {
-            Grid.HorizontalSpacing = value;
+            Grid.HorizontalSpacing = value.ToPoints(unit);
         }
         
         public void Columns(int value = Grid.DefaultColumnsCount)

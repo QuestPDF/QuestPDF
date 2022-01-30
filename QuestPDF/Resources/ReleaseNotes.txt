@@ -1,4 +1,8 @@
-﻿- Introduced new element: `Table` - a great way to construct complex document structures, e.g. reports. This element covers all cases offered by combination of the `Stack` and the `Row` elements. Additionally, it provides support for more complex layouts and corner cases. Updating to the `Table` element can greatly simplify your code 😁
-- Added new element `DefaultTextStyle` - it allows set new text style to all its children,
-- Improved the default paging behavior for the `Row` element. In some minor corner cases it might cause infinite layout exceptions and confuse developers.
-- Fixed default page sizes for: Letter and Legal.
+- Added a `ScaleToFit` element - scales its child down so it fits in the provided space,
+- Added a `StopPaging` element - when its child requires more than one page to fully render, only the first page is shown,
+- Added a 'LineVertical' and a 'LineHorizontal' elements - those will simplify your code a lot, there is no need to use the `Border` element anymore!
+- Renaming: the `Stack` element was renamed to the `Column` element,
+- Renaming: children of the `Row` element are now called `items` instead of `columns`, e.g. `RelativeItem` instead of `RelativeColumn`,
+- Added support of the `AutoItem` to the `Row` element - those items take as little width as possible,
+- Improved default Fluent configuration behavior for elements: Scale, Padding, Translate,
+- Improved integration support with the HttpContext.Response.Body. This improvement was introduced by schulz3000, thank you!

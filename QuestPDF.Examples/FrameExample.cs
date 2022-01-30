@@ -36,14 +36,14 @@ namespace QuestPDF.Examples
                     container
                         .Background("#FFF")
                         .Padding(25)
-                        .Stack(stack =>
+                        .Column(column =>
                         {
                             for(var i = 1; i <= 4; i++)
                             {
-                                stack.Item().Row(row =>
+                                column.Item().Row(row =>
                                 {
-                                    row.RelativeColumn(2).LabelCell(Placeholders.Label());
-                                    row.RelativeColumn(3).ValueCell().Text(Placeholders.Paragraph());
+                                    row.RelativeItem(2).LabelCell(Placeholders.Label());
+                                    row.RelativeItem(3).ValueCell().Text(Placeholders.Paragraph());
                                 });
                             }
                         });

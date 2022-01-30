@@ -26,58 +26,58 @@ namespace QuestPDF.ReportSample.Layouts
 
         private void ComposeHeader(IContainer container)
         {
-            container.Background(Colors.Grey.Lighten3).Border(1).Stack(stack =>
+            container.Background(Colors.Grey.Lighten3).Border(1).Column(column =>
             {
-                stack.Item().ShowOnce().Padding(5).AlignMiddle().Row(row =>
+                column.Item().ShowOnce().Padding(5).AlignMiddle().Row(row =>
                 {
-                    row.RelativeColumn(2).AlignMiddle().Text("PRIMARY HEADER", TextStyle.Default.Color(Colors.Grey.Darken3).Size(30).Bold());
-                    row.RelativeColumn(1).AlignRight().MinimalBox().AlignMiddle().Background(Colors.Blue.Darken2).Padding(30);
+                    row.RelativeItem(2).AlignMiddle().Text("PRIMARY HEADER", TextStyle.Default.Color(Colors.Grey.Darken3).Size(30).Bold());
+                    row.RelativeItem(1).AlignRight().MinimalBox().AlignMiddle().Background(Colors.Blue.Darken2).Padding(30);
                 });
-                stack.Item().SkipOnce().Padding(5).Row(row =>
+                column.Item().SkipOnce().Padding(5).Row(row =>
                 {
-                    row.RelativeColumn(2).Text("SECONDARY HEADER", TextStyle.Default.Color(Colors.Grey.Darken3).Size(30).Bold());
-                    row.RelativeColumn(1).AlignRight().MinimalBox().Background(Colors.Blue.Lighten4).Padding(15);
+                    row.RelativeItem(2).Text("SECONDARY HEADER", TextStyle.Default.Color(Colors.Grey.Darken3).Size(30).Bold());
+                    row.RelativeItem(1).AlignRight().MinimalBox().Background(Colors.Blue.Lighten4).Padding(15);
                 });
             });
         }
 
         private void ComposeContent(IContainer container)
         {
-            container.Stack(stack =>
+            container.Column(column =>
             {
-                stack.Item().PaddingVertical(80).Text("First");
-                stack.Item().PageBreak();
-                stack.Item().PaddingVertical(80).Text("Second");
-                stack.Item().PageBreak();
-                stack.Item().PaddingVertical(80).Text("Third");
-                stack.Item().PageBreak();
+                column.Item().PaddingVertical(80).Text("First");
+                column.Item().PageBreak();
+                column.Item().PaddingVertical(80).Text("Second");
+                column.Item().PageBreak();
+                column.Item().PaddingVertical(80).Text("Third");
+                column.Item().PageBreak();
             });
         }
 
         private void ComposeFooter(IContainer container)
         {
-            container.Background(Colors.Grey.Lighten3).Stack(stack =>
+            container.Background(Colors.Grey.Lighten3).Column(column =>
             {
-                stack.Item().ShowOnce().Background(Colors.Grey.Lighten3).Row(row =>
+                column.Item().ShowOnce().Background(Colors.Grey.Lighten3).Row(row =>
                 {
-                    row.RelativeColumn().Text(x =>
+                    row.RelativeItem().Text(x =>
                     {
                         x.CurrentPageNumber();
                         x.Span(" / ");
                         x.TotalPages();
                     });
-                    row.RelativeColumn().AlignRight().Text("Footer for header");
+                    row.RelativeItem().AlignRight().Text("Footer for header");
                 });
 
-                stack.Item().SkipOnce().Background(Colors.Grey.Lighten3).Row(row =>
+                column.Item().SkipOnce().Background(Colors.Grey.Lighten3).Row(row =>
                 {
-                    row.RelativeColumn().Text(x =>
+                    row.RelativeItem().Text(x =>
                     {
                         x.CurrentPageNumber();
                         x.Span(" / ");
                         x.TotalPages();
                     });
-                    row.RelativeColumn().AlignRight().Text("Footer for every page except header");
+                    row.RelativeItem().AlignRight().Text("Footer for every page except header");
                 });
             });
         }

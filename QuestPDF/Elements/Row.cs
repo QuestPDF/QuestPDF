@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
@@ -6,174 +7,152 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class RowElement : Constrained
+    internal enum RowItemType
     {
-        public float ConstantSize { get; }
-        public float RelativeSize { get; }
-
-        public RowElement(float constantSize, float relativeSize)
-        {
-            ConstantSize = constantSize;
-            RelativeSize = relativeSize;
-        }
-        
-        public void SetWidth(float width)
-        {
-            MinWidth = width;
-            MaxWidth = width;
-        }
+        Auto,
+        Constant,
+        Relative
     }
     
-    internal class BinaryRow : Element, ICacheable, IStateResettable
+    internal class RowItem : Container
     {
-        internal Element Left { get; set; }
-        internal Element Right { get; set; }
-
-        private bool IsLeftRendered { get; set; } 
-        private bool IsRightRendered { get; set; } 
+        public bool IsRendered { get; set; }
+        public float Width { get; set; }
         
+        public RowItemType Type { get; set; }
+        public float Size { get; set; }
+    }
+
+    internal class RowItemRenderingCommand
+    {
+        public RowItem RowItem { get; set; }
+        public SpacePlan Measurement { get; set; }
+        public Size Size { get; set; }
+        public Position Offset { get; set; }
+    }
+    
+    internal class Row : Element, ICacheable, IStateResettable
+    {
+        internal List<RowItem> Items { get; } = new();
+        internal float Spacing { get; set; }
+
         public void ResetState()
         {
-            IsLeftRendered = false;
-            IsRightRendered = false;
+            Items.ForEach(x => x.IsRendered = false);
         }
         
         internal override IEnumerable<Element?> GetChildren()
         {
-            yield return Left;
-            yield return Right;
+            return Items;
         }
         
         internal override void CreateProxy(Func<Element?, Element?> create)
         {
-            Left = create(Left);
-            Right = create(Right);
+            Items.ForEach(x => x.Child = create(x.Child));
         }
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            var leftMeasurement = Left.Measure(new Size(availableSpace.Width, availableSpace.Height));
+            UpdateItemsWidth(availableSpace.Width);
+            var renderingCommands = PlanLayout(availableSpace);
+
+            if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.Wrap))
+                return SpacePlan.Wrap();
+
+            var width = renderingCommands.Last().Offset.X + renderingCommands.Last().Size.Width;
+            var height = renderingCommands.Max(x => x.Size.Height);
+            var size = new Size(width, height);
+
+            if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
+                return SpacePlan.Wrap();
             
-            if (leftMeasurement.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+            if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.PartialRender))
+                return SpacePlan.PartialRender(size);
 
-            var rightMeasurement = Right.Measure(new Size(availableSpace.Width - leftMeasurement.Width, availableSpace.Height));
-
-            if (rightMeasurement.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
-
-            var totalWidth = leftMeasurement.Width + rightMeasurement.Width;
-            var totalHeight = Math.Max(leftMeasurement.Height, rightMeasurement.Height);
-
-            var targetSize = new Size(totalWidth, totalHeight);
-
-            if ((!IsLeftRendered && leftMeasurement.Type == SpacePlanType.PartialRender) || 
-                (!IsRightRendered && rightMeasurement.Type == SpacePlanType.PartialRender))
-                return SpacePlan.PartialRender(targetSize);
-
-            return SpacePlan.FullRender(targetSize);
+            return SpacePlan.FullRender(size);
         }
 
         internal override void Draw(Size availableSpace)
         {
-            var leftSpace = new Size(availableSpace.Width, availableSpace.Height);
-            var leftMeasurement = Left.Measure(leftSpace);
+            UpdateItemsWidth(availableSpace.Width);
+            var renderingCommands = PlanLayout(availableSpace);
 
-            if (leftMeasurement.Type == SpacePlanType.FullRender)
-                IsLeftRendered = true;
-            
-            Left.Draw(new Size(leftMeasurement.Width, availableSpace.Height));
-
-            var rightSpace = new Size(availableSpace.Width - leftMeasurement.Width, availableSpace.Height);
-            var rightMeasurement = Right.Measure(rightSpace);
-            
-            if (rightMeasurement.Type == SpacePlanType.FullRender)
-                IsRightRendered = true;
-            
-            Canvas.Translate(new Position(leftMeasurement.Width, 0));
-            Right.Draw(rightSpace);
-            Canvas.Translate(new Position(-leftMeasurement.Width, 0));
-        }
-    }
-    
-    internal class Row : Element
-    {
-        public float Spacing { get; set; } = 0;
-        
-        public ICollection<RowElement> Items { get; internal set; } = new List<RowElement>();
-        private Element? RootElement { get; set; }
-
-        internal override IEnumerable<Element?> GetChildren()
-        {
-            if (RootElement == null)
-                ComposeTree();
-
-            yield return RootElement;
-        }
-
-        internal override SpacePlan Measure(Size availableSpace)
-        {
-            UpdateElementsWidth(availableSpace.Width);
-            return RootElement.Measure(availableSpace);
-        }
-
-        internal override void Draw(Size availableSpace)
-        {
-            UpdateElementsWidth(availableSpace.Width);
-            RootElement.Draw(availableSpace);
-        }
-        
-        #region structure
-        
-        private void ComposeTree()
-        {
-            Items = AddSpacing(Items, Spacing);
-            
-            var elements = Items.Cast<Element>().ToArray();
-            RootElement = BuildTree(elements);
-        }
-
-        private void UpdateElementsWidth(float availableWidth)
-        {
-            var constantWidth = Items.Sum(x => x.ConstantSize);
-            var relativeWidth = Items.Sum(x => x.RelativeSize);
-
-            var widthPerRelativeUnit = (relativeWidth > 0) ? (availableWidth - constantWidth) / relativeWidth : 0;
-            
-            foreach (var row in Items)
+            foreach (var command in renderingCommands)
             {
-                row.SetWidth(row.ConstantSize + row.RelativeSize * widthPerRelativeUnit);
+                if (command.Measurement.Type == SpacePlanType.FullRender)
+                    command.RowItem.IsRendered = true;
+                
+                if (command.Measurement.Type == SpacePlanType.Wrap)
+                    continue;
+
+                Canvas.Translate(command.Offset);
+                command.RowItem.Draw(command.Size);
+                Canvas.Translate(command.Offset.Reverse());
+            }
+            
+            if (Items.All(x => x.IsRendered))
+                ResetState();
+        }
+
+        private void UpdateItemsWidth(float availableWidth)
+        {
+            HandleItemsWithAutoWidth();
+            
+            var constantWidth = Items.Where(x => x.Type == RowItemType.Constant).Sum(x => x.Size);
+            var relativeWidth = Items.Where(x => x.Type == RowItemType.Relative).Sum(x => x.Size);
+            var spacingWidth = (Items.Count - 1) * Spacing;
+
+            foreach (var item in Items.Where(x => x.Type == RowItemType.Constant))
+                item.Width = item.Size;
+            
+            if (relativeWidth <= 0)
+                return;
+
+            var widthPerRelativeUnit = (availableWidth - constantWidth - spacingWidth) / relativeWidth;
+            
+            foreach (var item in Items.Where(x => x.Type == RowItemType.Relative))
+                item.Width = item.Size * widthPerRelativeUnit;
+        }
+
+        private void HandleItemsWithAutoWidth()
+        {
+            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto))
+            {
+                rowItem.Size = rowItem.Measure(Size.Max).Width;
+                rowItem.Type = RowItemType.Constant;
             }
         }
-        
-        private static ICollection<RowElement> AddSpacing(ICollection<RowElement> elements, float spacing)
+
+        private ICollection<RowItemRenderingCommand> PlanLayout(Size availableSpace)
         {
-            if (spacing < Size.Epsilon)
-                return elements;
-            
-            return elements
-                .SelectMany(x => new[] { new RowElement(spacing, 0), x })
-                .Skip(1)
-                .ToList();
-        }
+            var leftOffset = 0f;
+            var renderingCommands = new List<RowItemRenderingCommand>();
 
-        private static Element BuildTree(Span<Element> elements)
-        {
-            if (elements.IsEmpty)
-                return Empty.Instance;
-
-            if (elements.Length == 1)
-                return elements[0];
-
-            var half = elements.Length / 2;
-            
-            return new BinaryRow
+            foreach (var item in Items)
             {
-                Left = BuildTree(elements.Slice(0, half)),
-                Right = BuildTree(elements.Slice(half))
-            };
+                var itemSpace = new Size(item.Width, availableSpace.Height);
+                
+                var command = new RowItemRenderingCommand
+                {
+                    RowItem = item,
+                    Size = itemSpace,
+                    Measurement = item.Measure(itemSpace),
+                    Offset = new Position(leftOffset, 0)
+                };
+                
+                renderingCommands.Add(command);
+                leftOffset += item.Width + Spacing;
+            }
+
+            var rowHeight = renderingCommands.Where(x => !x.RowItem.IsRendered).Max(x => x.Measurement.Height);
+            
+            foreach (var command in renderingCommands)
+            {
+                command.Size = new Size(command.Size.Width, rowHeight);
+                command.Measurement = command.RowItem.Measure(command.Size);
+            }
+            
+            return renderingCommands;
         }
-        
-        #endregion
     }
 }

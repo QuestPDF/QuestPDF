@@ -136,8 +136,7 @@ namespace QuestPDF.Fluent
             });
         }
         
-        // TODO: deprecated Box method in QuestPDF 2022.1
-        [Obsolete("This element has been renamed. Please use the MinimalBox method.")]
+        [Obsolete("This element has been renamed since version 2022.1. Please use the MinimalBox method.")]
         public static IContainer Box(this IContainer element)
         {
             return element.Element(new MinimalBox());
@@ -159,6 +158,16 @@ namespace QuestPDF.Fluent
             {
                 TextStyle = textStyle
             });
+        }
+
+        public static IContainer StopPaging(this IContainer element)
+        {
+            return element.Element(new StopPaging());
+        }
+        
+        public static IContainer ScaleToFit(this IContainer element)
+        {
+            return element.Element(new ScaleToFit());
         }
     }
 }

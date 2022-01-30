@@ -18,14 +18,16 @@ namespace QuestPDF.Drawing
         internal static void GeneratePdf(Stream stream, IDocument document)
         {
             var metadata = document.GetMetadata();
-            var canvas = new PdfCanvas(stream, metadata);
+            var writeOnlyStream = new WriteOnlyStream(stream);
+            var canvas = new PdfCanvas(writeOnlyStream, metadata);
             RenderDocument(canvas, document);
         }
         
         internal static void GenerateXps(Stream stream, IDocument document)
         {
             var metadata = document.GetMetadata();
-            var canvas = new XpsCanvas(stream, metadata);
+            var writeOnlyStream = new WriteOnlyStream(stream);
+            var canvas = new XpsCanvas(writeOnlyStream, metadata);
             RenderDocument(canvas, document);
         }
         

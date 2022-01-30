@@ -37,9 +37,9 @@ namespace QuestPDF.Fluent
             Alignment = HorizontalAlignment.Right;
         }
 
-        public void ParagraphSpacing(float value)
+        public void ParagraphSpacing(float value, Unit unit = Unit.Point)
         {
-            Spacing = value;
+            Spacing = value.ToPoints(unit);
         }
 
         private void AddItemToLastTextBlock(ITextBlockItem item)
@@ -174,12 +174,12 @@ namespace QuestPDF.Fluent
         {
             TextBlocks.ToList().ForEach(x => x.Alignment = Alignment);
 
-            container.DefaultTextStyle(DefaultStyle).Stack(stack =>
+            container.DefaultTextStyle(DefaultStyle).Column(column =>
             {
-                stack.Spacing(Spacing);
+                column.Spacing(Spacing);
 
                 foreach (var textBlock in TextBlocks)
-                    stack.Item().Element(textBlock);
+                    column.Item().Element(textBlock);
             });
         }
     }

@@ -126,7 +126,7 @@ namespace QuestPDF.Examples
         }
         
         [Test]
-        public void TextStack()
+        public void Textcolumn()
         {
             RenderingTest
                 .Create()

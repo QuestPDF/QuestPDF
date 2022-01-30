@@ -16,13 +16,13 @@ namespace QuestPDF.Drawing
             var container = new Container();
             
             container
-                .Stack(stack =>
+                .Column(column =>
                 {
                     Pages
                         .SelectMany(x => new List<Action>()
                         {
-                            () => stack.Item().PageBreak(),
-                            () => stack.Item().Component(x)
+                            () => column.Item().PageBreak(),
+                            () => column.Item().Component(x)
                         })
                         .Skip(1)
                         .ToList()

@@ -22,10 +22,10 @@ namespace QuestPDF.Examples
                 
                 page.Header().Text("Header");
                 
-                page.Content().PaddingVertical(10).Border(1).Padding(10).Stack(stack =>
+                page.Content().PaddingVertical(10).Border(1).Padding(10).Column(column =>
                 {
                     foreach (var index in Enumerable.Range(1, 100))
-                        stack.Item().Text($"Line {index}", TextStyle.Default.Color(Placeholders.Color()));
+                        column.Item().Text($"Line {index}", TextStyle.Default.Color(Placeholders.Color()));
                 });
                 
                 page.Footer().Text("Footer");

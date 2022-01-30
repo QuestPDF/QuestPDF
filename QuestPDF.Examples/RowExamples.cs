@@ -9,7 +9,7 @@ namespace QuestPDF.Examples
     public class RowExamples
     {
         [Test]
-        public void ColumnTypes()
+        public void ItemTypes()
         {
             RenderingTest
                 .Create()
@@ -22,25 +22,24 @@ namespace QuestPDF.Examples
                         .Padding(25)
                         .MinimalBox()
                         .Border(1)
-                        .Stack(stack =>
+                        .Column(column =>
                         {
-                            stack.Item().LabelCell("Total width: 600px");
+                            column.Item().LabelCell("Total width: 600px");
                             
-                            stack.Item().Row(row =>
+                            column.Item().Row(row =>
                             {
-                                row.ConstantColumn(150).ValueCell("150px");
-                                row.ConstantColumn(100).ValueCell("100px");
-                                row.RelativeColumn(4).ValueCell("200px");
-                                row.RelativeColumn(3).ValueCell("150px");
+                                row.ConstantItem(150).ValueCell("150px");
+                                row.ConstantItem(100).ValueCell("100px");
+                                row.RelativeItem(4).ValueCell("200px");
+                                row.RelativeItem(3).ValueCell("150px");
                             });
                             
-                            stack.Item().Row(row =>
+                            column.Item().Row(row =>
                             {
-                                row.ConstantColumn(100).ValueCell("100px");
-                                row.ConstantColumn(50).ValueCell("50px");
-                                row.RelativeColumn(3).ValueCell("300px");
-                                row.RelativeColumn(1).ValueCell("100px");
-                                row.ConstantColumn(50).ValueCell("50px");
+                                row.ConstantItem(100).ValueCell("100px");
+                                row.ConstantItem(50).ValueCell("50px");
+                                row.RelativeItem(2).ValueCell("100px");
+                                row.RelativeItem(1).ValueCell("50px");
                             });
                         });
                 });
@@ -63,17 +62,17 @@ namespace QuestPDF.Examples
                         .Padding(25)
                         .Row(row =>
                         {
-                            row.RelativeColumn().Stack(stack =>
+                            row.RelativeItem().Column(column =>
                             {
-                                stack.Item().ShowOnce().Element(CreateBox).Text("X");
-                                stack.Item().Element(CreateBox).Text("1");
-                                stack.Item().Element(CreateBox).Text("2");
+                                column.Item().ShowOnce().Element(CreateBox).Text("X");
+                                column.Item().Element(CreateBox).Text("1");
+                                column.Item().Element(CreateBox).Text("2");
                             });
                                 
-                            row.RelativeColumn().Stack(stack =>
+                            row.RelativeItem().Column(column =>
                             {
-                                stack.Item().Element(CreateBox).Text("1");
-                                stack.Item().Element(CreateBox).Text("2");
+                                column.Item().Element(CreateBox).Text("1");
+                                column.Item().Element(CreateBox).Text("2");
                             });
                         });
                 });

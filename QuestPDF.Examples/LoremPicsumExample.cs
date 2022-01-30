@@ -43,7 +43,7 @@ namespace QuestPDF.Examples
                     container
                         .Background("#FFF")
                         .Padding(25)
-                        .Stack(column =>
+                        .Column(column =>
                         {
                             column.Spacing(10);
 

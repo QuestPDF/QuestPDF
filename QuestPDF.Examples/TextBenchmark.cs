@@ -117,19 +117,19 @@ namespace QuestPDF.Examples
                     {
                         decoration
                             .Content()
-                            .Stack(stack =>
+                            .Column(column =>
                             {
-                                stack.Item().Element(Title);
-                                stack.Item().PageBreak();
-                                stack.Item().Element(TableOfContents);
-                                stack.Item().PageBreak();
+                                column.Item().Element(Title);
+                                column.Item().PageBreak();
+                                column.Item().Element(TableOfContents);
+                                column.Item().PageBreak();
 
-                                Chapters(stack);
+                                Chapters(column);
 
-                                stack.Item().Element(Acknowledgements);
+                                column.Item().Element(Acknowledgements);
                             });
 
-                        decoration.Footer().Element(Footer);
+                        decoration.After().Element(Footer);
                     });
             }
             
@@ -139,61 +139,61 @@ namespace QuestPDF.Examples
                     .Extend()
                     .PaddingBottom(200)
                     .AlignBottom()
-                    .Stack(stack =>
+                    .Column(column =>
                     {
-                        stack.Item().Text("Quo Vadis", TextStyle.Default.Size(72).Bold().Color(Colors.Blue.Darken2));
-                        stack.Item().Text("Henryk Sienkiewicz", TextStyle.Default.Size(24).Color(Colors.Grey.Darken2));
+                        column.Item().Text("Quo Vadis", TextStyle.Default.Size(72).Bold().Color(Colors.Blue.Darken2));
+                        column.Item().Text("Henryk Sienkiewicz", TextStyle.Default.Size(24).Color(Colors.Grey.Darken2));
                     });
             }
 
             void TableOfContents(IContainer container)
             {
-                container.Stack(stack =>
+                container.Column(column =>
                 {
-                    SectionTitle(stack, "Spis treści");
+                    SectionTitle(column, "Spis treści");
                     
                     foreach (var chapter in chapters)
                     {
-                        stack.Item().InternalLink(chapter.Title).Row(row =>
+                        column.Item().InternalLink(chapter.Title).Row(row =>
                         {
-                            row.RelativeColumn().Text(chapter.Title, normalStyle);
-                            row.ConstantColumn(100).AlignRight().Text(text => text.PageNumberOfLocation(chapter.Title, normalStyle));
+                            row.RelativeItem().Text(chapter.Title, normalStyle);
+                            row.ConstantItem(100).AlignRight().Text(text => text.PageNumberOfLocation(chapter.Title, normalStyle));
                         });
                     }
                 });
             }
 
-            void Chapters(StackDescriptor stack)
+            void Chapters(ColumnDescriptor column)
             {
                 foreach (var chapter in chapters)
                 {
-                    stack.Item().Element(container => Chapter(container, chapter.Title, chapter.Content));
+                    column.Item().Element(container => Chapter(container, chapter.Title, chapter.Content));
                 }
             }
             
             void Chapter(IContainer container, string title, string content)
             {
-                container.Stack(stack =>
+                container.Column(column =>
                 {
-                    SectionTitle(stack, title);
+                    SectionTitle(column, title);
   
-                    stack.Item().Text(text =>
+                    column.Item().Text(text =>
                     {
                         text.ParagraphSpacing(5);
                         text.Span(content, normalStyle);
                     });
                     
-                    stack.Item().PageBreak();
+                    column.Item().PageBreak();
                 });
             }
 
             void Acknowledgements(IContainer container)
             {
-                container.Stack(stack =>
+                container.Column(column =>
                 {
-                    SectionTitle(stack, "Podziękowania");
+                    SectionTitle(column, "Podziękowania");
                     
-                    stack.Item().Text(text =>
+                    column.Item().Text(text =>
                     {
                         text.DefaultTextStyle(normalStyle);
                         
@@ -204,10 +204,10 @@ namespace QuestPDF.Examples
                 });
             }
 
-            void SectionTitle(StackDescriptor stack, string text)
+            void SectionTitle(ColumnDescriptor column, string text)
             {
-                stack.Item().Location(text).Text(text, subtitleStyle);
-                stack.Item().PaddingTop(10).PaddingBottom(50).BorderBottom(1).BorderColor(Colors.Grey.Lighten2).ExtendHorizontal();
+                column.Item().Location(text).Text(text, subtitleStyle);
+                column.Item().PaddingTop(10).PaddingBottom(50).BorderBottom(1).BorderColor(Colors.Grey.Lighten2).ExtendHorizontal();
             }
             
             void Footer(IContainer container)

@@ -21,25 +21,25 @@ namespace QuestPDF.ReportSample.Layouts
                 .Decoration(decoration =>
                 {
                     decoration
-                        .Header()
+                        .Before()
                         .PaddingBottom(5)
                         .Text(Model.Title, Typography.Headline);
 
-                    decoration.Content().Border(0.75f).BorderColor(Colors.Grey.Medium).Stack(stack =>
+                    decoration.Content().Border(0.75f).BorderColor(Colors.Grey.Medium).Column(column =>
                     {
                         foreach (var part in Model.Parts)
                         {
-                            stack.Item().EnsureSpace(25).Row(row =>
+                            column.Item().EnsureSpace(25).Row(row =>
                             {
-                                row.ConstantColumn(150).LabelCell().Text(part.Label);
-                                var frame = row.RelativeColumn().ValueCell();
+                                row.ConstantItem(150).LabelCell().Text(part.Label);
+                                var frame = row.RelativeItem().ValueCell();
                             
                                 if (part is ReportSectionText text)
                                     frame.ShowEntire().Text(text.Text);
-                        
+                                
                                 if (part is ReportSectionMap map)
                                     frame.Element(x => MapElement(x, map));
-                        
+                                
                                 if (part is ReportSectionPhotos photos)
                                     frame.Element(x => PhotosElement(x, photos));
                             });
@@ -56,12 +56,12 @@ namespace QuestPDF.ReportSample.Layouts
                 return;
             }
 
-            container.ShowEntire().Stack(stack =>
+            container.ShowEntire().Column(column =>
             {
-                stack.Spacing(5);
+                column.Spacing(5);
                 
-                stack.Item().MaxWidth(250).AspectRatio(4 / 3f).Component<ImagePlaceholder>();
-                stack.Item().Text(model.Location.Format());
+                column.Item().MaxWidth(250).AspectRatio(4 / 3f).Component<ImagePlaceholder>();
+                column.Item().Text(model.Location.Format());
             });
         }
         

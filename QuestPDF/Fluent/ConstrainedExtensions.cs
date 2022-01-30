@@ -14,34 +14,38 @@ namespace QuestPDF.Fluent
             return element.Element(constrained);
         }
         
-        public static IContainer Width(this IContainer element, float value)
+        public static IContainer Width(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.MinWidth(value).MaxWidth(value);
+            return element
+                .MinWidth(value, unit)
+                .MaxWidth(value, unit);
         }
         
-        public static IContainer MinWidth(this IContainer element, float value)
+        public static IContainer MinWidth(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Constrained(x => x.MinWidth = value);
+            return element.Constrained(x => x.MinWidth = value.ToPoints(unit));
         }
         
-        public static IContainer MaxWidth(this IContainer element, float value)
+        public static IContainer MaxWidth(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Constrained(x => x.MaxWidth = value);
+            return element.Constrained(x => x.MaxWidth = value.ToPoints(unit));
         }
         
-        public static IContainer Height(this IContainer element, float value)
+        public static IContainer Height(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.MinHeight(value).MaxHeight(value);
+            return element
+                .MinHeight(value, unit)
+                .MaxHeight(value, unit);
         }
         
-        public static IContainer MinHeight(this IContainer element, float value)
+        public static IContainer MinHeight(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Constrained(x => x.MinHeight = value);
+            return element.Constrained(x => x.MinHeight = value.ToPoints(unit));
         }
         
-        public static IContainer MaxHeight(this IContainer element, float value)
+        public static IContainer MaxHeight(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Constrained(x => x.MaxHeight = value);
+            return element.Constrained(x => x.MaxHeight = value.ToPoints(unit));
         }
     }
 }

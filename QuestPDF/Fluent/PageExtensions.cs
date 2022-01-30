@@ -10,16 +10,24 @@ namespace QuestPDF.Fluent
     {
         internal Page Page { get; } = new Page();
 
+        public void Size(float width, float height, Unit unit = Unit.Inch)
+        {
+            var pageSize = new PageSize(width, height, unit);
+            
+            MinSize(pageSize);
+            MaxSize(pageSize);
+        }
+        
         public void Size(PageSize pageSize)
         {
             MinSize(pageSize);
             MaxSize(pageSize);
         }
         
-        public void ContinuousSize(float width)
+        public void ContinuousSize(float width, Unit unit = Unit.Point)
         {
-            MinSize(new PageSize(width, 0));
-            MaxSize(new PageSize(width, Infrastructure.Size.Max.Height));
+            MinSize(new PageSize(width.ToPoints(unit), 0));
+            MaxSize(new PageSize(width.ToPoints(unit), Infrastructure.Size.Max.Height));
         }
 
         public void MinSize(PageSize pageSize)
@@ -32,42 +40,42 @@ namespace QuestPDF.Fluent
             Page.MaxSize = pageSize;
         }
 
-        public void MarginLeft(float value)
+        public void MarginLeft(float value, Unit unit = Unit.Point)
         {
-            Page.MarginLeft = value;
+            Page.MarginLeft = value.ToPoints(unit);
         }
         
-        public void MarginRight(float value)
+        public void MarginRight(float value, Unit unit = Unit.Point)
         {
-            Page.MarginRight = value;
+            Page.MarginRight = value.ToPoints(unit);
         }
         
-        public void MarginTop(float value)
+        public void MarginTop(float value, Unit unit = Unit.Point)
         {
-            Page.MarginTop = value;
+            Page.MarginTop = value.ToPoints(unit);
         }
         
-        public void MarginBottom(float value)
+        public void MarginBottom(float value, Unit unit = Unit.Point)
         {
-            Page.MarginBottom = value;
+            Page.MarginBottom = value.ToPoints(unit);
         }
         
-        public void MarginVertical(float value)
+        public void MarginVertical(float value, Unit unit = Unit.Point)
         {
-            MarginTop(value);
-            MarginBottom(value);
+            MarginTop(value, unit);
+            MarginBottom(value, unit);
         }
         
-        public void MarginHorizontal(float value)
+        public void MarginHorizontal(float value, Unit unit = Unit.Point)
         {
-            MarginLeft(value);
-            MarginRight(value);
+            MarginLeft(value, unit);
+            MarginRight(value, unit);
         }
         
-        public void Margin(float value)
+        public void Margin(float value, Unit unit = Unit.Point)
         {
-            MarginVertical(value);
-            MarginHorizontal(value);
+            MarginVertical(value, unit);
+            MarginHorizontal(value, unit);
         }
         
         public void DefaultTextStyle(TextStyle textStyle)

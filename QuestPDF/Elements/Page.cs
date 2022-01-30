@@ -45,7 +45,7 @@ namespace QuestPDF.Elements
                 .Decoration(decoration =>
                 {
                     decoration
-                        .Header()
+                        .Before()
                         .DebugPointer("Page header")
                         .Element(Header);
                     
@@ -57,7 +57,7 @@ namespace QuestPDF.Elements
                         .Element(Content);
                     
                     decoration
-                        .Footer()
+                        .After()
                         .DebugPointer("Page footer")
                         .Element(Footer);
                 });

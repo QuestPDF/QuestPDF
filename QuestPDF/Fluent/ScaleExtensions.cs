@@ -21,7 +21,7 @@ namespace QuestPDF.Fluent
         
         public static IContainer ScaleHorizontal(this IContainer element, float value)
         {
-            return element.Scale(x => x.ScaleX = value);
+            return element.Scale(x => x.ScaleX *= value);
         }
         
         public static IContainer FlipHorizontal(this IContainer element)
@@ -31,7 +31,7 @@ namespace QuestPDF.Fluent
         
         public static IContainer ScaleVertical(this IContainer element, float value)
         {
-            return element.Scale(x => x.ScaleY = value);
+            return element.Scale(x => x.ScaleY *= value);
         }
         
         public static IContainer FlipVertical(this IContainer element)

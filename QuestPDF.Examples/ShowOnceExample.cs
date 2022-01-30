@@ -27,14 +27,14 @@ namespace QuestPDF.Examples
                         
                         page.Content().PaddingVertical(5).Row(row =>
                         {
-                            row.RelativeColumn()
+                            row.RelativeItem()
                                 .Background(Colors.Grey.Lighten2)
                                 .Border(1)
                                 .Padding(5)
                                 .ShowOnce()
                                 .Text(Placeholders.Label());
                             
-                            row.RelativeColumn(2)
+                            row.RelativeItem(2)
                                 .Border(1)
                                 .Padding(5)
                                 .Text(Placeholders.Paragraph());

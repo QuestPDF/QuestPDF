@@ -8,16 +8,16 @@ namespace QuestPDF.Fluent
     {
         internal Decoration Decoration { get; } = new Decoration();
         
-        public IContainer Header()
+        public IContainer Before()
         {
             var container = new Container();
-            Decoration.Header = container;
+            Decoration.Before = container;
             return container;
         }
         
-        public void Header(Action<IContainer> handler)
+        public void Before(Action<IContainer> handler)
         {
-            handler?.Invoke(Header());
+            handler?.Invoke(Before());
         }
         
         public IContainer Content()
@@ -32,17 +32,49 @@ namespace QuestPDF.Fluent
             handler?.Invoke(Content());
         }
         
-        public IContainer Footer()
+        public IContainer After()
         {
             var container = new Container();
-            Decoration.Footer = container;
+            Decoration.After = container;
             return container;
         }
         
+        public void After(Action<IContainer> handler)
+        {
+            handler?.Invoke(After());
+        }
+
+        #region Obsolete
+
+        [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
+        public IContainer Header()
+        {
+            var container = new Container();
+            Decoration.Before = container;
+            return container;
+        }
+        
+        [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
+        public void Header(Action<IContainer> handler)
+        {
+            handler?.Invoke(Header());
+        }
+        
+        [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
+        public IContainer Footer()
+        {
+            var container = new Container();
+            Decoration.After = container;
+            return container;
+        }
+        
+        [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
         public void Footer(Action<IContainer> handler)
         {
             handler?.Invoke(Footer());
         }
+
+        #endregion
     }
     
     public static class DecorationExtensions
@@ -52,7 +84,7 @@ namespace QuestPDF.Fluent
             var descriptor = new DecorationDescriptor();
             handler(descriptor);
             
-            element.Component(descriptor.Decoration);
+            element.Element(descriptor.Decoration);
         }
     }
 }

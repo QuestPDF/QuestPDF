@@ -39,26 +39,26 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Column(column =>
             {
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
-                    row.RelativeColumn(6).Element(childA);
-                    row.RelativeColumn(4).Element(childB);
-                    row.RelativeColumn(2);
+                    row.RelativeItem(6).Element(childA);
+                    row.RelativeItem(4).Element(childB);
+                    row.RelativeItem(2);
                 });
                 
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
-                    row.RelativeColumn(4).Element(childC);
-                    row.RelativeColumn(2).Element(childD);
-                    row.RelativeColumn(6);
+                    row.RelativeItem(4).Element(childC);
+                    row.RelativeItem(2).Element(childD);
+                    row.RelativeItem(6);
                 });
                 
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
-                    row.RelativeColumn(8).Element(childE);
-                    row.RelativeColumn(4);
+                    row.RelativeItem(8).Element(childE);
+                    row.RelativeItem(4);
                 });
             });
             
@@ -93,29 +93,29 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Column(column =>
             {
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
-                    row.RelativeColumn(1);
-                    row.RelativeColumn(6).Element(childA);
-                    row.RelativeColumn(4).Element(childB);
-                    row.RelativeColumn(1);
+                    row.RelativeItem(1);
+                    row.RelativeItem(6).Element(childA);
+                    row.RelativeItem(4).Element(childB);
+                    row.RelativeItem(1);
                 });
                 
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
-                    row.RelativeColumn(3);
-                    row.RelativeColumn(4).Element(childC);
-                    row.RelativeColumn(2).Element(childD);
-                    row.RelativeColumn(3);
+                    row.RelativeItem(3);
+                    row.RelativeItem(4).Element(childC);
+                    row.RelativeItem(2).Element(childD);
+                    row.RelativeItem(3);
                 });
                 
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
-                    row.RelativeColumn(2);
-                    row.RelativeColumn(8).Element(childE);
-                    row.RelativeColumn(2);
+                    row.RelativeItem(2);
+                    row.RelativeItem(8).Element(childE);
+                    row.RelativeItem(2);
                 });
             });
 
@@ -150,26 +150,26 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Column(column =>
             {
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
-                    row.RelativeColumn(2);
-                    row.RelativeColumn(6).Element(childA);
-                    row.RelativeColumn(4).Element(childB);
+                    row.RelativeItem(2);
+                    row.RelativeItem(6).Element(childA);
+                    row.RelativeItem(4).Element(childB);
                 });
                 
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
-                    row.RelativeColumn(6);
-                    row.RelativeColumn(4).Element(childC);
-                    row.RelativeColumn(2).Element(childD);
+                    row.RelativeItem(6);
+                    row.RelativeItem(4).Element(childC);
+                    row.RelativeItem(2).Element(childD);
                 });
                 
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
-                    row.RelativeColumn(4);
-                    row.RelativeColumn(8).Element(childE);
+                    row.RelativeItem(4);
+                    row.RelativeItem(8).Element(childE);
                 });
             });
             
@@ -210,36 +210,36 @@ namespace QuestPDF.UnitTests
             // assert
             var expected = new Container();
             
-            expected.Stack(stack =>
+            expected.Column(column =>
             {
-                stack.Spacing(20);
+                column.Spacing(20);
                 
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
                     row.Spacing(30);
                     
-                    row.RelativeColumn(3);
-                    row.RelativeColumn(5).Element(childA);
-                    row.RelativeColumn(5).Element(childB);
-                    row.RelativeColumn(3);
+                    row.RelativeItem(3);
+                    row.RelativeItem(5).Element(childA);
+                    row.RelativeItem(5).Element(childB);
+                    row.RelativeItem(3);
                 });
                 
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
                     row.Spacing(30);
                     
-                    row.RelativeColumn(3);
-                    row.RelativeColumn(10).Element(childC);
-                    row.RelativeColumn(3);
+                    row.RelativeItem(3);
+                    row.RelativeItem(10).Element(childC);
+                    row.RelativeItem(3);
                 });
                 
-                stack.Item().Row(row =>
+                column.Item().Row(row =>
                 {
                     row.Spacing(30);
                     
-                    row.RelativeColumn(2);
-                    row.RelativeColumn(12).Element(childD);
-                    row.RelativeColumn(2);
+                    row.RelativeItem(2);
+                    row.RelativeItem(12).Element(childD);
+                    row.RelativeItem(2);
                 });
             });
             

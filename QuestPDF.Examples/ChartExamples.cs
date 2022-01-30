@@ -52,14 +52,14 @@ namespace QuestPDF.Examples
                     container
                         .Background(Colors.White)
                         .Padding(25)
-                        .Stack(stack =>
+                        .Column(column =>
                         {
-                            stack
+                            column
                                 .Item()
                                 .PaddingBottom(10)
                                 .Text("Chart example", TextStyle.Default.Size(20).SemiBold().Color(Colors.Blue.Medium));
                             
-                            stack
+                            column
                                 .Item()
                                 .Border(1)
                                 .ExtendHorizontal()
