@@ -15,7 +15,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(PageSizes.A4)
-                .ProducePdf()
+                .ProduceImages()
                 .ShowResults()
                 .Render(container =>
                 {
@@ -23,15 +23,15 @@ namespace QuestPDF.Examples
                     {
                         var text = Placeholders.Paragraph();
 
-                        foreach (var i in Enumerable.Range(0, 16))
+                        foreach (var i in Enumerable.Range(2, 5))
                         {
                             column
                                 .Item()
                                 .MinimalBox()
                                 .Border(1)
                                 .Padding(5)
-                                .Width(50 + i * 25)
-                                .Height(25 + i * 5)
+                                .Width(i * 40)
+                                .Height(i * 20)
                                 .ScaleToFit()
                                 .Text(text);
                         }

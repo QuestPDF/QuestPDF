@@ -3,6 +3,7 @@ using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
@@ -14,16 +15,20 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(PageSizes.A5)
-                .ProducePdf()
+                .ProduceImages()
                 .ShowResults()
                 .Render(container => 
                 {
-                    container.Padding(25).Column(column =>
-                    {
-                        column.Item().Text("Above text");
-                        column.Item().PaddingVertical(10).LineHorizontal(1).LineColor(Colors.Blue.Accent1);
-                        column.Item().Text("Below text");
-                    });
+                    container
+                        .Padding(15)
+                        .MinimalBox()
+                        .DefaultTextStyle(TextStyle.Default.Size(16))
+                        .Column(column =>
+                        {
+                            column.Item().Text("Above text");
+                            column.Item().PaddingVertical(5).LineHorizontal(1).LineColor(Colors.Grey.Medium);
+                            column.Item().Text("Below text");
+                        });
                 });
         }
         
@@ -33,17 +38,19 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(PageSizes.A5)
-                .ProducePdf()
+                .ProduceImages()
                 .ShowResults()
                 .Render(container => 
                 {
-                    container.Padding(25).Inlined(inlined =>
-                    {
-                        inlined.Spacing(5);
-                        inlined.Item().Text("Above text");
-                        inlined.Item().LineVertical(1).LineColor(Colors.Blue.Accent1);
-                        inlined.Item().Text("Below text");
-                    });
+                    container
+                        .Padding(15)
+                        .DefaultTextStyle(TextStyle.Default.Size(16))
+                        .Row(row =>
+                        {
+                            row.AutoItem().Text("Left text");
+                            row.AutoItem().PaddingHorizontal(10).LineVertical(1).LineColor(Colors.Grey.Medium);
+                            row.AutoItem().Text("Right text");
+                        });
                 });
         }
     }
