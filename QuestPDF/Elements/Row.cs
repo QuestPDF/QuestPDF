@@ -53,6 +53,9 @@ namespace QuestPDF.Elements
 
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (!Items.Any())
+                return SpacePlan.FullRender(Size.Zero);
+            
             UpdateItemsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
@@ -74,6 +77,9 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            if (!Items.Any())
+                return;
+
             UpdateItemsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
@@ -143,8 +149,12 @@ namespace QuestPDF.Elements
                 renderingCommands.Add(command);
                 leftOffset += item.Width + Spacing;
             }
-
-            var rowHeight = renderingCommands.Where(x => !x.RowItem.IsRendered).Max(x => x.Measurement.Height);
+            
+            var rowHeight = renderingCommands
+                .Where(x => !x.RowItem.IsRendered)
+                .Select(x => x.Measurement.Height)
+                .DefaultIfEmpty(0)
+                .Max();
             
             foreach (var command in renderingCommands)
             {

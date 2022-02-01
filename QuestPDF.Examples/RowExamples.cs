@@ -89,5 +89,21 @@ namespace QuestPDF.Examples
                     .ShowOnce();
             }
         }
+        
+        [Test]
+        public void Stability_NoItems()
+        {
+            RenderingTest
+                .Create()
+                .ProducePdf()
+                .MaxPages(100)
+                .PageSize(250, 150)
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .Row(row => { });
+                });
+        }
     }
 }
