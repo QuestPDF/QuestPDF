@@ -2,37 +2,21 @@
   <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="400px"> 
 </a>
 
-## Overview
+QuestPDF presents a new approach to PDF document generation. Unlike other libraries, it does not rely on the HTML-to-PDF conversion which in many cases is not reliable. Instead, it implements its own layouting engine that is optimized to cover all paging-related requirements. Then, everything is rendered using the SkiaSharp library (a Skia port for .NET, used in Chrome, Android, MAUI, etc.).
 
-**Rely on solid fundamentals** - This library is created specifically for designing and arranging document layouts, with full paging support.  Alternative solutions, such as HTML-based converters, are not designed for this purpose and therefore are often unpredictable and do not produce desired results.
-
-**Work with organized self-explanatory code** - The entire process of implementing PDF document, takes place in your code. Free yourself from slow visual designers and strange technological limitations. Follow simple yet highly effective approaches to create maintainable, high-quality code.
-
-**Compose simple components into complex documents** - Do you remember the feeling when your code just works? When your ideas are becoming real without any effort? Working with simple, easy to understand, self-explanatory and highly composable layout elements is the key here!
-
-**Create and reuse components** - Feel no fear of complex documents! Create custom, reusable components and divide the document's layout into easy to maintain pieces. Inject data to customize content and use slots to enhance composability. Decide how complex approaches your solution needs and follow the best path.
-
-**Prototype with ease** - We understand that document generation is often tricky and require multiple iterations. The library offers additional prototyping tools such as random text generator or image placeholder element. By following best practices, you can develop a document without having data.
-
-**Enjoy fast PDF generation** - QuestPDF is created upon SkiaSharp, a well-known graphical library, and converts your data into PDF documents. It offers a highly optimized layouting engine capable of generating over 1000 PDF files per minute per core. The entire process is thread-safe.
+I have designed this layouting engine with full paging support in mind. The document consists of many simple elements (e.g. border, background, image, text, padding, table, grid etc.) that are composed together to create more complex structures. This way, as a developer, you can understand the behaviour of every element and use them with full confidence. Additionally, the document and all its elements support paging functionality. For example, an element can be moved to the next page (if there is not enough space) or even be split between pages like table's rows.
 
 ## Support QuestPDF
 
-All great frameworks and libraries started from zero. Please help us to make QuestPDF a commonly known library and an obvious choice in case of generating PDF documents. It can be as easy as:
-- Giving this repository a star ⭐ so more people will know about it,
-- Observing 🤩 the library to know about each new realease,
-- Trying our sample project to see how easy it is to create an invoice 📊,
-- Sharing your thoughts 💬 with us and your colleagues,
-- Simply using it 👨‍💻 and suggesting new features,
-- Creating new features 🆕 for everybody.
+All great frameworks and libraries started from zero. Please help me make QuestPDF a commonly known library and an obvious choice in case of generating PDF documents. Please give it a start ⭐ and share with your colleagues 💬👨‍💻.
 
 ## Installation
 
 The library is available as a nuget package. You can install it as any other nuget package from your IDE, try to search by `QuestPDF`. You can find package details [on this webpage](https://www.nuget.org/packages/QuestPDF/).
 
-<a href="https://www.nuget.org/packages/QuestPDF/">
-  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/nuget.svg" width="200px">  
-</a>
+```
+Install-Package QuestPDF
+```
 
 ## Documentation
 
