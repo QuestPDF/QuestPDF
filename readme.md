@@ -158,14 +158,16 @@ void ComposeTable(IContainer container)
         
         foreach (var item in Model.Items)
         {
-            table.Cell().Text(Model.Items.IndexOf(item) + 1);
-            table.Cell().Text(item.Name);
-            table.Cell().AlignRight().Text($"{item.Price}$");
-            table.Cell().AlignRight().Text(item.Quantity);
-            table.Cell().AlignRight().Text($"{item.Price * item.Quantity}$");
+            table.Cell().Element(CellStyle).Text(Model.Items.IndexOf(item) + 1);
+            table.Cell().Element(CellStyle).Text(item.Name);
+            table.Cell().Element(CellStyle).AlignRight().Text($"{item.Price}$");
+            table.Cell().Element(CellStyle).AlignRight().Text(item.Quantity);
+            table.Cell().Element(CellStyle).AlignRight().Text($"{item.Price * item.Quantity}$");
             
-            table.Cell().ColumnSpan(5)
-                 .PaddingVertical(5).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+            static IContainer CellStyle(IContainer container)
+            {
+                container.BorderBottom(1).BorderColor(Colors.Grey.Lighten2).PaddingVertical(5);
+            }
         }
     });
 }
