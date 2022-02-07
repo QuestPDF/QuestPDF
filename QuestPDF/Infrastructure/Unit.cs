@@ -32,7 +32,7 @@ namespace QuestPDF.Infrastructure
                     Point => 1,
                     Meter => 100 / InchToCentimetre * InchToPoints,
                     Centimetre => 1 / InchToCentimetre * InchToPoints,
-                    Millimetre => 10 / InchToCentimetre * InchToPoints,
+                    Millimetre => 0.1f / InchToCentimetre * InchToPoints,
                     Feet => 12 * InchToPoints,
                     Inch => InchToPoints,
                     Mill => InchToPoints / 1000f,
