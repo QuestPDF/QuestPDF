@@ -1,11 +1,13 @@
-﻿using QuestPDF.Elements.Text.Calculation;
+﻿using System;
+using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
 {
     internal class TextBlockPageNumber : TextBlockSpan
     {
-        public string SlotName { get; set; }
+        public const string PageNumberPlaceholder = "123";
+        public Func<IPageContext, string> Source { get; set; } = _ => PageNumberPlaceholder;
         
         public override TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
@@ -21,13 +23,7 @@ namespace QuestPDF.Elements.Text.Items
 
         private void SetPageNumber(IPageContext context)
         {
-            var pageNumberPlaceholder = 123;
-            
-            var pageNumber = context.GetRegisteredLocations().Contains(SlotName)
-                ? context.GetLocationPage(SlotName)
-                : pageNumberPlaceholder;
-
-            Text = pageNumber.ToString();
+            Text = Source(context) ?? PageNumberPlaceholder;
         }
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ReportSample.Layouts
@@ -43,7 +45,18 @@ namespace QuestPDF.ReportSample.Layouts
                 {
                     row.ConstantItem(25).Text($"{number}.");
                     row.RelativeItem().Text(locationName);
-                    row.ConstantItem(150).AlignRight().Text(text => text.PageNumberOfLocation(locationName));
+                    row.ConstantItem(150).AlignRight().Text(text =>
+                    {
+                        text.BeginPageNumberOfLocation(locationName);
+                        text.Span(" - ");
+                        text.EndPageNumberOfLocation(locationName);
+
+                        var lengthStyle = TextStyle.Default.Color(Colors.Grey.Medium);
+                        
+                        text.Span(" (", lengthStyle);
+                        text.PageLengthOfLocation(locationName, x => x == 1 ? "1 page long" : $"{x} pages long", lengthStyle);
+                        text.Span(")", lengthStyle);
+                    });
                 });
         }
     }

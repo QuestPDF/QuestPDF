@@ -90,36 +90,60 @@ namespace QuestPDF.Fluent
             Span(Environment.NewLine);
         }
 
-        private void PageNumber(string slotName, TextStyle? style = null)
+        private void PageNumber(Func<IPageContext, string> source, TextStyle? style = null)
         {
-            if (IsNullOrEmpty(slotName))
-                throw new ArgumentException(nameof(slotName));
-            
             style ??= TextStyle.Default;
             
             AddItemToLastTextBlock(new TextBlockPageNumber()
             {
-                Style = style,
-                SlotName = slotName
+                Source = source,
+                Style = style
             });
+        }
+        
+        public void CurrentPageNumber(Func<int?, string> format, TextStyle? style = null)
+        {
+            PageNumber(context => format(context.CurrentPage), style);
         }
         
         public void CurrentPageNumber(TextStyle? style = null)
         {
-            PageNumber(PageContext.CurrentPageSlot, style);
+            CurrentPageNumber(x => x.ToString(), style);
+        }
+
+        public void TotalPages(Func<int?, string> format, TextStyle? style = null)
+        {
+            PageNumber(context => format(context.GetLocation(PageContext.DocumentLocation)?.Length), style);
         }
         
         public void TotalPages(TextStyle? style = null)
         {
-            PageNumber(PageContext.TotalPagesSlot, style);
+            TotalPages(x => x.ToString(), style);
         }
         
         public void PageNumberOfLocation(string locationName, TextStyle? style = null)
         {
-            if (IsNullOrEmpty(locationName))
-                throw new ArgumentException(nameof(locationName));
-            
-            PageNumber(locationName, style);
+            BeginPageNumberOfLocation(locationName);
+        }
+        
+        public void BeginPageNumberOfLocation(string locationName, TextStyle? style = null)
+        {
+            PageNumber(context => (context.GetLocation(locationName)?.PageStart ?? 123).ToString(), style);
+        }
+        
+        public void EndPageNumberOfLocation(string locationName, TextStyle? style = null)
+        {
+            PageNumber(context => (context.GetLocation(locationName)?.PageEnd ?? 123).ToString(), style);
+        }
+        
+        public void PageNumberWithinLocation(string locationName, Func<int?, string> format, TextStyle? style = null)
+        {
+            PageNumber(context => format(context.CurrentPage + 1 - context.GetLocation(locationName)?.PageEnd), style);
+        }
+        
+        public void PageLengthOfLocation(string locationName, Func<int?, string> format, TextStyle? style = null)
+        {
+            PageNumber(context => format(context.GetLocation(locationName)?.Length), style);
         }
         
         public void InternalLocation(string? text, string locationName, TextStyle? style = null)

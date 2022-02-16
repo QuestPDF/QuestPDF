@@ -1,44 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace QuestPDF.Infrastructure
 {
-    public class PageContext : IPageContext
+    internal class PageContext : IPageContext
     {
-        public const string CurrentPageSlot = "currentPage";
-        public const string TotalPagesSlot = "totalPages";
+        public const string DocumentLocation = "document";
         
-        private Dictionary<string, int> Locations { get; } = new Dictionary<string, int>();
-        private int PageNumber { get; set; }
+        private List<DocumentLocation> Locations { get; } = new();
+        public int CurrentPage { get; private set; }
 
         internal void SetPageNumber(int number)
         {
-            PageNumber = number;
-            Locations[CurrentPageSlot] = number;
-
-            if (!Locations.ContainsKey(TotalPagesSlot) || Locations[TotalPagesSlot] < number)
-                Locations[TotalPagesSlot] = number;
+            CurrentPage = number;
+            SetLocationPage(DocumentLocation);
         }
         
-        public void SetLocationPage(string key)
+        public void SetLocationPage(string name)
         {
-            if (Locations.ContainsKey(key))
-                return;
-            
-            Locations[key] = PageNumber;
+            var location = GetLocation(name);
+
+            if (location == null)
+            {
+                location = new DocumentLocation
+                {
+                    Name = name,
+                    PageStart = CurrentPage,
+                    PageEnd = CurrentPage
+                };
+                
+                Locations.Add(location);
+            }
+
+            if (location.PageEnd < CurrentPage)
+                location.PageEnd = CurrentPage;
         }
 
-        public int GetLocationPage(string key)
+        public DocumentLocation? GetLocation(string name)
         {
-            if (!Locations.ContainsKey(key))
-                throw new ArgumentException($"The location '{key}' does not exists.");
-            
-            return Locations[key];
-        }
-
-        public ICollection<string> GetRegisteredLocations()
-        {
-            return Locations.Keys;
+            return Locations.FirstOrDefault(x => x.Name == name);
         }
     }
 }

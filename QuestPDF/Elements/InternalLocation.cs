@@ -16,12 +16,11 @@ namespace QuestPDF.Elements
         {
             if (!IsRendered)
             {
-                PageContext.SetLocationPage(LocationName);
-                
                 Canvas.DrawLocation(LocationName);
                 IsRendered = true;
             }
             
+            PageContext.SetLocationPage(LocationName);
             base.Draw(availableSpace);
         }
     }

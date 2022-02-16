@@ -2,10 +2,18 @@
 
 namespace QuestPDF.Infrastructure
 {
-    public interface IPageContext
+    internal class DocumentLocation
     {
-        void SetLocationPage(string key);
-        int GetLocationPage(string key);
-        ICollection<string> GetRegisteredLocations();
+        public string Name { get; set; }
+        public int PageStart { get; set; }
+        public int PageEnd { get; set; }
+        public int Length => PageEnd - PageStart + 1;
+    }
+    
+    internal interface IPageContext
+    {
+        int CurrentPage { get; }
+        void SetLocationPage(string name);
+        DocumentLocation? GetLocation(string name);
     }
 }

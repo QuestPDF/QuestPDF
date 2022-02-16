@@ -13,6 +13,10 @@ namespace QuestPDF.Infrastructure
         
         Feet,
         Inch,
+        
+        /// <summary>
+        /// 1/1000th of inch
+        /// </summary>
         Mill
     }
 
