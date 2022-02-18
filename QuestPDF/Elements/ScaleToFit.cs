@@ -17,8 +17,10 @@ namespace QuestPDF.Elements
             if (perfectScale == null)
                 return SpacePlan.Wrap();
 
-            var targetSpace = ScaleSize(availableSpace, perfectScale.Value);
-            return SpacePlan.FullRender(targetSpace);
+            var scaledSpace = ScaleSize(availableSpace, 1 / perfectScale.Value);
+            var childSizeInScale = Child.Measure(scaledSpace);
+            var childSizeInOriginalScale = ScaleSize(childSizeInScale, perfectScale.Value);
+            return SpacePlan.FullRender(childSizeInOriginalScale);
         }
         
         internal override void Draw(Size availableSpace)

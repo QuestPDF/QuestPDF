@@ -6,16 +6,16 @@ namespace QuestPDF.Drawing
 {
     internal class SkiaDocumentCanvasBase : SkiaCanvasBase
     {
-        private SKDocument Document { get; }
+        private SKDocument? Document { get; }
 
-        public SkiaDocumentCanvasBase(SKDocument document)
+        protected SkiaDocumentCanvasBase(SKDocument document)
         {
             Document = document;
         }
 
         ~SkiaDocumentCanvasBase()
         {
-            Document.Dispose();
+            Document?.Dispose();
         }
         
         public override void BeginDocument()
@@ -25,7 +25,7 @@ namespace QuestPDF.Drawing
 
         public override void EndDocument()
         {
-            Canvas.Dispose();
+            Canvas?.Dispose();
             
             Document.Close();
             Document.Dispose();

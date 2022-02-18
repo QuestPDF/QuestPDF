@@ -29,6 +29,8 @@ namespace QuestPDF.Fluent
         }
         
         #endregion
+
+        #region XPS
         
         public static byte[] GenerateXps(this IDocument document)
         {
@@ -47,8 +49,6 @@ namespace QuestPDF.Fluent
         {
             DocumentGenerator.GenerateXps(stream, document);
         }
-        
-        #region XPS
         
         #endregion
 

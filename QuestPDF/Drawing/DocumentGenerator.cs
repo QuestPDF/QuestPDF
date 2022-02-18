@@ -17,18 +17,29 @@ namespace QuestPDF.Drawing
     {
         internal static void GeneratePdf(Stream stream, IDocument document)
         {
+            CheckIfStreamIsCompatible(stream);
+            
             var metadata = document.GetMetadata();
-            var writeOnlyStream = new WriteOnlyStream(stream);
-            var canvas = new PdfCanvas(writeOnlyStream, metadata);
+            var canvas = new PdfCanvas(stream, metadata);
             RenderDocument(canvas, document);
         }
         
         internal static void GenerateXps(Stream stream, IDocument document)
         {
+            CheckIfStreamIsCompatible(stream);
+            
             var metadata = document.GetMetadata();
-            var writeOnlyStream = new WriteOnlyStream(stream);
-            var canvas = new XpsCanvas(writeOnlyStream, metadata);
+            var canvas = new XpsCanvas(stream, metadata);
             RenderDocument(canvas, document);
+        }
+
+        private static void CheckIfStreamIsCompatible(Stream stream)
+        {
+            if (!stream.CanWrite)
+                throw new ArgumentException("The library requires a Stream object with the 'write' capability available (the CanWrite flag). Please consider using the MemoryStream class.");
+            
+            if (!stream.CanSeek)
+                throw new ArgumentException("The library requires a Stream object with the 'seek' capability available (the CanSeek flag). Please consider using the MemoryStream class.");
         }
         
         internal static ICollection<byte[]> GenerateImages(IDocument document)

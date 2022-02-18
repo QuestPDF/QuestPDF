@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Infrastructure;
@@ -11,8 +12,7 @@ namespace QuestPDF.Elements.Text.Items
         public string Text { get; set; }
         public TextStyle Style { get; set; } = new TextStyle();
 
-        private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache =
-            new Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?>();
+        private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new ();
 
         public virtual TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
@@ -54,7 +54,7 @@ namespace QuestPDF.Elements.Text.Items
             // start breaking text from requested position
             var text = Text.Substring(startIndex);
             
-            var textLength = (int)paint.BreakText(text, request.AvailableWidth);
+            var textLength = (int)paint.BreakText(text, request.AvailableWidth + Size.Epsilon);
 
             if (textLength <= 0)
                 return null;

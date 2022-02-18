@@ -25,8 +25,8 @@ namespace QuestPDF.Elements
         {
             return Type switch
             {
-                LineType.Vertical when availableSpace.Width >= Size => SpacePlan.FullRender(Size, 0),
-                LineType.Horizontal when availableSpace.Height >= Size => SpacePlan.FullRender(0, Size),
+                LineType.Vertical when availableSpace.Width + Infrastructure.Size.Epsilon >= Size => SpacePlan.FullRender(Size, 0),
+                LineType.Horizontal when availableSpace.Height + Infrastructure.Size.Epsilon >= Size => SpacePlan.FullRender(0, Size),
                 _ => SpacePlan.Wrap()
             };
         }
