@@ -90,81 +90,81 @@ namespace QuestPDF.Fluent
             Span(Environment.NewLine);
         }
 
-        private void PageNumber(Func<IPageContext, string> source, TextStyle? style = null)
+        private static Func<int?, string> DefaultTextFormat = x => (x ?? 123).ToString();
+        
+        private void PageNumber(Func<IPageContext, int?> pageNumber, TextStyle? style, Func<int?, string>? format)
         {
             style ??= TextStyle.Default;
+            format ??= DefaultTextFormat;
             
             AddItemToLastTextBlock(new TextBlockPageNumber()
             {
-                Source = source,
+                Source = context => format(pageNumber(context)),
                 Style = style
             });
         }
-        
-        public void CurrentPageNumber(Func<int?, string> format, TextStyle? style = null)
+
+        public void CurrentPageNumber(TextStyle? style = null, Func<int?, string>? format = null)
         {
-            PageNumber(context => format(context.CurrentPage), style);
+            PageNumber(x => x.CurrentPage, style, format);
         }
         
-        public void CurrentPageNumber(TextStyle? style = null)
+        public void TotalPages(TextStyle? style = null, Func<int?, string>? format = null)
         {
-            CurrentPageNumber(x => x.ToString(), style);
+            PageNumber(x => x.GetLocation(PageContext.DocumentLocation)?.Length, style, format);
         }
 
-        public void TotalPages(Func<int?, string> format, TextStyle? style = null)
-        {
-            PageNumber(context => format(context.GetLocation(PageContext.DocumentLocation)?.Length), style);
-        }
-        
-        public void TotalPages(TextStyle? style = null)
-        {
-            TotalPages(x => x.ToString(), style);
-        }
-        
+        [Obsolete("This element has been renamed since version 2022.3. Please use the BeginPageNumberOfSection method.")]
         public void PageNumberOfLocation(string locationName, TextStyle? style = null)
         {
-            BeginPageNumberOfLocation(locationName);
+            BeginPageNumberOfSection(locationName);
         }
         
-        public void BeginPageNumberOfLocation(string locationName, TextStyle? style = null)
+        public void BeginPageNumberOfSection(string locationName, TextStyle? style = null, Func<int?, string>? format = null)
         {
-            PageNumber(context => (context.GetLocation(locationName)?.PageStart ?? 123).ToString(), style);
+            PageNumber(x => x.GetLocation(locationName)?.PageStart, style, format);
         }
         
-        public void EndPageNumberOfLocation(string locationName, TextStyle? style = null)
+        public void EndPageNumberOfSection(string locationName, TextStyle? style = null, Func<int?, string>? format = null)
         {
-            PageNumber(context => (context.GetLocation(locationName)?.PageEnd ?? 123).ToString(), style);
+            PageNumber(x => x.GetLocation(locationName)?.PageEnd, style, format);
         }
         
-        public void PageNumberWithinLocation(string locationName, Func<int?, string> format, TextStyle? style = null)
+        public void PageNumberWithinSection(string locationName, TextStyle? style = null, Func<int?, string>? format = null)
         {
-            PageNumber(context => format(context.CurrentPage + 1 - context.GetLocation(locationName)?.PageEnd), style);
+            PageNumber(x => x.CurrentPage + 1 - x.GetLocation(locationName)?.PageEnd, style, format);
         }
         
-        public void PageLengthOfLocation(string locationName, Func<int?, string> format, TextStyle? style = null)
+        public void TotalPagesWithinSection(string locationName, TextStyle? style = null, Func<int?, string>? format = null)
         {
-            PageNumber(context => format(context.GetLocation(locationName)?.Length), style);
+            PageNumber(x => x.GetLocation(locationName)?.Length, style, format);
         }
         
-        public void InternalLocation(string? text, string locationName, TextStyle? style = null)
+        public void SectionLink(string? text, string sectionName, TextStyle? style = null)
         {
             if (IsNullOrEmpty(text))
                 return;
             
-            if (IsNullOrEmpty(locationName))
-                throw new ArgumentException(nameof(locationName));
+            if (IsNullOrEmpty(sectionName))
+                throw new ArgumentException(nameof(sectionName));
 
             style ??= TextStyle.Default;
             
-            AddItemToLastTextBlock(new TextBlockInternalLink
+            AddItemToLastTextBlock(new TextBlockSectionlLink
             {
                 Style = style,
                 Text = text,
-                LocationName = locationName
+                SectionName = sectionName
             });
         }
         
-        public void ExternalLocation(string? text, string url, TextStyle? style = null)
+        [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]
+        public void InternalLocation(string? text, string locationName, TextStyle? style = null)
+        {
+            SectionLink(text, locationName, style);
+        }
+        
+        public void Hyperlink(string? text, string url, TextStyle? style = null)
         {
             if (IsNullOrEmpty(text))
                 return;
@@ -174,12 +174,18 @@ namespace QuestPDF.Fluent
             
             style ??= TextStyle.Default;
             
-            AddItemToLastTextBlock(new TextBlockExternalLink
+            AddItemToLastTextBlock(new TextBlockHyperlink
             {
                 Style = style,
                 Text = text,
                 Url = url
             });
+        }
+        
+        [Obsolete("This element has been renamed since version 2022.3. Please use the Hyperlink method.")]
+        public void ExternalLocation(string? text, string url, TextStyle? style = null)
+        {
+            Hyperlink(text, url, style);
         }
         
         public IContainer Element()

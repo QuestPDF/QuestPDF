@@ -8,7 +8,7 @@ namespace QuestPDF.UnitTests
     public class ExternalLinkTests
     {
         [Test]
-        public void Measure() => SimpleContainerTests.Measure<ExternalLink>();
+        public void Measure() => SimpleContainerTests.Measure<Hyperlink>();
         
         // TODO: consider tests for the Draw method
     }

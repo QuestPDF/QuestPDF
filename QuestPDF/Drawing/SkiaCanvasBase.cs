@@ -37,19 +37,19 @@ namespace QuestPDF.Drawing
             Canvas.DrawImage(image, new SKRect(vector.X, vector.Y, size.Width, size.Height));
         }
 
-        public void DrawExternalLink(string url, Size size)
+        public void DrawHyperlink(string url, Size size)
         {
             Canvas.DrawUrlAnnotation(new SKRect(0, 0, size.Width, size.Height), url);
         }
         
-        public void DrawLocationLink(string locationName, Size size)
+        public void DrawSectionLink(string sectionName, Size size)
         {
-            Canvas.DrawLinkDestinationAnnotation(new SKRect(0, 0, size.Width, size.Height), locationName);
+            Canvas.DrawLinkDestinationAnnotation(new SKRect(0, 0, size.Width, size.Height), sectionName);
         }
 
-        public void DrawLocation(string locationName)
+        public void DrawSection(string sectionName)
         {
-            Canvas.DrawNamedDestinationAnnotation(new SKPoint(0, 0), locationName);
+            Canvas.DrawNamedDestinationAnnotation(new SKPoint(0, 0), sectionName);
         }
 
         public void Rotate(float angle)

@@ -39,9 +39,9 @@ namespace QuestPDF.ReportSample.Layouts
                     
                     page.Footer().AlignCenter().Text(text =>
                     {
-                        text.CurrentPageNumber();
+                        text.CurrentPageNumber(format: x => x?.FormatAsRomanNumeral() ?? "-----");
                         text.Span(" / ");
-                        text.TotalPages();
+                        text.TotalPages(format: x => x?.FormatAsRomanNumeral() ?? "-----");
                     });
                 });
         }

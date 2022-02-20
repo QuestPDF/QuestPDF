@@ -14,10 +14,10 @@ namespace QuestPDF.Infrastructure
         internal void SetPageNumber(int number)
         {
             CurrentPage = number;
-            SetLocationPage(DocumentLocation);
+            SetSectionPage(DocumentLocation);
         }
         
-        public void SetLocationPage(string name)
+        public void SetSectionPage(string name)
         {
             var location = GetLocation(name);
 

@@ -10,9 +10,9 @@ namespace QuestPDF.Infrastructure
         void DrawText(string text, Position position, TextStyle style);
         void DrawImage(SKImage image, Position position, Size size);
 
-        void DrawExternalLink(string url, Size size);
-        void DrawLocationLink(string locationName, Size size);
-        void DrawLocation(string locationName);
+        void DrawHyperlink(string url, Size size);
+        void DrawSectionLink(string sectionName, Size size);
+        void DrawSection(string sectionName);
         
         void Rotate(float angle);
         void Scale(float scaleX, float scaleY);

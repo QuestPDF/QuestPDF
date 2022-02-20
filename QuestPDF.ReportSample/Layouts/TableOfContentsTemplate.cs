@@ -47,14 +47,14 @@ namespace QuestPDF.ReportSample.Layouts
                     row.RelativeItem().Text(locationName);
                     row.ConstantItem(150).AlignRight().Text(text =>
                     {
-                        text.BeginPageNumberOfLocation(locationName);
+                        text.BeginPageNumberOfSection(locationName);
                         text.Span(" - ");
-                        text.EndPageNumberOfLocation(locationName);
+                        text.EndPageNumberOfSection(locationName);
 
                         var lengthStyle = TextStyle.Default.Color(Colors.Grey.Medium);
                         
                         text.Span(" (", lengthStyle);
-                        text.PageLengthOfLocation(locationName, x => x == 1 ? "1 page long" : $"{x} pages long", lengthStyle);
+                        text.TotalPagesWithinSection(locationName, lengthStyle, x => x == 1 ? "1 page long" : $"{x} pages long");
                         text.Span(")", lengthStyle);
                     });
                 });

@@ -13,7 +13,7 @@ namespace QuestPDF.Infrastructure
     internal interface IPageContext
     {
         int CurrentPage { get; }
-        void SetLocationPage(string name);
+        void SetSectionPage(string name);
         DocumentLocation? GetLocation(string name);
     }
 }
