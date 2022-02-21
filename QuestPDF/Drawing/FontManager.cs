@@ -8,16 +8,29 @@ namespace QuestPDF.Drawing
 {
     public static class FontManager
     {
-        private static ConcurrentDictionary<string, SKTypeface> Typefaces = new ConcurrentDictionary<string, SKTypeface>();
+        private static ConcurrentDictionary<string, FontStyleSet> StyleSets = new ConcurrentDictionary<string, FontStyleSet>();
         private static ConcurrentDictionary<string, SKFontMetrics> FontMetrics = new ConcurrentDictionary<string, SKFontMetrics>();
         private static ConcurrentDictionary<string, SKPaint> Paints = new ConcurrentDictionary<string, SKPaint>();
         private static ConcurrentDictionary<string, SKPaint> ColorPaint = new ConcurrentDictionary<string, SKPaint>();
 
+        private static void RegisterFontType(string fontName, SKTypeface typeface)
+        {
+            FontStyleSet set = StyleSets.GetOrAdd(fontName, _ => new FontStyleSet());
+            set.Add(typeface);
+        }
+
         public static void RegisterFontType(string fontName, Stream stream)
         {
-            Typefaces.TryAdd(fontName, SKTypeface.FromStream(stream));
+            SKTypeface typeface = SKTypeface.FromStream(stream);
+            RegisterFontType(fontName, typeface);
         }
-        
+
+        public static void RegisterFontType(Stream stream)
+        {
+            SKTypeface typeface = SKTypeface.FromStream(stream);
+            RegisterFontType(typeface.FamilyName, typeface);
+        }
+
         internal static SKPaint ColorToPaint(this string color)
         {
             return ColorPaint.GetOrAdd(color, Convert);
@@ -30,11 +43,11 @@ namespace QuestPDF.Drawing
                 };
             }
         }
-        
+
         internal static SKPaint ToPaint(this TextStyle style)
         {
             return Paints.GetOrAdd(style.Key, key => Convert(style));
-            
+
             static SKPaint Convert(TextStyle style)
             {
                 return new SKPaint
@@ -48,13 +61,22 @@ namespace QuestPDF.Drawing
 
             static SKTypeface GetTypeface(TextStyle style)
             {
-                if (Typefaces.TryGetValue(style.FontType, out var result))
-                    return result;
-                
-                var slant = (style.IsItalic ?? false) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
-                
-                return SKTypeface.FromFamilyName(style.FontType, (int)(style.FontWeight ?? FontWeight.Normal), (int)SKFontStyleWidth.Normal, slant) 
-                       ?? throw new ArgumentException($"The typeface {style.FontType} could not be found.");
+                SKFontStyleWeight weight = (SKFontStyleWeight)(style.FontWeight ?? FontWeight.Normal);
+                SKFontStyleWidth width = SKFontStyleWidth.Normal;
+                SKFontStyleSlant slant = (style.IsItalic ?? false) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
+
+                SKFontStyle skFontStyle = new SKFontStyle(weight, width, slant);
+
+                FontStyleSet set;
+                if (StyleSets.TryGetValue(style.FontType, out set))
+                {
+                    return set.Match(skFontStyle);
+                }
+                else
+                {
+                    return SKTypeface.FromFamilyName(style.FontType, skFontStyle)
+                        ?? throw new ArgumentException($"The typeface {style.FontType} could not be found.");
+                }
             }
         }
 
