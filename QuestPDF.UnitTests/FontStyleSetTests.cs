@@ -1,123 +1,146 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using NUnit.Framework;
 using QuestPDF.Drawing;
 using SkiaSharp;
+using static SkiaSharp.SKFontStyleSlant;
 
 namespace QuestPDF.UnitTests
 {
     [TestFixture]
     public class FontStyleSetTests
     {
-        private void ExpectComparisonOrder(SKFontStyle target, params SKFontStyle[] styles)
+        private void ExpectComparisonOrder(SKFontStyle target, SKFontStyle[] styles)
         {
-            for (int i = 0; i < styles.Length - 1; i++)
+            for (var i = 0; i < styles.Length - 1; i++)
             {
-                Assert.True(FontStyleSet.IsBetterMatch(target, styles[i], styles[i + 1]));
-                Assert.False(FontStyleSet.IsBetterMatch(target, styles[i + 1], styles[i]));
+                var currentStyle = styles[i];
+                var nextStyle = styles[i + 1];
+                
+                FontStyleSet.IsBetterMatch(target, currentStyle, nextStyle).Should().BeTrue();
+                FontStyleSet.IsBetterMatch(target, nextStyle, currentStyle).Should().BeFalse();
             }
         }
 
         [Test]
         public void FontStyleSet_IsBetterMatch_CondensedWidth()
         {
-            ExpectComparisonOrder(
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 4, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 3, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 6, SKFontStyleSlant.Upright)
-            );
+            var styles = new[]
+            {
+                new SKFontStyle(500, 5, Upright),
+                new SKFontStyle(500, 4, Upright),
+                new SKFontStyle(500, 3, Upright),
+                new SKFontStyle(500, 6, Upright)
+            };
+            
+            ExpectComparisonOrder(new SKFontStyle(500, 5, Upright), styles);
         }
 
         [Test]
         public void FontStyleSet_IsBetterMatch_ExpandedWidth()
         {
-            ExpectComparisonOrder(
-                new SKFontStyle(500, 6, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 6, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 7, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 8, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright)
-            );
+            var styles = new[]
+            {
+                new SKFontStyle(500, 6, Upright),
+                new SKFontStyle(500, 7, Upright),
+                new SKFontStyle(500, 8, Upright),
+                new SKFontStyle(500, 5, Upright)
+            };
+            
+            ExpectComparisonOrder(new SKFontStyle(500, 6, Upright), styles);
         }
 
         [Test]
         public void FontStyleSet_IsBetterMatch_ItalicSlant()
         {
-            ExpectComparisonOrder(
-                new SKFontStyle(500, 5, SKFontStyleSlant.Italic),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Italic),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Oblique),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright)
-            );
+            var styles = new[]
+            {
+                new SKFontStyle(500, 5, Italic),
+                new SKFontStyle(500, 5, Oblique),
+                new SKFontStyle(500, 5, Upright)
+            };
+        
+            ExpectComparisonOrder(new SKFontStyle(500, 5, Italic), styles);
         }
 
         [Test]
         public void FontStyleSet_IsBetterMatch_ObliqueSlant()
         {
-            ExpectComparisonOrder(
-                new SKFontStyle(500, 5, SKFontStyleSlant.Oblique),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Oblique),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Italic),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright)
-            );
+            var styles = new[]
+            {
+                new SKFontStyle(500, 5, Oblique),
+                new SKFontStyle(500, 5, Italic),
+                new SKFontStyle(500, 5, Upright)
+            };
+        
+            ExpectComparisonOrder(new SKFontStyle(500, 5, Oblique), styles);
         }
 
         [Test]
         public void FontStyleSet_IsBetterMatch_UprightSlant()
         {
-            ExpectComparisonOrder(
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Oblique),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Italic)
-            );
+            var styles = new[]
+            {
+                new SKFontStyle(500, 5, Upright),
+                new SKFontStyle(500, 5, Oblique),
+                new SKFontStyle(500, 5, Italic)
+            };
+        
+            ExpectComparisonOrder(new SKFontStyle(500, 5, Upright), styles);
         }
 
         [Test]
         public void FontStyleSet_IsBetterMatch_ThinWeight()
         {
-            ExpectComparisonOrder(
-                new SKFontStyle(300, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(300, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(200, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(100, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(400, 5, SKFontStyleSlant.Upright)
-            );
+            var styles = new[]
+            {
+                new SKFontStyle(300, 5, Upright),
+                new SKFontStyle(200, 5, Upright),
+                new SKFontStyle(100, 5, Upright),
+                new SKFontStyle(400, 5, Upright)
+            };
+        
+            ExpectComparisonOrder(new SKFontStyle(300, 5, Upright), styles);
         }
 
         [Test]
         public void FontStyleSet_IsBetterMatch_RegularWeight()
         {
-            ExpectComparisonOrder(
-                new SKFontStyle(400, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(300, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(100, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(600, 5, SKFontStyleSlant.Upright)
-            );
+            var styles = new[]
+            {
+                new SKFontStyle(500, 5, Upright),
+                new SKFontStyle(300, 5, Upright),
+                new SKFontStyle(100, 5, Upright),
+                new SKFontStyle(600, 5, Upright)
+            };
+        
+            ExpectComparisonOrder(new SKFontStyle(400, 5, Upright), styles);
         }
 
         [Test]
         public void FontStyleSet_IsBetterMatch_BoldWeight()
         {
-            ExpectComparisonOrder(
-                new SKFontStyle(600, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(600, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(700, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(800, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright)
-            );
+            var styles = new[]
+            {
+                new SKFontStyle(600, 5, Upright),
+                new SKFontStyle(700, 5, Upright),
+                new SKFontStyle(800, 5, Upright),
+                new SKFontStyle(500, 5, Upright)
+            };
+        
+            ExpectComparisonOrder(new SKFontStyle(600, 5, Upright), styles);
         }
 
         [Test]
         public void FontStyleSet_RespectsPriority()
         {
-            ExpectComparisonOrder(
-                new SKFontStyle(500, 5, SKFontStyleSlant.Upright),
-                new SKFontStyle(600, 5, SKFontStyleSlant.Italic),
-                new SKFontStyle(600, 6, SKFontStyleSlant.Upright),
-                new SKFontStyle(500, 6, SKFontStyleSlant.Italic)
-            );
+            var styles = new[]
+            {
+                new SKFontStyle(600, 5, Italic),
+                new SKFontStyle(600, 6, Upright),
+                new SKFontStyle(500, 6, Italic)
+            };
+        
+            ExpectComparisonOrder(new SKFontStyle(500, 5, Upright), styles);
         }
     }
 }

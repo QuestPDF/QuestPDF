@@ -10,8 +10,8 @@ namespace QuestPDF.Drawing
     public static class FontManager
     {
         private static ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
-        private static ConcurrentDictionary<string, SKFontMetrics> FontMetrics = new();
-        private static ConcurrentDictionary<string, SKPaint> Paints = new();
+        private static ConcurrentDictionary<object, SKFontMetrics> FontMetrics = new();
+        private static ConcurrentDictionary<object, SKPaint> Paints = new();
         private static ConcurrentDictionary<string, SKPaint> ColorPaint = new();
 
         private static void RegisterFontType(SKData fontData, string? customName = null)
@@ -59,7 +59,7 @@ namespace QuestPDF.Drawing
 
         internal static SKPaint ToPaint(this TextStyle style)
         {
-            return Paints.GetOrAdd(style.Key, key => Convert(style));
+            return Paints.GetOrAdd(style.PaintKey, key => Convert(style));
 
             static SKPaint Convert(TextStyle style)
             {
@@ -67,8 +67,7 @@ namespace QuestPDF.Drawing
                 {
                     Color = SKColor.Parse(style.Color),
                     Typeface = GetTypeface(style),
-                    TextSize = style.Size ?? 12,
-                    TextEncoding = SKTextEncoding.Utf32
+                    TextSize = style.Size ?? 12
                 };
             }
 
@@ -77,19 +76,27 @@ namespace QuestPDF.Drawing
                 var weight = (SKFontStyleWeight)(style.FontWeight ?? FontWeight.Normal);
                 var slant = (style.IsItalic ?? false) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
 
-                var skFontStyle = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
+                var fontStyle = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
 
-                if (StyleSets.TryGetValue(style.FontType, out var set))
-                    return set.Match(skFontStyle);
+                if (StyleSets.TryGetValue(style.FontType, out var fontStyleSet))
+                    return fontStyleSet.Match(fontStyle);
 
-                return SKTypeface.FromFamilyName(style.FontType, skFontStyle)
-                    ?? throw new ArgumentException($"The typeface {style.FontType} could not be found. Please consider installing the font file on your system or loading it from a file using the FontManager.RegisterFontType() static method.");
+                var fontFromDefaultSource = SKFontManager.Default.MatchFamily(style.FontType, fontStyle);
+                
+                if (fontFromDefaultSource != null)
+                    return fontFromDefaultSource;
+                
+                throw new ArgumentException(
+                    $"The typeface '{style.FontType}' could not be found. " +
+                    $"Please consider the following options: " +
+                    $"1) install the font on your operating system or execution environment. " +
+                    $"2) load a font file specifically for QuestPDF usage via the QuestPDF.Drawing.FontManager.RegisterFontType(Stream fileContentStream) static method.");
             }
         }
 
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
-            return FontMetrics.GetOrAdd(style.Key, key => style.ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.ToPaint().FontMetrics);
         }
     }
 }
