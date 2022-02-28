@@ -19,8 +19,21 @@ namespace QuestPDF.Examples
                 {
                     container.Page(page =>
                     {
-                        page.Margin(2, Unit.Centimetre);
-                        page.Content().Text("Hello PDF!");
+                        page.Size(PageSizes.A5);
+                        page.Margin(1.5f, Unit.Centimetre);
+                        
+                        page.Header()
+                            .Text("Hello PDF!", TextStyle.Default.SemiBold().Size(20));
+                        
+                        page.Content()
+                            .PaddingVertical(1, Unit.Centimetre)
+                            .Column(x =>
+                            {
+                                x.Spacing(10);
+                                
+                                x.Item().Text(Placeholders.LoremIpsum());
+                                x.Item().Image(Placeholders.Image(200, 100));
+                            });
                     });
                 })
                 .GeneratePdf("hello.pdf");
