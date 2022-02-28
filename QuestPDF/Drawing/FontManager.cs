@@ -12,6 +12,7 @@ namespace QuestPDF.Drawing
         private static ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
         private static ConcurrentDictionary<object, SKFontMetrics> FontMetrics = new();
         private static ConcurrentDictionary<object, SKPaint> Paints = new();
+        private static ConcurrentDictionary<object, SKFont> Fonts = new();
         private static ConcurrentDictionary<string, SKPaint> ColorPaint = new();
 
         private static void RegisterFontType(SKData fontData, string? customName = null)
@@ -94,6 +95,11 @@ namespace QuestPDF.Drawing
             }
         }
 
+        internal static SKFont ToFont(this TextStyle style)
+        {
+            return Fonts.GetOrAdd(style.FontMetricsKey, _ => style.ToPaint().Typeface.ToFont());
+        }
+        
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
             return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.ToPaint().FontMetrics);

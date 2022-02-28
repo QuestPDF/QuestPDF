@@ -11,8 +11,7 @@ namespace QuestPDF.Elements.Text.Items
         public string Text { get; set; }
         public TextStyle Style { get; set; } = new TextStyle();
 
-        private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache =
-            new Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?>();
+        private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new();
 
         public virtual TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
@@ -88,7 +87,7 @@ namespace QuestPDF.Elements.Text.Items
             
             // measure final text
             var width = paint.MeasureText(text);
-            
+  
             return new TextMeasurementResult
             {
                 Width = width,
@@ -104,7 +103,6 @@ namespace QuestPDF.Elements.Text.Items
                 TotalIndex = Text.Length
             };
         }
-        
         public virtual void Draw(TextDrawingRequest request)
         {
             var fontMetrics = Style.ToFontMetrics();

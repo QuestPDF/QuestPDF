@@ -1,5 +1,6 @@
 using QuestPDF.Infrastructure;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 
 namespace QuestPDF.Drawing
 {
@@ -29,7 +30,7 @@ namespace QuestPDF.Drawing
 
         public void DrawText(string text, Position vector, TextStyle style)
         {
-            Canvas.DrawText(text, vector.X, vector.Y, style.ToPaint());
+            Canvas.DrawShapedText(text, vector.X, vector.Y, style.ToPaint());
         }
 
         public void DrawImage(SKImage image, Position vector, Size size)
