@@ -236,7 +236,7 @@ namespace QuestPDF.Examples
                         .Padding(10)
                         .Text(text =>
                         {
-                            text.DefaultTextStyle(TextStyle.Default);
+                            text.DefaultTextStyle(TextStyle.Default.BackgroundColor(Colors.Grey.Lighten3));
                             text.AlignLeft();
                             text.ParagraphSpacing(10);
 
@@ -251,7 +251,7 @@ namespace QuestPDF.Examples
                             
                             text.EmptyLine();
                             
-                            foreach (var i in Enumerable.Range(1, 100))
+                            foreach (var i in Enumerable.Range(1, 1000))
                             {
                                 text.Line($"{i}: {Placeholders.Paragraph()}");
 

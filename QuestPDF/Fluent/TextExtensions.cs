@@ -150,7 +150,7 @@ namespace QuestPDF.Fluent
 
             style ??= TextStyle.Default;
             
-            AddItemToLastTextBlock(new TextBlockSectionlLink
+            AddItemToLastTextBlock(new TextBlockSectionLink
             {
                 Style = style,
                 Text = text,

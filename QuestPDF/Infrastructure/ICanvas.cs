@@ -8,6 +8,7 @@ namespace QuestPDF.Infrastructure
         
         void DrawRectangle(Position vector, Size size, string color);
         void DrawText(string text, Position position, TextStyle style);
+        void DrawShapedText(string text, Position position, TextStyle style);
         void DrawImage(SKImage image, Position position, Size size);
 
         void DrawHyperlink(string url, Size size);

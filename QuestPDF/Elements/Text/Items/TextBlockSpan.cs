@@ -1,116 +1,88 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Infrastructure;
+using SkiaSharp.HarfBuzz;
 using Size = QuestPDF.Infrastructure.Size;
 
 namespace QuestPDF.Elements.Text.Items
 {
     internal class TextBlockSpan : ITextBlockItem
     {
-        public string Text { get; set; }
-        public TextStyle Style { get; set; } = new TextStyle();
-
-        private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new();
-
-        public virtual TextMeasurementResult? Measure(TextMeasurementRequest request)
-        {
-            var cacheKey = (request.StartIndex, request.AvailableWidth);
-            
-            if (!MeasureCache.ContainsKey(cacheKey))
-                MeasureCache[cacheKey] = MeasureWithoutCache(request);
-            
-            return MeasureCache[cacheKey];
-        }
+        public ICanvas Canvas { get; set; }
+        public IPageContext PageContext { get; set; }
         
-        internal TextMeasurementResult? MeasureWithoutCache(TextMeasurementRequest request)
+        public string Text { get; set; }
+        public TextStyle Style { get; set; }
+        
+        protected TextBlockSize? Size { get; set; }
+        protected bool RequiresShaping { get; set; }
+        
+        public virtual TextBlockSize? Measure()
         {
-            const char space = ' ';
-            
+            Size ??= Text == " " ? GetSizeForSpace() : GetSizeForWord();
+            return Size;
+        }
+
+        private TextBlockSize GetSizeForWord()
+        {
             var paint = Style.ToPaint();
             var fontMetrics = Style.ToFontMetrics();
 
-            var startIndex = request.StartIndex;
+            var shaper = Style.ToShaper();
             
-            if (request.IsFirstLineElement)
-            {
-                while (startIndex + 1 < Text.Length && Text[startIndex] == space)
-                    startIndex++;
-            }
-
-            if (Text.Length == 0)
-            {
-                return new TextMeasurementResult
-                {
-                    Width = 0,
-                    
-                    LineHeight = Style.LineHeight ?? 1,
-                    Ascent = fontMetrics.Ascent,
-                    Descent = fontMetrics.Descent
-                };
-            }
+            // shaper returns positions of all glyphs,
+            // by adding a space, it is possible to capture width of the last original character
+            var result = shaper.Shape(Text + " ", paint); 
             
-            // start breaking text from requested position
-            var text = Text.Substring(startIndex);
+            // when text is left-to-right: last value corresponds to text width
+            // when text is right-to-left: glyphs are in the reverse order, first value represents text width
+            var width = Math.Max(result.Points.First().X, result.Points.Last().X);
+
+            RequiresShaping = result.Points.Length != Text.Length + 1;
             
-            var textLength = (int)paint.BreakText(text, request.AvailableWidth);
-
-            if (textLength <= 0)
-                return null;
-
-            if (textLength < text.Length && text[textLength] == space)
-                textLength++;
-            
-            // break text only on spaces
-            if (textLength < text.Length)
-            {
-                var lastSpaceIndex = text.Substring(0, textLength).LastIndexOf(space) - 1;
-
-                if (lastSpaceIndex <= 0)
-                {
-                    if (!request.IsFirstLineElement)
-                        return null;
-                }
-                else
-                {
-                    textLength = lastSpaceIndex + 1;
-                }
-            }
-
-            text = text.Substring(0, textLength);
-
-            var endIndex = startIndex + textLength;
-            var nextIndex = endIndex;
-
-            while (nextIndex + 1 < Text.Length && Text[nextIndex] == space)
-                nextIndex++;
-            
-            // measure final text
-            var width = paint.MeasureText(text);
-  
-            return new TextMeasurementResult
+            return new TextBlockSize
             {
                 Width = width,
                 
                 Ascent = fontMetrics.Ascent,
                 Descent = fontMetrics.Descent,
      
-                LineHeight = Style.LineHeight ?? 1,
-                
-                StartIndex = startIndex,
-                EndIndex = endIndex,
-                NextIndex = nextIndex,
-                TotalIndex = Text.Length
+                LineHeight = Style.LineHeight ?? 1
             };
         }
+        
+        private TextBlockSize GetSizeForSpace()
+        {
+            var paint = Style.ToPaint();
+            var fontMetrics = Style.ToFontMetrics();
+            
+            return new TextBlockSize
+            {
+                Width = paint.MeasureText(" "),
+                
+                Ascent = fontMetrics.Ascent,
+                Descent = fontMetrics.Descent,
+     
+                LineHeight = Style.LineHeight ?? 1
+            };
+        }
+
         public virtual void Draw(TextDrawingRequest request)
         {
             var fontMetrics = Style.ToFontMetrics();
 
-            var text = Text.Substring(request.StartIndex, request.EndIndex - request.StartIndex);
-            
-            request.Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
-            request.Canvas.DrawText(text, Position.Zero, Style);
+            Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
+
+            if (!string.IsNullOrWhiteSpace(Text))
+            {
+                if (RequiresShaping)
+                    Canvas.DrawShapedText(Text, Position.Zero, Style);
+                else
+                    Canvas.DrawText(Text, Position.Zero, Style);
+            }
 
             // draw underline
             if ((Style.HasUnderline ?? false) && fontMetrics.UnderlinePosition.HasValue)
@@ -122,7 +94,7 @@ namespace QuestPDF.Elements.Text.Items
 
             void DrawLine(float offset, float thickness)
             {
-                request.Canvas.DrawRectangle(new Position(0, offset - thickness / 2f), new Size(request.TextSize.Width, thickness), Style.Color);
+                Canvas.DrawRectangle(new Position(0, offset - thickness / 2f), new Size(request.TextSize.Width, thickness), Style.Color);
             }
         }
     }

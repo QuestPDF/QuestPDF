@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Examples.Engine;
@@ -96,6 +97,65 @@ namespace QuestPDF.Examples
 
             using var text1 = skTextBlobBuilder.Build();
             return text1.Bounds.Width;
+        }
+        
+        [Test]
+        public void ShapeSingle()
+        {
+            using var textPaint = new SKPaint
+            {
+                Color = SKColors.Black,
+                Typeface = SKTypeface.CreateDefault(),
+                IsAntialias = true,
+                TextSize = 20
+            };
+
+            var text = string.Join(" ", Enumerable.Range(0, 10_000).Select(x => Placeholders.Sentence()));
+            
+            using var shaper = new SKShaper(textPaint.Typeface);
+            var result = shaper.Shape(text + " ", textPaint);
+        }
+        
+        [Test]
+        public void ShapeMany()
+        {
+            using var textPaint = new SKPaint
+            {
+                Color = SKColors.Black,
+                Typeface = SKTypeface.CreateDefault(),
+                IsAntialias = true,
+                TextSize = 20
+            };
+
+            var text = string.Join(" ", Enumerable.Range(0, 1_000).Select(x => Placeholders.Sentence()));
+            
+            foreach (var part in Regex.Split(text, "( )|(\\w+)"))
+            {
+                using var shaper = new SKShaper(textPaint.Typeface);
+                var result = shaper.Shape(part + " ", textPaint);
+            }
+        }
+        
+        [Test]
+        public void ShapeMany2()
+        {
+            using var textPaint = new SKPaint
+            {
+                Color = SKColors.Black,
+                Typeface = SKTypeface.CreateDefault(),
+                IsAntialias = true,
+                TextSize = 20
+            };
+
+            using var shaper = new SKShaper(textPaint.Typeface);
+            
+            foreach (var i in Enumerable.Range(0, 10_000))
+            {
+                var text = Placeholders.Paragraph();
+
+                textPaint.MeasureText(text);
+                var result = shaper.Shape(text + " ", textPaint);
+            }
         }
     }
 }

@@ -9,21 +9,21 @@ namespace QuestPDF.Elements.Text.Items
         public const string PageNumberPlaceholder = "123";
         public Func<IPageContext, string> Source { get; set; } = _ => PageNumberPlaceholder;
         
-        public override TextMeasurementResult? Measure(TextMeasurementRequest request)
+        public override TextBlockSize? Measure()
         {
-            SetPageNumber(request.PageContext);
-            return MeasureWithoutCache(request);
+            SetPageNumber();
+            return base.Measure();
         }
 
         public override void Draw(TextDrawingRequest request)
         {
-            SetPageNumber(request.PageContext);
+            SetPageNumber();
             base.Draw(request);
         }
 
-        private void SetPageNumber(IPageContext context)
+        private void SetPageNumber()
         {
-            Text = Source(context) ?? PageNumberPlaceholder;
+            Text = Source(PageContext) ?? PageNumberPlaceholder;
         }
     }
 }

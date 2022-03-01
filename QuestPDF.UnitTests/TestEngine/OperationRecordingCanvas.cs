@@ -16,6 +16,7 @@ namespace QuestPDF.UnitTests.TestEngine
 
         public void DrawRectangle(Position vector, Size size, string color) => Operations.Add(new CanvasDrawRectangleOperation(vector, size, color));
         public void DrawText(string text, Position position, TextStyle style) => Operations.Add(new CanvasDrawTextOperation(text, position, style));
+        public void DrawShapedText(string text, Position position, TextStyle style) => Operations.Add(new CanvasDrawTextOperation(text, position, style));
         public void DrawImage(SKImage image, Position position, Size size) => Operations.Add(new CanvasDrawImageOperation(position, size));
         
         public void DrawHyperlink(string url, Size size) => throw new NotImplementedException();

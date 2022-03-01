@@ -45,6 +45,11 @@ namespace QuestPDF.Drawing
         {
             
         }
+        
+        public void DrawShapedText(string text, Position position, TextStyle style)
+        {
+            
+        }
 
         public void DrawImage(SKImage image, Position position, Size size)
         {

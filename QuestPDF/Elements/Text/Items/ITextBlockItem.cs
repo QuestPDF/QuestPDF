@@ -5,7 +5,10 @@ namespace QuestPDF.Elements.Text.Items
 {
     internal interface ITextBlockItem
     {
-        TextMeasurementResult? Measure(TextMeasurementRequest request);
+        ICanvas Canvas { get; set; }
+        IPageContext PageContext { get; set; }
+        
+        TextBlockSize? Measure();
         void Draw(TextDrawingRequest request);
     }
 }

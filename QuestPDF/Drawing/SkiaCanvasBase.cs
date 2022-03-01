@@ -30,9 +30,14 @@ namespace QuestPDF.Drawing
 
         public void DrawText(string text, Position vector, TextStyle style)
         {
-            Canvas.DrawShapedText(text, vector.X, vector.Y, style.ToPaint());
+            Canvas.DrawText(text, vector.X, vector.Y, style.ToPaint());
         }
 
+        public void DrawShapedText(string text, Position vector, TextStyle style)
+        {
+            Canvas.DrawShapedText(text, vector.X, vector.Y, style.ToPaint());
+        }
+        
         public void DrawImage(SKImage image, Position vector, Size size)
         {
             Canvas.DrawImage(image, new SKRect(vector.X, vector.Y, size.Width, size.Height));

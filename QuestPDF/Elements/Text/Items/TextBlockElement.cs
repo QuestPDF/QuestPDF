@@ -7,41 +7,40 @@ namespace QuestPDF.Elements.Text.Items
 {
     internal class TextBlockElement : ITextBlockItem
     {
+        public ICanvas Canvas { get; set; }
+        public IPageContext PageContext { get; set; }
+        
         public Element Element { get; set; } = Empty.Instance;
         
-        public TextMeasurementResult? Measure(TextMeasurementRequest request)
+        public TextBlockSize? Measure()
         {
             Element.VisitChildren(x => (x as IStateResettable)?.ResetState());
-            Element.VisitChildren(x => x.Initialize(request.PageContext, request.Canvas));
+            Element.VisitChildren(x => x.Initialize(PageContext, Canvas));
 
-            var measurement = Element.Measure(new Size(request.AvailableWidth, Size.Max.Height));
+            var measurement = Element.Measure(Size.Max);
 
             if (measurement.Type != SpacePlanType.FullRender)
                 return null;
             
-            return new TextMeasurementResult
+            return new TextBlockSize
             {
                 Width = measurement.Width,
                 
                 Ascent = -measurement.Height,
                 Descent = 0,
                 
-                LineHeight = 1,
-                
-                StartIndex = 0,
-                EndIndex = 0,
-                TotalIndex = 0
+                LineHeight = 1
             };
         }
 
         public void Draw(TextDrawingRequest request)
         {
             Element.VisitChildren(x => (x as IStateResettable)?.ResetState());
-            Element.VisitChildren(x => x.Initialize(request.PageContext, request.Canvas));
+            Element.VisitChildren(x => x.Initialize(PageContext, Canvas));
             
-            request.Canvas.Translate(new Position(0, request.TotalAscent));
+            Canvas.Translate(new Position(0, request.TotalAscent));
             Element.Draw(new Size(request.TextSize.Width, -request.TotalAscent));
-            request.Canvas.Translate(new Position(0, -request.TotalAscent));
+            Canvas.Translate(new Position(0, -request.TotalAscent));
         }
     }
 }
