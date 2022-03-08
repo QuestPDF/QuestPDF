@@ -4,8 +4,6 @@ using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using ShimSkiaSharp;
-using SKTypeface = SkiaSharp.SKTypeface;
 
 namespace QuestPDF.Examples
 {
@@ -19,26 +17,79 @@ namespace QuestPDF.Examples
                 {
                     container.Page(page =>
                     {
-                        page.Size(PageSizes.A5);
-                        page.Margin(1.5f, Unit.Centimetre);
+                        page.Size(PageSizes.A4);
+                        page.Margin(2, Unit.Centimetre);
+                        page.Background(Colors.White);
+                        page.DefaultTextStyle(TextStyle.Default.Size(20));
                         
                         page.Header()
-                            .Text("Hello PDF!", TextStyle.Default.SemiBold().Size(20));
+                            .Text("Hello PDF!").SemiBold().Size(36).Color(Colors.Blue.Medium);
                         
                         page.Content()
                             .PaddingVertical(1, Unit.Centimetre)
                             .Column(x =>
                             {
-                                x.Spacing(10);
+                                x.Spacing(20);
                                 
                                 x.Item().Text(Placeholders.LoremIpsum());
                                 x.Item().Image(Placeholders.Image(200, 100));
+                            });
+                        
+                        page.Footer()
+                            .AlignCenter()
+                            .Text(x =>
+                            {
+                                x.Span("Page ");
+                                x.CurrentPageNumber();
                             });
                     });
                 })
                 .GeneratePdf("hello.pdf");
 
             Process.Start("explorer.exe", "hello.pdf");
+        }
+        
+        [Test]
+        public void MinimalApi2()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.A4);
+                        page.Margin(2, Unit.Centimetre);
+                        page.Background(Colors.White);
+                        page.DefaultTextStyle(TextStyle.Default.Size(20));
+                        
+                        page.Header()
+                            .Text("Hello PDF!")
+                            .SemiBold()
+                            .Size(36)
+                            .Color(Colors.Blue.Medium);
+                        
+                        page.Content()
+                            .PaddingVertical(1, Unit.Centimetre)
+                            .Column(x =>
+                            {
+                                x.Spacing(20);
+                                
+                                x.Item().Text(Placeholders.LoremIpsum());
+                                x.Item().Image(Placeholders.Image(200, 100));
+                            });
+                        
+                        page.Footer()
+                            .AlignCenter()
+                            .Text(x =>
+                            {
+                                x.Span("Page ");
+                                x.CurrentPageNumber();
+                            });
+                    });
+                });
         }
     }
 }

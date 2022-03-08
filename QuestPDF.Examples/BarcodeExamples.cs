@@ -25,7 +25,9 @@ namespace QuestPDF.Examples
                         .Background(Colors.White)
                         .AlignCenter()
                         .AlignMiddle()
-                        .Text("*QuestPDF*", TextStyle.Default.FontType("Libre Barcode 39").Size(64));
+                        .Text("*QuestPDF*")
+                        .FontType("Libre Barcode 39")
+                        .Size(64);
                 });
         }
     }

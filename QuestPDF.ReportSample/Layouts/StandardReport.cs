@@ -39,9 +39,9 @@ namespace QuestPDF.ReportSample.Layouts
                     
                     page.Footer().AlignCenter().Text(text =>
                     {
-                        text.CurrentPageNumber(format: x => x?.FormatAsRomanNumeral() ?? "-----");
+                        text.CurrentPageNumber().Format(x => x?.FormatAsRomanNumeral() ?? "-----");
                         text.Span(" / ");
-                        text.TotalPages(format: x => x?.FormatAsRomanNumeral() ?? "-----");
+                        text.TotalPages().Format(x => x?.FormatAsRomanNumeral() ?? "-----");
                     });
                 });
         }
@@ -54,7 +54,7 @@ namespace QuestPDF.ReportSample.Layouts
                 {
                     row.Spacing(50);
                     
-                    row.RelativeItem().PaddingTop(-10).Text(Model.Title, Typography.Title);
+                    row.RelativeItem().PaddingTop(-10).Text(Model.Title).Style(Typography.Title);
                     row.ConstantItem(90).ExternalLink("https://www.questpdf.com").MaxHeight(30).Component<ImagePlaceholder>();
                 });
 
@@ -69,7 +69,7 @@ namespace QuestPDF.ReportSample.Layouts
                     {
                         grid.Item().Text(text =>
                         {
-                            text.Span($"{field.Label}: ", TextStyle.Default.SemiBold());
+                            text.Span($"{field.Label}: ").SemiBold();
                             text.Span(field.Value);
                         });
                     }

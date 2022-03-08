@@ -49,7 +49,10 @@ namespace QuestPDF.Examples
                                 .PrimaryLayer()
                                 .PaddingVertical(10)
                                 .PaddingHorizontal(20)
-                                .Text("Sample text", TextStyle.Default.Size(16).Color(Colors.Blue.Darken2).SemiBold());
+                                .Text("Sample text")
+                                .Size(16)
+                                .Color(Colors.Blue.Darken2)
+                                .SemiBold();
                         });
                 });
         }

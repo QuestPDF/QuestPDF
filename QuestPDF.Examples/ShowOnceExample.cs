@@ -23,7 +23,7 @@ namespace QuestPDF.Examples
                         page.Size(PageSizes.A7.Landscape());
                         page.Background(Colors.White);
 
-                        page.Header().Text("With show once", TextStyle.Default.SemiBold());
+                        page.Header().Text("With show once").SemiBold();
                         
                         page.Content().PaddingVertical(5).Row(row =>
                         {

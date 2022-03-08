@@ -30,12 +30,12 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 column.Item().ShowOnce().Padding(5).AlignMiddle().Row(row =>
                 {
-                    row.RelativeItem(2).AlignMiddle().Text("PRIMARY HEADER", TextStyle.Default.Color(Colors.Grey.Darken3).Size(30).Bold());
+                    row.RelativeItem(2).AlignMiddle().Text("PRIMARY HEADER").Color(Colors.Grey.Darken3).Size(30).Bold();
                     row.RelativeItem(1).AlignRight().MinimalBox().AlignMiddle().Background(Colors.Blue.Darken2).Padding(30);
                 });
                 column.Item().SkipOnce().Padding(5).Row(row =>
                 {
-                    row.RelativeItem(2).Text("SECONDARY HEADER", TextStyle.Default.Color(Colors.Grey.Darken3).Size(30).Bold());
+                    row.RelativeItem(2).Text("SECONDARY HEADER").Color(Colors.Grey.Darken3).Size(30).Bold();
                     row.RelativeItem(1).AlignRight().MinimalBox().Background(Colors.Blue.Lighten4).Padding(15);
                 });
             });

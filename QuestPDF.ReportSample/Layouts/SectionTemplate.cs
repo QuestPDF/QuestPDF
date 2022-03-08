@@ -23,7 +23,8 @@ namespace QuestPDF.ReportSample.Layouts
                     decoration
                         .Before()
                         .PaddingBottom(5)
-                        .Text(Model.Title, Typography.Headline);
+                        .Text(Model.Title)
+                        .Style(Typography.Headline);
 
                     decoration.Content().Border(0.75f).BorderColor(Colors.Grey.Medium).Column(column =>
                     {
@@ -69,7 +70,7 @@ namespace QuestPDF.ReportSample.Layouts
         {
             if (model.PhotoCount == 0)
             {
-                container.Text("No photos", Typography.Normal);
+                container.Text("No photos").Style(Typography.Normal);
                 return;
             }
 

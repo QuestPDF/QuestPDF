@@ -31,7 +31,7 @@ namespace QuestPDF.Examples
                         {
                             text.DefaultTextStyle(TextStyle.Default.Size(20));
                             text.Span("This is a normal text, followed by an ");
-                            text.Span("underlined red text.", TextStyle.Default.Size(20).Color(Colors.Red.Medium).Underline());
+                            text.Span("underlined red text.").Size(20).Color(Colors.Red.Medium).Underline();
                         });
                 });
         }
@@ -57,7 +57,7 @@ namespace QuestPDF.Examples
     
                             foreach (var i in Enumerable.Range(1, 3))
                             {
-                                text.Span($"Paragraph {i}: ", TextStyle.Default.SemiBold());
+                                text.Span($"Paragraph {i}: ").SemiBold();
                                 text.Line(Placeholders.Paragraph());
                             }
                         });
@@ -120,7 +120,7 @@ namespace QuestPDF.Examples
 
                             text.Line(Placeholders.LoremIpsum());
 
-                            text.Span($"This is target text that should show up. {DateTime.UtcNow:T} > This is a short sentence that will be wrapped into second line hopefully, right? <", TextStyle.Default.Underline());
+                            text.Span($"This is target text that should show up. {DateTime.UtcNow:T} > This is a short sentence that will be wrapped into second line hopefully, right? <").Underline();
                         });
                 });
         }
@@ -173,6 +173,8 @@ namespace QuestPDF.Examples
                         .Padding(10)
                         .Text(text =>
                         {
+                            text.DefaultTextStyle(x => x.Bold());
+                            
                             text.DefaultTextStyle(TextStyle.Default);
                             text.AlignLeft();
                             text.ParagraphSpacing(10);
@@ -182,9 +184,9 @@ namespace QuestPDF.Examples
                             text.EmptyLine();
 
                             text.Span("This text is a normal text, ");
-                            text.Span("this is a bold text, ", TextStyle.Default.Bold());
-                            text.Span("this is a red and underlined text, ", TextStyle.Default.Color(Colors.Red.Medium).Underline());
-                            text.Span("and this is slightly bigger text.", TextStyle.Default.Size(16));
+                            text.Span("this is a bold text, ").Bold();
+                            text.Span("this is a red and underlined text, ").Color(Colors.Red.Medium).Underline();
+                            text.Span("and this is slightly bigger text.").Size(16);
 
                             text.EmptyLine();
 
@@ -210,7 +212,7 @@ namespace QuestPDF.Examples
                             
                             text.EmptyLine();
 
-                            text.Span(Placeholders.Paragraphs(), TextStyle.Default.Italic());
+                            text.Span(Placeholders.Paragraphs()).Italic();
                             
                             text.Line("This is target text that does not show up. " + Placeholders.Paragraph());
                         });
@@ -241,9 +243,9 @@ namespace QuestPDF.Examples
                             text.ParagraphSpacing(10);
 
                             text.Span("This text is a normal text, ");
-                            text.Span("this is a bold text, ", TextStyle.Default.Bold());
-                            text.Span("this is a red and underlined text, ", TextStyle.Default.Color(Colors.Red.Medium).Underline());
-                            text.Span("and this is slightly bigger text.", TextStyle.Default.Size(16));
+                            text.Span("this is a bold text, ").Bold();
+                            text.Span("this is a red and underlined text, ").Color(Colors.Red.Medium).Underline();
+                            text.Span("and this is slightly bigger text.").Size(16);
                             
                             text.Span("The new text element also supports injecting custom content between words: ");
                             text.Element().PaddingBottom(-10).Height(16).Width(32).Image(Placeholders.Image);

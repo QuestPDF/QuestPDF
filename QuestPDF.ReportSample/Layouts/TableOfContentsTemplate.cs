@@ -23,7 +23,8 @@ namespace QuestPDF.ReportSample.Layouts
                     decoration
                         .Before()
                         .PaddingBottom(5)
-                        .Text("Table of contents", Typography.Headline);
+                        .Text("Table of contents")
+                        .Style(Typography.Headline);
 
                     decoration.Content().Column(column =>
                     {
@@ -53,9 +54,9 @@ namespace QuestPDF.ReportSample.Layouts
 
                         var lengthStyle = TextStyle.Default.Color(Colors.Grey.Medium);
                         
-                        text.Span(" (", lengthStyle);
-                        text.TotalPagesWithinSection(locationName, lengthStyle, x => x == 1 ? "1 page long" : $"{x} pages long");
-                        text.Span(")", lengthStyle);
+                        text.Span(" (").Style(lengthStyle);
+                        text.TotalPagesWithinSection(locationName).Style(lengthStyle).Format(x => x == 1 ? "1 page long" : $"{x} pages long");
+                        text.Span(")").Style(lengthStyle);
                     });
                 });
         }

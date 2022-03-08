@@ -10,6 +10,34 @@ using static System.String;
 
 namespace QuestPDF.Fluent
 {
+    public class TextSpanDescriptor
+    {
+        internal TextStyle TextStyle { get; }
+
+        internal TextSpanDescriptor(TextStyle textStyle)
+        {
+            TextStyle = textStyle;
+        }
+    }
+
+    public delegate string PageNumberFormatter(int? pageNumber);
+    
+    public class TextPageNumberDescriptor : TextSpanDescriptor
+    {
+        internal PageNumberFormatter FormatFunction { get; private set; } = x => (x ?? 123).ToString();
+
+        internal TextPageNumberDescriptor(TextStyle textStyle) : base(textStyle)
+        {
+            
+        }
+
+        public TextPageNumberDescriptor Format(PageNumberFormatter formatter)
+        {
+            FormatFunction = formatter ?? FormatFunction;
+            return this;
+        }
+    }
+    
     public class TextDescriptor
     {
         private ICollection<TextBlock> TextBlocks { get; } = new List<TextBlock>();
@@ -20,6 +48,11 @@ namespace QuestPDF.Fluent
         public void DefaultTextStyle(TextStyle style)
         {
             DefaultStyle = style;
+        }
+        
+        public void DefaultTextStyle(Func<TextStyle, TextStyle> style)
+        {
+            DefaultStyle = style(TextStyle.Default);
         }
         
         public void AlignLeft()
@@ -50,12 +83,9 @@ namespace QuestPDF.Fluent
             TextBlocks.Last().Items.Add(item);
         }
         
-        public void Span(string? text, TextStyle? style = null)
+        public TextSpanDescriptor Span(string? text)
         {
-            if (IsNullOrEmpty(text))
-                return;
-            
-            style ??= TextStyle.Default;
+            var style = DefaultStyle.Clone();
  
             var items = text
                 .Replace("\r", string.Empty)
@@ -77,78 +107,81 @@ namespace QuestPDF.Fluent
                 })
                 .ToList()
                 .ForEach(TextBlocks.Add);
+
+            return new TextSpanDescriptor(style);
         }
 
-        public void Line(string? text, TextStyle? style = null)
+        public TextSpanDescriptor Line(string? text)
         {
             text ??= string.Empty;
-            Span(text + Environment.NewLine, style);
+            return Span(text + Environment.NewLine);
         }
 
-        public void EmptyLine()
+        public TextSpanDescriptor EmptyLine()
         {
-            Span(Environment.NewLine);
+            return Span(Environment.NewLine);
         }
-
-        private static Func<int?, string> DefaultTextFormat = x => (x ?? 123).ToString();
         
-        private void PageNumber(Func<IPageContext, int?> pageNumber, TextStyle? style, Func<int?, string>? format)
+        private TextPageNumberDescriptor PageNumber(Func<IPageContext, int?> pageNumber)
         {
-            style ??= TextStyle.Default;
-            format ??= DefaultTextFormat;
+            var style = DefaultStyle.Clone();
+            var descriptor = new TextPageNumberDescriptor(DefaultStyle);
             
-            AddItemToLastTextBlock(new TextBlockPageNumber()
+            AddItemToLastTextBlock(new TextBlockPageNumber
             {
-                Source = context => format(pageNumber(context)),
+                Source = context => descriptor.FormatFunction(pageNumber(context)),
                 Style = style
             });
+            
+            return descriptor;
         }
 
-        public void CurrentPageNumber(TextStyle? style = null, Func<int?, string>? format = null)
+        public TextPageNumberDescriptor CurrentPageNumber()
         {
-            PageNumber(x => x.CurrentPage, style, format);
+            return PageNumber(x => x.CurrentPage);
         }
         
-        public void TotalPages(TextStyle? style = null, Func<int?, string>? format = null)
+        public TextPageNumberDescriptor TotalPages()
         {
-            PageNumber(x => x.GetLocation(PageContext.DocumentLocation)?.Length, style, format);
+            return PageNumber(x => x.GetLocation(PageContext.DocumentLocation)?.Length);
         }
 
         [Obsolete("This element has been renamed since version 2022.3. Please use the BeginPageNumberOfSection method.")]
         public void PageNumberOfLocation(string locationName, TextStyle? style = null)
         {
-            BeginPageNumberOfSection(locationName);
+            BeginPageNumberOfSection(locationName).Style(style);
         }
         
-        public void BeginPageNumberOfSection(string locationName, TextStyle? style = null, Func<int?, string>? format = null)
+        public TextPageNumberDescriptor BeginPageNumberOfSection(string locationName)
         {
-            PageNumber(x => x.GetLocation(locationName)?.PageStart, style, format);
+            return PageNumber(x => x.GetLocation(locationName)?.PageStart);
         }
         
-        public void EndPageNumberOfSection(string locationName, TextStyle? style = null, Func<int?, string>? format = null)
+        public TextPageNumberDescriptor EndPageNumberOfSection(string locationName)
         {
-            PageNumber(x => x.GetLocation(locationName)?.PageEnd, style, format);
+            return PageNumber(x => x.GetLocation(locationName)?.PageEnd);
         }
         
-        public void PageNumberWithinSection(string locationName, TextStyle? style = null, Func<int?, string>? format = null)
+        public TextPageNumberDescriptor PageNumberWithinSection(string locationName)
         {
-            PageNumber(x => x.CurrentPage + 1 - x.GetLocation(locationName)?.PageEnd, style, format);
+            return PageNumber(x => x.CurrentPage + 1 - x.GetLocation(locationName)?.PageEnd);
         }
         
-        public void TotalPagesWithinSection(string locationName, TextStyle? style = null, Func<int?, string>? format = null)
+        public TextPageNumberDescriptor TotalPagesWithinSection(string locationName)
         {
-            PageNumber(x => x.GetLocation(locationName)?.Length, style, format);
+            return PageNumber(x => x.GetLocation(locationName)?.Length);
         }
         
-        public void SectionLink(string? text, string sectionName, TextStyle? style = null)
+        public TextSpanDescriptor SectionLink(string? text, string sectionName)
         {
-            if (IsNullOrEmpty(text))
-                return;
-            
             if (IsNullOrEmpty(sectionName))
                 throw new ArgumentException(nameof(sectionName));
 
-            style ??= TextStyle.Default;
+            var style = DefaultStyle.Clone();
+            var descriptor = new TextSpanDescriptor(style);
+            
+            if (IsNullOrEmpty(text))
+                return descriptor;
             
             AddItemToLastTextBlock(new TextBlockSectionlLink
             {
@@ -156,23 +189,26 @@ namespace QuestPDF.Fluent
                 Text = text,
                 SectionName = sectionName
             });
+
+            return descriptor;
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]
         public void InternalLocation(string? text, string locationName, TextStyle? style = null)
         {
-            SectionLink(text, locationName, style);
+            SectionLink(text, locationName).Style(style);
         }
         
-        public void Hyperlink(string? text, string url, TextStyle? style = null)
+        public TextSpanDescriptor Hyperlink(string? text, string url)
         {
-            if (IsNullOrEmpty(text))
-                return;
-            
             if (IsNullOrEmpty(url))
                 throw new ArgumentException(nameof(url));
-            
-            style ??= TextStyle.Default;
+
+            var style = DefaultStyle.Clone();
+            var descriptor = new TextSpanDescriptor(style);
+
+            if (IsNullOrEmpty(text))
+                return descriptor;
             
             AddItemToLastTextBlock(new TextBlockHyperlink
             {
@@ -180,12 +216,14 @@ namespace QuestPDF.Fluent
                 Text = text,
                 Url = url
             });
+
+            return descriptor;
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the Hyperlink method.")]
         public void ExternalLocation(string? text, string url, TextStyle? style = null)
         {
-            Hyperlink(text, url, style);
+            Hyperlink(text, url).Style(style);
         }
         
         public IContainer Element()
@@ -227,9 +265,17 @@ namespace QuestPDF.Fluent
             descriptor.Compose(element);
         }
         
-        public static void Text(this IContainer element, object? text, TextStyle? style = null)
+        //[Obsolete("This element has been renamed since version 2022.3. Please use the ")]
+        // public static void Text(this IContainer element, object? text, TextStyle style)
+        // {
+        //     element.Text(text).Style(style);
+        // }
+        
+        public static TextSpanDescriptor Text(this IContainer element, object? text)
         {
-            element.Text(x => x.Span(text?.ToString(), style));
+            var descriptor = (TextSpanDescriptor) null;
+            element.Text(x => descriptor = x.Span(text?.ToString()));
+            return descriptor;
         }
     }
 }

@@ -60,6 +60,19 @@ namespace QuestPDF.Infrastructure
             HasUnderline ??= parentStyle.HasUnderline;
         }
 
+        internal void OverrideStyle(TextStyle parentStyle)
+        {
+            Color = parentStyle.Color ?? Color;
+            BackgroundColor = parentStyle.BackgroundColor ?? BackgroundColor;
+            FontType = parentStyle.FontType ?? FontType;
+            Size = parentStyle.Size ?? Size;
+            LineHeight = parentStyle.LineHeight ?? LineHeight;
+            FontWeight = parentStyle.FontWeight ?? FontWeight;
+            IsItalic = parentStyle.IsItalic ?? IsItalic;
+            HasStrikethrough = parentStyle.HasStrikethrough ?? HasStrikethrough;
+            HasUnderline = parentStyle.HasUnderline ?? HasUnderline;
+        }
+        
         internal TextStyle Clone()
         {
             var clone = (TextStyle)MemberwiseClone();

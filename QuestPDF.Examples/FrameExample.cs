@@ -17,9 +17,9 @@ namespace QuestPDF.Examples
                 .Padding(5);
         }
         
-        public static void LabelCell(this IContainer container, string text) => container.Cell(true).Text(text, TextStyle.Default.SemiBold());
+        public static void LabelCell(this IContainer container, string text) => container.Cell(true).Text(text).SemiBold();
         public static IContainer ValueCell(this IContainer container) => container.Cell(false);
-        public static void ValueCell(this IContainer container, string text) => container.ValueCell().Text(text, TextStyle.Default);
+        public static void ValueCell(this IContainer container, string text) => container.ValueCell().Text(text);
     }
     
     public class FrameExample

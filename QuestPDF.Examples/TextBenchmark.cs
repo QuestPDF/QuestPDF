@@ -141,8 +141,8 @@ namespace QuestPDF.Examples
                     .AlignBottom()
                     .Column(column =>
                     {
-                        column.Item().Text("Quo Vadis", TextStyle.Default.Size(72).Bold().Color(Colors.Blue.Darken2));
-                        column.Item().Text("Henryk Sienkiewicz", TextStyle.Default.Size(24).Color(Colors.Grey.Darken2));
+                        column.Item().Text("Quo Vadis").Size(72).Bold().Color(Colors.Blue.Darken2);
+                        column.Item().Text("Henryk Sienkiewicz").Size(24).Color(Colors.Grey.Darken2);
                     });
             }
 
@@ -156,8 +156,8 @@ namespace QuestPDF.Examples
                     {
                         column.Item().InternalLink(chapter.Title).Row(row =>
                         {
-                            row.RelativeItem().Text(chapter.Title, normalStyle);
-                            row.ConstantItem(100).AlignRight().Text(text => text.PageNumberOfLocation(chapter.Title, normalStyle));
+                            row.RelativeItem().Text(chapter.Title).Style(normalStyle);
+                            row.ConstantItem(100).AlignRight().Text(text => text.BeginPageNumberOfSection(chapter.Title).Style(normalStyle));
                         });
                     }
                 });
@@ -180,7 +180,7 @@ namespace QuestPDF.Examples
                     column.Item().Text(text =>
                     {
                         text.ParagraphSpacing(5);
-                        text.Span(content, normalStyle);
+                        text.Span(content).Style(normalStyle);
                     });
                     
                     column.Item().PageBreak();
@@ -198,7 +198,7 @@ namespace QuestPDF.Examples
                         text.DefaultTextStyle(normalStyle);
                         
                         text.Span("Ten dokument został wygenerowany na podstawie książki w formacie TXT opublikowanej w serwisie ");
-                        text.ExternalLocation("wolnelektury.pl", "https://wolnelektury.pl/", normalStyle.Color(Colors.Blue.Medium).Underline());
+                        text.Hyperlink("wolnelektury.pl", "https://wolnelektury.pl/").Color(Colors.Blue.Medium).Underline();
                         text.Span(". Dziękuję za wspieranie polskiego czytelnictwa!");
                     });
                 });
@@ -206,7 +206,7 @@ namespace QuestPDF.Examples
 
             void SectionTitle(ColumnDescriptor column, string text)
             {
-                column.Item().Location(text).Text(text, subtitleStyle);
+                column.Item().Location(text).Text(text).Style(subtitleStyle);
                 column.Item().PaddingTop(10).PaddingBottom(50).BorderBottom(1).BorderColor(Colors.Grey.Lighten2).ExtendHorizontal();
             }
             
