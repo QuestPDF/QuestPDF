@@ -267,5 +267,30 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+        public void MeasureIssueWhenSpaceAtLineEnd()
+        {
+            // issue 135
+            
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(50);
+                        page.Background(Colors.White);
+
+                        page.Size(PageSizes.A4);
+
+                        page.Content().Text( 
+                            "This is a specially crafted sentence with a specially chosen length for demonstration of the bug that occurs ;;;;;. ",
+                            TextStyle.Default.Size(11));
+                    });
+                });
+        }
     }
 }

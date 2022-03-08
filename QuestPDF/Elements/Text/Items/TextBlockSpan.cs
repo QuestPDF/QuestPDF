@@ -17,7 +17,7 @@ namespace QuestPDF.Elements.Text.Items
         public virtual TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
             var cacheKey = (request.StartIndex, request.AvailableWidth);
-            
+             
             if (!MeasureCache.ContainsKey(cacheKey))
                 MeasureCache[cacheKey] = MeasureWithoutCache(request);
             
@@ -52,7 +52,7 @@ namespace QuestPDF.Elements.Text.Items
             }
             
             // start breaking text from requested position
-            var text = Text.Substring(startIndex);
+            var text = Text.AsSpan().Slice(startIndex);
             
             var textLength = (int)paint.BreakText(text, request.AvailableWidth + Size.Epsilon);
 
@@ -65,7 +65,7 @@ namespace QuestPDF.Elements.Text.Items
             // break text only on spaces
             if (textLength < text.Length)
             {
-                var lastSpaceIndex = text.Substring(0, textLength).LastIndexOf(space) - 1;
+                var lastSpaceIndex = text.Slice(0, textLength).LastIndexOf(space) - 1;
 
                 if (lastSpaceIndex <= 0)
                 {
@@ -78,7 +78,7 @@ namespace QuestPDF.Elements.Text.Items
                 }
             }
 
-            text = text.Substring(0, textLength);
+            text = text.Slice(0, textLength);
 
             var endIndex = startIndex + textLength;
             var nextIndex = endIndex;
@@ -87,7 +87,8 @@ namespace QuestPDF.Elements.Text.Items
                 nextIndex++;
             
             // measure final text
-            var width = paint.MeasureText(text);
+            var finalText = text.TrimEnd();
+            var width = paint.MeasureText(finalText);
             
             return new TextMeasurementResult
             {
