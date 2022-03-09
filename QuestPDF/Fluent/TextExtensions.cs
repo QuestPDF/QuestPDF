@@ -83,6 +83,12 @@ namespace QuestPDF.Fluent
             TextBlocks.Last().Items.Add(item);
         }
         
+        [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
+        public void Span(string? text, TextStyle style)
+        {
+            Span(text).Style(style);
+        }
+        
         public TextSpanDescriptor Span(string? text)
         {
             var style = DefaultStyle.Clone();
@@ -265,11 +271,11 @@ namespace QuestPDF.Fluent
             descriptor.Compose(element);
         }
         
-        //[Obsolete("This element has been renamed since version 2022.3. Please use the ")]
-        // public static void Text(this IContainer element, object? text, TextStyle style)
-        // {
-        //     element.Text(text).Style(style);
-        // }
+        [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
+        public static void Text(this IContainer element, object? text, TextStyle style)
+        {
+            element.Text(text).Style(style);
+        }
         
         public static TextSpanDescriptor Text(this IContainer element, object? text)
         {
