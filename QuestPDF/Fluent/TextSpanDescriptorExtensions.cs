@@ -15,7 +15,7 @@ namespace QuestPDF.Fluent
             return descriptor;
         }
         
-        public static T Color<T>(this T descriptor, string value) where T : TextSpanDescriptor
+        public static T FontColor<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
             descriptor.TextStyle.Color = value;
             return descriptor;
@@ -27,13 +27,13 @@ namespace QuestPDF.Fluent
             return descriptor;
         }
         
-        public static T FontType<T>(this T descriptor, string value) where T : TextSpanDescriptor
+        public static T FontFamily<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.FontType = value;
+            descriptor.TextStyle.FontFamily = value;
             return descriptor;
         }
         
-        public static T Size<T>(this T descriptor, float value) where T : TextSpanDescriptor
+        public static T FontSize<T>(this T descriptor, float value) where T : TextSpanDescriptor
         {
             descriptor.TextStyle.Size = value;
             return descriptor;

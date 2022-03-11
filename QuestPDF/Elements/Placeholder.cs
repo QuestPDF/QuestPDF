@@ -26,7 +26,7 @@ namespace QuestPDF.Elements
                     if (string.IsNullOrWhiteSpace(Text))
                         x.MaxHeight(32).Image(ImageData, ImageScaling.FitArea);
                     else
-                        x.Text(Text).Size(14);
+                        x.Text(Text).FontSize(14);
                 });
         }
     }

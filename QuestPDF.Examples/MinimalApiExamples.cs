@@ -23,7 +23,7 @@ namespace QuestPDF.Examples
                         page.DefaultTextStyle(TextStyle.Default.Size(20));
                         
                         page.Header()
-                            .Text("Hello PDF!").SemiBold().Size(36).Color(Colors.Blue.Medium);
+                            .Text("Hello PDF!").SemiBold().FontSize(36).FontColor(Colors.Blue.Medium);
                         
                         page.Content()
                             .PaddingVertical(1, Unit.Centimetre)
@@ -68,8 +68,8 @@ namespace QuestPDF.Examples
                         page.Header()
                             .Text("Hello PDF!")
                             .SemiBold()
-                            .Size(36)
-                            .Color(Colors.Blue.Medium);
+                            .FontSize(36)
+                            .FontColor(Colors.Blue.Medium);
                         
                         page.Content()
                             .PaddingVertical(1, Unit.Centimetre)

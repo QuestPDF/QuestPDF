@@ -9,7 +9,7 @@ namespace QuestPDF.Infrastructure
         
         internal string? Color { get; set; }
         internal string? BackgroundColor { get; set; }
-        internal string? FontType { get; set; }
+        internal string? FontFamily { get; set; }
         internal float? Size { get; set; }
         internal float? LineHeight { get; set; }
         internal FontWeight? FontWeight { get; set; }
@@ -24,7 +24,7 @@ namespace QuestPDF.Infrastructure
         {
             Color = Colors.Black,
             BackgroundColor = Colors.Transparent,
-            FontType = Fonts.Calibri,
+            FontFamily = Fonts.Calibri,
             Size = 12,
             LineHeight = 1.2f,
             FontWeight = Infrastructure.FontWeight.Normal,
@@ -43,15 +43,15 @@ namespace QuestPDF.Infrastructure
             HasGlobalStyleApplied = true;
 
             ApplyParentStyle(globalStyle);
-            PaintKey ??= (FontType, Size, FontWeight, IsItalic, Color);
-            FontMetricsKey ??= (FontType, Size, FontWeight, IsItalic);
+            PaintKey ??= (FontFamily, Size, FontWeight, IsItalic, Color);
+            FontMetricsKey ??= (FontFamily, Size, FontWeight, IsItalic);
         }
         
         internal void ApplyParentStyle(TextStyle parentStyle)
         {
             Color ??= parentStyle.Color;
             BackgroundColor ??= parentStyle.BackgroundColor;
-            FontType ??= parentStyle.FontType;
+            FontFamily ??= parentStyle.FontFamily;
             Size ??= parentStyle.Size;
             LineHeight ??= parentStyle.LineHeight;
             FontWeight ??= parentStyle.FontWeight;
@@ -64,7 +64,7 @@ namespace QuestPDF.Infrastructure
         {
             Color = parentStyle.Color ?? Color;
             BackgroundColor = parentStyle.BackgroundColor ?? BackgroundColor;
-            FontType = parentStyle.FontType ?? FontType;
+            FontFamily = parentStyle.FontFamily ?? FontFamily;
             Size = parentStyle.Size ?? Size;
             LineHeight = parentStyle.LineHeight ?? LineHeight;
             FontWeight = parentStyle.FontWeight ?? FontWeight;

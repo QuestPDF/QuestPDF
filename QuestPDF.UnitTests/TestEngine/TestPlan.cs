@@ -92,7 +92,7 @@ namespace QuestPDF.UnitTests.TestEngine
                     Assert.AreEqual(expected.Position.Y, position.Y, "Draw text: Y");
                     
                     Assert.AreEqual(expected.Style.Color, style.Color, "Draw text: color");
-                    Assert.AreEqual(expected.Style.FontType, style.FontType, "Draw text: font");
+                    Assert.AreEqual(expected.Style.FontFamily, style.FontFamily, "Draw text: font");
                     Assert.AreEqual(expected.Style.Size, style.Size, "Draw text: size");
                 },
                 DrawImageFunc = (image, position, size) =>

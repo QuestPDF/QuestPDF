@@ -27,7 +27,7 @@ namespace QuestPDF.Examples
                         .Column(column =>
                         { 
                             column.Item().Text("Default style applies to all children");
-                            column.Item().Text("You can override certain styles").Underline(false).Color(Colors.Green.Darken2);
+                            column.Item().Text("You can override certain styles").Underline(false).FontColor(Colors.Green.Darken2);
                             
                             column.Item().PaddingTop(10).Border(1).Grid(grid =>
                             {
@@ -44,7 +44,7 @@ namespace QuestPDF.Examples
                                         .AlignCenter()
                                         .AlignMiddle()
                                         .Text(i)
-                                        .Size(16 + i / 4);   
+                                        .FontSize(16 + i / 4);   
                                 }
                             });
                         });

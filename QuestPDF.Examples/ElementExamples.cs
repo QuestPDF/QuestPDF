@@ -44,8 +44,8 @@ namespace QuestPDF.Examples
                                 .Background(Colors.Grey.Medium)
                                 .Padding(10)
                                 .Text("Notes")
-                                .Size(16)
-                                .Color("#FFF");
+                                .FontSize(16)
+                                .FontColor("#FFF");
                     
                             decoration
                                 .Content()
@@ -283,14 +283,14 @@ namespace QuestPDF.Examples
                                 .AlignCenter()
                                 .AlignMiddle()
                                 .Text("Watermark")
-                                .Size(48)
+                                .FontSize(48)
                                 .Bold()
-                                .Color(Colors.Green.Lighten3);
+                                .FontColor(Colors.Green.Lighten3);
 
                             layers
                                 .Layer()
                                 .AlignBottom()
-                                .Text(text => text.CurrentPageNumber().Size(16).Color(Colors.Green.Medium));
+                                .Text(text => text.CurrentPageNumber().FontSize(16).FontColor(Colors.Green.Medium));
                         });
                 });
         }
@@ -422,8 +422,8 @@ namespace QuestPDF.Examples
                                     .BorderColor(Colors.Grey.Medium)
                                     .Padding(10)
                                     .Text(font)
-                                    .FontType(font)
-                                    .Size(16);
+                                    .FontFamily(font)
+                                    .FontSize(16);
                             }
                         });
                 });
@@ -463,7 +463,7 @@ namespace QuestPDF.Examples
                             });
                     
                             layers.Layer().Background("#8F00").Extend();
-                            layers.Layer().PaddingTop(40).Text("It works!").Size(24);
+                            layers.Layer().PaddingTop(40).Text("It works!").FontSize(24);
                         });
                 });
         }
@@ -484,7 +484,7 @@ namespace QuestPDF.Examples
                         //.MinimalBox()
                         .Background(Colors.Grey.Lighten2)
                         .Padding(15)
-                        .Text("Test of the \n box element").Size(20);
+                        .Text("Test of the \n box element").FontSize(20);
                 });
         }
 
@@ -565,7 +565,7 @@ namespace QuestPDF.Examples
                         
                         .Padding(50)
                         .Text("Moved text")
-                        .Size(25);
+                        .FontSize(25);
                 });
         }
 
@@ -602,7 +602,7 @@ namespace QuestPDF.Examples
                                     .Background(Colors.White)
                                     .Padding(10)
                                     .Text($"Rotated {turns * 90}°")
-                                    .Size(16);
+                                    .FontSize(16);
                             }
                         });
                 });
@@ -701,7 +701,7 @@ namespace QuestPDF.Examples
                                     .Background(Colors.White)
                                     .Padding(10)
                                     .Text($"Flipped {turns}")
-                                    .Size(16);
+                                    .FontSize(16);
                             }
                         });
                 });

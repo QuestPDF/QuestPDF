@@ -31,9 +31,9 @@ namespace QuestPDF.Elements
                         .Background(Colors.White)
                         .Padding(2)
                         .Text(Text)
-                        .Color(Color)
-                        .FontType(Fonts.Consolas)
-                        .Size(8);
+                        .FontColor(Color)
+                        .FontFamily(Fonts.Consolas)
+                        .FontSize(8);
                 });
         }
     }

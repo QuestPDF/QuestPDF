@@ -31,7 +31,7 @@ namespace QuestPDF.Examples
                         {
                             text.DefaultTextStyle(TextStyle.Default.Size(20));
                             text.Span("This is a normal text, followed by an ");
-                            text.Span("underlined red text.").Size(20).Color(Colors.Red.Medium).Underline();
+                            text.Span("underlined red text.").FontSize(20).FontColor(Colors.Red.Medium).Underline();
                         });
                 });
         }
@@ -185,8 +185,8 @@ namespace QuestPDF.Examples
 
                             text.Span("This text is a normal text, ");
                             text.Span("this is a bold text, ").Bold();
-                            text.Span("this is a red and underlined text, ").Color(Colors.Red.Medium).Underline();
-                            text.Span("and this is slightly bigger text.").Size(16);
+                            text.Span("this is a red and underlined text, ").FontColor(Colors.Red.Medium).Underline();
+                            text.Span("and this is slightly bigger text.").FontSize(16);
 
                             text.EmptyLine();
 
@@ -244,8 +244,8 @@ namespace QuestPDF.Examples
 
                             text.Span("This text is a normal text, ");
                             text.Span("this is a bold text, ").Bold();
-                            text.Span("this is a red and underlined text, ").Color(Colors.Red.Medium).Underline();
-                            text.Span("and this is slightly bigger text.").Size(16);
+                            text.Span("this is a red and underlined text, ").FontColor(Colors.Red.Medium).Underline();
+                            text.Span("and this is slightly bigger text.").FontSize(16);
                             
                             text.Span("The new text element also supports injecting custom content between words: ");
                             text.Element().PaddingBottom(-10).Height(16).Width(32).Image(Placeholders.Image);

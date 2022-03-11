@@ -13,7 +13,7 @@ namespace QuestPDF.Examples
         [Test]
         public void Example()
         {
-            FontManager.RegisterFontType(File.OpenRead("LibreBarcode39-Regular.ttf"));
+            FontManager.RegisterFont(File.OpenRead("LibreBarcode39-Regular.ttf"));
             
             RenderingTest
                 .Create()
@@ -26,8 +26,8 @@ namespace QuestPDF.Examples
                         .AlignCenter()
                         .AlignMiddle()
                         .Text("*QuestPDF*")
-                        .FontType("Libre Barcode 39")
-                        .Size(64);
+                        .FontFamily("Libre Barcode 39")
+                        .FontSize(64);
                 });
         }
     }

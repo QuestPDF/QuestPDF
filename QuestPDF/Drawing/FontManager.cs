@@ -30,7 +30,7 @@ namespace QuestPDF.Drawing
             }
         }
 
-        [Obsolete("Since version 2022.3, the FontManager class offers better font type matching support. Please use the RegisterFontType(Stream stream) overload.")]
+        [Obsolete("Since version 2022.3, the FontManager class offers better font type matching support. Please use the RegisterFont(Stream stream) method.")]
         public static void RegisterFontType(string fontName, Stream stream)
         {
             using var fontData = SKData.Create(stream);
@@ -38,7 +38,7 @@ namespace QuestPDF.Drawing
             RegisterFontType(fontData, customName: fontName);
         }
 
-        public static void RegisterFontType(Stream stream)
+        public static void RegisterFont(Stream stream)
         {
             using var fontData = SKData.Create(stream);
             RegisterFontType(fontData);
@@ -78,16 +78,16 @@ namespace QuestPDF.Drawing
 
                 var fontStyle = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
 
-                if (StyleSets.TryGetValue(style.FontType, out var fontStyleSet))
+                if (StyleSets.TryGetValue(style.FontFamily, out var fontStyleSet))
                     return fontStyleSet.Match(fontStyle);
 
-                var fontFromDefaultSource = SKFontManager.Default.MatchFamily(style.FontType, fontStyle);
+                var fontFromDefaultSource = SKFontManager.Default.MatchFamily(style.FontFamily, fontStyle);
                 
                 if (fontFromDefaultSource != null)
                     return fontFromDefaultSource;
                 
                 throw new ArgumentException(
-                    $"The typeface '{style.FontType}' could not be found. " +
+                    $"The typeface '{style.FontFamily}' could not be found. " +
                     $"Please consider the following options: " +
                     $"1) install the font on your operating system or execution environment. " +
                     $"2) load a font file specifically for QuestPDF usage via the QuestPDF.Drawing.FontManager.RegisterFontType(Stream fileContentStream) static method.");

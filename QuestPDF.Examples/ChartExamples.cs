@@ -58,9 +58,9 @@ namespace QuestPDF.Examples
                                 .Item()
                                 .PaddingBottom(10)
                                 .Text("Chart example")
-                                .Size(20)
+                                .FontSize(20)
                                 .SemiBold()
-                                .Color(Colors.Blue.Medium);
+                                .FontColor(Colors.Blue.Medium);
                             
                             column
                                 .Item()

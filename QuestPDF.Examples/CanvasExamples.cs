@@ -50,8 +50,8 @@ namespace QuestPDF.Examples
                                 .PaddingVertical(10)
                                 .PaddingHorizontal(20)
                                 .Text("Sample text")
-                                .Size(16)
-                                .Color(Colors.Blue.Darken2)
+                                .FontSize(16)
+                                .FontColor(Colors.Blue.Darken2)
                                 .SemiBold();
                         });
                 });

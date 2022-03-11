@@ -13,7 +13,13 @@ namespace QuestPDF.Fluent
             return style;
         }
         
+        [Obsolete("This element has been renamed since version 2022.3. Please use the FontColor method.")]
         public static TextStyle Color(this TextStyle style, string value)
+        {
+            return style.FontColor(value);
+        }
+        
+        public static TextStyle FontColor(this TextStyle style, string value)
         {
             return style.Mutate(x => x.Color = value);
         }
@@ -23,12 +29,24 @@ namespace QuestPDF.Fluent
             return style.Mutate(x => x.BackgroundColor = value);
         }
         
+        [Obsolete("This element has been renamed since version 2022.3. Please use the FontFamily method.")]
         public static TextStyle FontType(this TextStyle style, string value)
         {
-            return style.Mutate(x => x.FontType = value);
+            return style.FontFamily(value);
         }
         
+        public static TextStyle FontFamily(this TextStyle style, string value)
+        {
+            return style.Mutate(x => x.FontFamily = value);
+        }
+        
+        [Obsolete("This element has been renamed since version 2022.3. Please use the FontSize method.")]
         public static TextStyle Size(this TextStyle style, float value)
+        {
+            return style.FontSize(value);
+        }
+        
+        public static TextStyle FontSize(this TextStyle style, float value)
         {
             return style.Mutate(x => x.Size = value);
         }

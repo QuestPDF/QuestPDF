@@ -141,8 +141,8 @@ namespace QuestPDF.Examples
                     .AlignBottom()
                     .Column(column =>
                     {
-                        column.Item().Text("Quo Vadis").Size(72).Bold().Color(Colors.Blue.Darken2);
-                        column.Item().Text("Henryk Sienkiewicz").Size(24).Color(Colors.Grey.Darken2);
+                        column.Item().Text("Quo Vadis").FontSize(72).Bold().FontColor(Colors.Blue.Darken2);
+                        column.Item().Text("Henryk Sienkiewicz").FontSize(24).FontColor(Colors.Grey.Darken2);
                     });
             }
 
@@ -198,7 +198,7 @@ namespace QuestPDF.Examples
                         text.DefaultTextStyle(normalStyle);
                         
                         text.Span("Ten dokument został wygenerowany na podstawie książki w formacie TXT opublikowanej w serwisie ");
-                        text.Hyperlink("wolnelektury.pl", "https://wolnelektury.pl/").Color(Colors.Blue.Medium).Underline();
+                        text.Hyperlink("wolnelektury.pl", "https://wolnelektury.pl/").FontColor(Colors.Blue.Medium).Underline();
                         text.Span(". Dziękuję za wspieranie polskiego czytelnictwa!");
                     });
                 });

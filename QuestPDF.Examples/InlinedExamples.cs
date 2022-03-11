@@ -75,7 +75,7 @@ namespace QuestPDF.Examples
                                                     .AlignCenter()
                                                     .AlignMiddle()
                                                     .Text(sizeText)
-                                                    .Size(15);
+                                                    .FontSize(15);
                                             });
                                     }
                                 });
