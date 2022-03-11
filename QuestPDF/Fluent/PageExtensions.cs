@@ -88,6 +88,20 @@ namespace QuestPDF.Fluent
             Page.BackgroundColor = color;
         }
         
+        public IContainer Background()
+        {
+            var container = new Container();
+            Page.Background = container;
+            return container;
+        }
+        
+        public IContainer Foreground()
+        {
+            var container = new Container();
+            Page.Foreground = container;
+            return container;
+        }
+        
         public IContainer Header()
         {
             var container = new Container();

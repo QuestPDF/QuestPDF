@@ -20,6 +20,9 @@ namespace QuestPDF.Elements
 
         public string BackgroundColor { get; set; } = Colors.Transparent;
         
+        public Element Background { get; set; } = Empty.Instance;
+        public Element Foreground { get; set; } = Empty.Instance;
+        
         public Element Header { get; set; } = Empty.Instance;
         public Element Content { get; set; } = Empty.Instance;
         public Element Footer { get; set; } = Empty.Instance;
@@ -27,39 +30,54 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
-                .MinWidth(MinSize.Width)
-                .MinHeight(MinSize.Height)
-                
-                .MaxWidth(MaxSize.Width)
-                .MaxHeight(MaxSize.Height)
-                
-                .Background(BackgroundColor)
-     
-                .PaddingLeft(MarginLeft)
-                .PaddingRight(MarginRight)
-                .PaddingTop(MarginTop)
-                .PaddingBottom(MarginBottom)
-                
-                .DefaultTextStyle(DefaultTextStyle)
-                
-                .Decoration(decoration =>
+                .Layers(layers =>
                 {
-                    decoration
-                        .Before()
-                        .DebugPointer("Page header")
-                        .Element(Header);
+                    layers
+                        .Layer()
+                        .DebugPointer("Page background layer")
+                        .Element(Background);
                     
-                    decoration
-                        .Content()
-                        .Element(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
-                        .Element(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
-                        .DebugPointer("Page content")
-                        .Element(Content);
+                    layers
+                        .PrimaryLayer()
+                        .MinWidth(MinSize.Width)
+                        .MinHeight(MinSize.Height)
+                
+                        .MaxWidth(MaxSize.Width)
+                        .MaxHeight(MaxSize.Height)
+                
+                        .Background(BackgroundColor)
+     
+                        .PaddingLeft(MarginLeft)
+                        .PaddingRight(MarginRight)
+                        .PaddingTop(MarginTop)
+                        .PaddingBottom(MarginBottom)
+                
+                        .DefaultTextStyle(DefaultTextStyle)
+                
+                        .Decoration(decoration =>
+                        {
+                            decoration
+                                .Before()
+                                .DebugPointer("Page header")
+                                .Element(Header);
+
+                            decoration
+                                .Content()
+                                .Element(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
+                                .Element(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
+                                .DebugPointer("Page content")
+                                .Element(Content);
+
+                            decoration
+                                .After()
+                                .DebugPointer("Page footer")
+                                .Element(Footer);
+                        });
                     
-                    decoration
-                        .After()
-                        .DebugPointer("Page footer")
-                        .Element(Footer);
+                    layers
+                        .Layer()
+                        .DebugPointer("Page foreground layer")
+                        .Element(Foreground);
                 });
 
             bool IsClose(float x, float y)
