@@ -1,6 +1,8 @@
 <a href="https://www.questpdf.com/" target="_blank">
-  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="300" style="margin-bottom: 12px;"> 
+  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="300"> 
 </a>
+
+---
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/stargazers)
 [![Nuget version](https://img.shields.io/nuget/v/QuestPdf)](https://www.nuget.org/packages/QuestPDF/)
