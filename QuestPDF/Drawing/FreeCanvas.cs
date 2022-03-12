@@ -51,17 +51,17 @@ namespace QuestPDF.Drawing
             
         }
 
-        public void DrawExternalLink(string url, Size size)
+        public void DrawHyperlink(string url, Size size)
         {
            
         }
 
-        public void DrawLocationLink(string locationName, Size size)
+        public void DrawSectionLink(string sectionName, Size size)
         {
             
         }
 
-        public void DrawLocation(string locationName)
+        public void DrawSection(string sectionName)
         {
             
         }

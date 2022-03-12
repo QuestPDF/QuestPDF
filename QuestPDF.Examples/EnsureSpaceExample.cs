@@ -23,7 +23,7 @@ namespace QuestPDF.Examples
                         page.Size(PageSizes.A7.Landscape());
                         page.Background(Colors.White);
                         
-                        page.Header().Text("With ensure space", TextStyle.Default.SemiBold());
+                        page.Header().Text("With ensure space").SemiBold();
                         
                         page.Content().Column(column =>
                         {

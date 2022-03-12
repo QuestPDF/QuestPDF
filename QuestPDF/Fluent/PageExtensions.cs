@@ -83,9 +83,28 @@ namespace QuestPDF.Fluent
             Page.DefaultTextStyle = textStyle;
         }
         
+        public void DefaultTextStyle(Func<TextStyle, TextStyle> handler)
+        {
+            DefaultTextStyle(handler(TextStyle.Default));
+        }
+        
         public void Background(string color)
         {
             Page.BackgroundColor = color;
+        }
+        
+        public IContainer Background()
+        {
+            var container = new Container();
+            Page.Background = container;
+            return container;
+        }
+        
+        public IContainer Foreground()
+        {
+            var container = new Container();
+            Page.Foreground = container;
+            return container;
         }
         
         public IContainer Header()

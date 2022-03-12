@@ -38,7 +38,7 @@ namespace QuestPDF.Examples
                                 text.Line(Placeholders.Sentence());
                             
                                 // this text has size 20 but also semibold and red
-                                text.Span(Placeholders.Sentence(), TextStyle.Default.Color(Colors.Red.Medium));
+                                text.Span(Placeholders.Sentence()).FontColor(Colors.Red.Medium);
                             });
                         });
                     });

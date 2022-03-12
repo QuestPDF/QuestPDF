@@ -3,9 +3,9 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class InternalLink : ContainerElement
+    internal class SectionLink : ContainerElement
     {
-        public string LocationName { get; set; }
+        public string SectionName { get; set; }
         
         internal override void Draw(Size availableSpace)
         {
@@ -14,7 +14,7 @@ namespace QuestPDF.Elements
             if (targetSize.Type == SpacePlanType.Wrap)
                 return;
 
-            Canvas.DrawLocationLink(LocationName, targetSize);
+            Canvas.DrawSectionLink(SectionName, targetSize);
             base.Draw(availableSpace);
         }
     }

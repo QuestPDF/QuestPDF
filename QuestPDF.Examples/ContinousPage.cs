@@ -25,7 +25,7 @@ namespace QuestPDF.Examples
                 page.Content().PaddingVertical(10).Border(1).Padding(10).Column(column =>
                 {
                     foreach (var index in Enumerable.Range(1, 100))
-                        column.Item().Text($"Line {index}", TextStyle.Default.Color(Placeholders.Color()));
+                        column.Item().Text($"Line {index}").FontColor(Placeholders.Color());
                 });
                 
                 page.Footer().Text("Footer");

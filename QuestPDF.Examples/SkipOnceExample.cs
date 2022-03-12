@@ -31,7 +31,8 @@ namespace QuestPDF.Examples
                         
                         page.Content()
                             .PaddingVertical(10)
-                            .Text(Placeholders.Paragraphs(), TextStyle.Default.Color(Colors.Grey.Medium));
+                            .Text(Placeholders.Paragraphs())
+                            .FontColor(Colors.Grey.Medium);
                         
                         page.Footer().Text(text =>
                         {

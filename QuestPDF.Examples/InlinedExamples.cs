@@ -74,7 +74,8 @@ namespace QuestPDF.Examples
                                                     .PrimaryLayer()
                                                     .AlignCenter()
                                                     .AlignMiddle()
-                                                    .Text(sizeText, TextStyle.Default.Size(15));
+                                                    .Text(sizeText)
+                                                    .FontSize(15);
                                             });
                                     }
                                 });

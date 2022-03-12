@@ -30,7 +30,10 @@ namespace QuestPDF.Elements
                         .MinimalBox()
                         .Background(Colors.White)
                         .Padding(2)
-                        .Text(Text, TextStyle.Default.Color(Color).FontType(Fonts.Consolas).Size(8));
+                        .Text(Text)
+                        .FontColor(Color)
+                        .FontFamily(Fonts.Consolas)
+                        .FontSize(8);
                 });
         }
     }

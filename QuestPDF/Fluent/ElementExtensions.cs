@@ -60,7 +60,7 @@ namespace QuestPDF.Fluent
 
         public static void Placeholder(this IContainer element, string? text = null)
         {
-            element.Component(new Elements.Placeholder
+            element.Component(new Placeholder
             {
                 Text = text ?? string.Empty
             });
@@ -99,27 +99,45 @@ namespace QuestPDF.Fluent
             return element.Element(new Container());
         }
         
+        [Obsolete("This element has been renamed since version 2022.3. Please use the Hyperlink method.")]
         public static IContainer ExternalLink(this IContainer element, string url)
         {
-            return element.Element(new ExternalLink
+            return element.Hyperlink(url);
+        }
+        
+        public static IContainer Hyperlink(this IContainer element, string url)
+        {
+            return element.Element(new Hyperlink
             {
                 Url = url
             });
         }
         
+        [Obsolete("This element has been renamed since version 2022.3. Please use the Section method.")]
         public static IContainer Location(this IContainer element, string locationName)
         {
-            return element.Element(new InternalLocation
+            return element.Section(locationName);
+        }
+        
+        public static IContainer Section(this IContainer element, string sectionName)
+        {
+            return element.Element(new Section
             {
-                LocationName = locationName
+                LocationName = sectionName
             });
         }
         
+        [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]
         public static IContainer InternalLink(this IContainer element, string locationName)
         {
-            return element.Element(new InternalLink
+            return element.SectionLink(locationName);
+        }
+        
+        public static IContainer SectionLink(this IContainer element, string sectionName)
+        {
+            return element.Element(new SectionLink
             {
-                LocationName = locationName
+                SectionName = sectionName
             });
         }
         
@@ -159,7 +177,15 @@ namespace QuestPDF.Fluent
                 TextStyle = textStyle
             });
         }
-
+        
+        public static IContainer DefaultTextStyle(this IContainer element, Func<TextStyle, TextStyle> handler)
+        {
+            return element.Element(new DefaultTextStyle
+            {
+                TextStyle = handler(TextStyle.Default)
+            });
+        }
+        
         public static IContainer StopPaging(this IContainer element)
         {
             return element.Element(new StopPaging());

@@ -26,8 +26,8 @@ namespace QuestPDF.Examples
                         .DefaultTextStyle(TextStyle.Default.Bold().Underline())
                         .Column(column =>
                         { 
-                            column.Item().Text("Default style applies to all children", TextStyle.Default);
-                            column.Item().Text("You can override certain styles", TextStyle.Default.Underline(false).Color(Colors.Green.Darken2));
+                            column.Item().Text("Default style applies to all children");
+                            column.Item().Text("You can override certain styles").Underline(false).FontColor(Colors.Green.Darken2);
                             
                             column.Item().PaddingTop(10).Border(1).Grid(grid =>
                             {
@@ -43,7 +43,8 @@ namespace QuestPDF.Examples
                                         .Height(50)
                                         .AlignCenter()
                                         .AlignMiddle()
-                                        .Text(i, TextStyle.Default.Size(16 + i / 4));   
+                                        .Text(i)
+                                        .FontSize(16 + i / 4);   
                                 }
                             });
                         });

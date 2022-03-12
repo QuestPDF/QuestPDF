@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class ExternalLink : ContainerElement
+    internal class Hyperlink : ContainerElement
     {
         public string Url { get; set; } = "https://www.questpdf.com";
         
@@ -14,7 +14,7 @@ namespace QuestPDF.Elements
             if (targetSize.Type == SpacePlanType.Wrap)
                 return;
 
-            Canvas.DrawExternalLink(Url, targetSize);
+            Canvas.DrawHyperlink(Url, targetSize);
             base.Draw(availableSpace);
         }
     }

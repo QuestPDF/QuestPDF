@@ -20,9 +20,9 @@ namespace QuestPDF.UnitTests.TestEngine
         public void DrawRectangle(Position vector, Size size, string color) => DrawRectFunc(vector, size, color);
         public void DrawText(string text, Position position, TextStyle style) => DrawTextFunc(text, position, style);
         public void DrawImage(SKImage image, Position position, Size size) => DrawImageFunc(image, position, size);
-        
-        public void DrawExternalLink(string url, Size size) => throw new NotImplementedException();
-        public void DrawLocationLink(string locationName, Size size) => throw new NotImplementedException();
-        public void DrawLocation(string locationName) => throw new NotImplementedException();
+
+        public void DrawHyperlink(string url, Size size) => throw new NotImplementedException();
+        public void DrawSectionLink(string sectionName, Size size) => throw new NotImplementedException();
+        public void DrawSection(string sectionName) => throw new NotImplementedException();
     }
 }

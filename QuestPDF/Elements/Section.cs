@@ -2,7 +2,7 @@
 
 namespace QuestPDF.Elements
 {
-    internal class InternalLocation : ContainerElement, IStateResettable
+    internal class Section : ContainerElement, IStateResettable
     {
         public string LocationName { get; set; }
         private bool IsRendered { get; set; }
@@ -16,12 +16,11 @@ namespace QuestPDF.Elements
         {
             if (!IsRendered)
             {
-                PageContext.SetLocationPage(LocationName);
-                
-                Canvas.DrawLocation(LocationName);
+                Canvas.DrawSection(LocationName);
                 IsRendered = true;
             }
             
+            PageContext.SetSectionPage(LocationName);
             base.Draw(availableSpace);
         }
     }
