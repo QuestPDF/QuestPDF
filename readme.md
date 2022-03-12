@@ -90,10 +90,10 @@ Document.Create(container =>
 
 And compare it to the produced PDF file:
 
-
+<img src="https://github.com/QuestPDF/example-invoice/raw/main/images/minimal-api.png" width="300px">
 
 ## Are you ready for more?
 
 The Fluent API of QuestPDF scales really well. It is easy to create and maintain even most complex documents. Read [the Getting started tutorial](https://www.questpdf.com/documentation/getting-started.html) to learn QuestPDF basics and implement an invoice under 200 lines of code. You can also investigate and play with the code from [the example repository](https://github.com/QuestPDF/example-invoice).
 
-<img src="https://github.com/QuestPDF/example-invoice/raw/main/images/invoice.png" width="595px">
+<img src="https://github.com/QuestPDF/example-invoice/raw/main/images/invoice.png" width="400px">
