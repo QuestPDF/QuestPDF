@@ -11,7 +11,7 @@ namespace QuestPDF.Examples
     public class PageBackgroundForeground
     {
         [Test]
-        public void Frame()
+        public void Test()
         {
             RenderingTest
                 .Create()
@@ -31,7 +31,7 @@ namespace QuestPDF.Examples
                             .AlignCenter()
                             .Text("Watermark")
                             .FontSize(64)
-                            .FontColor(Colors.Blue.Lighten4);
+                            .FontColor(Colors.Blue.Lighten3);
                         
                         page.Header().Text("Background and foreground").Bold().FontColor(Colors.Blue.Medium).FontSize(24);
                         
@@ -42,14 +42,6 @@ namespace QuestPDF.Examples
                             foreach (var i in Enumerable.Range(0, 100))
                                 column.Item().Background(Colors.Grey.Lighten2).Height(75);
                         });
-                        
-                        page.Footer()
-                            .AlignCenter()
-                            .Text(x =>
-                            {
-                                x.Span("Page ");
-                                x.CurrentPageNumber();
-                            });
                     });
                 });
         }

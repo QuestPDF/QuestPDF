@@ -177,7 +177,15 @@ namespace QuestPDF.Fluent
                 TextStyle = textStyle
             });
         }
-
+        
+        public static IContainer DefaultTextStyle(this IContainer element, Func<TextStyle, TextStyle> handler)
+        {
+            return element.Element(new DefaultTextStyle
+            {
+                TextStyle = handler(TextStyle.Default)
+            });
+        }
+        
         public static IContainer StopPaging(this IContainer element)
         {
             return element.Element(new StopPaging());
