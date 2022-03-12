@@ -204,7 +204,7 @@ namespace QuestPDF.Examples
 
                             text.EmptyLine();
 
-                            text.ExternalLocation("Please visit QuestPDF website", "https://www.questpdf.com");
+                            text.Hyperlink("Please visit QuestPDF website", "https://www.questpdf.com");
 
                             text.EmptyLine();
 
@@ -258,7 +258,7 @@ namespace QuestPDF.Examples
                             {
                                 text.Line($"{i}: {Placeholders.Paragraph()}");
 
-                                text.ExternalLocation("Please visit QuestPDF website", "https://www.questpdf.com");
+                                text.Hyperlink("Please visit QuestPDF website", "https://www.questpdf.com");
                                 
                                 text.Span("This is page number ");
                                 text.CurrentPageNumber();
@@ -289,9 +289,7 @@ namespace QuestPDF.Examples
 
                         page.Size(PageSizes.A4);
 
-                        page.Content().Text( 
-                            "This is a specially crafted sentence with a specially chosen length for demonstration of the bug that occurs ;;;;;. ",
-                            TextStyle.Default.Size(11).BackgroundColor(Colors.Red.Lighten3));
+                        page.Content().Text("This is a specially crafted sentence with a specially chosen length for demonstration of the bug that occurs ;;;;;. ").FontSize(11).BackgroundColor(Colors.Red.Lighten3);
                     });
                 });
         }
@@ -314,9 +312,7 @@ namespace QuestPDF.Examples
 
                         page.Size(PageSizes.A4);
 
-                        page.Content().Text( 
-                            "         ",
-                            TextStyle.Default.FontSize(11).BackgroundColor(Colors.Red.Lighten3));
+                        page.Content().Text("         ").FontSize(11).BackgroundColor(Colors.Red.Lighten3);
                     });
                 });
         }
@@ -339,9 +335,7 @@ namespace QuestPDF.Examples
 
                         page.Size(PageSizes.A4);
 
-                        page.Content().Text( 
-                            "     x     ",
-                            TextStyle.Default.FontSize(11).BackgroundColor(Colors.Red.Lighten3));
+                        page.Content().Text("     x     ").FontSize(11).BackgroundColor(Colors.Red.Lighten3);
                     });
                 });
         }
