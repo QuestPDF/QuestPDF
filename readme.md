@@ -2,6 +2,8 @@
   <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="400px"> 
 </a>
 
+[![NuGet version](https://badge.fury.io/nu/QuestPDF.svg)](https://badge.fury.io/nu/QuestPDF) [![NuGet](https://img.shields.io/nuget/dt/QuestPDF.svg)](https://www.nuget.org/packages/QuestPDF/) 
+
 QuestPDF presents a new approach to PDF document generation. Unlike other libraries, it does not rely on the HTML-to-PDF conversion which in many cases is not reliable. Instead, it implements its own layouting engine that is optimized to cover all paging-related requirements. Then, everything is rendered using the SkiaSharp library (a Skia port for .NET, used in Chrome, Android, MAUI, etc.).
 
 I have designed this layouting engine with full paging support in mind. The document consists of many simple elements (e.g. border, background, image, text, padding, table, grid etc.) that are composed together to create more complex structures. This way, as a developer, you can understand the behaviour of every element and use them with full confidence. Additionally, the document and all its elements support paging functionality. For example, an element can be moved to the next page (if there is not enough space) or even be split between pages like table's rows.
