@@ -1,8 +1,12 @@
-<a href="https://www.questpdf.com/">
-  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="400px"> 
+<a href="https://www.questpdf.com/" target="_blank">
+  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" style="max-width: 300px; margin-bottom: 12px;"> 
 </a>
 
-[![NuGet version](https://badge.fury.io/nu/QuestPDF.svg)](https://badge.fury.io/nu/QuestPDF) [![NuGet](https://img.shields.io/nuget/dt/QuestPDF.svg)](https://www.nuget.org/packages/QuestPDF/) 
+[![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/stargazers)
+[![Nuget version](https://img.shields.io/nuget/v/QuestPdf)](https://www.nuget.org/packages/QuestPDF/)
+[![Nuget download](https://img.shields.io/nuget/dt/QuestPDF)](https://www.nuget.org/packages/QuestPDF/)
+[![License](https://img.shields.io/github/license/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/blob/main/LICENSE)
+[![Sponsor project](https://img.shields.io/badge/sponsor-project-red)](https://github.com/sponsors/QuestPDF)
 
 QuestPDF presents a new approach to PDF document generation. Unlike other libraries, it does not rely on the HTML-to-PDF conversion which in many cases is not reliable. Instead, it implements its own layouting engine that is optimized to cover all paging-related requirements. Then, everything is rendered using the SkiaSharp library (a Skia port for .NET, used in Chrome, Android, MAUI, etc.).
 
