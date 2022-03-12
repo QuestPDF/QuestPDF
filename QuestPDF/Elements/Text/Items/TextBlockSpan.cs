@@ -33,13 +33,15 @@ namespace QuestPDF.Elements.Text.Items
 
             var startIndex = request.StartIndex;
             
-            if (request.IsFirstLineElement)
+            // if the element is the first one within the line,
+            // ignore leading spaces
+            if (request.IsFirstElementInLine)
             {
-                while (startIndex + 1 < Text.Length && Text[startIndex] == space)
+                while (startIndex < Text.Length && Text[startIndex] == space)
                     startIndex++;
             }
-
-            if (Text.Length == 0)
+            
+            if (Text.Length == 0 || startIndex == Text.Length)
             {
                 return new TextMeasurementResult
                 {
@@ -58,37 +60,26 @@ namespace QuestPDF.Elements.Text.Items
 
             if (textLength <= 0)
                 return null;
-
-            if (textLength < text.Length && text[textLength] == space)
-                textLength++;
-            
+  
             // break text only on spaces
-            if (textLength < text.Length)
-            {
-                var lastSpaceIndex = text.Slice(0, textLength).LastIndexOf(space) - 1;
+            var wrappedTextLength = WrapText(text, textLength, request.IsFirstElementInLine);
 
-                if (lastSpaceIndex <= 0)
-                {
-                    if (!request.IsFirstLineElement)
-                        return null;
-                }
-                else
-                {
-                    textLength = lastSpaceIndex + 1;
-                }
-            }
+            if (wrappedTextLength == null)
+                return null;
+
+            textLength = wrappedTextLength.Value;
 
             text = text.Slice(0, textLength);
 
             var endIndex = startIndex + textLength;
             var nextIndex = endIndex;
 
-            while (nextIndex + 1 < Text.Length && Text[nextIndex] == space)
+            // when breaking text, omit spaces at the end of the line
+            while (nextIndex < Text.Length && Text[nextIndex] == space)
                 nextIndex++;
             
             // measure final text
-            var finalText = text.TrimEnd();
-            var width = paint.MeasureText(finalText);
+            var width = paint.MeasureText(text);
             
             return new TextMeasurementResult
             {
@@ -104,6 +95,31 @@ namespace QuestPDF.Elements.Text.Items
                 NextIndex = nextIndex,
                 TotalIndex = Text.Length
             };
+
+            static int? WrapText(ReadOnlySpan<char> text, int textLength, bool isFirstElementInLine)
+            {
+                // textLength - length of the part of the text that fits in available width (creating a line)
+                
+                // entire text fits, no need to wrap
+                if (textLength == text.Length)
+                    return textLength;
+
+                // current line ends at word, next character is space, perfect place to wrap
+                if (text[textLength - 1] != space && text[textLength] == space)
+                    return textLength;
+                
+                // find last space within the available text to wrap
+                var lastSpaceIndex = text.Slice(0, textLength).LastIndexOf(space);
+
+                // text contains space that can be used to wrap
+                if (lastSpaceIndex > 0)
+                    return lastSpaceIndex;
+                
+                // there is no available space to wrap text
+                // if the item is first within the line, perform safe mode and chop the word
+                // otherwise, move the item into the next line
+                return isFirstElementInLine ? textLength : null;
+            }
         }
         
         public virtual void Draw(TextDrawingRequest request)

@@ -170,7 +170,7 @@ namespace QuestPDF.Elements.Text
                         
                         StartIndex = currentItemIndex,
                         AvailableWidth = availableWidth - currentWidth,
-                        IsFirstLineElement = !currentLineElements.Any()
+                        IsFirstElementInLine = !currentLineElements.Any()
                     };
                 
                     var measurementResponse = currentElement.Measure(measurementRequest);

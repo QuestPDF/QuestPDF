@@ -31,7 +31,8 @@ namespace QuestPDF.Examples
                         {
                             text.DefaultTextStyle(TextStyle.Default.Size(20));
                             text.Span("This is a normal text, followed by an ");
-                            text.Span("underlined red text.", TextStyle.Default.Size(20).Color(Colors.Red.Medium).Underline());
+                            text.Span("underlined red text", TextStyle.Default.Color(Colors.Red.Medium).Underline());
+                            text.Span(".");
                         });
                 });
         }
@@ -189,7 +190,7 @@ namespace QuestPDF.Examples
                             text.EmptyLine();
 
                             text.Span("The new text element also supports injecting custom content between words: ");
-                            text.Element().PaddingBottom(-10).Height(16).Width(32).Image(Placeholders.Image);
+                            text.Element().PaddingBottom(-4).Height(16).Width(32).Image(Placeholders.Image);
                             text.Span(".");
 
                             text.EmptyLine();
@@ -246,7 +247,7 @@ namespace QuestPDF.Examples
                             text.Span("and this is slightly bigger text.", TextStyle.Default.Size(16));
                             
                             text.Span("The new text element also supports injecting custom content between words: ");
-                            text.Element().PaddingBottom(-10).Height(16).Width(32).Image(Placeholders.Image);
+                            text.Element().PaddingBottom(-4).Height(16).Width(32).Image(Placeholders.Image);
                             text.Span(".");
                             
                             text.EmptyLine();
@@ -288,7 +289,57 @@ namespace QuestPDF.Examples
 
                         page.Content().Text( 
                             "This is a specially crafted sentence with a specially chosen length for demonstration of the bug that occurs ;;;;;. ",
-                            TextStyle.Default.Size(11));
+                            TextStyle.Default.Size(11).BackgroundColor(Colors.Red.Lighten3));
+                    });
+                });
+        }
+        
+        [Test]
+        public void EmptyText()
+        {
+            // issue 135
+            
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(50);
+                        page.Background(Colors.White);
+
+                        page.Size(PageSizes.A4);
+
+                        page.Content().Text( 
+                            "         ",
+                            TextStyle.Default.Size(11).BackgroundColor(Colors.Red.Lighten3));
+                    });
+                });
+        }
+        
+        [Test]
+        public void Whitespaces()
+        {
+            // issue 135
+            
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(50);
+                        page.Background(Colors.White);
+
+                        page.Size(PageSizes.A4);
+
+                        page.Content().Text( 
+                            "     x     ",
+                            TextStyle.Default.Size(11).BackgroundColor(Colors.Red.Lighten3));
                     });
                 });
         }

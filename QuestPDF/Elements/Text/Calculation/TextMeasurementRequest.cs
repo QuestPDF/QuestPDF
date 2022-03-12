@@ -9,6 +9,6 @@ namespace QuestPDF.Elements.Text.Calculation
         
         public int StartIndex { get; set; }
         public float AvailableWidth { get; set; }
-        public bool IsFirstLineElement { get; set; }
+        public bool IsFirstElementInLine { get; set; }
     }
 }

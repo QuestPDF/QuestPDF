@@ -17,6 +17,6 @@ namespace QuestPDF.Elements.Text.Calculation
         public int NextIndex { get; set; }
         public int TotalIndex { get; set; }
 
-        public bool IsLast => EndIndex == TotalIndex;
+        public bool IsLast => NextIndex == EndIndex;
     }
 }

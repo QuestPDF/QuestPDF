@@ -23,7 +23,7 @@ namespace QuestPDF.Examples
                 .PageSize(PageSizes.A4)
                 .ProducePdf()
                 .ShowResults()
-                .Render(x => ComposeBook(x, chapters));
+                .RenderDocument(x => ComposeBook(x, chapters));
         }
         
         [Test]
@@ -42,8 +42,8 @@ namespace QuestPDF.Examples
                 RenderingTest
                     .Create()
                     .PageSize(PageSizes.A4)
-                        .ProducePdf()
-                    .Render(x => ComposeBook(x, chapters));
+                    .ProducePdf()
+                    .RenderDocument(x => ComposeBook(x, chapters));
             }
 
             IEnumerable<float> PerformTest(int attempts)
@@ -102,37 +102,30 @@ namespace QuestPDF.Examples
             }
         }
         
-        private void ComposeBook(IContainer container, ICollection<BookChapter> chapters)
+        private void ComposeBook(IDocumentContainer container, ICollection<BookChapter> chapters)
         {
             var subtitleStyle = TextStyle.Default.Size(24).SemiBold().Color(Colors.Blue.Medium);
             var normalStyle = TextStyle.Default.Size(14);
-            
-            ComposePage(container);
 
-            void ComposePage(IContainer container)
+            container.Page(page =>
             {
-                container
-                    .Padding(50)
-                    .Decoration(decoration =>
-                    {
-                        decoration
-                            .Content()
-                            .Column(column =>
-                            {
-                                column.Item().Element(Title);
-                                column.Item().PageBreak();
-                                column.Item().Element(TableOfContents);
-                                column.Item().PageBreak();
+                page.Margin(50);
+                
+                page.Content().Column(column =>
+                {
+                    column.Item().Element(Title);
+                    column.Item().PageBreak();
+                    column.Item().Element(TableOfContents);
+                    column.Item().PageBreak();
 
-                                Chapters(column);
+                    Chapters(column);
 
-                                column.Item().Element(Acknowledgements);
-                            });
+                    column.Item().Element(Acknowledgements);
+                });
+                
+                page.Footer().Element(Footer);
+            });
 
-                        decoration.After().Element(Footer);
-                    });
-            }
-            
             void Title(IContainer container)
             {
                 container
