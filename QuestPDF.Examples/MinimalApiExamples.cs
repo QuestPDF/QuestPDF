@@ -19,11 +19,12 @@ namespace QuestPDF.Examples
                     {
                         page.Size(PageSizes.A4);
                         page.Margin(2, Unit.Centimetre);
-                        page.Background(Colors.White);
-                        page.DefaultTextStyle(TextStyle.Default.Size(20));
+                        page.PageColor(Colors.White);
+                        page.DefaultTextStyle(x => x.FontSize(20));
                         
                         page.Header()
-                            .Text("Hello PDF!").SemiBold().FontSize(36).FontColor(Colors.Blue.Medium);
+                            .Text("Hello PDF!")
+                            .SemiBold().FontSize(36).FontColor(Colors.Blue.Medium);
                         
                         page.Content()
                             .PaddingVertical(1, Unit.Centimetre)
@@ -47,49 +48,6 @@ namespace QuestPDF.Examples
                 .GeneratePdf("hello.pdf");
 
             Process.Start("explorer.exe", "hello.pdf");
-        }
-        
-        [Test]
-        public void MinimalApi2()
-        {
-            RenderingTest
-                .Create()
-                .ProduceImages()
-                .ShowResults()
-                .RenderDocument(container =>
-                {
-                    container.Page(page =>
-                    {
-                        page.Size(PageSizes.A4);
-                        page.Margin(2, Unit.Centimetre);
-                        page.Background(Colors.White);
-                        page.DefaultTextStyle(TextStyle.Default.Size(20));
-                        
-                        page.Header()
-                            .Text("Hello PDF!")
-                            .SemiBold()
-                            .FontSize(36)
-                            .FontColor(Colors.Blue.Medium);
-                        
-                        page.Content()
-                            .PaddingVertical(1, Unit.Centimetre)
-                            .Column(x =>
-                            {
-                                x.Spacing(20);
-                                
-                                x.Item().Text(Placeholders.LoremIpsum());
-                                x.Item().Image(Placeholders.Image(200, 100));
-                            });
-                        
-                        page.Footer()
-                            .AlignCenter()
-                            .Text(x =>
-                            {
-                                x.Span("Page ");
-                                x.CurrentPageNumber();
-                            });
-                    });
-                });
         }
     }
 }

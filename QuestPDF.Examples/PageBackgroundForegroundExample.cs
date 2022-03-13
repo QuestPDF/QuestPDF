@@ -8,15 +8,15 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
-    public class PageBackgroundForeground
+    public class PageBackgroundForegroundExample
     {
         [Test]
-        public void Test()
+        public void PageBackgroundForeground()
         {
             RenderingTest
                 .Create()
-                .PageSize(550, 400)
-                .ProducePdf()
+                .ProduceImages()
+                .MaxPages(100)
                 .ShowResults()
                 .RenderDocument(document =>
                 {
@@ -25,15 +25,23 @@ namespace QuestPDF.Examples
                         page.Size(PageSizes.A4);
                         page.Margin(1, Unit.Inch);
                         page.DefaultTextStyle(TextStyle.Default.FontSize(16));
+                        page.PageColor(Colors.White);
 
-                        page.Foreground()
-                            .AlignMiddle()
-                            .AlignCenter()
-                            .Text("Watermark")
-                            .FontSize(64)
-                            .FontColor(Colors.Blue.Lighten3);
+                        const string transparentBlue = "#662196f3";
+
+                        page.Background()
+                            .AlignTop()
+                            .ExtendHorizontal()
+                            .Height(200)
+                            .Background(transparentBlue);
                         
-                        page.Header().Text("Background and foreground").Bold().FontColor(Colors.Blue.Medium).FontSize(24);
+                        page.Foreground()
+                            .AlignBottom()
+                            .ExtendHorizontal()
+                            .Height(250)
+                            .Background(transparentBlue);
+                        
+                        page.Header().Text("Background and foreground").Bold().FontColor(Colors.Blue.Darken2).FontSize(36);
                         
                         page.Content().PaddingVertical(25).Column(column =>
                         {

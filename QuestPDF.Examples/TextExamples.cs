@@ -82,7 +82,7 @@ namespace QuestPDF.Examples
                         .Padding(10)
                         .Text(text =>
                         {
-                            text.DefaultTextStyle(TextStyle.Default.Size(20));
+                            text.DefaultTextStyle(TextStyle.Default.FontSize(20));
                             text.Span("This is a random image aligned to the baseline: ");
                             
                             text.Element()
@@ -239,7 +239,7 @@ namespace QuestPDF.Examples
                         .Padding(10)
                         .Text(text =>
                         {
-                            text.DefaultTextStyle(TextStyle.Default);
+                            text.DefaultTextStyle(TextStyle.Default.FontSize(20));
                             text.AlignLeft();
                             text.ParagraphSpacing(10);
 
@@ -285,7 +285,7 @@ namespace QuestPDF.Examples
                     container.Page(page =>
                     {
                         page.Margin(50);
-                        page.Background(Colors.White);
+                        page.PageColor(Colors.White);
 
                         page.Size(PageSizes.A4);
 
@@ -308,7 +308,7 @@ namespace QuestPDF.Examples
                     container.Page(page =>
                     {
                         page.Margin(50);
-                        page.Background(Colors.White);
+                        page.PageColor(Colors.White);
 
                         page.Size(PageSizes.A4);
 
@@ -331,7 +331,7 @@ namespace QuestPDF.Examples
                     container.Page(page =>
                     {
                         page.Margin(50);
-                        page.Background(Colors.White);
+                        page.PageColor(Colors.White);
 
                         page.Size(PageSizes.A4);
 

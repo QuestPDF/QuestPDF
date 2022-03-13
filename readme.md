@@ -4,6 +4,7 @@
 
 ---
 
+[![Dotnet](https://img.shields.io/badge/platform-.NET-blue)](https://www.nuget.org/packages/QuestPDF/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/stargazers)
 [![Nuget version](https://img.shields.io/nuget/v/QuestPdf)](https://www.nuget.org/packages/QuestPDF/)
 [![Nuget download](https://img.shields.io/nuget/dt/QuestPDF)](https://www.nuget.org/packages/QuestPDF/)
@@ -19,13 +20,28 @@ I have designed this layouting engine with full paging support in mind. The docu
 All great frameworks and libraries started from zero. Please help me make QuestPDF a commonly known library and an obvious choice for generating PDF documents. 
 
 - ⭐ Give this repository a star,
-- 💬 Share it with your team members. 
+- 💬 Share it with your team members,
+- ❤ Please consider supporting
+
+## Share
+
+// consider removing logos
+
+[![GitHub Repo stars](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit)](https://reddit.com/submit?url=https://github.com/QuestPDF/QuestPDF&title=QuestPDF)
+
+[![GitHub Repo stars](https://img.shields.io/badge/share%20on-hacker%20news-orange?logo=ycombinator)](https://news.ycombinator.com/submitlink?u=https://github.com/QuestPDF/QuestPDF)
+
+[![GitHub Repo stars](https://img.shields.io/badge/share%20on-twitter-03A9F4?logo=twitter)](https://twitter.com/share?url=https://github.com/QuestPDF/QuestPDF&t=QuestPDF)
+
+[![GitHub Repo stars](https://img.shields.io/badge/share%20on-facebook-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/QuestPDF/QuestPDF)
+
+[![GitHub Repo stars](https://img.shields.io/badge/share%20on-linkedin-3949AB?logo=linkedin)](https://www.linkedin.com/shareArticle?url=https://github.com/QuestPDF/QuestPDF&title=QuestPDF)
 
 ## Installation
 
 The library is available as a nuget package. You can install it as any other nuget package from your IDE, try to search by `QuestPDF`. You can find package details [on this webpage](https://www.nuget.org/packages/QuestPDF/).
 
-```c#
+```xml
 // Package Manager
 Install-Package QuestPDF
 
@@ -33,10 +49,22 @@ Install-Package QuestPDF
 dotnet add package QuestPDF
 
 // Package reference in .csproj file
-<PackageReference Include="QuestPDF" Version="2022.2.5" />
+<PackageReference Include="QuestPDF" Version="2022.3.0" />
 ```
 
 ## Documentation
+
+[![GitHub Repo stars]( https://img.shields.io/badge/%F0%9F%9A%80-getting%20started-blue)](https://www.linkedin.com/shareArticle?url=https://github.com/QuestPDF/QuestPDF&title=QuestPDF)
+A short and easy to follow tutorial showing how to design an invoice document under 200 lines of code.
+
+
+[![GitHub Repo stars](https://img.shields.io/badge/%F0%9F%93%96-API%20reference-blue)](https://www.linkedin.com/shareArticle?url=https://github.com/QuestPDF/QuestPDF&title=QuestPDF)
+A detailed description of behavior of all available components and how to use them with C# Fluent API.
+
+
+[![GitHub Repo stars](https://img.shields.io/badge/%F0%9F%94%8D-patterns%20and%20practices-blue)](https://www.linkedin.com/shareArticle?url=https://github.com/QuestPDF/QuestPDF&title=QuestPDF)
+Everything that may help you designing great reports and create reusable code that is easy to maintain.
+
 
 **[🚀 Getting started tutorial](https://www.questpdf.com/documentation/getting-started.html)** - a short and easy to follow tutorial showing how to design an invoice document under 200 lines of code.
 
@@ -61,10 +89,11 @@ Document.Create(container =>
         page.Size(PageSizes.A4);
         page.Margin(2, Unit.Centimetre);
         page.Background(Colors.White);
-        page.DefaultTextStyle(TextStyle.Default.Size(20));
+        page.DefaultTextStyle(x => x.FontSize(20));
         
         page.Header()
-            .Text("Hello PDF!", TextStyle.Default.SemiBold().Size(36).Color(Colors.Blue.Medium));
+            .Text("Hello PDF!")
+            .SemiBold().FontSize(36).FontColor(Colors.Blue.Medium);
         
         page.Content()
             .PaddingVertical(1, Unit.Centimetre)

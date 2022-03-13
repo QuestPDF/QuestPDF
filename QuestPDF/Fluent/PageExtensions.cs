@@ -88,9 +88,15 @@ namespace QuestPDF.Fluent
             DefaultTextStyle(handler(TextStyle.Default));
         }
         
-        public void Background(string color)
+        public void PageColor(string color)
         {
             Page.BackgroundColor = color;
+        }
+        
+        [Obsolete("This element has been renamed since version 2022.3. Please use the PageColor method.")]
+        public void Background(string color)
+        {
+            PageColor(color);
         }
         
         public IContainer Background()

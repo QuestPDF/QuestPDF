@@ -24,7 +24,7 @@ namespace QuestPDF.Examples
                     
                         page.Margin(20);
                         page.Size(PageSizes.A4);
-                        page.Background(Colors.White);
+                        page.PageColor(Colors.White);
         
                         page.Content().Column(column =>
                         {

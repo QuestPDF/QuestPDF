@@ -30,6 +30,7 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
+                .Background(BackgroundColor)
                 .Layers(layers =>
                 {
                     layers
@@ -44,9 +45,7 @@ namespace QuestPDF.Elements
                 
                         .MaxWidth(MaxSize.Width)
                         .MaxHeight(MaxSize.Height)
-                
-                        .Background(BackgroundColor)
-     
+
                         .PaddingLeft(MarginLeft)
                         .PaddingRight(MarginRight)
                         .PaddingTop(MarginTop)

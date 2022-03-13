@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
