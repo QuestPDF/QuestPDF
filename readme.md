@@ -118,7 +118,7 @@ Document.Create(container =>
 
 And compare it to the produced PDF file:
 
-<img src="https://github.com/QuestPDF/example-invoice/raw/main/images/minimal-api.png" width="300px">
+<img src="https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/images/minimal-api.png" width="250px">
 
 ## Are you ready for more?
 
