@@ -1,9 +1,3 @@
-<a href="https://www.questpdf.com/" target="_blank">
-  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="300"> 
-</a>
-
----
-
 [![Dotnet](https://img.shields.io/badge/platform-.NET-blue)](https://www.nuget.org/packages/QuestPDF/)
 [![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/stargazers)
 [![Nuget version](https://img.shields.io/nuget/v/QuestPdf)](https://www.nuget.org/packages/QuestPDF/)
@@ -34,22 +28,22 @@ dotnet add package QuestPDF
 
 ## Documentation
 
-[![GitHub Repo stars]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue)](https://www.questpdf.com/documentation/getting-started.html)
+[![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue)](https://www.questpdf.com/documentation/getting-started.html)
 A short and easy to follow tutorial showing how to design an invoice document under 200 lines of code.
 
 
-[![GitHub Repo stars](https://img.shields.io/badge/%F0%9F%93%96%20read-API%20reference-blue)](https://www.questpdf.com/documentation/api-reference.html)
+[![API reference](https://img.shields.io/badge/%F0%9F%93%96%20read-API%20reference-blue)](https://www.questpdf.com/documentation/api-reference.html)
 A detailed description of behavior of all available components and how to use them with C# Fluent API.
 
 
-[![GitHub Repo stars](https://img.shields.io/badge/%F0%9F%94%8D%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/documentation/patterns-and-practices.html#document-metadata)
+[![Patterns and Practices](https://img.shields.io/badge/%F0%9F%94%8D%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/documentation/patterns-and-practices.html#document-metadata)
 Everything that may help you designing great reports and create reusable code that is easy to maintain.
 
 ## Simplicity is the key
 
 How easy it is to start and prototype with QuestPDF? Really easy thanks to its minimal API! Please analyse the code below:
 
-```csharp
+```#
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -92,10 +86,10 @@ Document.Create(container =>
 
 And compare it to the produced PDF file:
 
-<img src="https://github.com/QuestPDF/example-invoice/raw/main/images/minimal-api.png" width="300px">
+![invoice](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/images/minimal-example-shadow.png)
 
 ## Are you ready for more?
 
 The Fluent API of QuestPDF scales really well. It is easy to create and maintain even most complex documents. Read [the Getting started tutorial](https://www.questpdf.com/documentation/getting-started.html) to learn QuestPDF basics and implement an invoice under 200 lines of code. You can also investigate and play with the code from [the example repository](https://github.com/QuestPDF/example-invoice).
 
-<img src="https://github.com/QuestPDF/example-invoice/raw/main/images/invoice.png" width="400px">
+![invoice](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/images/invoice-small.png)
