@@ -23,6 +23,8 @@ namespace QuestPDF.Examples.Engine
         private bool ApplyCaching { get; set; }
         private bool ApplyDebugging { get; set; }
         private RenderingTestResult ResultType { get; set; } = RenderingTestResult.Images;
+
+        private bool ShowingResultsEnabled = true;
         
         private RenderingTest()
         {
@@ -114,7 +116,7 @@ namespace QuestPDF.Examples.Engine
                 Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
                 document.GenerateImages(fileNameSchema);
                 
-                if (ShowResult)
+                if (ShowResult && ShowingResultsEnabled)
                     Process.Start("explorer", fileNameSchema(0));
             }
 
@@ -123,7 +125,7 @@ namespace QuestPDF.Examples.Engine
                 var fileName = $"{FileNamePrefix}.pdf";
                 document.GeneratePdf(fileName);
                 
-                if (ShowResult)
+                if (ShowResult && ShowingResultsEnabled)
                     Process.Start("explorer", fileName);
             }
         }

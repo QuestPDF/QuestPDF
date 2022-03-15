@@ -742,7 +742,7 @@ namespace QuestPDF.Examples
                 {
                     container
                         .Padding(25)
-                        .PaddingLeft(75)
+                        .PaddingLeft(50)
                         .Column(column =>
                         {
                             column.Item().Width(300).Height(150).Background(Colors.Blue.Lighten4);

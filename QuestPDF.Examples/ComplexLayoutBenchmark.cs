@@ -16,7 +16,7 @@ namespace QuestPDF.Examples
                 .PageSize(PageSizes.A4)
                 .ProducePdf()
                 .ShowResults()
-                .Render(x => GenerateStructure(x, 16));
+                .Render(x => GenerateStructure(x, 12));
         }
 
         private void GenerateStructure(IContainer container, int level)
