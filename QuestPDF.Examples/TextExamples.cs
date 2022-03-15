@@ -339,5 +339,37 @@ namespace QuestPDF.Examples
                     });
                 });
         }
+        
+        [Test]
+        public void DrawingNullTextShouldNotThrowException()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(50);
+                        page.PageColor(Colors.White);
+
+                        page.Size(PageSizes.A4);
+
+                        page.Content().Column(column =>
+                        {
+                            column.Item().Text(null);
+
+                            column.Item().Text(text =>
+                            {
+                                text.Span(null);
+                                text.Line(null);
+                                text.Hyperlink(null, "http://www.questpdf.com");
+                                text.TotalPages().Format(x => null);
+                            });
+                        });
+                    });
+                });
+        }
     }
 }

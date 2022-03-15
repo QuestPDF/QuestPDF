@@ -11,19 +11,19 @@ namespace QuestPDF.Elements.Text.Items
         
         public override TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
-            SetPageNumber(request.PageContext);
+            UpdatePageNumberText(request.PageContext);
             return MeasureWithoutCache(request);
         }
 
         public override void Draw(TextDrawingRequest request)
         {
-            SetPageNumber(request.PageContext);
+            UpdatePageNumberText(request.PageContext);
             base.Draw(request);
         }
 
-        private void SetPageNumber(IPageContext context)
+        private void UpdatePageNumberText(IPageContext context)
         {
-            Text = Source(context) ?? PageNumberPlaceholder;
+            Text = Source(context) ?? string.Empty;
         }
     }
 }

@@ -24,7 +24,7 @@ namespace QuestPDF.Fluent
     
     public class TextPageNumberDescriptor : TextSpanDescriptor
     {
-        internal PageNumberFormatter FormatFunction { get; private set; } = x => (x ?? 123).ToString();
+        internal PageNumberFormatter FormatFunction { get; private set; } = x => x?.ToString() ?? string.Empty;
 
         internal TextPageNumberDescriptor(TextStyle textStyle) : base(textStyle)
         {
@@ -92,6 +92,10 @@ namespace QuestPDF.Fluent
         public TextSpanDescriptor Span(string? text)
         {
             var style = DefaultStyle.Clone();
+            var descriptor = new TextSpanDescriptor(style);
+
+            if (text == null)
+                return descriptor;
  
             var items = text
                 .Replace("\r", string.Empty)
@@ -114,7 +118,7 @@ namespace QuestPDF.Fluent
                 .ToList()
                 .ForEach(TextBlocks.Add);
 
-            return new TextSpanDescriptor(style);
+            return descriptor;
         }
 
         public TextSpanDescriptor Line(string? text)
