@@ -67,7 +67,8 @@ namespace QuestPDF.Drawing
                 {
                     Color = SKColor.Parse(style.Color),
                     Typeface = GetTypeface(style),
-                    TextSize = style.Size ?? 12
+                    TextSize = style.Size ?? 12,
+                    IsAntialias = true,
                 };
             }
 
