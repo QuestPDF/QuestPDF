@@ -1,7 +1,7 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
-using QuestPDF.Drawing;
+using Avalonia.Threading;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
@@ -9,7 +9,7 @@ namespace QuestPDF.Previewer
     internal class PreviewerControl : Control
     {
         public static readonly StyledProperty<IDocument?> DocumentProperty =
-          AvaloniaProperty.Register<PreviewerControl, IDocument?>(nameof(Document));
+            AvaloniaProperty.Register<PreviewerControl, IDocument?>(nameof(Document));
 
         public IDocument? Document
         {
@@ -18,7 +18,7 @@ namespace QuestPDF.Previewer
         }
 
         public static readonly StyledProperty<bool> IsGeneratingDocumentProperty =
-          AvaloniaProperty.Register<PreviewerControl, bool>(nameof(IsGeneratingDocument));
+            AvaloniaProperty.Register<PreviewerControl, bool>(nameof(IsGeneratingDocument));
 
         public bool IsGeneratingDocument
         {
@@ -26,51 +26,53 @@ namespace QuestPDF.Previewer
             set => SetValue(IsGeneratingDocumentProperty, value);
         }
 
-        public float PageSpacing { get; set; } = 20;
+        public static readonly StyledProperty<double> PageSpacingProperty =
+            AvaloniaProperty.Register<PreviewerControl, double>(nameof(PageSpacing), 20);
+
+        public double PageSpacing
+        {
+            get => GetValue(PageSpacingProperty);
+            set => SetValue(PageSpacingProperty, value);
+        }
+
+        private readonly DocumentRenderer _renderer = new();
 
         public PreviewerControl()
         {
-            DocumentProperty
-              .Changed
-              .Subscribe(_ => InvalidateVisual());
+            _renderer.PageSpacing = (float)PageSpacing;
+            DocumentProperty.Changed.Subscribe(_ => _renderer.UpdateDocument(Document));
+            PageSpacingProperty.Changed.Subscribe(f => _renderer.PageSpacing = (float)f.NewValue.Value);
         }
 
         public override void Render(DrawingContext context)
         {
-            if (Document == null)
+            IsGeneratingDocument = _renderer.IsRendering;
+            if (_renderer.IsRendering)
                 return;
 
-            try
+            if (_renderer.RenderException != null)
             {
-                IsGeneratingDocument = true;
-                Render(context, Document);
+                context.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, Bounds.Width, Bounds.Height));
+                DrawException(context, _renderer.RenderException);
+                return;
             }
-            finally
-            {
-                IsGeneratingDocument = false;
-            }
+
+            Width = _renderer.Bounds.Width;
+            Height = _renderer.Bounds.Height;
+
+            if (_renderer.Picture == null)
+                return;
+
+            context.Custom(new SkPictureRenderOperation(_renderer.Picture, Bounds));
         }
 
-        private void Render(DrawingContext context, IDocument document)
+        internal void InvalidateDocument()
         {
-            //TODO optimize, currently we generate the document twice.
-            // First generation for calculating the sizes
-            // Second generation for the actual rendering.
-            var docSizeTracker = new SizeTrackingCanvas();
-            try
+            Dispatcher.UIThread.Post(() =>
             {
-                DocumentGenerator.RenderDocument(docSizeTracker, document);
-            }
-            catch (Exception ex)
-            {
-                DrawException(context, ex);
-                return;
-            }
-
-            Width = docSizeTracker.PageSizes.Max(p => p.Width);
-            Height = docSizeTracker.PageSizes.Sum(p => p.Height) + ((docSizeTracker.PageSizes.Count - 1) * PageSpacing);
-
-            context.Custom(new DocumentRenderOperation(document, new Rect(0, 0, Width, Height), PageSpacing));
+                _renderer.UpdateDocument(Document);
+                InvalidateVisual();
+            });
         }
 
         private void DrawException(DrawingContext context, Exception ex)

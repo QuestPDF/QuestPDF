@@ -36,7 +36,7 @@ namespace QuestPDF.Previewer
 
         public void InvalidatePreview()
         {
-            _previewHost.InvalidateVisual();
+            _previewHost.InvalidateDocument();
         }
     }
 }
