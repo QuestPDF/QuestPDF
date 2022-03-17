@@ -54,6 +54,13 @@ namespace QuestPDF.Drawing
         internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document)
             where TCanvas : ICanvas, IRenderingCanvas
         {
+            RenderDocument(canvas, new FreeCanvas(), document);
+        }
+
+        internal static void RenderDocument<TCanvas, TFreeCanvas>(TCanvas canvas, TFreeCanvas freeCanvas, IDocument document, Action<TFreeCanvas>? afterFirstPass = null)
+            where TCanvas : ICanvas, IRenderingCanvas
+            where TFreeCanvas : ICanvas, IRenderingCanvas
+        {
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
@@ -67,7 +74,8 @@ namespace QuestPDF.Drawing
             if (metadata.ApplyCaching)
                 ApplyCaching(content);
 
-            RenderPass(pageContext, new FreeCanvas(), content, metadata, debuggingState);
+            RenderPass(pageContext, freeCanvas, content, metadata, debuggingState);
+            afterFirstPass?.Invoke(freeCanvas);
             RenderPass(pageContext, canvas, content, metadata, debuggingState);
         }
         
