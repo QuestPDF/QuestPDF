@@ -1,6 +1,8 @@
-﻿using Avalonia;
+﻿using System.Diagnostics;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
@@ -24,6 +26,9 @@ namespace QuestPDF.Previewer
 
             _previewHost = this.FindControl<PreviewerControl>("PreviewerSurface");
 
+            this.FindControl<Button>("GeneratePdf")
+                .Click += (_, __) => _ = PreviewerUtils.SavePdfWithDialog(Document, this);
+
             DocumentProperty.Changed.Subscribe(v => _previewHost.Document = v.NewValue.Value);
             HotReloadManager.Register(InvalidatePreview);
         }
@@ -33,7 +38,7 @@ namespace QuestPDF.Previewer
             AvaloniaXamlLoader.Load(this);
         }
 
-        public void InvalidatePreview()
+        private void InvalidatePreview()
         {
             _previewHost.InvalidateDocument();
         }

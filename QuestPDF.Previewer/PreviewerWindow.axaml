@@ -23,8 +23,20 @@
 			</ExperimentalAcrylicBorder.Material>
 		</ExperimentalAcrylicBorder>
 
-		<ScrollViewer Margin="0,40,0,0">
-			<previewer:PreviewerControl x:Name="PreviewerSurface" Margin="25" />
-		</ScrollViewer>
+		<Grid Margin="0,40,0,0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="40"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+
+			<DockPanel LastChildFill="False" VerticalAlignment="Center" Margin="20,0" Width="{Binding #PreviewerSurface.Width, Mode=OneWay}">
+				<TextBlock VerticalAlignment="Center" Text="QuestPDF Document Preview" DockPanel.Dock="Left" FontWeight="SemiBold" />
+				<Button x:Name="GeneratePdf" Content="Generate PDF" DockPanel.Dock="Right" />
+			</DockPanel>
+			
+			<ScrollViewer Grid.Row="1" VerticalAlignment="Top">
+				<previewer:PreviewerControl x:Name="PreviewerSurface" Margin="25" />
+			</ScrollViewer>
+		</Grid>
 	</Panel>
 </FluentWindow>
