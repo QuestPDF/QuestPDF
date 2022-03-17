@@ -23,10 +23,21 @@ Document
                 {
                     x.Spacing(20);
 
-                    x.Item().Text("VS: Start in debug mode with 'Hot Reload on Save' enabled.");
-                    x.Item().Text("VSCode: Use dotnet watch to instantly see your changes in the previewer.");
+                    x.Item().Table(t =>
+                    {
+                        t.ColumnsDefinition(c =>
+                        {
+                            c.RelativeColumn();
+                            c.RelativeColumn(3);
+                        });
 
-                    x.Item().Text("Try it out here.");
+                        t.Cell().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Text("Visual Studio");
+                        t.Cell().Border(1).Padding(5).Text("Start in debug mode with 'Hot Reload on Save' enabled.");
+                        t.Cell().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Text("Command line");
+                        t.Cell().Border(1).Padding(5).Text("Run 'dotnet watch'.");
+                    });
+
+                    x.Item().Text("Modify this line and the preview should show your changes instantly.");
                 });
 
             page.Footer()
