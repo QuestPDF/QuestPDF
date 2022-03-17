@@ -79,9 +79,15 @@ namespace QuestPDF.Previewer
 
         private void DrawException(DrawingContext context, Exception ex)
         {
+            var parentBounds = Parent?.Bounds ?? Bounds;
+
             var exceptionMsg = string.Join("\n", ex.GetType(), ex.Message);
-            var fmtText = new FormattedText($"Exception occured:\n{exceptionMsg}", Typeface.Default, 25, TextAlignment.Left, TextWrapping.Wrap, new Avalonia.Size(Parent.Bounds.Width / 2, Parent.Bounds.Height / 2));
-            var center = new Point((Parent.Bounds.Width - fmtText.Bounds.Width) / 2, (Parent.Bounds.Height - fmtText.Bounds.Height) / 2);
+
+            var fmtText = new FormattedText($"Exception occured:\n{exceptionMsg}", 
+                Typeface.Default, 25, TextAlignment.Left, TextWrapping.Wrap, 
+                new Avalonia.Size(parentBounds.Width / 2, parentBounds.Height / 2));
+
+            var center = new Point((parentBounds.Width - fmtText.Bounds.Width) / 2, (parentBounds.Height - fmtText.Bounds.Height) / 2);
             context.DrawText(Brushes.Black, center, fmtText);
         }
     }

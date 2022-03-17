@@ -5,12 +5,12 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
 {
-    internal class PreviewerView : UserControl
+    internal class PreviewerWindow : FluentWindow
     {
         private readonly PreviewerControl _previewHost;
 
         public static readonly StyledProperty<IDocument?> DocumentProperty =
-            AvaloniaProperty.Register<PreviewerControl, IDocument?>(nameof(Document));
+            AvaloniaProperty.Register<PreviewerWindow, IDocument?>(nameof(Document));
 
         public IDocument? Document
         {
@@ -18,15 +18,14 @@ namespace QuestPDF.Previewer
             set => SetValue(DocumentProperty, value);
         }
 
-        public PreviewerView()
+        public PreviewerWindow()
         {
             InitializeComponent();
 
             _previewHost = this.FindControl<PreviewerControl>("PreviewerSurface");
 
-            DocumentProperty
-              .Changed
-              .Subscribe(v => _previewHost.Document = v.NewValue.Value);
+            DocumentProperty.Changed.Subscribe(v => _previewHost.Document = v.NewValue.Value);
+            HotReloadManager.Register(InvalidatePreview);
         }
 
         private void InitializeComponent()

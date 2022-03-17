@@ -1,0 +1,30 @@
+﻿<FluentWindow xmlns="https://github.com/avaloniaui"
+							xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+							xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+							xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+							xmlns:previewer="clr-namespace:QuestPDF.Previewer"
+							mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+							x:Class="QuestPDF.Previewer.PreviewerWindow"
+							WindowStartupLocation="CenterScreen"
+							Icon="/Images/Logo.png"
+							UseLayoutRounding="True"
+							Background="{x:Null}"
+							Title="QuestPDF Document Preview">
+	<FluentWindow.Styles>
+		<Style Selector="TitleBar:fullscreen">
+			<Setter Property="Background" Value="#7F000000" />
+		</Style>
+	</FluentWindow.Styles>
+
+	<Panel>
+		<ExperimentalAcrylicBorder IsHitTestVisible="False">
+			<ExperimentalAcrylicBorder.Material>
+				<ExperimentalAcrylicMaterial TintColor="Black" MaterialOpacity="0.75" TintOpacity="1" />
+			</ExperimentalAcrylicBorder.Material>
+		</ExperimentalAcrylicBorder>
+
+		<ScrollViewer Margin="0,40,0,0">
+			<previewer:PreviewerControl x:Name="PreviewerSurface" Margin="25" />
+		</ScrollViewer>
+	</Panel>
+</FluentWindow>

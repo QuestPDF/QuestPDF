@@ -1,5 +1,4 @@
 ﻿using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using QuestPDF.Infrastructure;
@@ -8,8 +7,6 @@ namespace QuestPDF.Previewer
 {
     internal class PreviewerApp : Application
     {
-        private PreviewerView? _preview;
-
         public IDocument? Document { get; init; }
 
         public override void Initialize()
@@ -21,24 +18,12 @@ namespace QuestPDF.Previewer
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                HotReloadManager.Register(HandleDocumentHotReload);
-
-                _preview = new PreviewerView()
+                desktop.MainWindow = new PreviewerWindow()
                 {
-                    Document = Document,
-                };
-                desktop.MainWindow = new Window()
-                {
-                    Title = "QuestPDF Document Preview",
-                    Content = _preview,
+                    Document = Document
                 };
             }
             base.OnFrameworkInitializationCompleted();
-        }
-
-        private void HandleDocumentHotReload()
-        {
-            _preview?.InvalidatePreview();
         }
     }
 }
