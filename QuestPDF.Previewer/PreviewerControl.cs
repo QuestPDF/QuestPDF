@@ -39,6 +39,8 @@ namespace QuestPDF.Previewer
 
         public PreviewerControl()
         {
+            ClipToBounds = true;
+
             _renderer.PageSpacing = (float)PageSpacing;
             DocumentProperty.Changed.Subscribe(_ => _renderer.UpdateDocument(Document));
             PageSpacingProperty.Changed.Subscribe(f => _renderer.PageSpacing = (float)f.NewValue.Value);
@@ -63,7 +65,7 @@ namespace QuestPDF.Previewer
             if (_renderer.Picture == null)
                 return;
 
-            context.Custom(new SkPictureRenderOperation(_renderer.Picture, Bounds));
+            context.Custom(new SkPictureRenderOperation(_renderer.Picture, new Rect(0, 0, Bounds.Width, Bounds.Height)));
         }
 
         internal void InvalidateDocument()

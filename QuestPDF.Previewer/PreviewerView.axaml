@@ -12,6 +12,6 @@
 
 		<ScrollViewer Background="LightGray">
 			<previewer:PreviewerControl x:Name="PreviewerSurface" Margin="25" />
-			</ScrollViewer>
+		</ScrollViewer>
 	</Grid>
 </UserControl>
