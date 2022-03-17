@@ -65,7 +65,9 @@ namespace QuestPDF.Previewer
             if (_renderer.Picture == null)
                 return;
 
-            context.Custom(new SkPictureRenderOperation(_renderer.Picture, new Rect(0, 0, Bounds.Width, Bounds.Height)));
+            context.Custom(new SkCustomDrawOperation(
+                new Rect(0, 0, Bounds.Width, Bounds.Height),
+                c => c.DrawPicture(_renderer.Picture)));
         }
 
         internal void InvalidateDocument()

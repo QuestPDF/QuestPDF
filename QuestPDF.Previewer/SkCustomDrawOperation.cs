@@ -6,24 +6,22 @@ using SkiaSharp;
 
 namespace QuestPDF.Previewer
 {
-    internal class SkPictureRenderOperation : ICustomDrawOperation
+    internal sealed class SkCustomDrawOperation : ICustomDrawOperation
     {
-        public SKPicture? Picture { get; }
+        private readonly Action<SKCanvas> _renderFunc;
         public Rect Bounds { get; }
 
-        public SkPictureRenderOperation(SKPicture picture, Rect bounds)
+        public SkCustomDrawOperation(Rect bounds, Action<SKCanvas> renderFunc)
         {
-            Picture = picture;
             Bounds = bounds;
+            _renderFunc = renderFunc;
         }
 
         public void Dispose() { }
-
         public bool Equals(ICustomDrawOperation? other)
         {
             return false;
         }
-
         public bool HitTest(Point p)
         {
             return false;
@@ -31,14 +29,11 @@ namespace QuestPDF.Previewer
 
         public void Render(IDrawingContextImpl context)
         {
-            if (Picture == null)
-                return;
-
             var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
             if (canvas == null)
                 throw new InvalidOperationException($"Context needs to be ISkiaDrawingContextImpl but got {nameof(context)}");
 
-            canvas.DrawPicture(Picture);
+            _renderFunc(canvas);
         }
     }
 }
