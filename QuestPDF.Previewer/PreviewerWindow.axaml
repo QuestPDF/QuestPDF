@@ -9,6 +9,7 @@
 							Icon="/Images/Logo.png"
 							UseLayoutRounding="True"
 							Background="{x:Null}"
+							x:Name="Window"
 							Title="QuestPDF Document Preview">
 	<FluentWindow.Styles>
 		<Style Selector="TitleBar:fullscreen">
@@ -26,16 +27,33 @@
 		<Grid Margin="10,40,10,0">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="40"/>
+				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="*"/>
 			</Grid.RowDefinitions>
 
-			<DockPanel LastChildFill="False" VerticalAlignment="Center" Margin="20,0" Width="{Binding #PreviewerSurface.Width, Mode=OneWay}">
+			<DockPanel LastChildFill="False" VerticalAlignment="Center" Margin="20,0">
 				<TextBlock VerticalAlignment="Center" Text="QuestPDF Document Preview" DockPanel.Dock="Left" FontWeight="SemiBold" />
 				<Button x:Name="GeneratePdf" Content="Generate PDF" DockPanel.Dock="Right" />
 			</DockPanel>
-			
-			<ScrollViewer Grid.Row="1" VerticalAlignment="Top">
-				<previewer:PreviewerControl x:Name="PreviewerSurface" Margin="25" />
+
+			<ProgressBar IsVisible="{Binding #Window.DocumentRenderer.IsRendering}"
+									 Margin="20,0"
+									 Grid.Row="1"
+									 HorizontalAlignment="Stretch"									 
+									 Height="5"
+								   IsIndeterminate="True"/>
+
+			<ScrollViewer Grid.Row="2" VerticalAlignment="Top">
+				<ItemsRepeater HorizontalAlignment="Center" Margin="0,10" Grid.Row="1" VerticalAlignment="Top" Items="{Binding #Window.DocumentRenderer.Pages, Mode=OneWay}">
+					<ItemsRepeater.Layout>
+						<UniformGridLayout MaximumRowsOrColumns="1" Orientation="Horizontal" MinRowSpacing="25" MinColumnSpacing="25" />
+					</ItemsRepeater.Layout>
+					<ItemsRepeater.ItemTemplate>
+						<DataTemplate>
+							<previewer:PreviewerPageControl Page="{Binding}" />
+						</DataTemplate>
+					</ItemsRepeater.ItemTemplate>
+				</ItemsRepeater>
 			</ScrollViewer>
 		</Grid>
 	</Panel>

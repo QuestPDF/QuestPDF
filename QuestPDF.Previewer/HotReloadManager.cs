@@ -7,24 +7,11 @@ namespace QuestPDF.Previewer
     /// </summary>
     internal static class HotReloadManager
     {
-        private static readonly List<Action> _actions = new();
-
-        public static void Register(Action action)
-        {
-            _actions.Add(action);
-        }
-
-        public static void Unregister(Action action)
-        {
-            _actions.Remove(action);
-        }
-
-        public static void ClearCache(Type[]? _) { }
+        public static event EventHandler? UpdateApplicationRequested;
 
         public static void UpdateApplication(Type[]? _)
         {
-            foreach (var action in _actions)
-                action();
+            UpdateApplicationRequested?.Invoke(null, EventArgs.Empty);
         }
     }
 }

@@ -1,13 +1,14 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
 {
     internal class PreviewerWindow : FluentWindow
     {
-        private readonly PreviewerControl _previewHost;
+        public DocumentRenderer DocumentRenderer { get; } = new();
 
         public static readonly StyledProperty<IDocument?> DocumentProperty =
             AvaloniaProperty.Register<PreviewerWindow, IDocument?>(nameof(Document));
@@ -22,13 +23,11 @@ namespace QuestPDF.Previewer
         {
             InitializeComponent();
 
-            _previewHost = this.FindControl<PreviewerControl>("PreviewerSurface");
-
             this.FindControl<Button>("GeneratePdf")
                 .Click += (_, _) => _ = PreviewerUtils.SavePdfWithDialog(Document, this);
 
-            DocumentProperty.Changed.Subscribe(v => _previewHost.Document = v.NewValue.Value);
-            HotReloadManager.Register(InvalidatePreview);
+            DocumentProperty.Changed.Subscribe(v => Task.Run(() => DocumentRenderer.UpdateDocument(v.NewValue.Value)));
+            HotReloadManager.UpdateApplicationRequested += (_, _) => InvalidatePreview();
         }
 
         private void InitializeComponent()
@@ -38,7 +37,11 @@ namespace QuestPDF.Previewer
 
         private void InvalidatePreview()
         {
-            _previewHost.InvalidateDocument();
+            Dispatcher.UIThread.Post(() =>
+            {
+                var document = Document;
+                _ = Task.Run(() => DocumentRenderer.UpdateDocument(document));
+            });
         }
     }
 }
