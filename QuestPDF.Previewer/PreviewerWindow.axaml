@@ -1,4 +1,4 @@
-﻿<FluentWindow xmlns="https://github.com/avaloniaui"
+﻿<previewer:FluentWindow xmlns="https://github.com/avaloniaui"
 							xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 							xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 							xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -11,11 +11,11 @@
 							Background="{x:Null}"
 							x:Name="Window"
 							Title="QuestPDF Document Preview">
-	<FluentWindow.Styles>
+	<previewer:FluentWindow.Styles>
 		<Style Selector="TitleBar:fullscreen">
-			<Setter Property="Background" Value="#7F000000" />
+			<Setter Property="Background" Value="#F00" />
 		</Style>
-	</FluentWindow.Styles>
+	</previewer:FluentWindow.Styles>
 
 	<Panel>
 		<ExperimentalAcrylicBorder IsHitTestVisible="False">
@@ -57,4 +57,4 @@
 			</ScrollViewer>
 		</Grid>
 	</Panel>
-</FluentWindow>
+</previewer:FluentWindow>

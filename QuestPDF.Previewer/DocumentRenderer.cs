@@ -9,8 +9,6 @@ using SkiaSharp;
 
 namespace QuestPDF.Previewer
 {
-    public record RenderedPageInfo(SKPicture Picture, Size Size);
-
     internal class DocumentRenderer : INotifyPropertyChanged
     {
         public float PageSpacing { get; set; }
@@ -72,15 +70,15 @@ namespace QuestPDF.Previewer
         {
             var canvas = new PreviewerCanvas();
 
-            DocumentGenerator.RenderDocument(canvas, new SizeTrackingCanvas(), document, s =>
-            {
-                var width = s.PageSizes.Max(p => p.Width);
-                var height = s.PageSizes.Sum(p => p.Height) + ((s.PageSizes.Count - 1) * PageSpacing);
-                Bounds = new Size(width, height);
-            });
+            DocumentGenerator.RenderDocument(canvas, document);
+            
+            var width = canvas.Pictures.Max(p => p.Size.Width);
+            var height = canvas.Pictures.Sum(p => p.Size.Height) + (canvas.Pictures.Count - 1) * PageSpacing;
+            Bounds = new Size(width, height);
 
             foreach (var pages in Pages)
                 pages?.Picture?.Dispose();
+            
             Dispatcher.UIThread.Post(() =>
             {
                 Pages.Clear();

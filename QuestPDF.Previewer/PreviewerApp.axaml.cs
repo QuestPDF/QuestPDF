@@ -23,6 +23,7 @@ namespace QuestPDF.Previewer
                     Document = Document
                 };
             }
+            
             base.OnFrameworkInitializationCompleted();
         }
     }

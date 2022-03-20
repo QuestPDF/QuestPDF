@@ -1,7 +1,9 @@
-﻿using QuestPDF.Fluent;
+﻿using Avalonia.Media;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
+using Colors = QuestPDF.Helpers.Colors;
 
 Document
     .Create(container =>
@@ -46,6 +48,24 @@ Document
                 {
                     x.Span("Page ");
                     x.CurrentPageNumber();
+                });
+        });
+        
+        container.Page(page =>
+        {
+            page.Size(PageSizes.A3);
+            page.Margin(2, Unit.Centimetre);
+            page.PageColor(Colors.White);
+            page.DefaultTextStyle(x => x.FontSize(20));
+
+            page.Content()
+                .PaddingVertical(1, Unit.Centimetre)
+                .Column(x =>
+                {
+                    x.Spacing(20);
+
+                    foreach (var i in Enumerable.Range(0, 10))
+                        x.Item().Background(Colors.Grey.Lighten2).Height(80);
                 });
         });
     })

@@ -4,18 +4,19 @@ using SkiaSharp;
 
 namespace QuestPDF.Previewer
 {
+    public record RenderedPageInfo(SKPicture Picture, Size Size);
+    
     internal sealed class PreviewerCanvas : SkiaCanvasBase, IRenderingCanvas
     {
         private SKPictureRecorder? _currentRecorder;
-
-        private readonly List<RenderedPageInfo> _pictures = new();
-        public IReadOnlyList<RenderedPageInfo> Pictures => _pictures;
+        
+        public ICollection<RenderedPageInfo> Pictures { get; } = new List<RenderedPageInfo>();
 
         private Size? _currentSize;
 
         public override void BeginDocument()
         {
-            _pictures.Clear();
+            Pictures.Clear();
         }
 
         public override void BeginPage(Size size)
@@ -31,8 +32,9 @@ namespace QuestPDF.Previewer
         public override void EndPage()
         {
             var picture = _currentRecorder?.EndRecording();
+            
             if (picture != null && _currentSize.HasValue)
-                _pictures.Add(new RenderedPageInfo(picture, _currentSize.Value));
+                Pictures.Add(new RenderedPageInfo(picture, _currentSize.Value));
 
             _currentRecorder?.Dispose();
             _currentRecorder = null;
