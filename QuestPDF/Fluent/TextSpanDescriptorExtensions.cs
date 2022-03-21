@@ -62,6 +62,11 @@ namespace QuestPDF.Fluent
             descriptor.TextStyle.HasUnderline = value;
             return descriptor;
         }
+        public static T ForceWrap<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
+        {
+            descriptor.TextStyle.ForceWrap = value;
+            return descriptor;
+        }
 
         #region Weight
         

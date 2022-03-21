@@ -16,6 +16,7 @@ namespace QuestPDF.Infrastructure
         internal bool? IsItalic { get; set; }
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
+        internal bool? ForceWrap { get; set; }
 
         internal object PaintKey { get; private set; }
         internal object FontMetricsKey { get; private set; }
@@ -34,7 +35,7 @@ namespace QuestPDF.Infrastructure
         };
 
         public static TextStyle Default => new TextStyle();
-        
+
         internal void ApplyGlobalStyle(TextStyle globalStyle)
         {
             if (HasGlobalStyleApplied)

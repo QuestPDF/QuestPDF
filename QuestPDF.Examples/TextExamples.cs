@@ -64,6 +64,30 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+
+        [Test]
+        public void ParagraphSpacingForceWrap()
+        {
+            var spacelessLoremIpsum = Placeholders.LoremIpsum().Replace(" ", string.Empty);
+            
+            RenderingTest
+                .Create()
+                .PageSize(500, 300)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(5)
+                        .MinimalBox()
+                        .Border(1)
+                        .Padding(10)
+                        .Text(td =>
+                        {
+                            td.Span(spacelessLoremIpsum).ForceWrap();
+                        });
+                });
+        }
         
         [Test]
         public void CustomElement()

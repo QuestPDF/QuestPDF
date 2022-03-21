@@ -89,7 +89,7 @@ namespace QuestPDF.Elements.Text.Items
                 Descent = fontMetrics.Descent,
      
                 LineHeight = Style.LineHeight ?? 1,
-                
+                ForceWrap = Style.ForceWrap ?? false,
                 StartIndex = startIndex,
                 EndIndex = endIndex,
                 NextIndex = nextIndex,
