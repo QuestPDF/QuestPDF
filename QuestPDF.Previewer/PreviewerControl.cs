@@ -1,24 +1,19 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Reactive.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Presenters;
 using Avalonia.Input;
-using Avalonia.Interactivity;
 using Avalonia.Media;
 
 namespace QuestPDF.Previewer
 {
     internal class PreviewerControl : Control
     {
-        public static readonly StyledProperty<ObservableCollection<RenderedPageInfo>?> PagesProperty =
-            AvaloniaProperty.Register<PreviewerControl, ObservableCollection<RenderedPageInfo>>(nameof(Pages));
+        public static readonly StyledProperty<ObservableCollection<PreviewPage>?> PagesProperty =
+            AvaloniaProperty.Register<PreviewerControl, ObservableCollection<PreviewPage>>(nameof(Pages));
 
         private InteractiveCanvas InteractiveCanvas { get; set; } = new InteractiveCanvas();
         
-        public ObservableCollection<RenderedPageInfo>? Pages
+        public ObservableCollection<PreviewPage>? Pages
         {
             get => GetValue(PagesProperty);
             set => SetValue(PagesProperty, value);

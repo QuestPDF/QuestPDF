@@ -1,9 +1,7 @@
-﻿using System.Diagnostics;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
-using QuestPDF.Helpers;
 using SkiaSharp;
 
 namespace QuestPDF.Previewer;
@@ -11,7 +9,7 @@ namespace QuestPDF.Previewer;
 class InteractiveCanvas : ICustomDrawOperation
 {
     public Rect Bounds { get; set; }
-    public ICollection<RenderedPageInfo> Pages { get; set; }
+    public ICollection<PreviewPage> Pages { get; set; }
 
     private float Width => (float)Bounds.Width;
     private float Height => (float)Bounds.Height;
@@ -26,6 +24,8 @@ class InteractiveCanvas : ICustomDrawOperation
     private const float PageSpacing = 50f;
     private const float SafeZone = 50f;
 
+    #region transformations
+    
     private void LimitScale()
     {
         Scale = Math.Max(Scale, MinScale);
@@ -79,15 +79,15 @@ class InteractiveCanvas : ICustomDrawOperation
         LimitTranslate();
     }
     
+    #endregion
+    
+    #region rendering
+    
     public void Render(IDrawingContextImpl context)
     {
         if (Pages.Count <= 0)
             return;
 
-        LimitScale();
-        LimitTranslate();
-
-        
         var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
         
         if (canvas == null)
@@ -95,7 +95,6 @@ class InteractiveCanvas : ICustomDrawOperation
 
         var originalMatrix = canvas.TotalMatrix;
 
-        
         canvas.Translate(Width / 2, Height / 2);
         
         canvas.Scale(Scale);
@@ -104,7 +103,7 @@ class InteractiveCanvas : ICustomDrawOperation
         foreach (var page in Pages)
         {
             canvas.Translate(-page.Size.Width / 2f, 0);
-            DrawPageShadow(canvas, page.Size);
+            DrawBlankPage(canvas, page.Size);
             canvas.DrawPicture(page.Picture);
             canvas.Translate(page.Size.Width / 2f, page.Size.Height + PageSpacing);
         }
@@ -119,19 +118,27 @@ class InteractiveCanvas : ICustomDrawOperation
     public bool Equals(ICustomDrawOperation? other) => false;
     public bool HitTest(Point p) => true;
 
-    #region page shadow
-
-    private static readonly SKImageFilter PageShadow1 = SKImageFilter.CreateDropShadowOnly(0, 6, 6, 6, SKColors.Black.WithAlpha(64));
-    private static readonly SKImageFilter PageShadow2 = SKImageFilter.CreateDropShadowOnly(0, 10, 14, 14, SKColors.Black.WithAlpha(32));
+    #endregion
     
-    private static SKPaint PageShadowPaint = new SKPaint
+    #region blank page
+
+    private static SKPaint BlankPagePaint = new SKPaint
     {
-        ImageFilter = SKImageFilter.CreateBlendMode(SKBlendMode.Overlay, PageShadow1, PageShadow2)
+        Color = SKColors.White
     };
     
-    private void DrawPageShadow(SKCanvas canvas, QuestPDF.Infrastructure.Size size)
+    private static SKPaint BlankPageShadowPaint = new SKPaint
     {
-        canvas.DrawRect(0, 0, size.Width, size.Height, PageShadowPaint);
+        ImageFilter = SKImageFilter.CreateBlendMode(
+            SKBlendMode.Overlay, 
+            SKImageFilter.CreateDropShadowOnly(0, 6, 6, 6, SKColors.Black.WithAlpha(64)),
+            SKImageFilter.CreateDropShadowOnly(0, 10, 14, 14, SKColors.Black.WithAlpha(32)))
+    };
+    
+    private void DrawBlankPage(SKCanvas canvas, QuestPDF.Infrastructure.Size size)
+    {
+        canvas.DrawRect(0, 0, size.Width, size.Height, BlankPageShadowPaint);
+        canvas.DrawRect(0, 0, size.Width, size.Height, BlankPagePaint);
     }
     
     #endregion

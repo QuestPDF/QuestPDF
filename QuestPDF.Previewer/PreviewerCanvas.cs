@@ -4,16 +4,15 @@ using SkiaSharp;
 
 namespace QuestPDF.Previewer
 {
-    public record RenderedPageInfo(SKPicture Picture, Size Size);
+    public record PreviewPage(SKPicture Picture, Size Size);
     
     internal sealed class PreviewerCanvas : SkiaCanvasBase, IRenderingCanvas
     {
-        private SKPictureRecorder? _currentRecorder;
+        private SKPictureRecorder? PictureRecorder { get; set; }
+        private Size? CurrentPageSize { get; set; }
         
-        public ICollection<RenderedPageInfo> Pictures { get; } = new List<RenderedPageInfo>();
-
-        private Size? _currentSize;
-
+        public ICollection<PreviewPage> Pictures { get; } = new List<PreviewPage>();
+        
         public override void BeginDocument()
         {
             Pictures.Clear();
@@ -21,23 +20,21 @@ namespace QuestPDF.Previewer
 
         public override void BeginPage(Size size)
         {
-            _currentSize = size;
-            _currentRecorder = new SKPictureRecorder();
-            Canvas = _currentRecorder.BeginRecording(new SKRect(0, 0, size.Width, size.Height));
-
-            using var paint = new SKPaint() { Color = SKColors.White };
-            Canvas.DrawRect(0, 0, size.Width, size.Height, paint);
+            CurrentPageSize = size;
+            PictureRecorder = new SKPictureRecorder();
+            
+            Canvas = PictureRecorder.BeginRecording(new SKRect(0, 0, size.Width, size.Height));
         }
 
         public override void EndPage()
         {
-            var picture = _currentRecorder?.EndRecording();
+            var picture = PictureRecorder?.EndRecording();
             
-            if (picture != null && _currentSize.HasValue)
-                Pictures.Add(new RenderedPageInfo(picture, _currentSize.Value));
+            if (picture != null && CurrentPageSize.HasValue)
+                Pictures.Add(new PreviewPage(picture, CurrentPageSize.Value));
 
-            _currentRecorder?.Dispose();
-            _currentRecorder = null;
+            PictureRecorder?.Dispose();
+            PictureRecorder = null;
         }
 
         public override void EndDocument() { }
