@@ -1,0 +1,168 @@
+﻿using System.Diagnostics;
+using Avalonia;
+using Avalonia.Platform;
+using Avalonia.Rendering.SceneGraph;
+using Avalonia.Skia;
+using QuestPDF.Helpers;
+using SkiaSharp;
+
+namespace QuestPDF.Previewer;
+
+class InteractiveCanvas : ICustomDrawOperation
+{
+    public Rect Bounds { get; set; }
+    public ICollection<RenderedPageInfo> Pages { get; set; }
+
+    private float Width => (float)Bounds.Width;
+    private float Height => (float)Bounds.Height;
+    
+    public float Scale { get; private set; } = 1;
+    public float TranslateX { get; private set; }
+    public float TranslateY { get; private set; }
+
+    private const float MinScale = 0.1f;
+    private const float MaxScale = 10f;
+    
+    private const float PageSpacing = 50f;
+    private const float SafeZone = 50f;
+
+    private void LimitScale()
+    {
+        Scale = Math.Max(Scale, MinScale);
+        Scale = Math.Min(Scale, MaxScale);
+    }
+    
+    private void LimitTranslate()
+    {
+        var totalHeight = Pages.Sum(x => x.Size.Height) + (Pages.Count - 1) * PageSpacing;
+        var maxWidth = Pages.Max(x => x.Size.Width);
+
+        var maxTranslateY = SafeZone / Scale;
+        var minTranslateY = (Height - SafeZone) / Scale - totalHeight;
+        
+        TranslateY = Math.Min(TranslateY, maxTranslateY);
+        TranslateY = Math.Max(TranslateY, minTranslateY);
+        
+        if (maxWidth < Width / Scale)
+        {
+            TranslateX = 0;
+        }
+        else
+        {
+            var maxTranslateX = (Width / 2 - SafeZone) / Scale - maxWidth / 2;
+        
+            TranslateX = Math.Min(TranslateX, -maxTranslateX);
+            TranslateX = Math.Max(TranslateX, maxTranslateX);
+        }
+    }
+
+    public void TranslateWithCurrentScale(float x, float y)
+    {
+        TranslateX += x / Scale;
+        TranslateY += y / Scale;
+
+        LimitTranslate();
+    }
+    
+    public void ZoomToPoint(float x, float y, float factor)
+    {
+        var oldScale = Scale;
+        Scale *= factor;
+                
+        LimitScale();
+                
+        factor = Scale / oldScale;
+        
+        TranslateX -= x / (oldScale * factor) - x / oldScale;
+        TranslateY -= y / (oldScale * factor) - y / oldScale;
+
+        LimitTranslate();
+    }
+    
+    public void Render(IDrawingContextImpl context)
+    {
+        if (Pages.Count <= 0)
+            return;
+
+        LimitScale();
+        LimitTranslate();
+
+        
+        var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
+        
+        if (canvas == null)
+            throw new InvalidOperationException($"Context needs to be ISkiaDrawingContextImpl but got {nameof(context)}");
+
+        var originalMatrix = canvas.TotalMatrix;
+
+        
+        canvas.Translate(Width / 2, Height / 2);
+        
+        canvas.Scale(Scale);
+        canvas.Translate(TranslateX, TranslateY);
+
+        foreach (var page in Pages)
+        {
+            canvas.Translate(-page.Size.Width / 2f, 0);
+            DrawPageShadow(canvas, page.Size);
+            canvas.DrawPicture(page.Picture);
+            canvas.Translate(page.Size.Width / 2f, page.Size.Height + PageSpacing);
+        }
+
+        canvas.SetMatrix(originalMatrix);
+        
+        if (TranslateY < 0)
+            DrawInnerGradient(canvas);
+    }
+    
+    public void Dispose() { }
+    public bool Equals(ICustomDrawOperation? other) => false;
+    public bool HitTest(Point p) => true;
+
+    #region page shadow
+
+    private static readonly SKImageFilter PageShadow1 = SKImageFilter.CreateDropShadowOnly(0, 6, 6, 6, SKColors.Black.WithAlpha(64));
+    private static readonly SKImageFilter PageShadow2 = SKImageFilter.CreateDropShadowOnly(0, 10, 14, 14, SKColors.Black.WithAlpha(32));
+    
+    private static SKPaint PageShadowPaint = new SKPaint
+    {
+        ImageFilter = SKImageFilter.CreateBlendMode(SKBlendMode.Overlay, PageShadow1, PageShadow2)
+    };
+    
+    private void DrawPageShadow(SKCanvas canvas, QuestPDF.Infrastructure.Size size)
+    {
+        canvas.DrawRect(0, 0, size.Width, size.Height, PageShadowPaint);
+    }
+    
+    #endregion
+
+    #region inner viewport gradient
+
+    private const float InnerGradientSize = 24f;
+    private static readonly SKColor InnerGradientColor = SKColor.Parse("#666");
+    
+    private void DrawInnerGradient(SKCanvas canvas)
+    {
+        // gamma correction
+        var colors = Enumerable
+            .Range(0, 17)
+            .Select(x => 1f - x / 16f)
+            .Select(x => Math.Pow(x, 2f))
+            .Select(x => (byte)(x * 255))
+            .Select(x => InnerGradientColor.WithAlpha(x))
+            .ToArray();
+        
+        using var fogPaint = new SKPaint
+        {
+            Shader = SKShader.CreateLinearGradient(
+                new SKPoint(0, 0),
+                new SKPoint(0, InnerGradientSize), 
+                colors,
+                SKShaderTileMode.Clamp)
+        };
+        
+        canvas.DrawRect(0, 0, Width, InnerGradientSize, fogPaint);
+    }
+
+    #endregion
+}

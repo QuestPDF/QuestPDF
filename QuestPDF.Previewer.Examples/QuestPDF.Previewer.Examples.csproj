@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\QuestPDF.Previewer\QuestPDF.Previewer.csproj" />
+    <ProjectReference Include="..\QuestPDF.ReportSample\QuestPDF.ReportSample.csproj" />
     <ProjectReference Include="..\QuestPDF\QuestPDF.csproj" />
   </ItemGroup>
 

@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
 {
-    internal class PreviewerWindow : FluentWindow
+    internal class PreviewerWindow : Window
     {
         public DocumentRenderer DocumentRenderer { get; } = new();
 
@@ -22,9 +22,9 @@ namespace QuestPDF.Previewer
         public PreviewerWindow()
         {
             InitializeComponent();
-
-            this.FindControl<Button>("GeneratePdf")
-                .Click += (_, _) => _ = PreviewerUtils.SavePdfWithDialog(Document, this);
+            //
+            // this.FindControl<Button>("GeneratePdf")
+            //     .Click += (_, _) => _ = PreviewerUtils.SavePdfWithDialog(Document, this);
 
             DocumentProperty.Changed.Subscribe(v => Task.Run(() => DocumentRenderer.UpdateDocument(v.NewValue.Value)));
             HotReloadManager.UpdateApplicationRequested += (_, _) => InvalidatePreview();

@@ -3,7 +3,13 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
+using QuestPDF.ReportSample;
+using QuestPDF.ReportSample.Layouts;
 using Colors = QuestPDF.Helpers.Colors;
+
+var model = DataSource.GetReport();
+var report = new StandardReport(model);
+report.ShowInPreviewer();
 
 Document
     .Create(container =>
@@ -53,9 +59,9 @@ Document
         
         container.Page(page =>
         {
-            page.Size(PageSizes.A3);
+            page.Size(PageSizes.A4);
             page.Margin(2, Unit.Centimetre);
-            page.PageColor(Colors.White);
+            page.PageColor(Colors.Red.Medium);
             page.DefaultTextStyle(x => x.FontSize(20));
 
             page.Content()
