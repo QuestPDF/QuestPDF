@@ -3,18 +3,16 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
 {
-    /// <summary>
-    /// Extensions for <see cref="IDocument"/> for previewer
-    /// </summary>
     public static class DocumentPreviewerExtensions
     {
         /// <summary>
-        /// Displays the document in a previewer which supports hot reloading.
+        /// Opens document in the QuestPDF previewer tool.
+        /// Improves development speed by supporting hot reloading.
+        /// Shows document preview and refreshes it after each code change.
         /// </summary>
         /// <remarks>
-        /// Intended for development only. Not intended for shipping.
+        /// Intended for development only. Do not use in production environment.
         /// </remarks>
-        /// <param name="document"></param>
         public static void ShowInPreviewer(this IDocument document)
         {
             ArgumentNullException.ThrowIfNull(document);

@@ -21,7 +21,7 @@ class InteractiveCanvas : ICustomDrawOperation
     private const float MinScale = 0.1f;
     private const float MaxScale = 10f;
     
-    private const float PageSpacing = 50f;
+    private const float PageSpacing = 25f;
     private const float SafeZone = 50f;
 
     #region transformations
@@ -37,8 +37,8 @@ class InteractiveCanvas : ICustomDrawOperation
         var totalHeight = Pages.Sum(x => x.Size.Height) + (Pages.Count - 1) * PageSpacing;
         var maxWidth = Pages.Max(x => x.Size.Width);
 
-        var maxTranslateY = SafeZone / Scale;
-        var minTranslateY = (Height - SafeZone) / Scale - totalHeight;
+        var maxTranslateY = - (Height / 2 - SafeZone) / Scale;
+        var minTranslateY = (Height / 2 - SafeZone) / Scale - totalHeight;
         
         TranslateY = Math.Min(TranslateY, maxTranslateY);
         TranslateY = Math.Max(TranslateY, minTranslateY);
@@ -88,6 +88,9 @@ class InteractiveCanvas : ICustomDrawOperation
         if (Pages.Count <= 0)
             return;
 
+        LimitScale();
+        LimitTranslate();
+        
         var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
         
         if (canvas == null)

@@ -8,8 +8,6 @@ namespace QuestPDF.Previewer
 {
     internal class DocumentRenderer : INotifyPropertyChanged
     {
-        public float PageSpacing { get; set; }
-        public Size Bounds { get; private set; }
         public IDocument? Document { get; private set; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -71,10 +69,6 @@ namespace QuestPDF.Previewer
 
             DocumentGenerator.RenderDocument(canvas, document);
             
-            var width = canvas.Pictures.Max(p => p.Size.Width);
-            var height = canvas.Pictures.Sum(p => p.Size.Height) + (canvas.Pictures.Count - 1) * PageSpacing;
-            Bounds = new Size(width, height);
-
             foreach (var pages in Pages)
                 pages?.Picture?.Dispose();
             

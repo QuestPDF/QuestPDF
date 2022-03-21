@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
 {
-    internal class PreviewerWindow : Window
+    class PreviewerWindow : Window
     {
         public DocumentRenderer DocumentRenderer { get; } = new();
 

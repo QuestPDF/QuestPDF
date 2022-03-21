@@ -4,9 +4,9 @@ using SkiaSharp;
 
 namespace QuestPDF.Previewer
 {
-    public record PreviewPage(SKPicture Picture, Size Size);
+    record PreviewPage(SKPicture Picture, Size Size);
     
-    internal sealed class PreviewerCanvas : SkiaCanvasBase, IRenderingCanvas
+    sealed class PreviewerCanvas : SkiaCanvasBase, IRenderingCanvas
     {
         private SKPictureRecorder? PictureRecorder { get; set; }
         private Size? CurrentPageSize { get; set; }

@@ -6,7 +6,7 @@ using Avalonia.Media;
 
 namespace QuestPDF.Previewer
 {
-    internal class PreviewerControl : Control
+    class PreviewerControl : Control
     {
         public static readonly StyledProperty<ObservableCollection<PreviewPage>?> PagesProperty =
             AvaloniaProperty.Register<PreviewerControl, ObservableCollection<PreviewPage>>(nameof(Pages));

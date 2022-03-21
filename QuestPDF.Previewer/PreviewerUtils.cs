@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
 {
-    internal static class PreviewerUtils
+    static class PreviewerUtils
     {
         public static async Task<bool> SavePdfWithDialog(IDocument? document, Window dialogOwner)
         {
