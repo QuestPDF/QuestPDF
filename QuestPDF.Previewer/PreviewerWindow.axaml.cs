@@ -65,14 +65,16 @@ namespace QuestPDF.Previewer
             //     .Click += (_, _) => _ = PreviewerUtils.SavePdfWithDialog(Document, this);
 
             DocumentProperty.Changed.Subscribe(v => Task.Run(() => DocumentRenderer.UpdateDocument(v.NewValue.Value)));
-            HotReloadManager.UpdateApplicationRequested += (_, _) => InvalidatePreview();
+            HotReloadManager.UpdateApplicationRequested += InvalidatePreview;
         }
 
-        private void InitializeComponent()
+        protected override void OnClosed(EventArgs e)
         {
-            AvaloniaXamlLoader.Load(this);
+            HotReloadManager.UpdateApplicationRequested -= InvalidatePreview;
+            base.OnClosed(e);
         }
 
+        private void InvalidatePreview(object? sender, EventArgs e) => InvalidatePreview();
         private void InvalidatePreview()
         {
             Dispatcher.UIThread.Post(() =>
@@ -80,6 +82,11 @@ namespace QuestPDF.Previewer
                 var document = Document;
                 _ = Task.Run(() => DocumentRenderer.UpdateDocument(document));
             });
+        }
+
+        private void InitializeComponent()
+        {
+            AvaloniaXamlLoader.Load(this);
         }
     }
 }
