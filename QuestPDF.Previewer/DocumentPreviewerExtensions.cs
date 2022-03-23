@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
@@ -16,6 +17,19 @@ namespace QuestPDF.Previewer
         public static void ShowInPreviewer(this IDocument document)
         {
             ArgumentNullException.ThrowIfNull(document);
+
+            //Currently there is no way to unitialize a previously run avalonia app.
+            //So we need to check if the previewer was already run and show the window again.
+            if(Application.Current?.ApplicationLifetime is ClassicDesktopStyleApplicationLifetime desktop)
+            {
+                desktop.MainWindow = new PreviewerWindow()
+                {
+                    Document = document,
+                };
+                desktop.MainWindow.Show();
+                desktop.Start(Array.Empty<string>());
+                return;
+            }
 
             AppBuilder
                 .Configure(() => new PreviewerApp()
