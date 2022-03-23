@@ -23,12 +23,14 @@ class InteractiveCanvas : ICustomDrawOperation
     private const float MaxScale = 10f;
 
     private const float PageSpacing = 25f;
-    private const float SafeZone = 50f;
+    private const float SafeZone = InnerGradientSize;
 
-    public float TotalHeight => Pages.Sum(x => x.Size.Height) + (Pages.Count - 1) * PageSpacing;
+    public float TotalPagesHeight => Pages.Sum(x => x.Size.Height) + (Pages.Count - 1) * PageSpacing;
+    public float TotalHeight => TotalPagesHeight + SafeZone * 2 / Scale;
     public float MaxWidth => Pages.Any() ? Pages.Max(x => x.Size.Width) : 0;
+    
     public float MaxTranslateY => -(Height / 2 - SafeZone) / Scale;
-    public float MinTranslateY => (Height / 2 - SafeZone) / Scale - TotalHeight;
+    public float MinTranslateY => (Height / 2 + SafeZone) / Scale - TotalHeight;
 
     public float ScrollPercentY
     {
@@ -46,10 +48,8 @@ class InteractiveCanvas : ICustomDrawOperation
     {
         get
         {
-            if (TotalHeight * Scale < Height)
-                return 1;
-            
-            return Math.Clamp(Height / Scale / (MaxTranslateY - MinTranslateY), 0, 1);
+            var viewPortSize = Height / Scale / TotalHeight;
+            return Math.Clamp(viewPortSize, 0, 1);
         }
     }
 
@@ -63,14 +63,14 @@ class InteractiveCanvas : ICustomDrawOperation
     
     private void LimitTranslate()
     {
-        if (TotalHeight * Scale > Height)
+        if (TotalPagesHeight * Scale > Height)
         {
             TranslateY = Math.Min(TranslateY, MaxTranslateY);
             TranslateY = Math.Max(TranslateY, MinTranslateY);
         }
         else
         {
-            TranslateY = -TotalHeight / 2;
+            TranslateY = -TotalPagesHeight / 2;
         }
 
         if (Width / Scale < MaxWidth)
@@ -178,15 +178,15 @@ class InteractiveCanvas : ICustomDrawOperation
 
     #region inner viewport gradient
 
-    private const float InnerGradientSize = 24f;
+    private const int InnerGradientSize = 24;
     private static readonly SKColor InnerGradientColor = SKColor.Parse("#666");
     
     private void DrawInnerGradient(SKCanvas canvas)
     {
         // gamma correction
         var colors = Enumerable
-            .Range(0, 17)
-            .Select(x => 1f - x / 16f)
+            .Range(0, InnerGradientSize)
+            .Select(x => 1f - x / (float) InnerGradientSize)
             .Select(x => Math.Pow(x, 2f))
             .Select(x => (byte)(x * 255))
             .Select(x => InnerGradientColor.WithAlpha(x))

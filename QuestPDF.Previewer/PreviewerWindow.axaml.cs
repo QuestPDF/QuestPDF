@@ -24,8 +24,7 @@ namespace QuestPDF.Previewer
             set => SetValue(DocumentProperty, value);
         }
 
-        public static readonly StyledProperty<float> CurrentScrollProperty =
-            AvaloniaProperty.Register<PreviewerWindow, float>(nameof(CurrentScroll));
+        public static readonly StyledProperty<float> CurrentScrollProperty = AvaloniaProperty.Register<PreviewerWindow, float>(nameof(CurrentScroll));
 
         public float CurrentScroll
         {
@@ -33,8 +32,7 @@ namespace QuestPDF.Previewer
             set => SetValue(CurrentScrollProperty, value);
         }
 
-        public static readonly StyledProperty<float> ScrollViewportSizeProperty =
-            AvaloniaProperty.Register<PreviewerWindow, float>(nameof(ScrollViewportSize));
+        public static readonly StyledProperty<float> ScrollViewportSizeProperty = AvaloniaProperty.Register<PreviewerWindow, float>(nameof(ScrollViewportSize));
 
         public float ScrollViewportSize
         {
@@ -42,8 +40,7 @@ namespace QuestPDF.Previewer
             set => SetValue(ScrollViewportSizeProperty, value);
         }
 
-        public static readonly StyledProperty<bool> VerticalScrollbarVisibleProperty =
-            AvaloniaProperty.Register<PreviewerWindow, bool>(nameof(VerticalScrollbarVisible));
+        public static readonly StyledProperty<bool> VerticalScrollbarVisibleProperty = AvaloniaProperty.Register<PreviewerWindow, bool>(nameof(VerticalScrollbarVisible));
 
         public bool VerticalScrollbarVisible
         {
@@ -59,9 +56,8 @@ namespace QuestPDF.Previewer
                 .Subscribe(e => Dispatcher.UIThread.Post(() =>
                 {
                     VerticalScrollbarVisible = e.NewValue.Value < 1;
-                    Debug.WriteLine($"Scrollbar visible: {VerticalScrollbarVisible}");
                 }));
-
+                
             // this.FindControl<Button>("GeneratePdf")
             //     .Click += (_, _) => _ = PreviewerUtils.SavePdfWithDialog(Document, this);
 
