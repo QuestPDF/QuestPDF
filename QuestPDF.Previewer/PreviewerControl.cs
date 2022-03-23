@@ -1,17 +1,19 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using ReactiveUI;
 
 namespace QuestPDF.Previewer
 {
     class PreviewerControl : Control
     {
-        public static readonly StyledProperty<ObservableCollection<PreviewPage>?> PagesProperty =
+        private InteractiveCanvas InteractiveCanvas { get; set; } = new ();
+        
+        public static readonly StyledProperty<ObservableCollection<PreviewPage>> PagesProperty =
             AvaloniaProperty.Register<PreviewerControl, ObservableCollection<PreviewPage>>(nameof(Pages));
-
-        private InteractiveCanvas InteractiveCanvas { get; set; } = new InteractiveCanvas();
         
         public ObservableCollection<PreviewPage>? Pages
         {
@@ -19,11 +21,35 @@ namespace QuestPDF.Previewer
             set => SetValue(PagesProperty, value);
         }
 
+        public static readonly StyledProperty<float> CurrentScrollProperty = AvaloniaProperty.Register<PreviewerControl, float>(nameof(CurrentScroll));
+        
+        public float CurrentScroll
+        {
+            get => GetValue(CurrentScrollProperty);
+            set => SetValue(CurrentScrollProperty, value);
+        }
+        
+        public static readonly StyledProperty<float> ScrollViewportSizeProperty = AvaloniaProperty.Register<PreviewerControl, float>(nameof(ScrollViewportSize));
+        
+        public float ScrollViewportSize
+        {
+            get => GetValue(ScrollViewportSizeProperty);
+            set => SetValue(ScrollViewportSizeProperty, value);
+        }
+        
         public PreviewerControl()
         {
+            ScrollViewportSize = 0.5f;
+            
             PagesProperty.Changed.Subscribe(p =>
             {
                 InteractiveCanvas.Pages = Pages;
+                InvalidateVisual();
+            });
+
+            CurrentScrollProperty.Changed.Subscribe(p =>
+            {
+                InteractiveCanvas.ScrollPercentY = CurrentScroll;
                 InvalidateVisual();
             });
 
@@ -84,6 +110,9 @@ namespace QuestPDF.Previewer
 
         public override void Render(DrawingContext context)
         {
+            CurrentScroll = InteractiveCanvas.ScrollPercentY;
+            ScrollViewportSize = InteractiveCanvas.ScrollViewportSizeY;
+    
             InteractiveCanvas.Bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
 
             context.Custom(InteractiveCanvas);

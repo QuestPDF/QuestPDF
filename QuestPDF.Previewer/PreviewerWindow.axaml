@@ -19,7 +19,6 @@
 			<Grid.RowDefinitions>
 				<RowDefinition Height="32" />
 				<RowDefinition Height="*" />
-				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
 
 			<Grid.ColumnDefinitions>
@@ -29,15 +28,23 @@
 			
 			<TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
 			           VerticalAlignment="Center" HorizontalAlignment="Center" 
-			           TextAlignment="Center" Text="QuestPDF Document Preview" FontSize="14" Foreground="#DFFF" FontWeight="Regular" />
+			           TextAlignment="Center" Text="QuestPDF Document Preview" FontSize="14" Foreground="#DFFF" FontWeight="Regular" IsHitTestVisible="False" />
 			
-			<previewer:PreviewerControl Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2"
+			<previewer:PreviewerControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
 			                            HorizontalAlignment="Stretch" 
 			                            VerticalAlignment="Stretch"
+			                            CurrentScroll="{Binding #Window.CurrentScroll, Mode=TwoWay}"
+			                            ScrollViewportSize="{Binding #Window.ScrollViewportSize, Mode=OneWayToSource}"
 			                            Pages="{Binding #Window.DocumentRenderer.Pages, Mode=OneWay}" />
-			
-			<ScrollBar Grid.Row="2" Grid.Column="0" Orientation="Horizontal" />
-			<ScrollBar Grid.Row="1" Grid.Column="1" Orientation="Vertical" />
+
+
+			<ScrollBar Grid.Row="1" Grid.Column="1" 
+			           Orientation="Vertical" 
+			           AllowAutoHide="False" 
+			           Minimum="0" Maximum="1" 
+			           IsVisible="{Binding #Window.VerticalScrollbarVisible}"
+			           Value="{Binding #Window.CurrentScroll, Mode=TwoWay}" 
+			           ViewportSize="{Binding #Window.ScrollViewportSize, Mode=OneWay}"></ScrollBar>
 		</Grid>
 	</Panel>
 </Window>

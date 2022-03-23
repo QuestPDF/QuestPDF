@@ -7,9 +7,9 @@ using QuestPDF.ReportSample;
 using QuestPDF.ReportSample.Layouts;
 using Colors = QuestPDF.Helpers.Colors;
 
-var model = DataSource.GetReport();
-var report = new StandardReport(model);
-report.ShowInPreviewer();
+// var model = DataSource.GetReport();
+// var report = new StandardReport(model);
+// report.ShowInPreviewer();
 
 Document
     .Create(container =>

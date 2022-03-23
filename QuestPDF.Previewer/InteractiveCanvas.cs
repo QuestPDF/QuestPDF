@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System.Diagnostics;
+using Avalonia;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
@@ -13,16 +14,44 @@ class InteractiveCanvas : ICustomDrawOperation
 
     private float Width => (float)Bounds.Width;
     private float Height => (float)Bounds.Height;
-    
+
     public float Scale { get; private set; } = 1;
-    public float TranslateX { get; private set; }
-    public float TranslateY { get; private set; }
+    public float TranslateX { get; set; }
+    public float TranslateY { get; set; }
 
     private const float MinScale = 0.1f;
     private const float MaxScale = 10f;
-    
+
     private const float PageSpacing = 25f;
     private const float SafeZone = 50f;
+
+    public float TotalHeight => Pages.Sum(x => x.Size.Height) + (Pages.Count - 1) * PageSpacing;
+    public float MaxWidth => Pages.Max(x => x.Size.Width);
+    public float MaxTranslateY => -(Height / 2 - SafeZone) / Scale;
+    public float MinTranslateY => (Height / 2 - SafeZone) / Scale - TotalHeight;
+
+    public float ScrollPercentY
+    {
+        get
+        {
+            return Math.Clamp(1 - (TranslateY - MinTranslateY) / (MaxTranslateY - MinTranslateY), 0, 1);
+        }
+        set
+        {
+            TranslateY = (1 - value) * (MaxTranslateY - MinTranslateY) + MinTranslateY;
+        }
+    }
+
+    public float ScrollViewportSizeY
+    {
+        get
+        {
+            if (TotalHeight * Scale < Height)
+                return 1;
+            
+            return Math.Clamp(Height / Scale / (MaxTranslateY - MinTranslateY), 0, 1);
+        }
+    }
 
     #region transformations
     
@@ -34,25 +63,26 @@ class InteractiveCanvas : ICustomDrawOperation
     
     private void LimitTranslate()
     {
-        var totalHeight = Pages.Sum(x => x.Size.Height) + (Pages.Count - 1) * PageSpacing;
-        var maxWidth = Pages.Max(x => x.Size.Width);
-
-        var maxTranslateY = - (Height / 2 - SafeZone) / Scale;
-        var minTranslateY = (Height / 2 - SafeZone) / Scale - totalHeight;
-        
-        TranslateY = Math.Min(TranslateY, maxTranslateY);
-        TranslateY = Math.Max(TranslateY, minTranslateY);
-        
-        if (maxWidth < Width / Scale)
+        if (TotalHeight * Scale > Height)
         {
-            TranslateX = 0;
+            TranslateY = Math.Min(TranslateY, MaxTranslateY);
+            TranslateY = Math.Max(TranslateY, MinTranslateY);
         }
         else
         {
-            var maxTranslateX = (Width / 2 - SafeZone) / Scale - maxWidth / 2;
-        
+            TranslateY = -TotalHeight / 2;
+        }
+
+        if (Width / Scale < MaxWidth)
+        {
+            var maxTranslateX = (Width / 2 - SafeZone) / Scale - MaxWidth / 2;
+
             TranslateX = Math.Min(TranslateX, -maxTranslateX);
             TranslateX = Math.Max(TranslateX, maxTranslateX);
+        }
+        else
+        {
+            TranslateX = 0;
         }
     }
 
