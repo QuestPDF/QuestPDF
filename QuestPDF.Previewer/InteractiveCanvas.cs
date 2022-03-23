@@ -27,7 +27,8 @@ class InteractiveCanvas : ICustomDrawOperation
 
     public float TotalPagesHeight => Pages.Sum(x => x.Size.Height) + (Pages.Count - 1) * PageSpacing;
     public float TotalHeight => TotalPagesHeight + SafeZone * 2 / Scale;
-    public float MaxWidth => Pages.Max(x => x.Size.Width);
+    public float MaxWidth => Pages.Any() ? Pages.Max(x => x.Size.Width) : 0;
+    
     public float MaxTranslateY => -(Height / 2 - SafeZone) / Scale;
     public float MinTranslateY => (Height / 2 + SafeZone) / Scale - TotalHeight;
 
