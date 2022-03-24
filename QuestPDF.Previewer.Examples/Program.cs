@@ -11,6 +11,8 @@ var model = DataSource.GetReport();
 var report = new StandardReport(model);
 report.ShowInPreviewer();
 
+return;
+
 Document
     .Create(container =>
     {

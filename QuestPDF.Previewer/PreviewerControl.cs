@@ -39,8 +39,6 @@ namespace QuestPDF.Previewer
         
         public PreviewerControl()
         {
-            ScrollViewportSize = 0.5f;
-            
             PagesProperty.Changed.Subscribe(p =>
             {
                 InteractiveCanvas.Pages = Pages;

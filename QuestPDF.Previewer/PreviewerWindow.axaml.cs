@@ -5,6 +5,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using ReactiveUI;
@@ -57,10 +58,7 @@ namespace QuestPDF.Previewer
                 {
                     VerticalScrollbarVisible = e.NewValue.Value < 1;
                 }));
-                
-            // this.FindControl<Button>("GeneratePdf")
-            //     .Click += (_, _) => _ = PreviewerUtils.SavePdfWithDialog(Document, this);
-
+  
             DocumentProperty.Changed.Subscribe(v => Task.Run(() => DocumentRenderer.UpdateDocument(v.NewValue.Value)));
             HotReloadManager.UpdateApplicationRequested += InvalidatePreview;
         }
@@ -84,6 +82,31 @@ namespace QuestPDF.Previewer
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void ShowPDF(object? sender, RoutedEventArgs e)
+        {
+            var path = Path.GetTempPath() + ".pdf";
+            
+            try
+            {
+                DocumentRenderer.Document?.GeneratePdf(path);
+            }
+            catch (Exception exception)
+            {
+                new ExceptionDocument(exception).GeneratePdf(path);
+            }
+            
+            var openBrowserProcess = new Process
+            {
+                StartInfo = new()
+                {
+                    UseShellExecute = true,
+                    FileName = path
+                }
+            };
+
+            openBrowserProcess.Start();
         }
     }
 }

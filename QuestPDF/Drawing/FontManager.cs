@@ -52,7 +52,8 @@ namespace QuestPDF.Drawing
             {
                 return new SKPaint
                 {
-                    Color = SKColor.Parse(color)
+                    Color = SKColor.Parse(color),
+                    IsAntialias = true
                 };
             }
         }
