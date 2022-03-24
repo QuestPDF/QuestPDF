@@ -3,6 +3,7 @@ using System.Diagnostics;
 using ReactiveUI;
 using QuestPDF.Infrastructure;
 using Unit = System.Reactive.Unit;
+using Avalonia.Threading;
 
 namespace QuestPDF.Previewer
 {
@@ -43,7 +44,7 @@ namespace QuestPDF.Previewer
         public bool VerticalScrollbarVisible
         {
             get => _verticalScrollbarVisible;
-            private set => this.RaiseAndSetIfChanged(ref _verticalScrollbarVisible, value);
+            private set => Dispatcher.UIThread.Post(() => this.RaiseAndSetIfChanged(ref _verticalScrollbarVisible, value));
         }
 
         public ReactiveCommand<Unit, Unit> ShowPdfCommand { get; }
