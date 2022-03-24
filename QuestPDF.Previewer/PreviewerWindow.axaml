@@ -11,9 +11,7 @@
 							Background="#666"
 							Icon="/Images/Logo.png"
 							UseLayoutRounding="True"
-							x:Name="Window"
 							Title="QuestPDF Document Preview">
-	
 	<Panel>
 		<Grid>
 			<Grid.RowDefinitions>
@@ -33,14 +31,14 @@
 			<previewer:PreviewerControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
 			                            HorizontalAlignment="Stretch" 
 			                            VerticalAlignment="Stretch"
-			                            CurrentScroll="{Binding #Window.CurrentScroll, Mode=TwoWay}"
-			                            ScrollViewportSize="{Binding #Window.ScrollViewportSize, Mode=OneWayToSource}"
-			                            Pages="{Binding #Window.DocumentRenderer.Pages, Mode=OneWay}" />
+			                            CurrentScroll="{Binding CurrentScroll, Mode=TwoWay}"
+			                            ScrollViewportSize="{Binding ScrollViewportSize, Mode=OneWayToSource}"
+			                            Pages="{Binding DocumentRenderer.Pages, Mode=OneWay}" />
 			
 			<Button Grid.Row="1" Grid.Column="0" 
 			        VerticalAlignment="Bottom" HorizontalAlignment="Left" 
 			        Margin="32" Padding="10" CornerRadius="100" 
-			        Click="ShowPDF" 
+			        Command="{Binding ShowPdfCommand, Mode=OneTime}"
 			        ToolTip.Tip="Generates PDF file and shows it in the default browser. Useful for testing compatibility and interactive links.">
 				<Viewbox Width="24" Height="24">
 					<Canvas Width="24" Height="24">
@@ -53,9 +51,9 @@
 			           Orientation="Vertical" 
 			           AllowAutoHide="False" 
 			           Minimum="0" Maximum="1" 
-			           IsVisible="{Binding #Window.VerticalScrollbarVisible, Mode=OneWay}"
-			           Value="{Binding #Window.CurrentScroll, Mode=TwoWay}" 
-			           ViewportSize="{Binding #Window.ScrollViewportSize, Mode=OneWay}"></ScrollBar>
+			           IsVisible="{Binding VerticalScrollbarVisible, Mode=OneWay}"
+			           Value="{Binding CurrentScroll, Mode=TwoWay}" 
+			           ViewportSize="{Binding ScrollViewportSize, Mode=OneWay}"></ScrollBar>
 		</Grid>
 	</Panel>
 </Window>
