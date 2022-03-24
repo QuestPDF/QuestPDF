@@ -20,7 +20,10 @@ namespace QuestPDF.Previewer
             {
                 desktop.MainWindow = new PreviewerWindow()
                 {
-                    Document = Document
+                    DataContext = new PreviewerWindowViewModel()
+                    {
+                        Document = Document,
+                    }
                 };
             }
             
