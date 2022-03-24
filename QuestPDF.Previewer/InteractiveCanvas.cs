@@ -62,14 +62,14 @@ class InteractiveCanvas : ICustomDrawOperation
     
     private void LimitTranslate()
     {
-        if (TotalPagesHeight * Scale > Height)
+        if (TotalPagesHeight > Height / Scale)
         {
             TranslateY = Math.Min(TranslateY, MaxTranslateY);
             TranslateY = Math.Max(TranslateY, 0);
         }
         else
         {
-            TranslateY = -TotalPagesHeight / 2;
+            TranslateY = (TotalPagesHeight - Height / Scale) / 2;
         }
 
         if (Width / Scale < MaxWidth)
