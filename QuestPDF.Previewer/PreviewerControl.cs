@@ -61,15 +61,15 @@ namespace QuestPDF.Previewer
             if ((e.KeyModifiers & KeyModifiers.Control) != 0)
             {
                 var scaleFactor = 1 + e.Delta.Y / 10f;
-                var point = Bounds.Center - Bounds.TopLeft - e.GetPosition(this);
+                var point = new Point(Bounds.Center.X, Bounds.Top) - e.GetPosition(this);
                 
-                InteractiveCanvas.ZoomToPoint((float)point.X, (float)point.Y, (float)scaleFactor);
+                InteractiveCanvas.ZoomToPoint((float)point.X, -(float)point.Y, (float)scaleFactor);
             }
                 
             if (e.KeyModifiers == KeyModifiers.None)
             {
                 var translation = (float)e.Delta.Y * 25;
-                InteractiveCanvas.TranslateWithCurrentScale(0, translation);
+                InteractiveCanvas.TranslateWithCurrentScale(0, -translation);
             }
                 
             InvalidateVisual();
@@ -86,7 +86,7 @@ namespace QuestPDF.Previewer
             {
                 var currentPosition = e.GetPosition(this);
                 var translation = currentPosition - MousePosition;
-                InteractiveCanvas.TranslateWithCurrentScale((float)translation.X, (float)translation.Y);
+                InteractiveCanvas.TranslateWithCurrentScale((float)translation.X, -(float)translation.Y);
                 
                 InvalidateVisual();
             }

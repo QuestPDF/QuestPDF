@@ -23,24 +23,23 @@ class InteractiveCanvas : ICustomDrawOperation
     private const float MaxScale = 10f;
 
     private const float PageSpacing = 25f;
-    private const float SafeZone = InnerGradientSize;
+    private const float SafeZone = 25f;
 
     public float TotalPagesHeight => Pages.Sum(x => x.Size.Height) + (Pages.Count - 1) * PageSpacing;
     public float TotalHeight => TotalPagesHeight + SafeZone * 2 / Scale;
     public float MaxWidth => Pages.Any() ? Pages.Max(x => x.Size.Width) : 0;
     
-    public float MaxTranslateY => -(Height / 2 - SafeZone) / Scale;
-    public float MinTranslateY => (Height / 2 + SafeZone) / Scale - TotalHeight;
+    public float MaxTranslateY => TotalHeight - Height / Scale;
 
     public float ScrollPercentY
     {
         get
         {
-            return Math.Clamp(1 - (TranslateY - MinTranslateY) / (MaxTranslateY - MinTranslateY), 0, 1);
+            return TranslateY / MaxTranslateY;
         }
         set
         {
-            TranslateY = (1 - value) * (MaxTranslateY - MinTranslateY) + MinTranslateY;
+            TranslateY = value * MaxTranslateY;
         }
     }
 
@@ -66,7 +65,7 @@ class InteractiveCanvas : ICustomDrawOperation
         if (TotalPagesHeight * Scale > Height)
         {
             TranslateY = Math.Min(TranslateY, MaxTranslateY);
-            TranslateY = Math.Max(TranslateY, MinTranslateY);
+            TranslateY = Math.Max(TranslateY, 0);
         }
         else
         {
@@ -128,10 +127,10 @@ class InteractiveCanvas : ICustomDrawOperation
 
         var originalMatrix = canvas.TotalMatrix;
 
-        canvas.Translate(Width / 2, Height / 2);
+        canvas.Translate(Width / 2, 0);
         
         canvas.Scale(Scale);
-        canvas.Translate(TranslateX, TranslateY);
+        canvas.Translate(TranslateX, -TranslateY + SafeZone / Scale);
 
         foreach (var page in Pages)
         {
@@ -142,9 +141,7 @@ class InteractiveCanvas : ICustomDrawOperation
         }
 
         canvas.SetMatrix(originalMatrix);
-        
-        if (TranslateY < 0)
-            DrawInnerGradient(canvas);
+        DrawInnerGradient(canvas);
     }
     
     public void Dispose() { }
@@ -178,7 +175,7 @@ class InteractiveCanvas : ICustomDrawOperation
 
     #region inner viewport gradient
 
-    private const int InnerGradientSize = 24;
+    private const int InnerGradientSize = (int)SafeZone;
     private static readonly SKColor InnerGradientColor = SKColor.Parse("#666");
     
     private void DrawInnerGradient(SKCanvas canvas)
