@@ -131,7 +131,7 @@ class InteractiveCanvas : ICustomDrawOperation
         
         canvas.Scale(Scale);
         canvas.Translate(TranslateX, -TranslateY + SafeZone / Scale);
-
+        
         foreach (var page in Pages)
         {
             canvas.Translate(-page.Size.Width / 2f, 0);

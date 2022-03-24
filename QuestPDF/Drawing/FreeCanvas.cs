@@ -17,7 +17,7 @@ namespace QuestPDF.Drawing
             
         }
 
-        public virtual void BeginPage(Size size)
+        public void BeginPage(Size size)
         {
             
         }

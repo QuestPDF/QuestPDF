@@ -72,15 +72,15 @@ namespace QuestPDF.Previewer
 
         private void ShowPdf()
         {
-            var path = Path.Combine(Path.GetTempPath(), ".pdf");
+            var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.pdf");
 
             try
             {
-                Document?.GeneratePdf(path);
+                Document?.GeneratePdf(filePath);
             }
             catch (Exception exception)
             {
-                new ExceptionDocument(exception).GeneratePdf(path);
+                new ExceptionDocument(exception).GeneratePdf(filePath);
             }
 
             var openBrowserProcess = new Process
@@ -88,7 +88,7 @@ namespace QuestPDF.Previewer
                 StartInfo = new()
                 {
                     UseShellExecute = true,
-                    FileName = path
+                    FileName = filePath
                 }
             };
 

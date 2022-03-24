@@ -26,20 +26,6 @@ namespace QuestPDF.Previewer
             }
         }
 
-        private bool _isRendering;
-        public bool IsRendering
-        {
-            get => _isRendering;
-            private set
-            {
-                if (_isRendering != value)
-                {
-                    _isRendering = value;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsRendering)));
-                }
-            }
-        }
-
         public void UpdateDocument(IDocument? document)
         {
             Document = document;
@@ -49,17 +35,12 @@ namespace QuestPDF.Previewer
             
             try
             {
-                IsRendering = true;
                 RenderDocument(document);
             }
             catch (Exception exception)
             {
                 var exceptionDocument = new ExceptionDocument(exception);
                 RenderDocument(exceptionDocument);
-            }
-            finally
-            {
-                IsRendering = false;
             }
         }
 

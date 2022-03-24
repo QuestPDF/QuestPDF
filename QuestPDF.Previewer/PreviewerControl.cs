@@ -39,15 +39,15 @@ namespace QuestPDF.Previewer
         
         public PreviewerControl()
         {
-            PagesProperty.Changed.Subscribe(p =>
+            PagesProperty.Changed.Subscribe(x =>
             {
-                InteractiveCanvas.Pages = Pages;
+                InteractiveCanvas.Pages = x.NewValue.Value;
                 InvalidateVisual();
             });
 
-            CurrentScrollProperty.Changed.Subscribe(p =>
+            CurrentScrollProperty.Changed.Subscribe(x =>
             {
-                InteractiveCanvas.ScrollPercentY = CurrentScroll;
+                InteractiveCanvas.ScrollPercentY = x.NewValue.Value;
                 InvalidateVisual();
             });
 
