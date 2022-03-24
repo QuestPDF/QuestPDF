@@ -1,5 +1,6 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.ReactiveUI;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
@@ -24,7 +25,10 @@ namespace QuestPDF.Previewer
             {
                 desktop.MainWindow = new PreviewerWindow()
                 {
-                    Document = document,
+                    DataContext = new PreviewerWindowViewModel()
+                    {
+                        Document = document,
+                    }
                 };
                 
                 desktop.MainWindow.Show();
@@ -39,6 +43,7 @@ namespace QuestPDF.Previewer
                     Document = document,
                 })
                 .UsePlatformDetect()
+                .UseReactiveUI()
                 .StartWithClassicDesktopLifetime(Array.Empty<string>());
         }
     }
