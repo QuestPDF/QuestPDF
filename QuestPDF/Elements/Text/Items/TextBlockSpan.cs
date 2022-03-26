@@ -9,6 +9,8 @@ namespace QuestPDF.Elements.Text.Items
 {
     internal class TextBlockSpan : ITextBlockItem
     {
+        private const char Space = ' ';
+        
         public string Text { get; set; }
         public TextStyle Style { get; set; } = new TextStyle();
 
@@ -26,8 +28,6 @@ namespace QuestPDF.Elements.Text.Items
         
         internal TextMeasurementResult? MeasureWithoutCache(TextMeasurementRequest request)
         {
-            const char space = ' ';
-            
             var paint = Style.ToPaint();
             var fontMetrics = Style.ToFontMetrics();
 
@@ -37,7 +37,7 @@ namespace QuestPDF.Elements.Text.Items
             // ignore leading spaces
             if (!request.IsFirstElementInBlock && request.IsFirstElementInLine)
             {
-                while (startIndex < Text.Length && Text[startIndex] == space)
+                while (startIndex < Text.Length && Text[startIndex] == Space)
                     startIndex++;
             }
             
@@ -67,7 +67,7 @@ namespace QuestPDF.Elements.Text.Items
             if (wrappedTextLength == null)
                 return null;
 
-            textLength = wrappedTextLength.Value;
+            textLength = wrappedTextLength.Value.fragmentLength;
 
             text = text.Slice(0, textLength);
 
@@ -87,33 +87,39 @@ namespace QuestPDF.Elements.Text.Items
                 
                 StartIndex = startIndex,
                 EndIndex = endIndex,
+                NextIndex = startIndex + wrappedTextLength.Value.nextIndex,
                 TotalIndex = Text.Length
             };
-
-            static int? WrapText(ReadOnlySpan<char> text, int textLength, bool isFirstElementInLine)
-            {
-                // textLength - length of the part of the text that fits in available width (creating a line)
+        }
+        
+        // TODO: consider introduce text wrapping abstraction (basic, english-like, asian-like)
+        private (int fragmentLength, int nextIndex)? WrapText(ReadOnlySpan<char> text, int textLength, bool isFirstElementInLine)
+        {
+            // textLength - length of the part of the text that fits in available width (creating a line)
                 
-                // entire text fits, no need to wrap
-                if (textLength == text.Length)
-                    return textLength;
+            // entire text fits, no need to wrap
+            if (textLength == text.Length)
+                return (textLength, textLength + 1);
 
-                // current line ends at word, next character is space, perfect place to wrap
-                if (text[textLength - 1] != space && text[textLength] == space)
-                    return textLength;
+            // breaking anywhere
+            if (Style.BreakAnywhere ?? false)
+                return (textLength, textLength);
                 
-                // find last space within the available text to wrap
-                var lastSpaceIndex = text.Slice(0, textLength).LastIndexOf(space);
+            // current line ends at word, next character is space, perfect place to wrap
+            if (text[textLength - 1] != Space && text[textLength] == Space)
+                return (textLength, textLength + 1);
+                
+            // find last space within the available text to wrap
+            var lastSpaceIndex = text.Slice(0, textLength).LastIndexOf(Space);
 
-                // text contains space that can be used to wrap
-                if (lastSpaceIndex > 0)
-                    return lastSpaceIndex;
+            // text contains space that can be used to wrap
+            if (lastSpaceIndex > 0)
+                return (lastSpaceIndex, lastSpaceIndex + 1);
                 
-                // there is no available space to wrap text
-                // if the item is first within the line, perform safe mode and chop the word
-                // otherwise, move the item into the next line
-                return isFirstElementInLine ? textLength : null;
-            }
+            // there is no available space to wrap text
+            // if the item is first within the line, perform safe mode and chop the word
+            // otherwise, move the item into the next line
+            return isFirstElementInLine ? (textLength, textLength + 1) : null;
         }
         
         public virtual void Draw(TextDrawingRequest request)

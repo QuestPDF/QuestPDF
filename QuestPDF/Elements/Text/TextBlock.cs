@@ -187,7 +187,7 @@ namespace QuestPDF.Elements.Text
                     });
 
                     currentWidth += measurementResponse.Width;
-                    currentItemIndex = measurementResponse.EndIndex + 1;
+                    currentItemIndex = measurementResponse.NextIndex;
                     
                     if (!measurementResponse.IsLast)
                         break;

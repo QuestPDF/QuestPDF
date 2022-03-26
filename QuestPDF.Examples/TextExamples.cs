@@ -394,8 +394,10 @@ namespace QuestPDF.Examples
 
                             column.Item().Text(text =>
                             {
-                                text.DefaultTextStyle(x => x.BackgroundColor(Colors.Red.Lighten3));
-                                text.Span("       " + Placeholders.LoremIpsum() + " 0123456789012345678901234567890123456789012345678901234567890123456789         ").FontSize(24);
+                                text.DefaultTextStyle(x => x.BackgroundColor(Colors.Red.Lighten3).FontSize(24));
+                                
+                                text.Span("       " + Placeholders.LoremIpsum());
+                                text.Span(" 0123456789012345678901234567890123456789012345678901234567890123456789         ").BreakAnywhere();
                             });
                         });
                     });

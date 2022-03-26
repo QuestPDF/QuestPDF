@@ -63,6 +63,12 @@ namespace QuestPDF.Fluent
             return descriptor;
         }
 
+        public static T BreakAnywhere<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
+        {
+            descriptor.TextStyle.BreakAnywhere = value;
+            return descriptor;
+        }
+
         #region Weight
         
         public static T Weight<T>(this T descriptor, FontWeight weight) where T : TextSpanDescriptor
