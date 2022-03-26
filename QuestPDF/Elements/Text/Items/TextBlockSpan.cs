@@ -35,7 +35,7 @@ namespace QuestPDF.Elements.Text.Items
             
             // if the element is the first one within the line,
             // ignore leading spaces
-            if (request.IsFirstElementInLine)
+            if (!request.IsFirstElementInBlock && request.IsFirstElementInLine)
             {
                 while (startIndex < Text.Length && Text[startIndex] == space)
                     startIndex++;
@@ -72,12 +72,7 @@ namespace QuestPDF.Elements.Text.Items
             text = text.Slice(0, textLength);
 
             var endIndex = startIndex + textLength;
-            var nextIndex = endIndex;
 
-            // when breaking text, omit spaces at the end of the line
-            while (nextIndex < Text.Length && Text[nextIndex] == space)
-                nextIndex++;
-            
             // measure final text
             var width = paint.MeasureText(text);
             
@@ -92,7 +87,6 @@ namespace QuestPDF.Elements.Text.Items
                 
                 StartIndex = startIndex,
                 EndIndex = endIndex,
-                NextIndex = nextIndex,
                 TotalIndex = Text.Length
             };
 

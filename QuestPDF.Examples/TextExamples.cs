@@ -371,5 +371,35 @@ namespace QuestPDF.Examples
                     });
                 });
         }
+        
+        [Test]
+        public void BreakingLongWord()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(50);
+                        page.PageColor(Colors.White);
+
+                        page.Size(PageSizes.A4);
+
+                        page.Content().Column(column =>
+                        {
+                            column.Item().Text(null);
+
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.BackgroundColor(Colors.Red.Lighten3));
+                                text.Span("       " + Placeholders.LoremIpsum() + " 0123456789012345678901234567890123456789012345678901234567890123456789         ").FontSize(24);
+                            });
+                        });
+                    });
+                });
+        }
     }
 }
