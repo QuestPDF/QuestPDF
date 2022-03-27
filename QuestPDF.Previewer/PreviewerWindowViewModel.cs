@@ -48,11 +48,16 @@ namespace QuestPDF.Previewer
         }
 
         public ReactiveCommand<Unit, Unit> ShowPdfCommand { get; }
+        public ReactiveCommand<Unit, Unit> ShowDocumentationCommand { get; }
+        public ReactiveCommand<Unit, Unit> SponsorProjectCommand { get; }
 
         public PreviewerWindowViewModel()
         {
             HotReloadManager.UpdateApplicationRequested += InvalidateDocument;
+            
             ShowPdfCommand = ReactiveCommand.Create(ShowPdf);
+            ShowDocumentationCommand = ReactiveCommand.Create(() => OpenLink("https://www.questpdf.com/documentation/api-reference.html"));
+            SponsorProjectCommand = ReactiveCommand.Create(() => OpenLink("https://github.com/sponsors/QuestPDF"));
         }
 
         public void UnregisterHotReloadHandler()
@@ -83,12 +88,17 @@ namespace QuestPDF.Previewer
                 new ExceptionDocument(exception).GeneratePdf(filePath);
             }
 
+            OpenLink(filePath);
+        }
+        
+        private void OpenLink(string path)
+        {
             var openBrowserProcess = new Process
             {
                 StartInfo = new()
                 {
                     UseShellExecute = true,
-                    FileName = filePath
+                    FileName = path
                 }
             };
 
