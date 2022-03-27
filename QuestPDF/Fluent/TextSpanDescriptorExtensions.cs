@@ -63,9 +63,9 @@ namespace QuestPDF.Fluent
             return descriptor;
         }
 
-        public static T BreakAnywhere<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
+        public static T WrapAnywhere<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.BreakAnywhere = value;
+            descriptor.TextStyle.WrapAnywhere = value;
             return descriptor;
         }
 

@@ -72,9 +72,9 @@ namespace QuestPDF.Fluent
             return style.Mutate(x => x.HasUnderline = value);
         }
         
-        public static TextStyle BreakAnywhere(this TextStyle style, bool value = true)
+        public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)
         {
-            return style.Mutate(x => x.BreakAnywhere = value);
+            return style.Mutate(x => x.WrapAnywhere = value);
         }
 
         #region Weight

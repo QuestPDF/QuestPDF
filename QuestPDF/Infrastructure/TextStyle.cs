@@ -16,7 +16,7 @@ namespace QuestPDF.Infrastructure
         internal bool? IsItalic { get; set; }
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
-        internal bool? BreakAnywhere { get; set; }
+        internal bool? WrapAnywhere { get; set; }
 
         internal object PaintKey { get; private set; }
         internal object FontMetricsKey { get; private set; }
@@ -32,7 +32,7 @@ namespace QuestPDF.Infrastructure
             IsItalic = false,
             HasStrikethrough = false,
             HasUnderline = false,
-            BreakAnywhere = false
+            WrapAnywhere = false
         };
 
         public static TextStyle Default => new TextStyle();
@@ -60,7 +60,7 @@ namespace QuestPDF.Infrastructure
             IsItalic ??= parentStyle.IsItalic;
             HasStrikethrough ??= parentStyle.HasStrikethrough;
             HasUnderline ??= parentStyle.HasUnderline;
-            BreakAnywhere ??= parentStyle.BreakAnywhere;
+            WrapAnywhere ??= parentStyle.WrapAnywhere;
         }
 
         internal void OverrideStyle(TextStyle parentStyle)
@@ -74,7 +74,7 @@ namespace QuestPDF.Infrastructure
             IsItalic = parentStyle.IsItalic ?? IsItalic;
             HasStrikethrough = parentStyle.HasStrikethrough ?? HasStrikethrough;
             HasUnderline = parentStyle.HasUnderline ?? HasUnderline;
-            BreakAnywhere = parentStyle.BreakAnywhere ?? BreakAnywhere;
+            WrapAnywhere = parentStyle.WrapAnywhere ?? WrapAnywhere;
         }
         
         internal TextStyle Clone()

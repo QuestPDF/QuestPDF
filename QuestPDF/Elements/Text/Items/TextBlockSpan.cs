@@ -102,7 +102,7 @@ namespace QuestPDF.Elements.Text.Items
                 return (textLength, textLength + 1);
 
             // breaking anywhere
-            if (Style.BreakAnywhere ?? false)
+            if (Style.WrapAnywhere ?? false)
                 return (textLength, textLength);
                 
             // current line ends at word, next character is space, perfect place to wrap
