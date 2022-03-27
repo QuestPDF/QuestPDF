@@ -1,3 +1,4 @@
+using System;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -47,7 +48,7 @@ namespace QuestPDF.ReportSample.Layouts
             container.Border(0.75f).BorderColor(Colors.Grey.Medium).Grid(grid =>
             {
                 grid.Columns(6);
-                
+
                 grid.Item().LabelCell().Text("Date");
                 grid.Item(2).ValueCell().Text(Model.Date?.ToString("g") ?? string.Empty);
                 grid.Item().LabelCell().Text("Location");

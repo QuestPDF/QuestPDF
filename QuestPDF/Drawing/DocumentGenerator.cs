@@ -51,7 +51,7 @@ namespace QuestPDF.Drawing
             return canvas.Images;
         }
 
-        private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document)
+        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             var container = new DocumentContainer();

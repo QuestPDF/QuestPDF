@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QuestPDF.Previewer\QuestPDF.Previewer.csproj" />
+    <ProjectReference Include="..\QuestPDF.ReportSample\QuestPDF.ReportSample.csproj" />
+    <ProjectReference Include="..\QuestPDF\QuestPDF.csproj" />
+  </ItemGroup>
+
+</Project>
