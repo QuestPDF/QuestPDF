@@ -78,10 +78,12 @@ namespace QuestPDF.Elements.Text.Items
 
             if (!string.IsNullOrWhiteSpace(Text))
             {
+                var offset = GetGlyphOffsetForStyle(Style);
+
                 if (RequiresShaping)
-                    Canvas.DrawShapedText(Text, Position.Zero, Style);
+                    Canvas.DrawShapedText(Text, offset, Style);
                 else
-                    Canvas.DrawText(Text, Position.Zero, Style);
+                    Canvas.DrawText(Text, offset, Style);
             }
 
             // draw underline
@@ -96,6 +98,16 @@ namespace QuestPDF.Elements.Text.Items
             {
                 Canvas.DrawRectangle(new Position(0, offset - thickness / 2f), new Size(request.TextSize.Width, thickness), Style.Color);
             }
+        }
+
+        private static Position GetGlyphOffsetForStyle(TextStyle style)
+        {
+            if (style.FontVariant == FontVariant.Superscript)
+                return new Position(0, (style.Size ?? 12f) * -0.35f);
+            if (style.FontVariant == FontVariant.Subscript)
+                return new Position(0, (style.Size ?? 12f) * 0.1f);
+
+            return Position.Zero;
         }
     }
 }

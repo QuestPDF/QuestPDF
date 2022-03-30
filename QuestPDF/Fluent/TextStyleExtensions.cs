@@ -109,7 +109,29 @@ namespace QuestPDF.Fluent
         {
             return style.Weight(FontWeight.ExtraBlack);
         }
-        
+
+        #endregion
+
+        #region Variant
+        public static TextStyle Variant(this TextStyle style, FontVariant variant)
+        {
+            return style.Mutate(x => x.FontVariant = variant);
+        }
+
+        public static TextStyle NormalVariant(this TextStyle style)
+        {
+            return style.Variant(FontVariant.Normal);
+        }
+
+        public static TextStyle Subscript(this TextStyle style)
+        {
+            return style.Variant(FontVariant.Subscript);
+        }
+
+        public static TextStyle Superscript(this TextStyle style)
+        {
+            return style.Variant(FontVariant.Superscript);
+        }
         #endregion
     }
 }

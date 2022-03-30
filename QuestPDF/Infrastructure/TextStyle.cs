@@ -13,6 +13,7 @@ namespace QuestPDF.Infrastructure
         internal float? Size { get; set; }
         internal float? LineHeight { get; set; }
         internal FontWeight? FontWeight { get; set; }
+        internal FontVariant? FontVariant { get; set; }
         internal bool? IsItalic { get; set; }
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
@@ -28,6 +29,7 @@ namespace QuestPDF.Infrastructure
             Size = 12,
             LineHeight = 1.2f,
             FontWeight = Infrastructure.FontWeight.Normal,
+            FontVariant = Infrastructure.FontVariant.Normal,
             IsItalic = false,
             HasStrikethrough = false,
             HasUnderline = false
@@ -43,8 +45,8 @@ namespace QuestPDF.Infrastructure
             HasGlobalStyleApplied = true;
 
             ApplyParentStyle(globalStyle);
-            PaintKey ??= (FontType, Size, FontWeight, IsItalic, Color);
-            FontMetricsKey ??= (FontType, Size, FontWeight, IsItalic);
+            PaintKey ??= (FontType, Size, FontWeight, FontVariant, IsItalic, Color);
+            FontMetricsKey ??= (FontType, Size, FontWeight, FontVariant, IsItalic);
         }
         
         internal void ApplyParentStyle(TextStyle parentStyle)
@@ -55,6 +57,7 @@ namespace QuestPDF.Infrastructure
             Size ??= parentStyle.Size;
             LineHeight ??= parentStyle.LineHeight;
             FontWeight ??= parentStyle.FontWeight;
+            FontVariant ??= parentStyle.FontVariant;
             IsItalic ??= parentStyle.IsItalic;
             HasStrikethrough ??= parentStyle.HasStrikethrough;
             HasUnderline ??= parentStyle.HasUnderline;

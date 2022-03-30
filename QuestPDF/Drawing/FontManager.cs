@@ -70,13 +70,18 @@ namespace QuestPDF.Drawing
                 {
                     Color = SKColor.Parse(style.Color),
                     Typeface = GetTypeface(style),
-                    TextSize = style.Size ?? 12
+                    TextSize = (style.Size ?? 12) * GetTextScale(style)
                 };
             }
 
             static SKTypeface GetTypeface(TextStyle style)
             {
                 var weight = (SKFontStyleWeight)(style.FontWeight ?? FontWeight.Normal);
+
+                //Extra weight for superscript and subscript
+                if (style.FontVariant == FontVariant.Superscript || style.FontVariant == FontVariant.Subscript)
+                  weight = (SKFontStyleWeight)((int)weight + 100);
+
                 var slant = (style.IsItalic ?? false) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
 
                 var fontStyle = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
@@ -95,6 +100,14 @@ namespace QuestPDF.Drawing
                     $"1) install the font on your operating system or execution environment. " +
                     $"2) load a font file specifically for QuestPDF usage via the QuestPDF.Drawing.FontManager.RegisterFontType(Stream fileContentStream) static method.");
             }
+        }
+
+        private static float GetTextScale(TextStyle style)
+        {
+            if (style.FontVariant == FontVariant.Superscript || style.FontVariant == FontVariant.Subscript)
+                return 0.65f;
+
+            return 1;
         }
 
         internal static SKFont ToFont(this TextStyle style)
