@@ -1,7 +1,0 @@
-﻿using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
-[assembly: InternalsVisibleTo("QuestPDF.Previewer")]
-[assembly: InternalsVisibleTo("QuestPDF.UnitTests")]
-[assembly: InternalsVisibleTo("QuestPDF.Examples")]
-[assembly: InternalsVisibleTo("QuestPDF.ReportSample")]

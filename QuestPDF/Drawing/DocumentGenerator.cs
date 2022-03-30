@@ -51,6 +51,13 @@ namespace QuestPDF.Drawing
             return canvas.Images;
         }
 
+        internal static ICollection<PreviewerPicture> GeneratePreviewerPictures(IDocument document)
+        {
+            var canvas = new SkiaPictureCanvas();
+            RenderDocument(canvas, document);
+            return canvas.Pictures;
+        }
+        
         internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document)
             where TCanvas : ICanvas, IRenderingCanvas
         {
