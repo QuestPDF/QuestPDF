@@ -65,9 +65,11 @@ namespace QuestPDF.Examples
 
                             text.EmptyLine();
 
-                            text.Span("Subscript", TextStyle.Default.Subscript());
-                            text.Span("Normal", TextStyle.Default.NormalVariant());
-                            text.Span("Superscript", TextStyle.Default.Superscript());
+                            var style = TextStyle.Default.Underline().Strikethrough();
+
+                            text.Span("Subscript", style.Subscript().BackgroundColor(Colors.Green.Medium));
+                            text.Span("Normal", style.NormalVariant().BackgroundColor(Colors.Blue.Medium));
+                            text.Span("Superscript", style.Superscript().BackgroundColor(Colors.Red.Medium));
                         });
                });
         }

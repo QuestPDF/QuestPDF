@@ -74,25 +74,25 @@ namespace QuestPDF.Elements.Text.Items
         {
             var fontMetrics = Style.ToFontMetrics();
 
+            var glyphOffsetY = GetVerticalGlyphOffsetForStyle(Style);
+
             Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
 
             if (!string.IsNullOrWhiteSpace(Text))
             {
-                var offset = GetGlyphOffsetForStyle(Style);
-
                 if (RequiresShaping)
-                    Canvas.DrawShapedText(Text, offset, Style);
+                    Canvas.DrawShapedText(Text, new Position(0, glyphOffsetY), Style);
                 else
-                    Canvas.DrawText(Text, offset, Style);
+                    Canvas.DrawText(Text, new Position(0, glyphOffsetY), Style);
             }
 
             // draw underline
             if ((Style.HasUnderline ?? false) && fontMetrics.UnderlinePosition.HasValue)
-                DrawLine(fontMetrics.UnderlinePosition.Value, fontMetrics.UnderlineThickness ?? 1);
+                DrawLine(glyphOffsetY + fontMetrics.UnderlinePosition.Value, fontMetrics.UnderlineThickness ?? 1);
             
             // draw stroke
             if ((Style.HasStrikethrough ?? false) && fontMetrics.StrikeoutPosition.HasValue)
-                DrawLine(fontMetrics.StrikeoutPosition.Value, fontMetrics.StrikeoutThickness ?? 1);
+                DrawLine(glyphOffsetY + fontMetrics.StrikeoutPosition.Value, fontMetrics.StrikeoutThickness ?? 1);
 
             void DrawLine(float offset, float thickness)
             {
@@ -100,14 +100,14 @@ namespace QuestPDF.Elements.Text.Items
             }
         }
 
-        private static Position GetGlyphOffsetForStyle(TextStyle style)
+        private static float GetVerticalGlyphOffsetForStyle(TextStyle style)
         {
             if (style.FontVariant == FontVariant.Superscript)
-                return new Position(0, (style.Size ?? 12f) * -0.35f);
+                return (style.Size ?? 12f) * -0.35f;
             if (style.FontVariant == FontVariant.Subscript)
-                return new Position(0, (style.Size ?? 12f) * 0.1f);
+                return (style.Size ?? 12f) * 0.1f;
 
-            return Position.Zero;
+            return 0;
         }
     }
 }
