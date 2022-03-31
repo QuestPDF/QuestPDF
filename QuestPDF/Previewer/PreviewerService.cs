@@ -63,7 +63,7 @@ namespace QuestPDF.Previewer
                     StartInfo = new()
                     {
                         UseShellExecute = false,
-                        FileName = "questpdf-test",
+                        FileName = "questpdf-previewer",
                         CreateNoWindow = true
                     }
                 };

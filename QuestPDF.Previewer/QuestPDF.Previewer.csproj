@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+
+        <PackAsTool>true</PackAsTool>
+        <PackageId>QuestPDF.Previewer</PackageId>
+        <Version>2022.4.0</Version>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <ToolCommandName>questpdf-previewer</ToolCommandName>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <AvaloniaResource Include="Resources\Logo.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <PackageReference Include="Avalonia" Version="0.10.10" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.10" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.10" />
+        <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="0.10.10" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
+        <PackageReference Include="ReactiveUI" Version="17.1.50" />
+        <PackageReference Include="System.Reactive" Version="5.0.0" />
+        <PackageReference Include="SkiaSharp" Version="2.80.3" />
+    </ItemGroup>
+</Project>

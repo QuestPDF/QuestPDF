@@ -81,7 +81,7 @@ namespace QuestPDF.Previewer
                             
                             .Text(text =>
                             {
-                                text.DefaultTextStyle(x => x.FontSize(18));
+                                text.DefaultTextStyle(x => x.FontSize(16));
 
                                 text.Span(currentException.GetType().Name + ": ").Bold();
                                 text.Span(currentException.Message);
