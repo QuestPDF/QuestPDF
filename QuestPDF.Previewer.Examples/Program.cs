@@ -1,14 +1,10 @@
-﻿using System.Net.Http.Headers;
-using Avalonia.Media;
-using QuestPDF.Fluent;
+﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
-using QuestPDF.ReportSample;
 using QuestPDF.ReportSample.Layouts;
-using Colors = QuestPDF.Helpers.Colors;
 
-ImagePlaceholder.Solid = true;
+//ImagePlaceholder.Solid = true;
 
 // var model = DataSource.GetReport();
 // var report = new StandardReport(model);
@@ -51,16 +47,6 @@ Document
                     });
 
                     x.Item().Text("Modify this line and the preview should show your changes instantly.");
-                    
-                    // for testing exception handling
-                    // try
-                    // {
-                    //     throw new ArgumentException("This file does not exists... peace.png");
-                    // }
-                    // catch (Exception e)
-                    // {
-                    //     throw new FileNotFoundException("This is the top exception!", e);
-                    // }
                 });
 
             page.Footer()
@@ -71,22 +57,5 @@ Document
                     x.CurrentPageNumber();
                 });
         });
-        
-        container.Page(page =>
-        {
-            page.Size(PageSizes.A4);
-            page.Margin(2, Unit.Centimetre);
-            page.DefaultTextStyle(x => x.FontSize(20));
-
-            page.Content()
-                .PaddingVertical(1, Unit.Centimetre)
-                .Column(x =>
-                {
-                    x.Spacing(20);
-
-                    foreach (var i in Enumerable.Range(0, 10))
-                        x.Item().Background(Colors.Grey.Lighten2).Height(80);
-                });
-        });
     })
-    .ShowInPreviewer().Wait();
+    .ShowInPreviewer();

@@ -19,22 +19,25 @@ namespace QuestPDF.Previewer
             HttpClient = new()
             {
                 BaseAddress = new Uri($"http://localhost:{port}/"), 
-                Timeout = TimeSpan.FromMilliseconds(100)
+                Timeout = TimeSpan.FromMilliseconds(250)
             };
         }
 
         public async Task Connect()
         {
-            var isConnected = await TestConnection();
-            
-            if (isConnected)
-                return;
+            var isAvailable = await IsPreviewerAvailable();
 
-            StartPreviewer();
-            await WaitForConnection();
+            if (!isAvailable)
+            {
+                StartPreviewer();
+                await WaitForConnection();
+            }
+            
+            var previewerVersion = await GetPreviewerVersion();
+            CheckVersionCompatibility(previewerVersion);
         }
 
-        private async Task<bool> TestConnection()
+        private async Task<bool> IsPreviewerAvailable()
         {
             try
             {
@@ -50,8 +53,7 @@ namespace QuestPDF.Previewer
         private async Task<Version> GetPreviewerVersion()
         {
             var result = await HttpClient.GetAsync("/version");
-            var value = await result.Content.ReadAsStringAsync();
-            return Version.Parse(value);
+            return await result.Content.ReadFromJsonAsync<Version>();
         }
         
         private static void StartPreviewer()
@@ -72,13 +74,19 @@ namespace QuestPDF.Previewer
             }
             catch
             {
-                throw new Exception("Cannot start the QuestPDF Previewer tool. Please install it by executing in terminal the following command: 'dotnet tool install --global QuestPDF.Previewer'.");
+                throw new Exception("Cannot start the QuestPDF Previewer tool. " +
+                                    "Please install it by executing in terminal the following command: 'dotnet tool install --global QuestPDF.Previewer'.");
             }
         }
 
         private void CheckVersionCompatibility(Version version)
         {
+            if (version.Major == 2022 && version.Minor == 4)
+                return;
             
+            throw new Exception($"Previewer version is not compatible. Possible solutions: " +
+                                $"1) Update the QuestPDF library to newer version. " +
+                                $"2) Update the QuestPDF previewer tool using the following command: 'dotnet tool update --global QuestPDF.Previewer --version 2022.4'");
         }
         
         private async Task WaitForConnection()
@@ -87,7 +95,7 @@ namespace QuestPDF.Previewer
             {
                 await Task.Delay(TimeSpan.FromSeconds(1));
 
-                var isConnected = await TestConnection();
+                var isConnected = await IsPreviewerAvailable();
 
                 if (isConnected)
                     break;

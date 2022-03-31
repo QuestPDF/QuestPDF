@@ -1,17 +1,32 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
-							xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-							xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-							xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-							xmlns:previewer="clr-namespace:QuestPDF.Previewer"
-							mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-							x:Class="QuestPDF.Previewer.PreviewerWindow"
-							WindowStartupLocation="CenterScreen"
-							ExtendClientAreaToDecorationsHint="true"
-							ExtendClientAreaTitleBarHeightHint="-1"
-							Background="#666"
-							Icon="/Resources/Logo.png"
-							UseLayoutRounding="True"
-							Title="QuestPDF Document Preview">
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:previewer="clr-namespace:QuestPDF.Previewer"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		x:Class="QuestPDF.Previewer.PreviewerWindow"
+		WindowStartupLocation="CenterScreen"
+		ExtendClientAreaToDecorationsHint="true"
+		ExtendClientAreaTitleBarHeightHint="-1"
+		Background="#666"
+		Icon="/Resources/Logo.png"
+		UseLayoutRounding="True"
+		Title="QuestPDF Document Preview">
+	
+	<Window.Styles>
+		<Style Selector="Button.actions">
+			<Setter Property="VerticalAlignment" Value="Bottom"/>
+			<Setter Property="HorizontalAlignment" Value="Left"/>
+			<Setter Property="Padding" Value="10"/>
+			<Setter Property="CornerRadius" Value="100"/>
+			<Setter Property="Background" Value="#888"/>
+		</Style>
+		
+		<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#999"/>
+		</Style>
+	</Window.Styles>
+
 	<Panel>
 		<Grid>
 			<Grid.RowDefinitions>
@@ -35,9 +50,8 @@
 			                            ScrollViewportSize="{Binding ScrollViewportSize, Mode=OneWayToSource}"
 			                            Pages="{Binding Pages, Mode=OneWay}" />
 			
-			<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Bottom" Spacing="16" Margin="32" ZIndex="100">
-				<Button VerticalAlignment="Bottom" HorizontalAlignment="Left" 
-				        Padding="10" CornerRadius="100" 
+			<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Bottom" Spacing="16" Margin="32">
+				<Button Classes="actions"
 				        Command="{Binding ShowPdfCommand, Mode=OneTime}"
 				        ToolTip.Tip="Generates PDF file and shows it in the default browser. Useful for testing compatibility and interactive links.">
 					<Viewbox Width="24" Height="24">
@@ -47,8 +61,7 @@
 					</Viewbox>
 				</Button>
 				
-				<Button VerticalAlignment="Bottom" HorizontalAlignment="Left" 
-				        Padding="10" CornerRadius="100" 
+				<Button Classes="actions"
 				        Command="{Binding ShowDocumentationCommand, Mode=OneTime}"
 				        ToolTip.Tip="Opens official QuestPDF documentation">
 					<Viewbox Width="24" Height="24">
@@ -58,8 +71,7 @@
 					</Viewbox>
 				</Button>
 				
-				<Button VerticalAlignment="Bottom" HorizontalAlignment="Left" 
-				        Padding="10" CornerRadius="100" 
+				<Button Classes="actions"
 				        Command="{Binding SponsorProjectCommand, Mode=OneTime}"
 				        ToolTip.Tip="Do you like QuestPDF? Please consider sponsoring the project. It really helps!">
 					<Viewbox Width="24" Height="24">

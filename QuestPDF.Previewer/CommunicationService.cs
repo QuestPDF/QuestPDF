@@ -32,7 +32,7 @@ class CommunicationService
         Application = builder.Build();
 
         Application.MapGet("ping", () => Results.Ok());
-        Application.MapGet("version", () => Results.Ok(GetType().Assembly.GetName().Version));
+        Application.MapGet("version", () => Results.Json(GetType().Assembly.GetName().Version));
         Application.MapPost("update/preview", HandleUpdatePreview);
             
         return Application.RunAsync($"http://localhost:{port}/");
@@ -58,8 +58,8 @@ class CommunicationService
                 return new PreviewPage(picture, page.Width, page.Height);
             })
             .ToList();
-            
-        OnDocumentRefreshed(pages);
+
+        Task.Run(() => OnDocumentRefreshed(pages));
         return Results.Ok();
     }
 }

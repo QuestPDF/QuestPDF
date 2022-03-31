@@ -12,15 +12,10 @@ namespace QuestPDF.Previewer
 
         public class Page
         {
-            public string Id { get; }
+            public string Id { get; } = Guid.NewGuid().ToString("N");
             
             public float Width { get; init; }
             public float Height { get; init; }
-
-            public Page()
-            {
-                Id = Guid.NewGuid().ToString("N");
-            }
         }
     }
 }

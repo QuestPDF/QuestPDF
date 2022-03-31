@@ -10,7 +10,12 @@ namespace QuestPDF.Previewer
 {
     public static class Extensions
     {
-        public static async Task ShowInPreviewer(this IDocument document, int port = 12500)
+        public static void ShowInPreviewer(this IDocument document, int port = 12500)
+        {
+            document.ShowInPreviewerAsync(port).ConfigureAwait(true).GetAwaiter().GetResult();
+        }
+        
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500)
         {
             var previewerService = new PreviewerService(port);
             await previewerService.Connect();
