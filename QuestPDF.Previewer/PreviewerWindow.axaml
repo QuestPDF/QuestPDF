@@ -22,7 +22,7 @@
 			<Setter Property="Background" Value="#888"/>
 		</Style>
 		
-		<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Style Selector="Button:pointerover /template/ ContentPresenter">
 			<Setter Property="Background" Value="#999"/>
 		</Style>
 	</Window.Styles>
