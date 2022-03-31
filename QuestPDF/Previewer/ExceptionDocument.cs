@@ -25,7 +25,7 @@ namespace QuestPDF.Previewer
         {
             document.Page(page =>
             {
-                page.Size(PageSizes.A4);
+                page.ContinuousSize(PageSizes.A4.Width);
                 page.Margin(50);
                 page.DefaultTextStyle(x => x.FontSize(16));
 
