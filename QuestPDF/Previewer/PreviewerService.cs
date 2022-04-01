@@ -12,10 +12,12 @@ namespace QuestPDF.Previewer
 {
     internal class PreviewerService
     {
+        private int Port { get; }
         private HttpClient HttpClient { get; init; }
         
         public PreviewerService(int port)
         {
+            Port = port;
             HttpClient = new()
             {
                 BaseAddress = new Uri($"http://localhost:{port}/"), 
@@ -56,7 +58,7 @@ namespace QuestPDF.Previewer
             return await result.Content.ReadFromJsonAsync<Version>();
         }
         
-        private static void StartPreviewer()
+        private void StartPreviewer()
         {
             try
             {
@@ -64,8 +66,9 @@ namespace QuestPDF.Previewer
                 {
                     StartInfo = new()
                     {
-                        UseShellExecute = false,
                         FileName = "questpdf-previewer",
+                        Arguments = $"{Port}",
+                        UseShellExecute = false,
                         CreateNoWindow = true
                     }
                 };
