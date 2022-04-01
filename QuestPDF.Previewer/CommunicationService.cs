@@ -11,7 +11,7 @@ class CommunicationService
 {
     public static CommunicationService Instance { get; } = new ();
     
-    public event Action<ICollection<PreviewPage>> OnDocumentRefreshed;
+    public event Action<ICollection<PreviewPage>>? OnDocumentRefreshed;
 
     private WebApplication? Application { get; set; }
 
@@ -31,8 +31,8 @@ class CommunicationService
         builder.Services.AddLogging(x => x.ClearProviders());
         Application = builder.Build();
 
-        Application.MapGet("ping", () => Results.Ok());
-        Application.MapGet("version", () => Results.Json(GetType().Assembly.GetName().Version));
+        Application.MapGet("ping", HandlePing);
+        Application.MapGet("version", HandleVersion);
         Application.MapPost("update/preview", HandleUpdatePreview);
             
         return Application.RunAsync($"http://localhost:{port}/");
@@ -44,6 +44,18 @@ class CommunicationService
         await Application.DisposeAsync();
     }
 
+    private async Task<IResult> HandlePing()
+    {
+        return OnDocumentRefreshed == null 
+            ? Results.StatusCode(StatusCodes.Status503ServiceUnavailable) 
+            : Results.Ok();
+    }
+    
+    private async Task<IResult> HandleVersion()
+    {
+        return Results.Json(GetType().Assembly.GetName().Version);
+    }
+    
     private async Task<IResult> HandleUpdatePreview(HttpRequest request)
     {
         var command = JsonSerializer.Deserialize<DocumentSnapshot>(request.Form["command"], JsonSerializerOptions);
