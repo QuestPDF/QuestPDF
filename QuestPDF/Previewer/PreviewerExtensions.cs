@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
@@ -18,14 +19,17 @@ namespace QuestPDF.Previewer
         public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500)
         {
             var previewerService = new PreviewerService(port);
+            
+            var cancellationTokenSource = new CancellationTokenSource();
+            previewerService.OnPreviewerStopped += () => cancellationTokenSource.Cancel();
+            
             await previewerService.Connect();
             await RefreshPreview();
             
             HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
-
-            while (true)
-                await Task.Delay(TimeSpan.FromSeconds(1));
-
+            
+            await WaitForPreviewerExit(cancellationTokenSource.Token);
+            
             Task RefreshPreview()
             {
                 var pictures = GetPictures();
@@ -42,6 +46,17 @@ namespace QuestPDF.Previewer
                         var exceptionDocument = new ExceptionDocument(exception);
                         return DocumentGenerator.GeneratePreviewerPictures(exceptionDocument);
                     }
+                }
+            }
+
+            async Task WaitForPreviewerExit(CancellationToken cancellationToken)
+            {
+                while (true)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+                
+                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
                 }
             }
         }

@@ -13,7 +13,9 @@ namespace QuestPDF.Previewer
     internal class PreviewerService
     {
         private int Port { get; }
-        private HttpClient HttpClient { get; init; }
+        private HttpClient HttpClient { get; }
+        
+        public  event Action? OnPreviewerStopped;
         
         public PreviewerService(int port)
         {
@@ -74,6 +76,12 @@ namespace QuestPDF.Previewer
                 };
                 
                 process.Start();
+
+                Task.Run(async () =>
+                {
+                    await process.WaitForExitAsync();
+                    OnPreviewerStopped?.Invoke();
+                });
             }
             catch
             {
@@ -96,7 +104,7 @@ namespace QuestPDF.Previewer
         {
             while (true)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromMilliseconds(250));
 
                 var isConnected = await IsPreviewerAvailable();
 
