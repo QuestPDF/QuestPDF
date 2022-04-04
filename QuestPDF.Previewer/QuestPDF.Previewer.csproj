@@ -1,16 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <Authors>MarcinZiabek</Authors>
+        <Company>CodeFlint</Company>
+        <PackageId>QuestPDF.Previewer</PackageId>
+        <Version>2022.4.0</Version>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>questpdf-previewer</ToolCommandName>
+        <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.</PackageDescription>
+        <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
+        <LangVersion>9</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageIcon>Logo.png</PackageIcon>
+        <PackageIconUrl>https://www.questpdf.com/images/package-logo.png</PackageIconUrl>
+        <PackageProjectUrl>https://www.questpdf.com/</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/QuestPDF/library.git</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
+        <PackageTags>pdf report file export generate generation tool create creation render portable document format quest html library converter open source free standard core previewer</PackageTags>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <OutputType>exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-
-        <PackAsTool>true</PackAsTool>
-        <PackageId>QuestPDF.Previewer</PackageId>
-        <Version>2022.4.0</Version>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <ToolCommandName>questpdf-previewer</ToolCommandName>
     </PropertyGroup>
 
     <ItemGroup>
