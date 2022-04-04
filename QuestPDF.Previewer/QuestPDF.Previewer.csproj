@@ -9,7 +9,7 @@
         <ToolCommandName>questpdf-previewer</ToolCommandName>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.</PackageDescription>
         <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
-        <LangVersion>9</LangVersion>
+        <LangVersion>10</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageIcon>Logo.png</PackageIcon>
         <PackageIconUrl>https://www.questpdf.com/images/package-logo.png</PackageIconUrl>
@@ -31,6 +31,15 @@
         <AvaloniaResource Include="Resources\Logo.png" />
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Include="Resources\Logo.png" />
+        <None Include="Resources\Logo.png">
+            <Pack>true</Pack>
+            <Visible>false</Visible>
+            <PackagePath>\</PackagePath>
+        </None>
+    </ItemGroup>
+    
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Avalonia" Version="0.10.10" />
