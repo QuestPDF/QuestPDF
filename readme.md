@@ -68,7 +68,7 @@ A short and easy to follow tutorial showing how to design an invoice document un
 A detailed description of behavior of all available components and how to use them with C# Fluent API.
 
 
-[![Patterns and Practices](https://img.shields.io/badge/%F0%9F%94%8D%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/documentation/patterns-and-practices.html#document-metadata)
+[![Patterns and Practices](https://img.shields.io/badge/%E2%9C%A8%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/documentation/patterns-and-practices.html#document-metadata)
 Everything that may help you designing great reports and create reusable code that is easy to maintain.
 
 ## QuestPDF Previewer
