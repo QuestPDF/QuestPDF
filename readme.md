@@ -75,7 +75,7 @@ Everything that may help you designing great reports and create reusable code th
 
 The QuestPDF Previewer is a tool designed to simplify and speed up your development lifecycle. First, it shows a preview of your document. But the real magic starts with the hot-reload capability! It observes your code and updates the preview every time you change the implementation. Get real-time results without the need of code recompilation. Save time and enjoy the task!
 
-[Learn more](https://www.questpdf.com/documentation/document-previewer.html)
+[![Learn more](https://img.shields.io/badge/%F0%9F%93%96%20Previewer-learn%20more-blue)](https://www.questpdf.com/documentation/document-previewer.html)
 
 <img src="https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/images/previewer/animation.gif" width="100%">
 
