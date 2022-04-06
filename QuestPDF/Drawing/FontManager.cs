@@ -126,8 +126,7 @@ namespace QuestPDF.Drawing
         /// </summary>
         internal static SKFontMetrics ToNormalizedFontMetrics(this TextStyle style)
         {
-            var fontMetricsKey = (style.FontType, style.Size, style.FontWeight, FontVariant.Normal, style.IsItalic);
-            return FontMetrics.GetOrAdd(fontMetricsKey, key => style.NormalVariant().ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(style.NormalizedFontMetricsKey, key => style.NormalVariant().ToPaint().FontMetrics);
         }
         
         internal static SKShaper ToShaper(this TextStyle style)

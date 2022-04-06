@@ -20,6 +20,8 @@ namespace QuestPDF.Infrastructure
 
         internal object PaintKey { get; private set; }
         internal object FontMetricsKey { get; private set; }
+
+        internal object NormalizedFontMetricsKey => (FontType, Size, FontWeight, Infrastructure.FontVariant.Normal, IsItalic);
         
         internal static TextStyle LibraryDefault => new TextStyle
         {
