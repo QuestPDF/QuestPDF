@@ -5,6 +5,8 @@
 		xmlns:previewer="clr-namespace:QuestPDF.Previewer"
 		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 		x:Class="QuestPDF.Previewer.PreviewerWindow"
+		x:DataType="previewer:PreviewerWindowViewModel"
+		x:CompileBindings="True"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="true"
 		ExtendClientAreaTitleBarHeightHint="-1"
