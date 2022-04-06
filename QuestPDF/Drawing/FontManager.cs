@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
@@ -118,6 +119,15 @@ namespace QuestPDF.Drawing
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
             return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.ToPaint().FontMetrics);
+        }
+
+        /// <summary>
+        /// Returns the normalized font metrics by ignoring the <see cref="FontVariant"/> property.
+        /// </summary>
+        internal static SKFontMetrics ToNormalizedFontMetrics(this TextStyle style)
+        {
+            var fontMetricsKey = (style.FontType, style.Size, style.FontWeight, FontVariant.Normal, style.IsItalic);
+            return FontMetrics.GetOrAdd(fontMetricsKey, key => style.NormalVariant().ToPaint().FontMetrics);
         }
         
         internal static SKShaper ToShaper(this TextStyle style)

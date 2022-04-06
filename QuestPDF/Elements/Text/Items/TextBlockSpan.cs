@@ -29,7 +29,7 @@ namespace QuestPDF.Elements.Text.Items
         private TextBlockSize GetSizeForWord()
         {
             var paint = Style.ToPaint();
-            var fontMetrics = Style.ToFontMetrics();
+            var fontMetrics = Style.ToNormalizedFontMetrics();
 
             var shaper = Style.ToShaper();
             
