@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
 
@@ -102,9 +103,17 @@ namespace QuestPDF.Previewer
         
         private async Task WaitForConnection()
         {
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
+            
+            var cancellationToken = cancellationTokenSource.Token; 
+            
             while (true)
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(250));
+
+                if (cancellationToken.IsCancellationRequested)
+                    throw new Exception($"Cannot connect to the QuestPDF Previewer tool. Please make sure that your Operating System does not block HTTP connections on port {Port}.");
 
                 var isConnected = await IsPreviewerAvailable();
 
