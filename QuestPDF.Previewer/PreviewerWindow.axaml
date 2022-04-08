@@ -53,6 +53,7 @@
 			<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Bottom" Spacing="16" Margin="32">
 				<Button Classes="actions"
 				        Command="{Binding ShowPdfCommand, Mode=OneTime}"
+				        IsVisible="{Binding !!Pages.Count}"
 				        ToolTip.Tip="Generates PDF file and shows it in the default browser. Useful for testing compatibility and interactive links.">
 					<Viewbox Width="24" Height="24">
 						<Canvas Width="24" Height="24">
