@@ -185,7 +185,7 @@ namespace QuestPDF.Fluent
         public TextSpanDescriptor SectionLink(string? text, string sectionName)
         {
             if (IsNullOrEmpty(sectionName))
-                throw new ArgumentException(nameof(sectionName));
+                throw new ArgumentException("Section name cannot be null or empty", nameof(sectionName));
 
             var style = DefaultStyle.Clone();
             var descriptor = new TextSpanDescriptor(style);
@@ -212,7 +212,7 @@ namespace QuestPDF.Fluent
         public TextSpanDescriptor Hyperlink(string? text, string url)
         {
             if (IsNullOrEmpty(url))
-                throw new ArgumentException(nameof(url));
+                throw new ArgumentException("Url cannot be null or empty", nameof(url));
 
             var style = DefaultStyle.Clone();
             var descriptor = new TextSpanDescriptor(style);
