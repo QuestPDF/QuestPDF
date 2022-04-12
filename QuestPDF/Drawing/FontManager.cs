@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -103,7 +104,7 @@ namespace QuestPDF.Drawing
 
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
-            return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.NormalPosition().ToPaint().FontMetrics);
         }
 
         private static float GetTextScale(TextStyle style)
