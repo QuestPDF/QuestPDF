@@ -36,7 +36,51 @@ namespace QuestPDF.Examples
                         });
                 });
         }
-        
+
+        [Test]
+        public void SuperscriptSubscript()
+        {
+            RenderingTest
+               .Create()
+               .PageSize(500, 300)
+
+               .ProduceImages()
+               .ShowResults()
+               .Render(container =>
+               {
+                   container
+                        .Padding(5)
+                        .MinimalBox()
+                        .Border(1)
+                        .Padding(10)
+                        .Text(text =>
+                        {
+                            text.Span("E=mc");
+                            text.Span("2").Superscript();
+
+                            text.EmptyLine();
+
+                            text.Span("H");
+                            text.Span("2").Subscript();
+                            text.Span("O");
+
+                            text.EmptyLine();
+
+                            text.ParagraphSpacing(2);
+
+                            var style = TextStyle.Default.Underline();
+
+                            text.Span("Subscript").Style(style).Subscript().BackgroundColor(Colors.Green.Medium);
+                            text.Span("Normal").Style(style).NormalPosition().BackgroundColor(Colors.Blue.Medium);
+                            text.Line("Superscript").Style(style).Superscript().BackgroundColor(Colors.Red.Medium);
+
+                            text.Line("Superscript").Style(style).Superscript().BackgroundColor(Colors.Green.Medium);
+                            text.Line("Normal").Style(style).NormalPosition().BackgroundColor(Colors.Blue.Medium);
+                            text.Line("Subscript").Style(style).Subscript().BackgroundColor(Colors.Red.Medium);
+                        });
+               });
+        }
+
         [Test]
         public void ParagraphSpacing()
         {
