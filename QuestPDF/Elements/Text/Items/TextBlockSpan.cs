@@ -126,23 +126,35 @@ namespace QuestPDF.Elements.Text.Items
         {
             var fontMetrics = Style.ToFontMetrics();
 
+            var glyphOffsetY = GetVerticalGlyphOffsetForStyle(Style);
+
             var text = Text.Substring(request.StartIndex, request.EndIndex - request.StartIndex);
             
             request.Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
-            request.Canvas.DrawText(text, Position.Zero, Style);
+            request.Canvas.DrawText(text, new Position(0, glyphOffsetY), Style);
 
             // draw underline
             if ((Style.HasUnderline ?? false) && fontMetrics.UnderlinePosition.HasValue)
-                DrawLine(fontMetrics.UnderlinePosition.Value, fontMetrics.UnderlineThickness ?? 1);
+                DrawLine(glyphOffsetY + fontMetrics.UnderlinePosition.Value, fontMetrics.UnderlineThickness ?? 1);
             
             // draw stroke
             if ((Style.HasStrikethrough ?? false) && fontMetrics.StrikeoutPosition.HasValue)
-                DrawLine(fontMetrics.StrikeoutPosition.Value, fontMetrics.StrikeoutThickness ?? 1);
+                DrawLine(glyphOffsetY + fontMetrics.StrikeoutPosition.Value, fontMetrics.StrikeoutThickness ?? 1);
 
             void DrawLine(float offset, float thickness)
             {
                 request.Canvas.DrawRectangle(new Position(0, offset - thickness / 2f), new Size(request.TextSize.Width, thickness), Style.Color);
             }
+        }
+
+        private static float GetVerticalGlyphOffsetForStyle(TextStyle style)
+        {
+            if (style.FontPosition == FontPosition.Superscript)
+                return (style.Size ?? 12f) * -0.35f;
+            if (style.FontPosition == FontPosition.Subscript)
+                return (style.Size ?? 12f) * 0.1f;
+
+            return 0;
         }
     }
 }

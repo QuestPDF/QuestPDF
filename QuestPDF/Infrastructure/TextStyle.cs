@@ -13,6 +13,7 @@ namespace QuestPDF.Infrastructure
         internal float? Size { get; set; }
         internal float? LineHeight { get; set; }
         internal FontWeight? FontWeight { get; set; }
+        internal FontPosition? FontPosition { get; set; }
         internal bool? IsItalic { get; set; }
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
@@ -29,6 +30,7 @@ namespace QuestPDF.Infrastructure
             Size = 12,
             LineHeight = 1.2f,
             FontWeight = Infrastructure.FontWeight.Normal,
+            FontPosition = Infrastructure.FontPosition.Normal,
             IsItalic = false,
             HasStrikethrough = false,
             HasUnderline = false,
@@ -45,7 +47,7 @@ namespace QuestPDF.Infrastructure
             HasGlobalStyleApplied = true;
 
             ApplyParentStyle(globalStyle);
-            PaintKey ??= (FontFamily, Size, FontWeight, IsItalic, Color);
+            PaintKey ??= (FontFamily, Size, FontWeight, FontPosition, IsItalic, Color);
             FontMetricsKey ??= (FontFamily, Size, FontWeight, IsItalic);
         }
         
@@ -57,6 +59,7 @@ namespace QuestPDF.Infrastructure
             Size ??= parentStyle.Size;
             LineHeight ??= parentStyle.LineHeight;
             FontWeight ??= parentStyle.FontWeight;
+            FontPosition ??= parentStyle.FontPosition;
             IsItalic ??= parentStyle.IsItalic;
             HasStrikethrough ??= parentStyle.HasStrikethrough;
             HasUnderline ??= parentStyle.HasUnderline;
@@ -71,6 +74,7 @@ namespace QuestPDF.Infrastructure
             Size = parentStyle.Size ?? Size;
             LineHeight = parentStyle.LineHeight ?? LineHeight;
             FontWeight = parentStyle.FontWeight ?? FontWeight;
+            FontPosition = parentStyle.FontPosition ?? FontPosition;
             IsItalic = parentStyle.IsItalic ?? IsItalic;
             HasStrikethrough = parentStyle.HasStrikethrough ?? HasStrikethrough;
             HasUnderline = parentStyle.HasUnderline ?? HasUnderline;
