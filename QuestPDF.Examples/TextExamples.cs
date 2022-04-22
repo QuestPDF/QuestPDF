@@ -403,5 +403,40 @@ namespace QuestPDF.Examples
                     });
                 });
         }
+
+        [Test]
+        public void FontFallback()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(50);
+                        page.PageColor(Colors.White);
+
+                        page.Size(PageSizes.A4);
+
+                        page.Content().Text(t =>
+                        {
+                            t.Line("This is normal text.");
+                            t.EmptyLine();
+
+                            t.Line("Following line should use font fallback:");
+                            t.Line("中文文本");
+                            t.EmptyLine();
+
+                            t.Line("The following line contains a mix of known and unknown characters.");
+                            t.Line("Mixed line: Thi中s 文is文文 a mixed本 本 line 本 中文文本!");
+                            t.EmptyLine();
+
+                            t.Line("Emojis work out of the box because of font fallback: 😊😅🥳👍❤😍👌");
+                        });
+                    });
+                });
+        }
     }
 }
