@@ -403,5 +403,31 @@ namespace QuestPDF.Examples
                     });
                 });
         }
+
+        [Test]
+        public void JustifiedText()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 300)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(5)
+                        .Border(1)
+                        .Padding(10)
+                        .MinimalBox()
+                        .Text(t =>
+                        {
+                            t.ParagraphSpacing(4);
+
+                            t.Span(Placeholders.LoremIpsum()).Justify();
+                            t.EmptyLine();
+                            t.Span(Placeholders.Paragraph()).Justify();
+                        });
+                });
+        }
     }
 }
