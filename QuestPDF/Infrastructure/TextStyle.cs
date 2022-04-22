@@ -14,6 +14,7 @@ namespace QuestPDF.Infrastructure
         internal float? LineHeight { get; set; }
         internal FontWeight? FontWeight { get; set; }
         internal bool? IsItalic { get; set; }
+        internal bool? IsJustified { get; set; }
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
         internal bool? WrapAnywhere { get; set; }
@@ -30,6 +31,7 @@ namespace QuestPDF.Infrastructure
             LineHeight = 1.2f,
             FontWeight = Infrastructure.FontWeight.Normal,
             IsItalic = false,
+            IsJustified = false,
             HasStrikethrough = false,
             HasUnderline = false,
             WrapAnywhere = false
@@ -58,6 +60,7 @@ namespace QuestPDF.Infrastructure
             LineHeight ??= parentStyle.LineHeight;
             FontWeight ??= parentStyle.FontWeight;
             IsItalic ??= parentStyle.IsItalic;
+            IsJustified ??= parentStyle.IsJustified;
             HasStrikethrough ??= parentStyle.HasStrikethrough;
             HasUnderline ??= parentStyle.HasUnderline;
             WrapAnywhere ??= parentStyle.WrapAnywhere;
@@ -72,6 +75,7 @@ namespace QuestPDF.Infrastructure
             LineHeight = parentStyle.LineHeight ?? LineHeight;
             FontWeight = parentStyle.FontWeight ?? FontWeight;
             IsItalic = parentStyle.IsItalic ?? IsItalic;
+            IsJustified = parentStyle.IsJustified ?? IsJustified;
             HasStrikethrough = parentStyle.HasStrikethrough ?? HasStrikethrough;
             HasUnderline = parentStyle.HasUnderline ?? HasUnderline;
             WrapAnywhere = parentStyle.WrapAnywhere ?? WrapAnywhere;
