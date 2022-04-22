@@ -1,3 +1,4 @@
+using System.Linq;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -29,7 +30,45 @@ namespace QuestPDF.Drawing
 
         public void DrawText(string text, Position vector, TextStyle style)
         {
-            Canvas.DrawText(text, vector.X, vector.Y, style.ToPaint());
+            if (text == string.Empty)
+                return;
+
+            var paint = style.ToPaint();
+            var runs = FontFallback.BuildRuns(text, paint.Typeface).ToArray();
+            var applyTranslation = runs.Length > 1;
+            float totalOffset = 0;
+
+            void DrawSegment(string segment, SKPaint paint)
+            {
+                Canvas.DrawText(segment, vector.X, vector.Y, paint);
+
+                if (!applyTranslation)
+                    return;
+
+                var offset = paint.MeasureText(segment);
+                Canvas.Translate(offset, 0);
+                totalOffset += offset;
+            }
+
+            foreach (var run in runs)
+            {
+                var segment = text.Substring(run.Start, run.End - run.Start);
+
+                //No font fallback needed, draw normally.
+                if (paint.Typeface == run.Typeface)
+                {
+                    DrawSegment(segment, paint);
+                    continue;
+                }
+
+                //Create a clone of the SKPaint and override the current typeface with the fallback typeface.
+                using var fallbackPaint = paint.Clone();
+                fallbackPaint.Typeface = run.Typeface;
+                DrawSegment(segment, fallbackPaint);
+            }
+
+            if (totalOffset > 0)
+                Canvas.Translate(-totalOffset, 0);
         }
 
         public void DrawImage(SKImage image, Position vector, Size size)
