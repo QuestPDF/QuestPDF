@@ -74,9 +74,8 @@ namespace QuestPDF.Drawing
                     continue;
                 }
 
-                //GetGlyph returns 0 if the glyph doesnt exist in the typeface.
-                var result = typeface.GetGlyph(codepoint);
-                if (result != 0)
+                var result = typeface.ContainsGlyph(codepoint);
+                if (result)
                 {
                     yield return typeface;
                     continue;
