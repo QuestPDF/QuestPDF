@@ -135,7 +135,7 @@ namespace QuestPDF.Fluent
         private TextPageNumberDescriptor PageNumber(Func<IPageContext, int?> pageNumber)
         {
             var style = DefaultStyle.Clone();
-            var descriptor = new TextPageNumberDescriptor(DefaultStyle);
+            var descriptor = new TextPageNumberDescriptor(style);
             
             AddItemToLastTextBlock(new TextBlockPageNumber
             {
