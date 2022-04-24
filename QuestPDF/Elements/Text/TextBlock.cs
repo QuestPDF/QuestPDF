@@ -4,13 +4,14 @@ using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Elements.Text.Items;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text
 {
     internal class TextBlock : Element, IStateResettable
     {
-        public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
+        public TextAlignment Alignment { get; set; } = TextAlignment.Left;
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
         public string Text => string.Join(" ", Items.Where(x => x is TextBlockSpan).Cast<TextBlockSpan>().Select(x => x.Text));
@@ -60,18 +61,29 @@ namespace QuestPDF.Elements.Text
             
             var heightOffset = 0f;
             var widthOffset = 0f;
-            
+
+            var lastLine = lines.Last();
             foreach (var line in lines)
             {
                 widthOffset = 0f;
-
+                
                 var alignmentOffset = GetAlignmentOffset(line.Width);
                 
                 Canvas.Translate(new Position(alignmentOffset, 0));
                 Canvas.Translate(new Position(0, -line.Ascent));
-            
+
+                var spacingAfterWord = 0f;
+                //Only if textblock is justified and its not the last line.
+                if (Alignment == TextAlignment.Justify && line != lastLine)
+                {
+                    var totalWhitespace = availableSpace.Width - line.Width;
+                    spacingAfterWord = totalWhitespace / (line.Elements.Count - 1);
+                }
+
+                var lastItem = line.Elements.Last();
                 foreach (var item in line.Elements)
                 {
+                    var additionalWidth = lastItem == item ? 0 : spacingAfterWord;
                     var textDrawingRequest = new TextDrawingRequest
                     {
                         Canvas = Canvas,
@@ -80,20 +92,20 @@ namespace QuestPDF.Elements.Text
                         StartIndex = item.Measurement.StartIndex,
                         EndIndex = item.Measurement.EndIndex,
                         
-                        TextSize = new Size(item.Measurement.Width, line.LineHeight),
+                        TextSize = new Size(item.Measurement.Width + additionalWidth, line.LineHeight),
                         TotalAscent = line.Ascent
                     };
                 
                     item.Item.Draw(textDrawingRequest);
                 
-                    Canvas.Translate(new Position(item.Measurement.Width, 0));
-                    widthOffset += item.Measurement.Width;
+                    Canvas.Translate(new Position(item.Measurement.Width + spacingAfterWord, 0));
+                    widthOffset += item.Measurement.Width + spacingAfterWord;
                 }
-            
+
                 Canvas.Translate(new Position(-alignmentOffset, 0));
-                Canvas.Translate(new Position(-line.Width, line.Ascent));
+                Canvas.Translate(new Position(-widthOffset, line.Ascent));
                 Canvas.Translate(new Position(0, line.LineHeight));
-                
+
                 heightOffset += line.LineHeight;
             }
             
@@ -115,15 +127,15 @@ namespace QuestPDF.Elements.Text
             
             float GetAlignmentOffset(float lineWidth)
             {
-                if (Alignment == HorizontalAlignment.Left)
+                if (Alignment == TextAlignment.Left || Alignment == TextAlignment.Justify)
                     return 0;
 
                 var emptySpace = availableSpace.Width - lineWidth;
 
-                if (Alignment == HorizontalAlignment.Right)
+                if (Alignment == TextAlignment.Right)
                     return emptySpace;
 
-                if (Alignment == HorizontalAlignment.Center)
+                if (Alignment == TextAlignment.Center)
                     return emptySpace / 2;
 
                 throw new ArgumentException();

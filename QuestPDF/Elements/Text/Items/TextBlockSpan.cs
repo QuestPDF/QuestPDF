@@ -74,8 +74,8 @@ namespace QuestPDF.Elements.Text.Items
 
             var endIndex = startIndex + textLength;
 
-            // If the text is justified we just take all the available width.
-            var width = Style.IsJustified == true ? request.AvailableWidth : paint.MeasureText(text);
+            // measure final text
+            var width = paint.MeasureText(text);
 
             return new TextMeasurementResult
             {
@@ -130,13 +130,7 @@ namespace QuestPDF.Elements.Text.Items
             var text = Text.Substring(request.StartIndex, request.EndIndex - request.StartIndex);
             
             request.Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
-
-            //Text justification is ignored on the last line of the paragraph.
-            var isNotLastLine = request.EndIndex < Text.Length - 1;
-            if (Style.IsJustified == true && isNotLastLine)
-                DrawJustifiedText(text, request, DrawText);
-            else
-                DrawText(text);
+            request.Canvas.DrawText(text, Position.Zero, Style);
 
             // draw underline
             if ((Style.HasUnderline ?? false) && fontMetrics.UnderlinePosition.HasValue)
@@ -150,44 +144,6 @@ namespace QuestPDF.Elements.Text.Items
             {
                 request.Canvas.DrawRectangle(new Position(0, offset - thickness / 2f), new Size(request.TextSize.Width, thickness), Style.Color);
             }
-
-            void DrawText(string text)
-            {
-                request.Canvas.DrawText(text, Position.Zero, Style);
-            }
-        }
-
-        private void DrawJustifiedText(string text, TextDrawingRequest request, Action<string> drawText)
-        {
-            var words = text.Split(new char[] { Space }, StringSplitOptions.RemoveEmptyEntries);
-
-            //Just draw the single word and exit.
-            if (words.Length < 2)
-            {
-                drawText(text);
-                return;
-            }
-
-            var paint = Style.ToPaint();
-            //Measure all words separatly.
-            var measuredWords = words.Select(w => (Value: w, Width: paint.MeasureText(w))).ToArray();
-
-            var totalTextWidth = measuredWords.Sum(w => w.Width);
-            var totalWhiteSpace = request.TextSize.Width - totalTextWidth;
-            var spacingPerWord = totalWhiteSpace / (words.Length - 1);
-
-            var totalOffsetX = 0f;
-            foreach (var (Text, Width) in measuredWords)
-            {
-                drawText(Text);
-
-                //Translate the x axis by the width of the word and the spacing after each word.
-                var offset = Width + spacingPerWord;
-                totalOffsetX += offset;
-                request.Canvas.Translate(new Position(offset, 0));
-            }
-
-            request.Canvas.Translate(new Position(-totalOffsetX, 0));
-        }
+        }       
     }
 }

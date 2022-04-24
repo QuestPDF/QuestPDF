@@ -409,25 +409,55 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(500, 300)
-                .ProduceImages()
+                .ProducePdf()
                 .ShowResults()
-                .Render(container =>
+                .RenderDocument(container =>
                 {
-                    container
-                        .Padding(5)
-                        .Border(1)
-                        .Padding(10)
-                        .MinimalBox()
-                        .Text(t =>
-                        {
-                            t.ParagraphSpacing(4);
+                    container.Page(page =>
+                    {
+                        page.Margin(50);
+                        page.PageColor(Colors.White);
 
-                            t.Span(Placeholders.LoremIpsum()).Justify();
-                            t.EmptyLine();
-                            t.Span(Placeholders.Paragraph()).Justify();
+                        page.Size(PageSizes.A4);
+
+                        page.Content().Row(r =>
+                        {
+                            void TextSample(bool justify, string text)
+                            {
+                                r.RelativeItem().Border(1).Padding(10).Column(c =>
+                                {
+                                    c.Item().AlignMiddle().Text(text).Bold().FontSize(20);
+
+                                    c.Item().Text(text =>
+                                    {
+                                        if (justify)
+                                            text.AlignJustify();
+
+                                        text.ParagraphSpacing(10);
+
+                                        text.Line(Placeholders.LoremIpsum()).BackgroundColor(Colors.Green.Lighten2);
+
+                                        text.Span("This text is a normal text, ");
+                                        text.Span("this is a bold text, ").Bold();
+                                        text.Span("this is a red and underlined text,").FontColor(Colors.Red.Medium).Underline();
+                                        text.Span(" and this is slightly bigger text.").FontSize(25);
+
+                                        text.Span("The new text element also supports injecting custom content between words: ");
+                                        text.Element().PaddingBottom(-4).Height(16).Width(32).Image(Placeholders.Image);
+                                        text.Span(". ");
+                                        text.Span("Also supports ");
+                                        text.Hyperlink("hyper links", "https://www.questpdf.com").FontColor(Colors.Blue.Medium).Underline();
+                                        text.Span("!");
+                                        text.Span("12312342423423423423423423123");
+                                    });
+                                });
+                            }
+
+                            TextSample(justify: false, "Normal");
+                            TextSample(justify: true, "Justified");
                         });
-                });
+                    });
+            });
         }
     }
 }
