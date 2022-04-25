@@ -164,7 +164,7 @@ namespace QuestPDF.Drawing
             return debuggingState;
         }
 
-        private static void ApplyDefaultTextStyle(this Element? content, TextStyle documentDefaultTextStyle)
+        internal static void ApplyDefaultTextStyle(this Element? content, TextStyle documentDefaultTextStyle)
         {
             if (content == null)
                 return;
@@ -186,6 +186,9 @@ namespace QuestPDF.Drawing
                 return;
             }
 
+            if (content is DynamicHost dynamicHost)
+                dynamicHost.TextStyle = documentDefaultTextStyle;
+            
             var targetTextStyle = documentDefaultTextStyle;
             
             if (content is DefaultTextStyle defaultTextStyleElement)
