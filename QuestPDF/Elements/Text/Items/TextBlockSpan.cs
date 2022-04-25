@@ -12,7 +12,7 @@ namespace QuestPDF.Elements.Text.Items
         private const char Space = ' ';
         
         public string Text { get; set; }
-        public TextStyle Style { get; set; } = new TextStyle();
+        public TextStyle Style { get; set; } = new();
 
         private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new ();
 

@@ -9,7 +9,7 @@ namespace QuestPDF.Elements
     internal class DynamicHost : Element, IStateResettable
     {
         private IDynamicComponent Child { get; }
-        internal TextStyle TextStyle { get; set; }
+        internal TextStyle TextStyle { get; } = new();
 
         public DynamicHost(IDynamicComponent child)
         {

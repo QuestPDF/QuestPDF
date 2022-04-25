@@ -187,7 +187,7 @@ namespace QuestPDF.Drawing
             }
 
             if (content is DynamicHost dynamicHost)
-                dynamicHost.TextStyle = documentDefaultTextStyle;
+                dynamicHost.TextStyle.ApplyGlobalStyle(documentDefaultTextStyle);
             
             var targetTextStyle = documentDefaultTextStyle;
             
