@@ -8,22 +8,26 @@ namespace QuestPDF.Elements
 {
     internal class DynamicHost : Element, IStateResettable
     {
-        private IDynamicComponent Child { get; }
+        private DynamicComponentProxy Child { get; }
+        private object InitialComponentState { get; set; }
+
         internal TextStyle TextStyle { get; } = new();
 
-        public DynamicHost(IDynamicComponent child)
+        public DynamicHost(DynamicComponentProxy child)
         {
             Child = child;
+            
+            InitialComponentState = Child.GetState();
         }
 
         public void ResetState()
         {
-            GetContent(Size.Zero, DynamicLayoutOperation.Reset);
+            Child.SetState(InitialComponentState);
         }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            var content = GetContent(availableSpace, DynamicLayoutOperation.Measure);
+            var content = GetContent(availableSpace, acceptNewState: false);
             var measurement = content.Measure(availableSpace);
 
             if (measurement.Type != SpacePlanType.FullRender)
@@ -36,11 +40,13 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            GetContent(availableSpace, DynamicLayoutOperation.Draw).Draw(availableSpace);
+            GetContent(availableSpace, acceptNewState: true).Draw(availableSpace);
         }
 
-        DynamicContainer GetContent(Size availableSize, DynamicLayoutOperation operation)
+        private DynamicContainer GetContent(Size availableSize, bool acceptNewState)
         {
+            var componentState = Child.GetState();
+            
             var context = new DynamicContext
             {
                 PageNumber = PageContext.CurrentPage,
@@ -48,13 +54,15 @@ namespace QuestPDF.Elements
                 Canvas = Canvas,
                 TextStyle = TextStyle,
                 
-                AvailableSize = availableSize,
-                Operation = operation
+                AvailableSize = availableSize
             };
             
             var container = new DynamicContainer();
             Child.Compose(context, container);
-            
+
+            if (!acceptNewState)
+                Child.SetState(componentState);
+
             container.VisitChildren(x => x?.Initialize(PageContext, Canvas));
             container.VisitChildren(x => (x as IStateResettable)?.ResetState());
             
@@ -62,23 +70,15 @@ namespace QuestPDF.Elements
         }
     }
 
-    public enum DynamicLayoutOperation
-    {
-        Reset,
-        Measure,
-        Draw
-    }
-    
     public class DynamicContext
     {
         internal IPageContext PageContext { get; set; }
         internal ICanvas Canvas { get; set; }
         internal TextStyle TextStyle { get; set; }
-        
+    
         public int PageNumber { get; internal set; }
         public Size AvailableSize { get; internal set; }
-        public DynamicLayoutOperation Operation { get; internal set; }
-        
+
         public IDynamicElement CreateElement(Action<IContainer> content)
         {
             var container = new DynamicElement();

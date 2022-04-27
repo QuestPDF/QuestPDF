@@ -5,14 +5,10 @@ namespace QuestPDF.Fluent
 {
     public static class DynamicComponentExtensions
     {
-        public static void Dynamic<TDynamic>(this IContainer element) where TDynamic : IDynamicComponent, new()
+        public static void Dynamic<TState>(this IContainer element, IDynamicComponent<TState> dynamicElement) where TState : struct
         {
-            element.Dynamic(new TDynamic());
-        }
-
-        public static void Dynamic(this IContainer element, IDynamicComponent dynamicElement)
-        {
-            element.Element(new DynamicHost(dynamicElement));
+            var componentProxy = DynamicComponentProxy.CreateFrom(dynamicElement);
+            element.Element(new DynamicHost(componentProxy));
         }
     }
 }

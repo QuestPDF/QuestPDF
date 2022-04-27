@@ -15,25 +15,29 @@ namespace QuestPDF.Examples
         public int Price { get; set; } = Placeholders.Random.Next(1, 11) * 10;
         public int Count { get; set; } = Placeholders.Random.Next(1, 11);
     }
+
+    public struct OrdersTableState
+    {
+        public int ShownItemsCount { get; set; }
+    }
     
-    public class OrdersTable : IDynamicComponent
+    public class OrdersTable : IDynamicComponent<OrdersTableState>
     {
         private ICollection<OrderItem> Items { get; }
-        private ICollection<OrderItem> ItemsLeft { get; set; }
-        
+        public OrdersTableState State { get; set; }
+
         public OrdersTable(ICollection<OrderItem> items)
         {
             Items = items;
+
+            State = new OrdersTableState
+            {
+                ShownItemsCount = 0
+            };
         }
         
         public void Compose(DynamicContext context, IDynamicContainer container)
         {
-            if (context.Operation == DynamicLayoutOperation.Reset)
-            {
-                ItemsLeft = new List<OrderItem>(Items);
-                return;
-            }
-
             var header = ComposeHeader(context);
             var sampleFooter = ComposeFooter(context, Enumerable.Empty<OrderItem>());
             var decorationHeight = header.Size.Height + sampleFooter.Size.Height;
@@ -41,12 +45,9 @@ namespace QuestPDF.Examples
             var rows = GetItemsForPage(context, decorationHeight).ToList();
             var footer = ComposeFooter(context, rows.Select(x => x.Item));
 
-            if (ItemsLeft.Count > rows.Count)
+            if (State.ShownItemsCount + rows.Count < Items.Count)
                 container.HasMoreContent();
             
-            if (context.Operation == DynamicLayoutOperation.Draw)
-                ItemsLeft = ItemsLeft.Skip(rows.Count).ToList();
-
             container.MinimalBox().Decoration(decoration =>
             {
                 decoration.Header().Element(header);
@@ -59,6 +60,11 @@ namespace QuestPDF.Examples
 
                 decoration.Footer().Element(footer);
             });
+
+            State = new OrdersTableState
+            {
+                ShownItemsCount = State.ShownItemsCount + rows.Count
+            };
         }
 
         private IDynamicElement ComposeHeader(DynamicContext context)
@@ -98,10 +104,11 @@ namespace QuestPDF.Examples
         private IEnumerable<(OrderItem Item, IDynamicElement Element)> GetItemsForPage(DynamicContext context, float decorationHeight)
         {
             var totalHeight = decorationHeight;
-            var counter = Items.Count - ItemsLeft.Count + 1;
-            
-            foreach (var orderItem in ItemsLeft)
+
+            foreach (var index in Enumerable.Range(State.ShownItemsCount, Items.Count - State.ShownItemsCount))
             {
+                var item = Items.ElementAt(index);
+                
                 var element = context.CreateElement(content =>
                 {
                     content
@@ -110,11 +117,11 @@ namespace QuestPDF.Examples
                         .Padding(5)
                         .Row(row =>
                         {
-                            row.ConstantItem(30).Text(counter++);
-                            row.RelativeItem().Text(orderItem.ItemName);
-                            row.ConstantItem(50).AlignRight().Text(orderItem.Count);
-                            row.ConstantItem(50).AlignRight().Text($"{orderItem.Price}$");
-                            row.ConstantItem(50).AlignRight().Text($"{orderItem.Count*orderItem.Price}$");
+                            row.ConstantItem(30).Text(index + 1);
+                            row.RelativeItem().Text(item.ItemName);
+                            row.ConstantItem(50).AlignRight().Text(item.Count);
+                            row.ConstantItem(50).AlignRight().Text($"{item.Price}$");
+                            row.ConstantItem(50).AlignRight().Text($"{item.Count*item.Price}$");
                         });
                 });
 
@@ -124,7 +131,7 @@ namespace QuestPDF.Examples
                     break;
                     
                 totalHeight += elementHeight;
-                yield return (orderItem, element);
+                yield return (item, element);
             }
         }
     }
