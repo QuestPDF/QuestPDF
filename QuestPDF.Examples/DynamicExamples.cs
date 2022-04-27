@@ -72,6 +72,7 @@ namespace QuestPDF.Examples
             return context.CreateElement(element =>
             {
                 element
+                    .Width(context.AvailableSize.Width)
                     .BorderBottom(1)
                     .BorderColor(Colors.Grey.Darken2)
                     .Padding(5)
@@ -95,6 +96,7 @@ namespace QuestPDF.Examples
             return context.CreateElement(element =>
             {
                 element
+                    .Width(context.AvailableSize.Width)
                     .Padding(5)
                     .AlignRight()
                     .Text($"Subtotal: {total}$", TextStyle.Default.Size(14).SemiBold());
@@ -112,6 +114,7 @@ namespace QuestPDF.Examples
                 var element = context.CreateElement(content =>
                 {
                     content
+                        .Width(context.AvailableSize.Width)
                         .BorderBottom(1)
                         .BorderColor(Colors.Grey.Lighten2)
                         .Padding(5)

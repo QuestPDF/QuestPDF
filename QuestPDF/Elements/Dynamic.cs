@@ -88,7 +88,7 @@ namespace QuestPDF.Elements
             container.VisitChildren(x => x?.Initialize(PageContext, Canvas));
             container.VisitChildren(x => (x as IStateResettable)?.ResetState());
 
-            container.Size = container.Measure(AvailableSize);
+            container.Size = container.Measure(Size.Max);
             
             return container;
         }
