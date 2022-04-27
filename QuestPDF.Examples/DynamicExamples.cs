@@ -36,7 +36,7 @@ namespace QuestPDF.Examples
             };
         }
         
-        public void Compose(DynamicContext context, IDynamicContainer container)
+        public DynamicComponentComposeResult Compose(DynamicContext context)
         {
             var header = ComposeHeader(context);
             var sampleFooter = ComposeFooter(context, Enumerable.Empty<OrderItem>());
@@ -45,25 +45,31 @@ namespace QuestPDF.Examples
             var rows = GetItemsForPage(context, decorationHeight).ToList();
             var footer = ComposeFooter(context, rows.Select(x => x.Item));
 
-            if (State.ShownItemsCount + rows.Count < Items.Count)
-                container.HasMoreContent();
-            
-            container.MinimalBox().Decoration(decoration =>
+            var content = context.CreateElement(container =>
             {
-                decoration.Header().Element(header);
-                
-                decoration.Content().Box().Stack(stack =>
+                container.MinimalBox().Decoration(decoration =>
                 {
-                    foreach (var row in rows)
-                        stack.Item().Element(row.Element);
-                });
+                    decoration.Header().Element(header);
 
-                decoration.Footer().Element(footer);
+                    decoration.Content().Box().Stack(stack =>
+                    {
+                        foreach (var row in rows)
+                            stack.Item().Element(row.Element);
+                    });
+
+                    decoration.Footer().Element(footer);
+                });
             });
 
             State = new OrdersTableState
             {
                 ShownItemsCount = State.ShownItemsCount + rows.Count
+            };
+
+            return new DynamicComponentComposeResult
+            {
+                Content = content,
+                HasMoreContent = State.ShownItemsCount + rows.Count < Items.Count
             };
         }
 

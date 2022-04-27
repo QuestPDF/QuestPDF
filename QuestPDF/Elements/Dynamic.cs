@@ -27,23 +27,25 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            var content = GetContent(availableSpace, acceptNewState: false);
+            var result = GetContent(availableSpace, acceptNewState: false);
+            var content = result.Content as Element ?? Empty.Instance;
             var measurement = content.Measure(availableSpace);
 
             if (measurement.Type != SpacePlanType.FullRender)
                 throw new DocumentLayoutException("Dynamic component generated content that does not fit on a single page.");
             
-            return content.HasMoreContent 
+            return result.HasMoreContent 
                 ? SpacePlan.PartialRender(measurement) 
                 : SpacePlan.FullRender(measurement);
         }
 
         internal override void Draw(Size availableSpace)
         {
-            GetContent(availableSpace, acceptNewState: true).Draw(availableSpace);
+            var content = GetContent(availableSpace, acceptNewState: true).Content as Element; 
+            content?.Draw(availableSpace);
         }
 
-        private DynamicContainer GetContent(Size availableSize, bool acceptNewState)
+        private DynamicComponentComposeResult GetContent(Size availableSize, bool acceptNewState)
         {
             var componentState = Child.GetState();
             
@@ -57,16 +59,12 @@ namespace QuestPDF.Elements
                 AvailableSize = availableSize
             };
             
-            var container = new DynamicContainer();
-            Child.Compose(context, container);
+            var result = Child.Compose(context);
 
             if (!acceptNewState)
                 Child.SetState(componentState);
 
-            container.VisitChildren(x => x?.Initialize(PageContext, Canvas));
-            container.VisitChildren(x => (x as IStateResettable)?.ResetState());
-            
-            return container;
+            return result;
         }
     }
 
@@ -94,25 +92,6 @@ namespace QuestPDF.Elements
         }
     }
 
-    public interface IDynamicContainer : IContainer
-    {
-        
-    }
-
-    internal class DynamicContainer : Container, IDynamicContainer
-    {
-        internal bool HasMoreContent { get; set; }
-    }
-
-    public static class DynamicContainerExtensions
-    {
-        public static IDynamicContainer HasMoreContent(this IDynamicContainer container)
-        {
-            (container as DynamicContainer).HasMoreContent = true;
-            return container;
-        }
-    }
-    
     public interface IDynamicElement : IElement
     {
         Size Size { get; }
