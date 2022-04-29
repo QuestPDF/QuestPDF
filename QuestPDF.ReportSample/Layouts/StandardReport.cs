@@ -55,7 +55,7 @@ namespace QuestPDF.ReportSample.Layouts
                     row.Spacing(50);
                     
                     row.RelativeItem().PaddingTop(-10).Text(Model.Title).Style(Typography.Title);
-                    row.ConstantItem(90).ExternalLink("https://www.questpdf.com").MaxHeight(30).Component<ImagePlaceholder>();
+                    row.ConstantItem(90).Hyperlink("https://www.questpdf.com").MaxHeight(30).Component<ImagePlaceholder>();
                 });
 
                 column.Item().ShowOnce().PaddingVertical(15).Border(1f).BorderColor(Colors.Grey.Lighten1).ExtendHorizontal();
@@ -88,10 +88,10 @@ namespace QuestPDF.ReportSample.Layouts
                 column.Item().PageBreak();
                 
                 foreach (var section in Model.Sections)
-                    column.Item().Location(section.Title).Component(new SectionTemplate(section));
+                    column.Item().Section(section.Title).Component(new SectionTemplate(section));
                 
                 column.Item().PageBreak();
-                column.Item().Location("Photos");
+                column.Item().Section("Photos");
                 
                 foreach (var photo in Model.Photos)
                     column.Item().Component(new PhotoTemplate(photo));
