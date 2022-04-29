@@ -174,7 +174,7 @@ namespace QuestPDF.Fluent
         
         public TextPageNumberDescriptor PageNumberWithinSection(string locationName)
         {
-            return PageNumber(x => x.CurrentPage + 1 - x.GetLocation(locationName)?.PageEnd);
+            return PageNumber(x => x.CurrentPage + 1 - x.GetLocation(locationName)?.PageStart);
         }
         
         public TextPageNumberDescriptor TotalPagesWithinSection(string locationName)
