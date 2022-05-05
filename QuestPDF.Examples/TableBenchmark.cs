@@ -16,7 +16,7 @@ namespace QuestPDF.Examples
                 .ProducePdf()
                 .PageSize(PageSizes.A4)
                 .ShowResults()
-                .MaxPages(20_000)
+                .MaxPages(10_000)
                 .EnableCaching(true)
                 .EnableDebugging(false)
                 .Render(container =>
@@ -27,7 +27,7 @@ namespace QuestPDF.Examples
                         .Border(1)
                         .Table(table =>
                         {
-                            const int numberOfRows = 250_000;
+                            const int numberOfRows = 100_000;
                             const int numberOfColumns = 10;
                             
                             table.ColumnsDefinition(columns =>

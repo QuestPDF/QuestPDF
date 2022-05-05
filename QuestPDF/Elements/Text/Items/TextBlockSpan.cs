@@ -119,7 +119,7 @@ namespace QuestPDF.Elements.Text.Items
             // there is no available space to wrap text
             // if the item is first within the line, perform safe mode and chop the word
             // otherwise, move the item into the next line
-            return isFirstElementInLine ? (textLength, textLength + 1) : null;
+            return isFirstElementInLine ? (textLength, textLength) : null;
         }
         
         public virtual void Draw(TextDrawingRequest request)

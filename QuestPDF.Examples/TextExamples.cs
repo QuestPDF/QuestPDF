@@ -397,7 +397,7 @@ namespace QuestPDF.Examples
                                 text.DefaultTextStyle(x => x.BackgroundColor(Colors.Red.Lighten3).FontSize(24));
                                 
                                 text.Span("       " + Placeholders.LoremIpsum());
-                                text.Span(" 0123456789012345678901234567890123456789012345678901234567890123456789         ").WrapAnywhere();
+                                text.Span(" 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789         ").WrapAnywhere();
                             });
                         });
                     });
