@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -68,7 +69,7 @@ namespace QuestPDF.Drawing
                 {
                     Color = SKColor.Parse(style.Color),
                     Typeface = GetTypeface(style),
-                    TextSize = style.Size ?? 12,
+                    TextSize = (style.Size ?? 12) * GetTextScale(style),
                     IsAntialias = true,
                 };
             }
@@ -76,6 +77,11 @@ namespace QuestPDF.Drawing
             static SKTypeface GetTypeface(TextStyle style)
             {
                 var weight = (SKFontStyleWeight)(style.FontWeight ?? FontWeight.Normal);
+
+                //Extra weight for superscript and subscript
+                if (style.FontPosition == FontPosition.Superscript || style.FontPosition == FontPosition.Subscript)
+                    weight = (SKFontStyleWeight)((int)weight + 100);
+
                 var slant = (style.IsItalic ?? false) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
 
                 var fontStyle = new SKFontStyle(weight, SKFontStyleWidth.Normal, slant);
@@ -98,7 +104,15 @@ namespace QuestPDF.Drawing
 
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
-            return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.NormalPosition().ToPaint().FontMetrics);
+        }
+
+        private static float GetTextScale(TextStyle style)
+        {
+            if (style.FontPosition == FontPosition.Superscript || style.FontPosition == FontPosition.Subscript)
+                return 0.65f;
+
+            return 1;
         }
     }
 }

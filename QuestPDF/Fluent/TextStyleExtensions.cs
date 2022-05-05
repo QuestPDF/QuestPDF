@@ -133,7 +133,32 @@ namespace QuestPDF.Fluent
         {
             return style.Weight(FontWeight.ExtraBlack);
         }
-        
+
+        #endregion
+
+        #region Position
+        public static TextStyle NormalPosition(this TextStyle style)
+        {
+            return style.Position(FontPosition.Normal);
+        }
+
+        public static TextStyle Subscript(this TextStyle style)
+        {
+            return style.Position(FontPosition.Subscript);
+        }
+
+        public static TextStyle Superscript(this TextStyle style)
+        {
+            return style.Position(FontPosition.Superscript);
+        }
+
+        private static TextStyle Position(this TextStyle style, FontPosition fontPosition)
+        {
+            if (style.FontPosition == fontPosition)
+                return style;
+
+            return style.Mutate(t => t.FontPosition = fontPosition);
+        }
         #endregion
     }
 }

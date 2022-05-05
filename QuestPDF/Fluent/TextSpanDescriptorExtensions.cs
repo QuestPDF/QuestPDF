@@ -126,7 +126,30 @@ namespace QuestPDF.Fluent
         {
             return descriptor.Weight(FontWeight.ExtraBlack);
         }
-        
+
+        #endregion
+
+        #region Position
+        public static T NormalPosition<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            return descriptor.Position(FontPosition.Normal);
+        }
+
+        public static T Subscript<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            return descriptor.Position(FontPosition.Subscript);
+        }
+
+        public static T Superscript<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            return descriptor.Position(FontPosition.Superscript);
+        }
+
+        private static T Position<T>(this T descriptor, FontPosition fontPosition) where T : TextSpanDescriptor
+        {
+            descriptor.TextStyle.FontPosition = fontPosition;
+            return descriptor;
+        }
         #endregion
     }
 }
