@@ -41,7 +41,7 @@ namespace QuestPDF.ReportSample.Layouts
         private void DrawLink(IContainer container, int number, string locationName)
         {
             container
-                .InternalLink(locationName)
+                .SectionLink(locationName)
                 .Row(row =>
                 {
                     row.ConstantItem(25).Text($"{number}.");
@@ -52,7 +52,7 @@ namespace QuestPDF.ReportSample.Layouts
                         text.Span(" - ");
                         text.EndPageNumberOfSection(locationName);
 
-                        var lengthStyle = TextStyle.Default.Color(Colors.Grey.Medium);
+                        var lengthStyle = TextStyle.Default.FontColor(Colors.Grey.Medium);
                         
                         text.Span(" (").Style(lengthStyle);
                         text.TotalPagesWithinSection(locationName).Style(lengthStyle).Format(x => x == 1 ? "1 page long" : $"{x} pages long");
