@@ -19,15 +19,22 @@ namespace QuestPDF.Elements.Table
         private int RowsCount { get; set; }
         private int CurrentRow { get; set; }
         
+        // cache that stores all cells
+        // first index: row number
+        // inner table: list of all cells that ends at the corresponding row
+        private TableCell[][] CellsCache { get; set; }
+        private int MaxRow { get; set; }
+        
         internal override void Initialize(IPageContext pageContext, ICanvas canvas)
         {
             StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
             RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
             Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
+            BuildCache();
 
             base.Initialize(pageContext, canvas);
         }
-        
+
         internal override IEnumerable<Element?> GetChildren()
         {
             return Cells;
@@ -37,6 +44,31 @@ namespace QuestPDF.Elements.Table
         {
             Cells.ForEach(x => x.IsRendered = false);
             CurrentRow = 1;
+        }
+
+        private void BuildCache()
+        {
+            if (CellsCache != null)
+                return;
+
+            if (Cells.Count == 0)
+            {
+                MaxRow = 0;
+                CellsCache = Array.Empty<TableCell[]>();
+                
+                return;
+            }
+            
+            var groups = Cells
+                .GroupBy(x => x.Row + x.RowSpan - 1)
+                .ToDictionary(x => x.Key, x => x.OrderBy(x => x.Column).ToArray());
+
+            MaxRow = groups.Max(x => x.Key);
+
+            CellsCache = Enumerable
+                .Range(0, MaxRow + 1)
+                .Select(x => groups.ContainsKey(x) ? groups[x] : Array.Empty<TableCell>())
+                .ToArray();
         }
         
         internal override SpacePlan Measure(Size availableSpace)
@@ -143,7 +175,10 @@ namespace QuestPDF.Elements.Table
                 var rowBottomOffsets = new DynamicDictionary<int, float>();
                 var commands = new List<TableCellRenderingCommand>();
                 
-                var cellsToTry = Cells.Where(x => x.Row + x.RowSpan - 1 >= CurrentRow);
+                var cellsToTry = Enumerable
+                    .Range(CurrentRow, MaxRow - CurrentRow + 1)
+                    .SelectMany(x => CellsCache[x]);
+                
                 var currentRow = CurrentRow;
                 var maxRenderingRow = RowsCount;
                 
