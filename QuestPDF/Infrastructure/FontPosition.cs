@@ -2,7 +2,7 @@
 {
     internal enum FontPosition
     {
-        Normal = 0,
+        Normal,
         Subscript,
         Superscript,
     }

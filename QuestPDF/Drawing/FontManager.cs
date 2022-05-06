@@ -78,9 +78,14 @@ namespace QuestPDF.Drawing
             {
                 var weight = (SKFontStyleWeight)(style.FontWeight ?? FontWeight.Normal);
 
-                //Extra weight for superscript and subscript
-                if (style.FontPosition == FontPosition.Superscript || style.FontPosition == FontPosition.Subscript)
-                    weight = (SKFontStyleWeight)((int)weight + 100);
+                // superscript and subscript use slightly bolder font to match visually line thickness
+                if (style.FontPosition is FontPosition.Superscript or FontPosition.Subscript)
+                {
+                    var weightValue = (int)weight;
+                    weightValue = Math.Min(weightValue + 100, 1000);
+                    
+                    weight = (SKFontStyleWeight) (weightValue);
+                }
 
                 var slant = (style.IsItalic ?? false) ? SKFontStyleSlant.Italic : SKFontStyleSlant.Upright;
 
@@ -100,19 +105,22 @@ namespace QuestPDF.Drawing
                     $"1) install the font on your operating system or execution environment. " +
                     $"2) load a font file specifically for QuestPDF usage via the QuestPDF.Drawing.FontManager.RegisterFontType(Stream fileContentStream) static method.");
             }
+            
+            static float GetTextScale(TextStyle style)
+            {
+                return style.FontPosition switch
+                {
+                    FontPosition.Normal => 1f,
+                    FontPosition.Subscript => 0.625f,
+                    FontPosition.Superscript => 0.625f,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            }
         }
 
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
             return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.NormalPosition().ToPaint().FontMetrics);
-        }
-
-        private static float GetTextScale(TextStyle style)
-        {
-            if (style.FontPosition == FontPosition.Superscript || style.FontPosition == FontPosition.Subscript)
-                return 0.65f;
-
-            return 1;
         }
     }
 }
