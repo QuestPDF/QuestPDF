@@ -111,7 +111,7 @@ namespace QuestPDF.Previewer
             
             while (true)
             {
-                await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
+                await Task.Delay(TimeSpan.FromMilliseconds(250));
 
                 if (cancellationToken.IsCancellationRequested)
                     throw new Exception($"Cannot connect to the QuestPDF Previewer tool. Please make sure that your Operating System does not block HTTP connections on port {Port}.");
