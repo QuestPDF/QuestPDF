@@ -46,7 +46,7 @@ namespace QuestPDF.Previewer
         {
             try
             {
-                var result = await HttpClient.GetAsync("/ping");
+                using var result = await HttpClient.GetAsync("/ping");
                 return result.IsSuccessStatusCode;
             }
             catch
@@ -57,7 +57,7 @@ namespace QuestPDF.Previewer
         
         private async Task<Version> GetPreviewerVersion()
         {
-            var result = await HttpClient.GetAsync("/version");
+            using var result = await HttpClient.GetAsync("/version");
             return await result.Content.ReadFromJsonAsync<Version>();
         }
         
@@ -81,6 +81,7 @@ namespace QuestPDF.Previewer
                 Task.Run(async () =>
                 {
                     await process.WaitForExitAsync();
+                    process.Dispose();
                     OnPreviewerStopped?.Invoke();
                 });
             }
@@ -103,7 +104,7 @@ namespace QuestPDF.Previewer
         
         private async Task WaitForConnection()
         {
-            var cancellationTokenSource = new CancellationTokenSource();
+            using var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
             
             var cancellationToken = cancellationTokenSource.Token; 
@@ -124,7 +125,7 @@ namespace QuestPDF.Previewer
         
         public async Task RefreshPreview(ICollection<PreviewerPicture> pictures)
         {
-            var multipartContent = new MultipartFormDataContent();
+            using var multipartContent = new MultipartFormDataContent();
 
             var pages = new List<PreviewerRefreshCommand.Page>();
             
@@ -149,7 +150,7 @@ namespace QuestPDF.Previewer
             
             multipartContent.Add(JsonContent.Create(command), "command");
 
-            await HttpClient.PostAsync("/update/preview", multipartContent);
+            using var _ = await HttpClient.PostAsync("/update/preview", multipartContent);
 
             foreach (var picture in pictures)
                 picture.Picture.Dispose();

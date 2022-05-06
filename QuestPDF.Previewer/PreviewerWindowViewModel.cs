@@ -63,7 +63,7 @@ namespace QuestPDF.Previewer
         
         private void OpenLink(string path)
         {
-            var openBrowserProcess = new Process
+            using var openBrowserProcess = new Process
             {
                 StartInfo = new()
                 {

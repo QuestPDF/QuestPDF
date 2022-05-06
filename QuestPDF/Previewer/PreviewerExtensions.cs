@@ -20,7 +20,7 @@ namespace QuestPDF.Previewer
         {
             var previewerService = new PreviewerService(port);
             
-            var cancellationTokenSource = new CancellationTokenSource();
+            using var cancellationTokenSource = new CancellationTokenSource();
             previewerService.OnPreviewerStopped += () => cancellationTokenSource.Cancel();
             
             await previewerService.Connect();
