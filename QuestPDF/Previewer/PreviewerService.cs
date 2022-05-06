@@ -24,7 +24,7 @@ namespace QuestPDF.Previewer
             HttpClient = new()
             {
                 BaseAddress = new Uri($"http://localhost:{port}/"), 
-                Timeout = TimeSpan.FromMilliseconds(250)
+                Timeout = TimeSpan.FromSeconds(1)
             };
         }
 
@@ -94,12 +94,12 @@ namespace QuestPDF.Previewer
 
         private void CheckVersionCompatibility(Version version)
         {
-            if (version.Major == 2022 && version.Minor == 4)
+            if (version.Major == 2022 && version.Minor == 5)
                 return;
             
             throw new Exception($"Previewer version is not compatible. Possible solutions: " +
                                 $"1) Update the QuestPDF library to newer version. " +
-                                $"2) Update the QuestPDF previewer tool using the following command: 'dotnet tool update --global QuestPDF.Previewer --version 2022.4'");
+                                $"2) Update the QuestPDF previewer tool using the following command: 'dotnet tool update --global QuestPDF.Previewer --version 2022.5'");
         }
         
         private async Task WaitForConnection()
