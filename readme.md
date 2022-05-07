@@ -133,3 +133,15 @@ And compare it to the produced PDF file:
 The Fluent API of QuestPDF scales really well. It is easy to create and maintain even most complex documents. Read [the Getting started tutorial](https://www.questpdf.com/documentation/getting-started.html) to learn QuestPDF basics and implement an invoice under 200 lines of code. You can also investigate and play with the code from [the example repository](https://github.com/QuestPDF/example-invoice).
 
 <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/invoice.png" width="400px">
+
+
+## QuestPDF on JetBrains OSS Power-Ups
+
+QuestPDF was presented on one of the episodes of OSS Power-Ups hosted by JetBrains. Huge thanks for Matthias Koch and entire JetBrains team for giving me a chance to show QuestPDF. You are the best!
+
+<a href="https://www.youtube.com/watch?v=-iYvZvpLX0g">
+    <img src="https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/images/jetbrains-oss-powerups-youtube.png" width="600px">
+</a>
+
+
+[![YouTube video about QuestPDF]( https://img.shields.io/badge/watch%20on-YouTube-red?logo=youtube)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
