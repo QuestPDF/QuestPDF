@@ -95,7 +95,7 @@ Document.Create(container =>
     {
         page.Size(PageSizes.A4);
         page.Margin(2, Unit.Centimetre);
-        page.Background(Colors.White);
+        page.PageColor(Colors.White);
         page.DefaultTextStyle(x => x.FontSize(20));
         
         page.Header()
