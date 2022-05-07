@@ -12,7 +12,7 @@ namespace QuestPDF.Elements.Text.Items
         private const char Space = ' ';
         
         public string Text { get; set; }
-        public TextStyle Style { get; set; } = new TextStyle();
+        public TextStyle Style { get; set; } = new();
 
         private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new ();
 
@@ -119,29 +119,53 @@ namespace QuestPDF.Elements.Text.Items
             // there is no available space to wrap text
             // if the item is first within the line, perform safe mode and chop the word
             // otherwise, move the item into the next line
-            return isFirstElementInLine ? (textLength, textLength + 1) : null;
+            return isFirstElementInLine ? (textLength, textLength) : null;
         }
         
         public virtual void Draw(TextDrawingRequest request)
         {
             var fontMetrics = Style.ToFontMetrics();
 
+            var glyphOffset = GetGlyphOffset();
             var text = Text.Substring(request.StartIndex, request.EndIndex - request.StartIndex);
             
             request.Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
-            request.Canvas.DrawText(text, Position.Zero, Style);
+            request.Canvas.DrawText(text, new Position(0, glyphOffset), Style);
 
             // draw underline
             if ((Style.HasUnderline ?? false) && fontMetrics.UnderlinePosition.HasValue)
-                DrawLine(fontMetrics.UnderlinePosition.Value, fontMetrics.UnderlineThickness ?? 1);
+            {
+                var underlineOffset = Style.FontPosition == FontPosition.Superscript ? 0 : glyphOffset;
+                DrawLine(fontMetrics.UnderlinePosition.Value + underlineOffset, fontMetrics.UnderlineThickness ?? 1);
+            }
             
             // draw stroke
             if ((Style.HasStrikethrough ?? false) && fontMetrics.StrikeoutPosition.HasValue)
-                DrawLine(fontMetrics.StrikeoutPosition.Value, fontMetrics.StrikeoutThickness ?? 1);
-
+            {
+                var strikeoutThickness = fontMetrics.StrikeoutThickness ?? 1;
+                strikeoutThickness *= Style.FontPosition == FontPosition.Normal ? 1f : 0.625f;
+                
+                DrawLine(fontMetrics.StrikeoutPosition.Value + glyphOffset, strikeoutThickness);
+            }
+            
             void DrawLine(float offset, float thickness)
             {
-                request.Canvas.DrawRectangle(new Position(0, offset - thickness / 2f), new Size(request.TextSize.Width, thickness), Style.Color);
+                request.Canvas.DrawRectangle(new Position(0, offset), new Size(request.TextSize.Width, thickness), Style.Color);
+            }
+
+            float GetGlyphOffset()
+            {
+                var fontSize = Style.Size ?? 12f;
+
+                var offsetFactor = Style.FontPosition switch
+                {
+                    FontPosition.Normal => 0,
+                    FontPosition.Subscript => 0.1f,
+                    FontPosition.Superscript => -0.35f,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                return fontSize * offsetFactor;
             }
         }
     }

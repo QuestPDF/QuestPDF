@@ -36,7 +36,99 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+
+        [Test]
+        public void SuperscriptSubscript_General()
+        {
+            RenderingTest
+               .Create()
+               .PageSize(500, 500)
+               .ProduceImages()
+               .ShowResults()
+               .Render(container =>
+               {
+                   container
+                        .Padding(5)
+                        .MinimalBox()
+                        .Border(1)
+                        .Padding(10)
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(x => x.FontSize(20));
+                            text.ParagraphSpacing(2);
+                            
+                            
+                            text.Span("In physics, mass–energy equivalence is the relationship between mass and energy in a system's rest frame, where the two values differ only by a constant and the units of measurement.");
+                            text.Span("[1][2]").Superscript();
+                            text.Span(" The principle is described by the physicist Albert Einstein's famous formula: E = mc");
+                            text.Span("2").Superscript();
+                            text.Span(". ");
+                            text.Span("[3]").Superscript();
+                            
+                            text.EmptyLine();
+                            
+                            text.Span("H");
+                            text.Span("2").Subscript();
+                            text.Span("O is the chemical formula for water, meaning that each of its molecules contains one oxygen and two hydrogen atoms.");
+
+                            text.EmptyLine();
+
+                            text.Span("H");
+                            text.Span("2").Subscript();
+                            text.Span("O");
+                        });
+               });
+        }
         
+        [Test]
+        public void SuperscriptSubscript_Effects()
+        {
+            RenderingTest
+               .Create()
+               .PageSize(800, 400)
+               .ProduceImages()
+               .ShowResults()
+               .Render(container =>
+               {
+                   container
+                        .Padding(25)
+                        .DefaultTextStyle(x => x.FontSize(30))
+                        .Column(column =>
+                        {
+                            column.Spacing(25);
+                            
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.Underline());
+                                
+                                text.Span("Underline of the superscript (E = mc");
+                                text.Span("2").Superscript();
+                                text.Span(") should be at the same height as for normal text.");
+                            });
+                            
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.Underline());
+                                
+                                text.Span("Underline of the subscript(H");
+                                text.Span("2").Subscript();
+                                text.Span("O) should be slightly lower than a normal text.");
+                            });
+                            
+                            column.Item().Text(text =>
+                            {
+                                text.DefaultTextStyle(x => x.Strikethrough());
+                                
+                                text.Span("Strikethrough of both superscript (E=mc");
+                                text.Span("2").Superscript();
+                                text.Span(") and subscript(H");
+                                text.Span("2").Subscript();
+                                text.Span("O) should be visible in the middle of the text.");
+                            });
+                        });
+               });
+        }
+
         [Test]
         public void ParagraphSpacing()
         {
@@ -397,7 +489,7 @@ namespace QuestPDF.Examples
                                 text.DefaultTextStyle(x => x.BackgroundColor(Colors.Red.Lighten3).FontSize(24));
                                 
                                 text.Span("       " + Placeholders.LoremIpsum());
-                                text.Span(" 0123456789012345678901234567890123456789012345678901234567890123456789         ").WrapAnywhere();
+                                text.Span(" 012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789         ").WrapAnywhere();
                             });
                         });
                     });
