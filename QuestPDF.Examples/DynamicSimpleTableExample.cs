@@ -88,7 +88,8 @@ namespace QuestPDF.Examples
                             footer
                                 .Cell().ColumnSpan(5)
                                 .AlignRight()
-                                .Text($"Subtotal: {total}$", TextStyle.Default.Size(14).SemiBold());
+                                .PaddingTop(10)
+                                .Text($"Subtotal: {total}$", TextStyle.Default.Bold());
                         });
                         
                         foreach (var index in Enumerable.Range(State.ShownItemsCount, itemsToDisplay))
@@ -123,13 +124,15 @@ namespace QuestPDF.Examples
                 .Create()
                 .PageSize(PageSizes.A5)
                 .ShowResults()
+                .ProduceImages()
                 .Render(container =>
                 {
-                    var items = Enumerable.Range(0, 25).Select(x => new OrderItem()).ToList();
+                    var items = Enumerable.Range(0, 15).Select(x => new OrderItem()).ToList();
                     
                     container
                         .Background(Colors.White)
                         .Padding(25)
+                        .DefaultTextStyle(x => x.FontSize(16))
                         .Decoration(decoration =>
                         {
                             decoration
@@ -137,7 +140,7 @@ namespace QuestPDF.Examples
                                 .PaddingBottom(5)
                                 .Text(text =>
                                 {
-                                    text.DefaultTextStyle(TextStyle.Default.SemiBold().FontColor(Colors.Blue.Darken2).FontSize(16));
+                                    text.DefaultTextStyle(TextStyle.Default.SemiBold().FontColor(Colors.Blue.Darken2));
                                     text.Span("Page ");
                                     text.CurrentPageNumber();
                                     text.Span(" / ");

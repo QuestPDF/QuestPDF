@@ -38,48 +38,105 @@ namespace QuestPDF.Examples
         }
 
         [Test]
-        public void SuperscriptSubscript_General()
+        public void TextWeight()
         {
             RenderingTest
-               .Create()
-               .PageSize(500, 500)
-               .ProduceImages()
-               .ShowResults()
-               .Render(container =>
-               {
-                   container
-                        .Padding(5)
+                .Create()
+                .PageSize(500, 500)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(20)
                         .MinimalBox()
                         .Border(1)
-                        .Padding(10)
+                        .Padding(20)
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(x => x.FontFamily(Fonts.Calibri).FontSize(20));
+
+                            text.Line("Thin").Thin();
+                            text.Line("ExtraLight").ExtraLight();
+                            text.Line("Light").Light();
+                            text.Line("NormalWeight").NormalWeight();
+                            text.Line("Medium").Medium();
+                            text.Line("SemiBold").SemiBold();
+                            text.Line("Bold").Bold();
+                            text.Line("ExtraBold").ExtraBold();
+                            text.Line("Black").Black();
+                            text.Line("ExtraBlack").ExtraBlack();
+                        });
+                });
+        }
+        
+        [Test]
+        public void LineHeight()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 700)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(20)
+                        .Column(column =>
+                        {
+                            var lineHeights = new[] { 0.8f, 1f, 1.5f };
+                            var paragraph = Placeholders.Paragraph();
+
+                            foreach (var lineHeight in lineHeights)
+                            {
+                                column
+                                    .Item()
+                                    .Border(1)
+                                    .Padding(10)
+                                    .Text(paragraph)
+                                    .FontSize(16)
+                                    .LineHeight(lineHeight);
+                            }
+                        });
+                });
+        }
+        
+        [Test]
+        public void SuperscriptSubscript_Simple()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 500)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(20)
+                        .MinimalBox()
+                        .Border(1)
+                        .Padding(20)
                         .Text(text =>
                         {
                             text.DefaultTextStyle(x => x.FontSize(20));
-                            text.ParagraphSpacing(2);
-                            
-                            
-                            text.Span("In physics, mass–energy equivalence is the relationship between mass and energy in a system's rest frame, where the two values differ only by a constant and the units of measurement.");
-                            text.Span("[1][2]").Superscript();
-                            text.Span(" The principle is described by the physicist Albert Einstein's famous formula: E = mc");
-                            text.Span("2").Superscript();
-                            text.Span(". ");
-                            text.Span("[3]").Superscript();
-                            
-                            text.EmptyLine();
-                            
-                            text.Span("H");
-                            text.Span("2").Subscript();
-                            text.Span("O is the chemical formula for water, meaning that each of its molecules contains one oxygen and two hydrogen atoms.");
+                            text.ParagraphSpacing(10);
+
+                            var highlight = TextStyle.Default.BackgroundColor(Colors.Green.Lighten3);
+
+                            text.Span("E=mc").Style(highlight);
+                            text.Span("2").Superscript().Style(highlight);
+                            text.Span(" is the equation of mass–energy equivalence.");
 
                             text.EmptyLine();
-
-                            text.Span("H");
-                            text.Span("2").Subscript();
-                            text.Span("O");
+                            
+                            text.Span("H").Style(highlight);
+                            text.Span("2").Subscript().Style(highlight);
+                            text.Span("O").Style(highlight);
+                            text.Span(" is the chemical formula for water.");
                         });
-               });
+                });
         }
-        
+
         [Test]
         public void SuperscriptSubscript_Effects()
         {

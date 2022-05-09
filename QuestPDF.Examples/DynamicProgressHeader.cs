@@ -43,13 +43,14 @@ namespace QuestPDF.Examples
                 .Create()
                 .ShowResults()
                 .MaxPages(100)
-                .ProducePdf()
+                .ProduceImages()
                 .RenderDocument(container =>
                 {
                     container.Page(page =>
                     {
                         page.Size(PageSizes.A6);
                         page.Margin(1, Unit.Centimetre);
+                        page.PageColor(Colors.White);
                         page.DefaultTextStyle(x => x.FontSize(20));
 
                         page.Header().Dynamic(new ProgressHeader());
@@ -58,6 +59,15 @@ namespace QuestPDF.Examples
                         {
                             foreach (var i in Enumerable.Range(0, 100))
                                 column.Item().PaddingTop(25).Background(Colors.Grey.Lighten2).Height(50);
+                        });
+
+                        page.Footer().AlignCenter().Text(text =>
+                        {
+                            text.DefaultTextStyle(x => x.FontSize(20));
+                            
+                            text.CurrentPageNumber();
+                            text.Span(" / ");
+                            text.TotalPages();
                         });
                     });
                 });
