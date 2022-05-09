@@ -41,6 +41,12 @@ It doesn't matter if you are a professional developer, creating a startup or wor
 
 [![Sponsor project](https://img.shields.io/badge/%E2%9D%A4%EF%B8%8F%20sponsor-QuestPDF-red)](https://github.com/sponsors/QuestPDF)
 
+Special thanks to all companies that decided to sponsor QuestPDF development. This makes .NET ecosystem a better place for all developers and businesses!
+
+| <a href="https://www.jetbrains.com/"><img src="Resources/jetbrains-logo.svg" width="100px"></a> |
+|-------------------------------------------------------------------------------------------------|
+| 100$ / month                                                                                    |
+
 ## Installation
 
 The library is available as a nuget package. You can install it as any other nuget package from your IDE, try to search by `QuestPDF`. You can find package details [on this webpage](https://www.nuget.org/packages/QuestPDF/).
