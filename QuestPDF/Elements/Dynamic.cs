@@ -52,6 +52,7 @@ namespace QuestPDF.Elements
             var context = new DynamicContext
             {
                 PageNumber = PageContext.CurrentPage,
+                TotalPages = PageContext.GetLocation(Infrastructure.PageContext.DocumentLocation).PageEnd,
                 PageContext = PageContext,
                 Canvas = Canvas,
                 TextStyle = TextStyle,
@@ -75,6 +76,7 @@ namespace QuestPDF.Elements
         internal TextStyle TextStyle { get; set; }
     
         public int PageNumber { get; internal set; }
+        public int TotalPages { get; internal set; }
         public Size AvailableSize { get; internal set; }
 
         public IDynamicElement CreateElement(Action<IContainer> content)

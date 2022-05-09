@@ -1,4 +1,4 @@
-- Implemented the DynamicComponent element (useful for most advanced cases, e.g. per-page totals),
-- Extend text rendering capabilities by adding subscript and superscript effects,
+- Implemented the DynamicComponent element (useful when you want to generate dynamic and conditional content that is page aware, e.g. per-page totals),
+- Extended text rendering capabilities by adding subscript and superscript effects,
 - Improved table rendering performance,
 - Previewer tool stability fixes.

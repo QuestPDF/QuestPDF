@@ -21,12 +21,12 @@ namespace QuestPDF.Examples
         public int ShownItemsCount { get; set; }
     }
     
-    public class OrdersTable : IDynamicComponent<OrdersTableState>
+    public class OptimizedOrdersTable : IDynamicComponent<OrdersTableState>
     {
         private ICollection<OrderItem> Items { get; }
         public OrdersTableState State { get; set; }
 
-        public OrdersTable(ICollection<OrderItem> items)
+        public OptimizedOrdersTable(ICollection<OrderItem> items)
         {
             Items = items;
 
@@ -69,7 +69,7 @@ namespace QuestPDF.Examples
             return new DynamicComponentComposeResult
             {
                 Content = content,
-                HasMoreContent = State.ShownItemsCount + rows.Count < Items.Count
+                HasMoreContent = State.ShownItemsCount < Items.Count
             };
         }
 
@@ -145,7 +145,7 @@ namespace QuestPDF.Examples
         }
     }
     
-    public static class DynamicExamples
+    public static class DynamicOptimizedExamples
     {
         [Test]
         public static void Dynamic()
@@ -177,7 +177,7 @@ namespace QuestPDF.Examples
                             
                             decoration
                                 .Content()
-                                .Dynamic(new OrdersTable(items));
+                                .Dynamic(new OptimizedOrdersTable(items));
                         });
                 });
         }
