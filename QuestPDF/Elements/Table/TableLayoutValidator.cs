@@ -6,7 +6,7 @@ using QuestPDF.Fluent;
 
 namespace QuestPDF.Elements.Table
 {
-    static class TableLayoutPlanner
+    static class TableLayoutValidator
     {
         public static void ValidateCellPositions(this Table table)
         {
