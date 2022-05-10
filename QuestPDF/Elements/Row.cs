@@ -53,7 +53,7 @@ namespace QuestPDF.Elements
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (!Items.Any())
+            if (Items.Count == 0)
                 return SpacePlan.FullRender(Size.Zero);
             
             UpdateItemsWidth(availableSpace.Width);
@@ -77,7 +77,7 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            if (!Items.Any())
+            if (Items.Count == 0)
                 return;
 
             UpdateItemsWidth(availableSpace.Width);

@@ -73,13 +73,13 @@ namespace QuestPDF.Elements.Table
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (!Cells.Any())
+            if (Cells.Count == 0)
                 return SpacePlan.FullRender(Size.Zero);
             
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
-            if (!renderingCommands.Any())
+            if (renderingCommands.Count == 0)
                 return SpacePlan.Wrap();
             
             var width = Columns.Sum(x => x.Width);
@@ -149,7 +149,7 @@ namespace QuestPDF.Elements.Table
             
             var commands = GetRenderingCommands();
 
-            if (!commands.Any())
+            if (commands.Count == 0)
                 return commands;
             
             var tableHeight = commands.Max(cell => cell.Offset.Y + cell.Size.Height);
@@ -238,7 +238,7 @@ namespace QuestPDF.Elements.Table
                     });
                 }
 
-                if (!commands.Any())
+                if (commands.Count == 0)
                     return commands;
 
                 var maxRow = commands.Select(x => x.Cell).Max(x => x.Row + x.RowSpan);

@@ -41,12 +41,12 @@ namespace QuestPDF.Elements
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (!Items.Any())
+            if (Items.Count == 0)
                 return SpacePlan.FullRender(Size.Zero);
             
             var renderingCommands = PlanLayout(availableSpace);
 
-            if (!renderingCommands.Any())
+            if (renderingCommands.Count == 0)
                 return SpacePlan.Wrap();
 
             var width = renderingCommands.Max(x => x.Size.Width);

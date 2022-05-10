@@ -38,7 +38,7 @@ namespace QuestPDF.Drawing.Proxy
 
             Root ??= item;
             
-            if (Stack.Any())
+            if (Stack.Count > 0)
                 Stack.Peek().Stack.Add(item);
 
             Stack.Push(item);

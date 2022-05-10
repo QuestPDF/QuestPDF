@@ -43,12 +43,12 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (!ChildrenQueue.Any())
+            if (ChildrenQueue.Count == 0)
                 return SpacePlan.FullRender(Size.Zero);
             
             var lines = Compose(availableSpace);
 
-            if (!lines.Any())
+            if (lines.Count == 0)
                 return SpacePlan.Wrap();
 
             var lineSizes = lines
@@ -189,7 +189,7 @@ namespace QuestPDF.Elements
             {
                 var line = GetNextLine();
                 
-                if (!line.Any())
+                if (line.Count == 0)
                     break;
 
                 var height = line
@@ -213,7 +213,7 @@ namespace QuestPDF.Elements
                 
                 while (true)
                 {
-                    if (!queue.Any())
+                    if (queue.Count == 0)
                         break;
                     
                     var element = queue.Peek();

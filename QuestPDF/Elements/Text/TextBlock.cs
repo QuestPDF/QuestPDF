@@ -26,12 +26,12 @@ namespace QuestPDF.Elements.Text
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (!RenderingQueue.Any())
+            if (RenderingQueue.Count == 0)
                 return SpacePlan.FullRender(Size.Zero);
             
             var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
 
-            if (!lines.Any())
+            if (lines.Count == 0)
                 return SpacePlan.Wrap();
             
             var width = lines.Max(x => x.Width);
@@ -55,7 +55,7 @@ namespace QuestPDF.Elements.Text
         {
             var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
             
-            if (!lines.Any())
+            if (lines.Count == 0)
                 return;
             
             var heightOffset = 0f;
@@ -110,7 +110,7 @@ namespace QuestPDF.Elements.Text
             var lastElementMeasurement = lines.Last().Elements.Last().Measurement;
             CurrentElementIndex = lastElementMeasurement.IsLast ? 0 : lastElementMeasurement.EndIndex;
             
-            if (!RenderingQueue.Any())
+            if (RenderingQueue.Count == 0)
                 ResetState();
             
             float GetAlignmentOffset(float lineWidth)
@@ -136,11 +136,11 @@ namespace QuestPDF.Elements.Text
             var currentItemIndex = CurrentElementIndex;
             var currentHeight = 0f;
 
-            while (queue.Any())
+            while (queue.Count > 0)
             {
                 var line = GetNextLine();
                 
-                if (!line.Elements.Any())
+                if (line.Elements.Count == 0)
                     yield break;
                 
                 if (currentHeight + line.LineHeight > availableHeight + Size.Epsilon)
@@ -158,7 +158,7 @@ namespace QuestPDF.Elements.Text
             
                 while (true)
                 {
-                    if (!queue.Any())
+                    if (queue.Count == 0)
                         break;
 
                     var currentElement = queue.Peek();
@@ -172,7 +172,7 @@ namespace QuestPDF.Elements.Text
                         AvailableWidth = availableWidth - currentWidth,
                         
                         IsFirstElementInBlock = currentElement == Items.First(),
-                        IsFirstElementInLine = !currentLineElements.Any()
+                        IsFirstElementInLine = currentLineElements.Count == 0
                     };
                 
                     var measurementResponse = currentElement.Measure(measurementRequest);
