@@ -46,9 +46,14 @@ namespace QuestPDF.Helpers
 
         internal static void VisitChildren(this Element? element, Action<Element?> handler)
         {
-            foreach (var child in element.GetChildren().Where(x => x != null))
-                VisitChildren(child, handler);
-            
+            if (element != null)
+            {
+                foreach (var child in element.GetChildren())
+                {
+                    if (child != null) VisitChildren(child, handler);
+                }
+            }
+
             handler(element);
         }
     }
