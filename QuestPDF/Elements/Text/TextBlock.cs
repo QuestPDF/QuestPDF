@@ -20,7 +20,20 @@ namespace QuestPDF.Elements.Text
 
         public void ResetState()
         {
-            RenderingQueue = new Queue<ITextBlockItem>(Items);
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            // Create queue when we don't have one yet, otherwise clear the existing one so it re-uses the internal array under the hood.
+            if (RenderingQueue == null)
+            {
+                RenderingQueue = new Queue<ITextBlockItem>(Items);
+            }
+            else
+            {
+                RenderingQueue.Clear();
+            
+                foreach (var item in Items)
+                    RenderingQueue.Enqueue(item);
+            }
+            
             CurrentElementIndex = 0;
         }
 
