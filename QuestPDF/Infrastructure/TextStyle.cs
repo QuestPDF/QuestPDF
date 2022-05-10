@@ -22,7 +22,10 @@ namespace QuestPDF.Infrastructure
         internal object PaintKey { get; private set; }
         internal object FontMetricsKey { get; private set; }
         
-        internal static TextStyle LibraryDefault => new TextStyle
+        // REVIEW: Should this be a method call that news up a TextStyle,
+        // or can it be a static variable?
+        // (style mutations seem to create a clone anyway)
+        internal static readonly TextStyle LibraryDefault = new TextStyle
         {
             Color = Colors.Black,
             BackgroundColor = Colors.Transparent,
@@ -37,7 +40,10 @@ namespace QuestPDF.Infrastructure
             WrapAnywhere = false
         };
 
-        public static TextStyle Default => new TextStyle();
+        // REVIEW: Should this be a method call that news up a TextStyle,
+        // or can it be a static variable?
+        // (style mutations seem to create a clone anyway)
+        public static readonly TextStyle Default = new TextStyle();
         
         internal void ApplyGlobalStyle(TextStyle globalStyle)
         {
