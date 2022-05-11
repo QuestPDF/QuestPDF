@@ -11,6 +11,7 @@ namespace QuestPDF.Elements.Text.Items
         
         public TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
+            // REVIEW: Can these two calls be merged into one Element.VisitChildren?
             Element.VisitChildren(x => (x as IStateResettable)?.ResetState());
             Element.VisitChildren(x => x.Initialize(request.PageContext, request.Canvas));
 
@@ -36,6 +37,7 @@ namespace QuestPDF.Elements.Text.Items
 
         public void Draw(TextDrawingRequest request)
         {
+            // REVIEW: Can these two calls be merged into one Element.VisitChildren?
             Element.VisitChildren(x => (x as IStateResettable)?.ResetState());
             Element.VisitChildren(x => x.Initialize(request.PageContext, request.Canvas));
             

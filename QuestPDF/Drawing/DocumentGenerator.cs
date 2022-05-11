@@ -81,6 +81,7 @@ namespace QuestPDF.Drawing
         internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata, DebuggingState? debuggingState)
             where TCanvas : ICanvas, IRenderingCanvas
         {
+            // REVIEW: Can these two calls be merged into one Element.VisitChildren?
             content.VisitChildren(x => x?.Initialize(pageContext, canvas));
             content.VisitChildren(x => (x as IStateResettable)?.ResetState());
             

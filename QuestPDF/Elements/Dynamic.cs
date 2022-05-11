@@ -85,6 +85,7 @@ namespace QuestPDF.Elements
             content(container);
             
             container.ApplyDefaultTextStyle(TextStyle);
+            // REVIEW: Can these two calls be merged into one Element.VisitChildren?
             container.VisitChildren(x => x?.Initialize(PageContext, Canvas));
             container.VisitChildren(x => (x as IStateResettable)?.ResetState());
 
