@@ -11,8 +11,8 @@ namespace QuestPDF.Drawing
     public static class FontManager
     {
         private static ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
-        private static ConcurrentDictionary<object, SKFontMetrics> FontMetrics = new();
-        private static ConcurrentDictionary<object, SKPaint> Paints = new();
+        private static ConcurrentDictionary<int, SKFontMetrics> FontMetrics = new();
+        private static ConcurrentDictionary<int, SKPaint> Paints = new();
         private static ConcurrentDictionary<string, SKPaint> ColorPaint = new();
 
         private static void RegisterFontType(SKData fontData, string? customName = null)

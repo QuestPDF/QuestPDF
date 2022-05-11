@@ -19,8 +19,36 @@ namespace QuestPDF.Infrastructure
         internal bool? HasUnderline { get; set; }
         internal bool? WrapAnywhere { get; set; }
 
-        internal object PaintKey { get; private set; }
-        internal object FontMetricsKey { get; private set; }
+        internal int PaintKey
+        {
+            get
+            {
+                unchecked
+                {
+                    var hashCode = Color?.GetHashCode() ?? 0;
+                    hashCode = (hashCode * 397) ^ (FontFamily?.GetHashCode() ?? 0);
+                    hashCode = (hashCode * 397) ^ (Size?.GetHashCode() ?? 0);
+                    hashCode = (hashCode * 397) ^ (FontWeight?.GetHashCode() ?? 0);
+                    hashCode = (hashCode * 397) ^ (FontPosition?.GetHashCode() ?? 0);
+                    hashCode = (hashCode * 397) ^ (IsItalic?.GetHashCode() ?? 0);
+                    return hashCode;
+                }
+            }
+        }
+        internal int FontMetricsKey
+        {
+            get
+            {
+                unchecked
+                {
+                    var hashCode = (FontFamily?.GetHashCode() ?? 0);
+                    hashCode = (hashCode * 397) ^ (Size?.GetHashCode() ?? 0);
+                    hashCode = (hashCode * 397) ^ (FontWeight?.GetHashCode() ?? 0);
+                    hashCode = (hashCode * 397) ^ (IsItalic?.GetHashCode() ?? 0);
+                    return hashCode;
+                }
+            }
+        }
         
         internal static TextStyle LibraryDefault => new TextStyle
         {
@@ -47,8 +75,6 @@ namespace QuestPDF.Infrastructure
             HasGlobalStyleApplied = true;
 
             ApplyParentStyle(globalStyle);
-            PaintKey ??= (FontFamily, Size, FontWeight, FontPosition, IsItalic, Color);
-            FontMetricsKey ??= (FontFamily, Size, FontWeight, IsItalic);
         }
         
         internal void ApplyParentStyle(TextStyle parentStyle)
