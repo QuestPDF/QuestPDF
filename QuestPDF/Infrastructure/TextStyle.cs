@@ -1,5 +1,4 @@
-﻿using System;
-using QuestPDF.Helpers;
+﻿using QuestPDF.Helpers;
 
 namespace QuestPDF.Infrastructure
 {
@@ -18,37 +17,6 @@ namespace QuestPDF.Infrastructure
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
         internal bool? WrapAnywhere { get; set; }
-
-        internal int PaintKey
-        {
-            get
-            {
-                unchecked
-                {
-                    var hashCode = Color?.GetHashCode() ?? 0;
-                    hashCode = (hashCode * 397) ^ (FontFamily?.GetHashCode() ?? 0);
-                    hashCode = (hashCode * 397) ^ (Size?.GetHashCode() ?? 0);
-                    hashCode = (hashCode * 397) ^ (FontWeight?.GetHashCode() ?? 0);
-                    hashCode = (hashCode * 397) ^ (FontPosition?.GetHashCode() ?? 0);
-                    hashCode = (hashCode * 397) ^ (IsItalic?.GetHashCode() ?? 0);
-                    return hashCode;
-                }
-            }
-        }
-        internal int FontMetricsKey
-        {
-            get
-            {
-                unchecked
-                {
-                    var hashCode = (FontFamily?.GetHashCode() ?? 0);
-                    hashCode = (hashCode * 397) ^ (Size?.GetHashCode() ?? 0);
-                    hashCode = (hashCode * 397) ^ (FontWeight?.GetHashCode() ?? 0);
-                    hashCode = (hashCode * 397) ^ (IsItalic?.GetHashCode() ?? 0);
-                    return hashCode;
-                }
-            }
-        }
         
         internal static TextStyle LibraryDefault => new TextStyle
         {

@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
@@ -11,8 +12,8 @@ namespace QuestPDF.Drawing
     public static class FontManager
     {
         private static ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
-        private static ConcurrentDictionary<int, SKFontMetrics> FontMetrics = new();
-        private static ConcurrentDictionary<int, SKPaint> Paints = new();
+        private static ConcurrentDictionary<string, SKFontMetrics> FontMetrics = new();
+        private static ConcurrentDictionary<string, SKPaint> Paints = new();
         private static ConcurrentDictionary<string, SKPaint> ColorPaint = new();
 
         private static void RegisterFontType(SKData fontData, string? customName = null)
@@ -61,7 +62,7 @@ namespace QuestPDF.Drawing
 
         internal static SKPaint ToPaint(this TextStyle style)
         {
-            return Paints.GetOrAdd(style.PaintKey, key => Convert(style));
+            return Paints.GetOrAdd(CalculatePaintKey(style), key => Convert(style));
 
             static SKPaint Convert(TextStyle style)
             {
@@ -120,7 +121,19 @@ namespace QuestPDF.Drawing
 
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
-            return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.NormalPosition().ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(CalculateFontMetricsKey(style), key => style.NormalPosition().ToPaint().FontMetrics);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string CalculatePaintKey(TextStyle style)
+        {
+            return $"{style.FontFamily}|{style.Size}|{style.FontWeight}|{style.FontPosition}|{style.IsItalic}|{style.Color}";
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string CalculateFontMetricsKey(TextStyle style)
+        {
+            return $"{style.FontFamily}|{style.Size}|{style.FontWeight}|{style.IsItalic}";
         }
     }
 }
