@@ -37,15 +37,15 @@ As an open-source project without funding, I cannot afford advertising QuestPDF 
 
 It doesn't matter if you are a professional developer, creating a startup or work for an established company. All of us care about our tools and dependencies, about stability and security, about time and money we can safe, about quality we can offer. Please consider sponsoring QuestPDF to give me an extra motivational push to develop the next great feature.
 
-> If you represent a company, want to help the entire community and show that you care, please consider sponsoring QuestPDF using one of the higher tiers. Your company logo will be shown here for all developers, building a strong positive relation.
-
-[![Sponsor project](https://img.shields.io/badge/%E2%9D%A4%EF%B8%8F%20sponsor-QuestPDF-red)](https://github.com/sponsors/QuestPDF)
+> If you represent a company and want to help the entire community, please consider sponsoring QuestPDF using one of the higher tiers. All developers will see your company logo and the description of your choice. It is a fantastic way to build a strong relationship with the community, show that you care, or even find the best professionals. The truth is, no classical advertisement campaign is as effective as real engagement.
 
 Special thanks to all companies that decided to sponsor QuestPDF development. This makes .NET ecosystem a better place for all developers and businesses!
 
-| <a href="https://www.jetbrains.com/"><img src="Resources/jetbrains-logo.svg" width="100px"></a> |
-|-------------------------------------------------------------------------------------------------|
-| 100$ / month                                                                                    |
+| Company                                                                              | Description                                                                                                                     |
+|--------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------|
+| <img src="Resources/jetbrains-logo.svg" width="100px"> | [JetBrains](https://www.jetbrains.com/) supports this project as part of the OSS Power-Ups program. Thank you!<br/>100$ / month |
+
+[![Sponsor project](https://img.shields.io/badge/%E2%9D%A4%EF%B8%8F%20sponsor-QuestPDF-red)](https://github.com/sponsors/QuestPDF)
 
 ## Installation
 
