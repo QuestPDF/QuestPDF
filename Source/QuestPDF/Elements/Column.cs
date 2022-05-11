@@ -87,6 +87,7 @@ namespace QuestPDF.Elements
         private ICollection<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
         {
             var topOffset = 0f;
+            var targetWidth = 0f;
             var commands = new List<ColumnItemRenderingCommand>();
 
             foreach (var item in Items)
@@ -105,6 +106,9 @@ namespace QuestPDF.Elements
                 if (measurement.Type == SpacePlanType.Wrap)
                     break;
 
+                if (measurement.Width > targetWidth)
+                    targetWidth = measurement.Width;
+                
                 commands.Add(new ColumnItemRenderingCommand
                 {
                     ColumnItem = item,
@@ -119,8 +123,10 @@ namespace QuestPDF.Elements
                 topOffset += measurement.Height + Spacing;
             }
 
-            var targetWidth = commands.Select(x => x.Size.Width).DefaultIfEmpty(0).Max();
-            commands.ForEach(x => x.Size = new Size(targetWidth, x.Size.Height));
+            foreach (var command in commands)
+            {
+                command.Size = new Size(targetWidth, command.Size.Height);
+            }
             
             return commands;
         }
