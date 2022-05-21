@@ -193,7 +193,7 @@ namespace QuestPDF.Fluent
             if (IsNullOrEmpty(text))
                 return descriptor;
             
-            AddItemToLastTextBlock(new TextBlockSectionlLink
+            AddItemToLastTextBlock(new TextBlockSectionLink
             {
                 Style = style,
                 Text = text,
