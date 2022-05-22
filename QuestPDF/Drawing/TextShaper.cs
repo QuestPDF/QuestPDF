@@ -53,7 +53,7 @@ namespace QuestPDF.Drawing
                 yOffset += glyphPositions[i].YAdvance * scaleY;
             }
             
-            return new TextShapingResult(Paint, glyphs);
+            return new TextShapingResult(glyphs);
         }
         
         void PopulateBufferWithText(Buffer buffer, string text)
@@ -89,12 +89,10 @@ namespace QuestPDF.Drawing
     
     internal class TextShapingResult
     {
-        private SKPaint Paint { get; }
         public ShapedGlyph[] Glyphs { get; }
 
-        public TextShapingResult(SKPaint paint, ShapedGlyph[] glyphs)
+        public TextShapingResult(ShapedGlyph[] glyphs)
         {
-            Paint = paint;
             Glyphs = glyphs;
         }
 
@@ -124,14 +122,14 @@ namespace QuestPDF.Drawing
             return end.Position.X - start.Position.X + end.Width;
         }
         
-        public DrawTextCommand? PositionText(int startIndex, int endIndex)
+        public DrawTextCommand? PositionText(int startIndex, int endIndex, TextStyle textStyle)
         {
             if (Glyphs.Length == 0)
                 return null;
             
             using var skTextBlobBuilder = new SKTextBlobBuilder();
             
-            var positionedRunBuffer = skTextBlobBuilder.AllocatePositionedRun(Paint.ToFont(), endIndex - startIndex + 1);
+            var positionedRunBuffer = skTextBlobBuilder.AllocatePositionedRun(textStyle.FoFont(), endIndex - startIndex + 1);
             var glyphSpan = positionedRunBuffer.GetGlyphSpan();
             var positionSpan = positionedRunBuffer.GetPositionSpan();
                 

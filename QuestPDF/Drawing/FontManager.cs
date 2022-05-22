@@ -17,6 +17,7 @@ namespace QuestPDF.Drawing
         private static ConcurrentDictionary<object, SKPaint> FontPaints = new();
         private static ConcurrentDictionary<string, SKPaint> ColorPaints = new();
         private static ConcurrentDictionary<object, Font> ShaperFonts = new();
+        private static ConcurrentDictionary<object, SKFont> Fonts = new();
         private static ConcurrentDictionary<object, TextShaper> TextShapers = new();
 
         private static void RegisterFontType(SKData fontData, string? customName = null)
@@ -153,6 +154,11 @@ namespace QuestPDF.Drawing
         internal static TextShaper ToTextShaper(this TextStyle style)
         {
             return TextShapers.GetOrAdd(style.PaintKey, _ => new TextShaper(style));
+        }
+        
+        internal static SKFont FoFont(this TextStyle style)
+        {
+            return Fonts.GetOrAdd(style.PaintKey, _ => style.ToPaint().ToFont());
         }
     }
 }

@@ -139,7 +139,7 @@ namespace QuestPDF.Elements.Text.Items
 
             var glyphOffsetY = GetGlyphOffset();
             
-            var textDrawingCommand = TextShapingResult.PositionText(request.StartIndex, request.EndIndex);
+            var textDrawingCommand = TextShapingResult.PositionText(request.StartIndex, request.EndIndex, Style);
             
             request.Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
             
