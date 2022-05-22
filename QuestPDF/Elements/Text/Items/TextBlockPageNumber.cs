@@ -8,6 +8,7 @@ namespace QuestPDF.Elements.Text.Items
     {
         public const string PageNumberPlaceholder = "123";
         public Func<IPageContext, string> Source { get; set; } = _ => PageNumberPlaceholder;
+        protected override bool EnableTextCache => false;
         
         public override TextMeasurementResult? Measure(TextMeasurementRequest request)
         {

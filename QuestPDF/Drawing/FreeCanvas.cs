@@ -41,7 +41,7 @@ namespace QuestPDF.Drawing
             
         }
 
-        public void DrawText(string text, Position position, TextStyle style)
+        public void DrawText(SKTextBlob skTextBlob, Position position, TextStyle style)
         {
             
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine.Operations;
 using SkiaSharp;
@@ -15,7 +16,7 @@ namespace QuestPDF.UnitTests.TestEngine
         public void Scale(float scaleX, float scaleY) => Operations.Add(new CanvasScaleOperation(scaleX, scaleY));
 
         public void DrawRectangle(Position vector, Size size, string color) => Operations.Add(new CanvasDrawRectangleOperation(vector, size, color));
-        public void DrawText(string text, Position position, TextStyle style) => Operations.Add(new CanvasDrawTextOperation(text, position, style));
+        public void DrawText(SKTextBlob skTextBlob, Position position, TextStyle style) => throw new NotImplementedException();
         public void DrawImage(SKImage image, Position position, Size size) => Operations.Add(new CanvasDrawImageOperation(position, size));
         
         public void DrawHyperlink(string url, Size size) => throw new NotImplementedException();

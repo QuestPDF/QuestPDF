@@ -1,4 +1,5 @@
-﻿using QuestPDF.Infrastructure;
+﻿using QuestPDF.Drawing;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Calculation
 {

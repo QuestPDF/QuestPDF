@@ -12,11 +12,11 @@ namespace QuestPDF.Examples
     public class TextExamples
     {
         [Test]
-        public void SimpleTextBlock()
+        public void SimpleText()
         {
             RenderingTest
                 .Create()
-                .PageSize(500, 300)
+                .PageSize(500, 100)
                 
                 .ProduceImages()
                 .ShowResults()
@@ -26,6 +26,27 @@ namespace QuestPDF.Examples
                         .Padding(5)
                         .MinimalBox()
                         .Border(1)
+                        .Padding(10)
+                        .Text(Placeholders.Paragraph());
+                });
+        }
+        
+        [Test]
+        public void SimpleTextBlock()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(600, 300)
+                
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(5)
+                        .MinimalBox()
+                        .Border(1)
+                        .MaxWidth(300)
                         .Padding(10)
                         .Text(text =>
                         {
@@ -191,7 +212,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(500, 300)
+                .PageSize(500, 500)
                 .ProduceImages()
                 .ShowResults()
                 .Render(container =>
@@ -203,13 +224,7 @@ namespace QuestPDF.Examples
                         .Padding(10)
                         .Text(text =>
                         {
-                            text.ParagraphSpacing(10);
-    
-                            foreach (var i in Enumerable.Range(1, 3))
-                            {
-                                text.Span($"Paragraph {i}: ").SemiBold();
-                                text.Line(Placeholders.Paragraph());
-                            }
+                            text.Line(Placeholders.Paragraph());
                         });
                 });
         }

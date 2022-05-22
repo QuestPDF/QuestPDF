@@ -31,7 +31,7 @@ namespace QuestPDF.Examples
         {
             var chapters = GetBookChapters().ToList();
   
-            var results = PerformTest(16).ToList();
+            var results = PerformTest(128).ToList();
  
             Console.WriteLine($"Min: {results.Min():F}");
             Console.WriteLine($"Max: {results.Max():F}");
