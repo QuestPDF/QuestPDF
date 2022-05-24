@@ -101,7 +101,7 @@ namespace QuestPDF.Elements.Text.Items
             // textLength - length of the part of the text that fits in available width (creating a line)
 
             // entire text fits, no need to wrap
-            if (endIndex == TextShapingResult.Glyphs.Length - 1)
+            if (endIndex == 0 || endIndex == TextShapingResult.Glyphs.Length - 1)
                 return (endIndex, endIndex);
 
             // breaking anywhere
