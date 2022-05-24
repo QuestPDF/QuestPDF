@@ -3,6 +3,7 @@ using System.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.ReportSample.Layouts
 {
@@ -44,9 +45,22 @@ namespace QuestPDF.ReportSample.Layouts
                 .SectionLink(locationName)
                 .Row(row =>
                 {
-                    row.ConstantItem(25).Text($"{number}.");
-                    row.RelativeItem().Text(locationName);
-                    row.ConstantItem(150).AlignRight().Text(text =>
+                    row.ConstantItem(20).Text($"{number}.");
+                    row.AutoItem().Text(locationName);
+                    
+                    row.RelativeItem().PaddingHorizontal(2).AlignBottom().TranslateY(-3).Height(1).Canvas((canvas, space) =>
+                    {
+                        // best to statically cache
+                        using var paint = new SKPaint
+                        {
+                            StrokeWidth = space.Height,
+                            PathEffect = SKPathEffect.CreateDash(new float[] { 1, 3 }, 0)
+                        };
+                        
+                        canvas.DrawLine(0, 0, space.Width, 0, paint);
+                    });
+                    
+                    row.AutoItem().Text(text =>
                     {
                         text.BeginPageNumberOfSection(locationName);
                         text.Span(" - ");

@@ -2,13 +2,14 @@
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
+using QuestPDF.ReportSample;
 using QuestPDF.ReportSample.Layouts;
 
 //ImagePlaceholder.Solid = true;
 
 // var model = DataSource.GetReport();
 // var report = new StandardReport(model);
-// report.ShowInPreviewer().Wait();
+// report.ShowInPreviewer();
 //
 // return;
 
