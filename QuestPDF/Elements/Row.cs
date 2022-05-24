@@ -102,13 +102,14 @@ namespace QuestPDF.Elements
 
         private void UpdateItemsWidth(float availableWidth)
         {
-            HandleItemsWithAutoWidth();
+            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto))
+                rowItem.Size = rowItem.Measure(Size.Max).Width;
             
-            var constantWidth = Items.Where(x => x.Type == RowItemType.Constant).Sum(x => x.Size);
+            var constantWidth = Items.Where(x => x.Type != RowItemType.Relative).Sum(x => x.Size);
             var relativeWidth = Items.Where(x => x.Type == RowItemType.Relative).Sum(x => x.Size);
             var spacingWidth = (Items.Count - 1) * Spacing;
 
-            foreach (var item in Items.Where(x => x.Type == RowItemType.Constant))
+            foreach (var item in Items.Where(x => x.Type != RowItemType.Relative))
                 item.Width = item.Size;
             
             if (relativeWidth <= 0)
@@ -119,16 +120,7 @@ namespace QuestPDF.Elements
             foreach (var item in Items.Where(x => x.Type == RowItemType.Relative))
                 item.Width = item.Size * widthPerRelativeUnit;
         }
-
-        private void HandleItemsWithAutoWidth()
-        {
-            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto))
-            {
-                rowItem.Size = rowItem.Measure(Size.Max).Width;
-                rowItem.Type = RowItemType.Constant;
-            }
-        }
-
+        
         private ICollection<RowItemRenderingCommand> PlanLayout(Size availableSpace)
         {
             var leftOffset = 0f;
