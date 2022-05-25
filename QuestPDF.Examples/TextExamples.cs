@@ -403,7 +403,7 @@ namespace QuestPDF.Examples
                         .Padding(10)
                         .Text(text =>
                         {
-                            text.DefaultTextStyle(TextStyle.Default.FontSize(20));
+                            text.DefaultTextStyle(TextStyle.Default.FontSize(20).BackgroundColor(Colors.Red.Lighten4));
                             text.AlignLeft();
                             text.ParagraphSpacing(10);
 
@@ -422,7 +422,7 @@ namespace QuestPDF.Examples
                             {
                                 text.Line($"{i}: {Placeholders.Paragraph()}");
 
-                                text.Hyperlink("Please visit QuestPDF website", "https://www.questpdf.com");
+                                text.Hyperlink("Please visit QuestPDF website. ", "https://www.questpdf.com");
                                 
                                 text.Span("This is page number ");
                                 text.CurrentPageNumber();

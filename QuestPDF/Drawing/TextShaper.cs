@@ -99,13 +99,13 @@ namespace QuestPDF.Drawing
         public int BreakText(int startIndex, float maxWidth)
         {
             var index = startIndex;
-            var currentWidth = 0f;
+            maxWidth += Glyphs[startIndex].Position.X;
 
             while (index < Glyphs.Length)
             {
-                currentWidth += Glyphs[index].Width;
-
-                if (currentWidth > maxWidth)
+                var glyph = Glyphs[index];
+                
+                if (glyph.Position.X + glyph.Width > maxWidth + Size.Epsilon)
                     break;
                 
                 index++;
@@ -114,9 +114,12 @@ namespace QuestPDF.Drawing
             return index - 1;
         }
         
-        public float MeasureWidth(int startGlyphIndex, int endIndex)
+        public float MeasureWidth(int startIndex, int endIndex)
         {
-            var start = Glyphs[startGlyphIndex];
+            if (Glyphs.Length == 0)
+                return 0;
+            
+            var start = Glyphs[startIndex];
             var end = Glyphs[endIndex];
 
             return end.Position.X - start.Position.X + end.Width;
