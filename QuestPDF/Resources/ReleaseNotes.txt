@@ -1,4 +1,2 @@
-- Implemented the DynamicComponent element (useful when you want to generate dynamic and conditional content that is page aware, e.g. per-page totals),
-- Extended text rendering capabilities by adding subscript and superscript effects,
-- Improved table rendering performance,
-- Previewer tool stability fixes.
+Implemented support for the text shaping algorithm that fixes rendering more advanced languages such as Arabic. 
+Fixed: a rare case when the Row.AutoItem does not calculate properly the width of its content.
