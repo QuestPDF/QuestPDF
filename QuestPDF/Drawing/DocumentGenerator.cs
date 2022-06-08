@@ -135,11 +135,10 @@ namespace QuestPDF.Drawing
                               $"In this case, please increase the value {nameof(DocumentMetadata)}.{nameof(DocumentMetadata.DocumentLayoutExceptionThreshold)} property configured in the {nameof(IDocument.GetMetadata)} method. " +
                               $"2) The layout configuration of your document is invalid. Some of the elements require more space than is provided." +
                               $"Please analyze your documents structure to detect this element and fix its size constraints.";
-                
-                throw new DocumentLayoutException(message)
-                {
-                    ElementTrace = debuggingState?.BuildTrace() ?? "Debug trace is available only in the DEBUG mode."
-                };
+
+                var elementTrace = debuggingState?.BuildTrace() ?? "Debug trace is available only in the DEBUG mode.";
+
+                throw new DocumentLayoutException(message, elementTrace);
             }
         }
 

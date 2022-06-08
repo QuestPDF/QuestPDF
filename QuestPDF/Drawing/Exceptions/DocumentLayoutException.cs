@@ -4,21 +4,11 @@ namespace QuestPDF.Drawing.Exceptions
 {
     public class DocumentLayoutException : Exception
     {
-        public string ElementTrace { get; set; }
-        
-        public DocumentLayoutException()
-        {
-            
-        }
+        public string? ElementTrace { get; }
 
-        public DocumentLayoutException(string message) : base(message)
+        internal DocumentLayoutException(string message, string? elementTrace = null) : base(message)
         {
-            
-        }
-
-        public DocumentLayoutException(string message, Exception inner) : base(message, inner)
-        {
-            
+            ElementTrace = elementTrace;
         }
     }
 }
