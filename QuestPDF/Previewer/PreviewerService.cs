@@ -94,7 +94,7 @@ namespace QuestPDF.Previewer
 
         private void CheckVersionCompatibility(Version version)
         {
-            if (version.Major == 2022 && version.Minor == 5)
+            if (version.Major == 2022 && version.Minor == 6)
                 return;
             
             throw new Exception($"Previewer version is not compatible. Possible solutions: " +

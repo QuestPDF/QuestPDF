@@ -82,19 +82,6 @@ namespace QuestPDF.UnitTests.TestEngine
                     
                     Assert.AreEqual(expected.Color, color, "Draw rectangle: color");
                 },
-                DrawTextFunc = (text, position, style) => 
-                {
-                    var expected = GetExpected<CanvasDrawTextOperation>();
-                    
-                    Assert.AreEqual(expected.Text, text);
-                    
-                    Assert.AreEqual(expected.Position.X, position.X, "Draw text: X");
-                    Assert.AreEqual(expected.Position.Y, position.Y, "Draw text: Y");
-                    
-                    Assert.AreEqual(expected.Style.Color, style.Color, "Draw text: color");
-                    Assert.AreEqual(expected.Style.FontFamily, style.FontFamily, "Draw text: font");
-                    Assert.AreEqual(expected.Style.Size, style.Size, "Draw text: size");
-                },
                 DrawImageFunc = (image, position, size) =>
                 {
                     var expected = GetExpected<CanvasDrawImageOperation>();
@@ -199,11 +186,6 @@ namespace QuestPDF.UnitTests.TestEngine
         public TestPlan ExpectCanvasDrawRectangle(Position position, Size size, string color)
         {
             return AddOperation(new CanvasDrawRectangleOperation(position, size, color));
-        }
-        
-        public TestPlan ExpectCanvasDrawText(string text, Position position, TextStyle style)
-        {
-            return AddOperation(new CanvasDrawTextOperation(text, position, style));
         }
         
         public TestPlan ExpectCanvasDrawImage(Position position, Size size)

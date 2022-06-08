@@ -1,5 +1,6 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,6 +30,7 @@ class CommunicationService
     {
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddLogging(x => x.ClearProviders());
+        builder.WebHost.UseKestrel(options => options.Limits.MaxRequestBodySize = null);
         Application = builder.Build();
 
         Application.MapGet("ping", HandlePing);

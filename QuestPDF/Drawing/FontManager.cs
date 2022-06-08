@@ -2,9 +2,11 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
+using HarfBuzzSharp;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 
 namespace QuestPDF.Drawing
 {
@@ -12,8 +14,11 @@ namespace QuestPDF.Drawing
     {
         private static ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
         private static ConcurrentDictionary<object, SKFontMetrics> FontMetrics = new();
-        private static ConcurrentDictionary<object, SKPaint> Paints = new();
-        private static ConcurrentDictionary<string, SKPaint> ColorPaint = new();
+        private static ConcurrentDictionary<object, SKPaint> FontPaints = new();
+        private static ConcurrentDictionary<string, SKPaint> ColorPaints = new();
+        private static ConcurrentDictionary<object, Font> ShaperFonts = new();
+        private static ConcurrentDictionary<object, SKFont> Fonts = new();
+        private static ConcurrentDictionary<object, TextShaper> TextShapers = new();
 
         private static void RegisterFontType(SKData fontData, string? customName = null)
         {
@@ -47,7 +52,7 @@ namespace QuestPDF.Drawing
 
         internal static SKPaint ColorToPaint(this string color)
         {
-            return ColorPaint.GetOrAdd(color, Convert);
+            return ColorPaints.GetOrAdd(color, Convert);
 
             static SKPaint Convert(string color)
             {
@@ -61,7 +66,7 @@ namespace QuestPDF.Drawing
 
         internal static SKPaint ToPaint(this TextStyle style)
         {
-            return Paints.GetOrAdd(style.PaintKey, key => Convert(style));
+            return FontPaints.GetOrAdd(style.PaintKey, key => Convert(style));
 
             static SKPaint Convert(TextStyle style)
             {
@@ -121,6 +126,39 @@ namespace QuestPDF.Drawing
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
             return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.NormalPosition().ToPaint().FontMetrics);
+        }
+
+        internal static Font ToShaperFont(this TextStyle style)
+        {
+            return ShaperFonts.GetOrAdd(style.PaintKey, _ =>
+            {
+                var typeface = style.ToPaint().Typeface;
+
+                using var harfBuzzBlob = typeface.OpenStream(out var ttcIndex).ToHarfBuzzBlob();
+                
+                using var face = new Face(harfBuzzBlob, ttcIndex)
+                {
+                    Index = ttcIndex,
+                    UnitsPerEm = typeface.UnitsPerEm,
+                    GlyphCount = typeface.GlyphCount
+                };
+                
+                var font = new Font(face);
+                font.SetScale(TextShaper.FontShapingScale, TextShaper.FontShapingScale);
+                font.SetFunctionsOpenType();
+
+                return font;
+            });
+        }
+        
+        internal static TextShaper ToTextShaper(this TextStyle style)
+        {
+            return TextShapers.GetOrAdd(style.PaintKey, _ => new TextShaper(style));
+        }
+        
+        internal static SKFont FoFont(this TextStyle style)
+        {
+            return Fonts.GetOrAdd(style.PaintKey, _ => style.ToPaint().ToFont());
         }
     }
 }

@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
+using SkiaSharp.HarfBuzz;
 using Size = QuestPDF.Infrastructure.Size;
 
 namespace QuestPDF.Elements.Text.Items
 {
     internal class TextBlockSpan : ITextBlockItem
     {
-        private const char Space = ' ';
-        
         public string Text { get; set; }
         public TextStyle Style { get; set; } = new();
+        public TextShapingResult? TextShapingResult { get; set; }
 
         private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new ();
+        protected virtual bool EnableTextCache => true; 
 
         public virtual TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
@@ -25,11 +29,17 @@ namespace QuestPDF.Elements.Text.Items
             
             return MeasureCache[cacheKey];
         }
-        
+
         internal TextMeasurementResult? MeasureWithoutCache(TextMeasurementRequest request)
         {
+            if (!EnableTextCache)
+                TextShapingResult = null;
+            
+            TextShapingResult ??= Style.ToTextShaper().Shape(Text);
+            
             var paint = Style.ToPaint();
             var fontMetrics = Style.ToFontMetrics();
+            var spaceCodepoint = paint.ToFont().Typeface.GetGlyphs(" ")[0];
 
             var startIndex = request.StartIndex;
             
@@ -37,11 +47,11 @@ namespace QuestPDF.Elements.Text.Items
             // ignore leading spaces
             if (!request.IsFirstElementInBlock && request.IsFirstElementInLine)
             {
-                while (startIndex < Text.Length && Text[startIndex] == Space)
+                while (startIndex < TextShapingResult.Glyphs.Length && Text[startIndex] == spaceCodepoint)
                     startIndex++;
             }
-            
-            if (Text.Length == 0 || startIndex == Text.Length)
+
+            if (TextShapingResult.Glyphs.Length == 0 || startIndex == TextShapingResult.Glyphs.Length)
             {
                 return new TextMeasurementResult
                 {
@@ -54,27 +64,19 @@ namespace QuestPDF.Elements.Text.Items
             }
             
             // start breaking text from requested position
-            var text = Text.AsSpan().Slice(startIndex);
-            
-            var textLength = (int)paint.BreakText(text, request.AvailableWidth + Size.Epsilon);
+            var endIndex = TextShapingResult.BreakText(startIndex, request.AvailableWidth);
 
-            if (textLength <= 0)
+            if (endIndex < 0)
                 return null;
   
             // break text only on spaces
-            var wrappedTextLength = WrapText(text, textLength, request.IsFirstElementInLine);
+            var wrappedText = WrapText(startIndex, endIndex, request.IsFirstElementInLine);
 
-            if (wrappedTextLength == null)
+            if (wrappedText == null)
                 return null;
-
-            textLength = wrappedTextLength.Value.fragmentLength;
-
-            text = text.Slice(0, textLength);
-
-            var endIndex = startIndex + textLength;
-
+            
             // measure final text
-            var width = paint.MeasureText(text);
+            var width = TextShapingResult.MeasureWidth(startIndex, wrappedText.Value.endIndex);
             
             return new TextMeasurementResult
             {
@@ -86,56 +88,70 @@ namespace QuestPDF.Elements.Text.Items
                 LineHeight = Style.LineHeight ?? 1,
                 
                 StartIndex = startIndex,
-                EndIndex = endIndex,
-                NextIndex = startIndex + wrappedTextLength.Value.nextIndex,
-                TotalIndex = Text.Length
+                EndIndex = wrappedText.Value.endIndex,
+                NextIndex = wrappedText.Value.nextIndex,
+                TotalIndex = TextShapingResult.Glyphs.Length - 1
             };
         }
         
-        // TODO: consider introduce text wrapping abstraction (basic, english-like, asian-like)
-        private (int fragmentLength, int nextIndex)? WrapText(ReadOnlySpan<char> text, int textLength, bool isFirstElementInLine)
+        // TODO: consider introducing text wrapping abstraction (basic, english-like, asian-like)
+        private (int endIndex, int nextIndex)? WrapText(int startIndex, int endIndex, bool isFirstElementInLine)
         {
+            var spaceCodepoint = Style.ToPaint().ToFont().Typeface.GetGlyphs(" ")[0];
+            
             // textLength - length of the part of the text that fits in available width (creating a line)
-                
+
             // entire text fits, no need to wrap
-            if (textLength == text.Length)
-                return (textLength, textLength + 1);
+            if (endIndex == TextShapingResult.Glyphs.Length - 1)
+                return (endIndex, endIndex);
 
             // breaking anywhere
             if (Style.WrapAnywhere ?? false)
-                return (textLength, textLength);
+                return (endIndex, endIndex + 1);
                 
             // current line ends at word, next character is space, perfect place to wrap
-            if (text[textLength - 1] != Space && text[textLength] == Space)
-                return (textLength, textLength + 1);
+            if (TextShapingResult.Glyphs[endIndex].Codepoint != spaceCodepoint && TextShapingResult.Glyphs[endIndex + 1].Codepoint == spaceCodepoint)
+                return (endIndex, endIndex + 2);
                 
             // find last space within the available text to wrap
-            var lastSpaceIndex = text.Slice(0, textLength).LastIndexOf(Space);
+            var lastSpaceIndex = endIndex;
+
+            while (lastSpaceIndex >= startIndex)
+            {
+                if (TextShapingResult.Glyphs[lastSpaceIndex].Codepoint == spaceCodepoint)
+                    break;
+
+                lastSpaceIndex--;
+            }
 
             // text contains space that can be used to wrap
-            if (lastSpaceIndex > 0)
-                return (lastSpaceIndex, lastSpaceIndex + 1);
+            if (lastSpaceIndex >= startIndex)
+                return (lastSpaceIndex - 1, lastSpaceIndex + 1);
                 
             // there is no available space to wrap text
             // if the item is first within the line, perform safe mode and chop the word
             // otherwise, move the item into the next line
-            return isFirstElementInLine ? (textLength, textLength) : null;
+            return isFirstElementInLine ? (endIndex, endIndex + 1) : null;
         }
         
         public virtual void Draw(TextDrawingRequest request)
         {
             var fontMetrics = Style.ToFontMetrics();
 
-            var glyphOffset = GetGlyphOffset();
-            var text = Text.Substring(request.StartIndex, request.EndIndex - request.StartIndex);
+            var glyphOffsetY = GetGlyphOffset();
             
-            request.Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
-            request.Canvas.DrawText(text, new Position(0, glyphOffset), Style);
+            var textDrawingCommand = TextShapingResult.PositionText(request.StartIndex, request.EndIndex, Style);
+
+            if (Style.BackgroundColor != Colors.Transparent)
+                request.Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
+            
+            if (textDrawingCommand.HasValue)
+                request.Canvas.DrawText(textDrawingCommand.Value.SkTextBlob, new Position(textDrawingCommand.Value.TextOffsetX, glyphOffsetY), Style);
 
             // draw underline
             if ((Style.HasUnderline ?? false) && fontMetrics.UnderlinePosition.HasValue)
             {
-                var underlineOffset = Style.FontPosition == FontPosition.Superscript ? 0 : glyphOffset;
+                var underlineOffset = Style.FontPosition == FontPosition.Superscript ? 0 : glyphOffsetY;
                 DrawLine(fontMetrics.UnderlinePosition.Value + underlineOffset, fontMetrics.UnderlineThickness ?? 1);
             }
             
@@ -145,7 +161,7 @@ namespace QuestPDF.Elements.Text.Items
                 var strikeoutThickness = fontMetrics.StrikeoutThickness ?? 1;
                 strikeoutThickness *= Style.FontPosition == FontPosition.Normal ? 1f : 0.625f;
                 
-                DrawLine(fontMetrics.StrikeoutPosition.Value + glyphOffset, strikeoutThickness);
+                DrawLine(fontMetrics.StrikeoutPosition.Value + glyphOffsetY, strikeoutThickness);
             }
             
             void DrawLine(float offset, float thickness)
