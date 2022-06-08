@@ -83,6 +83,10 @@ The QuestPDF Previewer is a tool designed to simplify and speed up your developm
 
 [![Learn more](https://img.shields.io/badge/%F0%9F%93%96%20Previewer-learn%20more-blue)](https://www.questpdf.com/documentation/document-previewer.html)
 
+<video src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/a6f54912ee761af14dfbe1f96aa70d7fcf7ff94f/images/previewer/video.mp4?raw=true"></video>
+
+
+
 <img src="https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/images/previewer/animation.gif" width="100%">
 
 ## Simplicity is the key
