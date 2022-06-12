@@ -4,6 +4,9 @@ namespace QuestPDF.Infrastructure
     {
         Left,
         Center,
-        Right
+        Right,
+        
+        Start,
+        End
     }
 }

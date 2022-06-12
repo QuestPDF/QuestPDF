@@ -8,11 +8,13 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text
 {
-    internal class TextBlock : Element, IStateResettable
+    internal class TextBlock : Element, IContentDirectionAware, IStateResettable
     {
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
+        public ContentDirectionType ContentDirection { get; set; }
+        
         public string Text => string.Join(" ", Items.Where(x => x is TextBlockSpan).Cast<TextBlockSpan>().Select(x => x.Text));
         
         private Queue<ITextBlockItem> RenderingQueue { get; set; }
@@ -69,8 +71,12 @@ namespace QuestPDF.Elements.Text
                 
                 Canvas.Translate(new Position(alignmentOffset, 0));
                 Canvas.Translate(new Position(0, -line.Ascent));
-            
-                foreach (var item in line.Elements)
+
+                var elements = ContentDirection == ContentDirectionType.LeftToRight
+                    ? line.Elements
+                    : line.Elements.Reverse();
+                
+                foreach (var item in elements)
                 {
                     var textDrawingRequest = new TextDrawingRequest
                     {

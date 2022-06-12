@@ -88,6 +88,16 @@ namespace QuestPDF.Fluent
             DefaultTextStyle(handler(TextStyle.Default));
         }
         
+        public void ContentDirectionLeftToRight()
+        {
+            Page.ContentDirection = ContentDirectionType.LeftToRight;
+        }
+        
+        public void ContentDirectionRightToLeft()
+        {
+            Page.ContentDirection = ContentDirectionType.RightToLeft;
+        }
+        
         public void PageColor(string color)
         {
             Page.BackgroundColor = color;

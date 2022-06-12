@@ -65,6 +65,7 @@ namespace QuestPDF.Drawing
             document.Compose(container);
             var content = container.Compose();
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
+            ApplyContentDirection(content);
             
             var metadata = document.GetMetadata();
             var pageContext = new PageContext();
@@ -198,6 +199,23 @@ namespace QuestPDF.Drawing
             
             foreach (var child in content.GetChildren())
                 ApplyDefaultTextStyle(child, targetTextStyle);
+        }
+
+        internal static void ApplyContentDirection(this Element? content, ContentDirectionType contentDirectionType = ContentDirectionType.LeftToRight)
+        {
+            if (content == null)
+                return;
+
+            var targetDirection = contentDirectionType;
+
+            if (content is ContentDirection contentDirection)
+                targetDirection = contentDirection.Direction;
+
+            if (content is IContentDirectionAware contentDirectionAware)
+                contentDirectionAware.ContentDirection = targetDirection;
+            
+            foreach (var child in content.GetChildren())
+                ApplyContentDirection(child, targetDirection);
         }
     }
 }

@@ -33,10 +33,11 @@ namespace QuestPDF.ReportSample.Layouts
                     page.MarginHorizontal(50);
                     
                     page.Size(PageSizes.A4);
+                    page.ContentDirectionRightToLeft();
                         
                     page.Header().Element(ComposeHeader);
                     page.Content().Element(ComposeContent);
-                    
+
                     page.Footer().AlignCenter().Text(text =>
                     {
                         text.CurrentPageNumber().Format(x => x?.FormatAsRomanNumeral() ?? "-----");

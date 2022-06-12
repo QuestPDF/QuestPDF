@@ -19,6 +19,8 @@ namespace QuestPDF.Elements
         public float MarginBottom { get; set; }
 
         public string BackgroundColor { get; set; } = Colors.Transparent;
+
+        public ContentDirectionType ContentDirection { get; set; } = ContentDirectionType.LeftToRight;
         
         public Element Background { get; set; } = Empty.Instance;
         public Element Foreground { get; set; } = Empty.Instance;
@@ -30,6 +32,7 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
+                .ContentDirection(ContentDirection)
                 .Background(BackgroundColor)
                 .Layers(layers =>
                 {
