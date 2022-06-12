@@ -17,6 +17,9 @@ namespace QuestPDF.Previewer
         private HttpClient HttpClient { get; }
         
         public  event Action? OnPreviewerStopped;
+
+        private const int RequiredPreviewerVersionMajor = 2022;
+        private const int RequiredPreviewerVersionMinor = 6;
         
         public PreviewerService(int port)
         {
@@ -94,12 +97,12 @@ namespace QuestPDF.Previewer
 
         private void CheckVersionCompatibility(Version version)
         {
-            if (version.Major == 2022 && version.Minor == 6)
+            if (version.Major == RequiredPreviewerVersionMajor && version.Minor == RequiredPreviewerVersionMinor)
                 return;
             
             throw new Exception($"Previewer version is not compatible. Possible solutions: " +
                                 $"1) Update the QuestPDF library to newer version. " +
-                                $"2) Update the QuestPDF previewer tool using the following command: 'dotnet tool update --global QuestPDF.Previewer --version 2022.5'");
+                                $"2) Update the QuestPDF previewer tool using the following command: 'dotnet tool update --global QuestPDF.Previewer --version {RequiredPreviewerVersionMajor}.{RequiredPreviewerVersionMinor}'");
         }
         
         private async Task WaitForConnection()
