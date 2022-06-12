@@ -567,5 +567,55 @@ namespace QuestPDF.Examples
                     });
                 });
         }
+        
+        [Test]
+        public void TextShaping_Unicode()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(600, 100)
+                
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(35)
+                        .MinimalBox()
+                        .Background(Colors.Grey.Lighten2)
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(TextStyle.Default.FontSize(20));
+                            
+                            text.Span("Complex Unicode structure: ");
+                            
+                            
+                            text.Span("T̶̖̔͆͆̽̔ḩ̷̼̫̐̈́̀͜͝͝ì̶͇̤͓̱̣͇͓͉̎s̵̡̟̹͍̜͉̗̾͛̈̐́͋͂͝͠ͅ ̴̨͙͍͇̭̒͗̀́͝ì̷̡̺͉̼̏̏̉̌͝s̷͍͙̗̰̖͙̈̑̂̔͑͊̌̓̊̇͜ ̶̛̼͚͊̅͘ṭ̷̨̘̣̙̖͉͌̏̂̅͑̄̽̕͝ȅ̶̲̲̙̭͈̬̣͔̝͔̈́͝s̸̢̯̪̫͓̭̮̓̀͆͜ț̸̢͉̞̥̤̏̌̓͝").FontColor(Colors.Red.Medium);
+                            
+                            
+                            text.Span(".");
+                        });
+                });
+        }
+        
+        [Test]
+        public void TextShaping_Arabic()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 100)
+                
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .MinimalBox()
+                        .Background(Colors.Grey.Lighten2)
+                        .Text("ينا الألم. في بعض الأحيان ونظراً للالتزامات التي يفرضها علينا")
+                        .FontSize(20);
+                });
+        }
     }
 }

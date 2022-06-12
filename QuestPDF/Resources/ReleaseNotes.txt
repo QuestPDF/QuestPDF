@@ -1,4 +1,9 @@
-Implemented support for the text shaping algorithm that fixes rendering more advanced languages such as Arabic. 
-Improved exception message when SkiaSharp throws the TypeInitializationException (when additional dependencies are needed).
-Fixed: a rare case when the Row.AutoItem does not calculate properly the width of its content.
+Integrated the text-shaping algorithm. This change significantly improves the Unicode compatibility. Also, it extends support for more advanced languages (e.g. Arabic) that:
+1) Combine multiple text characters and display them as a single visual glyph.
+2) Are displayed in the right-to-left order. 
+
+Improved the exception message when SkiaSharp throws the TypeInitializationException. On some operating systems, SkiaSharp requires additional dependencies installed as nuget packages. This change should help developers determine how to choose and install them correctly. 
+
+Fixed: a rare case when the Row.AutoItem() does not correctly calculate the width of its content. 
+
 Fixed: the QuestPDF Previewer does not work with content-rich documents.

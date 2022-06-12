@@ -11,7 +11,7 @@
         <PackageReference Include="nunit" Version="3.13.2" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-        <PackageReference Include="SkiaSharp" Version="2.80.3" />
+        <PackageReference Include="SkiaSharp" Version="2.80.4" />
         <PackageReference Include="Svg.Skia" Version="0.5.10" />
     </ItemGroup>
 
