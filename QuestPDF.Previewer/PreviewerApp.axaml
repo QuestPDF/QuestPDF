@@ -1,6 +1,7 @@
 ﻿<Application x:Class="QuestPDF.Previewer.PreviewerApp"
              xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Name="QuestPDF Document Preview">
 	<Application.Styles>
 		<FluentTheme Mode="Dark" />
 	</Application.Styles>
