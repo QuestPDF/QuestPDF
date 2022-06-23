@@ -12,12 +12,17 @@ namespace QuestPDF.UnitTests.TestEngine
         public Action<float, float> ScaleFunc { get; set; }
         public Action<SKImage, Position, Size> DrawImageFunc { get; set; }
         public Action<Position, Size, string> DrawRectFunc { get; set; }
+        public Action<Position, Position, Position, Position, string> DrawCornerFunc { get; set; }
 
         public void Translate(Position vector) => TranslateFunc(vector);
         public void Rotate(float angle) => RotateFunc(angle);
         public void Scale(float scaleX, float scaleY) => ScaleFunc(scaleX, scaleY);
 
         public void DrawRectangle(Position vector, Size size, string color) => DrawRectFunc(vector, size, color);
+
+        public void DrawCorner(Position first, Position center, Position last, Position cornerCenter, string color) =>
+            DrawCornerFunc(first, center, last, cornerCenter, color);
+
         public void DrawText(SKTextBlob skTextBlob, Position position, TextStyle style) => throw new NotImplementedException();
         public void DrawImage(SKImage image, Position position, Size size) => DrawImageFunc(image, position, size);
 
