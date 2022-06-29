@@ -26,7 +26,7 @@ namespace QuestPDF.Infrastructure
         {
             Color = Colors.Black,
             BackgroundColor = Colors.Transparent,
-            FontFamily = Fonts.Calibri,
+            FontFamily = GetDefaultFontFamily(),
             Size = 12,
             LineHeight = 1.2f,
             FontWeight = Infrastructure.FontWeight.Normal,
@@ -86,6 +86,26 @@ namespace QuestPDF.Infrastructure
             var clone = (TextStyle)MemberwiseClone();
             clone.HasGlobalStyleApplied = false;
             return clone;
+        }
+        
+        private static string? GetDefaultFontFamily()
+        {
+            //taken from https://fontsarena.com/blog/operating-systems-default-sans-serif-fonts/
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return Fonts.Calibri;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return "San Francisco";
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                var description = RuntimeInformation.OSDescription;
+                if (description?.ToLower().Contains("ubuntu") == true)
+                    return "Ubuntu";
+                if (description?.ToLower().Contains("red hat") == true)
+                    return "Red Hat";
+                if (description?.ToLower().Contains("debian") == true)
+                    return "DejaVu Sans";
+                return "Liberation Sans";
+            }
+
+            return "Sans Serif";
         }
     }
 }
