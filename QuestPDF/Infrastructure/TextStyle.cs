@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Runtime.InteropServices;
 using QuestPDF.Helpers;
 using SkiaSharp;
 
