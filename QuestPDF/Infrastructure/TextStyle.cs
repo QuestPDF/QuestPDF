@@ -1,5 +1,6 @@
 ﻿using System;
 using QuestPDF.Helpers;
+using SkiaSharp;
 
 namespace QuestPDF.Infrastructure
 {
@@ -93,19 +94,8 @@ namespace QuestPDF.Infrastructure
             //taken from https://fontsarena.com/blog/operating-systems-default-sans-serif-fonts/
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return Fonts.Calibri;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return "San Francisco";
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                var description = RuntimeInformation.OSDescription;
-                if (description?.ToLower().Contains("ubuntu") == true)
-                    return "Ubuntu";
-                if (description?.ToLower().Contains("red hat") == true)
-                    return "Red Hat";
-                if (description?.ToLower().Contains("debian") == true)
-                    return "DejaVu Sans";
-                return "Liberation Sans";
-            }
-
-            return "Sans Serif";
+            
+            return SKTypeface.FromFamilyName("Sans")?.FamilyName ?? SKTypeface.Default.FamilyName;
         }
     }
 }
