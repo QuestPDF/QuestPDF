@@ -74,6 +74,18 @@ namespace QuestPDF.Elements.Text.Items
 
             if (wrappedText == null)
                 return null;
+                
+            if (wrappedText.Value.endIndex < 0)
+            {
+                return new TextMeasurementResult
+                {
+                    Width = 0,
+                    
+                    LineHeight = Style.LineHeight ?? 1,
+                    Ascent = fontMetrics.Ascent,
+                    Descent = fontMetrics.Descent
+                };
+            }
             
             // measure final text
             var width = TextShapingResult.MeasureWidth(startIndex, wrappedText.Value.endIndex);
