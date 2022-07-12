@@ -46,11 +46,6 @@ namespace QuestPDF.Elements
             return Items;
         }
         
-        internal override void CreateProxy(Func<Element?, Element?> create)
-        {
-            Items.ForEach(x => x.Child = create(x.Child));
-        }
-
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!Items.Any())

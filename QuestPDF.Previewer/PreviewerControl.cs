@@ -35,6 +35,22 @@ namespace QuestPDF.Previewer
             set => SetValue(ScrollViewportSizeProperty, value);
         }
         
+        public static readonly StyledProperty<ObservableCollection<InspectionElement>> HierarchyProperty = AvaloniaProperty.Register<PreviewerControl, ObservableCollection<InspectionElement>>(nameof(Hierarchy));
+        
+        public ObservableCollection<InspectionElement> Hierarchy
+        {
+            get => GetValue(HierarchyProperty);
+            set => SetValue(HierarchyProperty, value);
+        }
+        
+        public static readonly StyledProperty<InspectionElement> CurrentSelectionProperty = AvaloniaProperty.Register<PreviewerControl, InspectionElement>(nameof(CurrentSelection));
+        
+        public InspectionElement CurrentSelection
+        {
+            get => GetValue(CurrentSelectionProperty);
+            set => SetValue(CurrentSelectionProperty, value);
+        }
+        
         public PreviewerControl()
         {
             PagesProperty.Changed.Subscribe(x =>
@@ -49,7 +65,72 @@ namespace QuestPDF.Previewer
                 InvalidateVisual();
             });
 
+            CurrentSelectionProperty.Changed.Subscribe(x =>
+            {
+                InteractiveCanvas.InspectionElement = CurrentSelection;
+                //InteractiveCanvas.ScrollToInspectionElement(CurrentSelection);
+                InvalidateVisual();
+            });
+            
             ClipToBounds = true;
+
+            PointerPressed += (sender, args) =>
+            {
+                var position = args.GetPosition(this);
+                InteractiveCanvas.SetActivePage((float)position.X, (float)position.Y);
+
+                var clickedPosition = InteractiveCanvas.FindClickedPointOnThePage((float)position.X, (float)position.Y);
+                
+                if (clickedPosition != null) 
+                    FindHighlightedElement(clickedPosition.Value.pageNumber, clickedPosition.Value.x, clickedPosition.Value.y);
+                
+                InvalidateVisual();
+            };
+        }
+
+        void FindHighlightedElement(int pageNumber, float x, float y)
+        {
+            var possible = FlattenHierarchy(Hierarchy.First(), 0)
+                .Select(x =>
+                {
+                    var location = x.element.Location.First(y => y.PageNumber == pageNumber);
+
+                    return new
+                    {
+                        Element = x.element,
+                        Level = x.level,
+                        Size = location.Width * location.Height
+                    };
+                })
+                .ToList();
+
+            var minSize = possible.Min(x => x.Size);
+
+            CurrentSelection = possible
+                .Where(x => Math.Abs(x.Size - minSize) < 1)
+                .OrderByDescending(x => x.Level)
+                .First()
+                .Element;
+
+            IEnumerable<(InspectionElement element, int level)> FlattenHierarchy(InspectionElement element, int level)
+            {
+                var location = element.Location.FirstOrDefault(x => x.PageNumber == pageNumber);
+                
+                if (location == null)
+                    yield break;
+
+                if (x < location.Left || location.Left + location.Width < x)
+                    yield break;
+
+                if (y < location.Top || location.Top + location.Height < y)
+                    yield break;
+                
+                yield return (element, level);
+                
+                foreach (var childIndex in Enumerable.Range(0, element.Children.Count))
+                foreach (var nestedChild in FlattenHierarchy(element.Children[childIndex], level + childIndex + 1))
+                    yield return nestedChild;
+            }
         }
         
         protected override void OnPointerWheelChanged(PointerWheelEventArgs e)

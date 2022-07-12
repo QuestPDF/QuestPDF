@@ -38,6 +38,9 @@
             <Visible>false</Visible>
             <PackagePath>\</PackagePath>
         </None>
+        <None Update="hierarchy.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
     
     <ItemGroup>

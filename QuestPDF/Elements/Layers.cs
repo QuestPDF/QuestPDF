@@ -19,7 +19,7 @@ namespace QuestPDF.Elements
         {
             return Children;
         }
-        
+
         internal override SpacePlan Measure(Size availableSpace)
         {
             return Children

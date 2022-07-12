@@ -94,36 +94,36 @@ namespace QuestPDF.Drawing.Proxy
                 item.Stack.ToList().ForEach(Traverse);
                 nestingLevel--;
             }
-
-            static IEnumerable<string> GetElementConfiguration(IElement element)
-            {
-                if (element is DebugPointer)
-                    return Enumerable.Empty<string>();
+        }
+        
+        internal static IEnumerable<string> GetElementConfiguration(IElement element)
+        {
+            if (element is DebugPointer)
+                return Enumerable.Empty<string>();
                 
-                return element
-                    .GetType()
-                    .GetProperties()
-                    .Select(x => new
-                    {
-                        Property = x.Name.PrettifyName(),
-                        Value = x.GetValue(element)
-                    })
-                    .Where(x => !(x.Value is IElement))
-                    .Where(x => x.Value is string || !(x.Value is IEnumerable))
-                    .Where(x => !(x.Value is TextStyle))
-                    .Select(x => $"{x.Property}: {FormatValue(x.Value)}");
-
-                string FormatValue(object value)
+            return element
+                .GetType()
+                .GetProperties()
+                .Select(x => new
                 {
-                    const int maxLength = 100;
+                    Property = x.Name.PrettifyName(),
+                    Value = x.GetValue(element)
+                })
+                .Where(x => !(x.Value is IElement))
+                .Where(x => x.Value is string || !(x.Value is IEnumerable))
+                .Where(x => !(x.Value is TextStyle))
+                .Select(x => $"{x.Property}: {FormatValue(x.Value)}");
+
+            string FormatValue(object value)
+            {
+                const int maxLength = 100;
                     
-                    var text = value?.ToString() ?? "-";
+                var text = value?.ToString() ?? "-";
 
-                    if (text.Length < maxLength)
-                        return text;
+                if (text.Length < maxLength)
+                    return text;
 
-                    return text.AsSpan(0, maxLength).ToString() + "...";
-                }
+                return text.AsSpan(0, maxLength).ToString() + "...";
             }
         }
     }

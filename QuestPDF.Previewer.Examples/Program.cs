@@ -7,11 +7,11 @@ using QuestPDF.ReportSample.Layouts;
 
 //ImagePlaceholder.Solid = true;
 
-// var model = DataSource.GetReport();
-// var report = new StandardReport(model);
-// report.ShowInPreviewer();
-//
-// return;
+var model = DataSource.GetReport();
+var report = new StandardReport(model);
+report.ShowInPreviewer();
+
+return;
 
 Document
     .Create(container =>

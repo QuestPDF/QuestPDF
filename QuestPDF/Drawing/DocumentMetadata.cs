@@ -26,6 +26,7 @@ namespace QuestPDF.Drawing
 
         public bool ApplyCaching { get; set; } = !System.Diagnostics.Debugger.IsAttached;
         public bool ApplyDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        public bool ApplyInspection { get; set; } = System.Diagnostics.Debugger.IsAttached;
 
         public static DocumentMetadata Default => new DocumentMetadata();
     }

@@ -22,7 +22,7 @@ namespace QuestPDF.Fluent
                 Child = container
             });
             
-            return container;
+            return container.DebugPointer("Column Item");;
         }
     }
     

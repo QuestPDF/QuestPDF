@@ -22,7 +22,7 @@ namespace QuestPDF.Fluent
             };
             
             Row.Items.Add(element);
-            return element;
+            return element.DebugPointer("Row Item");
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the RelativeItem method.")]

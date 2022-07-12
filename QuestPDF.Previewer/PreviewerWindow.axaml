@@ -19,13 +19,17 @@
 		<Style Selector="Button.actions">
 			<Setter Property="VerticalAlignment" Value="Bottom"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
-			<Setter Property="Padding" Value="10"/>
-			<Setter Property="CornerRadius" Value="100"/>
-			<Setter Property="Background" Value="#888"/>
+			<Setter Property="Padding" Value="12" />
+			<Setter Property="Margin" Value="-1" />
+            <Setter Property="Background" Value="transparent"/>
 		</Style>
 		
+        <Style Selector="Button.active">
+            <Setter Property="Background" Value="#555"/>
+        </Style>
+        
 		<Style Selector="Button:pointerover /template/ ContentPresenter">
-			<Setter Property="Background" Value="#999"/>
+			<Setter Property="Background" Value="#333"/>
 		</Style>
 	</Window.Styles>
 
@@ -37,29 +41,44 @@
 			</Grid.RowDefinitions>
 
 			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition MinWidth="300" MaxWidth="500" Width="300" />
+				<ColumnDefinition Width="4" />
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
-			
-			<TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"
-			           VerticalAlignment="Center" HorizontalAlignment="Center" 
-			           TextAlignment="Center" Text="QuestPDF Previewer" FontSize="14" Foreground="#DFFF" FontWeight="Regular" IsHitTestVisible="False" />
-			
-			<previewer:PreviewerControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-			                            HorizontalAlignment="Stretch" 
-			                            VerticalAlignment="Stretch"
-			                            CurrentScroll="{Binding CurrentScroll, Mode=TwoWay}"
-			                            ScrollViewportSize="{Binding ScrollViewportSize, Mode=OneWayToSource}"
-			                            Pages="{Binding Pages, Mode=OneWay}" />
-			
-			<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Bottom" Spacing="16" Margin="32">
-				<Button Classes="actions"
-				        Command="{Binding ShowPdfCommand, Mode=OneTime}"
-				        IsVisible="{Binding !!Pages.Count}"
-				        ToolTip.Tip="Generates PDF file and shows it in the default browser. Useful for testing compatibility and interactive links.">
+            
+            <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" 
+                       TextAlignment="Center" Text="QuestPDF Previewer" FontSize="14" Foreground="#DFFF" FontWeight="Regular" IsHitTestVisible="False" />
+
+            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Stretch" Background="#444">
+                <Button Classes="actions active"
+                        Command="{Binding ShowPdfCommand, Mode=OneTime}"
+                        ToolTip.Tip="Inspect document elements">
+                    <Viewbox Width="24" Height="24">
+                        <Canvas Width="24" Height="24">
+                            <Path Fill="White" Data="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M3.05,13H1V11H3.05C3.5,6.83 6.83,3.5 11,3.05V1H13V3.05C17.17,3.5 20.5,6.83 20.95,11H23V13H20.95C20.5,17.17 17.17,20.5 13,20.95V23H11V20.95C6.83,20.5 3.5,17.17 3.05,13M12,5A7,7 0 0,0 5,12A7,7 0 0,0 12,19A7,7 0 0,0 19,12A7,7 0 0,0 12,5Z" />
+                        </Canvas>
+                    </Viewbox>
+                </Button>
+                
+                <Button Classes="actions"
+                        Command="{Binding ShowPdfCommand, Mode=OneTime}"
+                        ToolTip.Tip="Inspect page content">
+                    <Viewbox Width="24" Height="24">
+                        <Canvas Width="24" Height="24">
+                            <Path Fill="White" Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H13C12.59,21.75 12.2,21.44 11.86,21.1C11.53,20.77 11.25,20.4 11,20H6V4H13V9H18V10.18C18.71,10.34 19.39,10.61 20,11V8L14,2M20.31,18.9C21.64,16.79 21,14 18.91,12.68C16.8,11.35 14,12 12.69,14.08C11.35,16.19 12,18.97 14.09,20.3C15.55,21.23 17.41,21.23 18.88,20.32L22,23.39L23.39,22L20.31,18.9M16.5,19A2.5,2.5 0 0,1 14,16.5A2.5,2.5 0 0,1 16.5,14A2.5,2.5 0 0,1 19,16.5A2.5,2.5 0 0,1 16.5,19Z" />
+                        </Canvas>
+                    </Viewbox>
+                </Button>
+                
+                <Button Classes="actions"
+                        Command="{Binding ShowPdfCommand, Mode=OneTime}"
+                        ToolTip.Tip="Generates PDF file and shows it in the default browser. Useful for testing compatibility and interactive links.">
 					<Viewbox Width="24" Height="24">
 						<Canvas Width="24" Height="24">
-							<Path Fill="White" Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H13C12.59,21.75 12.2,21.44 11.86,21.1C11.53,20.77 11.25,20.4 11,20H6V4H13V9H18V10.18C18.71,10.34 19.39,10.61 20,11V8L14,2M20.31,18.9C21.64,16.79 21,14 18.91,12.68C16.8,11.35 14,12 12.69,14.08C11.35,16.19 12,18.97 14.09,20.3C15.55,21.23 17.41,21.23 18.88,20.32L22,23.39L23.39,22L20.31,18.9M16.5,19A2.5,2.5 0 0,1 14,16.5A2.5,2.5 0 0,1 16.5,14A2.5,2.5 0 0,1 19,16.5A2.5,2.5 0 0,1 16.5,19Z" />
+							<Path Fill="White" Data="M12,10L8,14H11V20H13V14H16M19,4H5C3.89,4 3,4.9 3,6V18A2,2 0 0,0 5,20H9V18H5V8H19V18H15V20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4Z" />
 						</Canvas>
 					</Viewbox>
 				</Button>
@@ -84,14 +103,62 @@
 					</Viewbox>
 				</Button>
 			</StackPanel>
+            
+            <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Background="#555">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <Panel Grid.Row="0" Background="#555">
+                    <TreeView Items="{Binding Items}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single"
+                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4" AutoScrollToSelectedItem="True">
+                        <TreeView.ItemTemplate>
+                            <TreeDataTemplate ItemsSource="{Binding Children}">
+                                <TextBlock Text="{Binding Text}" Foreground="{Binding FontColor}" />
+                            </TreeDataTemplate>
+                        </TreeView.ItemTemplate>
+                    </TreeView>
+                </Panel>
+                
+                <Panel Grid.Row="1" Background="#333">
+                    <ItemsRepeater Items="{Binding SelectedItem.Metadata}" Margin="4">
+                        <ItemsRepeater.ItemTemplate>
+                            <DataTemplate DataType="previewer:Metadata">
+                                <Grid Margin="4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="16" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Grid.Column="0" Text="{Binding Label}" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Value}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsRepeater.ItemTemplate>
+                    </ItemsRepeater>
+                </Panel>
+            </Grid>
+            
+            <GridSplitter Grid.Column="2" Grid.RowSpan="2" Background="#666" ResizeDirection="Columns" />
+            
+			<previewer:PreviewerControl Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2"
+			                            HorizontalAlignment="Stretch" 
+			                            VerticalAlignment="Stretch"
+			                            CurrentScroll="{Binding CurrentScroll, Mode=TwoWay}"
+			                            ScrollViewportSize="{Binding ScrollViewportSize, Mode=OneWayToSource}"
+                                        CurrentSelection="{Binding SelectedItem, Mode=TwoWay}"
+                                        Hierarchy="{Binding Items}"
+			                            Pages="{Binding Pages, Mode=OneWay}" />
 			
-			<ScrollBar Grid.Row="1" Grid.Column="1"
-			           Orientation="Vertical" 
-			           AllowAutoHide="False" 
-			           Minimum="0" Maximum="1" 
-			           IsVisible="{Binding VerticalScrollbarVisible, Mode=OneWay}"
-			           Value="{Binding CurrentScroll, Mode=TwoWay}" 
-			           ViewportSize="{Binding ScrollViewportSize, Mode=OneWay}"></ScrollBar>
+            <ScrollBar Grid.Row="1" Grid.Column="4"
+                       Orientation="Vertical" 
+                       AllowAutoHide="False" 
+                       Minimum="0" Maximum="1" 
+                       IsVisible="{Binding VerticalScrollbarVisible, Mode=OneWay}"
+                       Value="{Binding CurrentScroll, Mode=TwoWay}" 
+                       ViewportSize="{Binding ScrollViewportSize, Mode=OneWay}"></ScrollBar>
 		</Grid>
 	</Panel>
 </Window>
