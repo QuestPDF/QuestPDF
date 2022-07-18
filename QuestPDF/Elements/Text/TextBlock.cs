@@ -108,7 +108,7 @@ namespace QuestPDF.Elements.Text
                 .ForEach(x => RenderingQueue.Dequeue());
 
             var lastElementMeasurement = lines.Last().Elements.Last().Measurement;
-            CurrentElementIndex = lastElementMeasurement.IsLast ? 0 : lastElementMeasurement.EndIndex;
+            CurrentElementIndex = lastElementMeasurement.IsLast ? 0 : lastElementMeasurement.NextIndex;
             
             if (!RenderingQueue.Any())
                 ResetState();

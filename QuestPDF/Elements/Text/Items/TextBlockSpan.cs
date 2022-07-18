@@ -125,7 +125,7 @@ namespace QuestPDF.Elements.Text.Items
             }
 
             // text contains space that can be used to wrap
-            if (lastSpaceIndex >= startIndex)
+            if (lastSpaceIndex > 1 && lastSpaceIndex >= startIndex)
                 return (lastSpaceIndex - 1, lastSpaceIndex + 1);
                 
             // there is no available space to wrap text
