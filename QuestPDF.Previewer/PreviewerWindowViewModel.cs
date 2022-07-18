@@ -89,9 +89,7 @@ namespace QuestPDF.Previewer
             foreach (var page in oldPages)
                 page.Picture.Dispose();
         }
-        
-        public ObservableCollection<InspectionElement> Items { get; set; }
-        
+     
         private InspectionElement _selectedItem;
         public InspectionElement SelectedItem
         {
@@ -99,18 +97,37 @@ namespace QuestPDF.Previewer
             set => this.RaiseAndSetIfChanged(ref _selectedItem, value);
         }
         
+        private InspectionElement items;
+        public InspectionElement Items
+        {
+            get => items;
+            set => this.RaiseAndSetIfChanged(ref items, value);
+        }
+        
         public void LoadItems()
         {
-            Items = new ObservableCollection<InspectionElement>();
-
             var text = File.ReadAllText("hierarchy.json");
-            var hierarchy = JsonSerializer.Deserialize<InspectionElement>(text);
+            Items = JsonSerializer.Deserialize<InspectionElement>(text);
+            UpdateLevel(Items);
+        }
 
-            Items.Add(hierarchy);
+        private void UpdateLevel(InspectionElement root)
+        {
+            var currentLevel = 1;
+            Traverse(root);
+            
+            void Traverse(InspectionElement element)
+            {
+                element.Level = currentLevel;
+
+                currentLevel++;
+                element.Children.ForEach(Traverse);
+                currentLevel--;
+            }
         }
     }
 
-    internal class InspectionElementLocation
+    public class InspectionElementLocation
     {
         public int PageNumber { get; set; }
         public float Top { get; set; }
@@ -119,7 +136,7 @@ namespace QuestPDF.Previewer
         public float Height { get; set; }
     }
 
-    internal class Metadata
+    public class Metadata
     {
         public string Label { get; set; }
         public string Value { get; set; }
@@ -130,17 +147,18 @@ namespace QuestPDF.Previewer
             Value = value;
         }
     }
-    
-    internal class InspectionElement
+
+    public class InspectionElement
     {
         public string Element { get; set; }
         public List<InspectionElementLocation> Location { get; set; }
         public Dictionary<string, string> Properties { get; set; }
         public List<InspectionElement> Children { get; set; }
-        public Thickness Margin { get; set; }
+        public int Level { get; set; }
         
         public string FontColor => Element == "DebugPointer" ? "#FFF" : "#AFFF";
         public string Text => Element == "DebugPointer" ? Properties.First(x => x.Key == "Target").Value : Element;
+        public bool Expanded { get; set; }
 
         public IList<Metadata> Metadata => ListMetadata().ToList();
 

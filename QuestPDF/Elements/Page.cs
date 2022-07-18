@@ -41,6 +41,7 @@ namespace QuestPDF.Elements
                     
                     layers
                         .PrimaryLayer()
+                        .DebugPointer("Page content")
                         .MinWidth(MinSize.Width)
                         .MinHeight(MinSize.Height)
                 

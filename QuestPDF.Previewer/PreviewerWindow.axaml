@@ -3,137 +3,128 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:previewer="clr-namespace:QuestPDF.Previewer"
+		xmlns:visualBasic="clr-namespace:Microsoft.VisualBasic;assembly=Microsoft.VisualBasic.Core"
 		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
 		x:Class="QuestPDF.Previewer.PreviewerWindow"
 		x:DataType="previewer:PreviewerWindowViewModel"
 		x:CompileBindings="True"
 		WindowStartupLocation="CenterScreen"
 		ExtendClientAreaToDecorationsHint="true"
-		ExtendClientAreaTitleBarHeightHint="-1"
-		Background="#666"
+		ExtendClientAreaTitleBarHeightHint="56"
+		Background="#555"
 		Icon="/Resources/Logo.png"
 		UseLayoutRounding="True"
 		Title="QuestPDF Document Preview">
 	
 	<Window.Styles>
-		<Style Selector="Button.actions">
+        <Style Selector=".MainMenu TextBlock">
+            <Setter Property="Foreground" Value="#AFFF" />
+            <Setter Property="Margin" Value="0,0,16,0" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+        
+        <Style Selector=".MainMenu TextBlock:pointerover">
+            <Setter Property="Foreground" Value="#FFF" />
+            <Setter Property="TextDecorations" Value="Underline" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        
+        <Style Selector="Button.actions">
 			<Setter Property="VerticalAlignment" Value="Bottom"/>
 			<Setter Property="HorizontalAlignment" Value="Left"/>
 			<Setter Property="Padding" Value="12" />
 			<Setter Property="Margin" Value="-1" />
             <Setter Property="Background" Value="transparent"/>
 		</Style>
+        
+        <Style Selector="Button.actions Path">
+            <Setter Property="Fill" Value="#8FFF"/>
+        </Style>
 		
-        <Style Selector="Button.active">
-            <Setter Property="Background" Value="#555"/>
+        <Style Selector="Button.active Path">
+            <Setter Property="Fill" Value="#FFFF"/>
+        </Style>
+        
+        <Style Selector="Button:pointerover Path">
+            <Setter Property="Fill" Value="#FFFF"/>
         </Style>
         
 		<Style Selector="Button:pointerover /template/ ContentPresenter">
 			<Setter Property="Background" Value="#333"/>
 		</Style>
-	</Window.Styles>
+    </Window.Styles>
 
 	<Panel>
 		<Grid>
 			<Grid.RowDefinitions>
-				<RowDefinition Height="32" />
+				<RowDefinition Height="56" />
 				<RowDefinition Height="*" />
 			</Grid.RowDefinitions>
 
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition MinWidth="300" MaxWidth="500" Width="300" />
 				<ColumnDefinition Width="4" />
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
             
-            <TextBlock Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2"
-                       VerticalAlignment="Center" HorizontalAlignment="Center" 
-                       TextAlignment="Center" Text="QuestPDF Previewer" FontSize="14" Foreground="#DFFF" FontWeight="Regular" IsHitTestVisible="False" />
-
-            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Stretch" Background="#444">
-                <Button Classes="actions active"
-                        Command="{Binding ShowPdfCommand, Mode=OneTime}"
-                        ToolTip.Tip="Inspect document elements">
-                    <Viewbox Width="24" Height="24">
-                        <Canvas Width="24" Height="24">
-                            <Path Fill="White" Data="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M3.05,13H1V11H3.05C3.5,6.83 6.83,3.5 11,3.05V1H13V3.05C17.17,3.5 20.5,6.83 20.95,11H23V13H20.95C20.5,17.17 17.17,20.5 13,20.95V23H11V20.95C6.83,20.5 3.5,17.17 3.05,13M12,5A7,7 0 0,0 5,12A7,7 0 0,0 12,19A7,7 0 0,0 19,12A7,7 0 0,0 12,5Z" />
-                        </Canvas>
-                    </Viewbox>
-                </Button>
-                
-                <Button Classes="actions"
-                        Command="{Binding ShowPdfCommand, Mode=OneTime}"
-                        ToolTip.Tip="Inspect page content">
-                    <Viewbox Width="24" Height="24">
-                        <Canvas Width="24" Height="24">
-                            <Path Fill="White" Data="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H13C12.59,21.75 12.2,21.44 11.86,21.1C11.53,20.77 11.25,20.4 11,20H6V4H13V9H18V10.18C18.71,10.34 19.39,10.61 20,11V8L14,2M20.31,18.9C21.64,16.79 21,14 18.91,12.68C16.8,11.35 14,12 12.69,14.08C11.35,16.19 12,18.97 14.09,20.3C15.55,21.23 17.41,21.23 18.88,20.32L22,23.39L23.39,22L20.31,18.9M16.5,19A2.5,2.5 0 0,1 14,16.5A2.5,2.5 0 0,1 16.5,14A2.5,2.5 0 0,1 19,16.5A2.5,2.5 0 0,1 16.5,19Z" />
-                        </Canvas>
-                    </Viewbox>
-                </Button>
-                
-                <Button Classes="actions"
-                        Command="{Binding ShowPdfCommand, Mode=OneTime}"
-                        ToolTip.Tip="Generates PDF file and shows it in the default browser. Useful for testing compatibility and interactive links.">
-					<Viewbox Width="24" Height="24">
-						<Canvas Width="24" Height="24">
-							<Path Fill="White" Data="M12,10L8,14H11V20H13V14H16M19,4H5C3.89,4 3,4.9 3,6V18A2,2 0 0,0 5,20H9V18H5V8H19V18H15V20H19A2,2 0 0,0 21,18V6A2,2 0 0,0 19,4Z" />
-						</Canvas>
-					</Viewbox>
-				</Button>
-				
-				<Button Classes="actions"
-				        Command="{Binding ShowDocumentationCommand, Mode=OneTime}"
-				        ToolTip.Tip="Opens official QuestPDF documentation">
-					<Viewbox Width="24" Height="24">
-						<Canvas Width="24" Height="24">
-							<Path Fill="White" Data="M19 1L14 6V17L19 12.5V1M21 5V18.5C19.9 18.15 18.7 18 17.5 18C15.8 18 13.35 18.65 12 19.5V6C10.55 4.9 8.45 4.5 6.5 4.5C4.55 4.5 2.45 4.9 1 6V20.65C1 20.9 1.25 21.15 1.5 21.15C1.6 21.15 1.65 21.1 1.75 21.1C3.1 20.45 5.05 20 6.5 20C8.45 20 10.55 20.4 12 21.5C13.35 20.65 15.8 20 17.5 20C19.15 20 20.85 20.3 22.25 21.05C22.35 21.1 22.4 21.1 22.5 21.1C22.75 21.1 23 20.85 23 20.6V6C22.4 5.55 21.75 5.25 21 5M10 18.41C8.75 18.09 7.5 18 6.5 18C5.44 18 4.18 18.19 3 18.5V7.13C3.91 6.73 5.14 6.5 6.5 6.5C7.86 6.5 9.09 6.73 10 7.13V18.41Z" />
-						</Canvas>
-					</Viewbox>
-				</Button>
-				
-				<Button Classes="actions"
-				        Command="{Binding SponsorProjectCommand, Mode=OneTime}"
-				        ToolTip.Tip="Do you like QuestPDF? Please consider sponsoring the project. It really helps!">
-					<Viewbox Width="24" Height="24">
-						<Canvas Width="24" Height="24">
-							<Path Fill="White" Data="M12,21.1L10.5,22.4C3.9,16.5 0.5,13.4 0.5,9.6C0.5,8.4 0.9,7.3 1.5,6.4C1.5,6.6 1.5,6.8 1.5,7C1.5,11.7 5.4,15.2 12,21.1M13.6,17C18.3,12.7 21.5,9.9 21.6,7C21.6,5 20.1,3.5 18.1,3.5C16.5,3.5 15,4.5 14.5,5.9H12.6C12,4.5 10.5,3.5 9,3.5C7,3.5 5.5,5 5.5,7C5.5,9.9 8.6,12.7 13.4,17L13.5,17.1M18,1.5C21.1,1.5 23.5,3.9 23.5,7C23.5,10.7 20.1,13.8 13.5,19.8C6.9,13.9 3.5,10.8 3.5,7C3.5,3.9 5.9,1.5 9,1.5C10.7,1.5 12.4,2.3 13.5,3.6C14.6,2.3 16.3,1.5 18,1.5Z" />
-						</Canvas>
-					</Viewbox>
-				</Button>
-			</StackPanel>
+            <Panel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" Background="#333">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="/Resources/Logo.png" Width="32" Height="32" Margin="12,12,20,12"></Image>
+                    
+                    <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                        <TextBlock 
+                            VerticalAlignment="Center" HorizontalAlignment="Left" Margin="0,0,0,4"
+                            TextAlignment="Center" Text="QuestPDF Previewer" FontSize="16" Foreground="#FFF" FontWeight="SemiBold" />
+                        
+                        <StackPanel Orientation="Horizontal" Classes="MainMenu">
+                            <TextBlock Text="Getting Started" />
+                            <TextBlock Text="Documentation" />
+                            <TextBlock Text="GitHub" />
+                            <TextBlock Text="Sponsor project" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </Panel>
             
-            <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Background="#555">
+            <Grid Grid.Row="1" Grid.Column="0" Background="#444">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
+                    <RowDefinition Height="32" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 
-                <Panel Grid.Row="0" Background="#555">
-                    <TreeView Items="{Binding Items}" SelectedItem="{Binding SelectedItem}" SelectionMode="Single"
-                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,4" AutoScrollToSelectedItem="True">
-                        <TreeView.ItemTemplate>
-                            <TreeDataTemplate ItemsSource="{Binding Children}">
-                                <TextBlock Text="{Binding Text}" Foreground="{Binding FontColor}" />
-                            </TreeDataTemplate>
-                        </TreeView.ItemTemplate>
-                    </TreeView>
+                <Panel Grid.Row="0">
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16,8"
+                               TextAlignment="Center" Text="Document hierarchy" Foreground="#DFFF" FontWeight="SemiBold" IsHitTestVisible="False" />
                 </Panel>
                 
-                <Panel Grid.Row="1" Background="#333">
-                    <ItemsRepeater Items="{Binding SelectedItem.Metadata}" Margin="4">
+                <Panel Grid.Row="1">
+                    <ScrollViewer>
+                        <previewer:MyHierarchy Hierarchy="{Binding Items}" Margin="-8,0,0,0" Selection="{Binding SelectedItem, Mode=TwoWay}"></previewer:MyHierarchy>
+                    </ScrollViewer>
+                </Panel>
+                
+                <Panel Grid.Row="3">
+                    <TextBlock VerticalAlignment="Center" HorizontalAlignment="Left" Margin="16,8"
+                               TextAlignment="Center" Text="Selected element properties" Foreground="#DFFF" FontWeight="SemiBold" IsHitTestVisible="False" />
+                </Panel>
+                
+                <Panel Grid.Row="4">
+                    <ItemsRepeater Items="{Binding SelectedItem.Metadata}" Margin="16, 2">
                         <ItemsRepeater.ItemTemplate>
                             <DataTemplate DataType="previewer:Metadata">
-                                <Grid Margin="4">
+                                <Grid Margin="0, 4">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="100" />
                                         <ColumnDefinition Width="16" />
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     
-                                    <TextBlock Grid.Column="0" Text="{Binding Label}" />
-                                    <TextBlock Grid.Column="2" Text="{Binding Value}" />
+                                    <TextBlock Grid.Column="0" Text="{Binding Label}" Foreground="#AFFF" FontSize="12" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Value}" Foreground="#AFFF" FontSize="12" />
                                 </Grid>
                             </DataTemplate>
                         </ItemsRepeater.ItemTemplate>
@@ -141,9 +132,9 @@
                 </Panel>
             </Grid>
             
-            <GridSplitter Grid.Column="2" Grid.RowSpan="2" Background="#666" ResizeDirection="Columns" />
+            <GridSplitter Grid.Column="1" Grid.Row="1" Background="#444" ResizeDirection="Columns" />
             
-			<previewer:PreviewerControl Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2"
+			<previewer:PreviewerControl Grid.Row="1" Grid.Column="2"
 			                            HorizontalAlignment="Stretch" 
 			                            VerticalAlignment="Stretch"
 			                            CurrentScroll="{Binding CurrentScroll, Mode=TwoWay}"
@@ -152,7 +143,7 @@
                                         Hierarchy="{Binding Items}"
 			                            Pages="{Binding Pages, Mode=OneWay}" />
 			
-            <ScrollBar Grid.Row="1" Grid.Column="4"
+            <ScrollBar Grid.Row="1" Grid.Column="3"
                        Orientation="Vertical" 
                        AllowAutoHide="False" 
                        Minimum="0" Maximum="1" 

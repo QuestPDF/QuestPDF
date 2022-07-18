@@ -290,7 +290,7 @@ namespace QuestPDF.Drawing
                 }
             }
         }
-        
+
         internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata, DebuggingState? debuggingState)
             where TCanvas : ICanvas, IRenderingCanvas
         {

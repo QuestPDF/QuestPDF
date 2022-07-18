@@ -253,7 +253,7 @@ class InteractiveCanvas : ICustomDrawOperation
     #region inner viewport gradient
 
     private const int InnerGradientSize = (int)SafeZone;
-    private static readonly SKColor InnerGradientColor = SKColor.Parse("#666");
+    private static readonly SKColor InnerGradientColor = SKColor.Parse("#555");
     
     private void DrawInnerGradient(SKCanvas canvas)
     {
@@ -312,25 +312,32 @@ class InteractiveCanvas : ICustomDrawOperation
         if (location == null)
             return;
 
-        var size = 4 / Scale;
-        size = Math.Min(size, 2);
+        var size = 6 / Scale;
+        size = Math.Min(size, 3);
 
-        using var strokePaint = new SKPaint
+        using var strokePaint1 = new SKPaint
         {
             StrokeWidth = size,
             IsStroke = true,
-            PathEffect = SKPathEffect.CreateDash(new[] { size * 4, size * 2 }, 0),
-            Color = SKColor.Parse("#444"),
-            StrokeJoin = SKStrokeJoin.Round
+            Color = SKColor.Parse("#42A5F5")
+        };
+        
+        using var strokePaint2 = new SKPaint
+        {
+            StrokeWidth = size,
+            IsStroke = true,
+            PathEffect = SKPathEffect.CreateDash(new[] { size * 3, size * 3 }, 0),
+            Color = SKColor.Parse("#1E88E5")
         };
         
         using var backgroundPaint = new SKPaint
         {
-            Color = SKColor.Parse("#4444"),
+            Color = SKColor.Parse("#442196F3"),
         };
         
         canvas.DrawRect(location.Left, location.Top, location.Width, location.Height, backgroundPaint);
-        canvas.DrawRect(location.Left + size / 2, location.Top + size / 2, location.Width - size, location.Height - size, strokePaint);
+        canvas.DrawRect(location.Left + size / 2, location.Top + size / 2, location.Width - size, location.Height - size, strokePaint1);
+        canvas.DrawRect(location.Left + size / 2, location.Top + size / 2, location.Width - size, location.Height - size, strokePaint2);
     }
 
     #endregion

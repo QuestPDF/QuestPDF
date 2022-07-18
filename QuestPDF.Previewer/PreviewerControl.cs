@@ -35,9 +35,9 @@ namespace QuestPDF.Previewer
             set => SetValue(ScrollViewportSizeProperty, value);
         }
         
-        public static readonly StyledProperty<ObservableCollection<InspectionElement>> HierarchyProperty = AvaloniaProperty.Register<PreviewerControl, ObservableCollection<InspectionElement>>(nameof(Hierarchy));
+        public static readonly StyledProperty<InspectionElement> HierarchyProperty = AvaloniaProperty.Register<PreviewerControl, InspectionElement>(nameof(Hierarchy));
         
-        public ObservableCollection<InspectionElement> Hierarchy
+        public InspectionElement Hierarchy
         {
             get => GetValue(HierarchyProperty);
             set => SetValue(HierarchyProperty, value);
@@ -90,7 +90,7 @@ namespace QuestPDF.Previewer
 
         void FindHighlightedElement(int pageNumber, float x, float y)
         {
-            var possible = FlattenHierarchy(Hierarchy.First(), 0)
+            var possible = FlattenHierarchy(Hierarchy, 0)
                 .Select(x =>
                 {
                     var location = x.element.Location.First(y => y.PageNumber == pageNumber);

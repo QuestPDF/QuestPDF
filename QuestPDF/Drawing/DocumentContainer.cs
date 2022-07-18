@@ -16,6 +16,7 @@ namespace QuestPDF.Drawing
             var container = new Container();
             
             container
+                .DebugPointer("Document")
                 .Column(column =>
                 {
                     Pages

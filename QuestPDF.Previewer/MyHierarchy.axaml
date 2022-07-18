@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:previewer="clr-namespace:QuestPDF.Previewer"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="QuestPDF.Previewer.MyHierarchy">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="Auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Panel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Name="Highlight" Background="transparent" DoubleTapped="InputElement_OnDoubleTapped" PointerEnter="Highlight_OnPointerEnter" PointerLeave="Indentation_OnPointerLeave" PointerPressed="Clicked"></Panel>
+        <Panel Grid.Row="0" Grid.Column="0" Name="Indentation"></Panel>
+        
+        <Panel Grid.Row="0" Grid.Column="1" Name="Panel" Width="16" Height="16" Margin="0,0,8,0" Background="transparent" PointerPressed="Toggle" PointerEnter="Highlight_OnPointerEnter" PointerLeave="Indentation_OnPointerLeave">
+            <Viewbox Width="24" Height="24">
+                <Canvas Width="24" Height="24">
+                    <Path Fill="#AFFF" Name="Icon" />
+                </Canvas>
+            </Viewbox>
+        </Panel>
+        
+        <Panel Grid.Row="0" Grid.Column="2">
+            <TextBlock Name="ElementName" FontSize="12" Foreground="#AFFF" Margin="0,6" IsHitTestVisible="False"></TextBlock>
+        </Panel>
+        
+        <ItemsRepeater Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Name="Repeater" HorizontalCacheLength="1000000" VerticalCacheLength="100000">
+            <ItemsRepeater.ItemTemplate>
+                <DataTemplate DataType="previewer:InspectionElement">
+                    <previewer:MyHierarchy Hierarchy="{Binding}" OnSelected="MyHierarchy_OnOnSelected"></previewer:MyHierarchy>
+                </DataTemplate>
+            </ItemsRepeater.ItemTemplate>
+        </ItemsRepeater>
+    </Grid>
+    
+</UserControl>
