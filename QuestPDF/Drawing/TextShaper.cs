@@ -132,7 +132,7 @@ namespace QuestPDF.Drawing
             
             using var skTextBlobBuilder = new SKTextBlobBuilder();
             
-            var positionedRunBuffer = skTextBlobBuilder.AllocatePositionedRun(textStyle.FoFont(), endIndex - startIndex + 1);
+            var positionedRunBuffer = skTextBlobBuilder.AllocatePositionedRun(textStyle.ToFont(), endIndex - startIndex + 1);
             var glyphSpan = positionedRunBuffer.GetGlyphSpan();
             var positionSpan = positionedRunBuffer.GetPositionSpan();
                 

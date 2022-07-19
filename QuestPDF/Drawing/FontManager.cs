@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using HarfBuzzSharp;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -20,6 +22,11 @@ namespace QuestPDF.Drawing
         private static ConcurrentDictionary<object, SKFont> Fonts = new();
         private static ConcurrentDictionary<object, TextShaper> TextShapers = new();
 
+        static FontManager()
+        {
+            RegisterLibraryDefaultFonts();
+        }
+        
         private static void RegisterFontType(SKData fontData, string? customName = null)
         {
             foreach (var index in Enumerable.Range(0, 256))
@@ -48,6 +55,38 @@ namespace QuestPDF.Drawing
         {
             using var fontData = SKData.Create(stream);
             RegisterFontType(fontData);
+        }
+        
+        public static void RegisterFontFromEmbeddedResource(string pathName)
+        {
+            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(pathName);
+            RegisterFont(stream);
+        }
+        
+        private static void RegisterLibraryDefaultFonts()
+        {
+            var fontFileNames = new[]
+            {
+                "Lato-Black.ttf",
+                "Lato-BlackItalic.ttf",
+                
+                "Lato-Bold.ttf",
+                "Lato-BoldItalic.ttf",
+                
+                "Lato-Regular.ttf",
+                "Lato-Italic.ttf",
+                
+                "Lato-Light.ttf",
+                "Lato-LightItalic.ttf",
+                
+                "Lato-Thin.ttf",
+                "Lato-ThinItalic.ttf"
+            };
+            
+            fontFileNames
+                .Select(x => $"QuestPDF.Resources.DefaultFont.{x}")
+                .ToList()
+                .ForEach(RegisterFontFromEmbeddedResource);
         }
 
         internal static SKPaint ColorToPaint(this string color)
@@ -156,7 +195,7 @@ namespace QuestPDF.Drawing
             return TextShapers.GetOrAdd(style.PaintKey, _ => new TextShaper(style));
         }
         
-        internal static SKFont FoFont(this TextStyle style)
+        internal static SKFont ToFont(this TextStyle style)
         {
             return Fonts.GetOrAdd(style.PaintKey, _ => style.ToPaint().ToFont());
         }

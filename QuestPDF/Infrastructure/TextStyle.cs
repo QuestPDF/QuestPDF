@@ -26,7 +26,7 @@ namespace QuestPDF.Infrastructure
         {
             Color = Colors.Black,
             BackgroundColor = Colors.Transparent,
-            FontFamily = Fonts.Calibri,
+            FontFamily = Fonts.Lato,
             Size = 12,
             LineHeight = 1.2f,
             FontWeight = Infrastructure.FontWeight.Normal,
