@@ -66,28 +66,25 @@ dotnet add package QuestPDF
 
 ## Documentation
 
-[![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue)](https://www.questpdf.com/documentation/getting-started.html)
+[![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue)](https://www.questpdf.com/getting-started.html)
 A short and easy to follow tutorial showing how to design an invoice document under 200 lines of code.
 
 
-[![API reference](https://img.shields.io/badge/%F0%9F%93%96%20read-API%20reference-blue)](https://www.questpdf.com/documentation/api-reference.html)
+[![API reference](https://img.shields.io/badge/%F0%9F%93%96%20read-API%20reference-blue)](https://www.questpdf.com/api-reference/index.html)
 A detailed description of behavior of all available components and how to use them with C# Fluent API.
 
 
-[![Patterns and Practices](https://img.shields.io/badge/%E2%9C%A8%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/documentation/patterns-and-practices.html#document-metadata)
+[![Patterns and Practices](https://img.shields.io/badge/%E2%9C%A8%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/design-patterns.html)
 Everything that may help you designing great reports and create reusable code that is easy to maintain.
 
 ## QuestPDF Previewer
 
 The QuestPDF Previewer is a tool designed to simplify and speed up your development lifecycle. First, it shows a preview of your document. But the real magic starts with the hot-reload capability! It observes your code and updates the preview every time you change the implementation. Get real-time results without the need of code recompilation. Save time and enjoy the task!
 
-[![Learn more](https://img.shields.io/badge/%F0%9F%93%96%20Previewer-learn%20more-blue)](https://www.questpdf.com/documentation/document-previewer.html)
-
-<video src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/a6f54912ee761af14dfbe1f96aa70d7fcf7ff94f/images/previewer/video.mp4?raw=true"></video>
+[![Learn more](https://img.shields.io/badge/%F0%9F%93%96%20Previewer-learn%20more-blue)](https://www.questpdf.com/document-previewer.html)
 
 
-
-<img src="https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/images/previewer/animation.gif" width="100%">
+<img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
 
 ## Simplicity is the key
 
@@ -136,13 +133,13 @@ Document.Create(container =>
 
 And compare it to the produced PDF file:
 
-<img src="https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/images/minimal-api.png" width="250px">
+<img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/minimal-example-shadow.png?raw=true" width="250px">
 
 ## Are you ready for more?
 
-The Fluent API of QuestPDF scales really well. It is easy to create and maintain even most complex documents. Read [the Getting started tutorial](https://www.questpdf.com/documentation/getting-started.html) to learn QuestPDF basics and implement an invoice under 200 lines of code. You can also investigate and play with the code from [the example repository](https://github.com/QuestPDF/example-invoice).
+The Fluent API of QuestPDF scales really well. It is easy to create and maintain even most complex documents. Read [the Getting started tutorial](https://www.questpdf.com/getting-started.html) to learn QuestPDF basics and implement an invoice under 200 lines of code. You can also investigate and play with the code from [the example repository](https://github.com/QuestPDF/example-invoice).
 
-<img src="https://github.com/QuestPDF/example-invoice/raw/main/images/invoice.png" width="400px">
+<img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/invoice-small.png?raw=true" width="400px">
 
 
 ## QuestPDF on JetBrains OSS Power-Ups
@@ -150,7 +147,7 @@ The Fluent API of QuestPDF scales really well. It is easy to create and maintain
 QuestPDF was presented on one of the episodes of OSS Power-Ups hosted by JetBrains. Huge thanks for Matthias Koch and entire JetBrains team for giving me a chance to show QuestPDF. You are the best!
 
 <a href="https://www.youtube.com/watch?v=-iYvZvpLX0g">
-    <img src="https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/images/jetbrains-oss-powerups-youtube.png" width="600px">
+    <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/jetbrains-oss-powerups-youtube.png?raw=true" width="600px">
 </a>
 
 
