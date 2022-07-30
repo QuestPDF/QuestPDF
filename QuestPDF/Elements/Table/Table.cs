@@ -42,7 +42,9 @@ namespace QuestPDF.Elements.Table
 
         public void ResetState()
         {
-            Cells.ForEach(x => x.IsRendered = false);
+            foreach (var x in Cells)
+                x.IsRendered = false;
+            
             CurrentRow = 1;
         }
 
