@@ -19,6 +19,12 @@ namespace QuestPDF.Elements
         Justify,
         SpaceAround
     }
+
+    internal struct InlinedMeasurement
+    {
+        public Element Element { get; set; }
+        public SpacePlan Size { get; set; }
+    }
     
     internal class Inlined : Element, IStateResettable
     {
@@ -80,10 +86,7 @@ namespace QuestPDF.Elements
             
             foreach (var line in lines)
             {
-                var height = line
-                    .Select(x => x.Measure(Size.Max))
-                    .Where(x => x.Type != SpacePlanType.Wrap)
-                    .Max(x => x.Height);
+                var height = line.Max(x => x.Size.Height);
                 
                 DrawLine(line);
 
@@ -94,24 +97,24 @@ namespace QuestPDF.Elements
             Canvas.Translate(new Position(0, -topOffset));
             lines.SelectMany(x => x).ToList().ForEach(x => ChildrenQueue.Dequeue());
 
-            void DrawLine(ICollection<InlinedElement> elements)
+            void DrawLine(ICollection<InlinedMeasurement> lineMeasurements)
             {
-                var lineSize = GetLineSize(elements);
+                var lineSize = GetLineSize(lineMeasurements);
 
                 var elementOffset = ElementOffset();
                 var leftOffset = AlignOffset();
                 Canvas.Translate(new Position(leftOffset, 0));
                 
-                foreach (var element in elements)
+                foreach (var measurement in lineMeasurements)
                 {
-                    var size = (Size)element.Measure(Size.Max);
+                    var size = (Size)measurement.Size;
                     var baselineOffset = BaselineOffset(size, lineSize.Height);
 
                     if (size.Height == 0)
                         size = new Size(size.Width, lineSize.Height);
                     
                     Canvas.Translate(new Position(0, baselineOffset));
-                    element.Draw(size);
+                    measurement.Element.Draw(size);
                     Canvas.Translate(new Position(0, -baselineOffset));
 
                     leftOffset += size.Width + elementOffset;
@@ -124,20 +127,20 @@ namespace QuestPDF.Elements
                 {
                     var difference = availableSpace.Width - lineSize.Width;
 
-                    if (elements.Count == 1)
+                    if (lineMeasurements.Count == 1)
                         return 0;
 
                     return ElementsAlignment switch
                     {
-                        InlinedAlignment.Justify => difference / (elements.Count - 1),
-                        InlinedAlignment.SpaceAround => difference / (elements.Count + 1),
+                        InlinedAlignment.Justify => difference / (lineMeasurements.Count - 1),
+                        InlinedAlignment.SpaceAround => difference / (lineMeasurements.Count + 1),
                         _ => HorizontalSpacing
                     };
                 }
 
                 float AlignOffset()
                 {
-                    var difference = availableSpace.Width - lineSize.Width - (elements.Count - 1) * HorizontalSpacing;
+                    var difference = availableSpace.Width - lineSize.Width - (lineMeasurements.Count - 1) * HorizontalSpacing;
 
                     return ElementsAlignment switch
                     {
@@ -164,24 +167,19 @@ namespace QuestPDF.Elements
             }
         }
 
-        Size GetLineSize(ICollection<InlinedElement> elements)
+        Size GetLineSize(ICollection<InlinedMeasurement> measurements)
         {
-            var sizes = elements
-                .Select(x => x.Measure(Size.Max))
-                .Where(x => x.Type != SpacePlanType.Wrap)
-                .ToList();
-            
-            var width = sizes.Sum(x => x.Width);
-            var height = sizes.Max(x => x.Height);
+            var width = measurements.Sum(x => x.Size.Width);
+            var height = measurements.Max(x => x.Size.Height);
 
             return new Size(width, height);
         }
         
         // list of lines, each line is a list of elements
-        private ICollection<ICollection<InlinedElement>> Compose(Size availableSize)
+        private ICollection<ICollection<InlinedMeasurement>> Compose(Size availableSize)
         {
             var queue = new Queue<InlinedElement>(ChildrenQueue);
-            var result = new List<ICollection<InlinedElement>>();
+            var result = new List<ICollection<InlinedMeasurement>>();
 
             var topOffset = 0f;
             
@@ -192,10 +190,7 @@ namespace QuestPDF.Elements
                 if (!line.Any())
                     break;
 
-                var height = line
-                    .Select(x => x.Measure(availableSize))
-                    .Where(x => x.Type != SpacePlanType.Wrap)
-                    .Max(x => x.Height);
+                var height = line.Max(x => x.Size.Height);
                 
                 if (topOffset + height > availableSize.Height + Size.Epsilon)
                     break;
@@ -206,9 +201,9 @@ namespace QuestPDF.Elements
 
             return result;
 
-            ICollection<InlinedElement> GetNextLine()
+            ICollection<InlinedMeasurement> GetNextLine()
             {
-                var result = new List<InlinedElement>();
+                var result = new List<InlinedMeasurement>();
                 var leftOffset = GetInitialAlignmentOffset();
                 
                 while (true)
@@ -227,7 +222,12 @@ namespace QuestPDF.Elements
 
                     queue.Dequeue();
                     leftOffset += size.Width + HorizontalSpacing;
-                    result.Add(element);    
+                    
+                    result.Add(new InlinedMeasurement
+                    {
+                        Element = element,
+                        Size = size
+                    });    
                 }
 
                 return result;
