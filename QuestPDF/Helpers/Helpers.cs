@@ -41,7 +41,7 @@ namespace QuestPDF.Helpers
 
         internal static string PrettifyName(this string text)
         {
-            return Regex.Replace(text, @"([a-z])([A-Z])", "$1 $2");
+            return Regex.Replace(text, @"([a-z])([A-Z])", "$1 $2", RegexOptions.Compiled);
         }
 
         internal static void VisitChildren(this Element? element, Action<Element?> handler)
