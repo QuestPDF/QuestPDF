@@ -590,7 +590,7 @@ namespace QuestPDF.Examples
                             text.Span("Complex Unicode structure: ");
                             
                             
-                            text.Span("T̶̖̔͆͆̽̔ḩ̷̼̫̐̈́̀͜͝͝ì̶͇̤͓̱̣͇͓͉̎s̵̡̟̹͍̜͉̗̾͛̈̐́͋͂͝͠ͅ ̴̨͙͍͇̭̒͗̀́͝ì̷̡̺͉̼̏̏̉̌͝s̷͍͙̗̰̖͙̈̑̂̔͑͊̌̓̊̇͜ ̶̛̼͚͊̅͘ṭ̷̨̘̣̙̖͉͌̏̂̅͑̄̽̕͝ȅ̶̲̲̙̭͈̬̣͔̝͔̈́͝s̸̢̯̪̫͓̭̮̓̀͆͜ț̸̢͉̞̥̤̏̌̓͝").FontColor(Colors.Red.Medium);
+                            text.Span("T̶̖̔͆͆̽̔ḩ̷̼̫̐̈́̀͜͝͝ì̶͇̤͓̱̣͇͓͉̎s̵̡̟̹͍̜͉̗̾͛̈̐́͋͂͝͠ͅ ̴̨͙͍͇̭̒͗̀́͝ì̷̡̺͉̼̏̏̉̌͝s̷͍͙̗̰̖͙̈̑̂̔͑͊̌̓̊̇͜ ̶̛̼͚͊̅͘ṭ̷̨̘̣̙̖͉͌̏̂̅͑̄̽̕͝ȅ̶̲̲̙̭͈̬̣͔̝͔̈́͝s̸̢̯̪̫͓̭̮̓̀͆͜ț̸̢͉̞̥̤̏̌̓͝").FontFamily(Fonts.Calibri).FontColor(Colors.Red.Medium);
                             
                             
                             text.Span(".");
@@ -614,6 +614,7 @@ namespace QuestPDF.Examples
                         .MinimalBox()
                         .Background(Colors.Grey.Lighten2)
                         .Text("ينا الألم. في بعض الأحيان ونظراً للالتزامات التي يفرضها علينا")
+                        .FontFamily(Fonts.Calibri)
                         .FontSize(20);
                 });
         }

@@ -14,27 +14,29 @@ namespace QuestPDF.Elements.Text
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
         public string Text => string.Join(" ", Items.Where(x => x is TextBlockSpan).Cast<TextBlockSpan>().Select(x => x.Text));
-        
+
         private Queue<ITextBlockItem> RenderingQueue { get; set; }
         private int CurrentElementIndex { get; set; }
 
         public void ResetState()
         {
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
-            // Create queue when we don't have one yet, otherwise clear the existing one so it re-uses the internal array under the hood.
-            if (RenderingQueue == null)
+            InitializeQueue();
+            CurrentElementIndex = 0;
+
+            void InitializeQueue()
             {
-                RenderingQueue = new Queue<ITextBlockItem>(Items);
-            }
-            else
-            {
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                if (RenderingQueue == null)
+                {
+                    RenderingQueue = new Queue<ITextBlockItem>(Items);
+                    return;
+                }
+                
                 RenderingQueue.Clear();
             
                 foreach (var item in Items)
                     RenderingQueue.Enqueue(item);
             }
-            
-            CurrentElementIndex = 0;
         }
 
         internal override SpacePlan Measure(Size availableSpace)

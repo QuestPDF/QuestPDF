@@ -43,8 +43,13 @@ namespace QuestPDF.Drawing
             }
         }
 
-        [Obsolete("Since version 2022.3, the FontManager class offers better font type matching support. Please use the RegisterFont(Stream stream) method.")]
+        [Obsolete("Since version 2022.8 this method has been renamed. Please use the RegisterFontWithCustomName method.")]
         public static void RegisterFontType(string fontName, Stream stream)
+        {
+            RegisterFontWithCustomName(fontName, stream);
+        }
+        
+        public static void RegisterFontWithCustomName(string fontName, Stream stream)
         {
             using var fontData = SKData.Create(stream);
             RegisterFontType(fontData);
