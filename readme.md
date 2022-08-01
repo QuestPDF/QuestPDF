@@ -1,5 +1,5 @@
 <a href="https://www.questpdf.com/" target="_blank">
-  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="300"> 
+  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="400"> 
 </a>
 
 ---
