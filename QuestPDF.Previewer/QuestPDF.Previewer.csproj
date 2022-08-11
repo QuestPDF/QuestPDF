@@ -48,8 +48,7 @@
         <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="0.10.10" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.10" />
         <PackageReference Include="ReactiveUI" Version="17.1.50" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux" Version="2.80.4" />
-        <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.80.4" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.80.4" />
         <PackageReference Include="System.Reactive" Version="5.0.0" />
         <PackageReference Include="SkiaSharp" Version="2.80.4" />
     </ItemGroup>
