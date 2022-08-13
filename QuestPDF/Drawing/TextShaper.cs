@@ -21,7 +21,7 @@ namespace QuestPDF.Drawing
 
         public TextShapingResult Shape(string text)
         {
-            var buffer = new Buffer();
+            using var buffer = new Buffer();
             
             PopulateBufferWithText(buffer, text);
             buffer.GuessSegmentProperties();
