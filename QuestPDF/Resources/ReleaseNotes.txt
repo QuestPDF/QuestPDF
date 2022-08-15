@@ -1,9 +1,7 @@
-Integrated the text-shaping algorithm. This change significantly improves the Unicode compatibility. Also, it extends support for more advanced languages (e.g. Arabic) that:
-1) Combine multiple text characters and display them as a single visual glyph.
-2) Are displayed in the right-to-left order. 
-
-Improved the exception message when SkiaSharp throws the TypeInitializationException. On some operating systems, SkiaSharp requires additional dependencies installed as nuget packages. This change should help developers determine how to choose and install them correctly. 
-
-Fixed: a rare case when the Row.AutoItem() does not correctly calculate the width of its content. 
-
-Fixed: the QuestPDF Previewer does not work with content-rich documents.
+- Improved library performance,
+- Breaking change: changed default font from Calibri to an open-source Lato,
+- Default font files are included with the nuget package, making it safe to deploy on any environment,
+- Default font files are significantly smaller, so output document files should be smaller too (up to 20x reduction in size),
+- When requested font is not available on the runtime environment, library provides list of available fonts,
+- Fixed a rare layout overflow exception with the Inlined element,
+- Fixed a memory leak connected to the HarfBuzz library.
