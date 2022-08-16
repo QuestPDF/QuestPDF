@@ -40,10 +40,8 @@ namespace QuestPDF.Infrastructure
             WrapAnywhere = false
         };
 
-        // REVIEW: Should this be a method call that news up a TextStyle,
-        // or can it be a static variable?
-        // (style mutations seem to create a clone anyway)
-        public static readonly TextStyle Default = new TextStyle();
+        // it is important to create new instances for the DefaultTextStyle element to work correctly
+        public static TextStyle Default => new TextStyle();
         
         internal void ApplyGlobalStyle(TextStyle globalStyle)
         {
