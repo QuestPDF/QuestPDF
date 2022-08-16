@@ -66,7 +66,7 @@ namespace QuestPDF.Elements.Text.Items
             // start breaking text from requested position
             var endIndex = TextShapingResult.BreakText(startIndex, request.AvailableWidth);
 
-            if (endIndex < 0)
+            if (endIndex < startIndex)
                 return null;
   
             // break text only on spaces

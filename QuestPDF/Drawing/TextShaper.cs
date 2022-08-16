@@ -129,6 +129,9 @@ namespace QuestPDF.Drawing
         {
             if (Glyphs.Length == 0)
                 return null;
+
+            if (startIndex > endIndex)
+                return null;
             
             using var skTextBlobBuilder = new SKTextBlobBuilder();
             
