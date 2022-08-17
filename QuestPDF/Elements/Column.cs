@@ -94,7 +94,12 @@ namespace QuestPDF.Elements
                 if (item.IsRendered)
                     continue;
 
-                var itemSpace = new Size(availableSpace.Width, availableSpace.Height - topOffset);
+                var availableHeight = availableSpace.Height - topOffset;
+                
+                if (availableHeight <= 0)
+                    break;
+
+                var itemSpace = new Size(availableSpace.Width, availableHeight);
                 var measurement = item.Measure(itemSpace);
                 
                 if (measurement.Type == SpacePlanType.Wrap)
