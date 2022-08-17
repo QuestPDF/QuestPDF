@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Helpers
@@ -53,6 +54,11 @@ namespace QuestPDF.Helpers
                 VisitChildren(child, handler);
 
             handler(element);
+        }
+
+        internal static bool IsNegative(this Size size)
+        {
+            return size.Width < 0f || size.Height < 0f;
         }
     }
 }

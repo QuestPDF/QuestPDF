@@ -23,6 +23,9 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap();
+            
             return Type switch
             {
                 LineType.Vertical when availableSpace.Width + Infrastructure.Size.Epsilon >= Size => SpacePlan.FullRender(Size, 0),

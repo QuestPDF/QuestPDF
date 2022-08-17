@@ -1,4 +1,5 @@
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -9,7 +10,9 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            return SpacePlan.FullRender(0, 0);
+            return availableSpace.IsNegative() 
+                ? SpacePlan.Wrap() 
+                : SpacePlan.FullRender(0, 0);
         }
 
         internal override void Draw(Size availableSpace)
