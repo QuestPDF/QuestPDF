@@ -39,18 +39,34 @@ namespace QuestPDF.Elements.Text.Items
             
             var paint = Style.ToPaint();
             var fontMetrics = Style.ToFontMetrics();
-            var spaceCodepoint = paint.ToFont().Typeface.GetGlyphs(" ")[0];
 
+            // if the element is the first one within the line,
+            // ignore leading spaces and new lines
+            var spaceCodepoint = paint.ToFont().Typeface.GetGlyph(' ');
+            var newLineCodepoint = paint.ToFont().Typeface.GetGlyph('\n');
+            var returnCodepoint = paint.ToFont().Typeface.GetGlyph('\r');
+            
             var startIndex = request.StartIndex;
             
-            // if the element is the first one within the line,
-            // ignore leading spaces
             if (!request.IsFirstElementInBlock && request.IsFirstElementInLine)
             {
-                while (startIndex < TextShapingResult.Glyphs.Length && Text[startIndex] == spaceCodepoint)
+                while (startIndex < TextShapingResult.Glyphs.Length && (Text[startIndex] == spaceCodepoint || Text[startIndex] == newLineCodepoint || Text[startIndex] == returnCodepoint))
                     startIndex++;
             }
 
+            // calculate max index (new new line)
+            var newLineIndex = startIndex;
+
+            while (newLineIndex < TextShapingResult.Glyphs.Length)
+            {
+                var glyphCodepoint = TextShapingResult.Glyphs[newLineIndex].Codepoint;
+                
+                if (glyphCodepoint == newLineCodepoint || glyphCodepoint == returnCodepoint)
+                    break;
+
+                newLineIndex++;
+            }
+            
             if (TextShapingResult.Glyphs.Length == 0 || startIndex == TextShapingResult.Glyphs.Length)
             {
                 return new TextMeasurementResult
@@ -68,6 +84,8 @@ namespace QuestPDF.Elements.Text.Items
 
             if (endIndex < startIndex)
                 return null;
+
+            endIndex = Math.Min(endIndex, newLineIndex);
   
             // break text only on spaces
             var wrappedText = WrapText(startIndex, endIndex, request.IsFirstElementInLine);
@@ -90,7 +108,9 @@ namespace QuestPDF.Elements.Text.Items
                 StartIndex = startIndex,
                 EndIndex = wrappedText.Value.endIndex,
                 NextIndex = wrappedText.Value.nextIndex,
-                TotalIndex = TextShapingResult.Glyphs.Length - 1
+                TotalIndex = TextShapingResult.Glyphs.Length - 1,
+                
+                IsNewLine = endIndex == newLineIndex
             };
         }
         

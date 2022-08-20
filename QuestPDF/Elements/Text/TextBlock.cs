@@ -11,7 +11,8 @@ namespace QuestPDF.Elements.Text
     internal class TextBlock : Element, IStateResettable
     {
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
-        public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
+        public List<ITextBlockItem> Items { get; set; } = new();
+        public float ParagraphSpacing { get; set; } = 0;
 
         public string Text => string.Join(" ", Items.Where(x => x is TextBlockSpan).Cast<TextBlockSpan>().Select(x => x.Text));
 
@@ -110,6 +111,12 @@ namespace QuestPDF.Elements.Text
                 Canvas.Translate(new Position(0, line.LineHeight));
                 
                 heightOffset += line.LineHeight;
+
+                if (line.Elements.Last().Measurement.IsNewLine)
+                {
+                    heightOffset += ParagraphSpacing;
+                    Canvas.Translate(new Position(0, ParagraphSpacing));
+                }
             }
             
             Canvas.Translate(new Position(0, -heightOffset));

@@ -19,5 +19,6 @@ namespace QuestPDF.Elements.Text.Calculation
         public int TotalIndex { get; set; }
 
         public bool IsLast => EndIndex == TotalIndex;
+        public bool IsNewLine { get; set; }
     }
 }

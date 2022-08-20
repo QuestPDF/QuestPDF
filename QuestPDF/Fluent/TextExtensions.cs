@@ -40,10 +40,9 @@ namespace QuestPDF.Fluent
     
     public class TextDescriptor
     {
-        private ICollection<TextBlock> TextBlocks { get; } = new List<TextBlock>();
+        internal TextBlock TextBlock = new();
         private TextStyle DefaultStyle { get; set; } = TextStyle.Default;
         internal HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
-        private float Spacing { get; set; } = 0f;
 
         public void DefaultTextStyle(TextStyle style)
         {
@@ -72,17 +71,9 @@ namespace QuestPDF.Fluent
 
         public void ParagraphSpacing(float value, Unit unit = Unit.Point)
         {
-            Spacing = value.ToPoints(unit);
+            TextBlock.ParagraphSpacing = value.ToPoints(unit);
         }
 
-        private void AddItemToLastTextBlock(ITextBlockItem item)
-        {
-            if (!TextBlocks.Any())
-                TextBlocks.Add(new TextBlock());
-            
-            TextBlocks.Last().Items.Add(item);
-        }
-        
         [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
         public void Span(string? text, TextStyle style)
         {
@@ -96,28 +87,13 @@ namespace QuestPDF.Fluent
 
             if (text == null)
                 return descriptor;
- 
-            var items = text
-                .Replace("\r", string.Empty)
-                .Split(new[] { '\n' }, StringSplitOptions.None)
-                .Select(x => new TextBlockSpan
-                {
-                    Text = x,
-                    Style = style
-                })
-                .ToList();
-
-            AddItemToLastTextBlock(items.First());
-
-            items
-                .Skip(1)
-                .Select(x => new TextBlock
-                {   
-                    Items = new List<ITextBlockItem> { x }
-                })
-                .ToList()
-                .ForEach(TextBlocks.Add);
-
+            
+            TextBlock.Items.Add(new TextBlockSpan
+            {
+                Text = text,
+                Style = style
+            });
+            
             return descriptor;
         }
 
@@ -137,7 +113,7 @@ namespace QuestPDF.Fluent
             var style = DefaultStyle.Clone();
             var descriptor = new TextPageNumberDescriptor(style);
             
-            AddItemToLastTextBlock(new TextBlockPageNumber
+            TextBlock.Items.Add(new TextBlockPageNumber
             {
                 Source = context => descriptor.FormatFunction(pageNumber(context)),
                 Style = style
@@ -193,7 +169,7 @@ namespace QuestPDF.Fluent
             if (IsNullOrEmpty(text))
                 return descriptor;
             
-            AddItemToLastTextBlock(new TextBlockSectionLink
+            TextBlock.Items.Add(new TextBlockSectionLink
             {
                 Style = style,
                 Text = text,
@@ -220,7 +196,7 @@ namespace QuestPDF.Fluent
             if (IsNullOrEmpty(text))
                 return descriptor;
             
-            AddItemToLastTextBlock(new TextBlockHyperlink
+            TextBlock.Items.Add(new TextBlockHyperlink
             {
                 Style = style,
                 Text = text,
@@ -240,25 +216,12 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
                 
-            AddItemToLastTextBlock(new TextBlockElement
+            TextBlock.Items.Add(new TextBlockElement
             {
                 Element = container
             });
             
             return container.AlignBottom().MinimalBox();
-        }
-        
-        internal void Compose(IContainer container)
-        {
-            TextBlocks.ToList().ForEach(x => x.Alignment = Alignment);
-
-            container.DefaultTextStyle(DefaultStyle).Column(column =>
-            {
-                column.Spacing(Spacing);
-
-                foreach (var textBlock in TextBlocks)
-                    column.Item().Element(textBlock);
-            });
         }
     }
     
@@ -272,7 +235,7 @@ namespace QuestPDF.Fluent
                 descriptor.Alignment = alignment.Horizontal;
             
             content?.Invoke(descriptor);
-            descriptor.Compose(element);
+            element.Element(descriptor.TextBlock);
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
