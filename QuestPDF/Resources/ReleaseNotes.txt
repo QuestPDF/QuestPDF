@@ -16,5 +16,5 @@
 - Updated stability of rendering elements in negative space
 - Optimization for the Column element: do not measure child when available height is negative
 
-2202.8.2
+2022.8.2
 - Fixed: the Column element incorrectly renders zero-height elements.
