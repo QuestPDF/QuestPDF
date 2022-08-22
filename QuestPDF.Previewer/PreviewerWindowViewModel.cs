@@ -49,7 +49,7 @@ namespace QuestPDF.Previewer
             CommunicationService.Instance.OnDocumentRefreshed += HandleUpdatePreview;
             
             ShowPdfCommand = ReactiveCommand.Create(ShowPdf);
-            ShowDocumentationCommand = ReactiveCommand.Create(() => OpenLink("https://www.questpdf.com/documentation/api-reference.html"));
+            ShowDocumentationCommand = ReactiveCommand.Create(() => OpenLink("https://www.questpdf.com/api-reference/index.html"));
             SponsorProjectCommand = ReactiveCommand.Create(() => OpenLink("https://github.com/sponsors/QuestPDF"));
         }
 
