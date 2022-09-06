@@ -66,19 +66,17 @@ namespace QuestPDF.Drawing
             var content = container.Compose();
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
             
-            var metadata = document.GetMetadata();
-            var pageContext = new PageContext();
-
-            var debuggingState = metadata.ApplyDebugging ? ApplyDebugging(content) : null;
+            var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
             
-            if (metadata.ApplyCaching)
+            if (Settings.EnableCaching)
                 ApplyCaching(content);
 
-            RenderPass(pageContext, new FreeCanvas(), content, metadata, debuggingState);
-            RenderPass(pageContext, canvas, content, metadata, debuggingState);
+            var pageContext = new PageContext();
+            RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
+            RenderPass(pageContext, canvas, content, debuggingState);
         }
         
-        internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DocumentMetadata documentMetadata, DebuggingState? debuggingState)
+        internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             content.VisitChildren(x => x?.Initialize(pageContext, canvas));
@@ -114,7 +112,7 @@ namespace QuestPDF.Drawing
 
                 canvas.EndPage();
 
-                if (currentPage >= documentMetadata.DocumentLayoutExceptionThreshold)
+                if (currentPage >= Settings.DocumentLayoutExceptionThreshold)
                 {
                     canvas.EndDocument();
                     ThrowLayoutException();
@@ -131,8 +129,8 @@ namespace QuestPDF.Drawing
             void ThrowLayoutException()
             {
                 var message = $"Composed layout generates infinite document. This may happen in two cases. " +
-                              $"1) Your document and its layout configuration is correct but the content takes more than {documentMetadata.DocumentLayoutExceptionThreshold} pages. " +
-                              $"In this case, please increase the value {nameof(DocumentMetadata)}.{nameof(DocumentMetadata.DocumentLayoutExceptionThreshold)} property configured in the {nameof(IDocument.GetMetadata)} method. " +
+                              $"1) Your document and its layout configuration is correct but the content takes more than {Settings.DocumentLayoutExceptionThreshold} pages. " +
+                              $"In this case, please increase the value {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.DocumentLayoutExceptionThreshold)} static property. " +
                               $"2) The layout configuration of your document is invalid. Some of the elements require more space than is provided." +
                               $"Please analyze your documents structure to detect this element and fix its size constraints.";
 

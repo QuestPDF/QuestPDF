@@ -51,7 +51,7 @@ namespace QuestPDF.ReportSample
             Content = documentContainer.Compose();
 
             PageContext = new PageContext();
-            DocumentGenerator.RenderPass(PageContext, new FreeCanvas(), Content, Metadata, null);
+            DocumentGenerator.RenderPass(PageContext, new FreeCanvas(), Content, null);
 
             var sw = new Stopwatch();
             sw.Start();
@@ -69,7 +69,7 @@ namespace QuestPDF.ReportSample
         [Benchmark]
         public void GenerationTest()
         {
-            DocumentGenerator.RenderPass(PageContext, new FreeCanvas(), Content, Metadata, null);
+            DocumentGenerator.RenderPass(PageContext, new FreeCanvas(), Content, null);
         }
     }
 }

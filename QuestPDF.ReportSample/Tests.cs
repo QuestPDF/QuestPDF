@@ -48,11 +48,10 @@ namespace QuestPDF.ReportSample
             Report.Compose(container);
             var content = container.Compose();
             
-            var metadata = Report.GetMetadata();
             var pageContext = new PageContext();
 
-            DocumentGenerator.RenderPass(pageContext, new FreeCanvas(), content, metadata, null);
-            DocumentGenerator.RenderPass(pageContext, new FreeCanvas(), content, metadata, null);
+            DocumentGenerator.RenderPass(pageContext, new FreeCanvas(), content, null);
+            DocumentGenerator.RenderPass(pageContext, new FreeCanvas(), content, null);
         }
     }
 }

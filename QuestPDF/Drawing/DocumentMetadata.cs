@@ -1,4 +1,5 @@
 using System;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
 {
@@ -18,14 +19,26 @@ namespace QuestPDF.Drawing
         public DateTime CreationDate { get; set; } = DateTime.Now;
         public DateTime ModifiedDate { get; set; } = DateTime.Now;
 
-        /// <summary>
-        /// If the number of generated pages exceeds this threshold
-        /// (likely due to infinite layout), the exception is thrown.
-        /// </summary>
-        public int DocumentLayoutExceptionThreshold { get; set; } = 250;
+        [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.DocumentLayoutExceptionThreshold static property.")]
+        public int DocumentLayoutExceptionThreshold
+        {
+            get => Settings.DocumentLayoutExceptionThreshold;
+            set => Settings.DocumentLayoutExceptionThreshold = value;
+        }
 
-        public bool ApplyCaching { get; set; } = !System.Diagnostics.Debugger.IsAttached;
-        public bool ApplyDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.EnableCaching static property.")]
+        public bool ApplyCaching
+        {
+            get => Settings.EnableCaching;
+            set => Settings.EnableCaching = value;
+        }
+        
+        [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.EnableDebugging static property.")]
+        public bool ApplyDebugging
+        {
+            get => Settings.EnableDebugging;
+            set => Settings.EnableDebugging = value;
+        }
 
         public static DocumentMetadata Default => new DocumentMetadata();
     }
