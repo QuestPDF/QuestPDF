@@ -251,14 +251,21 @@ namespace QuestPDF.Fluent
         internal void Compose(IContainer container)
         {
             TextBlocks.ToList().ForEach(x => x.Alignment = Alignment);
+            container = container.DefaultTextStyle(DefaultStyle);
 
-            container.DefaultTextStyle(DefaultStyle).Column(column =>
+            if (TextBlocks.Count == 1)
+            {
+                container.Element(TextBlocks.First());
+                return;
+            }
+            
+            container.Column(column =>
             {
                 column.Spacing(Spacing);
 
                 foreach (var textBlock in TextBlocks)
                     column.Item().Element(textBlock);
-            });
+            }); 
         }
     }
     
