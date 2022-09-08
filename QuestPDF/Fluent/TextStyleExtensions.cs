@@ -4,16 +4,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
+    
+    
     public static class TextStyleExtensions
     {
-        private static TextStyle Mutate(this TextStyle style, Action<TextStyle> handler)
-        {
-            style = style.Clone();
-            
-            handler(style);
-            return style;
-        }
-        
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontColor method.")]
         public static TextStyle Color(this TextStyle style, string value)
         {
@@ -22,12 +16,12 @@ namespace QuestPDF.Fluent
         
         public static TextStyle FontColor(this TextStyle style, string value)
         {
-            return style.Mutate(x => x.Color = value);
+            return style.Mutate(TextStyleProperty.Color, value);
         }
         
         public static TextStyle BackgroundColor(this TextStyle style, string value)
         {
-            return style.Mutate(x => x.BackgroundColor = value);
+            return style.Mutate(TextStyleProperty.BackgroundColor, value);
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontFamily method.")]
@@ -38,7 +32,7 @@ namespace QuestPDF.Fluent
         
         public static TextStyle FontFamily(this TextStyle style, string value)
         {
-            return style.Mutate(x => x.FontFamily = value);
+            return style.Mutate(TextStyleProperty.FontFamily, value);
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontSize method.")]
@@ -49,39 +43,39 @@ namespace QuestPDF.Fluent
         
         public static TextStyle FontSize(this TextStyle style, float value)
         {
-            return style.Mutate(x => x.Size = value);
+            return style.Mutate(TextStyleProperty.Size, value);
         }
         
         public static TextStyle LineHeight(this TextStyle style, float value)
         {
-            return style.Mutate(x => x.LineHeight = value);
+            return style.Mutate(TextStyleProperty.LineHeight, value);
         }
         
         public static TextStyle Italic(this TextStyle style, bool value = true)
         {
-            return style.Mutate(x => x.IsItalic = value);
+            return style.Mutate(TextStyleProperty.IsItalic, value);
         }
         
         public static TextStyle Strikethrough(this TextStyle style, bool value = true)
         {
-            return style.Mutate(x => x.HasStrikethrough = value);
+            return style.Mutate(TextStyleProperty.HasStrikethrough, value);
         }
         
         public static TextStyle Underline(this TextStyle style, bool value = true)
         {
-            return style.Mutate(x => x.HasUnderline = value);
+            return style.Mutate(TextStyleProperty.HasUnderline, value);
         }
         
         public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)
         {
-            return style.Mutate(x => x.WrapAnywhere = value);
+            return style.Mutate(TextStyleProperty.WrapAnywhere, value);
         }
 
         #region Weight
         
         public static TextStyle Weight(this TextStyle style, FontWeight weight)
         {
-            return style.Mutate(x => x.FontWeight = weight);
+            return style.Mutate(TextStyleProperty.FontWeight, weight);
         }
         
         public static TextStyle Thin(this TextStyle style)
@@ -154,10 +148,7 @@ namespace QuestPDF.Fluent
 
         private static TextStyle Position(this TextStyle style, FontPosition fontPosition)
         {
-            if (style.FontPosition == fontPosition)
-                return style;
-
-            return style.Mutate(t => t.FontPosition = fontPosition);
+            return style.Mutate(TextStyleProperty.FontPosition, fontPosition);
         }
         #endregion
     }

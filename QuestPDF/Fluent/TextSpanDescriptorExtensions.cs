@@ -11,120 +11,124 @@ namespace QuestPDF.Fluent
             if (style == null)
                 return descriptor;
             
-            descriptor.TextStyle.OverrideStyle(style);
+            descriptor.MutateTextStyle(x => x.OverrideStyle(style));
             return descriptor;
         }
         
         public static T FontColor<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.Color = value;
+            descriptor.MutateTextStyle(x => x.FontColor(value));
             return descriptor;
         }
         
         public static T BackgroundColor<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.BackgroundColor = value;
+            descriptor.MutateTextStyle(x => x.BackgroundColor(value));
             return descriptor;
         }
         
         public static T FontFamily<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.FontFamily = value;
+            descriptor.MutateTextStyle(x => x.FontFamily(value));
             return descriptor;
         }
         
         public static T FontSize<T>(this T descriptor, float value) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.Size = value;
+            descriptor.MutateTextStyle(x => x.FontSize(value));
             return descriptor;
         }
         
         public static T LineHeight<T>(this T descriptor, float value) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.LineHeight = value;
+            descriptor.MutateTextStyle(x => x.LineHeight(value));
             return descriptor;
         }
         
         public static T Italic<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.IsItalic = value;
+            descriptor.MutateTextStyle(x => x.Italic(value));
             return descriptor;
         }
         
         public static T Strikethrough<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.HasStrikethrough = value;
+            descriptor.MutateTextStyle(x => x.Strikethrough(value));
             return descriptor;
         }
         
         public static T Underline<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.HasUnderline = value;
+            descriptor.MutateTextStyle(x => x.Underline(value));
             return descriptor;
         }
 
         public static T WrapAnywhere<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.WrapAnywhere = value;
+            descriptor.MutateTextStyle(x => x.WrapAnywhere(value));
             return descriptor;
         }
 
         #region Weight
         
-        public static T Weight<T>(this T descriptor, FontWeight weight) where T : TextSpanDescriptor
-        {
-            descriptor.TextStyle.FontWeight = weight;
-            return descriptor;
-        }
-        
         public static T Thin<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.Thin);
+            descriptor.MutateTextStyle(x => x.Thin());
+            return descriptor;
         }
         
         public static T ExtraLight<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.ExtraLight);
+            descriptor.MutateTextStyle(x => x.ExtraLight());
+            return descriptor;
         }
         
         public static T Light<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.Light);
+            descriptor.MutateTextStyle(x => x.Light());
+            return descriptor;
         }
         
         public static T NormalWeight<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.Normal);
+            descriptor.MutateTextStyle(x => x.NormalWeight());
+            return descriptor;
         }
         
         public static T Medium<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.Medium);
+            descriptor.MutateTextStyle(x => x.Medium());
+            return descriptor;
         }
         
         public static T SemiBold<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.SemiBold);
+            descriptor.MutateTextStyle(x => x.SemiBold());
+            return descriptor;
         }
         
         public static T Bold<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.Bold);
+            descriptor.MutateTextStyle(x => x.Bold());
+            return descriptor;
         }
         
         public static T ExtraBold<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.ExtraBold);
+            descriptor.MutateTextStyle(x => x.ExtraBold());
+            return descriptor;
         }
         
         public static T Black<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.Black);
+            descriptor.MutateTextStyle(x => x.Black());
+            return descriptor;
         }
         
         public static T ExtraBlack<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Weight(FontWeight.ExtraBlack);
+            descriptor.MutateTextStyle(x => x.ExtraBlack());
+            return descriptor;
         }
 
         #endregion
@@ -132,24 +136,22 @@ namespace QuestPDF.Fluent
         #region Position
         public static T NormalPosition<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Position(FontPosition.Normal);
+            descriptor.MutateTextStyle(x => x.NormalPosition());
+            return descriptor;
         }
 
         public static T Subscript<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Position(FontPosition.Subscript);
+            descriptor.MutateTextStyle(x => x.Subscript());
+            return descriptor;
         }
 
         public static T Superscript<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            return descriptor.Position(FontPosition.Superscript);
-        }
-
-        private static T Position<T>(this T descriptor, FontPosition fontPosition) where T : TextSpanDescriptor
-        {
-            descriptor.TextStyle.FontPosition = fontPosition;
+            descriptor.MutateTextStyle(x => x.Superscript());
             return descriptor;
         }
+        
         #endregion
     }
 }

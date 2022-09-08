@@ -172,7 +172,7 @@ namespace QuestPDF.Drawing
                 {
                     if (textBlockItem is TextBlockSpan textSpan)
                     {
-                        textSpan.Style.ApplyGlobalStyle(documentDefaultTextStyle);
+                        textSpan.Style = textSpan.Style.ApplyGlobalStyle(TextStyle.LibraryDefault);
                     }
                     else if (textBlockItem is TextBlockElement textElement)
                     {
@@ -184,18 +184,13 @@ namespace QuestPDF.Drawing
             }
 
             if (content is DynamicHost dynamicHost)
-                dynamicHost.TextStyle.ApplyGlobalStyle(documentDefaultTextStyle);
-            
-            var targetTextStyle = documentDefaultTextStyle;
+                dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyGlobalStyle(documentDefaultTextStyle);
             
             if (content is DefaultTextStyle defaultTextStyleElement)
-            {
-                defaultTextStyleElement.TextStyle.ApplyParentStyle(documentDefaultTextStyle);
-                targetTextStyle = defaultTextStyleElement.TextStyle;
-            }
-            
+               documentDefaultTextStyle = defaultTextStyleElement.TextStyle.ApplyGlobalStyle(documentDefaultTextStyle);
+
             foreach (var child in content.GetChildren())
-                ApplyDefaultTextStyle(child, targetTextStyle);
+                ApplyDefaultTextStyle(child, documentDefaultTextStyle);
         }
     }
 }
