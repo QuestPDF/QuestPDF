@@ -19,12 +19,10 @@ namespace QuestPDF.Infrastructure
         internal bool? HasUnderline { get; set; }
         internal bool? WrapAnywhere { get; set; }
 
-        internal object PaintKey { get; private set; }
-        internal object FontMetricsKey { get; private set; }
+        // TODO: without cache, this may be an expensive operation
+        internal object PaintKey => (FontFamily, Size, FontWeight, FontPosition, IsItalic, Color);
+        internal object FontMetricsKey => (FontFamily, Size, FontWeight, IsItalic);
         
-        // REVIEW: Should this be a method call that news up a TextStyle,
-        // or can it be a static variable?
-        // (style mutations seem to create a clone anyway)
         internal static readonly TextStyle LibraryDefault = new TextStyle
         {
             Color = Colors.Black,
@@ -49,10 +47,7 @@ namespace QuestPDF.Infrastructure
                 return;
             
             HasGlobalStyleApplied = true;
-
             ApplyParentStyle(globalStyle);
-            PaintKey ??= (FontFamily, Size, FontWeight, FontPosition, IsItalic, Color);
-            FontMetricsKey ??= (FontFamily, Size, FontWeight, IsItalic);
         }
         
         internal void ApplyParentStyle(TextStyle parentStyle)
