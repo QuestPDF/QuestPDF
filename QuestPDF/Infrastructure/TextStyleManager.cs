@@ -32,6 +32,9 @@ namespace QuestPDF.Infrastructure
 
         private static TextStyle MutateStyle(TextStyle origin, TextStyleProperty property, object value, bool overrideValue = true)
         {
+            if (overrideValue && value == null)
+                return origin;
+            
             if (property == TextStyleProperty.Color)
             {
                 if (!overrideValue && origin.Color != null)
