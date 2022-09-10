@@ -1,4 +1,5 @@
 ﻿using System;
+using HarfBuzzSharp;
 using QuestPDF.Helpers;
 
 namespace QuestPDF.Infrastructure
@@ -19,6 +20,8 @@ namespace QuestPDF.Infrastructure
         internal bool? HasUnderline { get; set; }
         internal bool? WrapAnywhere { get; set; }
 
+        internal TextStyle? Fallback { get; set; }
+        
         // TODO: without cache, this may be an expensive operation
         internal object PaintKey => (FontFamily, Size, FontWeight, FontPosition, IsItalic, Color);
         internal object FontMetricsKey => (FontFamily, Size, FontWeight, IsItalic);
@@ -35,7 +38,8 @@ namespace QuestPDF.Infrastructure
             IsItalic = false,
             HasStrikethrough = false,
             HasUnderline = false,
-            WrapAnywhere = false
+            WrapAnywhere = false,
+            Fallback = null
         };
 
         // it is important to create new instances for the DefaultTextStyle element to work correctly
@@ -48,9 +52,18 @@ namespace QuestPDF.Infrastructure
             
             HasGlobalStyleApplied = true;
             ApplyParentStyle(globalStyle);
+
+            if (Fallback != null)
+                ApplyFallbackStyle(this);
+        }
+
+        internal void ApplyFallbackStyle(TextStyle parentStyle)
+        {
+            ApplyParentStyle(parentStyle, false);
+            Fallback?.ApplyFallbackStyle(this);
         }
         
-        internal void ApplyParentStyle(TextStyle parentStyle)
+        internal void ApplyParentStyle(TextStyle parentStyle, bool mapFallback = true)
         {
             Color ??= parentStyle.Color;
             BackgroundColor ??= parentStyle.BackgroundColor;
@@ -63,6 +76,9 @@ namespace QuestPDF.Infrastructure
             HasStrikethrough ??= parentStyle.HasStrikethrough;
             HasUnderline ??= parentStyle.HasUnderline;
             WrapAnywhere ??= parentStyle.WrapAnywhere;
+            
+            if (mapFallback)
+                Fallback ??= parentStyle.Fallback?.Clone();
         }
 
         internal void OverrideStyle(TextStyle parentStyle)
@@ -78,12 +94,14 @@ namespace QuestPDF.Infrastructure
             HasStrikethrough = parentStyle.HasStrikethrough ?? HasStrikethrough;
             HasUnderline = parentStyle.HasUnderline ?? HasUnderline;
             WrapAnywhere = parentStyle.WrapAnywhere ?? WrapAnywhere;
+            Fallback = parentStyle.Fallback?.Clone() ?? Fallback;
         }
         
         internal TextStyle Clone()
         {
             var clone = (TextStyle)MemberwiseClone();
             clone.HasGlobalStyleApplied = false;
+            clone.Fallback = Fallback?.Clone();
             return clone;
         }
     }

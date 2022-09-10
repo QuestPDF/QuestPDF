@@ -625,7 +625,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .ProducePdf()
+                .ProduceImages()
                 .ShowResults()
                 .RenderDocument(container =>
                 {
@@ -633,6 +633,9 @@ namespace QuestPDF.Examples
                     {
                         page.Margin(50);
                         page.PageColor(Colors.White);
+                        page.DefaultTextStyle(x => x
+                            .Fallback(y => y.FontFamily("Segoe UI Emoji")
+                                .Fallback(y => y.FontFamily("Microsoft YaHei"))));
 
                         page.Size(PageSizes.A4);
 
@@ -640,11 +643,11 @@ namespace QuestPDF.Examples
                         {
                             t.Line("This is normal text.");
                             t.EmptyLine();
-
+                            
                             t.Line("Following line should use font fallback:");
                             t.Line("中文文本");
                             t.EmptyLine();
-
+                            
                             t.Line("The following line contains a mix of known and unknown characters.");
                             t.Line("Mixed line: This 中文 is 文文 a mixed 本 本 line 本 中文文本!");
                             t.EmptyLine();

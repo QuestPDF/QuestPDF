@@ -14,6 +14,16 @@ namespace QuestPDF.Fluent
             return style;
         }
         
+        public static TextStyle Fallback(this TextStyle style, TextStyle? value = null)
+        {
+            return style.Mutate(x => x.Fallback = value);
+        }
+        
+        public static TextStyle Fallback(this TextStyle style, Func<TextStyle, TextStyle> handler)
+        {
+            return style.Fallback(handler(TextStyle.Default));
+        }
+        
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontColor method.")]
         public static TextStyle Color(this TextStyle style, string value)
         {
