@@ -18,6 +18,7 @@ namespace QuestPDF.Infrastructure
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
         internal bool? WrapAnywhere { get; set; }
+        internal DropShadow? DropShadow { get; set; }
 
         internal object PaintKey { get; private set; }
         internal object FontMetricsKey { get; private set; }
@@ -51,7 +52,7 @@ namespace QuestPDF.Infrastructure
             HasGlobalStyleApplied = true;
 
             ApplyParentStyle(globalStyle);
-            PaintKey ??= (FontFamily, Size, FontWeight, FontPosition, IsItalic, Color);
+            PaintKey ??= (FontFamily, Size, FontWeight, FontPosition, IsItalic, Color, DropShadow?.Key);
             FontMetricsKey ??= (FontFamily, Size, FontWeight, IsItalic);
         }
         
@@ -68,6 +69,7 @@ namespace QuestPDF.Infrastructure
             HasStrikethrough ??= parentStyle.HasStrikethrough;
             HasUnderline ??= parentStyle.HasUnderline;
             WrapAnywhere ??= parentStyle.WrapAnywhere;
+            DropShadow ??= parentStyle.DropShadow;
         }
 
         internal void OverrideStyle(TextStyle parentStyle)
@@ -83,6 +85,7 @@ namespace QuestPDF.Infrastructure
             HasStrikethrough = parentStyle.HasStrikethrough ?? HasStrikethrough;
             HasUnderline = parentStyle.HasUnderline ?? HasUnderline;
             WrapAnywhere = parentStyle.WrapAnywhere ?? WrapAnywhere;
+            DropShadow = parentStyle.DropShadow ?? DropShadow;
         }
         
         internal TextStyle Clone()

@@ -77,6 +77,11 @@ namespace QuestPDF.Fluent
             return style.Mutate(x => x.WrapAnywhere = value);
         }
 
+        public static TextStyle DropShadow(this TextStyle style, float offsetX, float offsetY, float radius, string color)
+        {
+            return style.Mutate(x => x.DropShadow = new DropShadow(offsetX, offsetY, radius, radius, color));
+        }
+
         #region Weight
         
         public static TextStyle Weight(this TextStyle style, FontWeight weight)

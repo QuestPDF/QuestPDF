@@ -120,6 +120,7 @@ namespace QuestPDF.Drawing
                     Typeface = GetTypeface(style),
                     TextSize = (style.Size ?? 12) * GetTextScale(style),
                     IsAntialias = true,
+                    ImageFilter = GetImageFilter(style)
                 };
             }
 
@@ -167,6 +168,20 @@ namespace QuestPDF.Drawing
                     FontPosition.Superscript => 0.625f,
                     _ => throw new ArgumentOutOfRangeException()
                 };
+            }
+
+            static SKImageFilter GetImageFilter(TextStyle style)
+            {
+                if (style.DropShadow == null)
+                    return null;
+
+                return SKImageFilter.CreateDropShadow(
+                    style.DropShadow.OffsetX,
+                    style.DropShadow.OffsetY,
+                    style.DropShadow.BlurX,
+                    style.DropShadow.BlurY,
+                    SKColor.Parse(style.DropShadow.Color)
+                );
             }
         }
 
