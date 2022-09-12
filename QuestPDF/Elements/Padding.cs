@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Padding : ContainerElement, ICacheable
+    internal class Padding : ContainerElement, ICacheable, ICollectable
     {
         public float Top { get; set; }
         public float Right { get; set; }
@@ -61,6 +61,16 @@ namespace QuestPDF.Elements
         public override string ToString()
         {
             return $"Padding: Top({Top}) Right({Right}) Bottom({Bottom}) Left({Left})";
+        }
+        
+        public override void Collect()
+        {
+            base.Collect();
+            
+            Left = 0;
+            Right = 0;
+            Bottom = 0;
+            Top = 0;
         }
     }
 }

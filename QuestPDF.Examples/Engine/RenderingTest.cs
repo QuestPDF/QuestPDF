@@ -65,9 +65,9 @@ namespace QuestPDF.Examples.Engine
             return this;
         }
 
-        public RenderingTest ShowResults()
+        public RenderingTest ShowResults(bool value = true)
         {
-            ShowResult = true;
+            ShowResult = value;
             return this;
         }
         

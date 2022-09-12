@@ -41,5 +41,15 @@ namespace QuestPDF.Elements
         {
             return $"Border: Top({Top}) Right({Right}) Bottom({Bottom}) Left({Left}) Color({Color})";
         }
+        
+        public override void Collect()
+        {
+            base.Collect();
+            
+            Left = 0;
+            Right = 0;
+            Bottom = 0;
+            Top = 0;
+        }
     }
 }

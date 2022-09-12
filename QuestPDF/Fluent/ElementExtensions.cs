@@ -1,4 +1,5 @@
 ﻿using System;
+using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
@@ -52,10 +53,10 @@ namespace QuestPDF.Fluent
 
         public static IContainer Background(this IContainer element, string color)
         {
-            return element.Element(new Background
-            {
-                Color = color
-            });
+            var background = ElementCacheManager.Get<Background>();
+            background.Color = color;
+
+            return element.Element(background);
         }
 
         public static void Placeholder(this IContainer element, string? text = null)
@@ -162,7 +163,7 @@ namespace QuestPDF.Fluent
         
         public static IContainer MinimalBox(this IContainer element)
         {
-            return element.Element(new MinimalBox());
+            return element.Element(ElementCacheManager.Get<MinimalBox>());
         }
         
         public static IContainer Unconstrained(this IContainer element)

@@ -1,12 +1,14 @@
 ﻿using System;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
+using Container = System.ComponentModel.Container;
 
 namespace QuestPDF.Fluent
 {
     public class ColumnDescriptor
     {
-        internal Column Column { get; } = new();
+        internal Column Column { get; set; }
 
         public void Spacing(float value, Unit unit = Unit.Point)
         {
@@ -15,14 +17,9 @@ namespace QuestPDF.Fluent
         
         public IContainer Item()
         {
-            var container = new Container();
-            
-            Column.Items.Add(new ColumnItem
-            {
-                Child = container
-            });
-            
-            return container;
+            var columnItem = ElementCacheManager.Get<ColumnItem>();
+            Column.Items.Add(columnItem);
+            return columnItem;
         }
     }
     
@@ -36,7 +33,8 @@ namespace QuestPDF.Fluent
         
         public static void Column(this IContainer element, Action<ColumnDescriptor> handler)
         {
-            var descriptor = new ColumnDescriptor();
+            var descriptor = ElementCacheManager.Get<ColumnDescriptor>();
+            descriptor.Column = ElementCacheManager.Get<Column>();
             handler(descriptor);
             element.Element(descriptor.Column);
         }

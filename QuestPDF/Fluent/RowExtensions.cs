@@ -1,4 +1,5 @@
 ﻿using System;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
@@ -6,7 +7,7 @@ namespace QuestPDF.Fluent
 {
     public class RowDescriptor
     {
-        internal Row Row { get; } = new();
+        internal Row Row { get; set; } 
 
         public void Spacing(float value)
         {
@@ -15,14 +16,12 @@ namespace QuestPDF.Fluent
 
         private IContainer Item(RowItemType type, float size = 0)
         {
-            var element = new RowItem
-            {
-                Type = type,
-                Size = size
-            };
+            var rowItem = ElementCacheManager.Get<RowItem>();
+            rowItem.Type = type;
+            rowItem.Size = size;
             
-            Row.Items.Add(element);
-            return element;
+            Row.Items.Add(rowItem);
+            return rowItem;
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the RelativeItem method.")]
@@ -57,9 +56,12 @@ namespace QuestPDF.Fluent
     {
         public static void Row(this IContainer element, Action<RowDescriptor> handler)
         {
-            var descriptor = new RowDescriptor();
+            var descriptor = ElementCacheManager.Get<RowDescriptor>();
+            descriptor.Row = ElementCacheManager.Get<Row>();
+            
             handler(descriptor);
             element.Element(descriptor.Row);
+            ElementCacheManager.Store(descriptor);
         }
     }
 }

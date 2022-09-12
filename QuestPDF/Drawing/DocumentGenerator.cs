@@ -74,6 +74,8 @@ namespace QuestPDF.Drawing
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
             RenderPass(pageContext, canvas, content, debuggingState);
+            
+            ElementCacheManager.Collect(content);
         }
         
         internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)

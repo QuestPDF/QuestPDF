@@ -1,4 +1,5 @@
 ﻿using System;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
@@ -8,7 +9,7 @@ namespace QuestPDF.Fluent
     { 
         private static IContainer Padding(this IContainer element, Action<Padding> handler)
         {
-            var padding = element as Padding ?? new Padding();
+            var padding = element as Padding ?? ElementCacheManager.Get<Padding>();
             handler(padding);
             
             return element.Element(padding);

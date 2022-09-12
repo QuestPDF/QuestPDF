@@ -19,7 +19,7 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
     
-    internal class Column : Element, ICacheable, IStateResettable
+    internal class Column : Element, ICacheable, IStateResettable, ICollectable
     {
         internal List<ColumnItem> Items { get; } = new();
         internal float Spacing { get; set; }
@@ -123,6 +123,11 @@ namespace QuestPDF.Elements
             commands.ForEach(x => x.Size = new Size(targetWidth, x.Size.Height));
             
             return commands;
+        }
+
+        public void Collect()
+        {
+            Items.Clear();
         }
     }
 }

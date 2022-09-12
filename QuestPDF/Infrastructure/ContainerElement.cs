@@ -5,7 +5,7 @@ using QuestPDF.Elements;
 
 namespace QuestPDF.Infrastructure
 {
-    internal abstract class ContainerElement : Element, IContainer
+    internal abstract class ContainerElement : Element, IContainer, ICollectable
     {
         internal Element? Child { get; set; } = Empty.Instance;
 
@@ -33,6 +33,11 @@ namespace QuestPDF.Infrastructure
         internal override void Draw(Size availableSpace)
         {
             Child?.Draw(availableSpace);
+        }
+
+        public virtual void Collect()
+        {
+            Child = default;
         }
     }
 }

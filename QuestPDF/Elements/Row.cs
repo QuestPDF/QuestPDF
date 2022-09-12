@@ -31,7 +31,7 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
     
-    internal class Row : Element, ICacheable, IStateResettable
+    internal class Row : Element, ICacheable, IStateResettable, ICollectable
     {
         internal List<RowItem> Items { get; } = new();
         internal float Spacing { get; set; }
@@ -155,6 +155,11 @@ namespace QuestPDF.Elements
             }
             
             return renderingCommands;
+        }
+
+        public void Collect()
+        {
+            Items.Clear();
         }
     }
 }

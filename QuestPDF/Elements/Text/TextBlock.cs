@@ -8,7 +8,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text
 {
-    internal class TextBlock : Element, IStateResettable
+    internal class TextBlock : Element, IStateResettable, ICollectable
     {
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
@@ -37,6 +37,11 @@ namespace QuestPDF.Elements.Text
                 foreach (var item in Items)
                     RenderingQueue.Enqueue(item);
             }
+        }
+        
+        public void Collect()
+        {
+            Items.Clear();
         }
 
         internal override SpacePlan Measure(Size availableSpace)

@@ -1,4 +1,5 @@
 ﻿using System;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
@@ -8,7 +9,7 @@ namespace QuestPDF.Fluent
     {
         private static IContainer Border(this IContainer element, Action<Border> handler)
         {
-            var border = element as Border ?? new Border();
+            var border = element as Border ?? ElementCacheManager.Get<Border>();
             handler(border);
             
             return element.Element(border);
