@@ -4,8 +4,6 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    
-    
     public static class TextStyleExtensions
     {
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontColor method.")]
@@ -131,6 +129,7 @@ namespace QuestPDF.Fluent
         #endregion
 
         #region Position
+        
         public static TextStyle NormalPosition(this TextStyle style)
         {
             return style.Position(FontPosition.Normal);
@@ -150,6 +149,21 @@ namespace QuestPDF.Fluent
         {
             return style.Mutate(TextStyleProperty.FontPosition, fontPosition);
         }
+        
+        #endregion
+
+        #region Fallback
+        
+        public static TextStyle Fallback(this TextStyle style, TextStyle? value = null)
+        {
+            return style.Mutate(x => x.Fallback = value);
+        }
+        
+        public static TextStyle Fallback(this TextStyle style, Func<TextStyle, TextStyle> handler)
+        {
+            return style.Fallback(handler(TextStyle.Default));
+        }
+
         #endregion
     }
 }

@@ -17,6 +17,8 @@ namespace QuestPDF.Infrastructure
         internal bool? HasUnderline { get; set; }
         internal bool? WrapAnywhere { get; set; }
 
+        internal TextStyle? Fallback { get; set; }
+
         internal static TextStyle LibraryDefault { get; } = new()
         {
             Color = Colors.Black,
@@ -29,7 +31,8 @@ namespace QuestPDF.Infrastructure
             IsItalic = false,
             HasStrikethrough = false,
             HasUnderline = false,
-            WrapAnywhere = false
+            WrapAnywhere = false,
+            Fallback = null
         };
 
         public static TextStyle Default { get; } = new();

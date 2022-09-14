@@ -15,6 +15,17 @@ namespace QuestPDF.Fluent
             return descriptor;
         }
         
+        public static T Fallback<T>(this T descriptor, TextStyle? value = null) where T : TextSpanDescriptor
+        {
+            descriptor.TextStyle.Fallback = value;
+            return descriptor;
+        }
+        
+        public static T Fallback<T>(this T descriptor, Func<TextStyle, TextStyle> handler) where T : TextSpanDescriptor
+        {
+            return descriptor.Fallback(handler(TextStyle.Default));
+        }
+        
         public static T FontColor<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
             descriptor.MutateTextStyle(x => x.FontColor(value));
