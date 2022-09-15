@@ -35,6 +35,6 @@
         /// However, it provides hints that used fonts are not sufficient to produce correct results.
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
-        public static bool CheckIfAllTextGlyphsAreAvailableInSpecifiedFont { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        public static bool CheckIfAllTextGlyphsAreAvailable { get; set; } = System.Diagnostics.Debugger.IsAttached;
     }
 }

@@ -56,7 +56,7 @@ namespace QuestPDF.Drawing
                 yOffset += glyphPositions[i].YAdvance * scaleY;
             }
 
-            if (Settings.CheckIfAllTextGlyphsAreAvailableInSpecifiedFont)
+            if (Settings.CheckIfAllTextGlyphsAreAvailable)
                 CheckIfAllGlyphsAreAvailable(glyphs, text);
             
             return new TextShapingResult(glyphs);
