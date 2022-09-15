@@ -36,6 +36,7 @@ namespace QuestPDF.Fluent
         internal TextPageNumberDescriptor(Action<TextStyle> assignTextStyle, Action<PageNumberFormatter> assignFormatFunction) : base(assignTextStyle)
         {
             AssignFormatFunction = assignFormatFunction;
+            AssignFormatFunction(x => x?.ToString());
         }
 
         public TextPageNumberDescriptor Format(PageNumberFormatter formatter)

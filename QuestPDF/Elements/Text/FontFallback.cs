@@ -121,7 +121,7 @@ namespace QuestPDF.Elements.Text
         {
             foreach (var textBlockItem in textBlockItems)
             {
-                if (textBlockItem is TextBlockSpan textBlockSpan)
+                if (textBlockItem is TextBlockSpan textBlockSpan and not TextBlockPageNumber)
                 {
                     // perform font-fallback operation only when any fallback is available
                     if (textBlockSpan.Style.Fallback == null)
