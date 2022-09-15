@@ -111,7 +111,7 @@ namespace QuestPDF.Examples
             {
                 page.Margin(50);
                 
-                page.Content().Column(column =>
+                page.Content().PaddingVertical(10).Column(column =>
                 {
                     column.Item().Element(Title);
                     column.Item().PageBreak();
