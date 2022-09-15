@@ -16,13 +16,15 @@ namespace QuestPDF.Infrastructure
         IsItalic,
         HasStrikethrough,
         HasUnderline,
-        WrapAnywhere
+        WrapAnywhere,
+        Fallback
     }
     
     internal static class TextStyleManager
     {
-        public static ConcurrentDictionary<(TextStyle origin, TextStyleProperty property, object value), TextStyle> TextStyleMutateCache = new();
-        public static ConcurrentDictionary<(TextStyle origin, TextStyle parent, bool overrideValue), TextStyle> TextStyleApplyCache = new();
+        private static readonly ConcurrentDictionary<(TextStyle origin, TextStyleProperty property, object value), TextStyle> TextStyleMutateCache = new();
+        private static readonly ConcurrentDictionary<(TextStyle origin, TextStyle parent), TextStyle> TextStyleApplyGlobalCache = new();
+        private static readonly ConcurrentDictionary<(TextStyle origin, TextStyle parent), TextStyle> TextStyleOverrideCache = new();
 
         public static TextStyle Mutate(this TextStyle origin, TextStyleProperty property, object value)
         {
@@ -30,7 +32,7 @@ namespace QuestPDF.Infrastructure
             return TextStyleMutateCache.GetOrAdd(cacheKey, x => MutateStyle(x.origin, x.property, x.value));
         }
 
-        private static TextStyle MutateStyle(TextStyle origin, TextStyleProperty property, object value, bool overrideValue = true)
+        private static TextStyle MutateStyle(TextStyle origin, TextStyleProperty property, object? value, bool overrideValue = true)
         {
             if (overrideValue && value == null)
                 return origin;
@@ -177,38 +179,69 @@ namespace QuestPDF.Infrastructure
                 
                 return origin with { WrapAnywhere = castedValue };
             }
+            
+            if (property == TextStyleProperty.Fallback)
+            {
+                if (!overrideValue && origin.Fallback != null)
+                    return origin;
+
+                var castedValue = (TextStyle?)value;
+                
+                if (origin.Fallback == castedValue)
+                    return origin;
+                
+                return origin with { Fallback = castedValue };
+            }
 
             throw new ArgumentOutOfRangeException(nameof(property), property, "Expected to mutate the TextStyle object. Provided property type is not supported.");
         }
         
         internal static TextStyle ApplyGlobalStyle(this TextStyle style, TextStyle parent)
         {
-            var cacheKey = (style, parent, false);
-            return TextStyleApplyCache.GetOrAdd(cacheKey, key => ApplyStyle(key.origin, key.parent, key.overrideValue));
+            var cacheKey = (style, parent);
+            return TextStyleApplyGlobalCache.GetOrAdd(cacheKey, key => ApplyStyle(key.origin, key.parent, overrideStyle: false).ApplyFontFallback());
+        }
+        
+        private static TextStyle ApplyFontFallback(this TextStyle style)
+        {
+            var targetFallbackStyle = style
+                ?.Fallback
+                ?.ApplyStyle(style, overrideStyle: false, applyFallback: false)
+                ?.ApplyFontFallback();
+            
+            return MutateStyle(style, TextStyleProperty.Fallback, targetFallbackStyle);
         }
         
         internal static TextStyle OverrideStyle(this TextStyle style, TextStyle parent)
         {
-            var cacheKey = (style, parent, true);
-            return TextStyleApplyCache.GetOrAdd(cacheKey, key => ApplyStyle(key.origin, key.parent, key.overrideValue));
+            var cacheKey = (style, parent);
+            
+            return TextStyleOverrideCache.GetOrAdd(cacheKey, key =>
+            {
+                var result = ApplyStyle(key.origin, key.parent);
+                return MutateStyle(result, TextStyleProperty.Fallback, key.parent.Fallback);
+            });
         }
         
-        private static TextStyle ApplyStyle(TextStyle style, TextStyle parent, bool overrideValue)
+        private static TextStyle ApplyStyle(this TextStyle style, TextStyle parent, bool overrideStyle = true, bool applyFallback = true)
         {
             var result = style;
 
-            result = MutateStyle(result, TextStyleProperty.Color, parent.Color, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.BackgroundColor, parent.BackgroundColor, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.Size, parent.Size, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.LineHeight, parent.LineHeight, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.FontWeight, parent.FontWeight, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.FontPosition, parent.FontPosition, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.IsItalic, parent.IsItalic, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.HasStrikethrough, parent.HasStrikethrough, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.HasUnderline, parent.HasUnderline, overrideValue);
-            result = MutateStyle(result, TextStyleProperty.WrapAnywhere, parent.WrapAnywhere, overrideValue);
+            result = MutateStyle(result, TextStyleProperty.Color, parent.Color, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.BackgroundColor, parent.BackgroundColor, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.Size, parent.Size, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.LineHeight, parent.LineHeight, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.FontWeight, parent.FontWeight, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.FontPosition, parent.FontPosition, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.IsItalic, parent.IsItalic, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.HasStrikethrough, parent.HasStrikethrough, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.HasUnderline, parent.HasUnderline, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.WrapAnywhere, parent.WrapAnywhere, overrideStyle);
             
+            if (applyFallback)
+                result = MutateStyle(result, TextStyleProperty.Fallback, parent.Fallback, overrideStyle);
+
             return result;
         }
     }

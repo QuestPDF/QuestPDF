@@ -172,7 +172,7 @@ namespace QuestPDF.Drawing
                 {
                     if (textBlockItem is TextBlockSpan textSpan)
                     {
-                        textSpan.Style = textSpan.Style.ApplyGlobalStyle(TextStyle.LibraryDefault);
+                        textSpan.Style = textSpan.Style.ApplyGlobalStyle(documentDefaultTextStyle);
                     }
                     else if (textBlockItem is TextBlockElement textElement)
                     {

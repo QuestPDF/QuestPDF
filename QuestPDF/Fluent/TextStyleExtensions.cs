@@ -156,7 +156,7 @@ namespace QuestPDF.Fluent
         
         public static TextStyle Fallback(this TextStyle style, TextStyle? value = null)
         {
-            return style.Mutate(x => x.Fallback = value);
+            return style.Mutate(TextStyleProperty.Fallback, value);
         }
         
         public static TextStyle Fallback(this TextStyle style, Func<TextStyle, TextStyle> handler)

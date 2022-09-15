@@ -85,22 +85,26 @@ namespace QuestPDF.Elements.Text
                     if (fallbackOption.Font.ContainsGlyph(codepoint))
                         return fallbackOption;
                 }
-                
+
+                throw CreateNotMatchingFontException(codepoint);
+            }
+
+            static Exception CreateNotMatchingFontException(int codepoint)
+            {
                 var character = char.ConvertFromUtf32(codepoint);
                 var unicode = $"U-{codepoint:X4}";
-
 
                 var proposedFonts = FindFontsContainingGlyph(codepoint);
                 var proposedFontsFormatted = proposedFonts.Any() ? string.Join(", ", proposedFonts) : "no fonts available";
                 
-                throw new DocumentDrawingException(
+                return new DocumentDrawingException(
                     $"Could not find an appropriate font fallback for glyph: {unicode} '{character}'. " +
                     $"Font families available on current environment that contain this glyph: {proposedFontsFormatted}. " +
                     $"Possible solutions: " +
                     $"1) Use one of the listed fonts as the primary font in your document. " +
                     $"2) Configure the fallback TextStyle using the 'TextStyle.Fallback' method with one of the listed fonts. ");
             }
-
+            
             static IEnumerable<string> FindFontsContainingGlyph(int codepoint)
             {
                 var fontManager = SKFontManager.Default;
