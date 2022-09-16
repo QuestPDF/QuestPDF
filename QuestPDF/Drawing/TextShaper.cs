@@ -55,9 +55,6 @@ namespace QuestPDF.Drawing
                 xOffset += glyphPositions[i].XAdvance * scaleX;
                 yOffset += glyphPositions[i].YAdvance * scaleY;
             }
-
-            if (Settings.CheckIfAllTextGlyphsAreAvailable)
-                CheckIfAllGlyphsAreAvailable(glyphs, text);
             
             return new TextShapingResult(glyphs);
         }
@@ -77,20 +74,6 @@ namespace QuestPDF.Drawing
 
             else
                 throw new NotSupportedException("TextEncoding of type GlyphId is not supported.");
-        }
-        
-        void CheckIfAllGlyphsAreAvailable(ShapedGlyph[] glyphs, string originalText)
-        {
-            var containsMissingGlyphs = glyphs.Any(x => x.Codepoint == default);
-            
-            if (!containsMissingGlyphs)
-                return;
-            
-            throw new ArgumentException(
-                $"Detected missing font glyphs while rendering text. " +
-                $"This means that the document contains text with characters not present in the assigned font. " +
-                $"Such characters are replaced by placeholders, usually visible as empty rectangles. " +
-                $"Font family used: {TextStyle.FontFamily}. Issue detected in text: '{originalText}'");
         }
     }
     

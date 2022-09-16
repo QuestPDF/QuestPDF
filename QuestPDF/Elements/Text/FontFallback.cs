@@ -123,8 +123,7 @@ namespace QuestPDF.Elements.Text
             {
                 if (textBlockItem is TextBlockSpan textBlockSpan and not TextBlockPageNumber)
                 {
-                    // perform font-fallback operation only when any fallback is available
-                    if (textBlockSpan.Style.Fallback == null)
+                    if (!Settings.CheckIfAllTextGlyphsAreAvailable && textBlockSpan.Style.Fallback == null)
                     {
                         yield return textBlockSpan;
                         continue;
