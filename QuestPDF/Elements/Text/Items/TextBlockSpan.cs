@@ -14,7 +14,7 @@ namespace QuestPDF.Elements.Text.Items
     internal class TextBlockSpan : ITextBlockItem
     {
         public string Text { get; set; }
-        public TextStyle Style { get; set; } = new();
+        public TextStyle Style { get; set; } = TextStyle.Default;
         public TextShapingResult? TextShapingResult { get; set; }
 
         private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new ();

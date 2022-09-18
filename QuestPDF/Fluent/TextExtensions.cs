@@ -12,11 +12,18 @@ namespace QuestPDF.Fluent
 {
     public class TextSpanDescriptor
     {
-        internal TextStyle TextStyle { get; }
+        internal TextStyle TextStyle = TextStyle.Default;
+        internal Action<TextStyle> AssignTextStyle { get; }
 
-        internal TextSpanDescriptor(TextStyle textStyle)
+        internal TextSpanDescriptor(Action<TextStyle> assignTextStyle)
         {
-            TextStyle = textStyle;
+            AssignTextStyle = assignTextStyle;
+        }
+
+        internal void MutateTextStyle(Func<TextStyle, TextStyle> handler)
+        {
+            TextStyle = handler(TextStyle);
+            AssignTextStyle(TextStyle);
         }
     }
 
@@ -24,16 +31,17 @@ namespace QuestPDF.Fluent
     
     public class TextPageNumberDescriptor : TextSpanDescriptor
     {
-        internal PageNumberFormatter FormatFunction { get; private set; } = x => x?.ToString() ?? string.Empty;
-
-        internal TextPageNumberDescriptor(TextStyle textStyle) : base(textStyle)
+        internal Action<PageNumberFormatter> AssignFormatFunction { get; }
+        
+        internal TextPageNumberDescriptor(Action<TextStyle> assignTextStyle, Action<PageNumberFormatter> assignFormatFunction) : base(assignTextStyle)
         {
-            
+            AssignFormatFunction = assignFormatFunction;
+            AssignFormatFunction(x => x?.ToString());
         }
 
         public TextPageNumberDescriptor Format(PageNumberFormatter formatter)
         {
-            FormatFunction = formatter ?? FormatFunction;
+            AssignFormatFunction(formatter);
             return this;
         }
     }
@@ -41,7 +49,7 @@ namespace QuestPDF.Fluent
     public class TextDescriptor
     {
         private ICollection<TextBlock> TextBlocks { get; } = new List<TextBlock>();
-        private TextStyle DefaultStyle { get; set; } = TextStyle.Default;
+        private TextStyle? DefaultStyle { get; set; }
         internal HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         private float Spacing { get; set; } = 0f;
 
@@ -91,19 +99,15 @@ namespace QuestPDF.Fluent
         
         public TextSpanDescriptor Span(string? text)
         {
-            var style = DefaultStyle.Clone();
-            var descriptor = new TextSpanDescriptor(style);
-
             if (text == null)
-                return descriptor;
+                return new TextSpanDescriptor(_ => { });
  
             var items = text
                 .Replace("\r", string.Empty)
                 .Split(new[] { '\n' }, StringSplitOptions.None)
                 .Select(x => new TextBlockSpan
                 {
-                    Text = x,
-                    Style = style
+                    Text = x
                 })
                 .ToList();
 
@@ -118,7 +122,7 @@ namespace QuestPDF.Fluent
                 .ToList()
                 .ForEach(TextBlocks.Add);
 
-            return descriptor;
+            return new TextSpanDescriptor(x => items.ForEach(y => y.Style = x));
         }
 
         public TextSpanDescriptor Line(string? text)
@@ -134,16 +138,10 @@ namespace QuestPDF.Fluent
         
         private TextPageNumberDescriptor PageNumber(Func<IPageContext, int?> pageNumber)
         {
-            var style = DefaultStyle.Clone();
-            var descriptor = new TextPageNumberDescriptor(style);
+            var textBlockItem = new TextBlockPageNumber();
+            AddItemToLastTextBlock(textBlockItem);
             
-            AddItemToLastTextBlock(new TextBlockPageNumber
-            {
-                Source = context => descriptor.FormatFunction(pageNumber(context)),
-                Style = style
-            });
-            
-            return descriptor;
+            return new TextPageNumberDescriptor(x => textBlockItem.Style = x, x => textBlockItem.Source = context => x(pageNumber(context)));
         }
 
         public TextPageNumberDescriptor CurrentPageNumber()
@@ -187,20 +185,17 @@ namespace QuestPDF.Fluent
             if (IsNullOrEmpty(sectionName))
                 throw new ArgumentException("Section name cannot be null or empty", nameof(sectionName));
 
-            var style = DefaultStyle.Clone();
-            var descriptor = new TextSpanDescriptor(style);
-            
             if (IsNullOrEmpty(text))
-                return descriptor;
-            
-            AddItemToLastTextBlock(new TextBlockSectionLink
+                return new TextSpanDescriptor(_ => { });
+
+            var textBlockItem = new TextBlockSectionLink
             {
-                Style = style,
                 Text = text,
                 SectionName = sectionName
-            });
+            };
 
-            return descriptor;
+            AddItemToLastTextBlock(textBlockItem);
+            return new TextSpanDescriptor(x => textBlockItem.Style = x);
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]
@@ -214,20 +209,17 @@ namespace QuestPDF.Fluent
             if (IsNullOrEmpty(url))
                 throw new ArgumentException("Url cannot be null or empty", nameof(url));
 
-            var style = DefaultStyle.Clone();
-            var descriptor = new TextSpanDescriptor(style);
-
             if (IsNullOrEmpty(text))
-                return descriptor;
+                return new TextSpanDescriptor(_ => { });
             
-            AddItemToLastTextBlock(new TextBlockHyperlink
+            var textBlockItem = new TextBlockHyperlink
             {
-                Style = style,
                 Text = text,
                 Url = url
-            });
+            };
 
-            return descriptor;
+            AddItemToLastTextBlock(textBlockItem);
+            return new TextSpanDescriptor(x => textBlockItem.Style = x);
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the Hyperlink method.")]
@@ -251,7 +243,9 @@ namespace QuestPDF.Fluent
         internal void Compose(IContainer container)
         {
             TextBlocks.ToList().ForEach(x => x.Alignment = Alignment);
-            container = container.DefaultTextStyle(DefaultStyle);
+            
+            if (DefaultStyle != null)
+                container = container.DefaultTextStyle(DefaultStyle);
 
             if (TextBlocks.Count == 1)
             {

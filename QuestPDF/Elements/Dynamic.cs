@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
 
-        internal TextStyle TextStyle { get; } = new();
+        internal TextStyle TextStyle { get; set; } = TextStyle.Default;
 
         public DynamicHost(DynamicComponentProxy child)
         {

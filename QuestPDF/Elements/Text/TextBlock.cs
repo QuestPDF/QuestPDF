@@ -18,8 +18,11 @@ namespace QuestPDF.Elements.Text
         private Queue<ITextBlockItem> RenderingQueue { get; set; }
         private int CurrentElementIndex { get; set; }
 
+        private bool FontFallbackApplied { get; set; } = false;
+        
         public void ResetState()
         {
+            ApplyFontFallback();
             InitializeQueue();
             CurrentElementIndex = 0;
 
@@ -36,6 +39,15 @@ namespace QuestPDF.Elements.Text
             
                 foreach (var item in Items)
                     RenderingQueue.Enqueue(item);
+            }
+
+            void ApplyFontFallback()
+            {
+                if (FontFallbackApplied)
+                    return;
+
+                Items = Items.ApplyFontFallback().ToList();
+                FontFallbackApplied = true;
             }
         }
 

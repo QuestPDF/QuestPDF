@@ -14,13 +14,13 @@ namespace QuestPDF.Drawing
 {
     public static class FontManager
     {
-        private static ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
-        private static ConcurrentDictionary<object, SKFontMetrics> FontMetrics = new();
-        private static ConcurrentDictionary<object, SKPaint> FontPaints = new();
-        private static ConcurrentDictionary<string, SKPaint> ColorPaints = new();
-        private static ConcurrentDictionary<object, Font> ShaperFonts = new();
-        private static ConcurrentDictionary<object, SKFont> Fonts = new();
-        private static ConcurrentDictionary<object, TextShaper> TextShapers = new();
+        private static readonly ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
+        private static readonly ConcurrentDictionary<TextStyle, SKFontMetrics> FontMetrics = new();
+        private static readonly ConcurrentDictionary<TextStyle, SKPaint> FontPaints = new();
+        private static readonly ConcurrentDictionary<string, SKPaint> ColorPaints = new();
+        private static readonly ConcurrentDictionary<TextStyle, Font> ShaperFonts = new();
+        private static readonly ConcurrentDictionary<TextStyle, SKFont> Fonts = new();
+        private static readonly ConcurrentDictionary<TextStyle, TextShaper> TextShapers = new();
 
         static FontManager()
         {
@@ -110,7 +110,7 @@ namespace QuestPDF.Drawing
 
         internal static SKPaint ToPaint(this TextStyle style)
         {
-            return FontPaints.GetOrAdd(style.PaintKey, key => Convert(style));
+            return FontPaints.GetOrAdd(style, Convert);
 
             static SKPaint Convert(TextStyle style)
             {
@@ -172,14 +172,14 @@ namespace QuestPDF.Drawing
 
         internal static SKFontMetrics ToFontMetrics(this TextStyle style)
         {
-            return FontMetrics.GetOrAdd(style.FontMetricsKey, key => style.NormalPosition().ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(style, key => key.NormalPosition().ToPaint().FontMetrics);
         }
 
         internal static Font ToShaperFont(this TextStyle style)
         {
-            return ShaperFonts.GetOrAdd(style.PaintKey, _ =>
+            return ShaperFonts.GetOrAdd(style, key =>
             {
-                var typeface = style.ToPaint().Typeface;
+                var typeface = key.ToPaint().Typeface;
 
                 using var harfBuzzBlob = typeface.OpenStream(out var ttcIndex).ToHarfBuzzBlob();
                 
@@ -200,12 +200,12 @@ namespace QuestPDF.Drawing
         
         internal static TextShaper ToTextShaper(this TextStyle style)
         {
-            return TextShapers.GetOrAdd(style.PaintKey, _ => new TextShaper(style));
+            return TextShapers.GetOrAdd(style, key => new TextShaper(key));
         }
         
         internal static SKFont ToFont(this TextStyle style)
         {
-            return Fonts.GetOrAdd(style.PaintKey, _ => style.ToPaint().ToFont());
+            return Fonts.GetOrAdd(style, key => key.ToPaint().ToFont());
         }
     }
 }
