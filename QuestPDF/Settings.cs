@@ -3,7 +3,7 @@
     public static class Settings
     {
         /// <summary>
-        /// This value represents the maximum lenght of the document that the library produces.
+        /// This value represents the maximum length of the document that the library produces.
         /// This is useful when layout constraints are too strong, e.g. one element does not fit in another.
         /// In such cases, the library would produce document of infinite length, consuming all available resources.
         /// To break the algorithm and save the environment, the library breaks the rendering process after reaching specified length of document.
