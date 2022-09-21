@@ -195,5 +195,13 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new ScaleToFit());
         }
+        
+        public static IContainer RepeatContent(this IContainer element, bool enabled = true)
+        {
+            return element.Element(new RepeatContent
+            {
+                Repeat = enabled
+            });
+        }
     }
 }

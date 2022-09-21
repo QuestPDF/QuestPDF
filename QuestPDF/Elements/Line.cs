@@ -15,7 +15,7 @@ namespace QuestPDF.Elements
         Horizontal
     }
     
-    internal class Line : Element, ILine, ICacheable
+    internal class Line : Element, ILine, ICacheable, IContent
     {
         public LineType Type { get; set; } = LineType.Vertical;
         public string Color { get; set; } = Colors.Black;

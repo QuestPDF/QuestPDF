@@ -64,6 +64,8 @@ namespace QuestPDF.Drawing
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
+
+            ApplyRepeatContent(content);
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
             
             var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
@@ -191,6 +193,24 @@ namespace QuestPDF.Drawing
 
             foreach (var child in content.GetChildren())
                 ApplyDefaultTextStyle(child, documentDefaultTextStyle);
+        }
+        
+        internal static void ApplyRepeatContent(this Element? content, bool enabled = false)
+        {
+            if (content == null)
+                return;
+
+            if (content is RepeatContent repeatContent)
+            {
+                ApplyRepeatContent(repeatContent.Child, repeatContent.Repeat);
+                return;
+            }
+            
+            foreach (var child in content.GetChildren())
+                ApplyRepeatContent(child, enabled);
+            
+            if (!enabled)
+                content.CreateProxy(y => y is IContent ? new ShowOnce { Child = y } : y);
         }
     }
 }

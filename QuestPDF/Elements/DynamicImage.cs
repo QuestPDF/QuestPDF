@@ -6,7 +6,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Elements
 {
-    internal class DynamicImage : Element
+    internal class DynamicImage : Element, IContent
     {
         public Func<Size, byte[]>? Source { get; set; }
         

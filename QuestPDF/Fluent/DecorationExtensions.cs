@@ -12,7 +12,7 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
             Decoration.Before = container;
-            return container;
+            return container.RepeatContent();
         }
         
         public void Before(Action<IContainer> handler)
@@ -36,7 +36,7 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
             Decoration.After = container;
-            return container;
+            return container.RepeatContent();
         }
         
         public void After(Action<IContainer> handler)

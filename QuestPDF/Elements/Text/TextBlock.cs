@@ -8,7 +8,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text
 {
-    internal class TextBlock : Element, IStateResettable
+    internal class TextBlock : Element, IStateResettable, IContent
     {
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
