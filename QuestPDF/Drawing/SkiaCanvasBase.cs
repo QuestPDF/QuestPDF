@@ -38,6 +38,11 @@ namespace QuestPDF.Drawing
             Canvas.DrawImage(image, new SKRect(vector.X, vector.Y, size.Width, size.Height));
         }
 
+        public void DrawPicture(SKPicture picture)
+        {
+            Canvas.DrawPicture(picture);
+        }
+
         public void DrawHyperlink(string url, Size size)
         {
             Canvas.DrawUrlAnnotation(new SKRect(0, 0, size.Width, size.Height), url);

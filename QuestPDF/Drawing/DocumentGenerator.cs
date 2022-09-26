@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using QuestPDF.Drawing.Exceptions;
@@ -67,13 +68,24 @@ namespace QuestPDF.Drawing
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
             
             var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
+            debuggingState = null;
             
-            if (Settings.EnableCaching)
-                ApplyCaching(content);
+            //if (Settings.EnableCaching)
+                //ApplyCaching(content);
 
             var pageContext = new PageContext();
+
+            var stopwatch = new Stopwatch();
+            
+            stopwatch.Restart(); 
             RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
+            stopwatch.Stop();
+            Console.WriteLine($"Cold free: {stopwatch.Elapsed}");
+
+            stopwatch.Restart();
             RenderPass(pageContext, canvas, content, debuggingState);
+            stopwatch.Stop();
+            Console.WriteLine($"Canvas: {stopwatch.Elapsed}");
         }
         
         internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)

@@ -30,6 +30,7 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
+                //.Element(new DrawingCache())
                 .Background(BackgroundColor)
                 .Layers(layers =>
                 {

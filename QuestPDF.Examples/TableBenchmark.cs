@@ -17,7 +17,7 @@ namespace QuestPDF.Examples
                 .PageSize(PageSizes.A4)
                 .ShowResults()
                 .MaxPages(10_000)
-                .EnableCaching(true)
+                //.EnableCaching(true)
                 .EnableDebugging(false)
                 .Render(container =>
                 {

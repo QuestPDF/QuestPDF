@@ -24,7 +24,10 @@ namespace QuestPDF.ReportSample
         [Test] 
         public void GenerateAndShowPdf()
         {
-            //ImagePlaceholder.Solid = true;
+            Settings.DocumentLayoutExceptionThreshold = 10_000;
+            Settings.EnableCaching = true;
+            Settings.EnableDebugging = false;
+            ImagePlaceholder.Solid = true;
         
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
             Report.GeneratePdf(path);
