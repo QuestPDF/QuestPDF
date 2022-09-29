@@ -4,8 +4,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class AspectRatio : ContainerElement, ICacheable
+    internal class AspectRatio : ContainerElement, ICacheable, IContentDirectionAware
     {
+        public ContentDirection ContentDirection { get; set; }
+        
         public float Ratio { get; set; } = 1;
         public AspectRatioOption Option { get; set; } = AspectRatioOption.FitWidth;
         
@@ -42,7 +44,10 @@ namespace QuestPDF.Elements
                 return;
             
             var size = GetTargetSize(availableSpace);
-            var offset = new Position(availableSpace.Width - size.Width, 0);
+            
+            var offset = ContentDirection == ContentDirection.LeftToRight
+                ? Position.Zero
+                : new Position(availableSpace.Width - size.Width, 0);
             
             Canvas.Translate(offset);
             base.Draw(size);
