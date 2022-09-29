@@ -2,6 +2,7 @@
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
@@ -102,6 +103,25 @@ namespace QuestPDF.Examples
                             table.Cell().Background(Colors.Green.Lighten2).Height(200);
                             table.Cell().Background(Colors.Blue.Lighten2).Height(200);
                         });
+                });
+        }
+        
+        [Test]
+        public void AspectRatio()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(600, 600)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .ContentFromRightToLeft()
+                        .Border(1)
+                        .AspectRatio(0.55f, AspectRatioOption.FitArea)
+                        .Background(Colors.Red.Medium);
                 });
         }
     }

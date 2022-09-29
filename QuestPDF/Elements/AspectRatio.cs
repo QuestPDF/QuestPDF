@@ -42,7 +42,11 @@ namespace QuestPDF.Elements
                 return;
             
             var size = GetTargetSize(availableSpace);
+            var offset = new Position(availableSpace.Width - size.Width, 0);
+            
+            Canvas.Translate(offset);
             base.Draw(size);
+            Canvas.Translate(offset.Reverse());
         }
         
         private Size GetTargetSize(Size availableSpace)
