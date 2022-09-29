@@ -29,7 +29,7 @@ namespace QuestPDF.Elements
                 InternalImage = SKImage.FromEncodedData(imageData)
             };
             
-            imageElement.Initialize(PageContext, Canvas);
+            imageElement.InjectDependencies(PageContext, Canvas);
             imageElement.Draw(availableSpace);
         }
     }

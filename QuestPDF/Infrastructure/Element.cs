@@ -15,12 +15,6 @@ namespace QuestPDF.Infrastructure
             yield break;
         }
 
-        internal virtual void Initialize(IPageContext pageContext, ICanvas canvas)
-        {
-            PageContext = pageContext;
-            Canvas = canvas;
-        }
-
         internal virtual void CreateProxy(Func<Element?, Element?> create)
         {
             

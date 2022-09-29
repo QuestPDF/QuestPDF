@@ -19,7 +19,7 @@ namespace QuestPDF.Elements.Text
         private int CurrentElementIndex { get; set; }
 
         private bool FontFallbackApplied { get; set; } = false;
-        
+
         public void ResetState()
         {
             ApplyFontFallback();

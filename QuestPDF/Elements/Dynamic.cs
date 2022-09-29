@@ -92,7 +92,7 @@ namespace QuestPDF.Elements
             container.ApplyDefaultTextStyle(TextStyle);
             container.ApplyContentDirection(ContentDirection);
             
-            container.VisitChildren(x => x?.Initialize(PageContext, Canvas));
+            container.InjectDependencies(PageContext, Canvas);
             container.VisitChildren(x => (x as IStateResettable)?.ResetState());
 
             container.Size = container.Measure(Size.Max);

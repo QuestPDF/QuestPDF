@@ -195,7 +195,7 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public TestPlan CheckMeasureResult(SpacePlan expected)
         {
-            Element.VisitChildren(x => x?.Initialize(null, Canvas));
+            Element.InjectDependencies(null, Canvas);
             
             var actual = Element.Measure(OperationInput);
             
@@ -210,7 +210,7 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public TestPlan CheckDrawResult()
         {
-            Element.VisitChildren(x => x?.Initialize(null, Canvas));
+            Element.InjectDependencies(null, Canvas);
             Element.Draw(OperationInput);
             return this;
         }
@@ -253,10 +253,10 @@ namespace QuestPDF.UnitTests.TestEngine
             availableSpace ??= new Size(400, 300);
             
             var canvas = new FreeCanvas();
-            value.VisitChildren(x => x.Initialize(null, canvas));
+            value.InjectDependencies(null, canvas);
             var valueMeasure = value.Measure(availableSpace.Value);
             
-            expected.VisitChildren(x => x.Initialize(null, canvas));
+            expected.InjectDependencies(null, canvas);
             var expectedMeasure = expected.Measure(availableSpace.Value);
             
             valueMeasure.Should().BeEquivalentTo(expectedMeasure);
@@ -267,11 +267,11 @@ namespace QuestPDF.UnitTests.TestEngine
             availableSpace ??= new Size(400, 300);
             
             var valueCanvas = new OperationRecordingCanvas();
-            value.VisitChildren(x => x.Initialize(null, valueCanvas));
+            value.InjectDependencies(null, valueCanvas);
             value.Draw(availableSpace.Value);
             
             var expectedCanvas = new OperationRecordingCanvas();
-            expected.VisitChildren(x => x.Initialize(null, expectedCanvas));
+            expected.InjectDependencies(null, expectedCanvas);
             expected.Draw(availableSpace.Value);
             
             valueCanvas.Operations.Should().BeEquivalentTo(expectedCanvas.Operations);

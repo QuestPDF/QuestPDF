@@ -17,6 +17,7 @@ namespace QuestPDF.Elements.Table
         public List<TableCell> Cells { get; set; } = new();
         public bool ExtendLastCellsToTableBottom { get; set; }
         
+        private bool CacheInitialized { get; set; }
         private int StartingRowsCount { get; set; }
         private int RowsCount { get; set; }
         private int CurrentRow { get; set; }
@@ -27,16 +28,6 @@ namespace QuestPDF.Elements.Table
         private TableCell[][] CellsCache { get; set; }
         private int MaxRow { get; set; }
         
-        internal override void Initialize(IPageContext pageContext, ICanvas canvas)
-        {
-            StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
-            RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
-            Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
-            BuildCache();
-
-            base.Initialize(pageContext, canvas);
-        }
-
         internal override IEnumerable<Element?> GetChildren()
         {
             return Cells;
@@ -44,10 +35,25 @@ namespace QuestPDF.Elements.Table
 
         public void ResetState()
         {
+            Initialize();
+            
             foreach (var x in Cells)
                 x.IsRendered = false;
             
             CurrentRow = 1;
+        }
+        
+        private void Initialize()
+        {
+            if (!CacheInitialized)
+                return;
+
+            StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
+            RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
+            Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
+            BuildCache();
+
+            CacheInitialized = true;
         }
 
         private void BuildCache()

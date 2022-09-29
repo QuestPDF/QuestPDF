@@ -8,7 +8,7 @@ namespace QuestPDF.Elements
 {
     internal class Page : IComponent
     {
-        public TextStyle DefaultTextStyle { get; set; } = new TextStyle();
+        public TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;
         
         public Size MinSize { get; set; } = PageSizes.A4;
         public Size MaxSize { get; set; } = PageSizes.A4;
