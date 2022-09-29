@@ -9,10 +9,12 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
 {
-    internal class Table : Element, IStateResettable
+    internal class Table : Element, IStateResettable, IContentDirectionAware
     {
-        public List<TableColumnDefinition> Columns { get; set; } = new List<TableColumnDefinition>();
-        public List<TableCell> Cells { get; set; } = new List<TableCell>();
+        public ContentDirection ContentDirection { get; set; }
+        
+        public List<TableColumnDefinition> Columns { get; set; } = new();
+        public List<TableCell> Cells { get; set; } = new();
         public bool ExtendLastCellsToTableBottom { get; set; }
         
         private int StartingRowsCount { get; set; }
@@ -109,9 +111,13 @@ namespace QuestPDF.Elements.Table
                 if (command.Measurement.Type == SpacePlanType.Wrap)
                     continue;
                 
-                Canvas.Translate(command.Offset);
+                var offset = ContentDirection == ContentDirection.LeftToRight
+                    ? command.Offset
+                    : new Position(availableSpace.Width - command.Offset.X - command.Size.Width, 0);
+                
+                Canvas.Translate(offset);
                 command.Cell.Draw(command.Size);
-                Canvas.Translate(command.Offset.Reverse());
+                Canvas.Translate(offset.Reverse());
             }
 
             CurrentRow = FindLastRenderedRow(renderingCommands) + 1;
@@ -158,7 +164,7 @@ namespace QuestPDF.Elements.Table
             
             if (ExtendLastCellsToTableBottom)
                 AdjustLastCellSizes(tableHeight, commands);
-
+            
             return commands;
 
             static float[] GetColumnLeftOffsets(IList<TableColumnDefinition> columns)
