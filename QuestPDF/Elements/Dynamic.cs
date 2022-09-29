@@ -6,13 +6,14 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class DynamicHost : Element, IStateResettable
+    internal class DynamicHost : Element, IStateResettable, IContentDirectionAware
     {
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
 
         internal TextStyle TextStyle { get; set; } = TextStyle.Default;
-
+        public ContentDirection ContentDirection { get; set; }
+        
         public DynamicHost(DynamicComponentProxy child)
         {
             Child = child;
@@ -51,12 +52,14 @@ namespace QuestPDF.Elements
             
             var context = new DynamicContext
             {
-                PageNumber = PageContext.CurrentPage,
-                TotalPages = PageContext.GetLocation(Infrastructure.PageContext.DocumentLocation).PageEnd,
                 PageContext = PageContext,
                 Canvas = Canvas,
-                TextStyle = TextStyle,
                 
+                TextStyle = TextStyle,
+                ContentDirection = ContentDirection,
+                
+                PageNumber = PageContext.CurrentPage,
+                TotalPages = PageContext.GetLocation(Infrastructure.PageContext.DocumentLocation).PageEnd,
                 AvailableSize = availableSize
             };
             
@@ -73,7 +76,9 @@ namespace QuestPDF.Elements
     {
         internal IPageContext PageContext { get; set; }
         internal ICanvas Canvas { get; set; }
+        
         internal TextStyle TextStyle { get; set; }
+        internal ContentDirection ContentDirection { get; set; }
     
         public int PageNumber { get; internal set; }
         public int TotalPages { get; internal set; }
@@ -85,6 +90,8 @@ namespace QuestPDF.Elements
             content(container);
             
             container.ApplyDefaultTextStyle(TextStyle);
+            container.ApplyContentDirection(ContentDirection);
+            
             container.VisitChildren(x => x?.Initialize(PageContext, Canvas));
             container.VisitChildren(x => (x as IStateResettable)?.ResetState());
 

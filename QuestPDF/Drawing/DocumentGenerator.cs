@@ -162,7 +162,7 @@ namespace QuestPDF.Drawing
             return debuggingState;
         }
         
-        private static void ApplyContentDirection(Element? content, ContentDirection direction)
+        internal static void ApplyContentDirection(this Element? content, ContentDirection direction)
         {
             if (content == null)
                 return;

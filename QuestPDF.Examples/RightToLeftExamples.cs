@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using QuestPDF.Elements;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -142,6 +143,48 @@ namespace QuestPDF.Examples
                         .MaxWidth(100)
                         .Background(Colors.Red.Medium);
                 });
+        }
+        
+        [Test]
+        public void Dynamic()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(600, 600)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .ContentFromRightToLeft()
+                        .Dynamic(new SimpleDynamic());
+                });
+        }
+
+        class SimpleDynamic : IDynamicComponent<int>
+        {
+            public int State { get; set; }
+            
+            public DynamicComponentComposeResult Compose(DynamicContext context)
+            {
+                var content = context.CreateElement(container =>
+                {
+                    container
+                        .Row(row =>
+                        {
+                            row.ConstantItem(200).Background(Colors.Red.Lighten2).Height(200);
+                            row.ConstantItem(150).Background(Colors.Green.Lighten2).Height(200);
+                            row.ConstantItem(100).Background(Colors.Blue.Lighten2).Height(200);
+                        });
+                });
+                
+                return new DynamicComponentComposeResult
+                {
+                    Content = content,
+                    HasMoreContent = false
+                };
+            }
         }
     }
 }
