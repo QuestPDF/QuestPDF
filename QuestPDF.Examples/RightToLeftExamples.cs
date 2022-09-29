@@ -124,5 +124,24 @@ namespace QuestPDF.Examples
                         .Background(Colors.Red.Medium);
                 });
         }
+        
+        [Test]
+        public void Constrained()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(600, 600)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .ContentFromRightToLeft()
+                        .Border(1)
+                        .MaxWidth(100)
+                        .Background(Colors.Red.Medium);
+                });
+        }
     }
 }

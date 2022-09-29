@@ -5,8 +5,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Constrained : ContainerElement, ICacheable
+    internal class Constrained : ContainerElement, ICacheable, IContentDirectionAware
     {
+        public ContentDirection ContentDirection { get; set; }
+        
         public float? MinWidth { get; set; }
         public float? MaxWidth { get; set; }
 
@@ -45,11 +47,17 @@ namespace QuestPDF.Elements
         
         internal override void Draw(Size availableSpace)
         {
-            var available = new Size(
+            var size = new Size(
                 Min(MaxWidth, availableSpace.Width),
                 Min(MaxHeight, availableSpace.Height));
             
-            Child?.Draw(available);
+            var offset = ContentDirection == ContentDirection.LeftToRight
+                ? Position.Zero
+                : new Position(availableSpace.Width - size.Width, 0);
+            
+            Canvas.Translate(offset);
+            base.Draw(size);
+            Canvas.Translate(offset.Reverse());
         }
         
         private static float Min(float? x, float y)
