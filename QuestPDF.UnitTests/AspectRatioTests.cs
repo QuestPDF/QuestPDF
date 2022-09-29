@@ -153,7 +153,9 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .DrawElement(new Size(500, 200))
+                .ExpectCanvasTranslate(0, 0)
                 .ExpectChildDraw(new Size(400, 200))
+                .ExpectCanvasTranslate(0, 0)
                 .CheckDrawResult();
         }
         
@@ -168,7 +170,45 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .DrawElement(new Size(400, 300))
+                .ExpectCanvasTranslate(0, 0)
                 .ExpectChildDraw(new Size(400, 200))
+                .ExpectCanvasTranslate(0, 0)
+                .CheckDrawResult();
+        } 
+        
+        [Test]
+        public void DrawChild_PerWidth_RightToLeft()
+        {
+            TestPlan
+                .For(x => new AspectRatio
+                {
+                    Child = x.CreateChild(),
+                    Option = AspectRatioOption.FitArea,
+                    Ratio = 2f,
+                    ContentDirection = ContentDirection.RightToLeft
+                })
+                .DrawElement(new Size(500, 200))
+                .ExpectCanvasTranslate(100, 0)
+                .ExpectChildDraw(new Size(400, 200))
+                .ExpectCanvasTranslate(-100, 0)
+                .CheckDrawResult();
+        }
+        
+        [Test]
+        public void DrawChild_PerHeight_RightToLeft()
+        {
+            TestPlan
+                .For(x => new AspectRatio
+                {
+                    Child = x.CreateChild(),
+                    Option = AspectRatioOption.FitArea,
+                    Ratio = 2f,
+                    ContentDirection = ContentDirection.RightToLeft
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectCanvasTranslate(0, 0)
+                .ExpectChildDraw(new Size(400, 200))
+                .ExpectCanvasTranslate(0, 0)
                 .CheckDrawResult();
         } 
     }

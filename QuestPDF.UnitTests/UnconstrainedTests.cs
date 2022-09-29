@@ -77,7 +77,9 @@ namespace QuestPDF.UnitTests
                 })
                 .DrawElement(new Size(900, 800))
                 .ExpectChildMeasure(Size.Max, SpacePlan.PartialRender(1200, 1600))
+                .ExpectCanvasTranslate(0, 0)
                 .ExpectChildDraw(new Size(1200, 1600))
+                .ExpectCanvasTranslate(0, 0)
                 .CheckDrawResult();
         }
         
@@ -91,7 +93,43 @@ namespace QuestPDF.UnitTests
                 })
                 .DrawElement(new Size(900, 800))
                 .ExpectChildMeasure(Size.Max, SpacePlan.FullRender(1600, 1000))
+                .ExpectCanvasTranslate(0, 0)
                 .ExpectChildDraw(new Size(1600, 1000))
+                .ExpectCanvasTranslate(0, 0)
+                .CheckDrawResult();
+        }
+        
+        [Test]
+        public void Draw_WhenChildPartiallyRenders_RightToLeft()
+        {
+            TestPlan
+                .For(x => new Unconstrained
+                {
+                    Child = x.CreateChild(),
+                    ContentDirection = ContentDirection.RightToLeft
+                })
+                .DrawElement(new Size(900, 800))
+                .ExpectChildMeasure(Size.Max, SpacePlan.PartialRender(1200, 1600))
+                .ExpectCanvasTranslate(-1200, 0)
+                .ExpectChildDraw(new Size(1200, 1600))
+                .ExpectCanvasTranslate(1200, 0)
+                .CheckDrawResult();
+        }
+        
+        [Test]
+        public void Draw_WhenChildFullyRenders_RightToLeft()
+        {
+            TestPlan
+                .For(x => new Unconstrained
+                {
+                    Child = x.CreateChild(),
+                    ContentDirection = ContentDirection.RightToLeft
+                })
+                .DrawElement(new Size(900, 800))
+                .ExpectChildMeasure(Size.Max, SpacePlan.FullRender(1600, 1000))
+                .ExpectCanvasTranslate(-1600, 0)
+                .ExpectChildDraw(new Size(1600, 1000))
+                .ExpectCanvasTranslate(1600, 0)
                 .CheckDrawResult();
         }
         
