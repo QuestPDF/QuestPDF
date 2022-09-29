@@ -65,6 +65,7 @@ namespace QuestPDF.Drawing
             document.Compose(container);
             var content = container.Compose();
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
+            ApplyContentDirection(content, ContentDirection.LeftToRight);
             
             var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
             
@@ -159,6 +160,24 @@ namespace QuestPDF.Drawing
             });
 
             return debuggingState;
+        }
+        
+        private static void ApplyContentDirection(Element? content, ContentDirection direction)
+        {
+            if (content == null)
+                return;
+
+            if (content is ContentDirectionSetter contentDirectionSetter)
+            {
+                ApplyContentDirection(contentDirectionSetter.Child, contentDirectionSetter.ContentDirection);
+                return;
+            }
+
+            if (content is IContentDirectionAware contentDirectionAware)
+                contentDirectionAware.ContentDirection = direction;
+            
+            foreach (var child in content.GetChildren())
+                ApplyContentDirection(child, direction);
         }
 
         internal static void ApplyDefaultTextStyle(this Element? content, TextStyle documentDefaultTextStyle)

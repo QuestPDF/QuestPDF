@@ -31,8 +31,10 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
     
-    internal class Row : Element, ICacheable, IStateResettable
+    internal class Row : Element, ICacheable, IStateResettable, IContentDirectionAware
     {
+        public ContentDirection ContentDirection { get; set; }
+        
         internal List<RowItem> Items { get; } = new();
         internal float Spacing { get; set; }
 
@@ -62,7 +64,7 @@ namespace QuestPDF.Elements
             if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.Wrap))
                 return SpacePlan.Wrap();
 
-            var width = renderingCommands.Last().Offset.X + renderingCommands.Last().Size.Width;
+            var width = renderingCommands.Max(c => c.Offset.X + c.Size.Width);
             var height = renderingCommands.Max(x => x.Size.Height);
             var size = new Size(width, height);
 
@@ -152,6 +154,9 @@ namespace QuestPDF.Elements
             {
                 command.Size = new Size(command.Size.Width, rowHeight);
                 command.Measurement = command.RowItem.Measure(command.Size);
+
+                if (ContentDirection == ContentDirection.RightToLeft)
+                    command.Offset = new Position(availableSpace.Width - command.Offset.X - command.Size.Width, 0);
             }
             
             return renderingCommands;
