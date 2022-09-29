@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using QuestPDF.Elements;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
@@ -185,6 +186,32 @@ namespace QuestPDF.Examples
                     HasMoreContent = false
                 };
             }
+        }
+        
+        [Test]
+        public void Grid()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(600, 600)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .Border(1)
+                        .ContentFromRightToLeft()
+                        .Grid(grid =>
+                        {
+                            grid.Spacing(25);
+                            
+                            foreach (var i in Enumerable.Range(1, 6))
+                            {
+                                grid.Item(i).Background(Placeholders.BackgroundColor()).Height(100);
+                            }
+                        });
+                });
         }
     }
 }
