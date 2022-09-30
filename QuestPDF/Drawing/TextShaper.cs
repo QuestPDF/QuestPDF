@@ -29,6 +29,12 @@ namespace QuestPDF.Drawing
             PopulateBufferWithText(buffer, text);
             buffer.GuessSegmentProperties();
 
+            if (TextStyle.Direction == TextDirection.LeftToRight)
+                buffer.Direction = Direction.LeftToRight;
+            
+            if (TextStyle.Direction == TextDirection.RightToLeft)
+                buffer.Direction = Direction.RightToLeft;
+            
             ShaperFont.Shape(buffer);
             
             var length = buffer.Length;

@@ -16,6 +16,7 @@ namespace QuestPDF.Infrastructure
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
         internal bool? WrapAnywhere { get; set; }
+        internal TextDirection? Direction { get; set; }
 
         internal TextStyle? Fallback { get; set; }
 
@@ -32,6 +33,7 @@ namespace QuestPDF.Infrastructure
             HasStrikethrough = false,
             HasUnderline = false,
             WrapAnywhere = false,
+            Direction = TextDirection.Auto,
             Fallback = null
         };
 
