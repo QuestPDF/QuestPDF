@@ -657,5 +657,43 @@ namespace QuestPDF.Examples
                     });
                 });
         }
+        
+        [Test]
+        public void TextDirectionality()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(PageSizes.A4)
+                .ProducePdf()
+                .ShowResults()
+                .Render(container =>
+                {
+                    var text = "بسم الله الرحمن الرحيم" +
+                               "\n" +
+                               "الحمد لله رب العالمين (1) مالك يوم الدين";
+                    
+                    container
+                        .Padding(25)
+                        .ContentFromRightToLeft()
+                        .Column(column =>
+                        {
+                            column.Spacing(20);
+                            
+                            foreach (var size in new[] { 14, 12, 11, 10, 8, 7 })
+                            {
+                                column
+                                    .Item()
+                                    .ShowEntire()
+                                    .MaxWidth(size * 25)
+                                    .Background(Colors.Grey.Lighten3)
+                                    .MinimalBox()
+                                    .Background(Colors.Grey.Lighten2)
+                                    .Text(text)
+                                    .FontSize(20)
+                                    .FontFamily("Segoe UI").DirectionFromRightToLeft();
+                            }
+                        });
+                });
+        }
     }
 }
