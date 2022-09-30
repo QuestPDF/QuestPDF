@@ -8,8 +8,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text
 {
-    internal class TextBlock : Element, IStateResettable
+    internal class TextBlock : Element, IStateResettable, IContentDirectionAware
     {
+        public ContentDirection ContentDirection { get; set; }
+        
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
@@ -85,18 +87,12 @@ namespace QuestPDF.Elements.Text
             if (!lines.Any())
                 return;
             
-            var heightOffset = 0f;
-            var widthOffset = 0f;
-            
+            var topOffset = 0f;
+
             foreach (var line in lines)
             {
-                widthOffset = 0f;
+                var leftOffset = GetAlignmentOffset(line.Width);
 
-                var alignmentOffset = GetAlignmentOffset(line.Width);
-                
-                Canvas.Translate(new Position(alignmentOffset, 0));
-                Canvas.Translate(new Position(0, -line.Ascent));
-            
                 foreach (var item in line.Elements)
                 {
                     var textDrawingRequest = new TextDrawingRequest
@@ -111,21 +107,20 @@ namespace QuestPDF.Elements.Text
                         TotalAscent = line.Ascent
                     };
                 
+                    var canvasOffset = ContentDirection == ContentDirection.LeftToRight
+                        ? new Position(leftOffset, topOffset - line.Ascent)
+                        : new Position(availableSpace.Width - leftOffset - item.Measurement.Width, topOffset - line.Ascent);
+                    
+                    Canvas.Translate(canvasOffset);
                     item.Item.Draw(textDrawingRequest);
-                
-                    Canvas.Translate(new Position(item.Measurement.Width, 0));
-                    widthOffset += item.Measurement.Width;
+                    Canvas.Translate(canvasOffset.Reverse());
+                    
+                    leftOffset += item.Measurement.Width;
                 }
-            
-                Canvas.Translate(new Position(-alignmentOffset, 0));
-                Canvas.Translate(new Position(-line.Width, line.Ascent));
-                Canvas.Translate(new Position(0, line.LineHeight));
                 
-                heightOffset += line.LineHeight;
+                topOffset += line.LineHeight;
             }
-            
-            Canvas.Translate(new Position(0, -heightOffset));
-            
+
             lines
                 .SelectMany(x => x.Elements)
                 .GroupBy(x => x.Item)

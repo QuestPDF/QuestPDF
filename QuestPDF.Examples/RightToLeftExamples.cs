@@ -205,11 +205,63 @@ namespace QuestPDF.Examples
                         .Grid(grid =>
                         {
                             grid.Spacing(25);
+                            grid.AlignRight();
                             
                             foreach (var i in Enumerable.Range(1, 6))
                             {
                                 grid.Item(i).Background(Placeholders.BackgroundColor()).Height(100);
                             }
+                        });
+                });
+        }
+        
+        [Test]
+        public void Inlined()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(600, 800)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .Border(1)
+                        .ContentFromRightToLeft()
+                        .Inlined(inlined =>
+                        {
+                            inlined.Spacing(25);
+                            
+                            foreach (var i in Enumerable.Range(5, 10))
+                            {
+                                inlined.Item().Background(Placeholders.BackgroundColor()).Height(25 + i * 5).Width(i * 25);
+                            }
+                        });
+                });
+        }
+        
+        [Test]
+        public void Text()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(600, 600)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .MinimalBox()
+                        .Border(1)
+                        .ContentFromRightToLeft()
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(x => x.FontSize(32));
+                            
+                            foreach (var i in Enumerable.Range(1, 100))
+                                text.Span($"{i}").FontColor(Placeholders.Color()).BackgroundColor("#2000");
                         });
                 });
         }
