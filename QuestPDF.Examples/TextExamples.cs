@@ -604,7 +604,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(500, 100)
+                .PageSize(250, 100)
                 
                 .ProduceImages()
                 .ShowResults()
@@ -614,9 +614,9 @@ namespace QuestPDF.Examples
                         .Padding(25)
                         .MinimalBox()
                         .Background(Colors.Grey.Lighten2)
-                        .Text("ينا الألم. في بعض الأحيان ونظراً للالتزامات التي يفرضها علينا")
+                        .Text("خوارزمية ترتيب")
                         .FontFamily(Fonts.Calibri)
-                        .FontSize(20);
+                        .FontSize(30);
                 });
         }
         
@@ -663,14 +663,12 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(PageSizes.A4)
+                .PageSize(new PageSize(1000, 500))
                 .ProducePdf()
                 .ShowResults()
                 .Render(container =>
                 {
-                    var text = "بسم الله الرحمن الرحيم" +
-                               "\n" +
-                               "الحمد لله رب العالمين (1) مالك يوم الدين";
+                    var text = "في المعلوماتية أو الرياضيات، خوارزمية الترتيب هي خوارزمية تمكن من تنظيم مجموعة عناصر حسب ترتيب محدد.";
                     
                     container
                         .Padding(25)
@@ -679,7 +677,7 @@ namespace QuestPDF.Examples
                         {
                             column.Spacing(20);
                             
-                            foreach (var size in new[] { 14, 12, 11, 10, 8, 7 })
+                            foreach (var size in new[] { 36, 34, 32, 30, 15 })
                             {
                                 column
                                     .Item()
@@ -690,7 +688,7 @@ namespace QuestPDF.Examples
                                     .Background(Colors.Grey.Lighten2)
                                     .Text(text)
                                     .FontSize(20)
-                                    .FontFamily("Segoe UI").DirectionFromRightToLeft();
+                                    .FontFamily("Segoe UI");
                             }
                         });
                 });
