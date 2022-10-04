@@ -105,5 +105,41 @@ namespace QuestPDF.Examples
                         .Row(row => { });
                 });
         }
+        
+        [Test]
+        public void RowElementForRelativeHeightDivision()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .MaxPages(100)
+                .PageSize(250, 400)
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .AlignLeft()
+                        .RotateRight()
+                        .Row(row =>
+                        {
+                            row.Spacing(20);
+
+                            row.RelativeItem(1).Element(Content);
+                            row.RelativeItem(2).Element(Content);
+                            row.RelativeItem(3).Element(Content);
+
+                            void Content(IContainer container)
+                            {
+                                container
+                                    .RotateLeft()
+                                    .Border(1)
+                                    .Background(Placeholders.BackgroundColor())
+                                    .Padding(5)
+                                    .Text(Placeholders.Label());
+                            }
+                        });
+                });
+        }
     }
 }
