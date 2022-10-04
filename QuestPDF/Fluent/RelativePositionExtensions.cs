@@ -14,21 +14,21 @@ namespace QuestPDF.Fluent
             return element.Element(relativePosition);
         }
 
-        public static IContainer RelativePositionVertical(this IContainer element, float parentOffset, float selfOffset)
+        public static IContainer RelativePositionVertical(this IContainer element, float parentOffset, float childOffset)
         {
             return element.RelativePosition(x =>
             {
                 x.VerticalParent = parentOffset;
-                x.VerticalSelf = selfOffset;
+                x.VerticalChild = childOffset;
             });
         }
         
-        public static IContainer RelativePositionHorizontal(this IContainer element, float parentOffset, float selfOffset)
+        public static IContainer RelativePositionHorizontal(this IContainer element, float parentOffset, float childOffset)
         {
             return element.RelativePosition(x =>
             {
                 x.HorizontalParent = parentOffset;
-                x.HorizontalSelf = selfOffset;
+                x.HorizontalChild = childOffset;
             });
         }
     }

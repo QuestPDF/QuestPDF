@@ -7,10 +7,10 @@ namespace QuestPDF.Elements
     internal class RelativePosition : ContainerElement
     {
         public float VerticalParent { get; set; }
-        public float VerticalSelf { get; set; }
+        public float VerticalChild { get; set; }
         
         public float HorizontalParent { get; set; }
-        public float HorizontalSelf { get; set; } 
+        public float HorizontalChild { get; set; } 
         
         internal override void Draw(Size availableSpace)
         {
@@ -22,8 +22,8 @@ namespace QuestPDF.Elements
             if (childSize.Type == SpacePlanType.Wrap)
                 return;
             
-            var left = availableSpace.Width * HorizontalParent + childSize.Width * HorizontalSelf;
-            var top = availableSpace.Height * VerticalParent + childSize.Height * VerticalSelf;
+            var left = availableSpace.Width * HorizontalParent + childSize.Width * HorizontalChild;
+            var top = availableSpace.Height * VerticalParent + childSize.Height * VerticalChild;
 
             Canvas.Translate(new Position(left, top));
             base.Draw(childSize);
