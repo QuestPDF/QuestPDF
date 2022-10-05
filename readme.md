@@ -17,7 +17,7 @@ It offers a layouting engine designed with a full paging support in mind. The do
 
 Unlike other libraries, it does not rely on the HTML-to-PDF conversion which in many cases is not reliable. Instead, it implements its own layouting engine that is optimized to cover all paging-related requirements.
 
-## Please show the value
+## Please help by giving a star
 
 Choosing a project dependency could be difficult. We need to ensure stability and maintainability of our projects. Surveys show that GitHub stars count play an important factor when assessing library quality. 
 
