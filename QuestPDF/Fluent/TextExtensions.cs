@@ -281,11 +281,17 @@ namespace QuestPDF.Fluent
         {
             element.Text(text).Style(style);
         }
-        
+
+        [Obsolete("Please use an overload where the text parameter is passed explicitly as a string.")]
         public static TextSpanDescriptor Text(this IContainer element, object? text)
         {
-            var descriptor = (TextSpanDescriptor) null;
-            element.Text(x => descriptor = x.Span(text?.ToString()));
+            return element.Text(text?.ToString());
+        }
+
+        public static TextSpanDescriptor Text(this IContainer element, string? text)
+        {
+            var descriptor = (TextSpanDescriptor) null!;
+            element.Text(x => descriptor = x.Span(text));
             return descriptor;
         }
     }

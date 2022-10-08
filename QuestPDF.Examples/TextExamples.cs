@@ -523,7 +523,7 @@ namespace QuestPDF.Examples
 
                         page.Content().Column(column =>
                         {
-                            column.Item().Text(null);
+                            column.Item().Text((string) null);
 
                             column.Item().Text(text =>
                             {
@@ -555,7 +555,7 @@ namespace QuestPDF.Examples
 
                         page.Content().Column(column =>
                         {
-                            column.Item().Text(null);
+                            column.Item().Text((string) null);
 
                             column.Item().Text(text =>
                             {

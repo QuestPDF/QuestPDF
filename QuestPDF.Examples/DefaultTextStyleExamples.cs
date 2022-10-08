@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
@@ -43,7 +44,7 @@ namespace QuestPDF.Examples
                                         .Height(50)
                                         .AlignCenter()
                                         .AlignMiddle()
-                                        .Text(i)
+                                        .Text(i.ToString(CultureInfo.InvariantCulture))
                                         .FontSize(16 + i / 4);   
                                 }
                             });
