@@ -109,7 +109,7 @@ namespace QuestPDF.Examples.Engine
             Render(document);
         }
         
-        private void Render(IDocument document)
+        public void Render(IDocument document)
         {
             if (ResultType == RenderingTestResult.Images)
             {
