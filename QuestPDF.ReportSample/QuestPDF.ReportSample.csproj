@@ -3,7 +3,6 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <IsPackable>false</IsPackable>
-        <LangVersion>8</LangVersion>
         <RootNamespace>QuestPDF.ReportSample</RootNamespace>
     </PropertyGroup>
 

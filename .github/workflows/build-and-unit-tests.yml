@@ -1,0 +1,51 @@
+﻿name: Run Build and Unit tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+  schedule:
+    - cron: '3 0 * * 0'
+
+jobs:
+  main:
+    runs-on: ${{ matrix.environment }}
+    strategy:
+      matrix:
+        environment:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+    env:
+      DOTNET_NOLOGO: 1
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
+      UNIT_TEST_PROJECT: QuestPDF.UnitTests/QuestPDF.UnitTests.csproj
+
+    steps:
+      - name: 📝 Fetch Sources 📝
+        uses: actions/checkout@v2
+
+      - name: ⚙ Setup .NET 6.0 SDK ⚙
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: 🔄 Restore Nuget Packages 🔄
+        shell: bash
+        run: dotnet restore
+
+      - name: 🛠 Build Solution 🛠
+        shell: bash
+        run: dotnet build -c Release --no-restore
+
+      - name: ✅ Run Unit Tests on .NET 6.0 ✅
+        shell: bash
+        run: dotnet test -c Release --no-build --framework net6.0 ${{ env.UNIT_TEST_PROJECT }}
+
+      - name: ✅ Run Unit Tests on .NET Framework 4.7.2 ✅
+        shell: bash
+        run: dotnet test -c Release --no-build --framework net472 ${{ env.UNIT_TEST_PROJECT }}
+        if: startsWith(runner.os, 'windows')
