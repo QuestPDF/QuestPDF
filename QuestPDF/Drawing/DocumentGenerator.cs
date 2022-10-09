@@ -57,8 +57,26 @@ namespace QuestPDF.Drawing
             RenderDocument(canvas, document);
             return canvas.Pictures;
         }
-        
+
         internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document)
+            where TCanvas : ICanvas, IRenderingCanvas
+        {
+            if (document is MergedDocument mergedDocument
+             && mergedDocument.PageNumberHandling == MergedDocumentPageNumberHandling.Seperate)
+            {
+                canvas.BeginDocument();
+                foreach (var singleDocument in mergedDocument.Documents)
+                    RenderDocumentImpl(canvas, singleDocument);
+                canvas.EndDocument();
+                return;
+            }
+
+            canvas.BeginDocument();
+            RenderDocumentImpl(canvas, document);
+            canvas.EndDocument();
+        }
+
+        internal static void RenderDocumentImpl<TCanvas>(TCanvas canvas, IDocument document)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             var container = new DocumentContainer();
@@ -82,8 +100,6 @@ namespace QuestPDF.Drawing
             content.VisitChildren(x => x?.Initialize(pageContext, canvas));
             content.VisitChildren(x => (x as IStateResettable)?.ResetState());
             
-            canvas.BeginDocument();
-
             var currentPage = 1;
             
             while(true)
@@ -124,8 +140,6 @@ namespace QuestPDF.Drawing
                 currentPage++;
             }
             
-            canvas.EndDocument();
-
             void ThrowLayoutException()
             {
                 var message = $"Composed layout generates infinite document. This may happen in two cases. " +
