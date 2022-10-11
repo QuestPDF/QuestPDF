@@ -200,10 +200,6 @@ namespace QuestPDF.Elements.Table
                         currentRow = cell.Row;
                     }
 
-                    // cell visibility optimizations
-                    if (cell.Row > maxRenderingRow)
-                        break;
-
                     // calculate cell position / size
                     var topOffset = rowBottomOffsets[cell.Row - 1];
                     
@@ -225,6 +221,10 @@ namespace QuestPDF.Elements.Table
                         maxRenderingRow = Math.Min(maxRenderingRow, cell.Row - 1);
                         continue;
                     }
+                    
+                    // cell visibility optimizations
+                    if (cell.Row > maxRenderingRow)
+                        break;
                     
                     // update position of the last row that cell occupies
                     var bottomRow = cell.Row + cell.RowSpan - 1;
