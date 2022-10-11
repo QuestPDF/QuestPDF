@@ -202,7 +202,7 @@ namespace QuestPDF.Elements.Table
 
                     // cell visibility optimizations
                     if (cell.Row > maxRenderingRow)
-                        break;
+                        continue;
 
                     // calculate cell position / size
                     var topOffset = rowBottomOffsets[cell.Row - 1];
@@ -218,14 +218,14 @@ namespace QuestPDF.Elements.Table
                     {
                         maxRenderingRow = Math.Min(maxRenderingRow, cell.Row + cell.RowSpan - 1);
                     }
-                    
+
                     // corner case: if cell within the row want to wrap to the next page, do not attempt to render this row
                     if (cellSize.Type == SpacePlanType.Wrap)
                     {
                         maxRenderingRow = Math.Min(maxRenderingRow, cell.Row - 1);
                         continue;
                     }
-                    
+
                     // update position of the last row that cell occupies
                     var bottomRow = cell.Row + cell.RowSpan - 1;
                     rowBottomOffsets[bottomRow] = Math.Max(rowBottomOffsets[bottomRow], topOffset + cellSize.Height);
