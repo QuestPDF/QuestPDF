@@ -24,6 +24,7 @@ namespace QuestPDF.Elements.Table
         // inner table: list of all cells that ends at the corresponding row
         private TableCell[][] CellsCache { get; set; }
         private int MaxRow { get; set; }
+        private int MaxRowSpan { get; set; }
         
         internal override void Initialize(IPageContext pageContext, ICanvas canvas)
         {
@@ -56,6 +57,7 @@ namespace QuestPDF.Elements.Table
             if (Cells.Count == 0)
             {
                 MaxRow = 0;
+                MaxRowSpan = 1;
                 CellsCache = Array.Empty<TableCell[]>();
                 
                 return;
@@ -66,6 +68,7 @@ namespace QuestPDF.Elements.Table
                 .ToDictionary(x => x.Key, x => x.OrderBy(x => x.Column).ToArray());
 
             MaxRow = groups.Max(x => x.Key);
+            MaxRowSpan = Cells.Max(x => x.RowSpan);
 
             CellsCache = Enumerable
                 .Range(0, MaxRow + 1)
@@ -199,10 +202,10 @@ namespace QuestPDF.Elements.Table
                         
                         currentRow = cell.Row;
                     }
-
+                    
                     // cell visibility optimizations
-                    if (cell.Row > maxRenderingRow)
-                        continue;
+                    if (cell.Row > maxRenderingRow + MaxRowSpan)
+                        break;
 
                     // calculate cell position / size
                     var topOffset = rowBottomOffsets[cell.Row - 1];
