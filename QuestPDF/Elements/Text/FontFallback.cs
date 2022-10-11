@@ -121,7 +121,11 @@ namespace QuestPDF.Elements.Text
         {
             foreach (var textBlockItem in textBlockItems)
             {
-                if (textBlockItem is TextBlockSpan textBlockSpan and not TextBlockPageNumber)
+                if (textBlockItem is TextBlockPageNumber or TextBlockElement)
+                {
+                    yield return textBlockItem;
+                }
+                else if (textBlockItem is TextBlockSpan textBlockSpan)
                 {
                     if (!Settings.CheckIfAllTextGlyphsAreAvailable && textBlockSpan.Style.Fallback == null)
                     {
@@ -130,19 +134,25 @@ namespace QuestPDF.Elements.Text
                     }
                     
                     var textRuns = textBlockSpan.Text.SplitWithFontFallback(textBlockSpan.Style);
-
+                    
                     foreach (var textRun in textRuns)
                     {
-                        yield return new TextBlockSpan
+                        var newElement = textBlockSpan switch
                         {
-                            Text = textRun.Content,
-                            Style = textRun.Style
+                            TextBlockHyperlink hyperlink => new TextBlockHyperlink { Url = hyperlink.Url },
+                            TextBlockSectionLink sectionLink => new TextBlockSectionLink { SectionName = sectionLink.SectionName },
+                            TextBlockSpan => new TextBlockSpan()
                         };
+
+                        newElement.Text = textRun.Content;
+                        newElement.Style = textRun.Style;
+
+                        yield return newElement;
                     }
                 }
                 else
                 {
-                    yield return textBlockItem;
+                    throw new NotSupportedException();
                 }
             }
         }
