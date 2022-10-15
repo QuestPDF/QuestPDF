@@ -212,7 +212,7 @@ namespace QuestPDF.Elements
                         break;
                     
                     var element = queue.Peek();
-                    var size = element.Measure(Size.Max);
+                    var size = element.Measure(new Size(availableSize.Width, Size.Max.Height));
                     
                     if (size.Type == SpacePlanType.Wrap)
                         break;
