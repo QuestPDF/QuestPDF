@@ -4,3 +4,8 @@
 - Significantly reduced memory allocation cost for TextStyle objects,
 - Implemented optional checking if all font glyphs are available,
 - Minor text-rendering optimizations.
+
+2022.9.1
+- Fixed: text hyperlinks do not work when the CheckIfAllTextGlyphsAreAvailable option or text fallback are used,
+- Fixed: cells with RowSpan (greater than 1) are not always displayed properly,
+- Improved predictability of the Inlined element when measuring its children.
