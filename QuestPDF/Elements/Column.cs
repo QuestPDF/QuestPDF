@@ -19,8 +19,10 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
     
-    internal class Column : Element, ICacheable, IStateResettable
+    internal class Column : Element, ICacheable, IStateResettable, IContentDirectionAware
     {
+        public ContentDirection ContentDirection { get; set; }
+        
         internal List<ColumnItem> Items { get; } = new();
         internal float Spacing { get; set; }
 
@@ -75,9 +77,13 @@ namespace QuestPDF.Elements
 
                 var targetSize = new Size(availableSpace.Width, command.Size.Height);
                 
-                Canvas.Translate(command.Offset);
+                var offset = ContentDirection == ContentDirection.LeftToRight
+                    ? command.Offset
+                    : new Position(availableSpace.Width - command.Offset.X - command.Measurement.Width, command.Offset.Y);
+                
+                Canvas.Translate(offset);
                 command.ColumnItem.Draw(targetSize);
-                Canvas.Translate(command.Offset.Reverse());
+                Canvas.Translate(offset.Reverse());
             }
             
             if (Items.All(x => x.IsRendered))
