@@ -7,18 +7,20 @@ using QuestPDF.UnitTests.TestEngine;
 namespace QuestPDF.UnitTests
 {
     [TestFixture]
-    public class BoxTests
+    public class ShrinkTests
     {
         [Test]
-        public void Measure() => SimpleContainerTests.Measure<MinimalBox>();
+        public void Measure() => SimpleContainerTests.Measure<Shrink>();
         
         [Test]
         public void Draw_Wrap()
         {
             TestPlan
-                .For(x => new MinimalBox
+                .For(x => new Shrink
                 {
-                    Child = x.CreateChild()
+                    Child = x.CreateChild(),
+                    ShrinkVertical = true,
+                    ShrinkHorizontal = true
                 })
                 .DrawElement(new Size(400, 300))
                 .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: SpacePlan.Wrap())
@@ -29,9 +31,11 @@ namespace QuestPDF.UnitTests
         public void Measure_PartialRender()
         {
             TestPlan
-                .For(x => new MinimalBox
+                .For(x => new Shrink
                 {
-                    Child = x.CreateChild()
+                    Child = x.CreateChild(),
+                    ShrinkVertical = true,
+                    ShrinkHorizontal = true
                 })
                 .MeasureElement(new Size(400, 300))
                 .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: SpacePlan.PartialRender(200, 100))
@@ -43,9 +47,11 @@ namespace QuestPDF.UnitTests
         public void Measure_FullRender()
         {
             TestPlan
-                .For(x => new MinimalBox
+                .For(x => new Shrink
                 {
-                    Child = x.CreateChild()
+                    Child = x.CreateChild(),
+                    ShrinkVertical = true,
+                    ShrinkHorizontal = true
                 })
                 .MeasureElement(new Size(500, 400))
                 .ExpectChildMeasure(expectedInput: new Size(500, 400), returns: SpacePlan.FullRender(300, 200))
