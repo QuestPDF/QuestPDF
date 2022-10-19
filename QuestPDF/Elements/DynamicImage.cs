@@ -24,13 +24,8 @@ namespace QuestPDF.Elements
             if (imageData == null)
                 return;
 
-            var imageElement = new Image
-            {
-                InternalImage = SKImage.FromEncodedData(imageData)
-            };
-            
-            imageElement.Initialize(PageContext, Canvas);
-            imageElement.Draw(availableSpace);
+            using var image = SKImage.FromEncodedData(imageData);
+            Canvas.DrawImage(image, Position.Zero, availableSpace);
         }
     }
 }

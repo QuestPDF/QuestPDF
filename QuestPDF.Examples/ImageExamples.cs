@@ -36,6 +36,21 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        public void DynamicImage()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(450, 350)
+                .ProducePdf()
+                .ShowResults()
+                .Render(page =>
+                {
+                    page.Padding(25)
+                        .Image(Placeholders.Image);
+                });
+        }
+        
+        [Test]
         public void Exception()
         {
             Assert.Throws<DocumentComposeException>(() =>
