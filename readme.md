@@ -47,6 +47,7 @@ Special thanks to all companies that decided to sponsor QuestPDF development. Th
 | Company                                                                              | Description                                                                                                                     |
 |--------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------|
 | <img src="Resources/jetbrains-logo.svg" width="100px"> | [JetBrains](https://www.jetbrains.com/) supports this project as part of the OSS Power-Ups program. Thank you!<br/>100$ / month |
+| <img src="https://avatars.githubusercontent.com/u/2712328?v=4" width="100px"> | [Mark Gould](https://github.com/markgould) supports this project. Thank you!<br/>100$ / month |
 
 [![Sponsor project](https://img.shields.io/badge/%E2%9D%A4%EF%B8%8F%20sponsor-QuestPDF-red)](https://github.com/sponsors/QuestPDF)
 
