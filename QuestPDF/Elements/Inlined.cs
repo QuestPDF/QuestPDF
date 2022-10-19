@@ -26,8 +26,10 @@ namespace QuestPDF.Elements
         public SpacePlan Size { get; set; }
     }
     
-    internal class Inlined : Element, IStateResettable
+    internal class Inlined : Element, IStateResettable, IContentDirectionAware
     {
+        public ContentDirection ContentDirection { get; set; }
+        
         public List<InlinedElement> Elements { get; internal set; } = new List<InlinedElement>();
         private Queue<InlinedElement> ChildrenQueue { get; set; }
 
@@ -103,7 +105,6 @@ namespace QuestPDF.Elements
 
                 var elementOffset = ElementOffset();
                 var leftOffset = AlignOffset();
-                Canvas.Translate(new Position(leftOffset, 0));
                 
                 foreach (var measurement in lineMeasurements)
                 {
@@ -113,15 +114,16 @@ namespace QuestPDF.Elements
                     if (size.Height == 0)
                         size = new Size(size.Width, lineSize.Height);
                     
-                    Canvas.Translate(new Position(0, baselineOffset));
+                    var offset = ContentDirection == ContentDirection.LeftToRight
+                        ? new Position(leftOffset, baselineOffset)
+                        : new Position(availableSpace.Width - size.Width - leftOffset, baselineOffset);
+                    
+                    Canvas.Translate(offset);
                     measurement.Element.Draw(size);
-                    Canvas.Translate(new Position(0, -baselineOffset));
+                    Canvas.Translate(offset.Reverse());
 
                     leftOffset += size.Width + elementOffset;
-                    Canvas.Translate(new Position(size.Width + elementOffset, 0));
                 }
-                
-                Canvas.Translate(new Position(-leftOffset, 0));
 
                 float ElementOffset()
                 {
@@ -144,11 +146,11 @@ namespace QuestPDF.Elements
 
                     return ElementsAlignment switch
                     {
-                        InlinedAlignment.Left => 0,
+                        InlinedAlignment.Left => ContentDirection == ContentDirection.LeftToRight ? 0 : difference,
                         InlinedAlignment.Justify => 0,
                         InlinedAlignment.SpaceAround => elementOffset,
                         InlinedAlignment.Center => difference / 2,
-                        InlinedAlignment.Right => difference,
+                        InlinedAlignment.Right => ContentDirection == ContentDirection.LeftToRight ? difference : 0,
                         _ => 0
                     };
                 }
