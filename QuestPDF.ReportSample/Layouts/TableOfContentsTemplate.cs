@@ -68,9 +68,11 @@ namespace QuestPDF.ReportSample.Layouts
 
                         var lengthStyle = TextStyle.Default.FontColor(Colors.Grey.Medium);
                         
-                        text.Span(" (").Style(lengthStyle);
-                        text.TotalPagesWithinSection(locationName).Style(lengthStyle).Format(x => x == 1 ? "1 page long" : $"{x} pages long");
-                        text.Span(")").Style(lengthStyle);
+                        text.TotalPagesWithinSection(locationName).Style(lengthStyle).Format(x =>
+                        {
+                            var formatted = x == 1 ? "1 page long" : $"{x} pages long";
+                            return $"({formatted})";
+                        });
                     });
                 });
         }

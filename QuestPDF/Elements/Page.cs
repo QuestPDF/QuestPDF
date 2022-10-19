@@ -8,6 +8,7 @@ namespace QuestPDF.Elements
 {
     internal class Page : IComponent
     {
+        public ContentDirection ContentDirection { get; set; }
         public TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;
         
         public Size MinSize { get; set; } = PageSizes.A4;
@@ -30,6 +31,7 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
+                .ContentDirection(ContentDirection)
                 .Background(BackgroundColor)
                 .Layers(layers =>
                 {

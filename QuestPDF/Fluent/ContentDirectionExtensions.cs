@@ -5,9 +5,9 @@ namespace QuestPDF.Fluent
 {
     public static class ContentDirectionExtensions
     {
-        private static IContainer ContentDirection(this IContainer element, ContentDirection direction)
+        internal static IContainer ContentDirection(this IContainer element, ContentDirection direction)
         {
-            return element.Element(new ContentDirectionSetter()
+            return element.Element(new ContentDirectionSetter
             {
                 ContentDirection = direction
             });

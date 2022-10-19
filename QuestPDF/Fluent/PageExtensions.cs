@@ -10,6 +10,8 @@ namespace QuestPDF.Fluent
     {
         internal Page Page { get; } = new Page();
 
+        #region Size
+        
         public void Size(float width, float height, Unit unit = Unit.Inch)
         {
             var pageSize = new PageSize(width, height, unit);
@@ -39,6 +41,10 @@ namespace QuestPDF.Fluent
         {
             Page.MaxSize = pageSize;
         }
+        
+        #endregion
+        
+        #region Margin
 
         public void MarginLeft(float value, Unit unit = Unit.Point)
         {
@@ -78,6 +84,10 @@ namespace QuestPDF.Fluent
             MarginHorizontal(value, unit);
         }
         
+        #endregion
+        
+        #region Properties
+        
         public void DefaultTextStyle(TextStyle textStyle)
         {
             Page.DefaultTextStyle = textStyle;
@@ -86,6 +96,16 @@ namespace QuestPDF.Fluent
         public void DefaultTextStyle(Func<TextStyle, TextStyle> handler)
         {
             DefaultTextStyle(handler(TextStyle.Default));
+        }
+        
+        public void ContentFromLeftToRight()
+        {
+            Page.ContentDirection = ContentDirection.LeftToRight;
+        }
+        
+        public void ContentFromRightToLeft()
+        {
+            Page.ContentDirection = ContentDirection.RightToLeft;
         }
         
         public void PageColor(string color)
@@ -98,6 +118,10 @@ namespace QuestPDF.Fluent
         {
             PageColor(color);
         }
+        
+        #endregion
+        
+        #region Slots
         
         public IContainer Background()
         {
@@ -133,6 +157,8 @@ namespace QuestPDF.Fluent
             Page.Footer = container;
             return container;
         }
+        
+        #endregion
     }
     
     public static class PageExtensions
