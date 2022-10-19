@@ -16,7 +16,7 @@ namespace QuestPDF.Fluent
         
         public static IContainer Shrink(this IContainer element)
         {
-            return element.ExtendVertical().ExtendHorizontal();
+            return element.ShrinkVertical().ShrinkHorizontal();
         }
         
         public static IContainer ShrinkVertical(this IContainer element)
