@@ -154,17 +154,6 @@ namespace QuestPDF.Fluent
             });
         }
         
-        [Obsolete("This element has been renamed since version 2022.1. Please use the MinimalBox method.")]
-        public static IContainer Box(this IContainer element)
-        {
-            return element.Element(new MinimalBox());
-        }
-        
-        public static IContainer MinimalBox(this IContainer element)
-        {
-            return element.Element(new MinimalBox());
-        }
-        
         public static IContainer Unconstrained(this IContainer element)
         {
             return element.Element(new Unconstrained());
