@@ -657,5 +657,37 @@ namespace QuestPDF.Examples
                     });
                 });
         }
+        
+        [Test]
+        public void WordWrappingStability()
+        {
+            // instruction: check if any characters repeat when performing the word-wrapping algorithm
+            
+            RenderingTest
+                .Create()
+                .PageSize(PageSizes.A4)
+                .ProducePdf()
+                .ShowResults()
+                .Render(container =>
+                {
+                    var text = "Lorem ipsum dolor sit amet consectetuer";
+                    
+                    container
+                        .Padding(20)
+                        .Column(column =>
+                        {
+                            column.Spacing(10);
+
+                            foreach (var width in Enumerable.Range(25, 200))
+                            {
+                                column
+                                    .Item()
+                                    .MaxWidth(width)
+                                    .Background(Colors.Grey.Lighten3)
+                                    .Text(text);
+                            }
+                        });
+                });
+        }
     }
 }
