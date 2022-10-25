@@ -31,7 +31,7 @@ namespace QuestPDF.Elements
             {
                 column.Spacing(VerticalSpacing);
                 
-                while (ChildrenQueue.Any())
+                while (ChildrenQueue.Count > 0)
                     column.Item().Row(BuildRow);
             });
         }
@@ -40,7 +40,7 @@ namespace QuestPDF.Elements
         {
             var rowLength = 0;
                 
-            while (ChildrenQueue.Any())
+            while (ChildrenQueue.Count > 0)
             {
                 var element = ChildrenQueue.Peek();
                             

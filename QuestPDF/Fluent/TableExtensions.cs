@@ -111,7 +111,7 @@ namespace QuestPDF.Fluent
 
         private static void ConfigureTable(Table table)
         {
-            if (!table.Columns.Any())
+            if (table.Columns.Count == 0)
                 throw new DocumentComposeException($"Table should have at least one column. Please call the '{nameof(ColumnsDefinition)}' method to define columns.");
             
             table.PlanCellPositions();

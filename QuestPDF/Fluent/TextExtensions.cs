@@ -85,7 +85,7 @@ namespace QuestPDF.Fluent
 
         private void AddItemToLastTextBlock(ITextBlockItem item)
         {
-            if (!TextBlocks.Any())
+            if (TextBlocks.Count == 0)
                 TextBlocks.Add(new TextBlock());
             
             TextBlocks.Last().Items.Add(item);
