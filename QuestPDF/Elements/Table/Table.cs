@@ -119,7 +119,7 @@ namespace QuestPDF.Elements.Table
                 
                 var offset = ContentDirection == ContentDirection.LeftToRight
                     ? command.Offset
-                    : new Position(availableSpace.Width - command.Offset.X - command.Size.Width, 0);
+                    : new Position(availableSpace.Width - command.Offset.X - command.Size.Width, command.Offset.Y);
                 
                 Canvas.Translate(offset);
                 command.Cell.Draw(command.Size);
