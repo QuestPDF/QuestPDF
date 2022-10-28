@@ -24,7 +24,7 @@ namespace QuestPDF.Fluent
             return container;
         }
 
-        public IContainer Layer() => Layer(false);
+        public IContainer Layer() => Layer(false).RepeatContentWhenPaging();
         public IContainer PrimaryLayer() => Layer(true);
 
         internal void Validate()

@@ -5,8 +5,11 @@ using SkiaSharp;
 
 namespace QuestPDF.Elements
 {
-    internal class Image : Element, ICacheable
+    internal class Image : Element, IVisual, ICacheable
     {
+        public bool IsRendered { get; set; }
+        public bool RepeatContent { get; set; }
+        
         public SKImage? InternalImage { get; set; }
 
         ~Image()
@@ -16,9 +19,13 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            return availableSpace.IsNegative() 
-                ? SpacePlan.Wrap() 
-                : SpacePlan.FullRender(availableSpace);
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap();
+            
+            if (IsRendered && !RepeatContent)
+                return SpacePlan.FullRender(Size.Zero);
+            
+            return SpacePlan.FullRender(availableSpace);
         }
 
         internal override void Draw(Size availableSpace)
@@ -26,6 +33,7 @@ namespace QuestPDF.Elements
             if (InternalImage == null)
                 return;
 
+            IsRendered = true;
             Canvas.DrawImage(InternalImage, Position.Zero, availableSpace);
         }
     }

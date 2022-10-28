@@ -4,12 +4,16 @@ using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Elements.Text.Items;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text
 {
-    internal class TextBlock : Element, IStateResettable
+    internal class TextBlock : Element, IVisual, IStateResettable
     {
+        public bool IsRendered { get; set; }
+        public bool RepeatContent { get; set; }
+        
         public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
@@ -19,7 +23,7 @@ namespace QuestPDF.Elements.Text
         private int CurrentElementIndex { get; set; }
 
         private bool FontFallbackApplied { get; set; } = false;
-        
+
         public void ResetState()
         {
             ApplyFontFallback();
@@ -53,6 +57,12 @@ namespace QuestPDF.Elements.Text
 
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap();
+            
+            if (IsRendered && !RepeatContent)
+                return SpacePlan.FullRender(Size.Zero);
+
             if (!RenderingQueue.Any())
                 return SpacePlan.FullRender(Size.Zero);
             
@@ -80,6 +90,9 @@ namespace QuestPDF.Elements.Text
 
         internal override void Draw(Size availableSpace)
         {
+            if (IsRendered && !RepeatContent)
+                return;
+
             var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
             
             if (!lines.Any())
@@ -136,10 +149,13 @@ namespace QuestPDF.Elements.Text
 
             var lastElementMeasurement = lines.Last().Elements.Last().Measurement;
             CurrentElementIndex = lastElementMeasurement.IsLast ? 0 : lastElementMeasurement.NextIndex;
-            
+
             if (!RenderingQueue.Any())
+            {
                 ResetState();
-            
+                IsRendered = true;
+            }
+
             float GetAlignmentOffset(float lineWidth)
             {
                 if (Alignment == HorizontalAlignment.Left)

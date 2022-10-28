@@ -65,13 +65,14 @@ namespace QuestPDF.Drawing
             document.Compose(container);
             var content = container.Compose();
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
-            
+            ApplyContentRepeatState(content, false);
+
             var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
             
             if (Settings.EnableCaching)
                 ApplyCaching(content);
 
-            var pageContext = new PageContext();
+            var pageContext = new PageContext(); 
             RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
             RenderPass(pageContext, canvas, content, debuggingState);
         }
@@ -81,6 +82,8 @@ namespace QuestPDF.Drawing
         {
             content.VisitChildren(x => x?.Initialize(pageContext, canvas));
             content.VisitChildren(x => (x as IStateResettable)?.ResetState());
+
+            ResetIsRenderedState(content);
             
             canvas.BeginDocument();
 
@@ -159,6 +162,50 @@ namespace QuestPDF.Drawing
             });
 
             return debuggingState;
+        }
+        
+        private static void ApplyContentRepeatState(Element? content, bool repeatContent)
+        {
+            if (content == null)
+                return;
+            
+            if (content is IVisual visual)
+                visual.RepeatContent = repeatContent;
+            
+            if (content is TextBlock textBlock)
+            {
+                foreach (var textBlockItem in textBlock.Items)
+                {
+                    if (textBlockItem is TextBlockElement textElement)
+                    {
+                        ApplyContentRepeatState(textElement.Element, true);
+                    }
+                }
+                
+                return;
+            }
+
+            // TODO: apply RepeatState in dynamic content
+            //if (content is DynamicHost dynamicHost)
+            //  dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyGlobalStyle(documentDefaultTextStyle);
+
+            if (content is RepeatContentSetter repeatContentSetter)
+                repeatContent = repeatContentSetter.RepeatContent;
+            
+            foreach (var child in content.GetChildren())
+                ApplyContentRepeatState(child, repeatContent);
+        }
+        
+        private static void ResetIsRenderedState(Element? content)
+        {
+            if (content == null)
+                return;
+            
+            if (content is IVisual visual)
+                visual.IsRendered = false;
+
+            foreach (var child in content.GetChildren())
+                ResetIsRenderedState(child);
         }
 
         internal static void ApplyDefaultTextStyle(this Element? content, TextStyle documentDefaultTextStyle)

@@ -12,7 +12,7 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
             Decoration.Before = container;
-            return container;
+            return container.RepeatContentWhenPaging();
         }
         
         public void Before(Action<IContainer> handler)
@@ -36,7 +36,7 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
             Decoration.After = container;
-            return container;
+            return container.RepeatContentWhenPaging();
         }
         
         public void After(Action<IContainer> handler)
@@ -49,9 +49,7 @@ namespace QuestPDF.Fluent
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
         public IContainer Header()
         {
-            var container = new Container();
-            Decoration.Before = container;
-            return container;
+            return Before();
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
@@ -63,9 +61,7 @@ namespace QuestPDF.Fluent
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
         public IContainer Footer()
         {
-            var container = new Container();
-            Decoration.After = container;
-            return container;
+            return After();
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
