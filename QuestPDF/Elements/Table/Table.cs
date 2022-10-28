@@ -45,7 +45,7 @@ namespace QuestPDF.Elements.Table
         
         private void Initialize()
         {
-            if (!CacheInitialized)
+            if (CacheInitialized)
                 return;
 
             StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
