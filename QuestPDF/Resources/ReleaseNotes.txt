@@ -1,6 +1,1 @@
-2022.9.0
-- Implemented font-fallback algorithm,
-- Introduced new Settings API,
-- Significantly reduced memory allocation cost for TextStyle objects,
-- Implemented optional checking if all font glyphs are available,
-- Minor text-rendering optimizations.
+Added support for the right-to-left content direction.
