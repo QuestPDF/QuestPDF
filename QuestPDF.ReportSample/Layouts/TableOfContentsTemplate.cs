@@ -71,7 +71,7 @@ namespace QuestPDF.ReportSample.Layouts
                         text.TotalPagesWithinSection(locationName).Style(lengthStyle).Format(x =>
                         {
                             var formatted = x == 1 ? "1 page long" : $"{x} pages long";
-                            return $"({formatted})";
+                            return $" ({formatted})";
                         });
                     });
                 });
