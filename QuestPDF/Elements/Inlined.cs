@@ -36,7 +36,7 @@ namespace QuestPDF.Elements
         internal float VerticalSpacing { get; set; }
         internal float HorizontalSpacing { get; set; }
         
-        internal InlinedAlignment ElementsAlignment { get; set; }
+        internal InlinedAlignment? ElementsAlignment { get; set; }
         internal VerticalAlignment BaselineAlignment { get; set; }
         
         public void ResetState()
@@ -51,6 +51,8 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            SetDefaultAlignment();   
+            
             if (!ChildrenQueue.Any())
                 return SpacePlan.FullRender(Size.Zero);
             
@@ -83,6 +85,8 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            SetDefaultAlignment();
+            
             var lines = Compose(availableSpace);
             var topOffset = 0f;
             
@@ -169,6 +173,16 @@ namespace QuestPDF.Elements
             }
         }
 
+        void SetDefaultAlignment()
+        {
+            if (ElementsAlignment.HasValue)
+                return;
+
+            ElementsAlignment = ContentDirection == ContentDirection.LeftToRight
+                ? InlinedAlignment.Left
+                : InlinedAlignment.Right;
+        }
+        
         Size GetLineSize(ICollection<InlinedMeasurement> measurements)
         {
             var width = measurements.Sum(x => x.Size.Width);
