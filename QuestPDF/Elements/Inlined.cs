@@ -146,15 +146,15 @@ namespace QuestPDF.Elements
 
                 float AlignOffset()
                 {
-                    var difference = availableSpace.Width - lineSize.Width - (lineMeasurements.Count - 1) * HorizontalSpacing;
+                    var emptySpace = availableSpace.Width - lineSize.Width - (lineMeasurements.Count - 1) * HorizontalSpacing;
 
                     return ElementsAlignment switch
                     {
-                        InlinedAlignment.Left => ContentDirection == ContentDirection.LeftToRight ? 0 : difference,
+                        InlinedAlignment.Left => ContentDirection == ContentDirection.LeftToRight ? 0 : emptySpace,
                         InlinedAlignment.Justify => 0,
                         InlinedAlignment.SpaceAround => elementOffset,
-                        InlinedAlignment.Center => difference / 2,
-                        InlinedAlignment.Right => ContentDirection == ContentDirection.LeftToRight ? difference : 0,
+                        InlinedAlignment.Center => emptySpace / 2,
+                        InlinedAlignment.Right => ContentDirection == ContentDirection.LeftToRight ? emptySpace : 0,
                         _ => 0
                     };
                 }
