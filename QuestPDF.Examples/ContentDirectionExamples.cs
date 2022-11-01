@@ -261,15 +261,40 @@ namespace QuestPDF.Examples
 
             void Content(IContainer container)
             {
-                container.Inlined(inlined =>
+                container.Column(column =>
                 {
-                    inlined.Spacing(5);
+                    column.Spacing(10);
+
+                    column.Item().Background(Colors.Grey.Lighten3).Text("Default alignment").FontSize(13);
+                    column.Item().Element(ContentWithAlignment(null));
                     
-                    inlined.Item().Height(50).Width(50).Background(Colors.Red.Lighten1);
-                    inlined.Item().Height(50).Width(75).Background(Colors.Green.Lighten1);
-                    inlined.Item().Height(50).Width(100).Background(Colors.Blue.Lighten1);
-                    inlined.Item().Height(50).Width(125).Background(Colors.Orange.Lighten1);
+                    column.Item().Background(Colors.Grey.Lighten3).Text("Left alignment").FontSize(14);
+                    column.Item().Element(ContentWithAlignment(InlinedAlignment.Left));
+                    
+                    column.Item().Background(Colors.Grey.Lighten3).Text("Center alignment").FontSize(14);
+                    column.Item().Element(ContentWithAlignment(InlinedAlignment.Center));
+                    
+                    column.Item().Background(Colors.Grey.Lighten3).Text("Right alignment").FontSize(14);
+                    column.Item().Element(ContentWithAlignment(InlinedAlignment.Right));
                 });
+                
+                static Action<IContainer> ContentWithAlignment(InlinedAlignment? alignment)
+                {
+                    return container =>
+                    {
+                        container.Inlined(inlined =>
+                        {
+                            inlined.Spacing(5);
+                            
+                            inlined.Alignment(alignment);
+                    
+                            inlined.Item().Height(50).Width(50).Background(Colors.Red.Lighten1);
+                            inlined.Item().Height(50).Width(75).Background(Colors.Green.Lighten1);
+                            inlined.Item().Height(50).Width(100).Background(Colors.Blue.Lighten1);
+                            inlined.Item().Height(50).Width(125).Background(Colors.Orange.Lighten1);
+                        });
+                    };
+                }
             }
         }
         
@@ -286,7 +311,37 @@ namespace QuestPDF.Examples
 
             void Content(IContainer container)
             {
-                container.Text(Placeholders.LoremIpsum());
+                container.Column(column =>
+                {
+                    column.Spacing(10);
+
+                    column.Item().Background(Colors.Grey.Lighten3).Text("Default alignment").FontSize(13);
+                    column.Item().Element(ContentWithAlignment(null));
+                    
+                    column.Item().Background(Colors.Grey.Lighten3).Text("Left alignment").FontSize(14);
+                    column.Item().Element(ContentWithAlignment(HorizontalAlignment.Left));
+                    
+                    column.Item().Background(Colors.Grey.Lighten3).Text("Center alignment").FontSize(14);
+                    column.Item().Element(ContentWithAlignment(HorizontalAlignment.Center));
+                    
+                    column.Item().Background(Colors.Grey.Lighten3).Text("Right alignment").FontSize(14);
+                    column.Item().Element(ContentWithAlignment(HorizontalAlignment.Right));
+                });
+
+                static Action<IContainer> ContentWithAlignment(HorizontalAlignment? alignment)
+                {
+                    return container =>
+                    {
+                        container.Text(text =>
+                        {
+                            text.Alignment = alignment; // internal API
+                    
+                            text.Span("Lorem ipsum").Bold().FontColor(Colors.Red.Medium);
+                            text.Element().Width(5);
+                            text.Span(Placeholders.LoremIpsum());
+                        });
+                    };
+                }
             }
         }
         
