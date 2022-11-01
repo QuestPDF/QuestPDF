@@ -12,7 +12,7 @@ namespace QuestPDF.Fluent
 
         #region Size
         
-        public void Size(float width, float height, Unit unit = Unit.Inch)
+        public void Size(float width, float height, Unit unit = Unit.Point)
         {
             var pageSize = new PageSize(width, height, unit);
             
