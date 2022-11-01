@@ -50,7 +50,7 @@ namespace QuestPDF.Fluent
     {
         private ICollection<TextBlock> TextBlocks { get; } = new List<TextBlock>();
         private TextStyle? DefaultStyle { get; set; }
-        internal HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
+        internal HorizontalAlignment? Alignment { get; set; }
         private float Spacing { get; set; } = 0f;
 
         public void DefaultTextStyle(TextStyle style)
@@ -62,7 +62,7 @@ namespace QuestPDF.Fluent
         {
             DefaultStyle = style(TextStyle.Default);
         }
-        
+  
         public void AlignLeft()
         {
             Alignment = HorizontalAlignment.Left;
@@ -242,7 +242,7 @@ namespace QuestPDF.Fluent
         
         internal void Compose(IContainer container)
         {
-            TextBlocks.ToList().ForEach(x => x.Alignment = Alignment);
+            TextBlocks.ToList().ForEach(x => x.Alignment ??= Alignment);
             
             if (DefaultStyle != null)
                 container = container.DefaultTextStyle(DefaultStyle);
