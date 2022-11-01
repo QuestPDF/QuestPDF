@@ -12,7 +12,7 @@ namespace QuestPDF.Elements.Text
     {
         public ContentDirection ContentDirection { get; set; }
         
-        public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
+        public HorizontalAlignment? Alignment { get; set; }
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
         public string Text => string.Join(" ", Items.Where(x => x is TextBlockSpan).Cast<TextBlockSpan>().Select(x => x.Text));
@@ -52,9 +52,21 @@ namespace QuestPDF.Elements.Text
                 FontFallbackApplied = true;
             }
         }
+        
+        void SetDefaultAlignment()
+        {
+            if (Alignment.HasValue)
+                return;
+
+            Alignment = ContentDirection == ContentDirection.LeftToRight
+                ? HorizontalAlignment.Left
+                : HorizontalAlignment.Right;
+        }
 
         internal override SpacePlan Measure(Size availableSpace)
         {
+            SetDefaultAlignment();
+            
             if (!RenderingQueue.Any())
                 return SpacePlan.FullRender(Size.Zero);
             
@@ -82,6 +94,8 @@ namespace QuestPDF.Elements.Text
 
         internal override void Draw(Size availableSpace)
         {
+            SetDefaultAlignment();
+            
             var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
             
             if (!lines.Any())
@@ -137,18 +151,15 @@ namespace QuestPDF.Elements.Text
             
             float GetAlignmentOffset(float lineWidth)
             {
-                if (Alignment == HorizontalAlignment.Left)
-                    return 0;
-
                 var emptySpace = availableSpace.Width - lineWidth;
 
-                if (Alignment == HorizontalAlignment.Right)
-                    return emptySpace;
-
-                if (Alignment == HorizontalAlignment.Center)
-                    return emptySpace / 2;
-
-                throw new ArgumentException();
+                return Alignment switch
+                {
+                    HorizontalAlignment.Left => ContentDirection == ContentDirection.LeftToRight ? 0 : emptySpace,
+                    HorizontalAlignment.Center => emptySpace / 2,
+                    HorizontalAlignment.Right => ContentDirection == ContentDirection.LeftToRight ? emptySpace : 0,
+                    _ => 0
+                };
             }
         }
 
