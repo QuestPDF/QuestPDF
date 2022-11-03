@@ -122,7 +122,49 @@ namespace QuestPDF.Examples
                         });
                 });
         }
-        
+
+        [Test]
+        public void LetterSpacing()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 700)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(20)
+                        .Column(column =>
+                        {
+                            var letterSpacing = new[] { -1f, 0f, 2f };
+                            var paragraph = Placeholders.Sentence();
+
+                            foreach (var spacing in letterSpacing)
+                            {
+                                column
+                                    .Item()
+                                    .Border(1)
+                                    .Padding(10)
+                                    .Column(nestedColumn =>
+                                    {
+                                        nestedColumn.Item()
+                                                    .Text(paragraph)
+                                                    .FontSize(16)
+                                                    .LetterSpacing(spacing);
+
+                                        nestedColumn.Item()
+                                                    .Text($"Letter spacing of {spacing} pt")
+                                                    .FontSize(10)
+                                                    .Italic()
+                                                    .FontColor(Colors.Blue.Medium);
+                                    });
+                                    
+                            }
+                        });
+                });
+        }
+
         [Test]
         public void SuperscriptSubscript_Simple()
         {
