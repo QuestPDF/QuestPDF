@@ -55,7 +55,13 @@ namespace QuestPDF.Fluent
             descriptor.MutateTextStyle(x => x.LineHeight(value));
             return descriptor;
         }
-        
+
+        public static T LetterSpacing<T>(this T descriptor, float value) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(x => x.LetterSpacing(value));
+            return descriptor;
+        }
+
         public static T Italic<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
             descriptor.MutateTextStyle(x => x.Italic(value));

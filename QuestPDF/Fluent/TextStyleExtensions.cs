@@ -48,7 +48,12 @@ namespace QuestPDF.Fluent
         {
             return style.Mutate(TextStyleProperty.LineHeight, value);
         }
-        
+
+        public static TextStyle LetterSpacing(this TextStyle style, float value)
+        {
+            return style.Mutate(TextStyleProperty.LetterSpacing, value);
+        }
+
         public static TextStyle Italic(this TextStyle style, bool value = true)
         {
             return style.Mutate(TextStyleProperty.IsItalic, value);
