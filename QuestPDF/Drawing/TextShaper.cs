@@ -52,7 +52,7 @@ namespace QuestPDF.Drawing
                     Width = glyphPositions[i].XAdvance * scaleX
                 };
                 
-                xOffset += glyphPositions[i].XAdvance * scaleX;
+                xOffset += (glyphPositions[i].XAdvance * scaleX) + TextStyle.LetterSpacing ?? 0;
                 yOffset += glyphPositions[i].YAdvance * scaleY;
             }
             
