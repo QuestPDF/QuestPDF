@@ -17,7 +17,7 @@ It offers a layouting engine designed with a full paging support in mind. The do
 
 Unlike other libraries, it does not rely on the HTML-to-PDF conversion which in many cases is not reliable. Instead, it implements its own layouting engine that is optimized to cover all paging-related requirements.
 
-## Please show the value
+## Please help by giving a star
 
 Choosing a project dependency could be difficult. We need to ensure stability and maintainability of our projects. Surveys show that GitHub stars count play an important factor when assessing library quality. 
 
@@ -47,6 +47,7 @@ Special thanks to all companies that decided to sponsor QuestPDF development. Th
 | Company                                                                              | Description                                                                                                                     |
 |--------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------|
 | <img src="Resources/jetbrains-logo.svg" width="100px"> | [JetBrains](https://www.jetbrains.com/) supports this project as part of the OSS Power-Ups program. Thank you!<br/>100$ / month |
+| <img src="https://avatars.githubusercontent.com/u/2712328?v=4" width="100px"> | [Mark Gould](https://github.com/markgould) supports this project. Thank you!<br/>100$ / month |
 
 [![Sponsor project](https://img.shields.io/badge/%E2%9D%A4%EF%B8%8F%20sponsor-QuestPDF-red)](https://github.com/sponsors/QuestPDF)
 
@@ -62,14 +63,14 @@ Install-Package QuestPDF
 dotnet add package QuestPDF
 
 // Package reference in .csproj file
-<PackageReference Include="QuestPDF" Version="2022.6.0" />
+<PackageReference Include="QuestPDF" Version="2022.9.0" />
 ```
 
 [![Nuget version](https://img.shields.io/badge/package%20details-QuestPDF-blue?logo=nuget)](https://www.nuget.org/packages/QuestPDF/)
 
 ## Documentation
 
-[![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue)](https://www.questpdf.com/getting-started.html)
+[![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue)](https://www.questpdf.com/getting-started)
 A short and easy to follow tutorial showing how to design an invoice document under 200 lines of code.
 
 
@@ -77,14 +78,14 @@ A short and easy to follow tutorial showing how to design an invoice document un
 A detailed description of behavior of all available components and how to use them with C# Fluent API.
 
 
-[![Patterns and Practices](https://img.shields.io/badge/%E2%9C%A8%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/design-patterns.html)
+[![Patterns and Practices](https://img.shields.io/badge/%E2%9C%A8%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/design-patterns)
 Everything that may help you designing great reports and create reusable code that is easy to maintain.
 
 ## QuestPDF Previewer
 
 The QuestPDF Previewer is a tool designed to simplify and speed up your development lifecycle. First, it shows a preview of your document. But the real magic starts with the hot-reload capability! It observes your code and updates the preview every time you change the implementation. Get real-time results without the need of code recompilation. Save time and enjoy the task!
 
-[![Learn more](https://img.shields.io/badge/%F0%9F%93%96%20Previewer-learn%20more-blue)](https://www.questpdf.com/document-previewer.html)
+[![Learn more](https://img.shields.io/badge/%F0%9F%93%96%20Previewer-learn%20more-blue)](https://www.questpdf.com/document-previewer)
 
 
 <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">

@@ -27,6 +27,7 @@ namespace QuestPDF.Elements.Table
         // inner table: list of all cells that ends at the corresponding row
         private TableCell[][] CellsCache { get; set; }
         private int MaxRow { get; set; }
+        private int MaxRowSpan { get; set; }
         
         internal override IEnumerable<Element?> GetChildren()
         {
@@ -64,6 +65,7 @@ namespace QuestPDF.Elements.Table
             if (Cells.Count == 0)
             {
                 MaxRow = 0;
+                MaxRowSpan = 1;
                 CellsCache = Array.Empty<TableCell[]>();
                 
                 return;
@@ -74,6 +76,7 @@ namespace QuestPDF.Elements.Table
                 .ToDictionary(x => x.Key, x => x.OrderBy(x => x.Column).ToArray());
 
             MaxRow = groups.Max(x => x.Key);
+            MaxRowSpan = Cells.Max(x => x.RowSpan);
 
             CellsCache = Enumerable
                 .Range(0, MaxRow + 1)
@@ -211,9 +214,9 @@ namespace QuestPDF.Elements.Table
                         
                         currentRow = cell.Row;
                     }
-
+                    
                     // cell visibility optimizations
-                    if (cell.Row > maxRenderingRow)
+                    if (cell.Row > maxRenderingRow + MaxRowSpan)
                         break;
 
                     // calculate cell position / size
@@ -230,14 +233,14 @@ namespace QuestPDF.Elements.Table
                     {
                         maxRenderingRow = Math.Min(maxRenderingRow, cell.Row + cell.RowSpan - 1);
                     }
-                    
+
                     // corner case: if cell within the row want to wrap to the next page, do not attempt to render this row
                     if (cellSize.Type == SpacePlanType.Wrap)
                     {
                         maxRenderingRow = Math.Min(maxRenderingRow, cell.Row - 1);
                         continue;
                     }
-                    
+
                     // update position of the last row that cell occupies
                     var bottomRow = cell.Row + cell.RowSpan - 1;
                     rowBottomOffsets[bottomRow] = Math.Max(rowBottomOffsets[bottomRow], topOffset + cellSize.Height);
