@@ -164,5 +164,27 @@ namespace QuestPDF.Fluent
         }
         
         #endregion
+        
+        #region Direction
+
+        public static T DirectionAuto<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(x => x.DirectionAuto());
+            return descriptor;
+        }
+        
+        public static T DirectionFromLeftToRight<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(x => x.DirectionFromLeftToRight());
+            return descriptor;
+        }
+        
+        public static T DirectionFromRightToLeft<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(x => x.DirectionFromRightToLeft());
+            return descriptor;
+        }
+
+        #endregion
     }
 }

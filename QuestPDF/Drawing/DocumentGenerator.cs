@@ -65,6 +65,7 @@ namespace QuestPDF.Drawing
             document.Compose(container);
             var content = container.Compose();
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
+            ApplyContentDirection(content, ContentDirection.LeftToRight);
             
             var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
             
@@ -79,7 +80,7 @@ namespace QuestPDF.Drawing
         internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)
             where TCanvas : ICanvas, IRenderingCanvas
         {
-            content.VisitChildren(x => x?.Initialize(pageContext, canvas));
+            InjectDependencies(content, pageContext, canvas);
             content.VisitChildren(x => (x as IStateResettable)?.ResetState());
             
             canvas.BeginDocument();
@@ -140,6 +141,18 @@ namespace QuestPDF.Drawing
             }
         }
 
+        internal static void InjectDependencies(this Element content, IPageContext pageContext, ICanvas canvas)
+        {
+            content.VisitChildren(x =>
+            {
+                if (x == null)
+                    return;
+                
+                x.PageContext = pageContext;
+                x.Canvas = canvas;
+            });
+        }
+
         private static void ApplyCaching(Container content)
         {
             content.VisitChildren(x =>
@@ -159,6 +172,24 @@ namespace QuestPDF.Drawing
             });
 
             return debuggingState;
+        }
+        
+        internal static void ApplyContentDirection(this Element? content, ContentDirection direction)
+        {
+            if (content == null)
+                return;
+
+            if (content is ContentDirectionSetter contentDirectionSetter)
+            {
+                ApplyContentDirection(contentDirectionSetter.Child, contentDirectionSetter.ContentDirection);
+                return;
+            }
+
+            if (content is IContentDirectionAware contentDirectionAware)
+                contentDirectionAware.ContentDirection = direction;
+            
+            foreach (var child in content.GetChildren())
+                ApplyContentDirection(child, direction);
         }
 
         internal static void ApplyDefaultTextStyle(this Element? content, TextStyle documentDefaultTextStyle)

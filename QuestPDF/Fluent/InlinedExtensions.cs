@@ -30,6 +30,7 @@ namespace QuestPDF.Fluent
         public void BaselineMiddle() => Inlined.BaselineAlignment = VerticalAlignment.Middle;
         public void BaselineBottom() => Inlined.BaselineAlignment = VerticalAlignment.Bottom;
 
+        internal void Alignment(InlinedAlignment? alignment) => Inlined.ElementsAlignment = alignment;
         public void AlignLeft() => Inlined.ElementsAlignment = InlinedAlignment.Left;
         public void AlignCenter() => Inlined.ElementsAlignment = InlinedAlignment.Center;
         public void AlignRight() => Inlined.ElementsAlignment = InlinedAlignment.Right;

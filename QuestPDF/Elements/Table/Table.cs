@@ -9,12 +9,15 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
 {
-    internal class Table : Element, IStateResettable
+    internal class Table : Element, IStateResettable, IContentDirectionAware
     {
-        public List<TableColumnDefinition> Columns { get; set; } = new List<TableColumnDefinition>();
-        public List<TableCell> Cells { get; set; } = new List<TableCell>();
+        public ContentDirection ContentDirection { get; set; }
+        
+        public List<TableColumnDefinition> Columns { get; set; } = new();
+        public List<TableCell> Cells { get; set; } = new();
         public bool ExtendLastCellsToTableBottom { get; set; }
         
+        private bool CacheInitialized { get; set; }
         private int StartingRowsCount { get; set; }
         private int RowsCount { get; set; }
         private int CurrentRow { get; set; }
@@ -26,16 +29,6 @@ namespace QuestPDF.Elements.Table
         private int MaxRow { get; set; }
         private int MaxRowSpan { get; set; }
         
-        internal override void Initialize(IPageContext pageContext, ICanvas canvas)
-        {
-            StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
-            RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
-            Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
-            BuildCache();
-
-            base.Initialize(pageContext, canvas);
-        }
-
         internal override IEnumerable<Element?> GetChildren()
         {
             return Cells;
@@ -43,10 +36,25 @@ namespace QuestPDF.Elements.Table
 
         public void ResetState()
         {
+            Initialize();
+            
             foreach (var x in Cells)
                 x.IsRendered = false;
             
             CurrentRow = 1;
+        }
+        
+        private void Initialize()
+        {
+            if (CacheInitialized)
+                return;
+
+            StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
+            RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
+            Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
+            BuildCache();
+
+            CacheInitialized = true;
         }
 
         private void BuildCache()
@@ -112,9 +120,13 @@ namespace QuestPDF.Elements.Table
                 if (command.Measurement.Type == SpacePlanType.Wrap)
                     continue;
                 
-                Canvas.Translate(command.Offset);
+                var offset = ContentDirection == ContentDirection.LeftToRight
+                    ? command.Offset
+                    : new Position(availableSpace.Width - command.Offset.X - command.Size.Width, command.Offset.Y);
+                
+                Canvas.Translate(offset);
                 command.Cell.Draw(command.Size);
-                Canvas.Translate(command.Offset.Reverse());
+                Canvas.Translate(offset.Reverse());
             }
 
             CurrentRow = FindLastRenderedRow(renderingCommands) + 1;
@@ -161,7 +173,7 @@ namespace QuestPDF.Elements.Table
             
             if (ExtendLastCellsToTableBottom)
                 AdjustLastCellSizes(tableHeight, commands);
-
+            
             return commands;
 
             static float[] GetColumnLeftOffsets(IList<TableColumnDefinition> columns)

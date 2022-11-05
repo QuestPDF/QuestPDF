@@ -26,15 +26,17 @@ namespace QuestPDF.Elements
         public SpacePlan Size { get; set; }
     }
     
-    internal class Inlined : Element, IStateResettable
+    internal class Inlined : Element, IStateResettable, IContentDirectionAware
     {
+        public ContentDirection ContentDirection { get; set; }
+        
         public List<InlinedElement> Elements { get; internal set; } = new List<InlinedElement>();
         private Queue<InlinedElement> ChildrenQueue { get; set; }
 
         internal float VerticalSpacing { get; set; }
         internal float HorizontalSpacing { get; set; }
         
-        internal InlinedAlignment ElementsAlignment { get; set; }
+        internal InlinedAlignment? ElementsAlignment { get; set; }
         internal VerticalAlignment BaselineAlignment { get; set; }
         
         public void ResetState()
@@ -49,6 +51,8 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            SetDefaultAlignment();   
+            
             if (!ChildrenQueue.Any())
                 return SpacePlan.FullRender(Size.Zero);
             
@@ -81,6 +85,8 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            SetDefaultAlignment();
+            
             var lines = Compose(availableSpace);
             var topOffset = 0f;
             
@@ -103,7 +109,6 @@ namespace QuestPDF.Elements
 
                 var elementOffset = ElementOffset();
                 var leftOffset = AlignOffset();
-                Canvas.Translate(new Position(leftOffset, 0));
                 
                 foreach (var measurement in lineMeasurements)
                 {
@@ -113,15 +118,16 @@ namespace QuestPDF.Elements
                     if (size.Height == 0)
                         size = new Size(size.Width, lineSize.Height);
                     
-                    Canvas.Translate(new Position(0, baselineOffset));
+                    var offset = ContentDirection == ContentDirection.LeftToRight
+                        ? new Position(leftOffset, baselineOffset)
+                        : new Position(availableSpace.Width - size.Width - leftOffset, baselineOffset);
+                    
+                    Canvas.Translate(offset);
                     measurement.Element.Draw(size);
-                    Canvas.Translate(new Position(0, -baselineOffset));
+                    Canvas.Translate(offset.Reverse());
 
                     leftOffset += size.Width + elementOffset;
-                    Canvas.Translate(new Position(size.Width + elementOffset, 0));
                 }
-                
-                Canvas.Translate(new Position(-leftOffset, 0));
 
                 float ElementOffset()
                 {
@@ -140,15 +146,15 @@ namespace QuestPDF.Elements
 
                 float AlignOffset()
                 {
-                    var difference = availableSpace.Width - lineSize.Width - (lineMeasurements.Count - 1) * HorizontalSpacing;
+                    var emptySpace = availableSpace.Width - lineSize.Width - (lineMeasurements.Count - 1) * HorizontalSpacing;
 
                     return ElementsAlignment switch
                     {
-                        InlinedAlignment.Left => 0,
+                        InlinedAlignment.Left => ContentDirection == ContentDirection.LeftToRight ? 0 : emptySpace,
                         InlinedAlignment.Justify => 0,
                         InlinedAlignment.SpaceAround => elementOffset,
-                        InlinedAlignment.Center => difference / 2,
-                        InlinedAlignment.Right => difference,
+                        InlinedAlignment.Center => emptySpace / 2,
+                        InlinedAlignment.Right => ContentDirection == ContentDirection.LeftToRight ? emptySpace : 0,
                         _ => 0
                     };
                 }
@@ -167,6 +173,16 @@ namespace QuestPDF.Elements
             }
         }
 
+        void SetDefaultAlignment()
+        {
+            if (ElementsAlignment.HasValue)
+                return;
+
+            ElementsAlignment = ContentDirection == ContentDirection.LeftToRight
+                ? InlinedAlignment.Left
+                : InlinedAlignment.Right;
+        }
+        
         Size GetLineSize(ICollection<InlinedMeasurement> measurements)
         {
             var width = measurements.Sum(x => x.Size.Width);

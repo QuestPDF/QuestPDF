@@ -8,9 +8,11 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text
 {
-    internal class TextBlock : Element, IStateResettable
+    internal class TextBlock : Element, IStateResettable, IContentDirectionAware
     {
-        public HorizontalAlignment Alignment { get; set; } = HorizontalAlignment.Left;
+        public ContentDirection ContentDirection { get; set; }
+        
+        public HorizontalAlignment? Alignment { get; set; }
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
         public string Text => string.Join(" ", Items.Where(x => x is TextBlockSpan).Cast<TextBlockSpan>().Select(x => x.Text));
@@ -19,7 +21,7 @@ namespace QuestPDF.Elements.Text
         private int CurrentElementIndex { get; set; }
 
         private bool FontFallbackApplied { get; set; } = false;
-        
+
         public void ResetState()
         {
             ApplyFontFallback();
@@ -50,9 +52,21 @@ namespace QuestPDF.Elements.Text
                 FontFallbackApplied = true;
             }
         }
+        
+        void SetDefaultAlignment()
+        {
+            if (Alignment.HasValue)
+                return;
+
+            Alignment = ContentDirection == ContentDirection.LeftToRight
+                ? HorizontalAlignment.Left
+                : HorizontalAlignment.Right;
+        }
 
         internal override SpacePlan Measure(Size availableSpace)
         {
+            SetDefaultAlignment();
+            
             if (!RenderingQueue.Any())
                 return SpacePlan.FullRender(Size.Zero);
             
@@ -80,23 +94,19 @@ namespace QuestPDF.Elements.Text
 
         internal override void Draw(Size availableSpace)
         {
+            SetDefaultAlignment();
+            
             var lines = DivideTextItemsIntoLines(availableSpace.Width, availableSpace.Height).ToList();
             
             if (!lines.Any())
                 return;
             
-            var heightOffset = 0f;
-            var widthOffset = 0f;
-            
+            var topOffset = 0f;
+
             foreach (var line in lines)
             {
-                widthOffset = 0f;
+                var leftOffset = GetAlignmentOffset(line.Width);
 
-                var alignmentOffset = GetAlignmentOffset(line.Width);
-                
-                Canvas.Translate(new Position(alignmentOffset, 0));
-                Canvas.Translate(new Position(0, -line.Ascent));
-            
                 foreach (var item in line.Elements)
                 {
                     var textDrawingRequest = new TextDrawingRequest
@@ -111,21 +121,20 @@ namespace QuestPDF.Elements.Text
                         TotalAscent = line.Ascent
                     };
                 
+                    var canvasOffset = ContentDirection == ContentDirection.LeftToRight
+                        ? new Position(leftOffset, topOffset - line.Ascent)
+                        : new Position(availableSpace.Width - leftOffset - item.Measurement.Width, topOffset - line.Ascent);
+                    
+                    Canvas.Translate(canvasOffset);
                     item.Item.Draw(textDrawingRequest);
-                
-                    Canvas.Translate(new Position(item.Measurement.Width, 0));
-                    widthOffset += item.Measurement.Width;
+                    Canvas.Translate(canvasOffset.Reverse());
+                    
+                    leftOffset += item.Measurement.Width;
                 }
-            
-                Canvas.Translate(new Position(-alignmentOffset, 0));
-                Canvas.Translate(new Position(-line.Width, line.Ascent));
-                Canvas.Translate(new Position(0, line.LineHeight));
                 
-                heightOffset += line.LineHeight;
+                topOffset += line.LineHeight;
             }
-            
-            Canvas.Translate(new Position(0, -heightOffset));
-            
+
             lines
                 .SelectMany(x => x.Elements)
                 .GroupBy(x => x.Item)
@@ -142,18 +151,15 @@ namespace QuestPDF.Elements.Text
             
             float GetAlignmentOffset(float lineWidth)
             {
-                if (Alignment == HorizontalAlignment.Left)
-                    return 0;
-
                 var emptySpace = availableSpace.Width - lineWidth;
 
-                if (Alignment == HorizontalAlignment.Right)
-                    return emptySpace;
-
-                if (Alignment == HorizontalAlignment.Center)
-                    return emptySpace / 2;
-
-                throw new ArgumentException();
+                return Alignment switch
+                {
+                    HorizontalAlignment.Left => ContentDirection == ContentDirection.LeftToRight ? 0 : emptySpace,
+                    HorizontalAlignment.Center => emptySpace / 2,
+                    HorizontalAlignment.Right => ContentDirection == ContentDirection.LeftToRight ? emptySpace : 0,
+                    _ => 0
+                };
             }
         }
 

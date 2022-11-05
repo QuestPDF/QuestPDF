@@ -74,7 +74,7 @@ namespace QuestPDF.Elements
                     command.ColumnItem.IsRendered = true;
 
                 var targetSize = new Size(availableSpace.Width, command.Size.Height);
-                
+
                 Canvas.Translate(command.Offset);
                 command.ColumnItem.Draw(targetSize);
                 Canvas.Translate(command.Offset.Reverse());

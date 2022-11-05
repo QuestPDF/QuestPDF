@@ -29,6 +29,12 @@ namespace QuestPDF.Drawing
             PopulateBufferWithText(buffer, text);
             buffer.GuessSegmentProperties();
 
+            if (TextStyle.Direction == TextDirection.LeftToRight)
+                buffer.Direction = Direction.LeftToRight;
+            
+            if (TextStyle.Direction == TextDirection.RightToLeft)
+                buffer.Direction = Direction.RightToLeft;
+            
             ShaperFont.Shape(buffer);
             
             var length = buffer.Length;
@@ -56,7 +62,7 @@ namespace QuestPDF.Drawing
                 yOffset += glyphPositions[i].YAdvance * scaleY;
             }
             
-            return new TextShapingResult(glyphs);
+            return new TextShapingResult(buffer.Direction, glyphs);
         }
         
         void PopulateBufferWithText(Buffer buffer, string text)
@@ -92,29 +98,65 @@ namespace QuestPDF.Drawing
     
     internal class TextShapingResult
     {
-        public ShapedGlyph[] Glyphs { get; }
+        private Direction Direction { get; }
+        private ShapedGlyph[] Glyphs { get; }
 
-        public TextShapingResult(ShapedGlyph[] glyphs)
+        public int Length => Glyphs.Length;
+        
+        public ShapedGlyph this[int index] =>
+            Direction == Direction.LeftToRight 
+                ? Glyphs[index] 
+                : Glyphs[Glyphs.Length - 1 - index];
+
+        public TextShapingResult(Direction direction, ShapedGlyph[] glyphs)
         {
+            Direction = direction;
             Glyphs = glyphs;
         }
 
         public int BreakText(int startIndex, float maxWidth)
         {
-            var index = startIndex;
-            maxWidth += Glyphs[startIndex].Position.X;
-
-            while (index < Glyphs.Length)
+            return Direction switch
             {
-                var glyph = Glyphs[index];
-                
-                if (glyph.Position.X + glyph.Width > maxWidth + Size.Epsilon)
-                    break;
-                
-                index++;
-            }
+                Direction.LeftToRight => BreakTextLeftToRight(),
+                Direction.RightToLeft => BreakTextRightToLeft(),
+                _ => throw new ArgumentOutOfRangeException()
+            };
 
-            return index - 1;
+            int BreakTextLeftToRight()
+            {
+                var index = startIndex;
+                maxWidth += Glyphs[startIndex].Position.X;
+
+                while (index < Glyphs.Length)
+                {
+                    var glyph = Glyphs[index];
+                
+                    if (glyph.Position.X + glyph.Width > maxWidth + Size.Epsilon)
+                        break;
+                
+                    index++;
+                }
+
+                return index - 1;
+            }
+            
+            int BreakTextRightToLeft()
+            {
+                var index = startIndex;
+
+                var startOffset = this[startIndex].Position.X + this[startIndex].Width;
+
+                while (index < Glyphs.Length)
+                {
+                    if (startOffset - this[index].Position.X > maxWidth + Size.Epsilon)
+                        break;
+                
+                    index++;
+                }
+
+                return index - 1;
+            }
         }
         
         public float MeasureWidth(int startIndex, int endIndex)
@@ -122,10 +164,15 @@ namespace QuestPDF.Drawing
             if (Glyphs.Length == 0)
                 return 0;
             
-            var start = Glyphs[startIndex];
-            var end = Glyphs[endIndex];
+            var start = this[startIndex];
+            var end = this[endIndex];
 
-            return end.Position.X - start.Position.X + end.Width;
+            return Direction switch
+            {
+                Direction.LeftToRight => end.Position.X - start.Position.X + end.Width,
+                Direction.RightToLeft => start.Position.X - end.Position.X + start.Width,
+                _ => throw new NotSupportedException()
+            };
         }
         
         public DrawTextCommand? PositionText(int startIndex, int endIndex, TextStyle textStyle)
@@ -146,14 +193,18 @@ namespace QuestPDF.Drawing
             {
                 var runIndex = sourceIndex - startIndex;
                 
-                glyphSpan[runIndex] = Glyphs[sourceIndex].Codepoint;
-                positionSpan[runIndex] = Glyphs[sourceIndex].Position;
+                glyphSpan[runIndex] = this[sourceIndex].Codepoint;
+                positionSpan[runIndex] = this[sourceIndex].Position;
             }
+
+            var firstVisualCharacterIndex = Direction == Direction.LeftToRight
+                ? startIndex
+                : endIndex;
             
             return new DrawTextCommand
             {
                 SkTextBlob = skTextBlobBuilder.Build(),
-                TextOffsetX = -Glyphs[startIndex].Position.X
+                TextOffsetX = -this[firstVisualCharacterIndex].Position.X
             };
         }
     }

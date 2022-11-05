@@ -17,7 +17,8 @@ namespace QuestPDF.Infrastructure
         HasStrikethrough,
         HasUnderline,
         WrapAnywhere,
-        Fallback
+        Fallback,
+        Direction
     }
     
     internal static class TextStyleManager
@@ -192,6 +193,19 @@ namespace QuestPDF.Infrastructure
                 
                 return origin with { Fallback = castedValue };
             }
+            
+            if (property == TextStyleProperty.Direction)
+            {
+                if (!overrideValue && origin.Direction != null)
+                    return origin;
+
+                var castedValue = (TextDirection?)value;
+                
+                if (origin.Direction == castedValue)
+                    return origin;
+                
+                return origin with { Direction = castedValue };
+            }
 
             throw new ArgumentOutOfRangeException(nameof(property), property, "Expected to mutate the TextStyle object. Provided property type is not supported.");
         }
@@ -238,6 +252,7 @@ namespace QuestPDF.Infrastructure
             result = MutateStyle(result, TextStyleProperty.HasStrikethrough, parent.HasStrikethrough, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.HasUnderline, parent.HasUnderline, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.WrapAnywhere, parent.WrapAnywhere, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.Direction, parent.Direction, overrideStyle);
             
             if (applyFallback)
                 result = MutateStyle(result, TextStyleProperty.Fallback, parent.Fallback, overrideStyle);

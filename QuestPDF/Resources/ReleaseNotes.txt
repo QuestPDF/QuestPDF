@@ -1,11 +1,3 @@
-2022.9.0
-- Implemented font-fallback algorithm,
-- Introduced new Settings API,
-- Significantly reduced memory allocation cost for TextStyle objects,
-- Implemented optional checking if all font glyphs are available,
-- Minor text-rendering optimizations.
-
-2022.9.1
-- Fixed: text hyperlinks do not work when the CheckIfAllTextGlyphsAreAvailable option or text fallback are used,
-- Fixed: cells with RowSpan (greater than 1) are not always displayed properly,
-- Improved predictability of the Inlined element when measuring its children.
+Added support for the right-to-left content direction.
+Fixed: word-wrapping algorithm does not work correctly with right-to-left languages.
+Fixed: Page.Size() API incorrectly uses Unit.Inch as default unit. Replaced with Unit.Point for consistency.

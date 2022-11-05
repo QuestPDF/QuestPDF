@@ -165,5 +165,29 @@ namespace QuestPDF.Fluent
         }
 
         #endregion
+
+        #region Direction
+
+        private static TextStyle TextDirection(this TextStyle style, TextDirection textDirection)
+        {
+            return style.Mutate(TextStyleProperty.Direction, textDirection);
+        }
+        
+        public static TextStyle DirectionAuto(this TextStyle style)
+        {
+            return style.TextDirection(Infrastructure.TextDirection.Auto);
+        }
+        
+        public static TextStyle DirectionFromLeftToRight(this TextStyle style)
+        {
+            return style.TextDirection(Infrastructure.TextDirection.LeftToRight);
+        }
+        
+        public static TextStyle DirectionFromRightToLeft(this TextStyle style)
+        {
+            return style.TextDirection(Infrastructure.TextDirection.RightToLeft);
+        }
+
+        #endregion
     }
 }
