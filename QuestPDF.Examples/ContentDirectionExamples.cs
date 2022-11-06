@@ -17,30 +17,29 @@ namespace QuestPDF.Examples
             return container =>
             {
                 container
-                    .Padding(20)
                     .MinimalBox()
-                    .Border(1)
                     .ExtendHorizontal()
                     .Table(table =>
                     {
                         table.ColumnsDefinition(columns =>
                         {
                             columns.RelativeColumn();
+                            columns.ConstantColumn(1);
                             columns.RelativeColumn();
                         });
                         
                         table.Header(header =>
                         {
                             header.Cell().ContentFromLeftToRight().Element(HeaderCell("Left-to-right"));
+                            header.Cell().LineVertical(1).LineColor(Colors.Grey.Medium);
                             header.Cell().ContentFromRightToLeft().Element(HeaderCell("Right-to-left"));
 
                             static Action<IContainer> HeaderCell(string label)
                             {
                                 return container => container
-                                    .Border(1)
                                     .BorderColor(Colors.Grey.Medium)
-                                    .Background(Colors.Grey.Lighten3)
-                                    .PaddingHorizontal(10)
+                                    .Background(Colors.Grey.Lighten2)
+                                    .PaddingHorizontal(15)
                                     .PaddingVertical(5)
                                     .Text(label)
                                     .FontSize(18)
@@ -49,15 +48,12 @@ namespace QuestPDF.Examples
                         });
 
                         table.Cell().Element(TestCell).ContentFromLeftToRight().Element(content);
-                        
-                        table.Cell()
-                            .Element(TestCell)
-                            .ContentFromRightToLeft()
-                            .Element(content);
+                        table.Cell().LineVertical(1).LineColor(Colors.Grey.Medium);
+                        table.Cell().Element(TestCell).ContentFromRightToLeft().Element(content);
                         
                         static IContainer TestCell(IContainer container)
                         {
-                            return container.Border(1).BorderColor(Colors.Grey.Medium).Padding(10);
+                            return container.Padding(15);
                         }
                     });
             };
@@ -79,46 +75,47 @@ namespace QuestPDF.Examples
                         page.Margin(20);
                         page.PageColor(Colors.White);
                         
-                        //page.ContentFromRightToLeft();
+                        page.DefaultTextStyle(x => x.FontFamily("Calibri").FontSize(20));
+                        page.ContentFromRightToLeft();
                         
                         page.Content().Column(column =>
                         {
                             column.Spacing(20);
-                            
-                            column.Item().Row(row =>
-                            {
-                                row.Spacing(10);
-                                
-                                row.AutoItem().AlignMiddle().Width(20).Height(20).Image(Placeholders.Image);
-                                
-                                row.RelativeItem()
-                                    .Text("Document title")
-                                    .FontSize(24).FontColor(Colors.Blue.Accent1).SemiBold();
-                            });
+
+                            column.Item()
+                                .Text("مثال على الفاتورة") // example invoice
+                                .FontSize(32).FontColor(Colors.Blue.Darken2).SemiBold();
                             
                             column.Item().Table(table =>
                             {
                                 table.ColumnsDefinition(columns =>
                                 {
                                     columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
-                                    columns.RelativeColumn();
+                                    columns.ConstantColumn(75);
+                                    columns.ConstantColumn(100);
                                 });
 
-                                foreach (var i in Enumerable.Range(0, 9))
-                                {
-                                    var width = (i % 4 == 0) ? 2 : 1;
+                                table.Cell().Element(HeaderStyle).Text("وصف السلعة"); // item description
+                                table.Cell().Element(HeaderStyle).Text("كمية"); // quantity
+                                table.Cell().Element(HeaderStyle).Text("سعر"); // price
 
-                                    table
-                                        .Cell()
-                                        .ColumnSpan((uint)width)
-                                        .Background(i % 4 == 0 ? Colors.Grey.Lighten1 : Colors.Grey.Lighten2)
-                                        .Padding(5)
-                                        .AlignCenter()
-                                        .Text(i)
-                                        .FontSize(20);
+                                var items = new[]
+                                {
+                                    "دورة البرمجة", // programming course
+                                    "دورة تصميم الرسومات", // graphics design course
+                                    "تحليل وتصميم الخوارزميات", // analysis and design of algorithms
+                                };
+                                
+                                foreach (var item in items)
+                                {
+                                    var price = Placeholders.Random.NextDouble() * 100;
+                                    
+                                    table.Cell().Text(item);
+                                    table.Cell().Text(Placeholders.Random.Next(1, 10));
+                                    table.Cell().Text($"USD${price:F2}");
                                 }
+
+                                static IContainer HeaderStyle(IContainer x) => x.BorderBottom(1).PaddingVertical(5);
                             });
                         });
                     });
@@ -265,16 +262,16 @@ namespace QuestPDF.Examples
                 {
                     column.Spacing(10);
 
-                    column.Item().Background(Colors.Grey.Lighten3).Text("Default alignment").FontSize(13);
+                    column.Item().Text("Default alignment").FontSize(14).SemiBold();
                     column.Item().Element(ContentWithAlignment(null));
                     
-                    column.Item().Background(Colors.Grey.Lighten3).Text("Left alignment").FontSize(14);
+                    column.Item().Text("Left alignment").FontSize(14).SemiBold();
                     column.Item().Element(ContentWithAlignment(InlinedAlignment.Left));
                     
-                    column.Item().Background(Colors.Grey.Lighten3).Text("Center alignment").FontSize(14);
+                    column.Item().Text("Center alignment").FontSize(14).SemiBold();
                     column.Item().Element(ContentWithAlignment(InlinedAlignment.Center));
                     
-                    column.Item().Background(Colors.Grey.Lighten3).Text("Right alignment").FontSize(14);
+                    column.Item().Text("Right alignment").FontSize(14).SemiBold();
                     column.Item().Element(ContentWithAlignment(InlinedAlignment.Right));
                 });
                 
@@ -315,16 +312,16 @@ namespace QuestPDF.Examples
                 {
                     column.Spacing(10);
 
-                    column.Item().Background(Colors.Grey.Lighten3).Text("Default alignment").FontSize(13);
+                    column.Item().Text("Default alignment").FontSize(14).SemiBold();
                     column.Item().Element(ContentWithAlignment(null));
                     
-                    column.Item().Background(Colors.Grey.Lighten3).Text("Left alignment").FontSize(14);
+                    column.Item().Text("Left alignment").FontSize(14).SemiBold();
                     column.Item().Element(ContentWithAlignment(HorizontalAlignment.Left));
                     
-                    column.Item().Background(Colors.Grey.Lighten3).Text("Center alignment").FontSize(14);
+                    column.Item().Text("Center alignment").FontSize(14).SemiBold();
                     column.Item().Element(ContentWithAlignment(HorizontalAlignment.Center));
                     
-                    column.Item().Background(Colors.Grey.Lighten3).Text("Right alignment").FontSize(14);
+                    column.Item().Text("Right alignment").FontSize(14).SemiBold();
                     column.Item().Element(ContentWithAlignment(HorizontalAlignment.Right));
                 });
 
