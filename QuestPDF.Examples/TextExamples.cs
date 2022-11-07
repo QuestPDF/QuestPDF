@@ -725,5 +725,45 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+        public void ForcingTextDirection()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(new PageSize(1000, 500))
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(10)
+                        .DefaultTextStyle(x => x.FontSize(24).FontFamily("Calibri"))
+                        .Column(column =>
+                        {
+                            column.Spacing(10);
+                            
+                            var word = "الجوريتم";
+                            var definition = "algorithm in Arabic";
+
+                            var text = $"{word} - {definition}";
+                            
+                            // text direction is automatically detected using the first word
+                            column.Item().Text(text);
+                            
+                            // it is possible to force specific content direction
+                            column.Item().Text(text).DirectionFromLeftToRight();
+                            column.Item().Text(text).DirectionFromRightToLeft();
+
+                            // to combine text in various content directions, split it into segments
+                            column.Item().Text(text =>
+                            {
+                                text.Span(word);
+                                text.Span(" - ");
+                                text.Span(definition);
+                            });
+                        });
+                });
+        }
     }
 }
