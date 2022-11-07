@@ -691,7 +691,28 @@ namespace QuestPDF.Examples
         }
         
         [Test]
-        public void TextDirectionality()
+        public void AdvancedLanguagesSupport()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(new PageSize(400, 400))
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    var text = "في المعلوماتية أو الرياضيات، خوارزمية الترتيب هي خوارزمية تمكن من تنظيم مجموعة عناصر حسب ترتيب محدد.";
+                    
+                    container
+                        .Padding(20)
+                        .ContentFromRightToLeft()
+                        .Text(text)
+                        .FontFamily(Fonts.Calibri)
+                        .FontSize(22);
+                });
+        }
+        
+        [Test]
+        public void WordWrappingWhenRightToLeft()
         {
             RenderingTest
                 .Create()
