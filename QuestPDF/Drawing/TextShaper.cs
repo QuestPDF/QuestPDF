@@ -41,18 +41,25 @@ namespace QuestPDF.Drawing
             var xOffset = 0f;
             var yOffset = 0f;
             
+            uint lastCluster = glyphInfos.LastOrDefault().Cluster;
+
             var glyphs = new ShapedGlyph[length];
-            
             for (var i = 0; i < length; i++)
             {
+                //We need to advance xOffset by the current letter spacing after each unicode cluster.
+                if (lastCluster != glyphInfos[i].Cluster)
+                {
+                    lastCluster = glyphInfos[i].Cluster;
+                    xOffset += TextStyle.LetterSpacing ?? 0;
+                }
+
                 glyphs[i] = new ShapedGlyph
                 {
                     Codepoint = (ushort)glyphInfos[i].Codepoint,
                     Position = new SKPoint(xOffset + glyphPositions[i].XOffset * scaleX, yOffset - glyphPositions[i].YOffset * scaleY),
                     Width = glyphPositions[i].XAdvance * scaleX
-                };
-                
-                xOffset += (glyphPositions[i].XAdvance * scaleX) + TextStyle.LetterSpacing ?? 0;
+                };                
+                xOffset += glyphPositions[i].XAdvance * scaleX;
                 yOffset += glyphPositions[i].YAdvance * scaleY;
             }
             
