@@ -166,6 +166,84 @@ namespace QuestPDF.Examples
         }
 
         [Test]
+        public void LetterSpacing_Arabic()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 700)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(50)
+                        .Column(column =>
+                        {
+                            var letterSpacing = new[] { -1f, 0f, 2f };
+                            var paragraph = "ينا الألم. في بعض الأحيان ونظراً للالتزامات التي يفرضها علينا";
+                            foreach (var spacing in letterSpacing)
+                            {
+                                column
+                                   .Item()
+                                   .Border(1)
+                                   .Padding(10)
+                                   .Column(nestedColumn =>
+                                   {
+                                       nestedColumn.Item()
+                                                   .Text(paragraph)
+                                                   .FontSize(16)
+                                                   .FontFamily(Fonts.Calibri)
+                                                   .LetterSpacing(spacing);
+
+                                       nestedColumn.Item()
+                                                   .Text($"Letter spacing of {spacing} pt")
+                                                   .FontSize(10)
+                                                   .Italic()
+                                                   .FontColor(Colors.Blue.Medium);
+                                   });
+                            }
+                        });
+                });
+        }
+
+
+        [Test]
+        public void LetterSpacing_Unicode()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(500, 700)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(50)
+                        .Column(column =>
+                        {
+                            var letterSpacing = new[] { 0f, 20f };
+                            var paragraph = "Ţ̴̡̧̤̮̺̤̗͎̱̹͙͎͖͂̿̓́̉̊̀̍͜h̵̞̘͇̾̎̏̅į̵̹̖͔͉̰̎̉̄̐̏͑͂̅̃̃͘͝s̷͓͉̭̭̯̬̥̻̰̩̦̑̀̀͌́̒̍̒̌̇͛̀͛́̎ ̷̡̡̟͕̳̺̝̼͇͔̬̟̖͍̈́̽͜͝͝i̶͔͚̟̊̐͛́͛̄̌ṡ̸̡̤̪͙͍̥͙̟̼̝̰̥͈̿̓̄̿̓͠ ̶̢̦̙͍̯̖̱̰̯͕͔͎̯̝̎͑t̸͖̲̱̼̎͐̎̉̾̎̾̌̅̔̏͘ȩ̶̝̫̙͓̙̣̔̀̌̔̋̂̑̈́̏̀̈͘̕͜͝s̸̫̝̮̻̼͐̅̄̎̎̑͝ț̷̨̢̨̻͈̮̞̆͗̓͊̃̌͂̑̉̕̕͜͝͝";
+
+                            foreach (var spacing in letterSpacing)
+                            {
+                                column.Item()
+                                      .Text($"Letter spacing of {spacing} pt")
+                                      .FontSize(10)
+                                      .Italic()
+                                      .FontColor(Colors.Blue.Medium);
+
+                                column.Item()
+                                      .PaddingVertical(50)
+                                      .Text(paragraph)
+                                      .FontSize(16)
+                                      .FontFamily(Fonts.Calibri)
+                                      .LetterSpacing(spacing);
+                            }
+                        });
+                });
+        }
+
+        [Test]
         public void SuperscriptSubscript_Simple()
         {
             RenderingTest
