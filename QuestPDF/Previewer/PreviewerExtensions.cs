@@ -1,4 +1,4 @@
-﻿#if NET6_0_OR_GREATER
+﻿#if NETCOREAPP3_0_OR_GREATER
 
 using System;
 using System.Collections.Generic;
@@ -11,12 +11,12 @@ namespace QuestPDF.Previewer
 {
     public static class Extensions
     {
-        public static void ShowInPreviewer(this IDocument document, int port = 12500)
+        public static void ShowInPreviewer(this IDocument document, int port = 5000)
         {
             document.ShowInPreviewerAsync(port).ConfigureAwait(true).GetAwaiter().GetResult();
         }
         
-        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500)
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 5000)
         {
             var previewerService = new PreviewerService(port);
             
@@ -26,39 +26,34 @@ namespace QuestPDF.Previewer
             await previewerService.Connect();
             await RefreshPreview();
             
-            HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
-            
-            await WaitForPreviewerExit(cancellationTokenSource.Token);
+            //
+            // //HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
+            //
+            // await WaitForPreviewerExit(cancellationTokenSource.Token);
             
             Task RefreshPreview()
             {
-                var pictures = GetPictures();
-                return previewerService.RefreshPreview(pictures);
-                
-                ICollection<PreviewerPicture> GetPictures()
+                try
                 {
-                    try
-                    {
-                        return DocumentGenerator.GeneratePreviewerPictures(document);
-                    }
-                    catch (Exception exception)
-                    {
-                        var exceptionDocument = new ExceptionDocument(exception);
-                        return DocumentGenerator.GeneratePreviewerPictures(exceptionDocument);
-                    }
+                    var pictures = DocumentGenerator.GeneratePreviewerPictures(document);
+                    return previewerService.ShowDocumentPreview(pictures);
+                }
+                catch (Exception exception)
+                {
+                    return previewerService.ShowGenericError(exception);
                 }
             }
-
-            async Task WaitForPreviewerExit(CancellationToken cancellationToken)
-            {
-                while (true)
-                {
-                    if (cancellationToken.IsCancellationRequested)
-                        return;
-                
-                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
-                }
-            }
+            //
+            // async Task WaitForPreviewerExit(CancellationToken cancellationToken)
+            // {
+            //     while (true)
+            //     {
+            //         if (cancellationToken.IsCancellationRequested)
+            //             return;
+            //     
+            //         await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+            //     }
+            // }
         }
     }
 }

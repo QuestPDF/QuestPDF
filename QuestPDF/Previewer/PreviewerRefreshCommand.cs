@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using QuestPDF.Infrastructure;
 
-#if NET6_0_OR_GREATER
+#if NETCOREAPP3_0_OR_GREATER
 
 namespace QuestPDF.Previewer
 {
@@ -14,8 +14,8 @@ namespace QuestPDF.Previewer
         {
             public string Id { get; } = Guid.NewGuid().ToString("N");
             
-            public float Width { get; init; }
-            public float Height { get; init; }
+            public float Width { get; set; }
+            public float Height { get; set; }
         }
     }
 }

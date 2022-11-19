@@ -18,6 +18,7 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net462;netstandard2.0;netcoreapp2.0;netcoreapp3.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>netcoreapp3.0;</TargetFrameworks>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
@@ -68,9 +69,5 @@
 
     <ItemGroup>
       <Compile Remove="Previewer\Models\GenericError.cs" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Previewer\Models" />
     </ItemGroup>
 </Project>
