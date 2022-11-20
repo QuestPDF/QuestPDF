@@ -25,7 +25,7 @@
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
         public static bool EnableDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
-        
+
         /// <summary>
         /// This flag enables checking the font glyph availability.
         /// If your text contains glyphs that are not present in the specified font,

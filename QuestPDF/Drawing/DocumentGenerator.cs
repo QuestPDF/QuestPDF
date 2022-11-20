@@ -10,6 +10,7 @@ using QuestPDF.Elements.Text.Items;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer.Inspection;
 
 namespace QuestPDF.Drawing
 {
@@ -51,14 +52,21 @@ namespace QuestPDF.Drawing
             return canvas.Images;
         }
 
-        internal static ICollection<PreviewerPicture> GeneratePreviewerPictures(IDocument document)
+        internal static DocumentPreviewResult GeneratePreviewerPictures(IDocument document)
         {
             var canvas = new SkiaPictureCanvas();
-            RenderDocument(canvas, document);
-            return canvas.Pictures;
+            InspectionElement documentHierarchy = null;
+            
+            RenderDocument(canvas, document, true, x => documentHierarchy = x);
+            
+            return new DocumentPreviewResult
+            {
+                PageSnapshots = canvas.Pictures.ToList(),
+                DocumentHierarchy = documentHierarchy
+            };
         }
         
-        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document)
+        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, bool applyInspection = false, Action<InspectionElement> inspectionResultHandler = null)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             var container = new DocumentContainer();
@@ -74,7 +82,14 @@ namespace QuestPDF.Drawing
 
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
+            
+            if (applyInspection)
+                ApplyInspection(content);
+            
             RenderPass(pageContext, canvas, content, debuggingState);
+
+            if (applyInspection)
+                inspectionResultHandler(DocumentHierarchyProcessor.ExtractDocumentHierarchy(content));
         }
         
         internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)
@@ -172,6 +187,14 @@ namespace QuestPDF.Drawing
             });
 
             return debuggingState;
+        }
+        
+        private static void ApplyInspection(Container content)
+        {
+            content.VisitChildren(x =>
+            {
+                x.CreateProxy(y => y is ElementProxy ? y : new InspectionProxy(y));
+            });
         }
         
         internal static void ApplyContentDirection(this Element? content, ContentDirection direction)

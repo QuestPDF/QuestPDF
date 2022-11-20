@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
+using QuestPDF.Previewer.Inspection;
 
 namespace QuestPDF.Previewer
 {
@@ -36,7 +37,8 @@ namespace QuestPDF.Previewer
     internal sealed class UpdateDocumentPreviewApiRequest
     {
         public ICollection<PageSnapshot> PageSnapshots { get; set; }
-
+        public InspectionElement DocumentHierarchy { get; set; }
+        
         public class PageSnapshot
         {
             public string ResourceId { get; } = Guid.NewGuid().ToString("N");
@@ -125,29 +127,31 @@ namespace QuestPDF.Previewer
             }
         }
         
-        public async Task ShowDocumentPreview(ICollection<PreviewerPicture> pictures)
+        public async Task ShowDocumentPreview(DocumentPreviewResult documentPreviewResult)
         {
             using var multipartContent = new MultipartFormDataContent();
             
             var pages = new List<UpdateDocumentPreviewApiRequest.PageSnapshot>();
             
-            foreach (var picture in pictures)
+            foreach (var snapshot in documentPreviewResult.PageSnapshots)
             {
                 var page = new UpdateDocumentPreviewApiRequest.PageSnapshot
                 {
-                    Width = picture.Size.Width,
-                    Height = picture.Size.Height
+                    PageNumber = documentPreviewResult.PageSnapshots.IndexOf(snapshot) + 1,
+                    Width = snapshot.Size.Width,
+                    Height = snapshot.Size.Height
                 };
                 
                 pages.Add(page);
             
-                var pictureStream = picture.Picture.Serialize().AsStream();
+                var pictureStream = snapshot.Picture.Serialize().AsStream();
                 multipartContent.Add(new StreamContent(pictureStream), "snapshots", page.ResourceId);
             }
             
             var request = new UpdateDocumentPreviewApiRequest
             {
-                PageSnapshots = pages
+                PageSnapshots = pages,
+                DocumentHierarchy = documentPreviewResult.DocumentHierarchy
             };
             
             var json = JsonSerializer.Serialize(request);
@@ -157,7 +161,7 @@ namespace QuestPDF.Previewer
             using var response = await HttpClient.PostAsync("/v1/update/preview/document", multipartContent);
             response.EnsureSuccessStatusCode();
             
-            foreach (var picture in pictures)
+            foreach (var picture in documentPreviewResult.PageSnapshots)
                 picture.Picture.Dispose();
         }
         

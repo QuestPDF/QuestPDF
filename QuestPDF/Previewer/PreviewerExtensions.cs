@@ -47,8 +47,8 @@ namespace QuestPDF.Previewer
             {
                 try
                 {
-                    var pictures = DocumentGenerator.GeneratePreviewerPictures(document);
-                    return previewerService.ShowDocumentPreview(pictures);
+                    var documentPreviewResult = DocumentGenerator.GeneratePreviewerPictures(document);
+                    return previewerService.ShowDocumentPreview(documentPreviewResult);
                 }
                 catch (DocumentLayoutException exception)
                 {
