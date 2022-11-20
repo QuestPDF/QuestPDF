@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if NETCOREAPP3_0_OR_GREATER
+
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -17,3 +18,5 @@ internal static class Helpers
         return client.PostAsync(requestUri, jsonContent, cancellationToken);
     }
 }
+
+#endif

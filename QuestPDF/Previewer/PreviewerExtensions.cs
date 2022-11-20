@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
@@ -16,8 +17,10 @@ namespace QuestPDF.Previewer
             document.ShowInPreviewerAsync(port).ConfigureAwait(true).GetAwaiter().GetResult();
         }
         
-        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 5000)
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 5000, CancellationToken cancellationToken = default)
         {
+            QuestPDF.Settings.EnableDebugging = true;
+            
             var previewerService = new PreviewerService(port);
             
             using var cancellationTokenSource = new CancellationTokenSource();
@@ -26,10 +29,19 @@ namespace QuestPDF.Previewer
             await previewerService.Connect();
             await RefreshPreview();
             
-            //
-            // //HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
-            //
-            // await WaitForPreviewerExit(cancellationTokenSource.Token);
+            #if NET6_0_OR_GREATER
+            HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
+            #endif
+
+            while (true)
+            {
+                //if (cancellationToken.IsCancellationRequested)
+                //    break;
+
+                await Task.Delay(TimeSpan.FromMilliseconds(1000));
+            }
+            
+            //await previewerService.Disconnect();
             
             Task RefreshPreview()
             {
@@ -38,22 +50,15 @@ namespace QuestPDF.Previewer
                     var pictures = DocumentGenerator.GeneratePreviewerPictures(document);
                     return previewerService.ShowDocumentPreview(pictures);
                 }
+                catch (DocumentLayoutException exception)
+                {
+                    return previewerService.ShowLayoutError(exception);
+                }
                 catch (Exception exception)
                 {
                     return previewerService.ShowGenericError(exception);
                 }
             }
-            //
-            // async Task WaitForPreviewerExit(CancellationToken cancellationToken)
-            // {
-            //     while (true)
-            //     {
-            //         if (cancellationToken.IsCancellationRequested)
-            //             return;
-            //     
-            //         await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
-            //     }
-            // }
         }
     }
 }

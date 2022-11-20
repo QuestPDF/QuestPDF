@@ -6,6 +6,7 @@ using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
 using QuestPDF.ReportSample.Layouts;
 
 namespace QuestPDF.ReportSample
@@ -24,11 +25,13 @@ namespace QuestPDF.ReportSample
         [Test] 
         public void GenerateAndShowPdf()
         {
+            Report.ShowInPreviewer();
+            
             //ImagePlaceholder.Solid = true;
-        
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
-            Report.GeneratePdf(path);
-            Process.Start("explorer.exe", path);
+            //
+            // var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
+            // Report.GeneratePdf(path);
+            // Process.Start("explorer.exe", path);
         }
         
         [Test] 

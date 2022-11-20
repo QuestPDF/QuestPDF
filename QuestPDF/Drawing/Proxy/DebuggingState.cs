@@ -6,6 +6,8 @@ using System.Text;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
+using Size = QuestPDF.Infrastructure.Size;
 
 namespace QuestPDF.Drawing.Proxy
 {
@@ -57,48 +59,35 @@ namespace QuestPDF.Drawing.Proxy
             item.SpacePlan = spacePlan;
         }
         
-        public string BuildTrace()
+        public LayoutRenderingTrace BuildTrace()
         {
-            var builder = new StringBuilder();
-            var nestingLevel = 0;
+            return Traverse(Root);
 
-            Traverse(Root);
-            return builder.ToString();
-
-            void Traverse(DebugStackItem item)
+            LayoutRenderingTrace Traverse(DebugStackItem item)
             {
-                var indent = new string(' ', nestingLevel * 4);
-                var title = item.Element.GetType().Name;
-
-                if (item.Element is DebugPointer debugPointer)
+                return  new LayoutRenderingTrace
                 {
-                    title = debugPointer.Target;
-                    title += debugPointer.Highlight ? " 🌟" : string.Empty;
-                }
-                
-                if (item.SpacePlan.Type != SpacePlanType.FullRender)
-                    title = "🔥 " + title;
-
-                builder.AppendLine(indent + title);
-                builder.AppendLine(indent + new string('-', title.Length));
-                
-                builder.AppendLine(indent + "Available space: " + item.AvailableSpace);
-                builder.AppendLine(indent + "Requested space: " + item.SpacePlan);
-                
-                foreach (var configuration in GetElementConfiguration(item.Element))
-                    builder.AppendLine(indent + configuration);
-
-                builder.AppendLine();
-                
-                nestingLevel++;
-                item.Stack.ToList().ForEach(Traverse);
-                nestingLevel--;
+                    ElementType = item.Element.GetType().Name,
+                    ElementProperties = GetElementConfiguration(item.Element).ToList(),
+                    AvailableSpace = new QuestPDF.Previewer.Size()
+                    {
+                        Width = item.AvailableSpace.Width,
+                        Height = item.AvailableSpace.Height
+                    },
+                    SpacePlan = new QuestPDF.Previewer.SpacePlan()
+                    {
+                        Width = item.SpacePlan.Width,
+                        Height = item.SpacePlan.Height,
+                        Type = item.SpacePlan.Type
+                    },
+                    Children = item.Stack.Select(Traverse).ToList()
+                };
             }
 
-            static IEnumerable<string> GetElementConfiguration(IElement element)
+            static IEnumerable<DocumentElementProperty> GetElementConfiguration(IElement element)
             {
                 if (element is DebugPointer)
-                    return Enumerable.Empty<string>();
+                    return Enumerable.Empty<DocumentElementProperty>();
                 
                 return element
                     .GetType()
@@ -111,7 +100,11 @@ namespace QuestPDF.Drawing.Proxy
                     .Where(x => !(x.Value is IElement))
                     .Where(x => x.Value is string || !(x.Value is IEnumerable))
                     .Where(x => !(x.Value is TextStyle))
-                    .Select(x => $"{x.Property}: {FormatValue(x.Value)}");
+                    .Select(x => new DocumentElementProperty
+                    {
+                        Label = x.Property,
+                        Value = FormatValue(x.Value)
+                    });
 
                 string FormatValue(object value)
                 {

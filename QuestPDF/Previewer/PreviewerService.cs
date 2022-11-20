@@ -2,11 +2,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.Exceptions;
 
 namespace QuestPDF.Previewer
 {
@@ -20,9 +22,14 @@ namespace QuestPDF.Previewer
         public GenericError? InnerException { get; set; }
     }
 
-    internal sealed class ShowLayoutErrorApiRequestVersion
+    internal sealed class ShowGenericErrorApiRequest
     {
         public GenericError? Error { get; set; }
+    }
+    
+    internal sealed class ShowLayoutErrorApiRequest
+    {
+        public LayoutRenderingTrace? Trace { get; set; }
     }
 
 
@@ -62,6 +69,62 @@ namespace QuestPDF.Previewer
             };
         }
 
+        private void StartPreviewer()
+        {
+            try
+            {
+                var process = new Process
+                {
+                    StartInfo = new()
+                    {
+                        FileName = "questpdf-previewer",
+                        Arguments = $"{Port}",
+                        UseShellExecute = false,
+                        CreateNoWindow = true
+                    }
+                };
+                
+                process.Start();
+            }
+            catch
+            {
+                throw new Exception("Cannot start the QuestPDF Previewer tool. " +
+                                    "Please install it by executing in terminal the following command: 'dotnet tool install --global QuestPDF.Previewer'.");
+            }
+        }
+        
+        public async Task Connect()
+        {
+            var isAvailable = await IsPreviewerAvailable();
+        
+            if (!isAvailable)
+            {
+                //StartPreviewer();
+                //await WaitForConnection();
+            }
+            
+            //var previewerVersion = await GetPreviewerVersion();
+            //CheckVersionCompatibility(previewerVersion);
+        }
+        
+        public async Task Disconnect()
+        {
+            await HttpClient.GetAsync("/v1/disconnect");
+        }
+        
+        private async Task<bool> IsPreviewerAvailable()
+        {
+            try
+            {
+                using var result = await HttpClient.GetAsync("/ping");
+                return result.IsSuccessStatusCode;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        
         public async Task ShowDocumentPreview(ICollection<PreviewerPicture> pictures)
         {
             using var multipartContent = new MultipartFormDataContent();
@@ -100,7 +163,7 @@ namespace QuestPDF.Previewer
         
         public async Task ShowGenericError(Exception exception)
         {
-            var payload = new ShowLayoutErrorApiRequestVersion
+            var payload = new ShowGenericErrorApiRequest
             {
                 Error = MapException(exception)
             };
@@ -122,32 +185,19 @@ namespace QuestPDF.Previewer
             }
         }
         
-        public async Task Connect()
+        public async Task ShowLayoutError(DocumentLayoutException exception)
         {
-            var isAvailable = await IsPreviewerAvailable();
-        
-            if (!isAvailable)
+            var payload = new ShowLayoutErrorApiRequest
             {
-                //StartPreviewer();
-                //await WaitForConnection();
-            }
-            
-            //var previewerVersion = await GetPreviewerVersion();
-            //CheckVersionCompatibility(previewerVersion);
+                Trace = exception.ElementTrace
+            };
+
+            await HttpClient.PostAsJsonAsync("/v1/update/error/layout", payload);
         }
         
-        private async Task<bool> IsPreviewerAvailable()
-        {
-            try
-            {
-                using var result = await HttpClient.GetAsync("/ping");
-                return result.IsSuccessStatusCode;
-            }
-            catch
-            {
-                return false;
-            }
-        }
+
+        
+
         //
         // private async Task<Version> GetPreviewerVersion()
         // {
@@ -155,36 +205,11 @@ namespace QuestPDF.Previewer
         //     return await result.Content.ReadFromJsonAsync<Version>();
         // }
         //
-        // private void StartPreviewer()
-        // {
-        //     try
-        //     {
-        //         var process = new Process
-        //         {
-        //             StartInfo = new()
-        //             {
-        //                 FileName = "questpdf-previewer",
-        //                 Arguments = $"{Port}",
-        //                 UseShellExecute = false,
-        //                 CreateNoWindow = true
-        //             }
-        //         };
-        //         
-        //         process.Start();
-        //
-        //         Task.Run(async () =>
-        //         {
-        //             await process.WaitForExitAsync();
-        //             process.Dispose();
-        //             OnPreviewerStopped?.Invoke();
-        //         });
-        //     }
-        //     catch
-        //     {
-        //         throw new Exception("Cannot start the QuestPDF Previewer tool. " +
-        //                             "Please install it by executing in terminal the following command: 'dotnet tool install --global QuestPDF.Previewer'.");
-        //     }
-        // }
+
+        
+
+        
+        
         //
         // private void CheckVersionCompatibility(Version version)
         // {
@@ -215,39 +240,6 @@ namespace QuestPDF.Previewer
         //         if (isConnected)
         //             break;
         //     }
-        // }
-        //
-        // public async Task RefreshPreview(ICollection<PreviewerPicture> pictures)
-        // {
-        //     using var multipartContent = new MultipartFormDataContent();
-        //
-        //     var pages = new List<PreviewerRefreshCommand.Page>();
-        //     
-        //     foreach (var picture in pictures)
-        //     {
-        //         var page = new PreviewerRefreshCommand.Page
-        //         {
-        //             Width = picture.Size.Width,
-        //             Height = picture.Size.Height
-        //         };
-        //         
-        //         pages.Add(page);
-        //
-        //         var pictureStream = picture.Picture.Serialize().AsStream();
-        //         multipartContent.Add(new StreamContent(pictureStream), page.Id, page.Id);
-        //     }
-        //
-        //     var command = new PreviewerRefreshCommand
-        //     {
-        //         Pages = pages
-        //     };
-        //     
-        //     multipartContent.Add(JsonContent.Create(command), "command");
-        //
-        //     using var _ = await HttpClient.PostAsync("/update/preview", multipartContent);
-        //
-        //     foreach (var picture in pictures)
-        //         picture.Picture.Dispose();
         // }
     }
 }

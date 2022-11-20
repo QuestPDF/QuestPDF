@@ -1,12 +1,13 @@
 ﻿using System;
+using QuestPDF.Previewer;
 
 namespace QuestPDF.Drawing.Exceptions
 {
     public class DocumentLayoutException : Exception
     {
-        public string? ElementTrace { get; }
+        internal LayoutRenderingTrace? ElementTrace { get; }
 
-        internal DocumentLayoutException(string message, string? elementTrace = null) : base(message)
+        internal DocumentLayoutException(string message, LayoutRenderingTrace? elementTrace = null) : base(message)
         {
             ElementTrace = elementTrace;
         }
