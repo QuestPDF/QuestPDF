@@ -42,6 +42,7 @@ namespace QuestPDF.Elements
                     
                     layers
                         .PrimaryLayer()
+                        .DebugPointer("Page primary layer")
                         .MinWidth(MinSize.Width)
                         .MinHeight(MinSize.Height)
                 
@@ -64,9 +65,9 @@ namespace QuestPDF.Elements
 
                             decoration
                                 .Content()
+                                .DebugPointer("Page content")
                                 .Element(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
                                 .Element(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
-                                .DebugPointer("Page content")
                                 .Element(Content);
 
                             decoration

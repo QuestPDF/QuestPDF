@@ -16,13 +16,14 @@ namespace QuestPDF.Drawing
             var container = new Container();
             
             container
+                .DebugPointer("Document")
                 .Column(column =>
                 {
                     Pages
                         .SelectMany(x => new List<Action>()
                         {
                             () => column.Item().PageBreak(),
-                            () => column.Item().Component(x)
+                            () => column.Item().DebugPointer("Page").Component(x)
                         })
                         .Skip(1)
                         .ToList()
