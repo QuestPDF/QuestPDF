@@ -13,7 +13,13 @@ using QuestPDF.Previewer.Inspection;
 
 namespace QuestPDF.Previewer
 {
-    
+    internal sealed class NotifyPresenceRequest
+    {
+        public string Id { get; set; }
+        public bool IsDotnet6OrBeyond { get; set; }
+        public bool IsDotnet3OrBeyond { get; set; }
+        public bool IsExecutedInUnitTest { get; set; }
+    }
     
     internal sealed class GenericError
     {
@@ -53,6 +59,8 @@ namespace QuestPDF.Previewer
 
     internal class PreviewerService
     {
+        private string ClientId { get; } = Guid.NewGuid().ToString("D");
+        
         private int Port { get; }
         private HttpClient HttpClient { get; }
         
@@ -107,13 +115,10 @@ namespace QuestPDF.Previewer
             
             //var previewerVersion = await GetPreviewerVersion();
             //CheckVersionCompatibility(previewerVersion);
+
+            StartNotifyPresenceTask();
         }
-        
-        public async Task Disconnect()
-        {
-            await HttpClient.GetAsync("/v1/disconnect");
-        }
-        
+
         private async Task<bool> IsPreviewerAvailable()
         {
             try
@@ -126,6 +131,33 @@ namespace QuestPDF.Previewer
                 return false;
             }
         }
+
+        public void StartNotifyPresenceTask()
+        {
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    NotifyPresence();
+                    await Task.Delay(1000);
+                }
+            });
+        }
+        
+        public async Task NotifyPresence()
+        {
+            var payload = new NotifyPresenceRequest
+            {
+                Id = ClientId,
+                IsDotnet6OrBeyond = RuntimeDetector.IsNet6OrGreater,
+                IsDotnet3OrBeyond = RuntimeDetector.IsNet3OrGreater,
+                IsExecutedInUnitTest = UnitTestDetector.RunningInUnitTest
+            };
+ 
+            await HttpClient.PostAsJsonAsync("/v1/notify/presence", payload);
+        }
+        
+        
         
         public async Task ShowDocumentPreview(DocumentPreviewResult documentPreviewResult)
         {
