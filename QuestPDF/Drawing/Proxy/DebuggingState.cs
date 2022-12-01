@@ -68,7 +68,8 @@ namespace QuestPDF.Drawing.Proxy
                 return  new LayoutRenderingTrace
                 {
                     ElementType = item.Element.GetType().Name,
-                    ElementProperties = GetElementConfiguration(item.Element).ToList(),
+                    IsSingleChildContainer = item.Element is ContainerElement,
+                    ElementProperties = item.Element.GetElementConfiguration().ToList(),
                     AvailableSpace = new QuestPDF.Previewer.Size()
                     {
                         Width = item.AvailableSpace.Width,
@@ -82,41 +83,6 @@ namespace QuestPDF.Drawing.Proxy
                     },
                     Children = item.Stack.Select(Traverse).ToList()
                 };
-            }
-
-            static IEnumerable<DocumentElementProperty> GetElementConfiguration(IElement element)
-            {
-                if (element is DebugPointer)
-                    return Enumerable.Empty<DocumentElementProperty>();
-                
-                return element
-                    .GetType()
-                    .GetProperties()
-                    .Select(x => new
-                    {
-                        Property = x.Name.PrettifyName(),
-                        Value = x.GetValue(element)
-                    })
-                    .Where(x => !(x.Value is IElement))
-                    .Where(x => x.Value is string || !(x.Value is IEnumerable))
-                    .Where(x => !(x.Value is TextStyle))
-                    .Select(x => new DocumentElementProperty
-                    {
-                        Label = x.Property,
-                        Value = FormatValue(x.Value)
-                    });
-
-                string FormatValue(object value)
-                {
-                    const int maxLength = 100;
-                    
-                    var text = value?.ToString() ?? "-";
-
-                    if (text.Length < maxLength)
-                        return text;
-
-                    return text.AsSpan(0, maxLength).ToString() + "...";
-                }
             }
         }
     }

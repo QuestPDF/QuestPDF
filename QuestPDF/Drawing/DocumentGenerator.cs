@@ -183,7 +183,7 @@ namespace QuestPDF.Drawing
 
             content.VisitChildren(x =>
             {
-                x.CreateProxy(y => new DebuggingProxy(debuggingState, y));
+                x.CreateProxy(y => y is ElementProxy ? y : new DebuggingProxy(debuggingState, y));
             });
 
             return debuggingState;

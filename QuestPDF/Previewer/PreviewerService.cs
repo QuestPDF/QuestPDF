@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
@@ -16,6 +17,7 @@ namespace QuestPDF.Previewer
     internal sealed class NotifyPresenceRequest
     {
         public string Id { get; set; }
+        public string LibraryVersion { get; set; }
         public bool IsDotnet6OrBeyond { get; set; }
         public bool IsDotnet3OrBeyond { get; set; }
         public bool IsExecutedInUnitTest { get; set; }
@@ -149,6 +151,7 @@ namespace QuestPDF.Previewer
             var payload = new NotifyPresenceRequest
             {
                 Id = ClientId,
+                LibraryVersion = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(),
                 IsDotnet6OrBeyond = RuntimeDetector.IsNet6OrGreater,
                 IsDotnet3OrBeyond = RuntimeDetector.IsNet3OrGreater,
                 IsExecutedInUnitTest = UnitTestDetector.RunningInUnitTest
@@ -228,7 +231,16 @@ namespace QuestPDF.Previewer
                 Trace = exception.ElementTrace
             };
 
-            await HttpClient.PostAsJsonAsync("/v1/update/error/layout", payload);
+            var jsonSerializerOptions = new JsonSerializerOptions
+            {
+                MaxDepth = 256,
+                Converters =
+                {
+                    new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+                }
+            };
+            
+            await HttpClient.PostAsJsonAsync("/v1/update/error/layout", payload, jsonSerializerOptions);
         }
         
 

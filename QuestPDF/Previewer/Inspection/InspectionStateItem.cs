@@ -25,9 +25,10 @@ namespace QuestPDF.Previewer.Inspection
     
     internal class InspectionElement
     {
-        public string ElementType { get; internal set; }
-        public IReadOnlyCollection<InspectionElementLocation> Location { get; internal set; }
-        public IReadOnlyCollection<DocumentElementProperty> Properties { get; internal set; }
+        public string ElementType { get; set; }
+        public bool IsSingleChildContainer { get; set; }
+        public IReadOnlyCollection<InspectionElementLocation> Location { get; set; }
+        public IReadOnlyCollection<DocumentElementProperty> Properties { get; set; }
         public ICollection<InspectionElement> Children { get; set; }
     }
 }

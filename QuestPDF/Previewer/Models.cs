@@ -26,6 +26,7 @@ internal sealed class SpacePlan
 internal sealed class LayoutRenderingTrace
 {
     public string ElementType { get; set; }
+    public bool IsSingleChildContainer { get; internal set; }
     public IReadOnlyCollection<DocumentElementProperty> ElementProperties { get; set; }
     public Size AvailableSpace { get; set; }
     public SpacePlan SpacePlan { get; set; }
