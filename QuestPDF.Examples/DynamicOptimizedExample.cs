@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Elements;
@@ -126,9 +127,9 @@ namespace QuestPDF.Examples
                         .Padding(5)
                         .Row(row =>
                         {
-                            row.ConstantItem(30).Text(index + 1);
+                            row.ConstantItem(30).Text((index + 1).ToString(CultureInfo.InvariantCulture));
                             row.RelativeItem().Text(item.ItemName);
-                            row.ConstantItem(50).AlignRight().Text(item.Count);
+                            row.ConstantItem(50).AlignRight().Text(item.Count.ToString(CultureInfo.InvariantCulture));
                             row.ConstantItem(50).AlignRight().Text($"{item.Price}$");
                             row.ConstantItem(50).AlignRight().Text($"{item.Count*item.Price}$");
                         });

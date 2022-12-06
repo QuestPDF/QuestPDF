@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Elements;
@@ -96,9 +97,9 @@ namespace QuestPDF.Examples
                         {
                             var item = Items[index];
                                 
-                            table.Cell().Element(Style).Text(index + 1);
+                            table.Cell().Element(Style).Text((index + 1).ToString(CultureInfo.InvariantCulture));
                             table.Cell().Element(Style).Text(item.ItemName);
-                            table.Cell().Element(Style).AlignRight().Text(item.Count);
+                            table.Cell().Element(Style).AlignRight().Text(item.Count.ToString(CultureInfo.InvariantCulture));
                             table.Cell().Element(Style).AlignRight().Text($"{item.Price}$");
                             table.Cell().Element(Style).AlignRight().Text($"{item.Count*item.Price}$");
 

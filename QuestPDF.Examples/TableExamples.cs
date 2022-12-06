@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Drawing;
@@ -389,12 +390,12 @@ namespace QuestPDF.Examples
                                 table.Cell().Element(CellStyle).ExtendHorizontal().AlignLeft().Text(page.name);
                                         
                                 // inches
-                                table.Cell().Element(CellStyle).Text(page.width);
-                                table.Cell().Element(CellStyle).Text(page.height);
+                                table.Cell().Element(CellStyle).Text(page.width.ToString(CultureInfo.InvariantCulture));
+                                table.Cell().Element(CellStyle).Text(page.height.ToString(CultureInfo.InvariantCulture));
                                         
                                 // points
-                                table.Cell().Element(CellStyle).Text(page.width * inchesToPoints);
-                                table.Cell().Element(CellStyle).Text(page.height * inchesToPoints);
+                                table.Cell().Element(CellStyle).Text((page.width * inchesToPoints).ToString(CultureInfo.InvariantCulture));
+                                table.Cell().Element(CellStyle).Text((page.height * inchesToPoints).ToString(CultureInfo.InvariantCulture));
                                         
                                 IContainer CellStyle(IContainer container) => DefaultCellStyle(container, Colors.White); 
                             }
