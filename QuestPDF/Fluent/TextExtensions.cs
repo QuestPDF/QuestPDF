@@ -276,13 +276,13 @@ namespace QuestPDF.Fluent
             descriptor.Compose(element);
         }
         
-        [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
+        [Obsolete("This method has been deprecated since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
         public static void Text(this IContainer element, object? text, TextStyle style)
         {
             element.Text(text).Style(style);
         }
 
-        [Obsolete("Please use an overload where the text parameter is passed explicitly as a string.")]
+        [Obsolete("This method has been deprecated since version 2022.12. Please use an overload where the text parameter is passed explicitly as a string.")]
         public static TextSpanDescriptor Text(this IContainer element, object? text)
         {
             return element.Text(text?.ToString());
