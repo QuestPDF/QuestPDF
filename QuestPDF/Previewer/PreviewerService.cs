@@ -61,7 +61,7 @@ namespace QuestPDF.Previewer
             }
             
             var previewerVersion = await GetPreviewerVersion();
-            CheckVersionCompatibility(previewerVersion);
+            await CheckVersionCompatibility(previewerVersion);
 
             StartNotifyPresenceTask();
         }
