@@ -47,12 +47,14 @@ namespace QuestPDF.Drawing
             var xOffset = 0f;
             var yOffset = 0f;
             
-            uint lastCluster = glyphInfos.LastOrDefault().Cluster;
+            // used for letter spacing calculation
+            var lastCluster = glyphInfos.LastOrDefault().Cluster;
 
             var glyphs = new ShapedGlyph[length];
             for (var i = 0; i < length; i++)
             {
-                //We need to advance xOffset by the current letter spacing after each unicode cluster.
+                // letter spacing should be applied between glyph clusters, not between individual glyphs,
+                // different cluster id indicates the end of the glyph cluster
                 if (lastCluster != glyphInfos[i].Cluster)
                 {
                     lastCluster = glyphInfos[i].Cluster;
@@ -65,6 +67,7 @@ namespace QuestPDF.Drawing
                     Position = new SKPoint(xOffset + glyphPositions[i].XOffset * scaleX, yOffset - glyphPositions[i].YOffset * scaleY),
                     Width = glyphPositions[i].XAdvance * scaleX
                 };                
+                
                 xOffset += glyphPositions[i].XAdvance * scaleX;
                 yOffset += glyphPositions[i].YAdvance * scaleY;
             }
