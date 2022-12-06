@@ -10,7 +10,7 @@ namespace QuestPDF.Drawing.Proxy;
 
 internal static class Helpers
 {
-    public static IEnumerable<DocumentElementProperty> GetElementConfiguration(this IElement element)
+    public static IReadOnlyCollection<DocumentElementProperty> GetElementConfiguration(this IElement element)
     {
         return element
             .GetType()

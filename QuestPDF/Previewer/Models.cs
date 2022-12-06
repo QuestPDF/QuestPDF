@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer.Inspection;
 
 namespace QuestPDF.Previewer;
 
@@ -32,3 +34,17 @@ internal sealed class LayoutRenderingTrace
     public SpacePlan SpacePlan { get; set; }
     public IReadOnlyCollection<LayoutRenderingTrace> Children { get; set; }
 }
+
+
+    
+internal sealed class GenericError
+{
+    public string ExceptionType { get; set; }
+    public string Message { get; set; }
+    public string StackTrace { get; set; }
+    public GenericError? InnerException { get; set; }
+}
+
+
+
+

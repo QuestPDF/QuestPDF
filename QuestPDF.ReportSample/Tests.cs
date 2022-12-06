@@ -25,7 +25,7 @@ namespace QuestPDF.ReportSample
         [Test] 
         public void GenerateAndShowPdf()
         {
-            Report.ShowInPreviewer();
+            Report.ShowInPreviewer(5000);
             
             //ImagePlaceholder.Solid = true;
             //

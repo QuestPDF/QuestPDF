@@ -83,6 +83,8 @@ namespace QuestPDF.ReportSample.Layouts
                     .Range(0, model.PhotoCount)
                     .ToList()
                     .ForEach(x => grid.Item().AspectRatio(4 / 3f).Component<ImagePlaceholder>());
+
+                //grid.Item().AspectRatio(4 / 3f).Width(100000).Component<ImagePlaceholder>();
             });
         }
     }
