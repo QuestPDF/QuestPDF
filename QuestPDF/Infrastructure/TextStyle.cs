@@ -10,6 +10,7 @@ namespace QuestPDF.Infrastructure
         internal string? FontFamily { get; set; }
         internal float? Size { get; set; }
         internal float? LineHeight { get; set; }
+        internal float? LetterSpacing { get; set; }
         internal FontWeight? FontWeight { get; set; }
         internal FontPosition? FontPosition { get; set; }
         internal bool? IsItalic { get; set; }
@@ -27,6 +28,7 @@ namespace QuestPDF.Infrastructure
             FontFamily = Fonts.Lato,
             Size = 12,
             LineHeight = 1.2f,
+            LetterSpacing = 0,
             FontWeight = Infrastructure.FontWeight.Normal,
             FontPosition = Infrastructure.FontPosition.Normal,
             IsItalic = false,

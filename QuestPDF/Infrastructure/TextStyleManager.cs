@@ -11,6 +11,7 @@ namespace QuestPDF.Infrastructure
         FontFamily,
         Size,
         LineHeight,
+        LetterSpacing,
         FontWeight,
         FontPosition,
         IsItalic,
@@ -101,6 +102,19 @@ namespace QuestPDF.Infrastructure
                     return origin;
 
                 return origin with { LineHeight = castedValue };
+            }
+
+            if(property == TextStyleProperty.LetterSpacing)
+            {
+                if (!overrideValue && origin.LetterSpacing != null)
+                    return origin;
+
+                var castedValue = (float?)value;
+
+                if (origin.LetterSpacing == castedValue)
+                    return origin;
+
+                return origin with { LetterSpacing = castedValue };
             }
             
             if (property == TextStyleProperty.FontWeight)
@@ -246,6 +260,7 @@ namespace QuestPDF.Infrastructure
             result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.Size, parent.Size, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.LineHeight, parent.LineHeight, overrideStyle);
+            result = MutateStyle(result, TextStyleProperty.LetterSpacing, parent.LetterSpacing, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.FontWeight, parent.FontWeight, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.FontPosition, parent.FontPosition, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.IsItalic, parent.IsItalic, overrideStyle);
