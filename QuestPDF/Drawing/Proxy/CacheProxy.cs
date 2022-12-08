@@ -37,7 +37,7 @@ namespace QuestPDF.Drawing.Proxy
             base.Draw(availableSpace);
         }
 
-        private bool IsClose(float x, float y)
+        private static bool IsClose(float x, float y)
         {
             return Math.Abs(x - y) < Size.Epsilon;
         }

@@ -1,24 +1,34 @@
-﻿using QuestPDF.Infrastructure;
+﻿using System.Collections.Generic;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy
 {
     internal class DebuggingProxy : ElementProxy
     {
-        private DebuggingState DebuggingState { get; }
+        internal List<MeasureDetails> Measurements { get; } = new();
 
-        public DebuggingProxy(DebuggingState debuggingState, Element child)
+        public DebuggingProxy(Element child)
         {
-            DebuggingState = debuggingState;
             Child = child;
         }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            DebuggingState.RegisterMeasure(Child, availableSpace);
-            var spacePlan = base.Measure(availableSpace);
-            DebuggingState.RegisterMeasureResult(Child, spacePlan);
-
+            var spacePlan = Child.Measure(availableSpace);
+            Measurements.Add(new MeasureDetails(availableSpace, spacePlan));
             return spacePlan;
+        }
+    }
+
+    internal struct MeasureDetails
+    {
+        public Size AvailableSpace { get; }
+        public SpacePlan SpacePlan { get;}
+
+        public MeasureDetails(Size availableSpace, SpacePlan spacePlan)
+        {
+            AvailableSpace = availableSpace;
+            SpacePlan = spacePlan;
         }
     }
 }

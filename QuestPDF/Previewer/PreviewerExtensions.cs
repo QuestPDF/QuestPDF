@@ -19,8 +19,6 @@ namespace QuestPDF.Previewer
         
         public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
-            QuestPDF.Settings.EnableDebugging = true;
-            
             var previewerService = new PreviewerService(port);
             
             using var cancellationTokenSource = new CancellationTokenSource();

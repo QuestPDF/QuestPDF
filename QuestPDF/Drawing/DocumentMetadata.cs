@@ -33,7 +33,7 @@ namespace QuestPDF.Drawing
             set => Settings.EnableCaching = value;
         }
         
-        [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.EnableDebugging static property.")]
+        [Obsolete("The new implementation for debugging layout issues does not introduce additional performance overhead. Therefore, this setting is no longer used since the 2023.1 release. Please remove this setter from your code.")]
         public bool ApplyDebugging
         {
             get => Settings.EnableDebugging;

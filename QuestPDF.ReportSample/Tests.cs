@@ -53,8 +53,8 @@ namespace QuestPDF.ReportSample
             
             var pageContext = new PageContext();
 
-            DocumentGenerator.RenderPass(pageContext, new FreeCanvas(), content, null);
-            DocumentGenerator.RenderPass(pageContext, new FreeCanvas(), content, null);
+            DocumentGenerator.RenderPass(pageContext, new FreeCanvas(), content);
+            DocumentGenerator.RenderPass(pageContext, new FreeCanvas(), content);
         }
     }
 }

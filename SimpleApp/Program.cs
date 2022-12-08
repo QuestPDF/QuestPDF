@@ -5,6 +5,9 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
 
+QuestPDF.Settings.EnableCaching = true;
+QuestPDF.Settings.EnableDebugging = true;
+
 Document
     .Create(container =>
     {
@@ -49,5 +52,5 @@ Document
                 });
         });
     })
-    .ShowInPreviewer();
+    .GeneratePdf();
 

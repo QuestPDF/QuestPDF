@@ -40,5 +40,5 @@ internal sealed class GenericErrorApiRequest
     
 internal sealed class LayoutErrorApiRequest
 {
-    public LayoutRenderingTrace? Trace { get; set; }
+    public LayoutErrorTrace? Trace { get; set; }
 }

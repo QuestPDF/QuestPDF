@@ -5,9 +5,9 @@ namespace QuestPDF.Drawing.Exceptions
 {
     public class DocumentLayoutException : Exception
     {
-        internal LayoutRenderingTrace? ElementTrace { get; }
+        internal LayoutErrorTrace? ElementTrace { get; }
 
-        internal DocumentLayoutException(string message, LayoutRenderingTrace? elementTrace = null) : base(message)
+        internal DocumentLayoutException(string message, LayoutErrorTrace? elementTrace = null) : base(message)
         {
             ElementTrace = elementTrace;
         }

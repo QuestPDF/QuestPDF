@@ -75,24 +75,22 @@ namespace QuestPDF.Drawing
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
             ApplyContentDirection(content, ContentDirection.LeftToRight);
             
-            var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
-            
             if (Settings.EnableCaching)
                 ApplyCaching(content);
 
             var pageContext = new PageContext();
-            RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
+            RenderPass(pageContext, new FreeCanvas(), content);
             
             if (applyInspection)
                 ApplyInspection(content);
             
-            RenderPass(pageContext, canvas, content, debuggingState);
+            RenderPass(pageContext, canvas, content);
 
             if (applyInspection)
                 inspectionResultHandler(DocumentHierarchyProcessor.ExtractDocumentHierarchy(content));
         }
         
-        internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)
+        internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             InjectDependencies(content, pageContext, canvas);
@@ -105,7 +103,6 @@ namespace QuestPDF.Drawing
             while(true)
             {
                 pageContext.SetPageNumber(currentPage);
-                debuggingState?.Reset();
                 
                 var spacePlan = content.Measure(Size.Max);
 
@@ -150,9 +147,13 @@ namespace QuestPDF.Drawing
                               $"2) The layout configuration of your document is invalid. Some of the elements require more space than is provided." +
                               $"Please analyze your documents structure to detect this element and fix its size constraints.";
 
-                var elementTrace = debuggingState?.BuildTrace(); // ?? "Debug trace is available only in the DEBUG mode.";
+                content.RemoveExistingProxies();
+                content.ApplyLayoutDebugging();
+                content.Measure(Size.Max);
+                
+                var layoutTrace = content.CollectLayoutErrorTrace();
 
-                throw new DocumentLayoutException(message, elementTrace);
+                throw new DocumentLayoutException(message, layoutTrace);
             }
         }
 
@@ -177,18 +178,6 @@ namespace QuestPDF.Drawing
             });
         }
 
-        private static DebuggingState ApplyDebugging(Container content)
-        {
-            var debuggingState = new DebuggingState();
-
-            content.VisitChildren(x =>
-            {
-                x.CreateProxy(y => y is ElementProxy ? y : new DebuggingProxy(debuggingState, y));
-            });
-
-            return debuggingState;
-        }
-        
         private static void ApplyInspection(Container content)
         {
             content.VisitChildren(x =>

@@ -1,4 +1,6 @@
-﻿namespace QuestPDF
+﻿using System;
+
+namespace QuestPDF
 {
     public static class Settings
     {
@@ -24,6 +26,7 @@
         /// It includes layout calculation results and path to the problematic area.
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
+        [Obsolete("The new implementation for debugging layout issues does not introduce any additional performance overhead. Therefore, this setting is no longer used since the 2023.1 release. Please remove this setter from your code.")]
         public static bool EnableDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
 
         /// <summary>
