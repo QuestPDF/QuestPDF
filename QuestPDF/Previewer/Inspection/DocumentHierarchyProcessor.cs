@@ -11,76 +11,22 @@ namespace QuestPDF.Previewer.Inspection;
 
 public static class DocumentHierarchyProcessor
 {
-    internal static InspectionElement ExtractDocumentHierarchy(Element container)
+    internal static InspectionElement ExtractDocumentHierarchy(this Container content)
     {
-        return Traverse(container);
-        
-        InspectionElement? Traverse(Element item)
+        var proxies = content.ExtractProxyOfType<InspectionProxy>();
+        return Map(proxies);
+
+        InspectionElement Map(TreeNode<InspectionProxy> treeNode)
         {
-            InspectionElement? result = null;
-            Element currentItem = item;
-            
-            while (true)
-            {
-                if (currentItem is InspectionProxy proxy)
-                {
-                    if (proxy.Child.GetType() == typeof(Container))
-                    {
-                        currentItem = proxy.Child;
-                        continue;
-                    }
-                    
-                    var statistics = GetInspectionElement(proxy);
-
-                    if (statistics == null)
-                        return null;
-                    
-                    if (result == null)
-                    {
-                        result = statistics;
-                    }
-                    else
-                    {
-                        result.Children.Add(statistics);
-                    }
-
-                    currentItem = proxy.Child;
-                }
-                else
-                {
-                    var children = currentItem.GetChildren().ToList();
-
-                    if (children.Count == 0)
-                    {
-                        return result;
-                    }
-                    else if (children.Count == 1)
-                    {
-                        currentItem = children.First();
-                        continue;
-                    }
-                    else
-                    {
-                        children
-                            .Select(Traverse)
-                            .Where(x => x != null)
-                            .ToList()
-                            .ForEach(result.Children.Add);
-
-                        return result;
-                    }
-                }
-            }
-        }
-
-        static InspectionElement? GetInspectionElement(InspectionProxy inspectionProxy)
-        {
-            var locations = inspectionProxy
+            var proxy = treeNode.Value;
+            var element = proxy.Child;
+                
+            var locations = proxy
                 .Statistics
                 .Keys
                 .Select(x =>
                 {
-                    var statistics = inspectionProxy.Statistics[x];
+                    var statistics = proxy.Statistics[x];
                     
                     return new InspectionElementLocation
                     {
@@ -101,10 +47,10 @@ public static class DocumentHierarchyProcessor
             
             return new InspectionElement
             {
-                ElementType = inspectionProxy.Child.GetType().Name,
-                IsSingleChildContainer = inspectionProxy.Child is ContainerElement,
+                ElementType = element.GetType().Name,
+                IsSingleChildContainer = element is ContainerElement,
                 Location = locations,
-                Properties = inspectionProxy.Child.GetElementConfiguration().ToList(),
+                Properties = proxy.Child.GetElementConfiguration().ToList(),
                 Children = new List<InspectionElement>()
             };
         }

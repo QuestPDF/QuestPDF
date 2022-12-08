@@ -7,6 +7,7 @@ namespace QuestPDF.Drawing.Proxy
 {
     internal class InspectionProxy : ElementProxy
     {
+        
         public Dictionary<int, InspectionStateItem> Statistics { get; set; } = new();
 
         public InspectionProxy(Element child)
