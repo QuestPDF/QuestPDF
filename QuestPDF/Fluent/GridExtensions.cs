@@ -60,8 +60,8 @@ namespace QuestPDF.Fluent
         {
             var descriptor = new GridDescriptor();
             
-            if (element is Alignment alignment)
-                descriptor.Alignment(alignment.Horizontal);
+            if (element is Alignment alignment && alignment.Horizontal.HasValue)
+                descriptor.Alignment(alignment.Horizontal.Value);
             
             handler(descriptor);
             element.Component(descriptor.Grid);

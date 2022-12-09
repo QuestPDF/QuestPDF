@@ -6,19 +6,23 @@ namespace QuestPDF.Elements
 {
     internal class Alignment : ContainerElement
     {
-        public VerticalAlignment Vertical { get; set; } = VerticalAlignment.Top;
-        public HorizontalAlignment Horizontal { get; set; } = HorizontalAlignment.Left;
+        public VerticalAlignment? Vertical { get; set; }
+        public HorizontalAlignment? Horizontal { get; set; }
         
         internal override void Draw(Size availableSpace)
         {
             if (Child == null)
                 return;
             
-            var childSize = base.Measure(availableSpace);
+            var childMeasurement = base.Measure(availableSpace);
             
-            if (childSize.Type == SpacePlanType.Wrap)
+            if (childMeasurement.Type == SpacePlanType.Wrap)
                 return;
-            
+
+            var childSize = new Size(
+                Horizontal.HasValue ? childMeasurement.Width : availableSpace.Width,
+                Vertical.HasValue ? childMeasurement.Height : availableSpace.Height);
+
             var top = GetTopOffset(availableSpace, childSize);
             var left = GetLeftOffset(availableSpace, childSize);
             
@@ -36,7 +40,7 @@ namespace QuestPDF.Elements
                 VerticalAlignment.Top => 0,
                 VerticalAlignment.Middle => difference / 2,
                 VerticalAlignment.Bottom => difference,
-                _ => throw new NotSupportedException()
+                _ => 0
             };
         }
         
@@ -49,7 +53,7 @@ namespace QuestPDF.Elements
                 HorizontalAlignment.Left => 0,
                 HorizontalAlignment.Center => difference / 2,
                 HorizontalAlignment.Right => difference,
-                _ => throw new NotSupportedException()
+                _ => 0
             };
         }
     }

@@ -86,5 +86,43 @@ namespace QuestPDF.UnitTests
                 .ExpectCanvasTranslate(new Position(-300, 0))
                 .CheckDrawResult();
         }
+        
+        [Test]
+        public void Draw_HorizontalCenter_VerticalNone()
+        {
+            TestPlan
+                .For(x => new Alignment
+                {
+                    Horizontal = HorizontalAlignment.Center,
+                    Vertical = null,
+                    
+                    Child = x.CreateChild()
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: SpacePlan.FullRender(new Size(100, 50)))
+                .ExpectCanvasTranslate(new Position(150, 0))
+                .ExpectChildDraw(new Size(100, 300))
+                .ExpectCanvasTranslate(new Position(-150, 0))
+                .CheckDrawResult();
+        }
+        
+        [Test]
+        public void Draw_HorizontalNone_VerticalMiddle()
+        {
+            TestPlan
+                .For(x => new Alignment
+                {
+                    Horizontal = null,
+                    Vertical = VerticalAlignment.Middle,
+                    
+                    Child = x.CreateChild()
+                })
+                .DrawElement(new Size(400, 300))
+                .ExpectChildMeasure(expectedInput: new Size(400, 300), returns: SpacePlan.FullRender(new Size(100, 50)))
+                .ExpectCanvasTranslate(new Position(0, 125))
+                .ExpectChildDraw(new Size(400, 50))
+                .ExpectCanvasTranslate(new Position(0, -125))
+                .CheckDrawResult();
+        }
     }
 }
