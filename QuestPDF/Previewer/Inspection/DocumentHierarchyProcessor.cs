@@ -50,8 +50,8 @@ public static class DocumentHierarchyProcessor
                 ElementType = element.GetType().Name,
                 IsSingleChildContainer = element is ContainerElement,
                 Location = locations,
-                Properties = proxy.Child.GetElementConfiguration().ToList(),
-                Children = new List<InspectionElement>()
+                Properties = element.GetElementConfiguration().ToList(),
+                Children = treeNode.Children.Select(Map).ToList()
             };
         }
     }

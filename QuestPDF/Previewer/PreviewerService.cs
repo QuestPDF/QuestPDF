@@ -137,7 +137,7 @@ namespace QuestPDF.Previewer
 
         private async Task CheckVersionCompatibility(Version version)
         {
-            if (version.Major == RequiredPreviewerVersionMajor && version.Minor == RequiredPreviewerVersionMinor)
+            if (version is { Major: RequiredPreviewerVersionMajor, Minor: RequiredPreviewerVersionMinor })
                 return;
 
             await ShowIncompatibleVersion();
