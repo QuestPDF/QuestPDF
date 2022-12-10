@@ -76,6 +76,13 @@ namespace QuestPDF.Drawing
             
         }
 
+        public void DrawObject(object Object, Position position, Size size)
+        {
+            
+        }
+
+
+
         #endregion
     }
 }

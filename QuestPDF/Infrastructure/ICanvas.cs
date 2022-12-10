@@ -1,15 +1,17 @@
 using QuestPDF.Drawing;
 using SkiaSharp;
+using System;
 
 namespace QuestPDF.Infrastructure
 {
-    internal interface ICanvas
+    public interface ICanvas
     {
         void Translate(Position vector);
         
         void DrawRectangle(Position vector, Size size, string color);
         void DrawText(SKTextBlob skTextBlob, Position position, TextStyle style);
         void DrawImage(SKImage image, Position position, Size size);
+        void DrawObject(object Object, Position position, Size size);
 
         void DrawHyperlink(string url, Size size);
         void DrawSectionLink(string sectionName, Size size);
