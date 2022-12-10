@@ -23,6 +23,14 @@ namespace QuestPDF.Drawing.Proxy
                 x.CreateProxy(y => y is ElementProxy proxy ? proxy.Child : y);
             });
         }
+        
+        public static void RemoveExistingContainers(this Container content)
+        {
+            content.VisitChildren(x =>
+            {
+                x.CreateProxy(y => y is Container container ? container.Child : y);
+            });
+        }
 
         public static LayoutErrorTrace CollectLayoutErrorTrace(this Container content)
         {

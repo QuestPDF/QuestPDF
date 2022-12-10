@@ -148,6 +148,7 @@ namespace QuestPDF.Drawing
                               $"Please analyze your documents structure to detect this element and fix its size constraints.";
 
                 content.RemoveExistingProxies();
+                content.RemoveExistingContainers();
                 content.ApplyLayoutDebugging();
                 content.Measure(Size.Max);
                 
