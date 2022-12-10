@@ -137,8 +137,8 @@ namespace QuestPDF.Examples
                         .Padding(20)
                         .Column(column =>
                         {
-                            var letterSpacing = new[] { -1f, 0f, 2f };
-                            var paragraph = Placeholders.Sentence();
+                            var letterSpacing = new[] { -0.1f, 0f, 0.2f };
+                            var paragraph = Placeholders.Sentence().ToUpper();
 
                             foreach (var spacing in letterSpacing)
                             {
@@ -154,12 +154,12 @@ namespace QuestPDF.Examples
                                                     .LetterSpacing(spacing);
 
                                         nestedColumn.Item()
-                                                    .Text($"Letter spacing of {spacing} pt")
+                                                    .Text($"Letter spacing of {spacing} em")
                                                     .FontSize(10)
                                                     .Italic()
                                                     .FontColor(Colors.Blue.Medium);
                                     });
-                                    
+                                
                             }
                         });
                 });
@@ -179,7 +179,7 @@ namespace QuestPDF.Examples
                         .Padding(50)
                         .Column(column =>
                         {
-                            var letterSpacing = new[] { -1f, 0f, 2f };
+                            var letterSpacing = new[] { -0.1f, 0f, 0.2f };
                             var paragraph = "ينا الألم. في بعض الأحيان ونظراً للالتزامات التي يفرضها علينا";
                             foreach (var spacing in letterSpacing)
                             {
@@ -196,7 +196,7 @@ namespace QuestPDF.Examples
                                                    .LetterSpacing(spacing);
 
                                        nestedColumn.Item()
-                                                   .Text($"Letter spacing of {spacing} pt")
+                                                   .Text($"Letter spacing of {spacing} em")
                                                    .FontSize(10)
                                                    .Italic()
                                                    .FontColor(Colors.Blue.Medium);
@@ -221,13 +221,18 @@ namespace QuestPDF.Examples
                         .Padding(50)
                         .Column(column =>
                         {
-                            var letterSpacing = new[] { 0f, 20f };
+                            var letterSpacing = new[] { 0f, 0.5f };
+                            
+                            
+                            
                             var paragraph = "Ţ̴̡̧̤̮̺̤̗͎̱̹͙͎͖͂̿̓́̉̊̀̍͜h̵̞̘͇̾̎̏̅į̵̹̖͔͉̰̎̉̄̐̏͑͂̅̃̃͘͝s̷͓͉̭̭̯̬̥̻̰̩̦̑̀̀͌́̒̍̒̌̇͛̀͛́̎ ̷̡̡̟͕̳̺̝̼͇͔̬̟̖͍̈́̽͜͝͝i̶͔͚̟̊̐͛́͛̄̌ṡ̸̡̤̪͙͍̥͙̟̼̝̰̥͈̿̓̄̿̓͠ ̶̢̦̙͍̯̖̱̰̯͕͔͎̯̝̎͑t̸͖̲̱̼̎͐̎̉̾̎̾̌̅̔̏͘ȩ̶̝̫̙͓̙̣̔̀̌̔̋̂̑̈́̏̀̈͘̕͜͝s̸̫̝̮̻̼͐̅̄̎̎̑͝ț̷̨̢̨̻͈̮̞̆͗̓͊̃̌͂̑̉̕̕͜͝͝";
 
+                            
+                            
                             foreach (var spacing in letterSpacing)
                             {
                                 column.Item()
-                                      .Text($"Letter spacing of {spacing} pt")
+                                      .Text($"Letter spacing of {spacing} em")
                                       .FontSize(10)
                                       .Italic()
                                       .FontColor(Colors.Blue.Medium);

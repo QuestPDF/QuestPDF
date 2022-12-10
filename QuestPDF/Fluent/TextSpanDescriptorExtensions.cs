@@ -56,6 +56,11 @@ namespace QuestPDF.Fluent
             return descriptor;
         }
 
+        /// <summary>
+        /// Letter spacing controls space between characters. Value 0 corresponds to normal spacing defined by a font.
+        /// Positive values create additional space, whereas negative values reduce space between characters.
+        /// Added / reduced space is relative to the font size.
+        /// </summary>
         public static T LetterSpacing<T>(this T descriptor, float value) where T : TextSpanDescriptor
         {
             descriptor.MutateTextStyle(x => x.LetterSpacing(value));

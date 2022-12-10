@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using HarfBuzzSharp;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 using Buffer = HarfBuzzSharp.Buffer;
@@ -49,8 +50,10 @@ namespace QuestPDF.Drawing
             
             // used for letter spacing calculation
             var lastCluster = glyphInfos.LastOrDefault().Cluster;
-
+            var letterSpacing = (TextStyle.LetterSpacing ?? 0) * (TextStyle.Size ?? 16); 
+            
             var glyphs = new ShapedGlyph[length];
+
             for (var i = 0; i < length; i++)
             {
                 // letter spacing should be applied between glyph clusters, not between individual glyphs,
@@ -58,7 +61,7 @@ namespace QuestPDF.Drawing
                 if (lastCluster != glyphInfos[i].Cluster)
                 {
                     lastCluster = glyphInfos[i].Cluster;
-                    xOffset += TextStyle.LetterSpacing ?? 0;
+                    xOffset += letterSpacing;
                 }
 
                 glyphs[i] = new ShapedGlyph

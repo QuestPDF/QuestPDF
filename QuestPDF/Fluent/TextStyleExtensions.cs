@@ -49,6 +49,11 @@ namespace QuestPDF.Fluent
             return style.Mutate(TextStyleProperty.LineHeight, value);
         }
 
+        /// <summary>
+        /// Letter spacing controls space between characters. Value 0 corresponds to normal spacing defined by a font.
+        /// Positive values create additional space, whereas negative values reduce space between characters.
+        /// Added / reduced space is relative to the font size.
+        /// </summary>
         public static TextStyle LetterSpacing(this TextStyle style, float value)
         {
             return style.Mutate(TextStyleProperty.LetterSpacing, value);
