@@ -12,7 +12,7 @@ namespace QuestPDF.Infrastructure
         /// Page numbers will be reset after each document is generated.
         /// E.g. two documents with a page count of 2 and 3 will result in the following page numbers: 1,2,1,2,3.
         /// </summary>
-        IMergedDocument SeperatePageNumbers();
+        IMergedDocument SeparatePageNumbers();
 
         /// <summary>
         /// All documents should be treated as a 'single' document in terms of page numbering.
@@ -26,7 +26,7 @@ namespace QuestPDF.Infrastructure
 
     internal enum MergedDocumentPageNumberHandling
     {
-        Seperate,
+        Separate,
         Continuous,
     }
 
@@ -34,7 +34,7 @@ namespace QuestPDF.Infrastructure
     {
         public IReadOnlyList<IDocument> Documents { get; }
 
-        public MergedDocumentPageNumberHandling PageNumberHandling { get; private set; } = MergedDocumentPageNumberHandling.Seperate;
+        public MergedDocumentPageNumberHandling PageNumberHandling { get; private set; } = MergedDocumentPageNumberHandling.Separate;
         public DocumentMetadata Metadata { get; private set; } = DocumentMetadata.Default;
 
         public MergedDocument(IEnumerable<IDocument> documents)
@@ -55,9 +55,9 @@ namespace QuestPDF.Infrastructure
             return Metadata;
         }
 
-        public IMergedDocument SeperatePageNumbers()
+        public IMergedDocument SeparatePageNumbers()
         {
-            PageNumberHandling = MergedDocumentPageNumberHandling.Seperate;
+            PageNumberHandling = MergedDocumentPageNumberHandling.Separate;
             return this;
         }
 

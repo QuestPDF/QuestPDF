@@ -62,7 +62,7 @@ namespace QuestPDF.Drawing
             where TCanvas : ICanvas, IRenderingCanvas
         {
             if (document is MergedDocument mergedDocument
-             && mergedDocument.PageNumberHandling == MergedDocumentPageNumberHandling.Seperate)
+             && mergedDocument.PageNumberHandling == MergedDocumentPageNumberHandling.Separate)
             {
                 canvas.BeginDocument();
                 foreach (var singleDocument in mergedDocument.Documents)

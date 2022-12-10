@@ -30,7 +30,7 @@ namespace QuestPDF.Examples
                 CreateDocument("Document 1"),
                 CreateDocument("Document 2"),
                 CreateDocument("Document 3"))
-                .SeperatePageNumbers();
+                .SeparatePageNumbers();
 
             RenderingTest
                 .Create()
