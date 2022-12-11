@@ -34,6 +34,11 @@ namespace QuestPDF.Elements.Table
             return Cells;
         }
 
+        internal override void CreateProxy(Func<Element?, Element?> create)
+        {
+            Cells.ForEach(x => x.Child = create(x.Child));
+        }
+        
         public void ResetState()
         {
             Initialize();

@@ -13,6 +13,8 @@ public static class DocumentHierarchyProcessor
 {
     internal static InspectionElement ExtractDocumentHierarchy(this Container content)
     {
+        content.RemoveExistingContainers();
+        
         var proxies = content.ExtractProxyOfType<InspectionProxy>();
         return Map(proxies);
 

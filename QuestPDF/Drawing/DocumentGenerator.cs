@@ -87,7 +87,7 @@ namespace QuestPDF.Drawing
             RenderPass(pageContext, canvas, content);
 
             if (applyInspection)
-                inspectionResultHandler(DocumentHierarchyProcessor.ExtractDocumentHierarchy(content));
+                inspectionResultHandler(content.ExtractDocumentHierarchy());
         }
         
         internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content)
@@ -183,7 +183,7 @@ namespace QuestPDF.Drawing
         {
             content.VisitChildren(x =>
             {
-                x.CreateProxy(y => y is ElementProxy ? y : new InspectionProxy(y));
+                x.CreateProxy(y => y is ElementProxy or Container ? y : new InspectionProxy(y));
             });
         }
         

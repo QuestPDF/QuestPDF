@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class InlinedElement : Container
+    internal class InlinedElement : ContainerElement
     {
 
     }
@@ -47,6 +47,11 @@ namespace QuestPDF.Elements
         internal override IEnumerable<Element?> GetChildren()
         {
             return Elements;
+        }
+        
+        internal override void CreateProxy(Func<Element?, Element?> create)
+        {
+            Elements.ForEach(x => x.Child = create(x.Child));
         }
         
         internal override SpacePlan Measure(Size availableSpace)
