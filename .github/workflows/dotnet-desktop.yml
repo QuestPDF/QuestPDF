@@ -40,3 +40,11 @@ jobs:
       - name: 🛠 Build Solution 🛠
         shell: bash
         run: dotnet build -c Release --no-restore
+        
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Build Package
+          path: |
+            **/*.nupkg
+            **/*.snupkg
