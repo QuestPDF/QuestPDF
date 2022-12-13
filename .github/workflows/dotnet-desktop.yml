@@ -1,4 +1,4 @@
-name: Run Build and Unit tests
+name: Build And Create Nuget Package
 
 on:
   push:
@@ -48,3 +48,4 @@ jobs:
           path: |
             **/*.nupkg
             **/*.snupkg
+            !.nuget
