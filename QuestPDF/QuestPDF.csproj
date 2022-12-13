@@ -11,6 +11,7 @@
         <PackageIcon>Logo.png</PackageIcon>
         <PackageIconUrl>https://www.questpdf.com/images/package-logo.png</PackageIconUrl>
         <PackageProjectUrl>https://www.questpdf.com/</PackageProjectUrl>
+        <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/QuestPDF/library.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
@@ -39,11 +40,10 @@
       <EmbeddedResource Include="Resources\ImagePlaceholder.png" />
       <EmbeddedResource Include="Resources\Logo.png" />
       <None Remove="ImagePlaceholder.png" />
-      <None Include="Resources\Logo.png">
-        <Pack>true</Pack>
-        <Visible>false</Visible>
-        <PackagePath>\</PackagePath>
-      </None>
+        
+      <None Include="Resources\Logo.png" Pack="true" PackagePath="\" />
+      <None Include="Resources\PackageReadme.md" Pack="true" PackagePath="\" />
+        
       <None Remove="Resources\DefaultFont\Lato-Black.ttf" />
       <EmbeddedResource Include="Resources\DefaultFont\Lato-Black.ttf" />
       <None Remove="Resources\DefaultFont\Lato-BlackItalic.ttf" />
