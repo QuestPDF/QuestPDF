@@ -23,7 +23,7 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 
 ⭐ Please give this repository a star. It takes seconds and help thousands of developers! ⭐
 
-<img src="https://user-images.githubusercontent.com/9263853/200136456-95b7a1e2-0b7e-4779-9071-9d4f2ef50745.png" width="709" />
+<img src="https://user-images.githubusercontent.com/9263853/207596765-f3b84375-e4da-4597-b6a4-f2e22dd2b479.png" width="800" />
 
 
 ## Please share with the community
