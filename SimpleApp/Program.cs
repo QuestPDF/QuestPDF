@@ -40,7 +40,7 @@ Document
                             .Text(i);
                     }
 
-                    x.Item().Width(1000);
+                    //x.Item().Width(1000);
                 });
                         
             page.Footer()
@@ -52,5 +52,5 @@ Document
                 });
         });
     })
-    .GeneratePdf();
+    .ShowInPreviewer();
 
