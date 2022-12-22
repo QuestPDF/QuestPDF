@@ -59,5 +59,37 @@ namespace QuestPDF.Fluent
         {
             return element.Border(x => x.Color = color);
         }
+
+        public static IContainer BorderCorners(this IContainer element, float value, Unit unit = Unit.Point)
+        {
+            return element.Border(x =>
+            {
+                var v = value.ToPoints(unit);
+                x.TopLeftCorner = v;
+                x.TopRightCorner = v;
+                x.BottomLeftCorner = v;
+                x.BottomRightCorner = v;
+            });
+        }
+
+        public static IContainer BorderTopLeftCorner(this IContainer element, float value, Unit unit = Unit.Point)
+        {
+            return element.Border(x => x.TopLeftCorner = value.ToPoints(unit));
+        }
+        
+        public static IContainer BorderTopRightCorner(this IContainer element, float value, Unit unit = Unit.Point)
+        {
+            return element.Border(x => x.TopRightCorner = value.ToPoints(unit));
+        }
+        
+        public static IContainer BorderBottomLeftCorner(this IContainer element, float value, Unit unit = Unit.Point)
+        {
+            return element.Border(x => x.BottomLeftCorner = value.ToPoints(unit));
+        }
+        
+        public static IContainer BorderBottomRightCorner(this IContainer element, float value, Unit unit = Unit.Point)
+        {
+            return element.Border(x => x.BottomRightCorner = value.ToPoints(unit));
+        }
     }
 }

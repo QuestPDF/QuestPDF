@@ -41,8 +41,8 @@ Document
                             c.RelativeColumn(3);
                         });
 
-                        t.Cell().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Text("Visual Studio");
-                        t.Cell().Border(1).Padding(5).Text("Start in debug mode with 'Hot Reload on Save' enabled.");
+                        t.Cell().Border(1).BorderTopLeftCorner(2).Background(Colors.Grey.Lighten3).Padding(5).Text("Visual Studio");
+                        t.Cell().Border(1).BorderTopRightCorner(2).Padding(5).Text("Start in debug mode with 'Hot Reload on Save' enabled.");
                         t.Cell().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Text("Command line");
                         t.Cell().Border(1).Padding(5).Text("Run 'dotnet watch'.");
                     });

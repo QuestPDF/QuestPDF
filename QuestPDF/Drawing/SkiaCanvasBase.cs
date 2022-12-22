@@ -1,6 +1,7 @@
+using System.Collections.Generic;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
-using SkiaSharp.HarfBuzz;
 
 namespace QuestPDF.Drawing
 {
@@ -26,6 +27,31 @@ namespace QuestPDF.Drawing
 
             var paint = color.ColorToPaint();
             Canvas.DrawRect(vector.X, vector.Y, size.Width, size.Height, paint);
+        }
+
+        public void DrawCorner(Position first, Position center, Position last, Position cornerCenter, string color)
+        {
+            var paint = color.ColorToPaint();
+            var points = new List<SKPoint>();
+            
+            var p1 = new SKPoint(first.X, first.Y);
+            var p2 = new SKPoint(center.X, center.Y);
+            var p3 = new SKPoint(last.X, last.Y);
+
+            points.Add(p1);
+            // calculating bezier curve points
+            BezierCurveHelper.PopulateBezierPoints(p1, p2, p3, 0, points);
+            points.Add(p3);
+            
+            // finish region
+            points.Add(new SKPoint(cornerCenter.X, last.Y));
+            points.Add(new SKPoint(cornerCenter.X, cornerCenter.Y));
+            points.Add(new SKPoint(first.X, cornerCenter.Y));
+
+            var path = new SKPath();
+            path.AddPoly(points.ToArray());
+            
+            Canvas.DrawPath(path, paint);
         }
 
         public void DrawText(SKTextBlob skTextBlob, Position position, TextStyle style)

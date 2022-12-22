@@ -41,6 +41,11 @@ namespace QuestPDF.Drawing
             
         }
 
+        public void DrawCorner(Position first, Position center, Position last, Position cornerCenter, string color)
+        {
+            
+        }
+
         public void DrawText(SKTextBlob skTextBlob, Position position, TextStyle style)
         {
             
