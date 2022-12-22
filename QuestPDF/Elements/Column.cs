@@ -96,7 +96,7 @@ namespace QuestPDF.Elements
 
                 var availableHeight = availableSpace.Height - topOffset;
                 
-                if (availableHeight < 0)
+                if (availableHeight < -Size.Epsilon)
                     break;
 
                 var itemSpace = new Size(availableSpace.Width, availableHeight);
