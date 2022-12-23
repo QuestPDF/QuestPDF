@@ -9,13 +9,12 @@
 [![Nuget version](https://img.shields.io/nuget/v/QuestPdf)](https://www.nuget.org/packages/QuestPDF/)
 [![Nuget download](https://img.shields.io/nuget/dt/QuestPDF)](https://www.nuget.org/packages/QuestPDF/)
 [![License](https://img.shields.io/github/license/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/blob/main/LICENSE)
-[![Sponsor project](https://img.shields.io/badge/sponsor-project-red)](https://github.com/sponsors/QuestPDF)
 
 QuestPDF is an open-source .NET library for PDF documents generation.
 
-It offers a layouting engine designed with a full paging support in mind. The document consists of many simple elements (e.g. border, background, image, text, padding, table, grid etc.) that are composed together to create more complex structures. This way, as a developer, you can understand the behavior of every element and use them with full confidence. Additionally, the document and all its elements support paging functionality. For example, an element can be moved to the next page (if there is not enough space) or even be split between pages like table's rows.
+It offers a layout engine designed with a full paging support in mind. The document consists of many simple elements (e.g. border, background, image, text, padding, table, grid etc.) that are composed together to create more complex structures. This way, as a developer, you can understand the behavior of every element and use them with full confidence. Additionally, the document and all its elements support paging functionality. For example, an element can be moved to the next page (if there is not enough space) or even be split between pages like table's rows.
 
-Unlike other libraries, it does not rely on the HTML-to-PDF conversion which in many cases is not reliable. Instead, it implements its own layouting engine that is optimized to cover all paging-related requirements.
+Unlike other libraries, it does not rely on the HTML-to-PDF conversion which in many cases is not reliable. Instead, it implements its own layout engine that is optimized to cover all paging-related requirements.
 
 ## Please help by giving a star
 
@@ -35,21 +34,6 @@ As an open-source project without funding, I cannot afford advertising QuestPDF 
 [![GitHub Repo stars](https://img.shields.io/badge/share%20on-twitter-03A9F4?logo=twitter)](https://twitter.com/share?url=https://github.com/QuestPDF/QuestPDF&t=QuestPDF)
 [![GitHub Repo stars](https://img.shields.io/badge/share%20on-facebook-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/QuestPDF/QuestPDF)
 [![GitHub Repo stars](https://img.shields.io/badge/share%20on-linkedin-3949AB?logo=linkedin)](https://www.linkedin.com/shareArticle?url=https://github.com/QuestPDF/QuestPDF&title=QuestPDF)
-
-## Support development
-
-It doesn't matter if you are a professional developer, creating a startup or work for an established company. All of us care about our tools and dependencies, about stability and security, about time and money we can safe, about quality we can offer. Please consider sponsoring QuestPDF to give me an extra motivational push to develop the next great feature.
-
-> If you represent a company and want to help the entire community, please consider sponsoring QuestPDF using one of the higher tiers. All developers will see your company logo and the description of your choice. It is a fantastic way to build a strong relationship with the community, show that you care, or even find the best professionals. The truth is, no classical advertisement campaign is as effective as real engagement.
-
-Special thanks to all companies that decided to sponsor QuestPDF development. This makes .NET ecosystem a better place for all developers and businesses!
-
-| Company                                                                              | Description                                                                                                                     |
-|--------------------------------------------------------------------------------------|:--------------------------------------------------------------------------------------------------------------------------------|
-| <img src="Resources/jetbrains-logo.svg" width="100px"> | [JetBrains](https://www.jetbrains.com/) supports this project as part of the OSS Power-Ups program. Thank you!<br/>100$ / month |
-| <img src="https://avatars.githubusercontent.com/u/2712328?v=4" width="100px"> | [Mark Gould](https://github.com/markgould) supports this project. Thank you!<br/>100$ / month |
-
-[![Sponsor project](https://img.shields.io/badge/%E2%9D%A4%EF%B8%8F%20sponsor-QuestPDF-red)](https://github.com/sponsors/QuestPDF)
 
 ## Installation
 
@@ -86,7 +70,6 @@ Everything that may help you designing great reports and create reusable code th
 The QuestPDF Previewer is a tool designed to simplify and speed up your development lifecycle. First, it shows a preview of your document. But the real magic starts with the hot-reload capability! It observes your code and updates the preview every time you change the implementation. Get real-time results without the need of code recompilation. Save time and enjoy the task!
 
 [![Learn more](https://img.shields.io/badge/%F0%9F%93%96%20Previewer-learn%20more-blue)](https://www.questpdf.com/document-previewer)
-
 
 <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
 
