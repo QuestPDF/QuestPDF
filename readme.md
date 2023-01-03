@@ -4,11 +4,11 @@
 
 ---
 
-[![Dotnet](https://img.shields.io/badge/platform-.NET-blue)](https://www.nuget.org/packages/QuestPDF/)
-[![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/stargazers)
-[![Nuget version](https://img.shields.io/nuget/v/QuestPdf)](https://www.nuget.org/packages/QuestPDF/)
-[![Nuget download](https://img.shields.io/nuget/dt/QuestPDF)](https://www.nuget.org/packages/QuestPDF/)
-[![License](https://img.shields.io/github/license/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/blob/main/LICENSE)
+[![Dotnet](https://img.shields.io/badge/platform-.NET-blue?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
+[![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/stargazers)
+[![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
+[![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
+[![License](https://img.shields.io/github/license/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/blob/main/LICENSE)
 
 QuestPDF is an open-source .NET library for PDF documents generation.
 
@@ -29,10 +29,10 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 
 As an open-source project without funding, I cannot afford advertising QuestPDF in a typical way. Instead, the library relies on community interactions. Please consider sharing a post about QuestPDF and the value it provides. It really does help!
 
-[![Share on Reddit](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit)](https://reddit.com/submit?url=https://github.com/QuestPDF/QuestPDF&title=Check%20out%20QuestPDF%20%F0%9F%8E%8A%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation%20%F0%9F%9A%80)
-[![Share on Twitter](https://img.shields.io/badge/share%20on-twitter-03A9F4?logo=twitter)](https://twitter.com/share?url=https://github.com/QuestPDF/QuestPDF&text=Check%20out%20QuestPDF%20%F0%9F%8E%8A%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation%20%F0%9F%9A%80%20%23dotnet%20%23csharp%20%23questpdf)
-[![Share on HackerNews](https://img.shields.io/badge/share%20on-hacker%20news-orange?logo=ycombinator)](https://news.ycombinator.com/submitlink?u=https://github.com/QuestPDF/QuestPDF&t=QuestPDF%20-%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation)
-[![Share on Facebook](https://img.shields.io/badge/share%20on-facebook-1976D2?logo=facebook)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/QuestPDF/QuestPDF)
+[![Share on Reddit](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit&style=for-the-badge)](https://reddit.com/submit?url=https://github.com/QuestPDF/QuestPDF&title=Check%20out%20QuestPDF%20%F0%9F%8E%8A%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation%20%F0%9F%9A%80)
+[![Share on Twitter](https://img.shields.io/badge/share%20on-twitter-03A9F4?logo=twitter&style=for-the-badge)](https://twitter.com/share?url=https://github.com/QuestPDF/QuestPDF&text=Check%20out%20QuestPDF%20%F0%9F%8E%8A%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation%20%F0%9F%9A%80%20%23dotnet%20%23csharp%20%23questpdf)
+[![Share on HackerNews](https://img.shields.io/badge/share%20on-hacker%20news-orange?logo=ycombinator&style=for-the-badge)](https://news.ycombinator.com/submitlink?u=https://github.com/QuestPDF/QuestPDF&t=QuestPDF%20-%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation)
+[![Share on Facebook](https://img.shields.io/badge/share%20on-facebook-1976D2?logo=facebook&style=for-the-badge)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/QuestPDF/QuestPDF)
 
 ## Installation
 
@@ -49,26 +49,26 @@ dotnet add package QuestPDF
 <PackageReference Include="QuestPDF" Version="2022.12.0" />
 ```
 
-[![Nuget version](https://img.shields.io/badge/package%20details-QuestPDF-blue?logo=nuget)](https://www.nuget.org/packages/QuestPDF/)
+[![Nuget version](https://img.shields.io/badge/package%20details-QuestPDF-blue?logo=nuget&style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
 
 ## Documentation
 
-[![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue)](https://www.questpdf.com/getting-started)
+[![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue?style=for-the-badge)](https://www.questpdf.com/getting-started)
 A short and easy to follow tutorial showing how to design an invoice document under 200 lines of code.
 
 
-[![API reference](https://img.shields.io/badge/%F0%9F%93%96%20read-API%20reference-blue)](https://www.questpdf.com/api-reference/index.html)
+[![API reference](https://img.shields.io/badge/%F0%9F%93%96%20read-API%20reference-blue?style=for-the-badge)](https://www.questpdf.com/api-reference/index.html)
 A detailed description of behavior of all available components and how to use them with C# Fluent API.
 
 
-[![Patterns and Practices](https://img.shields.io/badge/%E2%9C%A8%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/design-patterns)
+[![Patterns and Practices](https://img.shields.io/badge/%E2%9C%A8%20read-patterns%20and%20practices-blue?style=for-the-badge)](https://www.questpdf.com/design-patterns)
 Everything that may help you designing great reports and create reusable code that is easy to maintain.
 
 ## QuestPDF Previewer
 
 The QuestPDF Previewer is a tool designed to simplify and speed up your development lifecycle. First, it shows a preview of your document. But the real magic starts with the hot-reload capability! It observes your code and updates the preview every time you change the implementation. Get real-time results without the need of code recompilation. Save time and enjoy the task!
 
-[![Learn more](https://img.shields.io/badge/%F0%9F%93%96%20Previewer-learn%20more-blue)](https://www.questpdf.com/document-previewer)
+[![Learn more](https://img.shields.io/badge/%F0%9F%93%96%20Previewer-learn%20more-blue?style=for-the-badge)](https://www.questpdf.com/document-previewer)
 
 <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
 
@@ -137,4 +137,4 @@ QuestPDF was presented on one of the episodes of OSS Power-Ups hosted by JetBrai
 </a>
 
 
-[![YouTube video about QuestPDF]( https://img.shields.io/badge/watch%20on-YouTube-red?logo=youtube)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
+[![YouTube video about QuestPDF]( https://img.shields.io/badge/watch%20on-YouTube-red?logo=youtube&style=for-the-badge)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
