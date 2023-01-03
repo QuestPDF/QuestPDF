@@ -10,6 +10,7 @@
 [![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
 [![License](https://img.shields.io/github/license/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/blob/main/LICENSE)
 
+<br />
 
 ### QuestPDF is an open-source .NET library for PDF documents generation. Utilizing several new patterns and practices, QuestPDF seeks to resolve the challenges inherent in this process.
 
@@ -25,7 +26,11 @@
 
 ⌛ Save time thanks to a hot-reload capability, allowing real-time document preview without code recompilation.
 
+<br />
+
 <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
+
+<br />
 
 ## Please help by giving a star
 
@@ -33,7 +38,7 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 
 ⭐ Please give this repository a star. It takes seconds and help thousands of developers! ⭐
 
-<img src="https://user-images.githubusercontent.com/9263853/209412523-e97bdd74-90a9-483c-b186-63cd9797e2a0.png" width="800" />
+<img src="https://user-images.githubusercontent.com/9263853/210454391-54342f89-30ce-4446-b8d9-392f673e4d2f.png" width="800" />
 
 
 ## Please share with the community
@@ -44,6 +49,8 @@ As an open-source project without funding, I cannot afford advertising QuestPDF 
 [![Share on Twitter](https://img.shields.io/badge/share%20on-twitter-03A9F4?logo=twitter&style=for-the-badge)](https://twitter.com/share?url=https://github.com/QuestPDF/QuestPDF&text=Check%20out%20QuestPDF%20%F0%9F%8E%8A%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation%20%F0%9F%9A%80%20%23dotnet%20%23csharp%20%23questpdf)
 [![Share on HackerNews](https://img.shields.io/badge/share%20on-hacker%20news-orange?logo=ycombinator&style=for-the-badge)](https://news.ycombinator.com/submitlink?u=https://github.com/QuestPDF/QuestPDF&t=QuestPDF%20-%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation)
 [![Share on Facebook](https://img.shields.io/badge/share%20on-facebook-1976D2?logo=facebook&style=for-the-badge)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/QuestPDF/QuestPDF)
+
+<br />
 
 ## Installation
 
@@ -62,6 +69,8 @@ dotnet add package QuestPDF
 
 [![Nuget version](https://img.shields.io/badge/package%20details-QuestPDF-blue?logo=nuget&style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
 
+<br />
+
 ## Documentation
 
 [![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue?style=for-the-badge)](https://www.questpdf.com/getting-started)
@@ -70,11 +79,15 @@ dotnet add package QuestPDF
 
 [![Patterns and Practices](https://img.shields.io/badge/%E2%9C%A8%20read-patterns%20and%20practices-blue?style=for-the-badge)](https://www.questpdf.com/design-patterns)
 
+<br />
+
 ## Are you ready for more?
 
 The Fluent API of QuestPDF scales really well. It is easy to create and maintain even most complex documents. Read [the Getting started tutorial](https://www.questpdf.com/getting-started.html) to learn QuestPDF basics and implement an invoice under 200 lines of code. You can also investigate and play with the code from [the example repository](https://github.com/QuestPDF/example-invoice).
 
 <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/invoice-small.png?raw=true" width="400px">
+
+<br />
 
 ## QuestPDF on JetBrains OSS Power-Ups
 
