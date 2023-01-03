@@ -52,38 +52,13 @@ As an open-source project without funding, I cannot afford advertising QuestPDF 
 
 <br />
 
-## Installation
-
-The library is available as a nuget package. You can install it as any other nuget package from your IDE, try to search by `QuestPDF`. You can find package details [on this webpage](https://www.nuget.org/packages/QuestPDF/).
-
-```xml
-// Package Manager
-Install-Package QuestPDF
-
-// .NET CLI
-dotnet add package QuestPDF
-
-// Package reference in .csproj file
-<PackageReference Include="QuestPDF" Version="2022.12.0" />
-```
-
-[![Nuget version](https://img.shields.io/badge/package%20details-QuestPDF-blue?logo=nuget&style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
-
-<br />
-
 ## Documentation
 
+Begin exploring the QuestPDF library today. You are 250 lines of C# code away from creating a fully functional PDF invoice implementation.
+
+Read the Getting Started tutorial to familiarize yourself with general library architecture, important layout structures as well as to better understand helpful patterns and practices.
+
 [![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue?style=for-the-badge)](https://www.questpdf.com/getting-started)
-
-[![API reference](https://img.shields.io/badge/%F0%9F%93%96%20read-API%20reference-blue?style=for-the-badge)](https://www.questpdf.com/api-reference/index.html)
-
-[![Patterns and Practices](https://img.shields.io/badge/%E2%9C%A8%20read-patterns%20and%20practices-blue?style=for-the-badge)](https://www.questpdf.com/design-patterns)
-
-<br />
-
-## Are you ready for more?
-
-The Fluent API of QuestPDF scales really well. It is easy to create and maintain even most complex documents. Read [the Getting started tutorial](https://www.questpdf.com/getting-started.html) to learn QuestPDF basics and implement an invoice under 200 lines of code. You can also investigate and play with the code from [the example repository](https://github.com/QuestPDF/example-invoice).
 
 <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/invoice-small.png?raw=true" width="400px">
 
