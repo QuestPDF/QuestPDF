@@ -15,21 +15,36 @@
 
 ### QuestPDF is an open-source .NET library for PDF documents generation. Utilizing several new patterns and practices, QuestPDF seeks to resolve the challenges inherent in this process.
 
-👨‍💻 Design documents using C# and employ a code-only approach. Utilize your version control system to its fullest potential.
+<img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
 
-🧱 Compose document with a range of powerful and predictable structural elements, such as text, image, border, table, and many more.
-
-⚙️ Utilize a comprehensive layout engine, specifically designed for document generation and paging support.
-
-📖 Write code using concise and easy-to-understand C# Fluent API. Utilize IntelliSense to quickly discover available options.
-
-🔗 Don't be limited to any proprietary scripting language or format. Follow your experience and leverage all modern C# features.
-
-⌛ Save time thanks to a hot-reload capability, allowing real-time document preview without code recompilation.
+<table>
+<tr>
+    <td>👨‍💻</td>
+    <td>Design documents using C# and employ a code-only approach. Utilize your version control system to its fullest potential.</td>
+</tr>
+<tr>
+    <td>🧱</td>
+    <td>Compose document with a range of powerful and predictable structural elements, such as text, image, border, table, and many more.</td>
+</tr>
+<tr>
+    <td>⚙️</td>
+    <td>Utilize a comprehensive layout engine, specifically designed for document generation and paging support.</td>
+</tr>
+<tr>
+    <td>📖</td>
+    <td>Write code using concise and easy-to-understand C# Fluent API. Utilize IntelliSense to quickly discover available options.</td>
+</tr>
+<tr>
+    <td>🔗</td>
+    <td>Don't be limited to any proprietary scripting language or format. Follow your experience and leverage all modern C# features.</td>
+</tr>
+<tr>
+    <td>⌛</td>
+    <td>Save time thanks to a hot-reload capability, allowing real-time document preview without code recompilation.</td>
+</tr>
+</table>
 
 <br />
-
-<img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
 
 <br />
 
