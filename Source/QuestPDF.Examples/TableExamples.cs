@@ -300,17 +300,18 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
                                 columns.RelativeColumn();
+                                columns.RelativeColumn();
+                                columns.RelativeColumn();
                             });
 
-                            table.Cell().RowSpan(4).Element(Block).Text("1");
+                            var image = Placeholders.Image(400, 300);
                             
-                            table.Cell().RowSpan(2).Element(Block).Text("2");
-                            table.Cell().RowSpan(1).Element(Block).Text("3");
-                            table.Cell().RowSpan(1).Element(Block).Text("4");
-                            
-                            table.Cell().RowSpan(2).Element(Block).Text("5");
-                            table.Cell().RowSpan(1).Element(Block).Text("6");
-                            table.Cell().RowSpan(1).Element(Block).Text("7");
+                            table.Cell().Image(image);
+                            table.Cell().Image(image);
+                            table.Cell().Image(image);
+                            table.Cell().Image(image);
+                            table.Cell().Image(image);
+                            table.Cell().Image(image);
                         });
                 });
         }
