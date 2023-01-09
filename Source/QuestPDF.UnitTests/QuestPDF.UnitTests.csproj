@@ -17,4 +17,13 @@
       <ProjectReference Include="..\QuestPDF\QuestPDF.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="Resources\FontContent.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <EmbeddedResource Include="Resources\FontEmbeddedResource.ttf">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </EmbeddedResource>
+    </ItemGroup>
+
 </Project>

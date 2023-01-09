@@ -2,3 +2,5 @@ Feature: implemented LetterSpacing property for the Text element
 Improvement: the Text element API accepts now only string values, objects are not automatically converted anymore
 Fix: the Alignment element incorrectly limits size of its child when only one axis is set (horizontal or vertical)
 Maintenance: Updated SkiaSharp dependency to 2.88.3
+
+Fixed in version 2022.12.1: loading fonts from embedded resource via the FontManager.RegisterFontFromEmbeddedResource method

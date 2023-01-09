@@ -64,7 +64,11 @@ namespace QuestPDF.Drawing
         
         public static void RegisterFontFromEmbeddedResource(string pathName)
         {
-            using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(pathName);
+            using var stream = Assembly.GetCallingAssembly().GetManifestResourceStream(pathName);
+
+            if (stream == null)
+                throw new ArgumentException($"Cannot load font file from an embedded resource. Please make sure that the resource is available or the path is correct: {pathName}");
+            
             RegisterFont(stream);
         }
         
@@ -88,10 +92,13 @@ namespace QuestPDF.Drawing
                 "Lato-ThinItalic.ttf"
             };
             
-            fontFileNames
-                .Select(x => $"QuestPDF.Resources.DefaultFont.{x}")
-                .ToList()
-                .ForEach(RegisterFontFromEmbeddedResource);
+            foreach (var fileName in fontFileNames)
+            {
+                var filePath = $"QuestPDF.Resources.DefaultFont.{fileName}";
+                
+                using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(filePath);
+                RegisterFont(stream);
+            }
         }
 
         internal static SKPaint ColorToPaint(this string color)
