@@ -32,18 +32,16 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
-
-      - name: 🛠 Build Solution 🛠
-        shell: bash
-        run: cd Source
-
+          
       - name: 🔄 Restore Nuget Packages 🔄
         shell: bash
         run: dotnet restore
+        working-directory: ./Source
 
       - name: 🛠 Build Solution 🛠
         shell: bash
         run: dotnet build -c Release --no-restore
+        working-directory: ./Source
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
