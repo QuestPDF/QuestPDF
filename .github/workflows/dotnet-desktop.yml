@@ -33,6 +33,10 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
+      - name: 🛠 Build Solution 🛠
+        shell: bash
+        run: cd Source
+
       - name: 🔄 Restore Nuget Packages 🔄
         shell: bash
         run: dotnet restore
