@@ -3,4 +3,8 @@ Improvement: the Text element API accepts now only string values, objects are no
 Fix: the Alignment element incorrectly limits size of its child when only one axis is set (horizontal or vertical)
 Maintenance: Updated SkiaSharp dependency to 2.88.3
 
-Fixed in version 2022.12.1: loading fonts from embedded resource via the FontManager.RegisterFontFromEmbeddedResource method
+In version 2022.12.1:
+Fixed: loading fonts from embedded resource via the FontManager.RegisterFontFromEmbeddedResource method
+Fixed: better layout calculation stability for the Column element
+Improvement: exposed missing API method for the Dynamic component, enabling applying more advanced optimizations
+Improvement: better API documentation for the Settings.DocumentLayoutExceptionThreshold property
