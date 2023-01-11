@@ -10,5 +10,10 @@ namespace QuestPDF.Fluent
             var componentProxy = DynamicComponentProxy.CreateFrom(dynamicElement);
             element.Element(new DynamicHost(componentProxy));
         }
+        
+        public static void Element(this IContainer element, IDynamicElement child)
+        {
+            ElementExtensions.Element(element, child);
+        }
     }
 }
