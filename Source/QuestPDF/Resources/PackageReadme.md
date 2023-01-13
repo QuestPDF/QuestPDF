@@ -1,26 +1,50 @@
-﻿[![Dotnet](https://img.shields.io/badge/platform-.NET-blue)](https://www.nuget.org/packages/QuestPDF/)
-[![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/stargazers)
-[![Nuget version](https://img.shields.io/nuget/v/QuestPdf)](https://www.nuget.org/packages/QuestPDF/)
-[![Nuget download](https://img.shields.io/nuget/dt/QuestPDF)](https://www.nuget.org/packages/QuestPDF/)
-[![License](https://img.shields.io/github/license/QuestPDF/QuestPDF)](https://github.com/QuestPDF/QuestPDF/blob/main/LICENSE)
-[![Sponsor project](https://img.shields.io/badge/sponsor-project-red)](https://github.com/sponsors/QuestPDF)
+﻿<a href="https://www.questpdf.com/" target="_blank">
+  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="400"> 
+</a>
 
-QuestPDF is an open-source .NET library for PDF documents generation.
+---
 
-It offers a layout engine designed with a full paging support in mind. The document consists of many simple elements (e.g. border, background, image, text, padding, table, grid etc.) that are composed together to create more complex structures. This way, as a developer, you can understand the behavior of every element and use them with full confidence. Additionally, the document and all its elements support paging functionality. For example, an element can be moved to the next page (if there is not enough space) or even be split between pages like table's rows.
+[![QuestPDF Homepage](https://img.shields.io/badge/Homepage-blue?style=for-the-badge)](https://www.questpdf.com)
+[![Dotnet](https://img.shields.io/badge/platform-.NET-blue?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
+[![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/stargazers)
+[![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
+[![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
+[![License](https://img.shields.io/github/license/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/blob/main/LICENSE)
 
-## Documentation
+<br />
 
-[![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue)](https://www.questpdf.com/getting-started.html)
-A short and easy to follow tutorial showing how to design an invoice document under 200 lines of code.
+### QuestPDF is a modern open-source .NET library for PDF document generation. Offering comprehensive layout engine powered by concise and discoverable C# Fluent API.
 
+<img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
 
-[![API reference](https://img.shields.io/badge/%F0%9F%93%96%20read-API%20reference-blue)](https://www.questpdf.com/api-reference/index.html)
-A detailed description of behavior of all available components and how to use them with C# Fluent API.
+<table>
+<tr>
+    <td>👨‍💻</td>
+    <td>Design documents using C# and employ a code-only approach. Utilize your version control system to its fullest potential.</td>
+</tr>
+<tr>
+    <td>🧱</td>
+    <td>Compose document with a range of powerful and predictable structural elements, such as text, image, border, table, and many more.</td>
+</tr>
+<tr>
+    <td>⚙️</td>
+    <td>Utilize a comprehensive layout engine, specifically designed for document generation and paging support.</td>
+</tr>
+<tr>
+    <td>📖</td>
+    <td>Write code using concise and easy-to-understand C# Fluent API. Utilize IntelliSense to quickly discover available options.</td>
+</tr>
+<tr>
+    <td>🔗</td>
+    <td>Don't be limited to any proprietary scripting language or format. Follow your experience and leverage all modern C# features.</td>
+</tr>
+<tr>
+    <td>⌛</td>
+    <td>Save time thanks to a hot-reload capability, allowing real-time document preview without code recompilation.</td>
+</tr>
+</table>
 
-
-[![Patterns and Practices](https://img.shields.io/badge/%F0%9F%94%8D%20read-patterns%20and%20practices-blue)](https://www.questpdf.com/design-patterns.html)
-Everything that may help you designing great reports and create reusable code that is easy to maintain.
+<br />
 
 ## Simplicity is the key
 
@@ -67,12 +91,14 @@ Document.Create(container =>
 .GeneratePdf("hello.pdf");
 ```
 
-And compare it to the produced PDF file:
 
-![invoice](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/docs/public/minimal-example-shadow.png)
 
-## Are you ready for more?
+## Let's get started
 
-The Fluent API of QuestPDF scales really well. It is easy to create and maintain even most complex documents. Read [the Getting started tutorial](https://www.questpdf.com/documentation/getting-started.html) to learn QuestPDF basics and implement an invoice under 200 lines of code. You can also investigate and play with the code from [the example repository](https://github.com/QuestPDF/example-invoice).
+Begin exploring the QuestPDF library today. You are 250 lines of C# code away from creating a fully functional PDF invoice implementation.
 
-![invoice](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/docs/public/invoice-small.png)
+Read the Getting Started tutorial to familiarize yourself with general library architecture, important layout structures as well as to better understand helpful patterns and practices.
+
+[![Getting started tutorial](https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue?style=for-the-badge)](https://www.questpdf.com/getting-started)
+
+<img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/invoice-small.png?raw=true" width="400px">
