@@ -45,6 +45,7 @@ jobs:
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
+        if: ${{ matrix.environment == 'windows-latest' }}
         with:
           name: Build Package
           path: |
