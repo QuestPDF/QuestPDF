@@ -1,35 +1,33 @@
-﻿[![QuestPDF Homepage](https://img.shields.io/badge/Homepage-3366cc?style=for-the-badge)](https://www.questpdf.com)
-[![Getting started](https://img.shields.io/badge/Getting%20started-3366cc?style=for-the-badge)](https://www.questpdf.com/getting-startedm)
-[![API Reference](https://img.shields.io/badge/API%20Reference-3366cc?style=for-the-badge)](https://www.questpdf.com/api-reference/index)
-[![Design patterns](https://img.shields.io/badge/Design%20patterns-3366cc?style=for-the-badge)](https://www.questpdf.com/design-patterns)
-[![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/stargazers)
-[![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
-[![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
+﻿[![QuestPDF Homepage](https://img.shields.io/badge/Homepage%20link-blue?style=badge)](https://www.questpdf.com)
+[![Getting started tutorial]( https://img.shields.io/badge/%F0%9F%9A%80%20read-Getting%20Started-blue)](https://www.questpdf.com/getting-started.html)
+[![API reference](https://img.shields.io/badge/%F0%9F%93%96%20read-API%20Reference-blue)](https://www.questpdf.com/api-reference/index.html)
+[![Patterns and Practices](https://img.shields.io/badge/%F0%9F%94%8D%20read-Patterns%20and%20Practices-blue)](https://www.questpdf.com/design-patterns.html)
+[![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=badge)](https://github.com/QuestPDF/QuestPDF/stargazers)
+[![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=badge)](https://www.nuget.org/packages/QuestPDF/)
+[![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=badge)](https://www.nuget.org/packages/QuestPDF/)
 
-<br />
 
-### QuestPDF is a modern open-source .NET library for PDF document generation. Offering comprehensive layout engine powered by concise and discoverable C# Fluent API. Easily generate PDF documents, reports, invoices, etc.
 
-![Usage animation](https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true)
+### QuestPDF is a modern open-source .NET library for PDF document generation. Offering comprehensive layout engine powered by concise and discoverable C# Fluent API. Easily generate PDF documents, reports, invoices, exports etc.
 
-👨‍💻 Design documents using C# and employ a code-only approach. Utilize your version control system to its fullest potential.
+![Usage animation of the PDF library](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/docs/public/previewer/animation.gif)
 
-🧱 Compose document with a range of powerful and predictable structural elements, such as text, image, border, table, and many more.
+👨‍💻 Design PDF documents using C# and employ a code-only approach. Utilize your version control system to its fullest potential.
 
-⚙️ Utilize a comprehensive layout engine, specifically designed for document generation and paging support.
+🧱 Compose PDF document with a range of powerful and predictable structural elements, such as text, image, border, table, and many more.
+
+⚙️ Utilize a comprehensive layout engine, specifically designed for PDF document generation and paging support.
 
 📖 Write code using concise and easy-to-understand C# Fluent API. Utilize IntelliSense to quickly discover available options.
 
 🔗 Don't be limited to any proprietary scripting language or format. Follow your experience and leverage all modern C# features.
 
-⌛ Save time thanks to a hot-reload capability, allowing real-time document preview without code recompilation.
+⌛ Save time thanks to a hot-reload capability, allowing real-time PDF document preview without code recompilation.
 
-
-<br />
 
 ## Simplicity is the key
 
-How easy it is to start and prototype with QuestPDF? Really easy thanks to its minimal API! Please analyse the code below:
+How easy it is to start and prototype with QuestPDF? Really easy thanks to its minimal API! Please analyse the code below that generates basic PDF document:
 
 ```csharp
 using QuestPDF.Fluent;
@@ -72,6 +70,7 @@ Document.Create(container =>
 .GeneratePdf("hello.pdf");
 ```
 
+![Minimal PDF example](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/docs/public/minimal-example-shadow.png)
 
 
 ## Let's get started
@@ -80,6 +79,8 @@ Begin exploring the QuestPDF library today. You are 250 lines of C# code away fr
 
 Read the Getting Started tutorial to familiarize yourself with general library architecture, important layout structures as well as to better understand helpful patterns and practices.
 
-[![Getting started tutorial](https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue?style=for-the-badge)](https://www.questpdf.com/getting-started)
+Easily start designing your PDF documents, reports, invoices, exports and even more.
 
-![Example invoice](https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/invoice-small.png?raw=true)
+[![Getting started tutorial](https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started%20tutorial-blue?style=for-the-badge)](https://www.questpdf.com/getting-started)
+
+![Example invoice](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/main/docs/public/invoice-small.png)
