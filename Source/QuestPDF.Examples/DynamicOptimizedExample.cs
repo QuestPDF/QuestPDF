@@ -52,10 +52,10 @@ namespace QuestPDF.Examples
                 {
                     decoration.Before().Element(header);
 
-                    decoration.Content().Column(stack =>
+                    decoration.Content().Column(column =>
                     {
                         foreach (var row in rows)
-                            stack.Item().Element(row.Element);
+                            column.Item().Element(row.Element);
                     });
 
                     decoration.After().Element(footer);
