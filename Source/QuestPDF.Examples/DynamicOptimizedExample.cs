@@ -50,15 +50,15 @@ namespace QuestPDF.Examples
             {
                 container.MinimalBox().Decoration(decoration =>
                 {
-                    decoration.Header().Element(header);
+                    decoration.Before().Element(header);
 
-                    decoration.Content().Box().Stack(stack =>
+                    decoration.Content().Column(stack =>
                     {
                         foreach (var row in rows)
                             stack.Item().Element(row.Element);
                     });
 
-                    decoration.Footer().Element(footer);
+                    decoration.After().Element(footer);
                 });
             });
 
@@ -83,15 +83,14 @@ namespace QuestPDF.Examples
                     .BorderBottom(1)
                     .BorderColor(Colors.Grey.Darken2)
                     .Padding(5)
+                    .DefaultTextStyle(TextStyle.Default.SemiBold())
                     .Row(row =>
                     {
-                        var textStyle = TextStyle.Default.SemiBold();
-
-                        row.ConstantItem(30).Text("#", textStyle);
-                        row.RelativeItem().Text("Item name", textStyle);
-                        row.ConstantItem(50).AlignRight().Text("Count", textStyle);
-                        row.ConstantItem(50).AlignRight().Text("Price", textStyle);
-                        row.ConstantItem(50).AlignRight().Text("Total", textStyle);
+                        row.ConstantItem(30).Text("#");
+                        row.RelativeItem().Text("Item name");
+                        row.ConstantItem(50).AlignRight().Text("Count");
+                        row.ConstantItem(50).AlignRight().Text("Price");
+                        row.ConstantItem(50).AlignRight().Text("Total");
                     });
             });
         }
@@ -106,7 +105,8 @@ namespace QuestPDF.Examples
                     .Width(context.AvailableSize.Width)
                     .Padding(5)
                     .AlignRight()
-                    .Text($"Subtotal: {total}$", TextStyle.Default.Size(14).SemiBold());
+                    .DefaultTextStyle(TextStyle.Default.FontSize(14).SemiBold())
+                    .Text($"Subtotal: {total}$");
             });
         }
         
@@ -165,7 +165,7 @@ namespace QuestPDF.Examples
                         .Decoration(decoration =>
                         {
                             decoration
-                                .Header()
+                                .Before()
                                 .PaddingBottom(5)
                                 .Text(text =>
                                 {
