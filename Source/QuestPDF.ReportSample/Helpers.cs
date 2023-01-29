@@ -31,7 +31,7 @@ namespace QuestPDF.ReportSample
         public static string FormatAsRomanNumeral(this int number)
         {
             if (number < 0 || number > 3999) 
-                throw new ArgumentOutOfRangeException("Number should be in range from 1 to 3999");
+                throw new ArgumentOutOfRangeException(nameof(number), "Number should be in range from 1 to 3999");
             
             return RomanNumeralCache.GetOrAdd(number, x =>
             {
