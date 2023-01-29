@@ -19,10 +19,12 @@ namespace QuestPDF.Examples
         {
             var url = "https://picsum.photos/300/200";
 
-            if(Greyscale)
+            if (Greyscale)
                 url += "?grayscale";
 
             using var client = new WebClient();
+            client.Headers.Add("user-agent", "QuestPDF/1.0 Unit Testing");
+            
             var response = client.DownloadData(url);
             container.Image(response);
         }
