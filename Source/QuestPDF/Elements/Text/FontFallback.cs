@@ -94,7 +94,7 @@ namespace QuestPDF.Elements.Text
                 var character = char.ConvertFromUtf32(codepoint);
                 var unicode = $"U-{codepoint:X4}";
 
-                var proposedFonts = FindFontsContainingGlyph(codepoint);
+                var proposedFonts = FindFontsContainingGlyph(codepoint).ToArray();
                 var proposedFontsFormatted = proposedFonts.Any() ? string.Join(", ", proposedFonts) : "no fonts available";
                 
                 return new DocumentDrawingException(
