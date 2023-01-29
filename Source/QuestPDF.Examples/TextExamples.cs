@@ -7,6 +7,7 @@ using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Examples
 {
@@ -907,6 +908,68 @@ namespace QuestPDF.Examples
                                 text.Span(word);
                                 text.Span(" - ");
                                 text.Span(definition);
+                            });
+                        });
+                });
+        }
+        
+        [Test]
+        public void DetectSpanPositionExample()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(new PageSize(650, 800))
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    var fontSize = 20;
+                    
+                    var paint = new SKPaint
+                    {
+                        Color = SKColors.Red,
+                        TextSize = fontSize
+                    };
+                    
+                    var fontMetrics = paint.FontMetrics;
+
+                    var start = 0f;
+                    var end = 0f;
+                    
+                    // corner case: what if text is paged? clamp start and end?
+
+                    container
+                        .Padding(25)
+                        .DefaultTextStyle(x => x.FontSize(fontSize).FontFamily("Calibri"))
+                        .Layers(layers =>
+                        {
+                            layers.PrimaryLayer().Text(text =>
+                            {
+                                text.Span(Placeholders.Paragraph());
+                                text.Span(" - ");
+                                
+                                // record start
+                                text.Element().Width(0).Height(0)
+                                    .Canvas((canvas, size) => start = canvas.TotalMatrix.TransY / canvas.TotalMatrix.ScaleY);
+                                
+                                text.Span(Placeholders.LoremIpsum()).BackgroundColor(Colors.Red.Lighten4);
+                                
+                                // record end
+                                text.Element().Width(0).Height(0)
+                                    .Canvas((canvas, size) => end = canvas.TotalMatrix.TransY / canvas.TotalMatrix.ScaleY);
+                            
+                                text.Span(" - ");
+                                text.Span(Placeholders.Paragraph());
+                            });
+                            
+                            layers.Layer().Canvas((canvas, size) =>
+                            {
+                                canvas.Save();
+      
+                                canvas.Translate(-canvas.TotalMatrix.TransX / canvas.TotalMatrix.ScaleX, -canvas.TotalMatrix.TransY / canvas.TotalMatrix.ScaleY);
+                                canvas.DrawRect(10, start + fontMetrics.Ascent, 5, end - start + (fontMetrics.Bottom - fontMetrics.Ascent), paint);
+                                
+                                canvas.Restore();
                             });
                         });
                 });
