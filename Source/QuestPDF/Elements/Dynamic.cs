@@ -25,7 +25,27 @@ namespace QuestPDF.Elements
         {
             Child.SetState(InitialComponentState);
         }
-        
+
+        public int? BeginPageNumberOfSection(string locationName)
+        {
+            return PageContext.GetLocation(locationName)?.PageStart;
+        }
+
+        public int? EndPageNumberOfSection(string locationName)
+        {
+            return PageContext.GetLocation(locationName)?.PageEnd;
+        }
+
+        public int? PageNumberWithinSection(string locationName)
+        {
+            return PageContext.CurrentPage + 1 - PageContext.GetLocation(locationName)?.PageStart;
+        }
+
+        public int? TotalPagesWithinSection(string locationName)
+        {
+            return PageContext.GetLocation(locationName)?.Length;
+        }
+
         internal override SpacePlan Measure(Size availableSpace)
         {
             var result = GetContent(availableSpace, acceptNewState: false);

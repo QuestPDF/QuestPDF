@@ -9,11 +9,15 @@ namespace QuestPDF.Infrastructure
         public int PageEnd { get; set; }
         public int Length => PageEnd - PageStart + 1;
     }
-    
+
     internal interface IPageContext
     {
         int CurrentPage { get; }
         void SetSectionPage(string name);
         DocumentLocation? GetLocation(string name);
+        int? BeginPageNumberOfSection(string locationName);
+        int? EndPageNumberOfSection(string locationName);
+        int? PageNumberWithinSection(string locationName);
+        int? TotalPagesWithinSection(string locationName);
     }
 }
