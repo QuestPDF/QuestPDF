@@ -168,12 +168,13 @@ namespace QuestPDF.Elements.Table
 
             if (!commands.Any())
                 return commands;
-            
-            var tableHeight = commands.Max(cell => cell.Offset.Y + cell.Size.Height);
-            
+
             if (ExtendLastCellsToTableBottom)
+            {
+                var tableHeight = commands.Max(cell => cell.Offset.Y + cell.Size.Height);
                 AdjustLastCellSizes(tableHeight, commands);
-            
+            }
+
             return commands;
 
             static float[] GetColumnLeftOffsets(IList<TableColumnDefinition> columns)
