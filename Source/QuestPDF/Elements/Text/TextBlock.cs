@@ -107,7 +107,7 @@ namespace QuestPDF.Elements.Text
             {
                 var leftOffset = GetAlignmentOffset(line.Width);
 
-                foreach (var item in line.Elements)
+                foreach (var item in line.Elements.Where(x => x.Measurement.Width > 0.0))
                 {
                     var textDrawingRequest = new TextDrawingRequest
                     {
