@@ -86,7 +86,12 @@ namespace QuestPDF.Elements.Text
                         return fallbackOption;
                 }
 
-                throw CreateNotMatchingFontException(codepoint);
+                if (Settings.CheckIfAllTextGlyphsAreAvailable)
+                {
+                    throw CreateNotMatchingFontException(codepoint);
+                }
+
+                return fallbackOptions.First();
             }
 
             static Exception CreateNotMatchingFontException(int codepoint)
