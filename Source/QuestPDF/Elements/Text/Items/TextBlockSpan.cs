@@ -16,7 +16,8 @@ namespace QuestPDF.Elements.Text.Items
         public string Text { get; set; }
         public TextStyle Style { get; set; } = TextStyle.Default;
         private TextShapingResult? TextShapingResult { get; set; }
-
+        private ushort? SpaceCodepoint { get; set; }
+        
         private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new ();
         protected virtual bool EnableTextCache => true; 
 
@@ -36,10 +37,10 @@ namespace QuestPDF.Elements.Text.Items
                 TextShapingResult = null;
             
             TextShapingResult ??= Style.ToTextShaper().Shape(Text);
-            
+
             var paint = Style.ToPaint();
             var fontMetrics = Style.ToFontMetrics();
-            var spaceCodepoint = paint.ToFont().Typeface.GetGlyphs(" ")[0];
+            SpaceCodepoint ??= paint.ToFont().Typeface.GetGlyphs(" ")[0];
 
             var startIndex = request.StartIndex;
             
@@ -47,7 +48,7 @@ namespace QuestPDF.Elements.Text.Items
             // ignore leading spaces
             if (!request.IsFirstElementInBlock && request.IsFirstElementInLine)
             {
-                while (startIndex < TextShapingResult.Length && Text[startIndex] == spaceCodepoint)
+                while (startIndex < TextShapingResult.Length && Text[startIndex] == SpaceCodepoint)
                     startIndex++;
             }
 
@@ -97,8 +98,6 @@ namespace QuestPDF.Elements.Text.Items
         // TODO: consider introducing text wrapping abstraction (basic, english-like, asian-like)
         private (int endIndex, int nextIndex)? WrapText(int startIndex, int endIndex, bool isFirstElementInLine)
         {
-            var spaceCodepoint = Style.ToPaint().ToFont().Typeface.GetGlyphs(" ")[0];
-            
             // textLength - length of the part of the text that fits in available width (creating a line)
 
             // entire text fits, no need to wrap
@@ -110,7 +109,7 @@ namespace QuestPDF.Elements.Text.Items
                 return (endIndex, endIndex + 1);
                 
             // current line ends at word, next character is space, perfect place to wrap
-            if (TextShapingResult[endIndex].Codepoint != spaceCodepoint && TextShapingResult[endIndex + 1].Codepoint == spaceCodepoint)
+            if (TextShapingResult[endIndex].Codepoint != SpaceCodepoint && TextShapingResult[endIndex + 1].Codepoint == SpaceCodepoint)
                 return (endIndex, endIndex + 2);
                 
             // find last space within the available text to wrap
@@ -118,7 +117,7 @@ namespace QuestPDF.Elements.Text.Items
 
             while (lastSpaceIndex >= startIndex)
             {
-                if (TextShapingResult[lastSpaceIndex].Codepoint == spaceCodepoint)
+                if (TextShapingResult[lastSpaceIndex].Codepoint == SpaceCodepoint)
                     break;
 
                 lastSpaceIndex--;
