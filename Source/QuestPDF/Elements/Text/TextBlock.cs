@@ -15,7 +15,7 @@ namespace QuestPDF.Elements.Text
         public HorizontalAlignment? Alignment { get; set; }
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
-        public string Text => string.Join(" ", Items.Where(x => x is TextBlockSpan).Cast<TextBlockSpan>().Select(x => x.Text));
+        public string Text => string.Join(" ", Items.OfType<TextBlockSpan>().Select(x => x.Text));
 
         private Queue<ITextBlockItem> RenderingQueue { get; set; }
         private int CurrentElementIndex { get; set; }
