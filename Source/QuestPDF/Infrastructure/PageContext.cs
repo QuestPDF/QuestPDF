@@ -39,7 +39,7 @@ namespace QuestPDF.Infrastructure
 
         public DocumentLocation? GetLocation(string name)
         {
-            return Locations.FirstOrDefault(x => x.Name == name);
+            return Locations.Find(x => x.Name == name);
         }
     }
 }
