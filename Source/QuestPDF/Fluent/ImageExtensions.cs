@@ -32,16 +32,17 @@ namespace QuestPDF.Fluent
             if (image == null)
                 throw new DocumentComposeException("Cannot load or decode provided image.");
             
-            var aspectRatio = image.Width / (float)image.Height;
-            
             var imageElement = new Image
             {
                 InternalImage = image
             };
 
             if (scaling != ImageScaling.Resize)
+            {
+                var aspectRatio = image.Width / (float)image.Height;
                 parent = parent.AspectRatio(aspectRatio, Map(scaling));
-            
+            }
+
             parent.Element(imageElement);
 
             static AspectRatioOption Map(ImageScaling scaling)
