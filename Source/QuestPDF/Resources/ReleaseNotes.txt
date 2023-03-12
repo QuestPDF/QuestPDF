@@ -8,3 +8,10 @@ Fixed: loading fonts from embedded resource via the FontManager.RegisterFontFrom
 Fixed: better layout calculation stability for the Column element
 Improvement: exposed missing API method for the Dynamic component, enabling applying more advanced optimizations
 Improvement: better API documentation for the Settings.DocumentLayoutExceptionThreshold property
+
+In version 2022.12.2:
+Performance improvements in various areas
+Text rendering stability improvements
+Fixed: the Settings.CheckIfAllTextGlyphsAreAvailable setting does not work correctly
+
+This release was possible thanks to enormous help of AntonyCorbett, thank you!
