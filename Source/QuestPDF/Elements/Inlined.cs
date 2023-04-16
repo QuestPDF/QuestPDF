@@ -102,6 +102,9 @@ namespace QuestPDF.Elements
             
             Canvas.Translate(new Position(0, -topOffset));
             lines.SelectMany(x => x).ToList().ForEach(x => ChildrenQueue.Dequeue());
+            
+            if (!ChildrenQueue.Any())
+                ResetState();
 
             void DrawLine(ICollection<InlinedMeasurement> lineMeasurements)
             {

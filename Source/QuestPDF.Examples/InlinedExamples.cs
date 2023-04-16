@@ -120,5 +120,42 @@ namespace QuestPDF.Examples
                     .Background(Placeholders.BackgroundColor());
             }
         }
+        
+        [Test]
+        public void RepeatingInlinedInHeader_Test()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(document =>
+                {
+                    document.Page(page =>
+                    {
+                        page.Size(PageSizes.A4);
+                        page.Margin(1, Unit.Inch);
+                        page.PageColor(Colors.White);
+                        
+                        page.Header()
+                            .Inlined(inlined =>
+                            {
+                                inlined.Spacing(10);
+                                
+                                foreach (var i in Enumerable.Range(5, 5))
+                                    inlined.Item().Width(i * 10).Height(20).Background(Colors.Red.Medium);
+                            });
+                        
+                        page.Content()
+                            .PaddingVertical(20)
+                            .Column(column =>
+                            {
+                                column.Spacing(25);
+                                
+                                foreach (var i in Enumerable.Range(10, 20))
+                                    column.Item().Width(i * 10).Height(50).Background(Colors.Grey.Lighten2);
+                            });
+                    });
+                });
+        }
     }
 }
