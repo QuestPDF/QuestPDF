@@ -14,4 +14,9 @@ Performance improvements in various areas
 Text rendering stability improvements
 Fixed: the Settings.CheckIfAllTextGlyphsAreAvailable setting does not work correctly
 
+In version 2022.12.3:
+Fix: inconsistent text height when using multiple lines with different TextStyles
+Improvement: added validation for color arguments
+Fix: the inlined element is shown only once in the header but should be repeated on each page
+
 This release was possible thanks to enormous help of AntonyCorbett, thank you!
