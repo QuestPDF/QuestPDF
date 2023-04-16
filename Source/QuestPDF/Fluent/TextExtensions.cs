@@ -88,7 +88,19 @@ namespace QuestPDF.Fluent
             if (!TextBlocks.Any())
                 TextBlocks.Add(new TextBlock());
             
-            TextBlocks.Last().Items.Add(item);
+            var lastTextBlock = TextBlocks.Last();
+
+            // TextBlock with only one Span with empty text is a special case.
+            // It represents an empty line with a given text style (e.g. text height).
+            // When more content is put to text block, the first items should be ignored (removed in this case).
+            // This change fixes inconsistent line height problem.
+            if (lastTextBlock.Items.Count == 1 && lastTextBlock.Items[0] is TextBlockSpan { Text: "" })
+            {
+                lastTextBlock.Items[0] = item;
+                return;
+            }
+            
+            lastTextBlock.Items.Add(item);
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]

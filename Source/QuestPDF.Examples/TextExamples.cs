@@ -974,5 +974,35 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+        public void InconsistentLineHeightWhenUsingNewLineTest()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(PageSizes.A4)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(20)
+                        .Background(Colors.Grey.Lighten4)
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(x => x.FontSize(16));
+                            
+                            text.Line(Placeholders.Paragraph());
+                            text.Line("");
+                            text.Line(Placeholders.Paragraph());
+                            
+                            text.Line(Placeholders.Label()).FontSize(48);
+                            
+                            text.Line(Placeholders.Paragraph());
+                            text.Line("");
+                            text.Line(Placeholders.Paragraph());
+                        });
+                });
+        }
     }
 }
