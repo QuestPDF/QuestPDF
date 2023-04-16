@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -28,12 +29,14 @@ namespace QuestPDF.Fluent
         
         public static T FontColor<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
+            ColorValidator.Validate(value);
             descriptor.MutateTextStyle(x => x.FontColor(value));
             return descriptor;
         }
         
         public static T BackgroundColor<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
+            ColorValidator.Validate(value);
             descriptor.MutateTextStyle(x => x.BackgroundColor(value));
             return descriptor;
         }

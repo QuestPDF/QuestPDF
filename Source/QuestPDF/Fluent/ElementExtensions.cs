@@ -1,6 +1,7 @@
 ﻿using System;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -52,6 +53,8 @@ namespace QuestPDF.Fluent
 
         public static IContainer Background(this IContainer element, string color)
         {
+            ColorValidator.Validate(color);
+            
             return element.Element(new Background
             {
                 Color = color

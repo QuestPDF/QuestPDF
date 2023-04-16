@@ -1,5 +1,6 @@
 ﻿using System;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -30,6 +31,7 @@ namespace QuestPDF.Fluent
         
         public static void LineColor(this ILine descriptor, string value)
         {
+            ColorValidator.Validate(value);
             (descriptor as Line).Color = value;
         }
     }

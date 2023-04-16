@@ -1,5 +1,6 @@
 ﻿using System;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -57,6 +58,7 @@ namespace QuestPDF.Fluent
         
         public static IContainer BorderColor(this IContainer element, string color)
         {
+            ColorValidator.Validate(color);
             return element.Border(x => x.Color = color);
         }
     }

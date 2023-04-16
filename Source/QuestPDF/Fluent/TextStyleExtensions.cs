@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -14,11 +15,13 @@ namespace QuestPDF.Fluent
         
         public static TextStyle FontColor(this TextStyle style, string value)
         {
+            ColorValidator.Validate(value);
             return style.Mutate(TextStyleProperty.Color, value);
         }
         
         public static TextStyle BackgroundColor(this TextStyle style, string value)
         {
+            ColorValidator.Validate(value);
             return style.Mutate(TextStyleProperty.BackgroundColor, value);
         }
         

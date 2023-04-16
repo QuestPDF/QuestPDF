@@ -110,6 +110,7 @@ namespace QuestPDF.Fluent
         
         public void PageColor(string color)
         {
+            ColorValidator.Validate(color);
             Page.BackgroundColor = color;
         }
         

@@ -8,6 +8,8 @@ namespace QuestPDF.Fluent
     {
         public static IContainer DebugArea(this IContainer parent, string text, string color)
         {
+            ColorValidator.Validate(color);
+            
             var container = new Container();
 
             parent.Component(new DebugArea
