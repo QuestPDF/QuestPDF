@@ -7,11 +7,12 @@ namespace QuestPDF.Elements
 {
     internal class Image : Element, ICacheable
     {
-        public SKImage? InternalImage { get; set; }
+        public Infrastructure.Image? DocumentImage { get; set; }
 
         ~Image()
         {
-            InternalImage?.Dispose();
+            if (DocumentImage is { IsDocumentScoped: true })
+                DocumentImage?.Dispose();
         }
         
         internal override SpacePlan Measure(Size availableSpace)
@@ -23,10 +24,10 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            if (InternalImage == null)
+            if (DocumentImage == null)
                 return;
 
-            Canvas.DrawImage(InternalImage, Position.Zero, availableSpace);
+            Canvas.DrawImage(DocumentImage.SkImage, Position.Zero, availableSpace);
         }
     }
 }

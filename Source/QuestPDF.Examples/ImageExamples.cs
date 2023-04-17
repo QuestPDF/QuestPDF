@@ -1,10 +1,12 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
@@ -67,39 +69,25 @@ namespace QuestPDF.Examples
         [Test]
         public void ReusingTheSameImageFileShouldBePossible()
         {
-            var fileName = Path.GetTempFileName() + ".jpg";
-            
-            try
-            {
-                var image = Placeholders.Image(300, 100);
+            var image = Image.FromBinaryData(Placeholders.Image(300, 100)).DisposeAfterDocumentGeneration();
                 
-                using var file = File.Create(fileName);
-                file.Write(image);
-                file.Dispose();
-                
-                RenderingTest
-                    .Create()
-                    .ProducePdf()
-                    .PageSize(PageSizes.A4)
-                    .ShowResults()
-                    .Render(container =>
-                    {
-                        container
-                            .Padding(20)
-                            .Column(column =>
-                            {
-                                column.Spacing(20);
+            RenderingTest
+                .Create()
+                .ProducePdf()
+                .PageSize(PageSizes.A4)
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(20)
+                        .Column(column =>
+                        {
+                            column.Spacing(20);
                                 
-                                column.Item().Image(fileName);
-                                column.Item().Image(fileName);
-                                column.Item().Image(fileName);
-                            });
-                    });
-            }
-            finally
-            {
-                File.Delete(fileName);
-            }
+                            foreach (var i in Enumerable.Range(0, 1000))
+                                column.Item().Image(image);
+                        });
+                });
         }
     }
 }

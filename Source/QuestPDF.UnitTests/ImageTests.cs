@@ -5,6 +5,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 using SkiaSharp;
+using Image = QuestPDF.Infrastructure.Image;
 
 namespace QuestPDF.UnitTests
 {
@@ -15,9 +16,9 @@ namespace QuestPDF.UnitTests
         public void Measure_TakesAvailableSpaceRegardlessOfSize()
         {
             TestPlan
-                .For(x => new Image
+                .For(x => new QuestPDF.Elements.Image
                 {
-                    InternalImage = GenerateImage(400, 300)
+                    DocumentImage = Image.FromSkImage(GenerateImage(400, 300))
                 })
                 .MeasureElement(new Size(300, 200))
                 .CheckMeasureResult(SpacePlan.FullRender(300, 200));
@@ -27,9 +28,9 @@ namespace QuestPDF.UnitTests
         public void Draw_TakesAvailableSpaceRegardlessOfSize()
         {
             TestPlan
-                .For(x => new Image
+                .For(x => new QuestPDF.Elements.Image
                 {
-                    InternalImage = GenerateImage(400, 300)
+                    DocumentImage = Image.FromSkImage(GenerateImage(400, 300))
                 })
                 .DrawElement(new Size(300, 200))
                 .ExpectCanvasDrawImage(new Position(0, 0), new Size(300, 200))

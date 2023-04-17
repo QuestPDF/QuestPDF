@@ -3,7 +3,6 @@ using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 namespace QuestPDF.Fluent
 {
@@ -11,30 +10,30 @@ namespace QuestPDF.Fluent
     {
         public static void Image(this IContainer parent, byte[] imageData, ImageScaling scaling = ImageScaling.FitWidth)
         {
-            var image = SKImage.FromEncodedData(imageData);
+            var image = Infrastructure.Image.FromBinaryData(imageData).DisposeAfterDocumentGeneration();
             parent.Image(image, scaling);
         }
         
         public static void Image(this IContainer parent, string filePath, ImageScaling scaling = ImageScaling.FitWidth)
         {
-            var image = SKImage.FromEncodedData(filePath);
+            var image = Infrastructure.Image.FromFile(filePath).DisposeAfterDocumentGeneration();
             parent.Image(image, scaling);
         }
         
         public static void Image(this IContainer parent, Stream fileStream, ImageScaling scaling = ImageScaling.FitWidth)
         {
-            var image = SKImage.FromEncodedData(fileStream);
+            var image = Infrastructure.Image.FromStream(fileStream).DisposeAfterDocumentGeneration();
             parent.Image(image, scaling);
         }
         
-        private static void Image(this IContainer parent, SKImage image, ImageScaling scaling = ImageScaling.FitWidth)
+        public static void Image(this IContainer parent, Infrastructure.Image image, ImageScaling scaling = ImageScaling.FitWidth)
         {
             if (image == null)
                 throw new DocumentComposeException("Cannot load or decode provided image.");
             
-            var imageElement = new Image
+            var imageElement = new QuestPDF.Elements.Image
             {
-                InternalImage = image
+                DocumentImage = image
             };
 
             if (scaling != ImageScaling.Resize)
