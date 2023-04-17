@@ -1,7 +1,15 @@
-﻿namespace QuestPDF
+﻿using QuestPDF.Infrastructure;
+
+namespace QuestPDF
 {
     public static class Settings
     {
+        /// <summary>
+        /// <para>Please kindly select license type that applies to your usage of the QuestPDF library.</para>
+        /// <para>For more details, please check the QuestPDF License and Pricing page: https://www.questpdf.com/pricing.html</para>
+        /// </summary>
+        public static LicenseType? License { get; set; }
+        
         /// <summary>
         /// This value represents the maximum number of pages that the library produces.
         /// This is useful when layout constraints are too strong, e.g. one element does not fit in another.
