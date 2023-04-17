@@ -105,7 +105,9 @@ namespace QuestPDF.Elements.Text
                     $"Font families available on current environment that contain this glyph: {proposedFontsFormatted}. " +
                     $"Possible solutions: " +
                     $"1) Use one of the listed fonts as the primary font in your document. " +
-                    $"2) Configure the fallback TextStyle using the 'TextStyle.Fallback' method with one of the listed fonts. ");
+                    $"2) Configure the fallback TextStyle using the 'TextStyle.Fallback' method with one of the listed fonts. " +
+                    $"You can disable this check by setting the 'Settings.CheckIfAllTextGlyphsAreAvailable' option to 'false'. " +
+                    $"However, this may result with text glyphs being incorrectly rendered without any warning.");
             }
             
             static IEnumerable<string> FindFontsContainingGlyph(int codepoint)
