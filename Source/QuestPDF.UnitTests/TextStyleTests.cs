@@ -31,7 +31,7 @@ namespace QuestPDF.UnitTests
                 .BackgroundColor(Colors.Red.Lighten2);
             
             // act
-            var targetStyle = spanTextStyle.ApplyGlobalStyle(defaultTextStyle, true).ApplyGlobalStyle(TextStyle.LibraryDefault, false);
+            var targetStyle = spanTextStyle.ApplyInheritedStyle(defaultTextStyle).ApplyGlobalStyle();
             
             // assert
             var expectedStyle = TextStyle.LibraryDefault with
