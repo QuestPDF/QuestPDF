@@ -64,7 +64,7 @@ namespace QuestPDF.Drawing
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
-            ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
+            ApplyDefaultTextStyle(content, TextStyle.Default);
             ApplyContentDirection(content, ContentDirection.LeftToRight);
             
             var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
@@ -203,7 +203,8 @@ namespace QuestPDF.Drawing
                 {
                     if (textBlockItem is TextBlockSpan textSpan)
                     {
-                        textSpan.Style = textSpan.Style.ApplyGlobalStyle(documentDefaultTextStyle);
+                        textSpan.Style = textSpan.Style.ApplyGlobalStyle(documentDefaultTextStyle, true);
+                        textSpan.Style = textSpan.Style.ApplyGlobalStyle(TextStyle.LibraryDefault, false);
                     }
                     else if (textBlockItem is TextBlockElement textElement)
                     {
@@ -215,10 +216,10 @@ namespace QuestPDF.Drawing
             }
 
             if (content is DynamicHost dynamicHost)
-                dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyGlobalStyle(documentDefaultTextStyle);
+                dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyGlobalStyle(documentDefaultTextStyle, true);
             
             if (content is DefaultTextStyle defaultTextStyleElement)
-               documentDefaultTextStyle = defaultTextStyleElement.TextStyle.ApplyGlobalStyle(documentDefaultTextStyle);
+               documentDefaultTextStyle = defaultTextStyleElement.TextStyle.ApplyGlobalStyle(documentDefaultTextStyle, true);
 
             foreach (var child in content.GetChildren())
                 ApplyDefaultTextStyle(child, documentDefaultTextStyle);

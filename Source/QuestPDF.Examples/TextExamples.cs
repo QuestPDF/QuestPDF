@@ -1004,5 +1004,39 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+         public void FontFallback_Nested()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .RenderDocument(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Margin(50);
+                        page.PageColor(Colors.White);
+                        page.Size(PageSizes.A6.Landscape());
+                        
+                        page.DefaultTextStyle(x => x
+                            .FontSize(24)
+                            .Bold()
+                            .Fallback(y => y
+                                .FontFamily("Microsoft YaHei")
+                                .Underline()
+                                .BackgroundColor(Colors.Red.Lighten2)));
+
+                        page.Content().Text(text =>
+                        {
+                            text.Line("Normal 中文文本 text.");
+                            text.Line("Background 中文文本 text.").NormalWeight().BackgroundColor(Colors.Green.Lighten2);
+                            text.Line("Background 中文文本 text.").Strikethrough().Underline(false);
+                            text.Line("Background 中文文本 text.").Italic();
+                        });
+                    });
+                });
+        }
     }
 }

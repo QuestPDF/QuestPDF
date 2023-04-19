@@ -224,18 +224,18 @@ namespace QuestPDF.Infrastructure
             throw new ArgumentOutOfRangeException(nameof(property), property, "Expected to mutate the TextStyle object. Provided property type is not supported.");
         }
         
-        internal static TextStyle ApplyGlobalStyle(this TextStyle style, TextStyle parent)
+        internal static TextStyle ApplyGlobalStyle(this TextStyle style, TextStyle parent, bool overrideStyle)
         {
             var cacheKey = (style, parent);
-            return TextStyleApplyGlobalCache.GetOrAdd(cacheKey, key => ApplyStyle(key.origin, key.parent, overrideStyle: false).ApplyFontFallback());
+            return TextStyleApplyGlobalCache.GetOrAdd(cacheKey, key => ApplyStyle(key.origin, key.parent, overrideStyle: false).ApplyFontFallback(overrideStyle));
         }
         
-        private static TextStyle ApplyFontFallback(this TextStyle style)
+        private static TextStyle ApplyFontFallback(this TextStyle style, bool overrideStyle)
         {
             var targetFallbackStyle = style
                 ?.Fallback
-                ?.ApplyStyle(style, overrideStyle: false, applyFallback: false)
-                ?.ApplyFontFallback();
+                ?.ApplyStyle(style, overrideStyle: overrideStyle, overrideFontFamily: false, applyFallback: false)
+                ?.ApplyFontFallback(overrideStyle);
             
             return MutateStyle(style, TextStyleProperty.Fallback, targetFallbackStyle);
         }
@@ -251,13 +251,16 @@ namespace QuestPDF.Infrastructure
             });
         }
         
-        private static TextStyle ApplyStyle(this TextStyle style, TextStyle parent, bool overrideStyle = true, bool applyFallback = true)
+        private static TextStyle ApplyStyle(this TextStyle style, TextStyle parent, bool overrideStyle = true, bool overrideFontFamily = true, bool applyFallback = true)
         {
             var result = style;
 
             result = MutateStyle(result, TextStyleProperty.Color, parent.Color, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.BackgroundColor, parent.BackgroundColor, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideStyle);
+            
+            if (style.FontFamily == null)
+                result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideFontFamily);
+            
             result = MutateStyle(result, TextStyleProperty.Size, parent.Size, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.LineHeight, parent.LineHeight, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.LetterSpacing, parent.LetterSpacing, overrideStyle);
