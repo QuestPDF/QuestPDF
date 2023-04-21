@@ -1018,11 +1018,12 @@ namespace QuestPDF.Examples
                     {
                         page.Margin(50);
                         page.PageColor(Colors.White);
-                        page.Size(PageSizes.A6.Landscape());
+                        page.Size(PageSizes.A5.Landscape());
                         
                         page.DefaultTextStyle(x => x
                             .FontSize(24)
                             .Bold()
+                            .FontFamily("Times New Roman")
                             .Fallback(y => y
                                 .FontFamily("Microsoft YaHei")
                                 .Underline()
@@ -1030,10 +1031,10 @@ namespace QuestPDF.Examples
 
                         page.Content().Text(text =>
                         {
-                            text.Line("Normal 中文文本 text.");
-                            text.Line("Background 中文文本 text.").NormalWeight().BackgroundColor(Colors.Green.Lighten2);
-                            text.Line("Background 中文文本 text.").Strikethrough().Underline(false);
-                            text.Line("Background 中文文本 text.").Italic();
+                            text.Line("Default times new roman 中文文本 text.");
+                            text.Line("Normal weight and green 中文文本 text.").NormalWeight().BackgroundColor(Colors.Green.Lighten2);
+                            text.Line("Strikethrough without underline 中文文本 text.").Strikethrough().Underline(false);
+                            text.Line("Lato italic 中文文本 text.").FontFamily("Lato").Italic();
                         });
                     });
                 });

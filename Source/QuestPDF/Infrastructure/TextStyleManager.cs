@@ -228,7 +228,7 @@ namespace QuestPDF.Infrastructure
         internal static TextStyle ApplyInheritedStyle(this TextStyle style, TextStyle parent)
         {
             var cacheKey = (style, parent);
-            return TextStyleApplyInheritedCache.GetOrAdd(cacheKey, key => key.origin.ApplyStyleProperties(key.parent, overrideStyle: false, overrideFontFamily: true, applyFallback: true).UpdateFontFallback(true));
+            return TextStyleApplyInheritedCache.GetOrAdd(cacheKey, key => key.origin.ApplyStyleProperties(key.parent, overrideStyle: false, overrideFontFamily: false, applyFallback: true).UpdateFontFallback(true));
         }
         
         internal static TextStyle ApplyGlobalStyle(this TextStyle style)

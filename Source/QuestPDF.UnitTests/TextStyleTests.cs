@@ -10,7 +10,7 @@ namespace QuestPDF.UnitTests
     public class TextStyleTests
     {
         [Test]
-        public void Font()
+        public void ApplyInheritedAndGlobalStyle()
         {
             // arrange
             var defaultTextStyle = TextStyle
@@ -26,6 +26,7 @@ namespace QuestPDF.UnitTests
 
             var spanTextStyle = TextStyle
                 .Default
+                .FontFamily("Times New Roman")
                 .Bold()
                 .Strikethrough()
                 .BackgroundColor(Colors.Red.Lighten2);
@@ -37,7 +38,7 @@ namespace QuestPDF.UnitTests
             var expectedStyle = TextStyle.LibraryDefault with
             {
                 Size = 20, 
-                FontFamily = "Arial",
+                FontFamily = "Times New Roman",
                 FontWeight = FontWeight.Bold,
                 BackgroundColor = Colors.Red.Lighten2,
                 HasStrikethrough = true,
