@@ -89,5 +89,29 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+        public void ImageResolutionScaling()
+        {
+            var image = Image.FromFile("large-image.jpg");
+            
+            Document
+                .Create(document =>
+                {
+                    document.Page(page =>
+                    {
+                        page.Size(11000, 11000);
+                        page.Margin(50);
+                        page.Content().Image(image);
+                    });
+                })
+                .GeneratePdfAndOpen();
+
+           //Console.WriteLine(documentData.Length);
+            
+            // var filePath = Path.GetTempPath() + $"test.pdf";
+            // File.WriteAllBytes(filePath, documentData);
+            // Console.WriteLine(filePath);
+        }
     }
 }
