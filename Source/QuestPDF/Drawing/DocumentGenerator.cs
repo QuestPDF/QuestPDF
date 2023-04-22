@@ -64,7 +64,7 @@ namespace QuestPDF.Drawing
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
-            ApplyDefaultTextStyle(content, TextStyle.Default);
+            ApplyInheritedAndGlobalTexStyle(content, TextStyle.Default);
             ApplyContentDirection(content, ContentDirection.LeftToRight);
             
             var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
@@ -192,7 +192,7 @@ namespace QuestPDF.Drawing
                 ApplyContentDirection(child, direction);
         }
 
-        internal static void ApplyDefaultTextStyle(this Element? content, TextStyle documentDefaultTextStyle)
+        internal static void ApplyInheritedAndGlobalTexStyle(this Element? content, TextStyle documentDefaultTextStyle)
         {
             if (content == null)
                 return;
@@ -202,13 +202,10 @@ namespace QuestPDF.Drawing
                 foreach (var textBlockItem in textBlock.Items)
                 {
                     if (textBlockItem is TextBlockSpan textSpan)
-                    {
                         textSpan.Style = textSpan.Style.ApplyInheritedStyle(documentDefaultTextStyle).ApplyGlobalStyle();
-                    }
-                    else if (textBlockItem is TextBlockElement textElement)
-                    {
-                        ApplyDefaultTextStyle(textElement.Element, documentDefaultTextStyle);
-                    }
+                    
+                    if (textBlockItem is TextBlockElement textElement)
+                        ApplyInheritedAndGlobalTexStyle(textElement.Element, documentDefaultTextStyle);
                 }
                 
                 return;
@@ -221,7 +218,7 @@ namespace QuestPDF.Drawing
                documentDefaultTextStyle = defaultTextStyleElement.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
 
             foreach (var child in content.GetChildren())
-                ApplyDefaultTextStyle(child, documentDefaultTextStyle);
+                ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
         }
     }
 }

@@ -89,7 +89,7 @@ namespace QuestPDF.Elements
             var container = new DynamicElement();
             content(container);
             
-            container.ApplyDefaultTextStyle(TextStyle);
+            container.ApplyInheritedAndGlobalTexStyle(TextStyle);
             container.ApplyContentDirection(ContentDirection);
             
             container.InjectDependencies(PageContext, Canvas);
