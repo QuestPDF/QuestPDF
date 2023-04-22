@@ -1,22 +1,27 @@
+Version 2022.12.0:
 Feature: implemented LetterSpacing property for the Text element
 Improvement: the Text element API accepts now only string values, objects are not automatically converted anymore
 Fix: the Alignment element incorrectly limits size of its child when only one axis is set (horizontal or vertical)
 Maintenance: Updated SkiaSharp dependency to 2.88.3
 
-In version 2022.12.1:
+This release was possible thanks to enormous help of AntonyCorbett, thank you!
+
+Version 2022.12.1:
 Fixed: loading fonts from embedded resource via the FontManager.RegisterFontFromEmbeddedResource method
 Fixed: better layout calculation stability for the Column element
 Improvement: exposed missing API method for the Dynamic component, enabling applying more advanced optimizations
 Improvement: better API documentation for the Settings.DocumentLayoutExceptionThreshold property
 
-In version 2022.12.2:
+Version 2022.12.2:
 Performance improvements in various areas
 Text rendering stability improvements
 Fixed: the Settings.CheckIfAllTextGlyphsAreAvailable setting does not work correctly
 
-In version 2022.12.3:
+Version 2022.12.3:
 Fix: inconsistent text height when using multiple lines with different TextStyles
 Improvement: added validation for color arguments
 Fix: the inlined element is shown only once in the header but should be repeated on each page
 
-This release was possible thanks to enormous help of AntonyCorbett, thank you!
+Version 2022.12.4:
+Fix: the TextStyle.Fallback property incorrectly inherits parent's and global properties
+Improvement: updated the CreateNotMatchingFontException message to mention that the glyph checking operation can be disabled with the Settings.CheckIfAllTextGlyphsAreAvailable setting
