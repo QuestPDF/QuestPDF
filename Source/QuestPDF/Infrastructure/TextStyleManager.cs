@@ -25,16 +25,17 @@ namespace QuestPDF.Infrastructure
     internal static class TextStyleManager
     {
         private static readonly ConcurrentDictionary<(TextStyle origin, TextStyleProperty property, object value), TextStyle> TextStyleMutateCache = new();
-        private static readonly ConcurrentDictionary<(TextStyle origin, TextStyle parent), TextStyle> TextStyleApplyGlobalCache = new();
+        private static readonly ConcurrentDictionary<(TextStyle origin, TextStyle parent), TextStyle> TextStyleApplyInheritedCache = new();
+        private static readonly ConcurrentDictionary<TextStyle, TextStyle> TextStyleApplyGlobalCache = new();
         private static readonly ConcurrentDictionary<(TextStyle origin, TextStyle parent), TextStyle> TextStyleOverrideCache = new();
 
         public static TextStyle Mutate(this TextStyle origin, TextStyleProperty property, object value)
         {
             var cacheKey = (origin, property, value);
-            return TextStyleMutateCache.GetOrAdd(cacheKey, x => MutateStyle(x.origin, x.property, x.value));
+            return TextStyleMutateCache.GetOrAdd(cacheKey, x => MutateStyle(x.origin, x.property, x.value, overrideValue: true));
         }
 
-        private static TextStyle MutateStyle(TextStyle origin, TextStyleProperty property, object? value, bool overrideValue = true)
+        private static TextStyle MutateStyle(this TextStyle origin, TextStyleProperty property, object? value, bool overrideValue)
         {
             if (overrideValue && value == null)
                 return origin;
@@ -224,37 +225,37 @@ namespace QuestPDF.Infrastructure
             throw new ArgumentOutOfRangeException(nameof(property), property, "Expected to mutate the TextStyle object. Provided property type is not supported.");
         }
         
-        internal static TextStyle ApplyGlobalStyle(this TextStyle style, TextStyle parent)
+        internal static TextStyle ApplyInheritedStyle(this TextStyle style, TextStyle parent)
         {
             var cacheKey = (style, parent);
-            return TextStyleApplyGlobalCache.GetOrAdd(cacheKey, key => ApplyStyle(key.origin, key.parent, overrideStyle: false).ApplyFontFallback());
+            return TextStyleApplyInheritedCache.GetOrAdd(cacheKey, key => key.origin.ApplyStyleProperties(key.parent, overrideStyle: false, overrideFontFamily: false, applyFallback: true).UpdateFontFallback(overrideStyle: true));
         }
         
-        private static TextStyle ApplyFontFallback(this TextStyle style)
+        internal static TextStyle ApplyGlobalStyle(this TextStyle style)
+        {
+            return TextStyleApplyGlobalCache.GetOrAdd(style, key => key.ApplyStyleProperties(TextStyle.LibraryDefault, overrideStyle: false, overrideFontFamily: false, applyFallback: true).UpdateFontFallback(overrideStyle: false));
+        }
+        
+        private static TextStyle UpdateFontFallback(this TextStyle style, bool overrideStyle)
         {
             var targetFallbackStyle = style
                 ?.Fallback
-                ?.ApplyStyle(style, overrideStyle: false, applyFallback: false)
-                ?.ApplyFontFallback();
+                ?.ApplyStyleProperties(style, overrideStyle: overrideStyle, overrideFontFamily: false, applyFallback: false)
+                ?.UpdateFontFallback(overrideStyle);
             
-            return MutateStyle(style, TextStyleProperty.Fallback, targetFallbackStyle);
+            return style.MutateStyle(TextStyleProperty.Fallback, targetFallbackStyle, overrideValue: true);
         }
         
         internal static TextStyle OverrideStyle(this TextStyle style, TextStyle parent)
         {
             var cacheKey = (style, parent);
-            
-            return TextStyleOverrideCache.GetOrAdd(cacheKey, key =>
-            {
-                var result = ApplyStyle(key.origin, key.parent);
-                return MutateStyle(result, TextStyleProperty.Fallback, key.parent.Fallback);
-            });
+            return TextStyleOverrideCache.GetOrAdd(cacheKey, key => ApplyStyleProperties(key.origin, key.parent, overrideStyle: true, overrideFontFamily: true, applyFallback: true));
         }
         
-        private static TextStyle ApplyStyle(this TextStyle style, TextStyle parent, bool overrideStyle = true, bool applyFallback = true)
+        private static TextStyle ApplyStyleProperties(this TextStyle style, TextStyle parent, bool overrideStyle, bool overrideFontFamily, bool applyFallback)
         {
             var result = style;
-
+            
             result = MutateStyle(result, TextStyleProperty.Color, parent.Color, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.BackgroundColor, parent.BackgroundColor, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideStyle);
