@@ -256,9 +256,11 @@ namespace QuestPDF.Infrastructure
         {
             var result = style;
             
+            if (string.IsNullOrWhiteSpace(result.FontFamily) || overrideFontFamily)
+                result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideStyle);
+                
             result = MutateStyle(result, TextStyleProperty.Color, parent.Color, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.BackgroundColor, parent.BackgroundColor, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.Size, parent.Size, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.LineHeight, parent.LineHeight, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.LetterSpacing, parent.LetterSpacing, overrideStyle);
