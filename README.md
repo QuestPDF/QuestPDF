@@ -9,14 +9,15 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/stargazers)
 [![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
 [![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
-[![License](https://img.shields.io/github/license/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/blob/main/LICENSE)
+[![QuestPDF License](https://img.shields.io/badge/LICENSE%20details-Community%20MIT%20and%20professional-green?style=for-the-badge)](https://www.questpdf.com/pricing.html#license)
 
 <br />
+
 
 ### QuestPDF is a modern open-source .NET library for PDF document generation. Offering comprehensive layout engine powered by concise and discoverable C# Fluent API.
 
 <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
-
+ 
 <table>
 <tr>
     <td>👨‍💻</td>
@@ -48,6 +49,7 @@
 
 <br />
 
+
 ## Please help by giving a star
 
 Choosing a project dependency could be difficult. We need to ensure stability and maintainability of our projects. Surveys show that GitHub stars count play an important factor when assessing library quality. 
@@ -55,6 +57,7 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 ⭐ Please give this repository a star. It takes seconds and help thousands of developers! ⭐
 
 <img src="https://user-images.githubusercontent.com/9263853/232912983-b20e441e-bd47-41df-afa4-f02481252d26.png" width="800" />
+
 
 ## Please share with the community
 
@@ -66,6 +69,7 @@ As an open-source project without funding, I cannot afford advertising QuestPDF 
 [![Share on Facebook](https://img.shields.io/badge/share%20on-facebook-1976D2?logo=facebook&style=for-the-badge)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/QuestPDF/QuestPDF)
 
 <br />
+
 
 ## Let's get started
 
@@ -79,6 +83,21 @@ Read the Getting Started tutorial to familiarize yourself with general library a
 
 <br />
 
+
+## Library License
+
+If you are consuming the QuestPDF library as a Direct Package Dependency for usage in a Closed Source software in the capacity of a for-profit company/individual with more than 1M USD annual gross revenue, you must purchase the `QuestPDF Professional or Enterprise` License, depending on number of software developers.
+
+We love and highly appreciate the .NET Community and therefore the vast majority of users are welcome to use the library completely for free. If you do not meet the criteria described above, you are eligible to use the `QuestPDF Community MIT` License, without any limitations, even for commercial usage.
+
+If you still want to support library development, please consider purchasing the Professional License.
+
+[![Library license details](https://img.shields.io/badge/%F0%9F%93%9C%0A%20read-license%20details-blue?style=for-the-badge)](https://www.questpdf.com/pricing.html#license)
+[![Library pricing details](https://img.shields.io/badge/%F0%9F%92%8E%20read-pricing%20details-green?style=for-the-badge)](https://www.questpdf.com/pricing.html#tiers)
+
+<br />
+
+
 ## QuestPDF on JetBrains OSS Power-Ups
 
 QuestPDF was presented on one of the episodes of OSS Power-Ups hosted by JetBrains. Huge thanks for Matthias Koch and entire JetBrains team for giving me a chance to show QuestPDF. You are the best!
@@ -86,6 +105,5 @@ QuestPDF was presented on one of the episodes of OSS Power-Ups hosted by JetBrai
 <a href="https://www.youtube.com/watch?v=-iYvZvpLX0g">
     <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/jetbrains-oss-powerups-youtube.png?raw=true" width="600px">
 </a>
-
 
 [![YouTube video about QuestPDF]( https://img.shields.io/badge/watch%20on-YouTube-red?logo=youtube&style=for-the-badge)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
