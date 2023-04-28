@@ -10,6 +10,7 @@ using QuestPDF.Elements.Text.Items;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using Image = QuestPDF.Elements.Image;
 
 namespace QuestPDF.Drawing
 {
@@ -21,7 +22,7 @@ namespace QuestPDF.Drawing
             
             var metadata = document.GetMetadata();
             var canvas = new PdfCanvas(stream, metadata);
-            RenderDocument(canvas, document);
+            RenderDocument(canvas, document, metadata);
         }
         
         internal static void GenerateXps(Stream stream, IDocument document)
@@ -30,7 +31,7 @@ namespace QuestPDF.Drawing
             
             var metadata = document.GetMetadata();
             var canvas = new XpsCanvas(stream, metadata);
-            RenderDocument(canvas, document);
+            RenderDocument(canvas, document, metadata);
         }
 
         private static void CheckIfStreamIsCompatible(Stream stream)
@@ -46,24 +47,26 @@ namespace QuestPDF.Drawing
         {
             var metadata = document.GetMetadata();
             var canvas = new ImageCanvas(metadata);
-            RenderDocument(canvas, document);
+            RenderDocument(canvas, document, metadata);
 
             return canvas.Images;
         }
 
         internal static ICollection<PreviewerPicture> GeneratePreviewerPictures(IDocument document)
         {
+            var metadata = document.GetMetadata();
             var canvas = new SkiaPictureCanvas();
-            RenderDocument(canvas, document);
+            RenderDocument(canvas, document, metadata);
             return canvas.Pictures;
         }
         
-        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document)
+        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentMetadata metadata)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
+            ApplyDefaultImageDpi(content, metadata.RasterDpi);
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
             ApplyContentDirection(content, ContentDirection.LeftToRight);
             
@@ -172,6 +175,15 @@ namespace QuestPDF.Drawing
             });
 
             return debuggingState;
+        }
+
+        internal static void ApplyDefaultImageDpi(this Element? content, int targetDpi)
+        {
+            content.VisitChildren(x =>
+            {
+                if (x is Image { DocumentImage: { } image })
+                    image.TargetDpi ??= targetDpi;
+            });
         }
         
         internal static void ApplyContentDirection(this Element? content, ContentDirection direction)

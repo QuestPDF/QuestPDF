@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using SkiaSharp;
 
@@ -10,6 +11,8 @@ namespace QuestPDF.Infrastructure
     {
         private SKImage SkImage { get; }
         internal List<(Size size, SKImage image)>? ScaledImageCache { get; }
+        
+        public int? TargetDpi { get; set; }
         internal bool IsDocumentScoped { get; set; }
         
         public int Width => SkImage.Width;
@@ -20,12 +23,6 @@ namespace QuestPDF.Infrastructure
             SkImage = image;
         }
 
-        public Image DisposeAfterDocumentGeneration()
-        {
-            IsDocumentScoped = true;
-            return this;
-        }
-        
         public void Dispose()
         {
             SkImage.Dispose();
@@ -89,6 +86,22 @@ namespace QuestPDF.Infrastructure
             return new Image(image);
         }
 
+        #endregion
+        
+        #region configuration API
+        
+        public Image DisposeAfterDocumentGeneration()
+        {
+            IsDocumentScoped = true;
+            return this;
+        }
+
+        public Image WithTargetDpi(int dpi = DocumentMetadata.DefaultPdfDpi)
+        {
+            TargetDpi = dpi;
+            return this;
+        }
+        
         #endregion
     }
 }
