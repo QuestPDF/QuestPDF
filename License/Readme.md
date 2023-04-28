@@ -12,7 +12,7 @@ Being a healthy and growing community is our primary goal that motivates us to p
 
 ## QuestPDF Community MIT License
 
-We love and highly appreciate the .NET Community and therefore the vast majority of users are eligible to use the library completely for free under the `QuestPDF Community MIT License`, withouot any limitations, even for commercial usage. [Read more](https://www.questpdf.com/license-community.html)
+We love and highly appreciate the .NET Community and therefore the vast majority of users are eligible to use the library completely for free under the `QuestPDF Community MIT License`, without any limitations, even for commercial usage. [Read more](https://www.questpdf.com/license-community.html)
 
 
 ## QuestPDF Professional Or Enterprise Use License
