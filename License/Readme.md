@@ -10,11 +10,14 @@ Being a healthy and growing community is our primary goal that motivates us to p
 
 [Read more about exact terms](https://www.questpdf.com/pricing.html)
 
-## QuestPDF Community MIT License
-
-We love and highly appreciate the .NET Community and therefore the vast majority of users are eligible to use the library completely for free under the `QuestPDF Community MIT License`, without any limitations, even for commercial usage. [Read more](https://www.questpdf.com/license-community.html)
-
 
 ## QuestPDF Professional Or Enterprise Use License
 
-If you are consuming the QuestPDF library as a Direct Package Dependency for usage in a Closed Source software in the capacity of a for-profit company/individual with more than 1M USD annual gross revenue, you must purchase the QuestPDF Professional or Enterprise License, depending on number of software developers. [Read more](https://www.questpdf.com/license-commercial.html)
+If you are consuming the QuestPDF library as a Direct Package Dependency for usage in a Closed Source software in the capacity of a for-profit company/individual with more than 1M USD annual gross revenue, you must purchase the `QuestPDF Professional or Enterprise` License, depending on number of software developers. [Read more](https://www.questpdf.com/license-commercial.html)
+
+
+## QuestPDF Community MIT License
+
+We love and highly appreciate the .NET Community and therefore the vast majority of users are welcome to use the library completely for free. If you do not meet the criteria described above, you are eligible to use the `QuestPDF Community MIT` License, without any limitations, even for commercial usage. [Read more](https://www.questpdf.com/license-community.html)
+
+If you still want to support library development, please consider purchasing the Professional License.
