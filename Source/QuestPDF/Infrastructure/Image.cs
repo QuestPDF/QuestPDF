@@ -10,13 +10,17 @@ namespace QuestPDF.Infrastructure
     public class Image : IDisposable
     {
         private SKImage SkImage { get; }
-        internal List<(Size size, SKImage image)>? ScaledImageCache { get; }
+        internal List<(Size size, SKImage image)>? ScaledImageCache { get; set; }
         
-        public int? TargetDpi { get; set; }
+        internal int? TargetDpi { get; set; }
+        internal bool PerformScalingToTargetDpi { get; set; } = true;
         internal bool IsDocumentScoped { get; set; }
         
         public int Width => SkImage.Width;
         public int Height => SkImage.Height;
+
+        private const float ImageSizeSimilarityToleranceMax = 1.1f;
+        private const float ImageSizeSimilarityToleranceMin = 1 / ImageSizeSimilarityToleranceMax;
         
         private Image(SKImage image)
         {
@@ -31,28 +35,44 @@ namespace QuestPDF.Infrastructure
 
         internal SKImage GetVersionOfSize(Size size)
         {
-            if (size.Width > Width || size.Height > Height)
+            if (!PerformScalingToTargetDpi)
+                return SkImage;
+
+            var scalingFactor = TargetDpi.Value / (float)DocumentMetadata.DefaultPdfDpi;
+            var targetResolution = new Size(size.Width * scalingFactor, size.Height * scalingFactor);
+            
+            if (targetResolution.Width > Width || targetResolution.Height > Height)
                 return SkImage;
             
-            var target = SKImage.Create(new SKImageInfo((int)size.Width, (int)size.Height));
-            SkImage.ScalePixels(target.PeekPixels(), SKFilterQuality.High);
-
-            return target;
-
-            // bool ShouldApplyScaling()
-            // {
-            //     const float tolerance = 1.1f;
-            //     
-            //     if (width > Width / tolerance || height > Height / tolerance)
-            //         return false;
-            //     
-            //     SkImage.sca
-            // }
+            ScaledImageCache ??= new List<(Size size, SKImage image)>();
             
-            static bool HasSimilarSize(Size a, Size b, float tolerance)
+            foreach (var imageCache in ScaledImageCache)
             {
-                return (a.Width / b.Width > 1 / tolerance && a.Width / b.Width < tolerance) ||
-                       (a.Height / b.Height > 1 / tolerance && a.Height / b.Height < tolerance);
+                if (HasSimilarSize(imageCache.size, targetResolution))
+                    return imageCache.image;
+            }
+
+            var scaledImage = ScaleImage(SkImage, targetResolution);
+            ScaledImageCache.Add((targetResolution, scaledImage));
+
+            return scaledImage;
+     
+            static SKImage ScaleImage(SKImage originalImage, Size targetSize)
+            {
+                var imageInfo = new SKImageInfo((int)targetSize.Width, (int)targetSize.Height);
+                var target = SKImage.Create(imageInfo);
+                originalImage.ScalePixels(target.PeekPixels(), SKFilterQuality.High);
+
+                return target;
+            }
+            
+            static bool HasSimilarSize(Size a, Size b)
+            {
+                var widthRatio = a.Width / b.Width;
+                var heightRatio = a.Height / b.Height;
+
+                return widthRatio is > ImageSizeSimilarityToleranceMin and < ImageSizeSimilarityToleranceMax &&
+                       heightRatio is > ImageSizeSimilarityToleranceMin and < ImageSizeSimilarityToleranceMax;
             }
         }
 
@@ -101,7 +121,13 @@ namespace QuestPDF.Infrastructure
             TargetDpi = dpi;
             return this;
         }
-        
+
+        public Image ScaleToTargetDpi(bool value = true)
+        {
+            PerformScalingToTargetDpi = value;
+            return this;
+        }
+
         #endregion
     }
 }

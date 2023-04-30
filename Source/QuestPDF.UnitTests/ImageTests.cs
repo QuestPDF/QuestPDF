@@ -1,7 +1,12 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Linq;
+using System.Net.Mime;
+using FluentAssertions;
+using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 using SkiaSharp;
@@ -58,6 +63,54 @@ namespace QuestPDF.UnitTests
             var imageInfo = new SKImageInfo(width, height);
             using var surface = SKSurface.Create(imageInfo);
             return surface.Snapshot();
+        }
+
+        [Test]
+        public void UsingSharedImageShouldNotDrasticallyIncreaseDocumentSize()
+        {
+            var placeholderImage = Placeholders.Image(1000, 200);
+            
+            var documentWithSingleImageSize = GetDocumentSize(container =>
+            {
+                container.Image(placeholderImage);
+            });
+            
+            var documentWithMultipleImagesSize = GetDocumentSize(container =>
+            {
+                container.Column(column =>
+                {
+                    foreach (var i in Enumerable.Range(0, 100))
+                        column.Item().Image(placeholderImage);
+                });
+            });
+            
+            var documentWithSingleImageUsedMultipleTimesSize = GetDocumentSize(container =>
+            {
+                container.Column(column =>
+                {
+                    var sharedImage = Image.FromBinaryData(placeholderImage).DisposeAfterDocumentGeneration();
+                    
+                    foreach (var i in Enumerable.Range(0, 100))
+                        column.Item().Image(sharedImage);
+                });
+            });
+
+            (documentWithMultipleImagesSize / (float)documentWithSingleImageSize).Should().BeInRange(90, 100);
+            (documentWithSingleImageUsedMultipleTimesSize / (float)documentWithSingleImageSize).Should().BeInRange(1f, 1.5f);
+        }
+
+        private static int GetDocumentSize(Action<IContainer> container)
+        {
+            return Document
+                .Create(document =>
+                {
+                    document.Page(page =>
+                    {
+                        page.Content().Element(container);
+                    });
+                })
+                .GeneratePdf()
+                .Length;
         }
     }
 }

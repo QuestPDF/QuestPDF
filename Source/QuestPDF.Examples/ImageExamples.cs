@@ -66,29 +66,7 @@ namespace QuestPDF.Examples
             });
         }
         
-        [Test]
-        public void ReusingTheSameImageFileShouldBePossible()
-        {
-            var image = Image.FromBinaryData(Placeholders.Image(300, 100)).DisposeAfterDocumentGeneration();
-                
-            RenderingTest
-                .Create()
-                .ProducePdf()
-                .PageSize(PageSizes.A4)
-                .ShowResults()
-                .Render(container =>
-                {
-                    container
-                        .Padding(20)
-                        .Column(column =>
-                        {
-                            column.Spacing(20);
-                                
-                            foreach (var i in Enumerable.Range(0, 1000))
-                                column.Item().Image(image);
-                        });
-                });
-        }
+        
         
         [Test]
         public void ImageResolutionScaling()
@@ -100,18 +78,12 @@ namespace QuestPDF.Examples
                 {
                     document.Page(page =>
                     {
-                        page.Size(11000, 11000);
+                        page.Size(210, 210);
                         page.Margin(50);
                         page.Content().Image(image);
                     });
                 })
-                .GeneratePdfAndOpen();
-
-           //Console.WriteLine(documentData.Length);
-            
-            // var filePath = Path.GetTempPath() + $"test.pdf";
-            // File.WriteAllBytes(filePath, documentData);
-            // Console.WriteLine(filePath);
+                .GeneratePdf($"test.pdf");
         }
     }
 }
