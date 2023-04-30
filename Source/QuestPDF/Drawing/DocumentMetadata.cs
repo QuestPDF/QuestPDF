@@ -5,8 +5,10 @@ namespace QuestPDF.Drawing
 {
     public class DocumentMetadata
     {
+        public const int DefaultPdfDpi = 72;
+        
         public int ImageQuality { get; set; } = 101;
-        public int RasterDpi { get; set; } = 72;
+        public int RasterDpi { get; set; } = DefaultPdfDpi;
         public bool PdfA { get; set; }
         
         public string? Title { get; set; }

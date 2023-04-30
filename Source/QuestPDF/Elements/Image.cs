@@ -27,7 +27,7 @@ namespace QuestPDF.Elements
             if (DocumentImage == null)
                 return;
 
-            Canvas.DrawImage(DocumentImage.SkImage, Position.Zero, availableSpace);
+            Canvas.DrawImage(DocumentImage.GetVersionOfSize(availableSpace), Position.Zero, availableSpace);
         }
     }
 }

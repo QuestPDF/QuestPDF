@@ -66,28 +66,24 @@ namespace QuestPDF.Examples
             });
         }
         
+        
+        
         [Test]
-        public void ReusingTheSameImageFileShouldBePossible()
+        public void ImageResolutionScaling()
         {
-            var image = Image.FromBinaryData(Placeholders.Image(300, 100)).DisposeAfterDocumentGeneration();
-                
-            RenderingTest
-                .Create()
-                .ProducePdf()
-                .PageSize(PageSizes.A4)
-                .ShowResults()
-                .Render(container =>
+            var image = Image.FromFile("large-image.jpg");
+            
+            Document
+                .Create(document =>
                 {
-                    container
-                        .Padding(20)
-                        .Column(column =>
-                        {
-                            column.Spacing(20);
-                                
-                            foreach (var i in Enumerable.Range(0, 1000))
-                                column.Item().Image(image);
-                        });
-                });
+                    document.Page(page =>
+                    {
+                        page.Size(210, 210);
+                        page.Margin(50);
+                        page.Content().Image(image);
+                    });
+                })
+                .GeneratePdf($"test.pdf");
         }
     }
 }
