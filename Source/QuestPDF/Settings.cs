@@ -36,5 +36,11 @@
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
         public static bool CheckIfAllTextGlyphsAreAvailable { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        
+        
+        /// <summary>
+        /// The file size threshold in bytes that is used to determine if the image should be automatically scaled to physical dimensions.
+        /// </summary>
+        public static int AdjustImageSizeThreshold { get; set; } = 32 * 1024;
     }
 }

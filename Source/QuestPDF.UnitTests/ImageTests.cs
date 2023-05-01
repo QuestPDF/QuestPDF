@@ -57,13 +57,6 @@ namespace QuestPDF.UnitTests
                 .MeasureElement(new Size(300, 200))
                 .CheckMeasureResult(SpacePlan.FullRender(300, 100));;
         }
-        
-        SKImage GenerateImage(int width, int height)
-        {
-            var imageInfo = new SKImageInfo(width, height);
-            using var surface = SKSurface.Create(imageInfo);
-            return surface.Snapshot();
-        }
 
         [Test]
         public void UsingSharedImageShouldNotDrasticallyIncreaseDocumentSize()
@@ -99,6 +92,25 @@ namespace QuestPDF.UnitTests
             (documentWithSingleImageUsedMultipleTimesSize / (float)documentWithSingleImageSize).Should().BeInRange(1f, 1.5f);
         }
 
+        [Test]
+        public void ImageShouldNotBeScaledAboveItsNativeResolution()
+        {
+            var image = Placeholders.Image(200, 200);
+
+            var documentSizeWithScaledDownImage = GetDocumentSize(container => container.Width(100).Height(100).Image(Image.FromBinaryData(image)));
+            //var documentSizeWithNormalImage = GetDocumentSize(container => container.Width(200).Height(200).Image(image));
+            //var documentSizeWithScaledUpImage = GetDocumentSize(container => container.Width(400).Height(400).Image(image));
+        }
+
+        #region helpers
+        
+        SKImage GenerateImage(int width, int height)
+        {
+            var imageInfo = new SKImageInfo(width, height);
+            using var surface = SKSurface.Create(imageInfo);
+            return surface.Snapshot();
+        }
+        
         private static int GetDocumentSize(Action<IContainer> container)
         {
             return Document
@@ -112,5 +124,7 @@ namespace QuestPDF.UnitTests
                 .GeneratePdf()
                 .Length;
         }
+        
+        #endregion
     }
 }

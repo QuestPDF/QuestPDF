@@ -66,7 +66,7 @@ namespace QuestPDF.Drawing
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
-            ApplyDefaultImageDpi(content, metadata.RasterDpi);
+            ApplyDefaultImageDpi(content, metadata.RasterDpi, metadata.ImageQuality);
             ApplyDefaultTextStyle(content, TextStyle.LibraryDefault);
             ApplyContentDirection(content, ContentDirection.LeftToRight);
             
@@ -177,12 +177,15 @@ namespace QuestPDF.Drawing
             return debuggingState;
         }
 
-        internal static void ApplyDefaultImageDpi(this Element? content, int targetDpi)
+        internal static void ApplyDefaultImageDpi(this Element? content, int targetDpi, int targetImageQuality)
         {
             content.VisitChildren(x =>
             {
-                if (x is Image { DocumentImage: { } image })
-                    image.TargetDpi ??= targetDpi;
+                if (x is not Image { DocumentImage: { } image })
+                    return;
+                
+                image.TargetDpi ??= targetDpi;
+                image.ImageQuality ??= targetImageQuality;
             });
         }
         
