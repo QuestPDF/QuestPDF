@@ -47,7 +47,6 @@
         <None Remove="ImagePlaceholder.png" />
         <EmbeddedResource Include="Resources\ImagePlaceholder.png" />
         
-        
         <None Remove="Resources\DefaultFont\Lato-Black.ttf" />
         <EmbeddedResource Include="Resources\DefaultFont\Lato-Black.ttf" />
         
