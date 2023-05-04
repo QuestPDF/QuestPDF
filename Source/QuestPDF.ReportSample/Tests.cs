@@ -21,24 +21,20 @@ namespace QuestPDF.ReportSample
             
             var model = DataSource.GetReport();
             Report = new StandardReport(model);
-        }
-        
-        [Test] 
-        public void GenerateAndShowPdf()
-        {
+            
             //ImagePlaceholder.Solid = true;
-        
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.pdf");
-            Report.GeneratePdf(path);
-            Process.Start("explorer.exe", path);
         }
         
         [Test] 
-        public void GenerateAndShowXps()
+        public void GeneratePdfAndShow()
         {
-            var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"test_result.xps");
-            Report.GenerateXps(path);
-            Process.Start("explorer.exe", path);
+            Report.GeneratePdfAndShow();
+        }
+        
+        [Test] 
+        public void GenerateXpsAndShow()
+        {
+            Report.GenerateXpsAndShow();
         }
     }
 }
