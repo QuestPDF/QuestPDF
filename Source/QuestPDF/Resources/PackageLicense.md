@@ -2,15 +2,15 @@
 
 ## What license do you need?
 
-If you are consuming the QuestPDF library as a Direct Package Dependency for usage in a Closed Source software in the capacity of a for-profit company/individual with more than 1M USD annual gross revenue, you must purchase the QuestPDF Professional or Enterprise License, depending on number of software developers.
+Suppose you are consuming the QuestPDF library as a Direct Package Dependency for usage in a Closed Source software in the capacity of a for-profit company/individual with more than 1M USD annual gross revenue. In that case, you must purchase the QuestPDF Professional or Enterprise License, depending on the number of software developers.
 
-We love and highly appreciate the .NET Community and therefore the vast majority of users are welcome to use the library completely for free. If you do not meet the criteria described above, you are eligible to use the QuestPDF Community MIT License, without any limitations, even for commercial usage.
+We love and highly appreciate the .NET Community. Therefore, most users are welcome to use the library entirely for free. If you do not meet the criteria described above, you are eligible to use the QuestPDF Community MIT License, without any limitations, even for commercial usage.
 
 If you still want to support library development, please consider purchasing the Professional License.
 
-All details regarding the QuestPDF license can be found on the [official webpage](https://www.questpdf.com/pricing.html). 
+Please find all details regarding the QuestPDF license on the [official webpage](https://www.questpdf.com/pricing.html).
 
-Being a healthy and growing community is our primary goal that motivates us to pursue professionalism. Thank you!
+Being a healthy and growing community is the primary goal that motivates us to pursue professionalism. Thank you!
 
 
 ## QuestPDF Community MIT License
