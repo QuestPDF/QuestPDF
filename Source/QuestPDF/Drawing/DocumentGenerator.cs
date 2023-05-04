@@ -17,6 +17,7 @@ namespace QuestPDF.Drawing
     {
         internal static void GeneratePdf(Stream stream, IDocument document)
         {
+            ValidateLicense();
             CheckIfStreamIsCompatible(stream);
             
             var metadata = document.GetMetadata();
@@ -26,6 +27,7 @@ namespace QuestPDF.Drawing
         
         internal static void GenerateXps(Stream stream, IDocument document)
         {
+            ValidateLicense();
             CheckIfStreamIsCompatible(stream);
             
             var metadata = document.GetMetadata();
@@ -44,11 +46,42 @@ namespace QuestPDF.Drawing
         
         internal static ICollection<byte[]> GenerateImages(IDocument document)
         {
+            ValidateLicense();
+            
             var metadata = document.GetMetadata();
             var canvas = new ImageCanvas(metadata);
             RenderDocument(canvas, document);
 
             return canvas.Images;
+        }
+
+        private static void ValidateLicense()
+        {
+            if (Settings.License.HasValue)
+                return;
+            
+            var newParagraph = Environment.NewLine + Environment.NewLine;
+
+            var exceptionMessage = 
+                $"QuestPDF is a modern open-source library. " +
+                $"We identify the importance of the library in your projects and therefore want to make sure you can safely and confidently continue the development. " +
+                $"Being a healthy and growing community is the primary goal that motivates us to pursue professionalism. {newParagraph}" +
+                $"We love and highly appreciate the .NET Community, and therefore the vast majority of users are welcome to use the library completely for free under the QuestPDF Community MIT license. {newParagraph}" +
+                $"However, if you are consuming the QuestPDF library as a Direct Package Dependency for usage in a Closed Source software in the capacity of a for-profit company/individual with more than 1M USD annual gross revenue, you must purchase the QuestPDF Professional or Enterprise License, depending on the number of software developers. {newParagraph}" +
+                $"If you still want to support library development, please consider purchasing the Professional License. {newParagraph}" +
+                $"For evaluation purposes, feel free to use the QuestPDF Community License in a non-production environment. {newParagraph}" +
+                $"Please refer to the QuestPDF License and Pricing webpage for more details. (https://www.questpdf.com/pricing.html) {newParagraph}" +
+                $"If you are an existing QuestPDF user and for any reason cannot update, you can stay with the 2022.12.X release with the extended quality support but without any new features, improvements, or optimizations. That release will always be available under the MIT license, free for commercial usage. {newParagraph}" +
+                $"The library does not require any license key. " +
+                $"We trust our users, and therefore the process is simple. " +
+                $"To disable license validation and turn off this exception, please configure an eligible license using the QuestPDF.Settings.License API, for example: {newParagraph}" +
+                $"\"QuestPDF.Settings.License = LicenseType.Community;\". {newParagraph}" +
+                $"Learn more on: https://www.questpdf.com/license-configuration.html";
+            
+            throw new Exception(exceptionMessage)
+            {
+                HelpLink = "https://www.questpdf.com/pricing.html"
+            };
         }
 
         internal static ICollection<PreviewerPicture> GeneratePreviewerPictures(IDocument document)

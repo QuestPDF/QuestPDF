@@ -17,6 +17,8 @@ namespace QuestPDF.ReportSample
         [SetUp]
         public void SetUp()
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+            
             var model = DataSource.GetReport();
             Report = new StandardReport(model);
         }
