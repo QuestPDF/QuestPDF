@@ -75,7 +75,8 @@ namespace QuestPDF.Drawing
                 $"The library does not require any license key. " +
                 $"We trust our users, and therefore the process is simple. " +
                 $"To disable license validation and turn off this exception, please configure an eligible license using the QuestPDF.Settings.License API, for example: {newParagraph}" +
-                $"\"QuestPDF.Settings.License = LicenseType.Community;\". {newParagraph}";
+                $"\"QuestPDF.Settings.License = LicenseType.Community;\". {newParagraph}" +
+                $"Learn more on: https://www.questpdf.com/license-configuration.html";
             
             throw new Exception(exceptionMessage)
             {
