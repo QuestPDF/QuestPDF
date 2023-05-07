@@ -1,6 +1,6 @@
 ﻿namespace QuestPDF.Infrastructure
 {
-    internal enum ContentDirection
+    public enum ContentDirection
     {
         LeftToRight,
         RightToLeft
