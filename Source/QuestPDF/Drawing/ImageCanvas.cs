@@ -7,14 +7,14 @@ namespace QuestPDF.Drawing
 {
     internal class ImageCanvas : SkiaCanvasBase
     {
-        private DocumentMetadata Metadata { get; }
+        private DocumentSettings Settings { get; }
         private SKSurface Surface { get; set; }
 
         internal ICollection<byte[]> Images { get; } = new List<byte[]>();
         
-        public ImageCanvas(DocumentMetadata metadata)
+        public ImageCanvas(DocumentSettings settings)
         {
-            Metadata = metadata;
+            Settings = settings;
         }
         
         public override void BeginDocument()
@@ -30,7 +30,7 @@ namespace QuestPDF.Drawing
 
         public override void BeginPage(Size size)
         {
-            var scalingFactor = Metadata.RasterDpi / (float) PageSizes.PointsPerInch;
+            var scalingFactor = Settings.RasterDpi / (float) PageSizes.PointsPerInch;
             var imageInfo = new SKImageInfo((int) (size.Width * scalingFactor), (int) (size.Height * scalingFactor));
             
             Surface = SKSurface.Create(imageInfo);

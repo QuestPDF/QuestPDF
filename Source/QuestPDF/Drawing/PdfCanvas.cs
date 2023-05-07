@@ -2,23 +2,24 @@
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
     internal class PdfCanvas : SkiaDocumentCanvasBase
     {
-        public PdfCanvas(Stream stream, DocumentMetadata documentMetadata) 
-            : base(CreatePdf(stream, documentMetadata))
+        public PdfCanvas(Stream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings) 
+            : base(CreatePdf(stream, documentMetadata, documentSettings))
         {
             
         }
 
-        private static SKDocument CreatePdf(Stream stream, DocumentMetadata documentMetadata)
+        private static SKDocument CreatePdf(Stream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
         {
             try
             {
-                return SKDocument.CreatePdf(stream, MapMetadata(documentMetadata));
+                return SKDocument.CreatePdf(stream, MapMetadata(documentMetadata, documentSettings));
             }
             catch (TypeInitializationException exception)
             {
@@ -26,7 +27,7 @@ namespace QuestPDF.Drawing
             }
         }
 
-        private static SKDocumentPdfMetadata MapMetadata(DocumentMetadata metadata)
+        private static SKDocumentPdfMetadata MapMetadata(DocumentMetadata metadata, DocumentSettings documentSettings)
         {
             return new SKDocumentPdfMetadata
             {
@@ -40,9 +41,9 @@ namespace QuestPDF.Drawing
                 Creation = metadata.CreationDate,
                 Modified = metadata.ModifiedDate,
                 
-                RasterDpi = metadata.RasterDpi,
-                EncodingQuality = metadata.ImageQuality,
-                PdfA = metadata.PdfA
+                RasterDpi = documentSettings.RasterDpi,
+                EncodingQuality = documentSettings.ImageQuality,
+                PdfA = documentSettings.PdfA
             };
         }
     }

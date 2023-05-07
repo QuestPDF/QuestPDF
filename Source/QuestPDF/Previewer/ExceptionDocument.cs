@@ -20,6 +20,11 @@ namespace QuestPDF.Previewer
         {
             return DocumentMetadata.Default;
         }
+        
+        public DocumentSettings GetSettings()
+        {
+            return DocumentSettings.Default;
+        }
 
         public void Compose(IDocumentContainer document)
         {

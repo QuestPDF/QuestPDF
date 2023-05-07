@@ -21,7 +21,8 @@ namespace QuestPDF.Drawing
             CheckIfStreamIsCompatible(stream);
             
             var metadata = document.GetMetadata();
-            var canvas = new PdfCanvas(stream, metadata);
+            var settings = document.GetSettings();
+            var canvas = new PdfCanvas(stream, metadata, settings);
             RenderDocument(canvas, document);
         }
         
@@ -30,8 +31,8 @@ namespace QuestPDF.Drawing
             ValidateLicense();
             CheckIfStreamIsCompatible(stream);
             
-            var metadata = document.GetMetadata();
-            var canvas = new XpsCanvas(stream, metadata);
+            var settings = document.GetSettings();
+            var canvas = new XpsCanvas(stream, settings);
             RenderDocument(canvas, document);
         }
 
@@ -48,8 +49,8 @@ namespace QuestPDF.Drawing
         {
             ValidateLicense();
             
-            var metadata = document.GetMetadata();
-            var canvas = new ImageCanvas(metadata);
+            var settings = document.GetSettings();
+            var canvas = new ImageCanvas(settings);
             RenderDocument(canvas, document);
 
             return canvas.Images;

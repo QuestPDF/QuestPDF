@@ -1,14 +1,9 @@
 using System;
-using QuestPDF.Infrastructure;
 
-namespace QuestPDF.Drawing
+namespace QuestPDF.Infrastructure
 {
     public class DocumentMetadata
     {
-        public int ImageQuality { get; set; } = 101;
-        public int RasterDpi { get; set; } = 72;
-        public bool PdfA { get; set; }
-        
         public string? Title { get; set; }
         public string? Author { get; set; }
         public string? Subject { get; set; }
@@ -19,6 +14,10 @@ namespace QuestPDF.Drawing
         public DateTime CreationDate { get; set; } = DateTime.Now;
         public DateTime ModifiedDate { get; set; } = DateTime.Now;
 
+        public static DocumentMetadata Default => new DocumentMetadata();
+        
+        #region Deprecated properties
+        
         [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.DocumentLayoutExceptionThreshold static property.")]
         public int DocumentLayoutExceptionThreshold
         {
@@ -39,7 +38,16 @@ namespace QuestPDF.Drawing
             get => Settings.EnableDebugging;
             set => Settings.EnableDebugging = value;
         }
-
-        public static DocumentMetadata Default => new DocumentMetadata();
+        
+        [Obsolete("This API has been moved since version 2023.5. Please use the QuestPDF.Infrastructure.DocumentSettings API.")]
+        public int? ImageQuality { get; set; }
+        
+        [Obsolete("This API has been moved since version 2023.5. Please use the QuestPDF.Infrastructure.DocumentSettings API.")]
+        public int? RasterDpi { get; set; }
+        
+        [Obsolete("This API has been moved since version 2023.5. Please use the QuestPDF.Infrastructure.DocumentSettings API.")]
+        public bool? PdfA { get; set; }
+        
+        #endregion
     }
 }
