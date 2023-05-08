@@ -317,6 +317,58 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        public void Bug_RowSpanWorksIncorrectly()
+        {
+            // https://github.com/QuestPDF/QuestPDF/issues/552
+            
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .PageSize(PageSizes.A5.Landscape())
+                .ShowResults()
+                .Render(container =>
+                {
+                    container.Padding(20).Table(table => 
+                    {
+                        table.ColumnsDefinition(columns => 
+                        {
+                            columns.RelativeColumn(1);
+                            columns.RelativeColumn(2);
+                            columns.RelativeColumn(2);
+                            columns.RelativeColumn(2);
+                        });
+
+                        foreach (var i in Enumerable.Range(6, 9))
+                        {
+                            table.Cell().Element(CellStyleMainTable).Text($"{i:00}:00");
+                            
+                            foreach (var j in Enumerable.Range(1, 3))
+                                table.Cell().Element(CellStyleMainTable).Text("");
+                        }
+
+                        static IContainer CellStyleMainTable(IContainer container) 
+                        {
+                            return container
+                                .Border(0.5f).BorderColor(Colors.Blue.Lighten4)
+                                .Background(Colors.Blue.Lighten5)
+                                .PaddingVertical(5);
+                        }
+
+                        table.Cell().Row(1).RowSpan(3).Column(2).Element(BlockAccepted).Text("3 rows");
+                        table.Cell().Row(1).RowSpan(6).Column(3).Element(BlockAccepted).Text("6 rows");
+                        table.Cell().Row(3).RowSpan(5).Column(4).Element(BlockAccepted).Text("5 rows");
+                        
+                        static IContainer BlockAccepted(IContainer container)
+                        {
+                            return container
+                                .Border(1.5f).BorderColor(Colors.Green.Lighten2)
+                                .Background(Colors.Green.Lighten4);
+                        }
+                    });
+                });
+        }
+        
+        [Test]
         public void TableHeader()
         {
             RenderingTest

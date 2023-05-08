@@ -112,7 +112,7 @@ namespace QuestPDF.Elements.Table
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
-            foreach (var command in renderingCommands)
+            foreach (var command in renderingCommands.OrderBy(x => x.Cell.ZIndex))
             {
                 if (command.Measurement.Type == SpacePlanType.FullRender)
                     command.Cell.IsRendered = true;

@@ -16,9 +16,13 @@ namespace QuestPDF.Elements.Table
         {
             var cellsWindow = new List<TableCell>();
             (int x, int y) currentLocation = (1, 1);
+            var zIndex = 0;
             
             foreach (var cell in cells)
             {
+                cell.ZIndex = zIndex;
+                zIndex++;
+                
                 if (cellsWindow.Count > Math.Max(columnsCount, 16))
                 {
                     cellsWindow = cellsWindow
