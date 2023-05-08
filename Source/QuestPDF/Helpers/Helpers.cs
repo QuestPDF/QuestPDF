@@ -75,17 +75,5 @@ namespace QuestPDF.Helpers
                 _ => throw new ArgumentOutOfRangeException(nameof(quality), quality, null)
             };
         }
-
-        internal static SKFilterQuality ToFilterQuality(this ImageScalingQuality quality)
-        {
-            return quality switch
-            {
-                ImageScalingQuality.Low => SKFilterQuality.None,
-                ImageScalingQuality.Medium => SKFilterQuality.Low,
-                ImageScalingQuality.High => SKFilterQuality.Medium,
-                ImageScalingQuality.Best => SKFilterQuality.High,
-                _ => throw new ArgumentOutOfRangeException(nameof(quality), quality, null)
-            };
-        }
     }
 }

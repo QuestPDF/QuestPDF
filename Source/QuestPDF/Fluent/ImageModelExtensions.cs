@@ -1,26 +1,31 @@
 ﻿using QuestPDF.Drawing.Exceptions;
+using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public static class ImageModelExtensions
+    public class ImageDescriptor
     {
-        /// <summary>
-        /// When enabled, the image object is disposed automatically after document generation, and you don't need to call the Dispose method yourself.
-        /// </summary>
-        public static Image DisposeAfterDocumentGeneration(this Image image)
-        {
-            image.IsDocumentScoped = true;
-            return image;
-        }
+        private Elements.Image ImageElement { get; }
+        private AspectRatio AspectRatioElement { get; }
+        private float ImageAspectRatio { get; }
 
+        internal ImageDescriptor(Elements.Image imageElement, Elements.AspectRatio aspectRatioElement)
+        {
+            ImageElement = imageElement;
+            AspectRatioElement = aspectRatioElement;
+
+            var imageSize = ImageElement.DocumentImage.Size;
+            ImageAspectRatio = imageSize.Width / (float)imageSize.Height;
+        }
+        
         /// <summary>
         /// When enabled, the library will not attempt to resize the image to fit the target DPI, nor save it with target image quality.
         /// </summary>
-        public static Image UseOriginalImage(this Image image)
+        public ImageDescriptor UseOriginalImage(bool value = true)
         {
-            image.UseOriginalImage = true;
-            return image;
+            ImageElement.UseOriginalImage = value;
+            return this;
         }
         
         /// <summary>
@@ -29,10 +34,10 @@ namespace QuestPDF.Fluent
         /// When generating images, this parameter also controls the resolution of the generated content.
         /// Default value is 72.
         /// </summary>
-        public static Image WithRasterDpi(this Image image, int dpi)
+        public ImageDescriptor WithRasterDpi(int dpi)
         {
-            image.TargetDpi = dpi;
-            return image;
+            ImageElement.TargetDpi = dpi;
+            return this;
         }
 
         /// <summary>
@@ -41,22 +46,48 @@ namespace QuestPDF.Fluent
         /// If this value is set to a value between 1 and 100, and the image is opaque, it will be encoded using the JPEG format with that quality setting.
         /// The default value is 90 (very high quality).
         /// </summary>
-        public static Image WithCompressionQuality(this Image image, ImageCompressionQuality quality)
+        public ImageDescriptor WithCompressionQuality(ImageCompressionQuality quality)
         {
-            image.CompressionQuality = quality;
-            return image;
+            ImageElement.CompressionQuality = quality;
+            return this;
+        }
+
+        public ImageDescriptor WithResizeStrategy(ImageResizeStrategy strategy)
+        {
+            ImageElement.ResizeStrategy = strategy;
+            return this;
         }
         
-        public static Image WithScalingQuality(this Image image, ImageScalingQuality strategy)
+        #region Aspect Ratio
+        
+        public ImageDescriptor FitWidth()
         {
-            image.ScalingQuality = strategy;
-            return image;
+            return SetAspectRatio(AspectRatioOption.FitWidth);
         }
         
-        public static Image WithScalingStrategy(this Image image, ImageScalingStrategy strategy)
+        public ImageDescriptor FitHeight()
         {
-            image.ScalingStrategy = strategy;
-            return image;
+            return SetAspectRatio(AspectRatioOption.FitHeight);
         }
+        
+        public ImageDescriptor FitArea()
+        {
+            return SetAspectRatio(AspectRatioOption.FitArea);
+        }
+        
+        public ImageDescriptor FitUnproportionally()
+        {
+            AspectRatioElement.Ratio = 0;
+            return this;
+        }
+        
+        private ImageDescriptor SetAspectRatio(AspectRatioOption option)
+        {
+            AspectRatioElement.Ratio = ImageAspectRatio;
+            AspectRatioElement.Option = option;
+            return this;
+        }
+        
+        #endregion
     }
 }

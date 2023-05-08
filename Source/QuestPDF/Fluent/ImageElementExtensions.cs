@@ -9,25 +9,25 @@ namespace QuestPDF.Fluent
 {
     public static class ImageExtensions
     {
-        public static void Image(this IContainer parent, byte[] imageData, ImageScaling scaling = ImageScaling.FitWidth)
+        public static ImageDescriptor Image(this IContainer parent, byte[] imageData)
         {
             var image = Infrastructure.Image.FromBinaryData(imageData).DisposeAfterDocumentGeneration();
-            parent.Image(image, scaling);
+            return parent.Image(image);
         }
         
-        public static void Image(this IContainer parent, string filePath, ImageScaling scaling = ImageScaling.FitWidth)
+        public static ImageDescriptor Image(this IContainer parent, string filePath)
         {
             var image = Infrastructure.Image.FromFile(filePath).DisposeAfterDocumentGeneration();
-            parent.Image(image, scaling);
+            return parent.Image(image);
         }
         
-        public static void Image(this IContainer parent, Stream fileStream, ImageScaling scaling = ImageScaling.FitWidth)
+        public static ImageDescriptor Image(this IContainer parent, Stream fileStream)
         {
             var image = Infrastructure.Image.FromStream(fileStream).DisposeAfterDocumentGeneration();
-            parent.Image(image, scaling);
+            return parent.Image(image);
         }
         
-        internal static void Image(this IContainer parent, Infrastructure.Image image, ImageScaling scaling = ImageScaling.FitWidth)
+        internal static ImageDescriptor Image(this IContainer parent, Infrastructure.Image image)
         {
             if (image == null)
                 throw new DocumentComposeException("Cannot load or decode provided image.");
@@ -37,32 +37,64 @@ namespace QuestPDF.Fluent
                 DocumentImage = image
             };
 
-            if (scaling != ImageScaling.Resize)
+            var aspectRationElement = new AspectRatio
             {
-                var aspectRatio = image.Width / (float)image.Height;
-                parent = parent.AspectRatio(aspectRatio, Map(scaling));
-            }
-
-            parent.Element(imageElement);
-
-            static AspectRatioOption Map(ImageScaling scaling)
-            {
-                return scaling switch
-                {
-                    ImageScaling.FitWidth => AspectRatioOption.FitWidth,
-                    ImageScaling.FitHeight => AspectRatioOption.FitHeight,
-                    ImageScaling.FitArea => AspectRatioOption.FitArea,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-            }
+                Child = imageElement
+            };
+            
+            parent.Element(aspectRationElement);
+            return new ImageDescriptor(imageElement, aspectRationElement).FitWidth();
         }
 
-        public static void Image(this IContainer element, Func<Size, byte[]> imageSource)
+        public static void Image(this IContainer element, GenerateDynamicImageDelegate dynamicImageSource)
         {
             element.Element(new DynamicImage
             {
-                Source = imageSource
+                Source = dynamicImageSource
             });
         }
+        
+        #region Obsolete
+        
+        [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that takes the GenerateDynamicImageDelegate as an argument.")]
+        public static void Image(this IContainer element, Func<Size, byte[]> imageSource)
+        {
+            element.Image((ImageSize x) => imageSource(new Size(x.Width, x.Height)));
+        }
+        
+        [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that returns the ImageDescriptor object.")]
+        public static void Image(this IContainer parent, byte[] imageData, ImageScaling scaling)
+        {
+            parent.Image(imageData).ApplyScaling(scaling);
+        }
+        
+        [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that returns the ImageDescriptor object.")]
+        public static void Image(this IContainer parent, string filePath, ImageScaling scaling)
+        {
+            parent.Image(filePath).ApplyScaling(scaling);
+        }
+        
+        [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that returns the ImageDescriptor object.")]
+        public static void Image(this IContainer parent, Stream fileStream, ImageScaling scaling)
+        {
+            parent.Image(fileStream).ApplyScaling(scaling);
+        }
+        
+        internal static void ApplyScaling(this ImageDescriptor descriptor, ImageScaling scaling)
+        {
+            if (scaling == ImageScaling.Resize)
+                descriptor.FitUnproportionally();
+
+            else if (scaling == ImageScaling.FitWidth)
+                descriptor.FitWidth();
+            
+            else if (scaling == ImageScaling.FitHeight)
+                descriptor.FitHeight();
+            
+            else if (scaling == ImageScaling.FitArea)
+                descriptor.FitArea();
+        }
+        
+        #endregion
     }
 }

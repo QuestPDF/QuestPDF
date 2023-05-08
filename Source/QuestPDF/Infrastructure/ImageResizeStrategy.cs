@@ -1,6 +1,6 @@
 ﻿namespace QuestPDF.Infrastructure
 {
-    public enum ImageScalingStrategy
+    public enum ImageResizeStrategy
     {
         // TODO: add comments
         Always,

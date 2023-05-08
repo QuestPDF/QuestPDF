@@ -8,11 +8,14 @@ namespace QuestPDF.Elements
     {
         public ContentDirection ContentDirection { get; set; }
         
-        public float Ratio { get; set; } = 1;
+        public float Ratio { get; set; }
         public AspectRatioOption Option { get; set; } = AspectRatioOption.FitWidth;
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (Ratio == 0)
+                return SpacePlan.FullRender(0, 0);
+            
             if(Child == null)
                 return SpacePlan.FullRender(0, 0);
             
@@ -56,6 +59,9 @@ namespace QuestPDF.Elements
         
         private Size GetTargetSize(Size availableSpace)
         {
+            if (Ratio == 0)
+                return availableSpace;
+            
             var spaceRatio = availableSpace.Width / availableSpace.Height;
 
             var fitHeight = new Size(availableSpace.Height * Ratio, availableSpace.Height) ;

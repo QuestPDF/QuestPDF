@@ -213,10 +213,10 @@ namespace QuestPDF.Helpers
 
         public static byte[] Image(int width, int height)
         {
-            return Image(new Size(width, height));
+            return Image(new ImageSize(width, height));
         }
         
-        public static byte[] Image(Size size)
+        public static byte[] Image(ImageSize size)
         {
             // shuffle corner positions
             var targetPositions = new[]
@@ -239,7 +239,7 @@ namespace QuestPDF.Helpers
                 .ToArray();
             
             // create image with white background
-            var imageInfo = new SKImageInfo((int)size.Width, (int)size.Height);
+            var imageInfo = new SKImageInfo(size.Width, size.Height);
             using var surface = SKSurface.Create(imageInfo);
    
             using var backgroundPaint = new SKPaint

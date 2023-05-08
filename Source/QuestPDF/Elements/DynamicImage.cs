@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -6,9 +7,13 @@ using SkiaSharp;
 
 namespace QuestPDF.Elements
 {
+    public delegate byte[] GenerateDynamicImageDelegate(ImageSize size);
+    
     internal class DynamicImage : Element
     {
-        public Func<Size, byte[]>? Source { get; set; }
+        internal int? TargetDpi { get; set; }
+        internal ImageCompressionQuality? CompressionQuality { get; set; }
+        public GenerateDynamicImageDelegate? Source { get; set; }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
@@ -19,13 +24,24 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            var imageData = Source?.Invoke(availableSpace);
+            var targetResolution = GetTargetResolution(availableSpace, TargetDpi.Value);
+            var imageData = Source?.Invoke(targetResolution);
             
             if (imageData == null)
                 return;
 
             using var image = SKImage.FromEncodedData(imageData);
             Canvas.DrawImage(image, Position.Zero, availableSpace);
+        }
+
+        private static ImageSize GetTargetResolution(Size availableSize, int targetDpi)
+        {
+            var scalingFactor = targetDpi / (float)DocumentSettings.DefaultRasterDpi;
+
+            return new ImageSize(
+                (int)(availableSize.Width * scalingFactor),
+                (int)(availableSize.Height * scalingFactor)
+            );
         }
     }
 }

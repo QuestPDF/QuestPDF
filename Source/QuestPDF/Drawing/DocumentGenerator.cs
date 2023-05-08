@@ -232,13 +232,18 @@ namespace QuestPDF.Drawing
         {
             content.VisitChildren(x =>
             {
-                if (x is not QuestPDF.Elements.Image { DocumentImage: { } image })
-                    return;
-                
-                image.TargetDpi ??= settings.RasterDpi;
-                image.ScalingQuality ??= settings.ImageScalingQuality;
-                image.ScalingStrategy ??= settings.ImageScalingStrategy;
-                image.CompressionQuality ??= settings.ImageCompressionQuality;
+                if (x is QuestPDF.Elements.Image image)
+                {
+                    image.TargetDpi ??= settings.RasterDpi;
+                    image.ResizeStrategy ??= settings.ImageResizeStrategy;
+                    image.CompressionQuality ??= settings.ImageCompressionQuality;
+                }
+
+                if (x is QuestPDF.Elements.DynamicImage dynamicImage)
+                {
+                    dynamicImage.TargetDpi ??= settings.RasterDpi;
+                    dynamicImage.CompressionQuality ??= settings.ImageCompressionQuality;
+                }
             });
         }
 

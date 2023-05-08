@@ -51,7 +51,7 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Draw_PassesCorrectSizeToSource()
         {
-            Size passedSize = default;
+            ImageSize passedSize = default;
 
             TestPlan
                 .For(x => new DynamicImage
@@ -69,9 +69,9 @@ namespace QuestPDF.UnitTests
             passedSize.Should().BeEquivalentTo(new Size(400, 300));
         }
         
-        byte[] GenerateImage(Size size)
+        byte[] GenerateImage(ImageSize size)
         {
-            var image = GenerateImage((int) size.Width, (int) size.Height);
+            var image = GenerateImage(size.Width, size.Height);
             return image.Encode(SKEncodedImageFormat.Png, 100).ToArray();
         }
         

@@ -20,9 +20,7 @@
         public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.VeryHigh;
         
         // TODO: add comments
-        public ImageScalingStrategy ImageScalingStrategy { get; set; } = ImageScalingStrategy.ScaleOnlyToSignificantlySmallerResolution;
-        
-        public ImageScalingQuality ImageScalingQuality { get; set; } = ImageScalingQuality.High;
+        public ImageResizeStrategy ImageResizeStrategy { get; set; } = ImageResizeStrategy.ScaleOnlyToSignificantlySmallerResolution;
         
         /// <summary>
         /// The DPI (pixels-per-inch) at which images and features without native PDF support will be rasterized.

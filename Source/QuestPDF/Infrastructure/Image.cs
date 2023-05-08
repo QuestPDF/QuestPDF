@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
@@ -8,75 +7,55 @@ using SkiaSharp;
 
 namespace QuestPDF.Infrastructure
 {
+    internal record GetImageVersionRequest
+    {
+        internal ImageSize Resolution { get; set; }
+        internal ImageCompressionQuality CompressionQuality { get; set; }
+        internal ImageResizeStrategy ResizeStrategy { get; set; }
+    }
+    
     public class Image : IDisposable
     {
-        private SKImage SkImage { get; }
-        public int Width => SkImage.Width;
-        public int Height => SkImage.Height;
-
-        internal List<(Size size, SKImage image)>? ScaledImageCache { get; set; }
-        
+        internal SKImage SkImage { get; }
+        internal ImageSize Size { get; }
         internal bool IsDocumentScoped { get; set; }
-        internal bool UseOriginalImage { get; set; }
-        internal int? TargetDpi { get; set; }
-        internal ImageCompressionQuality? CompressionQuality { get; set; }
-        internal ImageScalingQuality? ScalingQuality { get; set; }
-        internal ImageScalingStrategy? ScalingStrategy { get; set; }
-
-        private const float ImageSizeSimilarityToleranceMax = 0.75f;
         
+        internal LinkedList<(GetImageVersionRequest request, SKImage image)> ScaledImageCache { get; } = new();
+
         private Image(SKImage image)
         {
             SkImage = image;
+            Size = new ImageSize(image.Width, image.Height);
         }
 
         public void Dispose()
         {
             SkImage.Dispose();
+
+            foreach (var cacheKey in ScaledImageCache)
+                cacheKey.image.Dispose();
         } 
         
         #region Scaling Image
 
-        internal SKImage GetVersionOfSize(Size availableAreaSize)
+        internal SKImage GetVersionOfSize(GetImageVersionRequest request)
         {
-            if (UseOriginalImage)
-                return SkImage;
+            foreach (var cacheKey in ScaledImageCache)
+            {
+                if (cacheKey.request == request)
+                    return cacheKey.image;
+            }
 
-            var imageResolution = new Size(SkImage.Width, SkImage.Height);
-            var targetResolution = GetTargetResolution(ScalingStrategy.Value, imageResolution, availableAreaSize, TargetDpi ?? DocumentSettings.DefaultRasterDpi);
-            
-            return ScaleAndCompressImage(SkImage, targetResolution, ScalingQuality.Value, CompressionQuality.Value);
+            var result = ResizeAndCompressImage(SkImage, request.Resolution, request.CompressionQuality);
+            ScaledImageCache.AddLast((request, result));
+            return result;
         }
-        
-        private static Size GetTargetResolution(ImageScalingStrategy scalingStrategy, Size imageResolution, Size availableAreaSize, int targetDpi)
-        {
-            if (scalingStrategy == ImageScalingStrategy.Never)
-                return imageResolution;
-            
-            if (scalingStrategy == ImageScalingStrategy.Always)
-                return availableAreaSize;
-            
-            var scalingFactor = targetDpi / DocumentSettings.DefaultRasterDpi;
-            var targetResolution = new Size(availableAreaSize.Width * scalingFactor, availableAreaSize.Height * scalingFactor);
 
-            var isSignificantlySmaller = IsImageSignificantlySmallerThanDrawingArea(imageResolution, targetResolution);
-            
-            if (scalingStrategy == ImageScalingStrategy.ScaleOnlyToSignificantlySmallerResolution && isSignificantlySmaller)
-                return targetResolution;
-
-            var isSmaller = IsImageSmallerThanDrawingArea(imageResolution, targetResolution);
-
-            if (scalingStrategy == ImageScalingStrategy.ScaleOnlyToSmallerResolution && isSmaller)
-                return targetResolution;
-
-            return imageResolution;
-        }
-        
         private static SKImage CompressImage(SKImage image, ImageCompressionQuality compressionQuality)
         {
             var targetFormat = image.Info.IsOpaque 
-                ? SKEncodedImageFormat.Png 
-                : SKEncodedImageFormat.Jpeg;
+                ? SKEncodedImageFormat.Jpeg 
+                : SKEncodedImageFormat.Png;
 
             if (targetFormat == SKEncodedImageFormat.Png)
                 compressionQuality = ImageCompressionQuality.Best;
@@ -85,29 +64,19 @@ namespace QuestPDF.Infrastructure
             return SKImage.FromEncodedData(data);
         }
 
-        private static SKImage ScaleAndCompressImage(SKImage image, Size targetResolution, ImageScalingQuality scalingQuality, ImageCompressionQuality compressionQuality)
+        private static SKImage ResizeAndCompressImage(SKImage image, ImageSize targetResolution, ImageCompressionQuality compressionQuality)
         {
-            var imageInfo = new SKImageInfo((int)targetResolution.Width, (int)targetResolution.Height);
+            if (image.Width == targetResolution.Width && image.Height == targetResolution.Height)
+                return CompressImage(image, compressionQuality);
+            
+            var imageInfo = new SKImageInfo(targetResolution.Width, targetResolution.Height);
             
             using var resultImage = SKImage.Create(imageInfo);
-            image.ScalePixels(resultImage.PeekPixels(), scalingQuality.ToFilterQuality());
+            image.ScalePixels(resultImage.PeekPixels(), SKFilterQuality.Medium);
             
             return CompressImage(resultImage, compressionQuality);
         }
-        
-        private static bool IsImageSmallerThanDrawingArea(Size imageResolution, Size targetResolution)
-        {
-            return imageResolution.Width < targetResolution.Width || imageResolution.Height < targetResolution.Height;
-        }
-        
-        private static bool IsImageSignificantlySmallerThanDrawingArea(Size imageResolution, Size targetResolution, float sizeSimilarityThreshold = ImageSizeSimilarityToleranceMax)
-        {
-            var widthRatio = imageResolution.Width / targetResolution.Width;
-            var heightRatio = imageResolution.Height / targetResolution.Height;
-        
-            return widthRatio < sizeSimilarityThreshold && heightRatio < sizeSimilarityThreshold;
-        }
-        
+
         #endregion
 
         #region public constructors
@@ -141,5 +110,11 @@ namespace QuestPDF.Infrastructure
         }
 
         #endregion
+
+        internal Image DisposeAfterDocumentGeneration()
+        {
+            IsDocumentScoped = true;
+            return this;
+        }
     }
 }
