@@ -1,6 +1,4 @@
-﻿using ImageQualityEnum = QuestPDF.Infrastructure.ImageQuality;
-
-namespace QuestPDF.Infrastructure
+﻿namespace QuestPDF.Infrastructure
 {
     public class DocumentSettings
     {
@@ -19,7 +17,12 @@ namespace QuestPDF.Infrastructure
         /// If this value is set to a value between 1 and 100, and the image is opaque, it will be encoded using the JPEG format with that quality setting.
         /// The default value is 90 (very high quality).
         /// </summary>
-        public int ImageQuality { get; set; } = (int)ImageQualityEnum.VeryHigh;
+        public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.VeryHigh;
+        
+        // TODO: add comments
+        public ImageScalingStrategy ImageScalingStrategy { get; set; } = ImageScalingStrategy.ScaleOnlyToSignificantlySmallerResolution;
+        
+        public ImageScalingQuality ImageScalingQuality { get; set; } = ImageScalingQuality.High;
         
         /// <summary>
         /// The DPI (pixels-per-inch) at which images and features without native PDF support will be rasterized.
@@ -28,7 +31,7 @@ namespace QuestPDF.Infrastructure
         /// Default value is 72.
         /// </summary>
         public int RasterDpi { get; set; } = DefaultRasterDpi;
-
+ 
         public ContentDirection ContentDirection { get; set; } = ContentDirection.LeftToRight;
         
         public static DocumentSettings Default => new DocumentSettings();

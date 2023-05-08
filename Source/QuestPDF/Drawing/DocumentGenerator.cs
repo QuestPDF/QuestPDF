@@ -236,7 +236,9 @@ namespace QuestPDF.Drawing
                     return;
                 
                 image.TargetDpi ??= settings.RasterDpi;
-                image.TargetQuality ??= settings.ImageQuality;
+                image.ScalingQuality ??= settings.ImageScalingQuality;
+                image.ScalingStrategy ??= settings.ImageScalingStrategy;
+                image.CompressionQuality ??= settings.ImageCompressionQuality;
             });
         }
 

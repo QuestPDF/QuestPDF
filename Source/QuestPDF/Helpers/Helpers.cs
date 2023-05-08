@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Helpers
 {
@@ -59,6 +60,32 @@ namespace QuestPDF.Helpers
         internal static bool IsNegative(this Size size)
         {
             return size.Width < 0f || size.Height < 0f;
+        }
+        
+        internal static int ToQualityValue(this ImageCompressionQuality quality)
+        {
+            return quality switch
+            {
+                ImageCompressionQuality.Best => 100,
+                ImageCompressionQuality.VeryHigh => 90,
+                ImageCompressionQuality.High => 80,
+                ImageCompressionQuality.Medium => 60,
+                ImageCompressionQuality.Low => 40,
+                ImageCompressionQuality.VeryLow => 20,
+                _ => throw new ArgumentOutOfRangeException(nameof(quality), quality, null)
+            };
+        }
+
+        internal static SKFilterQuality ToFilterQuality(this ImageScalingQuality quality)
+        {
+            return quality switch
+            {
+                ImageScalingQuality.Low => SKFilterQuality.None,
+                ImageScalingQuality.Medium => SKFilterQuality.Low,
+                ImageScalingQuality.High => SKFilterQuality.Medium,
+                ImageScalingQuality.Best => SKFilterQuality.High,
+                _ => throw new ArgumentOutOfRangeException(nameof(quality), quality, null)
+            };
         }
     }
 }

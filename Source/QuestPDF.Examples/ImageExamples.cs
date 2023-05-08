@@ -51,6 +51,24 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        public void ScalingImageWithAlpha()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(PageSizes.A4)
+                .ProducePdf()
+                .ShowResults()
+                .Render(page =>
+                {
+                    page.Padding(25).Layers(layers =>
+                    {
+                        layers.Layer().Image(Placeholders.Image);
+                        layers.PrimaryLayer().Padding(25).Image("multilingual.png");
+                    });
+                });
+        }
+        
+        [Test]
         public void Exception()
         {
             Assert.Throws<DocumentComposeException>(() =>
