@@ -8,6 +8,8 @@ namespace QuestPDF.Elements.Table
         public int Column { get; set; } = 0;
         public int ColumnSpan { get; set; } = 1;
         
+        public int ZIndex { get; set; }
+        
         public bool IsRendered { get; set; }
     }
 }
