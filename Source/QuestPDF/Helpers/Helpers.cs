@@ -75,5 +75,38 @@ namespace QuestPDF.Helpers
                 _ => throw new ArgumentOutOfRangeException(nameof(quality), quality, null)
             };
         }
+        
+        internal static SKImage CompressImage(this SKImage image, ImageCompressionQuality compressionQuality)
+        {
+            var targetFormat = image.Info.IsOpaque 
+                ? SKEncodedImageFormat.Jpeg 
+                : SKEncodedImageFormat.Png;
+
+            if (targetFormat == SKEncodedImageFormat.Png)
+                compressionQuality = ImageCompressionQuality.Best;
+            
+            var data = image.Encode(targetFormat, compressionQuality.ToQualityValue());
+            return SKImage.FromEncodedData(data);
+        }
+
+        internal static SKImage ResizeAndCompressImage(this SKImage image, ImageSize targetResolution, ImageCompressionQuality compressionQuality)
+        {
+            if (image.Width == targetResolution.Width && image.Height == targetResolution.Height)
+                return CompressImage(image, compressionQuality);
+            
+            var imageInfo = new SKImageInfo(targetResolution.Width, targetResolution.Height);
+            
+            using var resultImage = SKImage.Create(imageInfo);
+            image.ScalePixels(resultImage.PeekPixels(), SKFilterQuality.Medium);
+            
+            return CompressImage(resultImage, compressionQuality);
+        }
+
+        internal static SKImage GetImageWithSmallerSize(SKImage one, SKImage second)
+        {
+            return one.EncodedData.Size < second.EncodedData.Size
+                ? one
+                : second;
+        }
     }
 }

@@ -52,12 +52,6 @@ namespace QuestPDF.Fluent
             return this;
         }
 
-        public ImageDescriptor WithResizeStrategy(ImageResizeStrategy strategy)
-        {
-            ImageElement.ResizeStrategy = strategy;
-            return this;
-        }
-        
         #region Aspect Ratio
         
         public ImageDescriptor FitWidth()

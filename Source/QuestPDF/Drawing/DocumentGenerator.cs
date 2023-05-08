@@ -235,7 +235,6 @@ namespace QuestPDF.Drawing
                 if (x is QuestPDF.Elements.Image image)
                 {
                     image.TargetDpi ??= settings.RasterDpi;
-                    image.ResizeStrategy ??= settings.ImageResizeStrategy;
                     image.CompressionQuality ??= settings.ImageCompressionQuality;
                 }
 

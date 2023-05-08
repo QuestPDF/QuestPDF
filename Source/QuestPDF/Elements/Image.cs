@@ -12,7 +12,6 @@ namespace QuestPDF.Elements
         internal bool UseOriginalImage { get; set; }
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
-        internal ImageResizeStrategy? ResizeStrategy { get; set; }
         
         private const float ImageSizeSimilarityToleranceMax = 0.75f;
         
@@ -40,56 +39,35 @@ namespace QuestPDF.Elements
 
         private SKImage GetImageToDraw(Size availableSpace)
         {
+            var originalImage = DocumentImage.SkImage;
+            
             if (UseOriginalImage)
-                return DocumentImage.SkImage;
+                return originalImage;
             
             var request = new GetImageVersionRequest
             {
-                Resolution = GetTargetResolution(ResizeStrategy.Value, DocumentImage.Size, availableSpace, TargetDpi.Value),
-                CompressionQuality = CompressionQuality.Value,
-                ResizeStrategy = ResizeStrategy.Value
+                Resolution = GetTargetResolution(DocumentImage.Size, availableSpace, TargetDpi.Value),
+                CompressionQuality = CompressionQuality.Value
             };
             
-            return DocumentImage.GetVersionOfSize(request);
+            var targetImage = DocumentImage.GetVersionOfSize(request);
+            return Helpers.Helpers.GetImageWithSmallerSize(originalImage, targetImage);
         }
         
-        private static ImageSize GetTargetResolution(ImageResizeStrategy resizeStrategy, ImageSize imageResolution, Size availableAreaSize, int targetDpi)
+        private static ImageSize GetTargetResolution(ImageSize imageResolution, Size availableAreaSize, int targetDpi)
         {
-            if (resizeStrategy == ImageResizeStrategy.Never)
-                return imageResolution;
-
             var scalingFactor = targetDpi / (float)DocumentSettings.DefaultRasterDpi;
+            
             var targetResolution = new ImageSize(
                 (int)(availableAreaSize.Width * scalingFactor), 
                 (int)(availableAreaSize.Height * scalingFactor));
-
-            if (resizeStrategy == ImageResizeStrategy.Always)
-                return targetResolution;
             
-            var isSignificantlySmaller = IsImageSignificantlySmallerThanDrawingArea(imageResolution, targetResolution);
-            
-            if (resizeStrategy == ImageResizeStrategy.ScaleOnlyToSignificantlySmallerResolution && isSignificantlySmaller)
-                return targetResolution;
+            var isImageResolutionSmallerThanTarget = imageResolution.Width < targetResolution.Width || imageResolution.Height < targetResolution.Height;
 
-            var isSmaller = IsImageSmallerThanDrawingArea(imageResolution, targetResolution);
+            if (isImageResolutionSmallerThanTarget)
+                return imageResolution;
 
-            if (resizeStrategy == ImageResizeStrategy.ScaleOnlyToSmallerResolution && isSmaller)
-                return targetResolution;
-
-            return imageResolution;
-        }
-        
-        private static bool IsImageSmallerThanDrawingArea(ImageSize imageResolution, ImageSize targetResolution)
-        {
-            return imageResolution.Width < targetResolution.Width || imageResolution.Height < targetResolution.Height;
-        }
-        
-        private static bool IsImageSignificantlySmallerThanDrawingArea(ImageSize imageResolution, ImageSize targetResolution, float sizeSimilarityThreshold = ImageSizeSimilarityToleranceMax)
-        {
-            var widthRatio = targetResolution.Width / imageResolution.Width;
-            var heightRatio = targetResolution.Height / imageResolution.Height;
-        
-            return widthRatio < sizeSimilarityThreshold && heightRatio < sizeSimilarityThreshold;
+            return targetResolution;
         }
     }
 }

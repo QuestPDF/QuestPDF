@@ -30,8 +30,11 @@ namespace QuestPDF.Elements
             if (imageData == null)
                 return;
 
-            using var image = SKImage.FromEncodedData(imageData);
-            Canvas.DrawImage(image, Position.Zero, availableSpace);
+            using var originalImage = SKImage.FromEncodedData(imageData);
+            using var compressedImage = originalImage.CompressImage(CompressionQuality.Value);
+
+            var targetImage = Helpers.Helpers.GetImageWithSmallerSize(originalImage, compressedImage);
+            Canvas.DrawImage(targetImage, Position.Zero, availableSpace);
         }
 
         private static ImageSize GetTargetResolution(Size availableSize, int targetDpi)

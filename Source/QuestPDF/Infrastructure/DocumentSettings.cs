@@ -18,17 +18,14 @@
         /// The default value is 90 (very high quality).
         /// </summary>
         public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.VeryHigh;
-        
-        // TODO: add comments
-        public ImageResizeStrategy ImageResizeStrategy { get; set; } = ImageResizeStrategy.ScaleOnlyToSignificantlySmallerResolution;
-        
+
         /// <summary>
         /// The DPI (pixels-per-inch) at which images and features without native PDF support will be rasterized.
         /// A larger DPI would create a PDF that reflects the original intent with better fidelity, but it can make for larger PDF files too, which would use more memory while rendering, and it would be slower to be processed or sent online or to printer.
         /// When generating images, this parameter also controls the resolution of the generated content.
-        /// Default value is 72.
+        /// Default value is 144.
         /// </summary>
-        public int RasterDpi { get; set; } = DefaultRasterDpi;
+        public int RasterDpi { get; set; } = DefaultRasterDpi * 2;
  
         public ContentDirection ContentDirection { get; set; } = ContentDirection.LeftToRight;
         

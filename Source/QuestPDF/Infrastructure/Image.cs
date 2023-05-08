@@ -11,7 +11,6 @@ namespace QuestPDF.Infrastructure
     {
         internal ImageSize Resolution { get; set; }
         internal ImageCompressionQuality CompressionQuality { get; set; }
-        internal ImageResizeStrategy ResizeStrategy { get; set; }
     }
     
     public class Image : IDisposable
@@ -46,35 +45,9 @@ namespace QuestPDF.Infrastructure
                     return cacheKey.image;
             }
 
-            var result = ResizeAndCompressImage(SkImage, request.Resolution, request.CompressionQuality);
+            var result = SkImage.ResizeAndCompressImage(request.Resolution, request.CompressionQuality);
             ScaledImageCache.AddLast((request, result));
             return result;
-        }
-
-        private static SKImage CompressImage(SKImage image, ImageCompressionQuality compressionQuality)
-        {
-            var targetFormat = image.Info.IsOpaque 
-                ? SKEncodedImageFormat.Jpeg 
-                : SKEncodedImageFormat.Png;
-
-            if (targetFormat == SKEncodedImageFormat.Png)
-                compressionQuality = ImageCompressionQuality.Best;
-            
-            var data = image.Encode(targetFormat, compressionQuality.ToQualityValue());
-            return SKImage.FromEncodedData(data);
-        }
-
-        private static SKImage ResizeAndCompressImage(SKImage image, ImageSize targetResolution, ImageCompressionQuality compressionQuality)
-        {
-            if (image.Width == targetResolution.Width && image.Height == targetResolution.Height)
-                return CompressImage(image, compressionQuality);
-            
-            var imageInfo = new SKImageInfo(targetResolution.Width, targetResolution.Height);
-            
-            using var resultImage = SKImage.Create(imageInfo);
-            image.ScalePixels(resultImage.PeekPixels(), SKFilterQuality.Medium);
-            
-            return CompressImage(resultImage, compressionQuality);
         }
 
         #endregion
