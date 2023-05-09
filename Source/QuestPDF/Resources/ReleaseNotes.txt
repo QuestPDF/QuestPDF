@@ -4,3 +4,9 @@ This release does not contain any features or quality improvements.
 Its purpose is to mark the QuestPDF shift towards the dual-licensing model. 
 Most users are not affected by this change. 
 Please visit the https://www.questpdf.com/pricing.html webpage for more information.
+
+Version 2023.4.1:
+Added IntelliSense-powered documentation for certain API methods.
+
+Version 2023.4.2:
+Fix: fixed the rendering order of table cells in certain scenarios
