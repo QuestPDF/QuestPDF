@@ -25,3 +25,6 @@ Fix: the inlined element is shown only once in the header but should be repeated
 Version 2022.12.4:
 Fix: the TextStyle.Fallback property incorrectly inherits parent's and global properties
 Improvement: updated the CreateNotMatchingFontException message to mention that the glyph checking operation can be disabled with the Settings.CheckIfAllTextGlyphsAreAvailable setting
+
+Version 2022.12.6:
+Fix: fixed the rendering order of table cells in certain scenarios
