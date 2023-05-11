@@ -14,6 +14,9 @@ namespace QuestPDF.Elements
         internal TextStyle TextStyle { get; set; } = TextStyle.Default;
         public ContentDirection ContentDirection { get; set; }
         
+        internal int? ImageTargetDpi { get; set; }
+        internal ImageCompressionQuality? ImageCompressionQuality { get; set; }
+        
         public DynamicHost(DynamicComponentProxy child)
         {
             Child = child;
@@ -58,6 +61,9 @@ namespace QuestPDF.Elements
                 TextStyle = TextStyle,
                 ContentDirection = ContentDirection,
                 
+                ImageTargetDpi = ImageTargetDpi.Value,
+                ImageCompressionQuality = ImageCompressionQuality.Value,
+                
                 PageNumber = PageContext.CurrentPage,
                 TotalPages = PageContext.GetLocation(Infrastructure.PageContext.DocumentLocation).PageEnd,
                 AvailableSize = availableSize
@@ -79,7 +85,10 @@ namespace QuestPDF.Elements
         
         internal TextStyle TextStyle { get; set; }
         internal ContentDirection ContentDirection { get; set; }
-    
+
+        internal int ImageTargetDpi { get; set; }
+        internal ImageCompressionQuality ImageCompressionQuality { get; set; }
+        
         public int PageNumber { get; internal set; }
         public int TotalPages { get; internal set; }
         public Size AvailableSize { get; internal set; }
@@ -91,6 +100,7 @@ namespace QuestPDF.Elements
             
             container.ApplyInheritedAndGlobalTexStyle(TextStyle);
             container.ApplyContentDirection(ContentDirection);
+            container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality);
             
             container.InjectDependencies(PageContext, Canvas);
             container.VisitChildren(x => (x as IStateResettable)?.ResetState());
