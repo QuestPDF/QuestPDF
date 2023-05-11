@@ -12,9 +12,7 @@ namespace QuestPDF.Elements
         internal bool UseOriginalImage { get; set; }
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
-        
-        private const float ImageSizeSimilarityToleranceMax = 0.75f;
-        
+
         ~Image()
         {
             if (DocumentImage is { IsDocumentScoped: true })

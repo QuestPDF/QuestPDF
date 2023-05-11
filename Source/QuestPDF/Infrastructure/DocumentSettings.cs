@@ -15,7 +15,7 @@
         /// Encoding quality controls the trade-off between size and quality.
         /// When the image is opaque, it will be encoded using the JPEG format with the selected quality setting.
         /// When the image contains an alpha channel, it is always encoded using the PNG format and this option is ignored.
-        /// The default value is "very high quality".
+        /// The default value is "high quality".
         /// </summary>
         public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.VeryHigh;
 
@@ -25,7 +25,7 @@
         /// When generating images, this parameter also controls the resolution of the generated content.
         /// Default value is 144.
         /// </summary>
-        public int ImageRasterDpi { get; set; } = DefaultRasterDpi * 2;
+        public int RasterDpi { get; set; } = DefaultRasterDpi * 2;
  
         public ContentDirection ContentDirection { get; set; } = ContentDirection.LeftToRight;
         

@@ -29,9 +29,13 @@ namespace QuestPDF.Fluent
             DocumentGenerator.GeneratePdf(stream, document);
         }
         
+        private static int GenerateAndShowCounter = 0;
+        
         public static void GeneratePdfAndShow(this IDocument document)
         {
-            var filePath = Path.Combine(Path.GetTempPath(), $"QuestPDF Document.pdf");
+            GenerateAndShowCounter++;
+            
+            var filePath = Path.Combine(Path.GetTempPath(), $"QuestPDF Document {GenerateAndShowCounter}.pdf");
             document.GeneratePdf(filePath);
             OpenFileUsingDefaultProgram(filePath);
         }
