@@ -41,7 +41,7 @@ namespace QuestPDF.Drawing
                 Creation = metadata.CreationDate,
                 Modified = metadata.ModifiedDate,
                 
-                RasterDpi = documentSettings.RasterDpi,
+                RasterDpi = documentSettings.ImageRasterDpi,
                 EncodingQuality = documentSettings.ImageCompressionQuality.ToQualityValue(),
                 PdfA = documentSettings.PdfA
             };

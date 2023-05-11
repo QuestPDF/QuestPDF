@@ -19,7 +19,7 @@ namespace QuestPDF.Drawing
         {
             try
             {
-                return SKDocument.CreateXps(stream, documentSettings.RasterDpi);
+                return SKDocument.CreateXps(stream, documentSettings.ImageRasterDpi);
             }
             catch (TypeInitializationException exception)
             {

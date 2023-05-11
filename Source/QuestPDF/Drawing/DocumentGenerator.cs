@@ -234,13 +234,13 @@ namespace QuestPDF.Drawing
             {
                 if (x is QuestPDF.Elements.Image image)
                 {
-                    image.TargetDpi ??= settings.RasterDpi;
+                    image.TargetDpi ??= settings.ImageRasterDpi;
                     image.CompressionQuality ??= settings.ImageCompressionQuality;
                 }
 
                 if (x is QuestPDF.Elements.DynamicImage dynamicImage)
                 {
-                    dynamicImage.TargetDpi ??= settings.RasterDpi;
+                    dynamicImage.TargetDpi ??= settings.ImageRasterDpi;
                     dynamicImage.CompressionQuality ??= settings.ImageCompressionQuality;
                 }
             });

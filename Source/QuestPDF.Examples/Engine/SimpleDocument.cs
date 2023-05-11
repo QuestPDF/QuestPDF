@@ -28,7 +28,7 @@ namespace QuestPDF.Examples.Engine
         {
             return new DocumentSettings()
             {
-                RasterDpi = PageSizes.PointsPerInch * ImageScalingFactor
+                ImageRasterDpi = PageSizes.PointsPerInch * ImageScalingFactor
             };
         }
         

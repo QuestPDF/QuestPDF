@@ -25,7 +25,7 @@
         /// When generating images, this parameter also controls the resolution of the generated content.
         /// Default value is 144.
         /// </summary>
-        public int RasterDpi { get; set; } = DefaultRasterDpi * 2;
+        public int ImageRasterDpi { get; set; } = DefaultRasterDpi * 2;
  
         public ContentDirection ContentDirection { get; set; } = ContentDirection.LeftToRight;
         
