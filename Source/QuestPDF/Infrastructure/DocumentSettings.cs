@@ -13,9 +13,9 @@
 
         /// <summary>
         /// Encoding quality controls the trade-off between size and quality.
-        /// The value 101 corresponds to lossless encoding.
-        /// If this value is set to a value between 1 and 100, and the image is opaque, it will be encoded using the JPEG format with that quality setting.
-        /// The default value is 90 (very high quality).
+        /// When the image is opaque, it will be encoded using the JPEG format with the selected quality setting.
+        /// When the image contains an alpha channel, it is always encoded using the PNG format and this option is ignored.
+        /// The default value is "very high quality".
         /// </summary>
         public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.VeryHigh;
 
