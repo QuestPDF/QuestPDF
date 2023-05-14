@@ -17,6 +17,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(x => new DynamicImage
                 {
+                    TargetDpi = DocumentSettings.DefaultRasterDpi,
+                    CompressionQuality = ImageCompressionQuality.High,
                     Source = GenerateImage
                 })
                 .MeasureElement(new Size(300, 200))
@@ -29,6 +31,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(x => new DynamicImage
                 {
+                    TargetDpi = DocumentSettings.DefaultRasterDpi,
+                    CompressionQuality = ImageCompressionQuality.High,
                     Source = size => null
                 })
                 .DrawElement(new Size(300, 200))
@@ -41,6 +45,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(x => new DynamicImage
                 {
+                    TargetDpi = DocumentSettings.DefaultRasterDpi,
+                    CompressionQuality = ImageCompressionQuality.High,
                     Source = GenerateImage
                 })
                 .DrawElement(new Size(300, 200))
@@ -56,6 +62,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(x => new DynamicImage
                 {
+                    TargetDpi = DocumentSettings.DefaultRasterDpi * 3,
+                    CompressionQuality = ImageCompressionQuality.High,
                     Source = size =>
                     {
                         passedSize = size;
@@ -66,7 +74,8 @@ namespace QuestPDF.UnitTests
                 .ExpectCanvasDrawImage(Position.Zero, new Size(400, 300))
                 .CheckDrawResult();
             
-            passedSize.Should().BeEquivalentTo(new Size(400, 300));
+            passedSize.Width.Should().Be(1200);
+            passedSize.Height.Should().Be(900);
         }
         
         byte[] GenerateImage(ImageSize size)

@@ -37,6 +37,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(x => new ImageElement
                 {
+                    CompressionQuality = ImageCompressionQuality.High,
+                    TargetDpi = DocumentSettings.DefaultRasterDpi,
                     DocumentImage = GenerateDocumentImage(400, 300)
                 })
                 .DrawElement(new Size(300, 200))
@@ -47,7 +49,7 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Fluent_RecognizesImageProportions()
         {
-            var image = GenerateSkiaImage(600, 200).Encode(SKEncodedImageFormat.Png, 100).ToArray();
+            var image = GenerateDocumentImage(600, 200);
             
             TestPlan
                 .For(x =>
@@ -107,18 +109,11 @@ namespace QuestPDF.UnitTests
                 .GeneratePdf()
                 .Length;
         }
-        
-        SKImage GenerateSkiaImage(int width, int height)
-        {
-            var imageInfo = new SKImageInfo(width, height);
-            using var surface = SKSurface.Create(imageInfo);
-            return surface.Snapshot();
-        }
-        
+
         DocumentImage GenerateDocumentImage(int width, int height)
         {
-            var skiaImage = GenerateSkiaImage(width, height);
-            return DocumentImage.FromSkImage(skiaImage);
+            var image = Placeholders.Image(width, height);
+            return DocumentImage.FromBinaryData(image);
         }
     }
 }

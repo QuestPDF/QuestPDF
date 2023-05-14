@@ -237,6 +237,8 @@ namespace QuestPDF.UnitTests.TestEngine
                 
                 Child = new DynamicImage
                 {
+                    CompressionQuality = ImageCompressionQuality.Medium,
+                    TargetDpi = DocumentSettings.DefaultRasterDpi,
                     Source = Placeholders.Image
                 }
             };

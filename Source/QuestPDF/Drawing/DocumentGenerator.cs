@@ -249,6 +249,14 @@ namespace QuestPDF.Drawing
                     dynamicHost.ImageTargetDpi ??= imageRasterDpi;
                     dynamicHost.ImageCompressionQuality ??= imageCompressionQuality;
                 }
+
+                if (x is TextBlock textBlock)
+                {
+                    foreach (var textBlockElement in textBlock.Items.OfType<TextBlockElement>())
+                    {
+                        textBlockElement.Element.ApplyDefaultImageConfiguration(settings);
+                    }
+                }
             });
         }
 
