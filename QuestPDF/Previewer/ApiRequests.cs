@@ -11,7 +11,7 @@ internal sealed class IncompatibleVersionApiRequest
 
 internal sealed class NotifyPresenceApiRequest
 {
-    public string Id { get; set; }
+    public string ClientId { get; set; }
     public string LibraryVersion { get; set; }
     public bool IsDotnet6OrBeyond { get; set; }
     public bool IsDotnet3OrBeyond { get; set; }

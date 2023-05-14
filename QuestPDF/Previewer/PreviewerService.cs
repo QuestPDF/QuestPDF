@@ -128,11 +128,12 @@ namespace QuestPDF.Previewer
         #endregion
         
         #region Checking compatibility
-        
+
         private async Task<Version> GetPreviewerVersion()
         {
             using var result = await HttpClient.GetAsync("/version");
-            return await result.Content.ReadFromJsonAsync<Version>();
+            var response = await result.Content.ReadFromJsonAsync<string>();
+            return Version.Parse(response);
         }
 
         private async Task CheckVersionCompatibility(Version version)
@@ -173,7 +174,7 @@ namespace QuestPDF.Previewer
         {
             var payload = new NotifyPresenceApiRequest
             {
-                Id = ClientId,
+                ClientId = ClientId,
                 LibraryVersion = LibraryVersion,
                 IsDotnet6OrBeyond = RuntimeDetector.IsNet6OrGreater,
                 IsDotnet3OrBeyond = RuntimeDetector.IsNet3OrGreater,
