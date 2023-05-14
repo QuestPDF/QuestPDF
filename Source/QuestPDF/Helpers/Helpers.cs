@@ -68,10 +68,10 @@ namespace QuestPDF.Helpers
             {
                 ImageCompressionQuality.Best => 100,
                 ImageCompressionQuality.VeryHigh => 90,
-                ImageCompressionQuality.High => 80,
-                ImageCompressionQuality.Medium => 60,
-                ImageCompressionQuality.Low => 40,
-                ImageCompressionQuality.VeryLow => 20,
+                ImageCompressionQuality.High => 75,
+                ImageCompressionQuality.Medium => 50,
+                ImageCompressionQuality.Low => 25,
+                ImageCompressionQuality.VeryLow => 10,
                 _ => throw new ArgumentOutOfRangeException(nameof(quality), quality, null)
             };
         }
