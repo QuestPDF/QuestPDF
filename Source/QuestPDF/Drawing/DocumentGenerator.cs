@@ -254,7 +254,7 @@ namespace QuestPDF.Drawing
                 {
                     foreach (var textBlockElement in textBlock.Items.OfType<TextBlockElement>())
                     {
-                        textBlockElement.Element.ApplyDefaultImageConfiguration(settings);
+                        textBlockElement.Element.ApplyDefaultImageConfiguration(imageRasterDpi, imageCompressionQuality);
                     }
                 }
             });
