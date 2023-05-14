@@ -4,7 +4,7 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF.Previewer</PackageId>
-        <Version>2023.4.0</Version>
+        <Version>2023.5.0</Version>
         <PackAsTool>true</PackAsTool>
         <ToolCommandName>questpdf-previewer</ToolCommandName>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API.</PackageDescription>
@@ -37,12 +37,12 @@
     
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Avalonia" Version="0.10.18" />
-        <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
-        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
+        <PackageReference Include="Avalonia" Version="0.10.19" />
+        <PackageReference Include="Avalonia.Desktop" Version="0.10.19" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="0.10.19" />
         <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="0.10.18" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.18" />
-        <PackageReference Include="ReactiveUI" Version="18.4.1" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.19" />
+        <PackageReference Include="ReactiveUI" Version="18.4.44" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
         <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="2.88.3" />
         <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.3" />

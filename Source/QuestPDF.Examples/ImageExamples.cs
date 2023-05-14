@@ -103,8 +103,8 @@ namespace QuestPDF.Examples
                     {
                         column.Spacing(10);
                         
-                        column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.VeryLow);
-                        column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.High);
+                        column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.VeryLow).WithRasterDpi(72);
+                        column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.High).WithRasterDpi(72);
                     });
                 });
         }
