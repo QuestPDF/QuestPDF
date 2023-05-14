@@ -95,6 +95,28 @@ namespace QuestPDF.UnitTests
             (documentWithMultipleImagesSize / (float)documentWithSingleImageSize).Should().BeInRange(9.9f, 10);
             (documentWithSingleImageUsedMultipleTimesSize / (float)documentWithSingleImageSize).Should().BeInRange(1f, 1.05f);
         }
+        
+        [Test]
+        public void ImageCompressionHasImpactOnDocumentSize()
+        {
+            var photo = File.ReadAllBytes("Resources/photo.jpg");
+
+            var veryLowCompressionSize = GetDocumentSize(container => container.Image(photo).WithCompressionQuality(ImageCompressionQuality.VeryLow));
+            var bestCompressionSize = GetDocumentSize(container => container.Image(photo).WithCompressionQuality(ImageCompressionQuality.Best));
+
+            (bestCompressionSize / (float)veryLowCompressionSize).Should().BeGreaterThan(25);
+        }
+        
+        [Test]
+        public void TargetDpiHasImpactOnDocumentSize()
+        {
+            var photo = File.ReadAllBytes("Resources/photo.jpg");
+            
+            var lowDpiSize = GetDocumentSize(container => container.Image(photo).WithRasterDpi(12));
+            var highDpiSize = GetDocumentSize(container => container.Image(photo).WithRasterDpi(144));
+
+            (highDpiSize / (float)lowDpiSize).Should().BeGreaterThan(40);
+        }
 
         private static int GetDocumentSize(Action<IContainer> container)
         {

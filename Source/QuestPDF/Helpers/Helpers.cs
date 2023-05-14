@@ -94,7 +94,9 @@ namespace QuestPDF.Helpers
             if (image.Width == targetResolution.Width && image.Height == targetResolution.Height)
                 return CompressImage(image, compressionQuality);
             
-            using var resultImage = SKImage.Create(image.Info);
+            var imageInfo = new SKImageInfo(targetResolution.Width, targetResolution.Height, image.Info.ColorType, image.Info.AlphaType, image.Info.ColorSpace);
+            
+            using var resultImage = SKImage.Create(imageInfo);
             image.ScalePixels(resultImage.PeekPixels(), SKFilterQuality.Medium);
             
             return CompressImage(resultImage, compressionQuality);
