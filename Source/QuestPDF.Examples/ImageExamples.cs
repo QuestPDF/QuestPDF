@@ -5,6 +5,7 @@ using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
@@ -64,6 +65,46 @@ namespace QuestPDF.Examples
                     {
                         layers.Layer().Image(Placeholders.Image);
                         layers.PrimaryLayer().Padding(25).Image("multilingual.png");
+                    });
+                });
+        }
+
+        [Test]
+        public void DpiSetting()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(400, 600)
+                .ProduceImages()
+                .ShowResults()
+                .Render(page =>
+                {
+                    page.Padding(10).Column(column =>
+                    {
+                        column.Spacing(10);
+                        
+                        column.Item().Image("photo.jpg").WithRasterDpi(16);
+                        column.Item().Image("photo.jpg").WithRasterDpi(72);
+                    });
+                });
+        }
+        
+        [Test]
+        public void CompressionSetting()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(400, 600)
+                .ProduceImages()
+                .ShowResults()
+                .Render(page =>
+                {
+                    page.Padding(10).Column(column =>
+                    {
+                        column.Spacing(10);
+                        
+                        column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.VeryLow);
+                        column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.High);
                     });
                 });
         }

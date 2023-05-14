@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using FluentAssertions;
@@ -62,19 +63,19 @@ namespace QuestPDF.UnitTests
         [Test]
         public void UsingSharedImageShouldNotDrasticallyIncreaseDocumentSize()
         {
-            var placeholderImage = Placeholders.Image(1000, 200);
+            var photo = File.ReadAllBytes("Resources/photo.jpg");
 
             var documentWithSingleImageSize = GetDocumentSize(container =>
             {
-                container.Image(placeholderImage);
+                container.Image(photo);
             });
 
             var documentWithMultipleImagesSize = GetDocumentSize(container =>
             {
                 container.Column(column =>
                 {
-                    foreach (var i in Enumerable.Range(0, 100))
-                        column.Item().Image(placeholderImage);
+                    foreach (var i in Enumerable.Range(0, 10))
+                        column.Item().Image(photo);
                 });
             });
 
@@ -82,25 +83,17 @@ namespace QuestPDF.UnitTests
             {
                 container.Column(column =>
                 {
-                    var sharedImage = DocumentImage.FromBinaryData(placeholderImage).DisposeAfterDocumentGeneration();
+                    var sharedImage = DocumentImage.FromBinaryData(photo).DisposeAfterDocumentGeneration();
                     
-                    foreach (var i in Enumerable.Range(0, 100))
+                    foreach (var i in Enumerable.Range(0, 10))
                         column.Item().Image(sharedImage);
                 });
             });
 
-            (documentWithMultipleImagesSize / (float)documentWithSingleImageSize).Should().BeInRange(90, 100);
-            (documentWithSingleImageUsedMultipleTimesSize / (float)documentWithSingleImageSize).Should().BeInRange(1f, 1.5f);
+            (documentWithMultipleImagesSize / (float)documentWithSingleImageSize).Should().BeInRange(9.9f, 10);
+            (documentWithSingleImageUsedMultipleTimesSize / (float)documentWithSingleImageSize).Should().BeInRange(1f, 1.05f);
         }
-        
-        [Test]
-        public void ImageShouldNotBeScaledAboveItsNativeResolution()
-        {
-            var image = Placeholders.Image(200, 200);
 
-            // TODO
-        }
-        
         private static int GetDocumentSize(Action<IContainer> container)
         {
             return Document

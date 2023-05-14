@@ -27,4 +27,10 @@
       </EmbeddedResource>
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Resources\photo.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
