@@ -7,12 +7,12 @@ namespace QuestPDF.Drawing
 {
     internal class ImageCanvas : SkiaCanvasBase
     {
-        private DocumentSettings Settings { get; }
+        private ImageGenerationSettings Settings { get; }
         private SKSurface Surface { get; set; }
 
         internal ICollection<byte[]> Images { get; } = new List<byte[]>();
         
-        public ImageCanvas(DocumentSettings settings)
+        public ImageCanvas(ImageGenerationSettings settings)
         {
             Settings = settings;
         }
@@ -30,7 +30,7 @@ namespace QuestPDF.Drawing
 
         public override void BeginPage(Size size)
         {
-            var scalingFactor = Settings.ImageRasterDpi / (float) PageSizes.PointsPerInch;
+            var scalingFactor = Settings.RasterDpi / (float) PageSizes.PointsPerInch;
             var imageInfo = new SKImageInfo((int) (size.Width * scalingFactor), (int) (size.Height * scalingFactor));
             
             Surface = SKSurface.Create(imageInfo);
@@ -42,7 +42,7 @@ namespace QuestPDF.Drawing
         public override void EndPage()
         {
             Canvas.Save();
-            var image = Surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).ToArray();
+            var image = Surface.Snapshot().Encode(Settings.Format, Settings.Quality).ToArray();
             Images.Add(image);
             
             Canvas.Dispose();
