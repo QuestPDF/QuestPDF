@@ -109,19 +109,19 @@ namespace QuestPDF.Fluent
     {
         public static ImageDescriptor Image(this IContainer parent, byte[] imageData)
         {
-            var image = Infrastructure.Image.FromBinaryData(imageData).DisposeAfterDocumentGeneration();
+            var image = Infrastructure.Image.FromBinaryData(imageData);
             return parent.Image(image);
         }
         
         public static ImageDescriptor Image(this IContainer parent, string filePath)
         {
-            var image = Infrastructure.Image.FromFile(filePath).DisposeAfterDocumentGeneration();
+            var image = Infrastructure.Image.FromFile(filePath);
             return parent.Image(image);
         }
         
         public static ImageDescriptor Image(this IContainer parent, Stream fileStream)
         {
-            var image = Infrastructure.Image.FromStream(fileStream).DisposeAfterDocumentGeneration();
+            var image = Infrastructure.Image.FromStream(fileStream);
             return parent.Image(image);
         }
         

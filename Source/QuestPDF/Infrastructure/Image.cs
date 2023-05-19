@@ -13,28 +13,29 @@ namespace QuestPDF.Infrastructure
         internal ImageCompressionQuality CompressionQuality { get; set; }
     }
     
-    public class Image : IDisposable
+    public class Image
     {
         internal SKImage SkImage { get; }
         internal ImageSize Size { get; }
-        internal bool IsDocumentScoped { get; set; }
+        internal bool IsDocumentScoped { get; }
         
         internal LinkedList<(GetImageVersionRequest request, SKImage image)> ScaledImageCache { get; } = new();
 
-        private Image(SKImage image)
+        internal Image(SKImage image, bool isDocumentScoped)
         {
             SkImage = image;
+            IsDocumentScoped = isDocumentScoped;
             Size = new ImageSize(image.Width, image.Height);
         }
-
-        public void Dispose()
+        
+        internal void Dispose()
         {
             SkImage.Dispose();
 
             foreach (var cacheKey in ScaledImageCache)
                 cacheKey.image.Dispose();
         } 
-        
+
         #region Scaling Image
 
         internal SKImage GetVersionOfSize(GetImageVersionRequest request)
@@ -79,15 +80,51 @@ namespace QuestPDF.Infrastructure
             if (image == null)
                 throw new DocumentComposeException("Cannot load or decode provided image.");
 
-            return new Image(image);
+            return new Image(image, true);
         }
 
         #endregion
+    }
 
-        internal Image DisposeAfterDocumentGeneration()
+    public class SharedImage : Image, IDisposable
+    {
+        internal SharedImage(SKImage image) : base(image, false)
         {
-            IsDocumentScoped = true;
-            return this;
+            
         }
+        
+        public void Dispose()
+        {
+            base.Dispose();
+        } 
+        
+        #region public constructors
+        
+        public static new SharedImage FromBinaryData(byte[] imageData)
+        {
+            return CreateImage(SKImage.FromEncodedData(imageData));
+        }
+
+        public static new SharedImage FromFile(string filePath)
+        {
+            return CreateImage(SKImage.FromEncodedData(filePath));
+        }
+
+        public static new SharedImage FromStream(Stream fileStream)
+        {
+            return CreateImage(SKImage.FromEncodedData(fileStream));
+        }
+
+        private static SharedImage CreateImage(SKImage? image)
+        {
+            if (image == null)
+                throw new DocumentComposeException("Cannot load or decode provided image.");
+
+            var result = new SharedImage(image);
+            
+            return result;
+        }
+
+        #endregion
     }
 }
