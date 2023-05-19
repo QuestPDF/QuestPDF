@@ -51,7 +51,7 @@ namespace QuestPDF.Drawing
             
             var settings = document.GetSettings();
             var canvas = new ImageCanvas(settings);
-            RenderDocument(canvas, document, settings);
+            RenderDocument(canvas, document, settings, useOriginalImages: true);
 
             return canvas.Images;
         }
@@ -92,7 +92,7 @@ namespace QuestPDF.Drawing
             return canvas.Pictures;
         }
         
-        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings)
+        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings, bool useOriginalImages = false)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             var container = new DocumentContainer();
@@ -101,7 +101,7 @@ namespace QuestPDF.Drawing
             
             ApplyInheritedAndGlobalTexStyle(content, TextStyle.Default);
             ApplyContentDirection(content, settings.ContentDirection);
-            ApplyDefaultImageConfiguration(content, settings.ImageRasterDpi, settings.ImageCompressionQuality);
+            ApplyDefaultImageConfiguration(content, settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
             
             var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
             
@@ -228,7 +228,7 @@ namespace QuestPDF.Drawing
                 ApplyContentDirection(child, direction);
         }
         
-        internal static void ApplyDefaultImageConfiguration(this Element? content, int imageRasterDpi, ImageCompressionQuality imageCompressionQuality)
+        internal static void ApplyDefaultImageConfiguration(this Element? content, int imageRasterDpi, ImageCompressionQuality imageCompressionQuality, bool useOriginalImages)
         {
             content.VisitChildren(x =>
             {
@@ -236,25 +236,28 @@ namespace QuestPDF.Drawing
                 {
                     image.TargetDpi ??= imageRasterDpi;
                     image.CompressionQuality ??= imageCompressionQuality;
+                    image.UseOriginalImage |= useOriginalImages;
                 }
 
                 if (x is QuestPDF.Elements.DynamicImage dynamicImage)
                 {
                     dynamicImage.TargetDpi ??= imageRasterDpi;
                     dynamicImage.CompressionQuality ??= imageCompressionQuality;
+                    dynamicImage.UseOriginalImage |= useOriginalImages;
                 }
 
                 if (x is DynamicHost dynamicHost)
                 {
                     dynamicHost.ImageTargetDpi ??= imageRasterDpi;
                     dynamicHost.ImageCompressionQuality ??= imageCompressionQuality;
+                    dynamicHost.UseOriginalImage |= useOriginalImages;
                 }
 
                 if (x is TextBlock textBlock)
                 {
                     foreach (var textBlockElement in textBlock.Items.OfType<TextBlockElement>())
                     {
-                        textBlockElement.Element.ApplyDefaultImageConfiguration(imageRasterDpi, imageCompressionQuality);
+                        textBlockElement.Element.ApplyDefaultImageConfiguration(imageRasterDpi, imageCompressionQuality, useOriginalImages);
                     }
                 }
             });

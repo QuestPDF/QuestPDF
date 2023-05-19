@@ -16,6 +16,7 @@ namespace QuestPDF.Elements
         
         internal int? ImageTargetDpi { get; set; }
         internal ImageCompressionQuality? ImageCompressionQuality { get; set; }
+        internal bool UseOriginalImage { get; set; }
         
         public DynamicHost(DynamicComponentProxy child)
         {
@@ -63,6 +64,7 @@ namespace QuestPDF.Elements
                 
                 ImageTargetDpi = ImageTargetDpi.Value,
                 ImageCompressionQuality = ImageCompressionQuality.Value,
+                UseOriginalImage = UseOriginalImage,
                 
                 PageNumber = PageContext.CurrentPage,
                 TotalPages = PageContext.GetLocation(Infrastructure.PageContext.DocumentLocation).PageEnd,
@@ -88,6 +90,7 @@ namespace QuestPDF.Elements
 
         internal int ImageTargetDpi { get; set; }
         internal ImageCompressionQuality ImageCompressionQuality { get; set; }
+        internal bool UseOriginalImage { get; set; }
         
         public int PageNumber { get; internal set; }
         public int TotalPages { get; internal set; }
@@ -100,7 +103,7 @@ namespace QuestPDF.Elements
             
             container.ApplyInheritedAndGlobalTexStyle(TextStyle);
             container.ApplyContentDirection(ContentDirection);
-            container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality);
+            container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality, UseOriginalImage);
             
             container.InjectDependencies(PageContext, Canvas);
             container.VisitChildren(x => (x as IStateResettable)?.ResetState());
