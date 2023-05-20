@@ -13,6 +13,7 @@ namespace QuestPDF.Elements
     {
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
+        internal bool UseOriginalImage { get; set; }
         public GenerateDynamicImageDelegate? Source { get; set; }
         
         internal override SpacePlan Measure(Size availableSpace)
@@ -31,6 +32,13 @@ namespace QuestPDF.Elements
                 return;
 
             using var originalImage = SKImage.FromEncodedData(imageData);
+            
+            if (UseOriginalImage)
+            {
+                Canvas.DrawImage(originalImage, Position.Zero, availableSpace);
+                return;
+            }
+            
             using var compressedImage = originalImage.CompressImage(CompressionQuality.Value);
 
             var targetImage = Helpers.Helpers.GetImageWithSmallerSize(originalImage, compressedImage);

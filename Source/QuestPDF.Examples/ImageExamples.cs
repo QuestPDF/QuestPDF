@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Examples.Engine;
@@ -79,11 +80,11 @@ namespace QuestPDF.Examples
                 .ShowResults()
                 .Render(page =>
                 {
-                    page.Padding(10).Column(column =>
+                    page.Padding(15).Column(column =>
                     {
-                        column.Spacing(10);
+                        column.Spacing(15);
                         
-                        column.Item().Image("photo.jpg").WithRasterDpi(16);
+                        column.Item().Image("photo.jpg").WithRasterDpi(16).FitUnproportionally();
                         column.Item().Image("photo.jpg").WithRasterDpi(72);
                     });
                 });
@@ -99,12 +100,40 @@ namespace QuestPDF.Examples
                 .ShowResults()
                 .Render(page =>
                 {
-                    page.Padding(10).Column(column =>
+                    page.Padding(15).Column(column =>
                     {
-                        column.Spacing(10);
+                        column.Spacing(15);
                         
                         column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.VeryLow).WithRasterDpi(72);
                         column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.High).WithRasterDpi(72);
+                    });
+                });
+        }
+        
+        [Test]
+        public void ReusingImage_With()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(400, 600)
+                .ProduceImages()
+                .ShowResults()
+                .Render(page =>
+                {
+                    page.Padding(15).Column(column =>
+                    {
+                        column.Spacing(15);
+
+                        var image = Image.FromFile("checkbox.png");
+                        
+                        foreach (var i in Enumerable.Range(0, 5))
+                        {
+                            column.Item().Row(row =>
+                            {
+                                row.AutoItem().Width(24).Image(image);
+                                row.RelativeItem().PaddingLeft(8).AlignMiddle().Text(Placeholders.Label()).FontSize(16);
+                            });
+                        }
                     });
                 });
         }

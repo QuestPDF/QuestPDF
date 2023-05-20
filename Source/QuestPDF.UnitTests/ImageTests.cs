@@ -85,7 +85,7 @@ namespace QuestPDF.UnitTests
             {
                 container.Column(column =>
                 {
-                    var sharedImage = DocumentImage.FromBinaryData(photo).DisposeAfterDocumentGeneration();
+                    var sharedImage = DocumentImage.FromBinaryData(photo);
                     
                     foreach (var i in Enumerable.Range(0, 10))
                         column.Item().Image(sharedImage);
