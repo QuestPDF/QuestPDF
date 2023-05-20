@@ -62,6 +62,17 @@ namespace QuestPDF.Helpers
             return size.Width < 0f || size.Height < 0f;
         }
         
+        internal static SKEncodedImageFormat ToSkImageFormat(this ImageFormat format)
+        {
+            return format switch
+            {
+                ImageFormat.Jpeg => SKEncodedImageFormat.Jpeg,
+                ImageFormat.Png => SKEncodedImageFormat.Png,
+                ImageFormat.Webp=> SKEncodedImageFormat.Webp,
+                _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
+            };
+        }
+        
         internal static int ToQualityValue(this ImageCompressionQuality quality)
         {
             return quality switch

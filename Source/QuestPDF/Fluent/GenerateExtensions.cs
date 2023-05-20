@@ -75,30 +75,42 @@ namespace QuestPDF.Fluent
 
         public static IEnumerable<byte[]> GenerateImages(this IDocument document)
         {
-            return DocumentGenerator.GenerateImages(document);
+            return document.GenerateImages(ImageGenerationSettings.Default);
         }
-        
+
+
+        public static IEnumerable<byte[]> GenerateImages(this IDocument document, ImageGenerationSettings settings)
+        {
+            return DocumentGenerator.GenerateImages(document, settings);
+        }
+
         /// <param name="filePath">Method should return fileName for given index</param>
         public static void GenerateImages(this IDocument document, Func<int, string> filePath)
         {
+            document.GenerateImages(filePath, ImageGenerationSettings.Default);
+        }
+
+        /// <param name="filePath">Method should return fileName for given index</param>
+        public static void GenerateImages(this IDocument document, Func<int, string> filePath, ImageGenerationSettings settings)
+        {
             var index = 0;
-            
-            foreach (var imageData in document.GenerateImages())
+
+            foreach (var imageData in document.GenerateImages(settings))
             {
                 var path = filePath(index);
-                
+
                 if (File.Exists(path))
                     File.Delete(path);
-                
+
                 File.WriteAllBytes(path, imageData);
                 index++;
             }
         }
 
         #endregion
-        
+
         #region Helpers
-        
+
         private static void OpenFileUsingDefaultProgram(string filePath)
         {
             var process = new Process
