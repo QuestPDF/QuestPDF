@@ -7,20 +7,19 @@ namespace QuestPDF.Infrastructure
         /// <summary>
         /// The file format used to encode the image(s).
         /// </summary>
-        public SKEncodedImageFormat Format { get; set; } = SKEncodedImageFormat.Png;
+        public ImageFormat ImageFormat { get; set; } = ImageFormat.Png;
 
         /// <summary>
-        /// The quality level to use for the image(s). This is in the range from 0-100.
+        /// Encoding quality controls the trade-off between size and quality.
+        /// The default value is "high quality".
         /// </summary>
-        public int Quality { get; set; } = 100;
+        public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.VeryHigh;
 
         /// <summary>
-        /// The DPI (pixels-per-inch) at which images and features without native PDF support will be rasterized.
-        /// A larger DPI would create a PDF that reflects the original intent with better fidelity, but it can make for larger PDF files too, which would use more memory while rendering, and it would be slower to be processed or sent online or to printer.
-        /// When generating images, this parameter also controls the resolution of the generated content.
+        /// The DPI (pixels-per-inch) at which the document will be rasterized. This parameter controls the resolution of produced images.
         /// Default value is 144.
         /// </summary>
-        public int RasterDpi { get; set; } = 144;
+        public int RasterDpi { get; set; } = DocumentSettings.DefaultRasterDpi * 2;
 
 
         public static ImageGenerationSettings Default => new ImageGenerationSettings();

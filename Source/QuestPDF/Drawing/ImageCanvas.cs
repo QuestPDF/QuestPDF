@@ -42,7 +42,7 @@ namespace QuestPDF.Drawing
         public override void EndPage()
         {
             Canvas.Save();
-            var image = Surface.Snapshot().Encode(Settings.Format, Settings.Quality).ToArray();
+            var image = Surface.Snapshot().Encode(Settings.ImageFormat.ToSkImageFormat(), Settings.ImageCompressionQuality.ToQualityValue()).ToArray();
             Images.Add(image);
             
             Canvas.Dispose();
