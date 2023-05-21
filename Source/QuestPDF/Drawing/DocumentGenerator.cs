@@ -45,13 +45,14 @@ namespace QuestPDF.Drawing
                 throw new ArgumentException("The library requires a Stream object with the 'seek' capability available (the CanSeek flag). Please consider using the MemoryStream class.");
         }
         
-        internal static ICollection<byte[]> GenerateImages(IDocument document, ImageGenerationSettings settings)
+        internal static ICollection<byte[]> GenerateImages(IDocument document, ImageGenerationSettings imageGenerationSettings)
         {
             ValidateLicense();
             
             var documentSettings = document.GetSettings();
-            documentSettings.ImageRasterDpi = settings.RasterDpi;
-            var canvas = new ImageCanvas(settings);
+            documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
+            
+            var canvas = new ImageCanvas(imageGenerationSettings);
             RenderDocument(canvas, document, documentSettings, useOriginalImages: true);
 
             return canvas.Images;
