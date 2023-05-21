@@ -12,12 +12,6 @@ namespace QuestPDF.Elements
         internal bool UseOriginalImage { get; set; }
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
-
-        ~Image()
-        {
-            if (DocumentImage is { IsDocumentScoped: true })
-                DocumentImage?.Dispose();
-        }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
