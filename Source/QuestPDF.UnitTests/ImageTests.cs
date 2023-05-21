@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Drawing;
@@ -118,6 +119,47 @@ namespace QuestPDF.UnitTests
             (highDpiSize / (float)lowDpiSize).Should().BeGreaterThan(40);
         }
 
+        [Test]
+        public void InternalImageIsDisposedAfterDocumentGeneration()
+        {
+            var image = QuestPDF.Infrastructure.Image.FromBinaryData(Placeholders.Image(100, 100));
+            image.IsDisposed.Should().BeFalse();
+            
+            GeneratePdf();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            
+            image.IsDisposed.Should().BeTrue();
+
+            byte[] GeneratePdf()
+            {
+                // move Document object to separate closure to ensure it has no active references in the hierarchy
+                return Document.Create(x => x.Page(page => page.Content().Image(image))).GeneratePdf();
+            }
+        }
+        
+        [Test]
+        public void SharedImageIsDisposedAfterDocumentGeneration()
+        {
+            var image = QuestPDF.Infrastructure.SharedImage.FromBinaryData(Placeholders.Image(100, 100));
+            image.IsDisposed.Should().BeFalse();
+            
+            GeneratePdf();
+            GC.Collect();
+            Thread.Sleep(0);
+            
+            image.IsDisposed.Should().BeFalse();
+            
+            image.Dispose();
+            image.IsDisposed.Should().BeTrue();
+
+            byte[] GeneratePdf()
+            {
+                // move Document object to separate closure to ensure it has no active references in the hierarchy
+                return Document.Create(x => x.Page(page => page.Content().Image(image))).GeneratePdf();
+            }
+        }
+        
         private static int GetDocumentSize(Action<IContainer> container)
         {
             return Document

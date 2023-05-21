@@ -18,6 +18,7 @@ namespace QuestPDF.Infrastructure
         internal SKImage SkImage { get; }
         internal ImageSize Size { get; }
         internal bool IsDocumentScoped { get; }
+        internal bool IsDisposed { get; private set; }
         
         internal LinkedList<(GetImageVersionRequest request, SKImage image)> ScaledImageCache { get; } = new();
 
@@ -30,10 +31,15 @@ namespace QuestPDF.Infrastructure
         
         internal void Dispose()
         {
+            if (IsDisposed)
+                return;
+            
             SkImage.Dispose();
 
             foreach (var cacheKey in ScaledImageCache)
                 cacheKey.image.Dispose();
+
+            IsDisposed = true;
         } 
 
         #region Scaling Image
