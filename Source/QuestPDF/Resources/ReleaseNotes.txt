@@ -6,3 +6,9 @@ Version 2023.5.0
 - Refactoring: moved the PdfA setting from the DocumentMetadata class to the DocumentSettings class
 - Improved Image API by providing additional FluentA API methods
 - Improvement: the GenerateImage element now provides the expected image resolution, abstracting away the physical area size and target image DPI
+
+Version 2023.5.1
+- Adjusted the Image and SharedImage APIs,
+- Improved image generation performance,
+- Provided the ability to configure the image generation process: image format, compression quality and raster DPI.
+ 
