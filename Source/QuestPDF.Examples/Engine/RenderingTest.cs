@@ -122,11 +122,7 @@ namespace QuestPDF.Examples.Engine
 
             if (ResultType == RenderingTestResult.Pdf)
             {
-                var fileName = $"{FileNamePrefix}.pdf";
-                document.GeneratePdf(fileName);
-                
-                if (ShowResult && ShowingResultsEnabled)
-                    Process.Start("explorer", fileName);
+                document.GeneratePdfAndShow();
             }
         }
     }

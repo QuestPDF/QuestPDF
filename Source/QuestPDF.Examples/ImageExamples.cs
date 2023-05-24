@@ -7,6 +7,7 @@ using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Examples
 {
@@ -151,42 +152,47 @@ namespace QuestPDF.Examples
                     .Render(page => page.Image("non_existent.png"));
             });
         }
-        
+
         [Test]
-        public void ReusingTheSameImageFileShouldBePossible()
+        public void DrawingImageWithTransparency()
         {
-            var fileName = Path.GetTempFileName() + ".jpg";
-            
-            try
-            {
-                var image = Placeholders.Image(300, 100);
-                
-                using var file = File.Create(fileName);
-                file.Write(image);
-                file.Dispose();
-                
-                RenderingTest
-                    .Create()
-                    .ProducePdf()
-                    .PageSize(PageSizes.A4)
-                    .ShowResults()
-                    .Render(container =>
+            RenderingTest
+                .Create()
+                .PageSize(PageSizes.A4)
+                .ProducePdf()
+                .ShowResults()
+                .RenderDocument(document =>
+                {
+                    document.Page(page =>
                     {
-                        container
-                            .Padding(20)
-                            .Column(column =>
-                            {
-                                column.Spacing(20);
-                                
-                                column.Item().Image(fileName);
-                                column.Item().Image(fileName);
-                                column.Item().Image(fileName);
-                            });
+                        page.Content()
+                            .AlignCenter()
+                            .Text("Test")
+                            .FontSize(192)
+                            .FontColor(Colors.Blue.Medium)
+                            .Bold();
+                        
+                        var image = LoadImageWithTransparency("photo.jpg", 0.75f);
+                        page.Foreground().Image(image);
                     });
-            }
-            finally
+                });
+
+            QuestPDF.Infrastructure.Image LoadImageWithTransparency(string fileName, float transparency)
             {
-                File.Delete(fileName);
+                using var originalImage = SKImage.FromEncodedData(fileName);
+
+                using var surface = SKSurface.Create(originalImage.Width, originalImage.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var canvas = surface.Canvas;                
+
+                using var transparencyPaint = new SKPaint
+                {
+                    ColorFilter = SKColorFilter.CreateBlendMode(SKColors.White.WithAlpha((byte)(transparency * 255)), SKBlendMode.DstIn)
+                };
+                
+                canvas.DrawImage(originalImage, new SKPoint(0, 0), transparencyPaint);
+
+                var encodedImage = surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).ToArray();
+                return Image.FromBinaryData(encodedImage);
             }
         }
     }
