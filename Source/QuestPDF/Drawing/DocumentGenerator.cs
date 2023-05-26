@@ -97,6 +97,26 @@ namespace QuestPDF.Drawing
         internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings, bool useOriginalImages = false)
             where TCanvas : ICanvas, IRenderingCanvas
         {
+            if (document is MergedDocument { PageNumberHandling: MergedDocumentPageNumberHandling.Separate } mergedDocument)
+            {
+                canvas.BeginDocument();
+                
+                foreach (var singleDocument in mergedDocument.Documents)
+                    RenderDocumentImpl(canvas, singleDocument, settings, useOriginalImages);
+                
+                canvas.EndDocument();
+                
+                return;
+            }
+
+            canvas.BeginDocument();
+            RenderDocumentImpl(canvas, document, settings, useOriginalImages);
+            canvas.EndDocument();
+        }
+        
+        internal static void RenderDocumentImpl<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings, bool useOriginalImages = false)
+            where TCanvas : ICanvas, IRenderingCanvas
+        {
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
@@ -120,8 +140,6 @@ namespace QuestPDF.Drawing
         {
             InjectDependencies(content, pageContext, canvas);
             content.VisitChildren(x => (x as IStateResettable)?.ResetState());
-            
-            canvas.BeginDocument();
 
             var currentPage = 1;
             
@@ -162,8 +180,6 @@ namespace QuestPDF.Drawing
 
                 currentPage++;
             }
-            
-            canvas.EndDocument();
 
             void ThrowLayoutException()
             {
