@@ -125,7 +125,7 @@ namespace QuestPDF.Fluent
             return parent.Image(image);
         }
         
-        internal static ImageDescriptor Image(this IContainer parent, Infrastructure.Image image)
+        public static ImageDescriptor Image(this IContainer parent, Infrastructure.Image image)
         {
             if (image == null)
                 throw new DocumentComposeException("Cannot load or decode provided image.");
