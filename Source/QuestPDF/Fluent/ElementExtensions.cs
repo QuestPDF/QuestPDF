@@ -126,7 +126,7 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new Section
             {
-                LocationName = sectionName
+                SectionName = sectionName
             });
         }
         

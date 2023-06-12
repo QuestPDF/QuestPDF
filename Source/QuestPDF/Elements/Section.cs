@@ -4,7 +4,8 @@ namespace QuestPDF.Elements
 {
     internal class Section : ContainerElement, IStateResettable
     {
-        public string LocationName { get; set; }
+        public int DocumentId { get; set; }
+        public string SectionName { get; set; }
         private bool IsRendered { get; set; }
         
         public void ResetState()
@@ -14,14 +15,21 @@ namespace QuestPDF.Elements
         
         internal override void Draw(Size availableSpace)
         {
+            var targetName = GetTargetName(DocumentId, SectionName);
+            
             if (!IsRendered)
             {
-                Canvas.DrawSection(LocationName);
+                Canvas.DrawSection(targetName);
                 IsRendered = true;
             }
             
-            PageContext.SetSectionPage(LocationName);
+            PageContext.SetSectionPage(targetName);
             base.Draw(availableSpace);
+        }
+        
+        internal static string GetTargetName(int documentId, string locationName)
+        {
+            return $"{documentId} | {locationName}";
         }
     }
 }

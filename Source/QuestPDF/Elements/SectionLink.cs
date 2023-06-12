@@ -5,6 +5,7 @@ namespace QuestPDF.Elements
 {
     internal class SectionLink : ContainerElement
     {
+        public int DocumentId { get; set; }
         public string SectionName { get; set; }
         
         internal override void Draw(Size availableSpace)
@@ -14,7 +15,8 @@ namespace QuestPDF.Elements
             if (targetSize.Type == SpacePlanType.Wrap)
                 return;
 
-            Canvas.DrawSectionLink(SectionName, targetSize);
+            var targetName = Section.GetTargetName(DocumentId, SectionName);
+            Canvas.DrawSectionLink(targetName, targetSize);
             base.Draw(availableSpace);
         }
     }

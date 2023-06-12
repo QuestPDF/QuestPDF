@@ -97,30 +97,35 @@ namespace QuestPDF.Drawing
         internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings, bool useOriginalImages = false)
             where TCanvas : ICanvas, IRenderingCanvas
         {
-            if (document is MergedDocument { PageNumberHandling: MergedDocumentPageNumberHandling.Separate } mergedDocument)
+            if (document is MergedDocument mergedDocument)
             {
+                var pageContext = mergedDocument.PageNumberHandling == MergedDocumentPageNumberHandling.Continuous
+                    ? new PageContext()
+                    : null;
+                
                 canvas.BeginDocument();
-                
-                foreach (var singleDocument in mergedDocument.Documents)
-                    RenderDocumentImpl(canvas, singleDocument, settings, useOriginalImages);
-                
+
+                for (var documentId = 0; documentId < mergedDocument.Documents.Count; documentId++) 
+                    RenderDocumentImplementation(canvas, pageContext, mergedDocument.Documents[documentId], settings, useOriginalImages, documentId);
+
                 canvas.EndDocument();
                 
                 return;
             }
 
             canvas.BeginDocument();
-            RenderDocumentImpl(canvas, document, settings, useOriginalImages);
+            RenderDocumentImplementation(canvas, null, document, settings, useOriginalImages);
             canvas.EndDocument();
         }
         
-        internal static void RenderDocumentImpl<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings, bool useOriginalImages = false)
+        internal static void RenderDocumentImplementation<TCanvas>(TCanvas canvas, PageContext? pageContext, IDocument document, DocumentSettings settings, bool useOriginalImages = false, int documentId = 0)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             var container = new DocumentContainer();
             document.Compose(container);
             var content = container.Compose();
-            
+
+            ApplyDocumentId(content, documentId);
             ApplyInheritedAndGlobalTexStyle(content, TextStyle.Default);
             ApplyContentDirection(content, settings.ContentDirection);
             ApplyDefaultImageConfiguration(content, settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
@@ -130,7 +135,7 @@ namespace QuestPDF.Drawing
             if (Settings.EnableCaching)
                 ApplyCaching(content);
 
-            var pageContext = new PageContext();
+            pageContext ??= new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
             RenderPass(pageContext, canvas, content, debuggingState);
         }
@@ -308,6 +313,25 @@ namespace QuestPDF.Drawing
 
             foreach (var child in content.GetChildren())
                 ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
+        }
+        
+        /// <summary>
+        /// This method is important when merging multiple documents together.
+        /// Applying unique document Id to all section names and associated links, prevents from name collisions.
+        /// </summary>
+        internal static void ApplyDocumentId(this Element? content, int documentId)
+        {
+            content.VisitChildren(x =>
+            {
+                if (x is Section section)
+                    section.DocumentId = documentId;
+                
+                else if (x is SectionLink sectionLink)
+                    sectionLink.DocumentId = documentId;
+                
+                else if (x is DynamicHost dynamicHost)
+                    dynamicHost.DocumentId = documentId;
+            });
         }
     }
 }

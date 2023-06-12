@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 
 namespace QuestPDF.Examples
 {
@@ -39,25 +40,39 @@ namespace QuestPDF.Examples
                 .Render(mergedDocument);
         }
 
-
         private static Document CreateDocument(string content)
         {
-            return Document.Create(d =>
+            return Document.Create(document =>
             {
-                d.Page(p =>
+                document.Page(page =>
                 {
-                    p.Content().AlignMiddle().AlignCenter().Column(c =>
-                    {
-                        c.Item().Text(content).FontSize(40);
-                        c.Item().PageBreak();
-                        c.Item().Text(content).FontSize(40);
-                    });
-                    p.Footer().AlignCenter().PaddingVertical(20).Text(t =>
-                    {
-                        t.CurrentPageNumber();
-                        t.Span(" / ");
-                        t.TotalPages();
-                    });
+                    page.Content()
+                        .AlignMiddle()
+                        .AlignCenter()
+                        .Column(column =>
+                        {
+                            column.Item().Text(content).FontSize(40);
+                            
+                            column.Item().PageBreak();
+                            
+                            column.Item().Text(content).FontSize(40);
+                            column.Item().AlignCenter().SectionLink("next").Text("Next page").FontSize(16).Underline().FontColor(Colors.Blue.Medium);
+                            
+                            column.Item().PageBreak();
+                            
+                            column.Item().Text(content).FontSize(40);
+                            column.Item().AlignCenter().Section("next").Text("Next page").FontSize(16).FontColor(Colors.Green.Medium);
+                        });
+                    
+                    page.Footer()
+                        .AlignCenter()
+                        .PaddingVertical(20)
+                        .Text(text =>
+                        {
+                            text.CurrentPageNumber();
+                            text.Span(" / ");
+                            text.TotalPages();
+                        });
                 });
             });
         }

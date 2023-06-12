@@ -14,6 +14,8 @@ namespace QuestPDF.Elements
         internal TextStyle TextStyle { get; set; } = TextStyle.Default;
         public ContentDirection ContentDirection { get; set; }
         
+        internal int DocumentId { get; set; }
+        
         internal int? ImageTargetDpi { get; set; }
         internal ImageCompressionQuality? ImageCompressionQuality { get; set; }
         internal bool UseOriginalImage { get; set; }
@@ -58,6 +60,7 @@ namespace QuestPDF.Elements
             {
                 PageContext = PageContext,
                 Canvas = Canvas,
+                DocumentId = DocumentId,
                 
                 TextStyle = TextStyle,
                 ContentDirection = ContentDirection,
@@ -84,6 +87,7 @@ namespace QuestPDF.Elements
     {
         internal IPageContext PageContext { get; set; }
         internal ICanvas Canvas { get; set; }
+        internal int DocumentId { get; set; }
         
         internal TextStyle TextStyle { get; set; }
         internal ContentDirection ContentDirection { get; set; }
@@ -101,6 +105,7 @@ namespace QuestPDF.Elements
             var container = new DynamicElement();
             content(container);
             
+            container.ApplyDocumentId(DocumentId);
             container.ApplyInheritedAndGlobalTexStyle(TextStyle);
             container.ApplyContentDirection(ContentDirection);
             container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality, UseOriginalImage);
