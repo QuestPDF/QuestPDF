@@ -53,7 +53,7 @@ namespace QuestPDF.Drawing
             documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
             
             var canvas = new ImageCanvas(imageGenerationSettings);
-            RenderDocument(canvas, document, documentSettings, useOriginalImages: true);
+            RenderDocument(canvas, document, documentSettings);
 
             return canvas.Images;
         }
@@ -94,36 +94,33 @@ namespace QuestPDF.Drawing
             return canvas.Pictures;
         }
         
-        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings, bool useOriginalImages = false)
-            where TCanvas : ICanvas, IRenderingCanvas
+        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
         {
+            canvas.BeginDocument();
+            
             if (document is MergedDocument mergedDocument)
             {
-                var pageContext = mergedDocument.PageNumberHandling == MergedDocumentPageNumberHandling.Continuous
-                    ? new PageContext()
-                    : null;
+                var pageContext = mergedDocument.PageNumberHandling == MergedDocumentPageNumberHandling.Continuous ? new PageContext() : null;
                 
-                canvas.BeginDocument();
-
                 for (var documentId = 0; documentId < mergedDocument.Documents.Count; documentId++) 
-                    RenderDocumentImplementation(canvas, pageContext, mergedDocument.Documents[documentId], settings, useOriginalImages, documentId);
-
-                canvas.EndDocument();
-                
-                return;
+                    RenderDocumentFragment(canvas, pageContext, mergedDocument.Documents[documentId], settings, documentId);
             }
-
-            canvas.BeginDocument();
-            RenderDocumentImplementation(canvas, null, document, settings, useOriginalImages);
+            else
+            {
+                RenderDocumentFragment(canvas, null, document, settings);
+            }
+            
             canvas.EndDocument();
         }
         
-        internal static void RenderDocumentImplementation<TCanvas>(TCanvas canvas, PageContext? pageContext, IDocument document, DocumentSettings settings, bool useOriginalImages = false, int documentId = 0)
+        internal static void RenderDocumentFragment<TCanvas>(TCanvas canvas, PageContext? pageContext, IDocument document, DocumentSettings settings, int documentId = 0)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             var container = new DocumentContainer();
             document.Compose(container);
+            
             var content = container.Compose();
+            var useOriginalImages = canvas is ImageCanvas;
 
             ApplyDocumentId(content, documentId);
             ApplyInheritedAndGlobalTexStyle(content, TextStyle.Default);
