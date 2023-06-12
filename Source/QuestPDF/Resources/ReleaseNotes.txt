@@ -14,3 +14,6 @@ Version 2023.5.1
 
 Version 2023.5.2
 - Adjusted accessibility of the Image API method. 
+
+Version 2023.5.3
+- Fixed: image scaling may cause a rare bug that terminates an entire application when under a high memory pressure.
