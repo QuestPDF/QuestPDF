@@ -100,7 +100,7 @@ namespace QuestPDF.Drawing
             
             if (document is MergedDocument mergedDocument)
             {
-                var pageContext = mergedDocument.PageNumberHandling == MergedDocumentPageNumberHandling.Continuous ? new PageContext() : null;
+                var pageContext = mergedDocument.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous ? new PageContext() : null;
                 
                 for (var documentId = 0; documentId < mergedDocument.Documents.Count; documentId++) 
                     RenderDocumentFragment(canvas, pageContext, mergedDocument.Documents[documentId], settings, documentId);

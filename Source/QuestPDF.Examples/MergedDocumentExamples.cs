@@ -15,7 +15,7 @@ namespace QuestPDF.Examples
                     CreateDocument("Document 1"),
                     CreateDocument("Document 2"),
                     CreateDocument("Document 3"))
-                .ContinuousPageNumbers();
+                .UseContinuousPageNumbers();
 
             RenderingTest
                 .Create()
@@ -31,7 +31,7 @@ namespace QuestPDF.Examples
                     CreateDocument("Document 1"),
                     CreateDocument("Document 2"),
                     CreateDocument("Document 3"))
-                .SeparatePageNumbers();
+                .UseOriginalPageNumbers();
 
             RenderingTest
                 .Create()

@@ -33,12 +33,12 @@ namespace QuestPDF.Fluent
             return this;
         }
         
-        public static IMergedDocument Merge(IEnumerable<IDocument> documents)
+        public static MergedDocument Merge(IEnumerable<IDocument> documents)
         {
             return new MergedDocument(documents);
         }
 
-        public static IMergedDocument Merge(params IDocument[] documents)
+        public static MergedDocument Merge(params IDocument[] documents)
         {
             return new MergedDocument(documents);
         }
