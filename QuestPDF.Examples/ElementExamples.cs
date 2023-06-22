@@ -843,5 +843,39 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+        public void VerticalColumns()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(800, 400)
+                .ShowResults()
+                .ProduceImages()
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .FlipVertical()
+                        .RotateLeft()
+                        .Inlined(inlined =>
+                        {
+                            foreach (var i in Enumerable.Range(0, 50))
+                            {
+                                inlined
+                                    .Item()
+                                    .RotateRight()
+                                    .FlipVertical()
+                                    .MaxWidth(250)
+                                    .Background(Placeholders.BackgroundColor())
+                                    .Padding(10)
+                                    .Text($"{i}: {Placeholders.Label()}")
+                                    .FontSize(15);
+                            }
+                        });
+                });
+            
+            
+        }
     }
 }
