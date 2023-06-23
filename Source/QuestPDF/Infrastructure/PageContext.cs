@@ -11,12 +11,17 @@ namespace QuestPDF.Infrastructure
         private List<DocumentLocation> Locations { get; } = new();
         public int CurrentPage { get; private set; }
 
-        internal void SetPageNumber(int number)
+        internal void ResetPageNumber()
         {
-            CurrentPage = number;
-            SetSectionPage(DocumentLocation);
+            CurrentPage = 0;
         }
         
+        internal void IncrementPageNumber()
+        {
+            CurrentPage++;
+            SetSectionPage(DocumentLocation);
+        }
+
         public void SetSectionPage(string name)
         {
             var location = GetLocation(name);

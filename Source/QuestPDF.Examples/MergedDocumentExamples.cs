@@ -1,7 +1,9 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
@@ -11,10 +13,11 @@ namespace QuestPDF.Examples
         [Test]
         public void Merge_ContinuousPageNumbers()
         {
-            var mergedDocument = Document.Merge(
-                    CreateDocument("Document 1"),
-                    CreateDocument("Document 2"),
-                    CreateDocument("Document 3"))
+            var mergedDocument = Document
+                .Merge(
+                    GenerateReport("Short Document 1", 8),
+                    GenerateReport("Medium Document 2", 16),
+                    GenerateReport("Long Document 3", 24))
                 .UseContinuousPageNumbers();
 
             RenderingTest
@@ -27,10 +30,11 @@ namespace QuestPDF.Examples
         [Test]
         public void Merge_SeparatePageNumbers()
         {
-            var mergedDocument = Document.Merge(
-                    CreateDocument("Document 1"),
-                    CreateDocument("Document 2"),
-                    CreateDocument("Document 3"))
+            var mergedDocument = Document
+                .Merge(
+                    GenerateReport("Short Document 1", 8),
+                    GenerateReport("Medium Document 2", 16),
+                    GenerateReport("Long Document 3", 24))
                 .UseOriginalPageNumbers();
 
             RenderingTest
@@ -40,28 +44,38 @@ namespace QuestPDF.Examples
                 .Render(mergedDocument);
         }
 
-        private static Document CreateDocument(string content)
+        private static Document GenerateReport(string title, int itemsCount)
         {
             return Document.Create(document =>
             {
                 document.Page(page =>
                 {
+                    page.Margin(1, Unit.Inch);
+                    
+                    page.Header()
+                        .Text(title)
+                        .Bold()
+                        .FontSize(24)
+                        .FontColor(Colors.Blue.Accent1);
+                    
                     page.Content()
-                        .AlignMiddle()
-                        .AlignCenter()
+                        .PaddingVertical(20)
                         .Column(column =>
                         {
-                            column.Item().Text(content).FontSize(40);
-                            
-                            column.Item().PageBreak();
-                            
-                            column.Item().Text(content).FontSize(40);
-                            column.Item().AlignCenter().SectionLink("next").Text("Next page").FontSize(16).Underline().FontColor(Colors.Blue.Medium);
-                            
-                            column.Item().PageBreak();
-                            
-                            column.Item().Text(content).FontSize(40);
-                            column.Item().AlignCenter().Section("next").Text("Next page").FontSize(16).FontColor(Colors.Green.Medium);
+                            column.Spacing(10);
+
+                            foreach (var i in Enumerable.Range(0, itemsCount))
+                            {
+                                column
+                                    .Item()
+                                    .Width(200)
+                                    .Height(50)
+                                    .Background(Colors.Grey.Lighten3)
+                                    .AlignMiddle()
+                                    .AlignCenter()
+                                    .Text($"Item {i}")
+                                    .FontSize(16);
+                            }
                         });
                     
                     page.Footer()
@@ -69,6 +83,8 @@ namespace QuestPDF.Examples
                         .PaddingVertical(20)
                         .Text(text =>
                         {
+                            text.DefaultTextStyle(TextStyle.Default.FontSize(16));
+                            
                             text.CurrentPageNumber();
                             text.Span(" / ");
                             text.TotalPages();
