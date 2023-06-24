@@ -15,9 +15,9 @@ namespace QuestPDF.Examples
         {
             var mergedDocument = Document
                 .Merge(
-                    GenerateReport("Short Document 1", 8),
-                    GenerateReport("Medium Document 2", 16),
-                    GenerateReport("Long Document 3", 24))
+                    GenerateReport("Short Document 1", 5),
+                    GenerateReport("Medium Document 2", 10),
+                    GenerateReport("Long Document 3", 15))
                 .UseContinuousPageNumbers();
 
             RenderingTest
@@ -32,9 +32,9 @@ namespace QuestPDF.Examples
         {
             var mergedDocument = Document
                 .Merge(
-                    GenerateReport("Short Document 1", 8),
-                    GenerateReport("Medium Document 2", 16),
-                    GenerateReport("Long Document 3", 24))
+                    GenerateReport("Short Document 1", 5),
+                    GenerateReport("Medium Document 2", 10),
+                    GenerateReport("Long Document 3", 15))
                 .UseOriginalPageNumbers();
 
             RenderingTest
@@ -50,13 +50,14 @@ namespace QuestPDF.Examples
             {
                 document.Page(page =>
                 {
-                    page.Margin(1, Unit.Inch);
+                    page.Margin(0.5f, Unit.Inch);
+                    page.Size(PageSizes.A5);
                     
                     page.Header()
                         .Text(title)
                         .Bold()
                         .FontSize(24)
-                        .FontColor(Colors.Blue.Accent1);
+                        .FontColor(Colors.Blue.Accent2);
                     
                     page.Content()
                         .PaddingVertical(20)
@@ -64,7 +65,7 @@ namespace QuestPDF.Examples
                         {
                             column.Spacing(10);
 
-                            foreach (var i in Enumerable.Range(0, itemsCount))
+                            foreach (var i in Enumerable.Range(1, itemsCount))
                             {
                                 column
                                     .Item()
