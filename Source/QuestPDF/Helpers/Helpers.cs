@@ -87,6 +87,15 @@ namespace QuestPDF.Helpers
             };
         }
         
+        internal static SKImage ScaleImage(this SKImage image, ImageSize targetResolution)
+        {
+            var imageInfo = new SKImageInfo(targetResolution.Width, targetResolution.Height, image.Info.ColorType, image.Info.AlphaType, image.Info.ColorSpace);
+            
+            using var bitmap = SKBitmap.FromImage(image);
+            using var resultBitmap = bitmap.Resize(imageInfo, SKFilterQuality.Medium);
+            return SKImage.FromBitmap(resultBitmap);
+        }
+        
         internal static SKImage CompressImage(this SKImage image, ImageCompressionQuality compressionQuality)
         {
             var targetFormat = image.Info.IsOpaque 
@@ -105,12 +114,8 @@ namespace QuestPDF.Helpers
             if (image.Width == targetResolution.Width && image.Height == targetResolution.Height)
                 return CompressImage(image, compressionQuality);
             
-            var imageInfo = new SKImageInfo(targetResolution.Width, targetResolution.Height, image.Info.ColorType, image.Info.AlphaType, image.Info.ColorSpace);
-            
-            using var resultImage = SKImage.Create(imageInfo);
-            image.ScalePixels(resultImage.PeekPixels(), SKFilterQuality.Medium);
-            
-            return CompressImage(resultImage, compressionQuality);
+            using var scaledImage = image.ScaleImage(targetResolution);
+            return CompressImage(scaledImage, compressionQuality);
         }
 
         internal static SKImage GetImageWithSmallerSize(SKImage one, SKImage second)

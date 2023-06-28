@@ -6,6 +6,7 @@ using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -63,6 +64,32 @@ namespace QuestPDF.UnitTests
                 .CheckMeasureResult(SpacePlan.FullRender(300, 100));;
         }
         
+        [Test]
+        public void ImageObject_ThrowsEncodingException_WhenImageDataIsIncorrect()
+        {
+            Func<Infrastructure.Image> action = () => Infrastructure.Image.FromBinaryData(new byte[] { 1, 2, 3 });
+            action.Should().ThrowExactly<DocumentComposeException>().WithMessage("Cannot decode the provided image.");
+        }
+        
+        [Test]
+        public void ImageObject_ThrowsEncodingException_WhenStreamIsIncorrect()
+        {
+            Func<Infrastructure.Image> action = () =>
+            {
+                using var stream = new MemoryStream(new byte[] { 1, 2, 3 });
+                return Infrastructure.Image.FromStream(stream);
+            };
+
+            action.Should().ThrowExactly<DocumentComposeException>().WithMessage("Cannot decode the provided image.");
+        }
+        
+        [Test]
+        public void ImageObject_ThrowsFileNotFoundException_FileIsNotFound()
+        {
+            Func<Infrastructure.Image> action = () => Infrastructure.Image.FromFile("non-existing-file.jpg");
+            action.Should().ThrowExactly<DocumentComposeException>().WithMessage("Cannot load provided image, file not found: *");
+        }
+
         [Test]
         public void UsingSharedImageShouldNotDrasticallyIncreaseDocumentSize()
         {
