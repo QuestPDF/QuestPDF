@@ -1,19 +1,4 @@
-Version 2023.5.0
-- Simplified development loop by introducing cross-platform methods: GeneratePdfAndShow() and GenerateXpsAndShow()
-- New shared image API: the ability to define a single image resource that is used in multiple places in the document without increasing its size
-- New DocumentSettings API: target image raster DPI - now, the library automatically resizes all images to achieve desired DPI (dots-per-inch) resolution. It allows for minimizing output file size
-- New DocumentSettings API: target image compression quality - the ability to specify the balance between size and quality for images in the document. It allows for minimizing output file size
-- Refactoring: moved the PdfA setting from the DocumentMetadata class to the DocumentSettings class
-- Improved Image API by providing additional FluentA API methods
-- Improvement: the GenerateImage element now provides the expected image resolution, abstracting away the physical area size and target image DPI
-
-Version 2023.5.1
-- Adjusted and simplified the Image and SharedImage APIs,
-- Improved image generation performance,
-- Provided the ability to configure the image generation process: image format, compression quality and raster DPI.
-
-Version 2023.5.2
-- Adjusted accessibility of the Image API method. 
-
-Version 2023.5.3
-- Fixed: image scaling may cause a rare bug that terminates an entire application when under a high memory pressure.
+Version 2023.6.0
+- Improvement: the library received a final version of the licensing model, which has been enhanced to be more accommodating to both the business and community.
+- Feature: generating merged PDF documents.
+- Improvement: image loading exception better describes the failure reason.
