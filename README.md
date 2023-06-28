@@ -9,7 +9,7 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/stargazers)
 [![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
 [![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
-[![QuestPDF License](https://img.shields.io/badge/LICENSE%20details-Community%20MIT%20and%20professional-green?style=for-the-badge)](https://www.questpdf.com/pricing.html#license)
+[![QuestPDF License](https://img.shields.io/badge/LICENSE%20details-Community%20MIT%20and%20professional-green?style=for-the-badge)](https://www.questpdf.com/pricing.html)
 
 <br />
 
@@ -85,14 +85,13 @@ Read the Getting Started tutorial to familiarize yourself with general library a
 
 ## Library License
 
-If you are consuming the QuestPDF library as a Direct Package Dependency for usage in a Closed Source software in the capacity of a for-profit company/individual with more than 1M USD annual gross revenue, you must purchase the `QuestPDF Professional or Enterprise` License, depending on number of software developers.
+We identify the importance of the library in your projects and therefore want to make sure you can safely and confidently continue the development.
 
-We love and highly appreciate the .NET Community and therefore the vast majority of users are welcome to use the library completely for free. If you do not meet the criteria described above, you are eligible to use the `QuestPDF Community MIT` License, without any limitations, even for commercial usage.
+Being a healthy and growing community is the primary goal that motivates us to pursue professionalism.
 
-If you still want to support library development, please consider purchasing the Professional License.
+Please refer to the QuestPDF License and Pricing webpage for more details.
 
 [![Library license details](https://img.shields.io/badge/%F0%9F%93%9C%0A%20read-license%20details-blue?style=for-the-badge)](https://www.questpdf.com/pricing.html#license)
-[![Library pricing details](https://img.shields.io/badge/%F0%9F%92%8E%20read-pricing%20details-green?style=for-the-badge)](https://www.questpdf.com/pricing.html#tiers)
 
 <br />
 
