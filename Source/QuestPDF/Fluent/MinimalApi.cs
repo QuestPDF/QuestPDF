@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
@@ -30,6 +31,16 @@ namespace QuestPDF.Fluent
         {
             Settings = settings ?? Settings;
             return this;
+        }
+        
+        public static MergedDocument Merge(IEnumerable<IDocument> documents)
+        {
+            return new MergedDocument(documents);
+        }
+
+        public static MergedDocument Merge(params IDocument[] documents)
+        {
+            return new MergedDocument(documents);
         }
         
         #region IDocument

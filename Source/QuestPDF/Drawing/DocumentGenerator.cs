@@ -53,7 +53,7 @@ namespace QuestPDF.Drawing
             documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
             
             var canvas = new ImageCanvas(imageGenerationSettings);
-            RenderDocument(canvas, document, documentSettings, useOriginalImages: true);
+            RenderDocument(canvas, document, documentSettings);
 
             return canvas.Images;
         }
@@ -94,40 +94,98 @@ namespace QuestPDF.Drawing
             return canvas.Pictures;
         }
         
-        internal static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings, bool useOriginalImages = false)
+        private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
+        {
+            canvas.BeginDocument();
+            
+            if (document is MergedDocument mergedDocument)
+                RenderMergedDocument(canvas, mergedDocument, settings);
+            
+            else
+                RenderSingleDocument(canvas, document, settings);
+            
+            canvas.EndDocument();
+        }
+
+        private static void RenderSingleDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings)
             where TCanvas : ICanvas, IRenderingCanvas
         {
-            var container = new DocumentContainer();
-            document.Compose(container);
-            var content = container.Compose();
-            
-            ApplyInheritedAndGlobalTexStyle(content, TextStyle.Default);
-            ApplyContentDirection(content, settings.ContentDirection);
-            ApplyDefaultImageConfiguration(content, settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
-            
-            var debuggingState = Settings.EnableDebugging ? ApplyDebugging(content) : null;
-            
-            if (Settings.EnableCaching)
-                ApplyCaching(content);
+            var debuggingState = new DebuggingState();
+            var useOriginalImages = canvas is ImageCanvas;
+
+            var content = ConfigureContent(document, settings, debuggingState, 0, useOriginalImages);
 
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
+            pageContext.ResetPageNumber();
             RenderPass(pageContext, canvas, content, debuggingState);
         }
         
-        internal static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)
+        private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)
+            where TCanvas : ICanvas, IRenderingCanvas
+        {
+            var debuggingState = new DebuggingState();
+            var useOriginalImages = canvas is ImageCanvas;
+            
+            var documentContents = Enumerable
+                .Range(0, document.Documents.Count)
+                .Select(index => ConfigureContent(document.Documents[index], settings, debuggingState, index, useOriginalImages))
+                .ToList();
+
+            if (document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous)
+            {
+                var documentPageContext = new PageContext();
+                
+                foreach (var content in documentContents)
+                    RenderPass(documentPageContext, new FreeCanvas(), content, debuggingState);
+                
+                documentPageContext.ResetPageNumber();
+                
+                foreach (var content in documentContents)
+                    RenderPass(documentPageContext, canvas, content, debuggingState);
+            }
+            else
+            {
+                foreach (var content in documentContents)
+                {
+                    var pageContext = new PageContext();
+                    RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
+                    pageContext.ResetPageNumber();
+                    RenderPass(pageContext, canvas, content, debuggingState);
+                }
+            }
+        }
+
+        private static Container ConfigureContent(IDocument document, DocumentSettings settings, DebuggingState debuggingState, int documentIndex, bool useOriginalImages)
+        {
+            var container = new DocumentContainer();
+            document.Compose(container);
+            
+            var content = container.Compose();
+            
+            content.ApplyDocumentId(documentIndex);
+            content.ApplyInheritedAndGlobalTexStyle(TextStyle.Default);
+            content.ApplyContentDirection(settings.ContentDirection);
+            content.ApplyDefaultImageConfiguration(settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
+                    
+            if (Settings.EnableCaching)
+                content.ApplyCaching();
+
+            if (Settings.EnableDebugging)
+                content.ApplyDebugging(debuggingState);
+
+            return content;
+        }
+
+        private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             InjectDependencies(content, pageContext, canvas);
             content.VisitChildren(x => (x as IStateResettable)?.ResetState());
             
-            canvas.BeginDocument();
-
-            var currentPage = 1;
-            
             while(true)
             {
-                pageContext.SetPageNumber(currentPage);
+                pageContext.IncrementPageNumber();
                 debuggingState?.Reset();
                 
                 var spacePlan = content.Measure(Size.Max);
@@ -151,7 +209,7 @@ namespace QuestPDF.Drawing
 
                 canvas.EndPage();
 
-                if (currentPage >= Settings.DocumentLayoutExceptionThreshold)
+                if (pageContext.CurrentPage >= Settings.DocumentLayoutExceptionThreshold)
                 {
                     canvas.EndDocument();
                     ThrowLayoutException();
@@ -159,11 +217,7 @@ namespace QuestPDF.Drawing
                 
                 if (spacePlan.Type == SpacePlanType.FullRender)
                     break;
-
-                currentPage++;
             }
-            
-            canvas.EndDocument();
 
             void ThrowLayoutException()
             {
@@ -191,7 +245,7 @@ namespace QuestPDF.Drawing
             });
         }
 
-        private static void ApplyCaching(Container content)
+        private static void ApplyCaching(this Container content)
         {
             content.VisitChildren(x =>
             {
@@ -200,16 +254,15 @@ namespace QuestPDF.Drawing
             });
         }
 
-        private static DebuggingState ApplyDebugging(Container content)
+        private static void ApplyDebugging(this Container content, DebuggingState? debuggingState)
         {
-            var debuggingState = new DebuggingState();
-
+            if (debuggingState == null)
+                return;
+            
             content.VisitChildren(x =>
             {
                 x.CreateProxy(y => new DebuggingProxy(debuggingState, y));
             });
-
-            return debuggingState;
         }
         
         internal static void ApplyContentDirection(this Element? content, ContentDirection direction)
@@ -292,6 +345,25 @@ namespace QuestPDF.Drawing
 
             foreach (var child in content.GetChildren())
                 ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
+        }
+        
+        /// <summary>
+        /// This method is important when merging multiple documents together.
+        /// Applying unique document Id to all section names and associated links, prevents from name collisions.
+        /// </summary>
+        internal static void ApplyDocumentId(this Element? content, int documentId = 0)
+        {
+            content.VisitChildren(x =>
+            {
+                if (x is Section section)
+                    section.DocumentId = documentId;
+                
+                else if (x is SectionLink sectionLink)
+                    sectionLink.DocumentId = documentId;
+                
+                else if (x is DynamicHost dynamicHost)
+                    dynamicHost.DocumentId = documentId;
+            });
         }
     }
 }

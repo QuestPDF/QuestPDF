@@ -14,22 +14,34 @@ namespace QuestPDF.Drawing
         internal Container Compose()
         {
             var container = new Container();
-            
-            container
-                .Column(column =>
-                {
-                    Pages
-                        .SelectMany(x => new List<Action>()
-                        {
-                            () => column.Item().PageBreak(),
-                            () => column.Item().Component(x)
-                        })
-                        .Skip(1)
-                        .ToList()
-                        .ForEach(x => x());
-                });
-
+            ComposeContainer(container);
             return container;
+
+            void ComposeContainer(IContainer container)
+            {
+                if (Pages.Count == 0)
+                    return;
+                
+                if (Pages.Count == 1)
+                {
+                    container.Component(Pages.First());
+                    return;
+                }
+
+                container
+                    .Column(column =>
+                    {
+                        Pages
+                            .SelectMany(x => new List<Action>()
+                            {
+                                () => column.Item().PageBreak(),
+                                () => column.Item().Component(x)
+                            })
+                            .Skip(1)
+                            .ToList()
+                            .ForEach(x => x());
+                    });
+            }
         }
     }
 }
