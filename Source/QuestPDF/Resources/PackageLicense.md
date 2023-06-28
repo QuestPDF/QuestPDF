@@ -1,16 +1,42 @@
 ﻿# QuestPDF License
 
-## What license do you need?
+## License Selection Guide
 
-Suppose you are consuming the QuestPDF library as a Direct Package Dependency for usage in a Closed Source software in the capacity of a for-profit company/individual with more than 1M USD annual gross revenue. In that case, you must purchase the QuestPDF Professional or Enterprise License, depending on the number of software developers.
+Welcome to QuestPDF! This guide will help you understand how to select the appropriate license for our library, based on your usage context.
 
-We love and highly appreciate the .NET Community. Therefore, most users are welcome to use the library entirely for free. If you do not meet the criteria described above, you are eligible to use the QuestPDF Community MIT License, without any limitations, even for commercial usage.
+The licensing options for QuestPDF include the MIT license (which is free), and two tiers of paid licenses: the Professional License and the Enterprise License.
 
-If you still want to support library development, please consider purchasing the Professional License.
+### License Equality
 
-Please find all details regarding the QuestPDF license on the [official webpage](https://www.questpdf.com/pricing.html).
+We believe in offering the full power of QuestPDF to all our users, regardless of the license they choose. Whether you're operating under our Community MIT, Professional, or Enterprise licenses, you can enjoy the same comprehensive range of features:
 
-Being a healthy and growing community is the primary goal that motivates us to pursue professionalism. Thank you!
+- Full access to all QuestPDF features.
+- Support for commercial usage.
+- Freedom to create and deploy unlimited closed-source projects, applications, and APIs.
+- Royalty-free redistribution of the compiled library with your applications.
+  Transitive Dependency Usage
+  If you're using QuestPDF as a transitive dependency, you're free to use it under the MIT license without any cost. However, you're welcomed and encouraged to support the project by purchasing a paid license if you find the library valuable.
+
+### Non-profit Usage
+
+If you represent an open-source project, a charitable organization, or are using QuestPDF for educational purposes or training courses, you can also use QuestPDF for free under the MIT license.
+
+### Small Businesses
+
+For companies generating less than $1M USD in annual gross revenue, you can use QuestPDF under the MIT license for free.
+
+### Larger Businesses
+
+Companies with an annual gross revenue exceeding $1M USD are required to purchase a paid license. The type of license you need depends on the number of developers working on projects that use QuestPDF:
+
+Professional License - If there are up to 10 developers in your company who are using QuestPDF, you need to purchase the Professional License.
+
+Enterprise License - If your company has more than 10 developers using QuestPDF, the Enterprise License is the right choice.
+
+### Beyond Compliance
+
+Remember, purchasing a license isn't just about adhering to our guidelines, but also supporting the development of QuestPDF. Your contribution helps us to improve the library and offer top-notch support to all users.
+
 
 
 ## QuestPDF Community MIT License
@@ -24,6 +50,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 ### Limitation Of Liability
+
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
@@ -42,9 +69,13 @@ Grants the right to distribute the Software (without royalty) as part of package
 
 ### License Fees
 
-A. If you wish to use the Software in a production environment, you may download and use the Software for one year upon payment of the appropriate license fee as indicated on the pricing page in accordance with the terms and conditions of this Agreement.
+A. If you wish to use the Software in a production environment, the purchase of a license is required. This license is perpetual, granting you continued use of the Software in accordance with the terms and conditions of this Agreement. The cost of the license is as indicated on the pricing page.
 
-B. If you wish to use the Software in a non-production environment, you may download and access the source and/or binaries at no charge solely for testing and evaluation purposes and in accordance with all license limitations and restrictions set forth in this Agreement.
+B. Upon purchasing a license, you are also enrolled in a yearly, recurring subscription for software updates. This subscription is valid for a period of one year from the date of purchase, and it will automatically renew each year unless cancelled. We recommend maintaining your subscription as long as you are performing active software development to ensure you have access to the latest updates and improvements to the Software.
+
+C. However, it should be noted that the perpetual license allows use of only the latest library revision available at the time of or within the active subscription period, in accordance with the terms and conditions of this Agreement.
+
+D. If you wish to use the Software in a non-production environment, such as for testing and evaluation purposes, you may download and access the source and/or binaries at no charge. This access is subject to all license limitations and restrictions set forth in this Agreement.
 
 ### Ownership
 
