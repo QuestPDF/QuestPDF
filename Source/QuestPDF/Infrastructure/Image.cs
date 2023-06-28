@@ -54,31 +54,44 @@ namespace QuestPDF.Infrastructure
 
         #region public constructors
 
+        private const string CannotDecodeExceptionMessage = "Cannot decode the provided image.";
+        
         internal static Image FromSkImage(SKImage image)
         {
-            return CreateImage(image);
+            return new Image(image);
         }
 
         public static Image FromBinaryData(byte[] imageData)
         {
-            return CreateImage(SKImage.FromEncodedData(imageData));
+            var image = SKImage.FromEncodedData(imageData);
+            
+            if (image == null)
+                throw new DocumentComposeException(CannotDecodeExceptionMessage);
+            
+            return new Image(image);
         }
 
         public static Image FromFile(string filePath)
         {
-            return CreateImage(SKImage.FromEncodedData(filePath));
+            var image = SKImage.FromEncodedData(filePath);
+
+            if (image == null)
+            {
+                throw File.Exists(filePath) 
+                    ? new DocumentComposeException(CannotDecodeExceptionMessage)
+                    : new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
+            }
+            
+            return new Image(image);
         }
 
         public static Image FromStream(Stream fileStream)
         {
-            return CreateImage(SKImage.FromEncodedData(fileStream));
-        }
-
-        private static Image CreateImage(SKImage? image)
-        {
+            var image = SKImage.FromEncodedData(fileStream);
+            
             if (image == null)
-                throw new DocumentComposeException("Cannot load or decode provided image.");
-
+                throw new DocumentComposeException(CannotDecodeExceptionMessage);
+            
             return new Image(image);
         }
 
