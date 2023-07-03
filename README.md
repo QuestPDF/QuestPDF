@@ -85,13 +85,13 @@ Read the Getting Started tutorial to familiarize yourself with general library a
 
 ## Library License
 
-We identify the importance of the library in your projects and therefore want to make sure you can safely and confidently continue the development.
+We identify the importance of the library in your projects, so we want to ensure you can safely and confidently continue the development.
 
 Being a healthy and growing community is the primary goal that motivates us to pursue professionalism.
 
-Please refer to the QuestPDF License and Pricing webpage for more details.
+The lib Please take a look at the QuestPDF License and Pricing webpage for more details.
 
-[![Library license details](https://img.shields.io/badge/%F0%9F%93%9C%0A%20read-license%20details-blue?style=for-the-badge)](https://www.questpdf.com/pricing.html#license)
+[![Library license details](https://img.shields.io/badge/%F0%9F%93%9C%0A%20read-license%20details-blue?style=for-the-badge)](https://www.questpdf.com/license/)
 
 <br />
 
