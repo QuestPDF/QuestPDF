@@ -89,7 +89,7 @@ We identify the importance of the library in your projects, so we want to ensure
 
 Being a healthy and growing community is the primary goal that motivates us to pursue professionalism.
 
-The lib Please take a look at the QuestPDF License and Pricing webpage for more details.
+The library is available for free to the vast majority of users. However, please look at the QuestPDF License and Pricing webpage for more details:
 
 [![Library license details](https://img.shields.io/badge/%F0%9F%93%9C%0A%20read-license%20details-blue?style=for-the-badge)](https://www.questpdf.com/license/)
 
