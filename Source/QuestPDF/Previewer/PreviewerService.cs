@@ -99,10 +99,15 @@ namespace QuestPDF.Previewer
         {
             if (version.Major == RequiredPreviewerVersionMajor && version.Minor == RequiredPreviewerVersionMinor)
                 return;
+
+            var newLine = Environment.NewLine;
+            var newParagraph = newLine + newLine;
             
-            throw new Exception($"Previewer version is not compatible. Possible solutions: " +
-                                $"1) Update the QuestPDF library to newer version. " +
-                                $"2) Update the QuestPDF previewer tool using the following command: 'dotnet tool update --global QuestPDF.Previewer --version {RequiredPreviewerVersionMajor}.{RequiredPreviewerVersionMinor}'");
+            throw new Exception($"The QuestPDF Previewer application is not compatible. Possible solutions: {newParagraph}" +
+                                $"1) Change the QuestPDF library to the {version.Major}.{version.Minor}.X version to match the Previewer application version. {newParagraph}" +
+                                $"2) Recommended: install the QuestPDF Previewer tool in a proper version using the following commands: {newParagraph}"+
+                                $"dotnet tool uninstall --global QuestPDF.Previewer {newLine}"+
+                                $"dotnet tool update --global QuestPDF.Previewer --version {RequiredPreviewerVersionMajor}.{RequiredPreviewerVersionMinor} {newParagraph}");
         }
         
         private async Task WaitForConnection()
