@@ -11,7 +11,7 @@ namespace QuestPDF.Drawing.Proxy
 {
     internal class DebuggingState
     {
-        private DebugStackItem Root { get; set; }
+        private DebugStackItem? Root { get; set; }
         private Stack<DebugStackItem> Stack { get; set; }
 
         public DebuggingState()
@@ -59,6 +59,9 @@ namespace QuestPDF.Drawing.Proxy
         
         public string BuildTrace()
         {
+            if (Root == null)
+                return null;
+            
             var builder = new StringBuilder();
             var nestingLevel = 0;
 
