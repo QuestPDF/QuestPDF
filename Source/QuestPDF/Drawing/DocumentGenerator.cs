@@ -105,10 +105,12 @@ namespace QuestPDF.Drawing
         private static void RenderSingleDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings)
             where TCanvas : ICanvas, IRenderingCanvas
         {
+            const int documentId = 0;
+            
             var debuggingState = new DebuggingState();
             var useOriginalImages = canvas is ImageCanvas;
 
-            var content = ConfigureContent(document, settings, debuggingState, 0, useOriginalImages);
+            var content = ConfigureContent(document, settings, debuggingState, documentId, useOriginalImages);
 
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
@@ -122,31 +124,43 @@ namespace QuestPDF.Drawing
             var debuggingState = new DebuggingState();
             var useOriginalImages = canvas is ImageCanvas;
             
-            var documentContents = Enumerable
+            var documentParts = Enumerable
                 .Range(0, document.Documents.Count)
-                .Select(index => ConfigureContent(document.Documents[index], settings, debuggingState, index, useOriginalImages))
+                .Select(index => new
+                {
+                    DocumentId = index,
+                    Content = ConfigureContent(document.Documents[index], settings, debuggingState, index, useOriginalImages)
+                })
                 .ToList();
 
             if (document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous)
             {
                 var documentPageContext = new PageContext();
-                
-                foreach (var content in documentContents)
-                    RenderPass(documentPageContext, new FreeCanvas(), content, debuggingState);
+
+                foreach (var documentPart in documentParts)
+                {
+                    documentPageContext.SetDocumentId(documentPart.DocumentId);
+                    RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content, debuggingState);
+                }
                 
                 documentPageContext.ResetPageNumber();
-                
-                foreach (var content in documentContents)
-                    RenderPass(documentPageContext, canvas, content, debuggingState);
+
+                foreach (var documentPart in documentParts)
+                {
+                    documentPageContext.SetDocumentId(documentPart.DocumentId);
+                    RenderPass(documentPageContext, canvas, documentPart.Content, debuggingState);   
+                }
             }
             else
             {
-                foreach (var content in documentContents)
+                foreach (var documentPart in documentParts)
                 {
                     var pageContext = new PageContext();
-                    RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
+                    pageContext.SetDocumentId(documentPart.DocumentId);
+                    
+                    RenderPass(pageContext, new FreeCanvas(), documentPart.Content, debuggingState);
                     pageContext.ResetPageNumber();
-                    RenderPass(pageContext, canvas, content, debuggingState);
+                    RenderPass(pageContext, canvas, documentPart.Content, debuggingState);
                 }
             }
         }
@@ -158,7 +172,6 @@ namespace QuestPDF.Drawing
             
             var content = container.Compose();
             
-            content.ApplyDocumentId(documentIndex);
             content.ApplyInheritedAndGlobalTexStyle(TextStyle.Default);
             content.ApplyContentDirection(settings.ContentDirection);
             content.ApplyDefaultImageConfiguration(settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
@@ -340,25 +353,6 @@ namespace QuestPDF.Drawing
 
             foreach (var child in content.GetChildren())
                 ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
-        }
-        
-        /// <summary>
-        /// This method is important when merging multiple documents together.
-        /// Applying unique document Id to all section names and associated links, prevents from name collisions.
-        /// </summary>
-        internal static void ApplyDocumentId(this Element? content, int documentId = 0)
-        {
-            content.VisitChildren(x =>
-            {
-                if (x is Section section)
-                    section.DocumentId = documentId;
-                
-                else if (x is SectionLink sectionLink)
-                    sectionLink.DocumentId = documentId;
-                
-                else if (x is DynamicHost dynamicHost)
-                    dynamicHost.DocumentId = documentId;
-            });
         }
     }
 }

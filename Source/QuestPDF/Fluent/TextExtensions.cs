@@ -163,7 +163,7 @@ namespace QuestPDF.Fluent
         
         public TextPageNumberDescriptor TotalPages()
         {
-            return PageNumber(x => x.GetLocation(PageContext.DocumentLocation)?.Length);
+            return PageNumber(x => x.DocumentLength);
         }
 
         [Obsolete("This element has been renamed since version 2022.3. Please use the BeginPageNumberOfSection method.")]
