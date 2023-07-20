@@ -2,3 +2,8 @@ Version 2023.6.0
 - Improvement: the library received a final version of the licensing model, which has been enhanced to be more accommodating to both the business and community.
 - Feature: generating merged PDF documents.
 - Improvement: image loading exception better describes the failure reason.
+
+Version 2023.6.1
+- Fix: incorrect layout exception when debugging is disabled
+- Fix: the page number functionality for sections do not work (#609)
+- Improvement: enhanced the message about the QuestPDF Previewer application version incompatibility
