@@ -6,11 +6,17 @@ namespace QuestPDF.Infrastructure
 {
     internal class PageContext : IPageContext
     {
-        public const string DocumentLocation = "document";
-        
+        public int DocumentLength { get; private set; }
         private List<DocumentLocation> Locations { get; } = new();
+        
+        public int CurrentDocumentId { get; private set; }
         public int CurrentPage { get; private set; }
 
+        internal void SetDocumentId(int id)
+        {
+            CurrentDocumentId = id;
+        }
+        
         internal void ResetPageNumber()
         {
             CurrentPage = 0;
@@ -19,7 +25,7 @@ namespace QuestPDF.Infrastructure
         internal void IncrementPageNumber()
         {
             CurrentPage++;
-            SetSectionPage(DocumentLocation);
+            DocumentLength = Math.Max(DocumentLength, CurrentPage);
         }
 
         public void SetSectionPage(string name)
@@ -30,6 +36,7 @@ namespace QuestPDF.Infrastructure
             {
                 location = new DocumentLocation
                 {
+                    DocumentId = CurrentDocumentId,
                     Name = name,
                     PageStart = CurrentPage,
                     PageEnd = CurrentPage
@@ -44,7 +51,12 @@ namespace QuestPDF.Infrastructure
 
         public DocumentLocation? GetLocation(string name)
         {
-            return Locations.Find(x => x.Name == name);
+            return Locations.Find(x => x.DocumentId == CurrentDocumentId && x.Name == name);
+        }
+        
+        public string GetDocumentLocationName(string locationName)
+        {
+            return $"{CurrentDocumentId} | {locationName}";
         }
     }
 }
