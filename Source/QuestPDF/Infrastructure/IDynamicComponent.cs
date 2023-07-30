@@ -19,12 +19,27 @@ namespace QuestPDF.Infrastructure
                 Compose = component.Compose
             };
         }
+        
+        internal static DynamicComponentProxy CreateFrom(IDynamicComponent component)
+        {
+            return new DynamicComponentProxy
+            {
+                GetState = () => null,
+                SetState = _ => { },
+                Compose = component.Compose
+            };
+        }
     }
 
     public class DynamicComponentComposeResult
     {
         public IElement Content { get; set; }
         public bool HasMoreContent { get; set; }
+    }
+    
+    public interface IDynamicComponent
+    {
+        DynamicComponentComposeResult Compose(DynamicContext context);
     }
     
     public interface IDynamicComponent<TState> where TState : struct
