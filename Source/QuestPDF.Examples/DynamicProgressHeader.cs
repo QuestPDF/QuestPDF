@@ -9,10 +9,8 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
-    public class ProgressHeader : IDynamicComponent<int>
+    public class ProgressHeader : IDynamicComponent
     {
-        public int State { get; set; }
-        
         public DynamicComponentComposeResult Compose(DynamicContext context)
         {
             var content = context.CreateElement(container =>
