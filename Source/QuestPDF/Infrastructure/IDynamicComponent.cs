@@ -42,9 +42,8 @@ namespace QuestPDF.Infrastructure
         DynamicComponentComposeResult Compose(DynamicContext context);
     }
     
-    public interface IDynamicComponent<TState> where TState : struct
+    public interface IDynamicComponent<TState> : IDynamicComponent where TState : struct
     {
         TState State { get; set; }
-        DynamicComponentComposeResult Compose(DynamicContext context);
     }
 }
