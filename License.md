@@ -1,1 +1,1 @@
-Source/QuestPDF/Resources/PackageLicense.md
+./Source/QuestPDF/Resources/PackageLicense.md
