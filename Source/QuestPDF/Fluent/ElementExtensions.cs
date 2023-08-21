@@ -63,7 +63,6 @@ namespace QuestPDF.Fluent
 
         /// <summary>
         /// Draws a basic placeholder useful for prototyping.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/placeholder.html">Learn more</a>
         /// </summary>
         /// <remarks>
@@ -83,11 +82,38 @@ namespace QuestPDF.Fluent
             });
         }
 
+        /// <summary>
+        /// If the container spans multiple pages, its content appears only on the first one.
+        /// <a href="https://www.questpdf.com/api-reference/show-once.html">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// <para>This element is useful if you wish to display a header on every page but want certain elements visible only on the first page.</para>
+        /// <para>Depending on the content, certain elements (such as Row or Table) may repeatedly draw their items across multiple pages. Use the ShowOnce element to modify this behavior if it's not desired.</para>
+        /// </remarks>
+        /// <example>
+        /// <para>Combine this element with SkipOnce to achieve more complex behaviors, e.g.:</para>
+        /// <para><c>.SkipOnce().ShowOnce()</c> ensures the child element is displayed only on the second page.</para>
+        /// <para><c>.SkipOnce().SkipOnce()</c> starts displaying the child element from the third page onwards.</para>
+        /// <para><c>.ShowOnce().SkipOnce()</c> draws nothing, as the order of invocation is important.</para>
+        /// </example>
         public static IContainer ShowOnce(this IContainer element)
         {
             return element.Element(new ShowOnce());
         }
 
+        /// <summary>
+        /// If the container spans multiple pages, its content is omitted on the first page and then displayed on the second and subsequent pages.
+        /// <a href="https://www.questpdf.com/api-reference/skip-once.html">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// A common use-case for this element is when displaying a consistent header across pages but needing to conditionally show/hide specific fragments on the first page.
+        /// </remarks>
+        /// <example>
+        /// <para>Combine this element with ShowOnce to achieve more complex behaviors, e.g.:</para>
+        /// <para><c>.SkipOnce().ShowOnce()</c> ensures the child element is displayed only on the second page.</para>
+        /// <para><c>.SkipOnce().SkipOnce()</c> starts displaying the child element from the third page onwards.</para>
+        /// <para><c>.ShowOnce().SkipOnce()</c> draws nothing, as the order of invocation is important.</para>
+        /// </example>
         public static IContainer SkipOnce(this IContainer element)
         {
             return element.Element(new SkipOnce());
@@ -158,6 +184,11 @@ namespace QuestPDF.Fluent
             });
         }
         
+        /// <summary>
+        /// Conditionally draws or hides its content.
+        /// <a href="https://www.questpdf.com/api-reference/show-if.html">Learn more</a>
+        /// </summary>
+        /// <param name="condition">If the value is <see langword="true"/>, its content is visible. Otherwise, it's hidden.</param>
         public static IContainer ShowIf(this IContainer element, bool condition)
         {
             return condition ? element : new Container();
