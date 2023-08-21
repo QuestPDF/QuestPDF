@@ -19,7 +19,7 @@ namespace QuestPDF.Fluent
         /// A positive value moves content to the right; a negative value moves it to the left.
         /// Does not alter the available space.
         /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/translate.html">Read more details</a>
+        /// <a href="https://www.questpdf.com/api-reference/translate.html">Learn more</a>
         /// </summary>
         public static IContainer TranslateX(this IContainer element, float value, Unit unit = Unit.Point)
         {
@@ -31,7 +31,7 @@ namespace QuestPDF.Fluent
         /// A positive value moves content downwards, a negative value moves it upwards.
         /// Does not alter the available space.
         /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/translate.html">Read more details</a>
+        /// <a href="https://www.questpdf.com/api-reference/translate.html">Learn more</a>
         /// </summary>
         public static IContainer TranslateY(this IContainer element, float value, Unit unit = Unit.Point)
         {

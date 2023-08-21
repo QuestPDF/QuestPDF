@@ -44,7 +44,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Draws a collection of elements vertically (from top to bottom).
         /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/column.html">Read more details</a>
+        /// <a href="https://www.questpdf.com/api-reference/column.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// Supports paging.

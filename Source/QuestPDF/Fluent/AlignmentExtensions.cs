@@ -17,7 +17,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Aligns content horizontally to the left side.
         /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Learn more</a>
         /// </summary>
         public static IContainer AlignLeft(this IContainer element)
         {
@@ -27,7 +27,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Aligns content horizontally to the center, ensuring equal space on both left and right sides.
         /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Learn more</a>
         /// </summary>
         public static IContainer AlignCenter(this IContainer element)
         {
@@ -37,7 +37,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Aligns its content horizontally to the right side.
         /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Learn more</a>
         /// </summary>
         public static IContainer AlignRight(this IContainer element)
         {
@@ -47,7 +47,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Aligns content vertically to the upper side.
         /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Learn more</a>
         /// </summary>
         public static IContainer AlignTop(this IContainer element)
         {
@@ -57,7 +57,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Aligns content vertically to the center, ensuring equal space above and below.
         /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Learn more</a>
         /// </summary>
         public static IContainer AlignMiddle(this IContainer element)
         {
@@ -67,7 +67,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Aligns content vertically to the bottom side.
         /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Learn more</a>
         /// </summary>
         public static IContainer AlignBottom(this IContainer element)
         {
