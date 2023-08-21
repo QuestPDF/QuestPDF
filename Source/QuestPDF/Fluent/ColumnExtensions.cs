@@ -9,7 +9,7 @@ namespace QuestPDF.Fluent
         internal Column Column { get; } = new();
 
         /// <summary>
-        /// Adjusts spacing between items.
+        /// Adjusts vertical spacing between items.
         /// </summary>
         public void Spacing(float value, Unit unit = Unit.Point)
         {
@@ -19,7 +19,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Adds a new item to the column element.
         /// </summary>
-        /// <returns>The container to the newly created item.</returns>
+        /// <returns>The container of the newly created item.</returns>
         public IContainer Item()
         {
             var container = new Container();

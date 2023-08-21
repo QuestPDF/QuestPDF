@@ -15,8 +15,8 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// For positive values, adds empty space around its content.
-        /// For negative values, pushes its content beyond the edges, increasing available space, similarly to negative HTML margins.
+        /// <para>For positive values, adds empty space around its content.</para>
+        /// <para>For negative values, pushes its content beyond the edges, increasing available space, similarly to negative HTML margins.</para>
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/padding.html">Learn more</a>
         /// </summary>
@@ -28,8 +28,8 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// For positive values, adds empty space horizontally (left and right) around its content.
-        /// For negative values, pushes its content beyond the horizontal edges, increasing available space, similarly to negative HTML margins.
+        /// <para>For positive values, adds empty space horizontally (left and right) around its content.</para>
+        /// <para>For negative values, pushes its content beyond the horizontal edges, increasing available space, similarly to negative HTML margins.</para>
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/padding.html">Learn more</a>
         /// </summary>
@@ -41,8 +41,8 @@ namespace QuestPDF.Fluent
         }
 
         /// <summary>
-        /// For positive values, adds empty space vertically (top and bottom) around its content.
-        /// For negative values, pushes its content beyond the vertical edges, increasing available space, similarly to negative HTML margins.
+        /// <para>For positive values, adds empty space vertically (top and bottom) around its content.</para>
+        /// <para>For negative values, pushes its content beyond the vertical edges, increasing available space, similarly to negative HTML margins.</para>
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/padding.html">Learn more</a>
         /// </summary>
@@ -54,8 +54,8 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// For positive values, adds empty space above its content.
-        /// For negative values, pushes its content beyond the top edge, increasing available space, similarly to negative HTML margins.
+        /// <para>For positive values, adds empty space above its content.</para>
+        /// <para>For negative values, pushes its content beyond the top edge, increasing available space, similarly to negative HTML margins.</para>
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/padding.html">Learn more</a>
         /// </summary>
@@ -65,8 +65,8 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// For positive values, adds empty space below its content.
-        /// For negative values, pushes its content beyond the bottom edge, increasing available space, similarly to negative HTML margins.
+        /// <para>For positive values, adds empty space below its content.</para>
+        /// <para>For negative values, pushes its content beyond the bottom edge, increasing available space, similarly to negative HTML margins.</para>
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/padding.html">Learn more</a>
         /// </summary>
@@ -76,8 +76,8 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// For positive values, adds empty space to the left of its content.
-        /// For negative values, pushes its content beyond the left edge, increasing available space, similarly to negative HTML margins.
+        /// <para>For positive values, adds empty space to the left of its content.</para>
+        /// <para>For negative values, pushes its content beyond the left edge, increasing available space, similarly to negative HTML margins.</para>
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/padding.html">Learn more</a>
         /// </summary>
@@ -87,8 +87,8 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// For positive values, adds empty space to the right of its content.
-        /// For negative values, pushes its content beyond the right edge, increasing available space, similarly to negative HTML margins.
+        /// <para>For positive values, adds empty space to the right of its content.</para>
+        /// <para>For negative values, pushes its content beyond the right edge, increasing available space, similarly to negative HTML margins.</para>
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/padding.html">Learn more</a>
         /// </summary>
