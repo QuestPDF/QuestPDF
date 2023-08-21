@@ -15,6 +15,11 @@ namespace QuestPDF.Fluent
             return element.Element(border);
         }
         
+        /// <summary>
+        /// Sets a uniform border (all edges) for its content.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
+        /// </summary>
         public static IContainer Border(this IContainer element, float value, Unit unit = Unit.Point)
         {
             return element
@@ -22,6 +27,11 @@ namespace QuestPDF.Fluent
                 .BorderVertical(value, unit);
         }
         
+        /// <summary>
+        /// Sets a vertical border (left and right) for its content.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
+        /// </summary>
         public static IContainer BorderVertical(this IContainer element, float value, Unit unit = Unit.Point)
         {
             return element
@@ -29,6 +39,11 @@ namespace QuestPDF.Fluent
                 .BorderRight(value, unit);
         }
         
+        /// <summary>
+        /// Sets a horizontal border (top and bottom) for its content.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
+        /// </summary>
         public static IContainer BorderHorizontal(this IContainer element, float value, Unit unit = Unit.Point)
         {
             return element
@@ -36,26 +51,52 @@ namespace QuestPDF.Fluent
                 .BorderBottom(value, unit);
         }
         
+        /// <summary>
+        /// Sets a border on the left side of its content.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
+        /// </summary>
         public static IContainer BorderLeft(this IContainer element, float value, Unit unit = Unit.Point)
         {
             return element.Border(x => x.Left = value.ToPoints(unit));
         }
         
+        /// <summary>
+        /// Sets a border on the right side of its content.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
+        /// </summary>
         public static IContainer BorderRight(this IContainer element, float value, Unit unit = Unit.Point)
         {
             return element.Border(x => x.Right = value.ToPoints(unit));
         }
         
+        /// <summary>
+        /// Sets a border on the top side of its content.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
+        /// </summary>
         public static IContainer BorderTop(this IContainer element, float value, Unit unit = Unit.Point)
         {
             return element.Border(x => x.Top = value.ToPoints(unit));
         }
         
+        /// <summary>
+        /// Sets a border on the bottom side of its content.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
+        /// </summary>        
         public static IContainer BorderBottom(this IContainer element, float value, Unit unit = Unit.Point)
         {
             return element.Border(x => x.Bottom = value.ToPoints(unit));
         }
         
+        /// <summary>
+        /// Adjusts color of the border element.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
+        /// </summary>
+        /// <param name="color">The color value in a <a href="https://www.questpdf.com/concepts/colors.html">valid format</a>, e.g. #FF8800 which is orange</param>
         public static IContainer BorderColor(this IContainer element, string color)
         {
             ColorValidator.Validate(color);
