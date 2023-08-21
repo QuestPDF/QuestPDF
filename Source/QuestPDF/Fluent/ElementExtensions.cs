@@ -61,6 +61,20 @@ namespace QuestPDF.Fluent
             });
         }
 
+        /// <summary>
+        /// Draws a basic placeholder useful for prototyping.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/placeholder.html">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// You can control the size of the Placeholder by chaining other elements before its invocation, e.g.:
+        /// <code>
+        /// .Width(200)
+        /// .Height(100)
+        /// .Placeholder("Sample text");
+        /// </code>
+        /// </remarks>
+        /// <param name="text">When provided, the placeholder displays this text. If omitted, a simple image icon is shown instead.</param>
         public static void Placeholder(this IContainer element, string? text = null)
         {
             element.Component(new Placeholder
