@@ -14,31 +14,61 @@ namespace QuestPDF.Fluent
             return element.Element(alignment);
         }
         
+        /// <summary>
+        /// Aligns content horizontally to the left side.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// </summary>
         public static IContainer AlignLeft(this IContainer element)
         {
             return element.Alignment(x => x.Horizontal = HorizontalAlignment.Left);
         }
         
+        /// <summary>
+        /// Aligns content horizontally to the center, ensuring equal space on both left and right sides.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// </summary>
         public static IContainer AlignCenter(this IContainer element)
         {
             return element.Alignment(x => x.Horizontal = HorizontalAlignment.Center);
         }
         
+        /// <summary>
+        /// Aligns its content horizontally to the right side.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// </summary>
         public static IContainer AlignRight(this IContainer element)
         {
             return element.Alignment(x => x.Horizontal = HorizontalAlignment.Right);
         }
         
+        /// <summary>
+        /// Aligns content vertically to the upper side.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// </summary>
         public static IContainer AlignTop(this IContainer element)
         {
             return element.Alignment(x => x.Vertical = VerticalAlignment.Top);
         }
         
+        /// <summary>
+        /// Aligns content vertically to the center, ensuring equal space above and below.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// </summary>
         public static IContainer AlignMiddle(this IContainer element)
         {
             return element.Alignment(x => x.Vertical = VerticalAlignment.Middle);
         }
         
+        /// <summary>
+        /// Aligns content vertically to the bottom side.
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/alignment.html">Read more details</a>
+        /// </summary>
         public static IContainer AlignBottom(this IContainer element)
         {
             return element.Alignment(x => x.Vertical = VerticalAlignment.Bottom);
