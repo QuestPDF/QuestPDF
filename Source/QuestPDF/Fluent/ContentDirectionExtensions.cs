@@ -15,7 +15,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets the left-to-right (LTR) direction for its entire content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/content-direction.html">Learn more</a>
         /// </summary>
         /// <remarks>
@@ -30,7 +29,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets the left-to-right (LTR) direction for its entire content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/content-direction.html">Learn more</a>
         /// </summary>
         /// <remarks>

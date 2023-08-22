@@ -17,15 +17,18 @@
         /// When the image contains an alpha channel, it is always encoded using the PNG format and this option is ignored.
         /// The default value is "high quality".
         /// </summary>
-        public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.VeryHigh;
+        /// <remarks>
+        /// This setting is taken into account only when the image is in the JPG format, otherwise it is ignored.
+        /// </remarks>
+        public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.High;
 
         /// <summary>
         /// The DPI (pixels-per-inch) at which images and features without native PDF support will be rasterized.
         /// A larger DPI would create a PDF that reflects the original intent with better fidelity, but it can make for larger PDF files too, which would use more memory while rendering, and it would be slower to be processed or sent online or to printer.
         /// When generating images, this parameter also controls the resolution of the generated content.
-        /// Default value is 144.
+        /// Default value is 288.
         /// </summary>
-        public int ImageRasterDpi { get; set; } = DefaultRasterDpi * 2;
+        public int ImageRasterDpi { get; set; } = DefaultRasterDpi * 4;
  
         public ContentDirection ContentDirection { get; set; } = ContentDirection.LeftToRight;
         

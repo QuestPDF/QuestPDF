@@ -96,7 +96,7 @@ namespace QuestPDF.Fluent
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>
-        /// <param name="color">The color value in a <a href="https://www.questpdf.com/concepts/colors.html">valid format</a>, e.g. #FF8800 which is orange</param>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
         public static IContainer BorderColor(this IContainer element, string color)
         {
             ColorValidator.Validate(color);

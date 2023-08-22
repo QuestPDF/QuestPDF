@@ -1,0 +1,17 @@
+<documentation>
+    <doc for="colorParam">
+        <param name="color">Color in a <a href="https://www.questpdf.com/concepts/colors.html">valid format</a> (like <c>#FF8800</c> for orange) or from the predefined <see cref="Colors"/> set (like <c>Colors.Red.Lighten1</c>).</param>
+    </doc>
+
+    <doc for="scale.remarks">
+        <remarks>
+        <para>Although this adjustment modifies the space available to its inner content, some elements might use their own strategies to fill that space.</para>
+        <para>For example, an Image with the <see cref="Infrastructure.ImageScaling.FitWidth" /> setting may retain its size, but its quality could vary based on the DPI setting.</para>
+        <para>In contrast, text will not only appear smaller or bigger; but also a different number of words may fit each line.</para>
+        </remarks>
+    </doc>
+    
+    <doc for="scale.factorParam">
+        <param name="factor">The scaling factor. Values greater than 1 enlarge the content, while values less than 1 reduce it.</param>
+    </doc>
+</documentation>
