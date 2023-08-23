@@ -54,8 +54,8 @@ namespace QuestPDF.Fluent
         /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
         /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
         /// </remarks>
-        /// <param name="handler">Any method that takes the current container, optionally fills it with content, and returns another container to continue the chain.</param>
-        /// <returns>New container returned by the handler</returns>
+        /// <param name="handler">A method that accepts the current container, optionally populates it with content, and returns a subsequent container to continue the Fluent API chain.</param>
+        /// <returns>The container returned by the <paramref name="handler"/> method.</returns>
         public static IContainer Element(this IContainer parent, Func<IContainer, IContainer> handler)
         {
             return handler(parent.Container()).Container();
@@ -196,6 +196,12 @@ namespace QuestPDF.Fluent
             element.Element(new PageBreak());
         }
         
+        /// <summary>
+        /// A neutral layout structure that neither contributes to nor alters its content.
+        /// </summary>
+        /// <remarks>
+        /// By default, certain FluentAPI calls may be batched together for optimized performance. Introduce this element if you wish to separate and prevent such optimizations.
+        /// </remarks>
         public static IContainer Container(this IContainer element)
         {
             return element.Element(new Container());
