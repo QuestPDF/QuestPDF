@@ -1,6 +1,6 @@
 ﻿namespace QuestPDF.Infrastructure
 {
-    public interface IRenderingCanvas
+    internal interface IRenderingCanvas
     {
         void BeginDocument();
         void EndDocument();
