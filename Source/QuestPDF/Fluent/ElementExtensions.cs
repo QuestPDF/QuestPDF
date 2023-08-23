@@ -32,19 +32,38 @@ namespace QuestPDF.Fluent
             return child;
         }
         
-        public static void Element<TParent>(this TParent parent, Action<IContainer> handler) where TParent : IContainer
+        /// <summary>
+        /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
+        /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
+        /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
+        /// </remarks>
+        /// <param name="handler">A delegate that takes the current container and populates it with content.</param>
+        public static void Element(this IContainer parent, Action<IContainer> handler)
         {
             handler(parent.Container());
         }
         
-        public static IContainer Element<TParent>(this TParent parent, Func<IContainer, IContainer> handler) where TParent : IContainer
+        /// <summary>
+        /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
+        /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
+        /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
+        /// </remarks>
+        /// <param name="handler">Any method that takes the current container, optionally fills it with content, and returns another container to continue the chain.</param>
+        /// <returns>New container returned by the handler</returns>
+        public static IContainer Element(this IContainer parent, Func<IContainer, IContainer> handler)
         {
             return handler(parent.Container()).Container();
         }
         
         /// <summary>
         /// Constrains its content to maintain a given aspect ratio.
-        /// <a href="https://www.questpdf.com/api-reference/aspect-ratio.html">Documentation</a>
+        /// <a href="https://www.questpdf.com/api-reference/aspect-ratio.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// This container enforces strict space constraints. The <see cref="DocumentLayoutException" /> may be thrown if these constraints can't be satisfied.
