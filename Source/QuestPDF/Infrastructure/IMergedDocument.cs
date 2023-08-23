@@ -42,12 +42,13 @@ namespace QuestPDF.Infrastructure
         }
 
         /// <summary>
-        /// Each document is considered as separate in terms of page numbering.
-        /// That means, all page number related APIs will return values based on original documents.
-        /// All documents will simply be merged together.
-        /// For example: let's suppose that two documents are merged, first with 2 pages and second with 3 pages.
-        /// The resulting document will have 5 pages, and page numbers will be: 1, 2, 1, 2, 3.
+        /// Documents maintain their own page numbers upon merging, without continuity between them.
+        /// As a result, APIs related to page numbers reflect individual documents, not the cumulative count.
+        /// All documents are simply be merged together.
         /// </summary>
+        /// <example>
+        /// Merging a two-page document with a three-page document results in a sequence: 1, 2, 1, 2, 3.
+        /// </example>
         public MergedDocument UseOriginalPageNumbers()
         {
             PageNumberStrategy = MergedDocumentPageNumberStrategy.Original;
@@ -55,11 +56,12 @@ namespace QuestPDF.Infrastructure
         }
 
         /// <summary>
-        /// Content from all documents will be merged together, and considered as one/single document.
-        /// That means, all page number related APIs will return continuous numbers.
-        /// For example: let's suppose that two documents are merged, first with 2 pages and second with 3 pages.
-        /// The resulting document will have 5 pages, and page numbers will be: 1, 2, 3, 4, 5.
+        /// Consolidates the content from every document, creating a continuous seamless one.
+        /// Page number APIs return a consecutive numbering for this unified document.
         /// </summary>
+        /// <example>
+        /// Merging a two-page document with a three-page document results in a sequence: 1, 2, 3, 4, 5.
+        /// </example>
         public MergedDocument UseContinuousPageNumbers()
         {
             PageNumberStrategy = MergedDocumentPageNumberStrategy.Continuous;
