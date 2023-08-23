@@ -275,7 +275,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Provides direct access to the low-level SkiaSharp API.
-        /// <a href="https://www.questpdf.com/api-reference/canvas.html">Documentation</a>
+        /// <a href="https://www.questpdf.com/api-reference/canvas.html">Learn more</a>
         /// </summary>
         /// <example>
         /// <para>Use this element when needing to render advanced shapes not directly available in the QuestPDF API.</para>

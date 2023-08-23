@@ -11,15 +11,15 @@ namespace QuestPDF.Infrastructure
 
         /// <summary>
         /// Encoding quality controls the trade-off between size and quality.
-        /// The default value is "high quality".
+        /// The default value is "high".
         /// </summary>
-        public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.VeryHigh;
+        public ImageCompressionQuality ImageCompressionQuality { get; set; } = ImageCompressionQuality.High;
 
         /// <summary>
         /// The DPI (pixels-per-inch) at which the document will be rasterized. This parameter controls the resolution of produced images.
-        /// Default value is 144.
+        /// Default value is 288.
         /// </summary>
-        public int RasterDpi { get; set; } = DocumentSettings.DefaultRasterDpi * 2;
+        public int RasterDpi { get; set; } = DocumentSettings.DefaultRasterDpi * 4;
 
 
         public static ImageGenerationSettings Default => new ImageGenerationSettings();

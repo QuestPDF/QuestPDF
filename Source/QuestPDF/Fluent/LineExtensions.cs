@@ -21,7 +21,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Renders a vertical line with a specified thickness.
-        /// <a href="https://www.questpdf.com/api-reference/line.html">Documentation</a>
+        /// <a href="https://www.questpdf.com/api-reference/line.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// The line is not just a visual element; it occupies actual space within the document.
@@ -34,7 +34,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Renders a horizontal line with a specified thickness.
-        /// <a href="https://www.questpdf.com/api-reference/line.html">Documentation</a>
+        /// <a href="https://www.questpdf.com/api-reference/line.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// The line is not just a visual element; it occupies actual space within the document.
