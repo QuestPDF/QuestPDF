@@ -5,13 +5,37 @@
 
     <doc for="scale.remarks">
         <remarks>
-        <para>Although this adjustment modifies the space available to its inner content, some elements might use their own strategies to fill that space.</para>
-        <para>For example, an Image with the <see cref="Infrastructure.ImageScaling.FitWidth" /> setting may retain its size, but its quality could vary based on the DPI setting.</para>
-        <para>In contrast, text will not only appear smaller or bigger; but also a different number of words may fit each line.</para>
+            <para>Although this adjustment modifies the space available to its inner content, some elements might use their own strategies to fill that space.</para>
+            <para>For example, an Image with the <see cref="Infrastructure.ImageScaling.FitWidth" /> setting may retain its size, but its quality could vary based on the DPI setting.</para>
+            <para>In contrast, text will not only appear smaller or bigger; but also a different number of words may fit each line.</para>
         </remarks>
     </doc>
     
     <doc for="scale.factorParam">
         <param name="factor">The scaling factor. Values greater than 1 enlarge the content, while values less than 1 reduce it.</param>
+    </doc>
+
+    <doc for="contentDirection.ltr.remarks">
+        <remarks>
+            <para>This writing system is used by most of modern languages.</para>
+            
+            <para>
+                The content direction affects various layout structures. In LTR mode, items are typically aligned to the left.
+                This mode also influences the direction of items in certain layouts. For instance, in a row element with LTR mode,
+                the first item is positioned on the left, while the last item is on the right.
+            </para>
+        </remarks>
+    </doc>
+
+    <doc for="contentDirection.rtl.remarks">
+        <remarks>
+            <para>This writing system is used by languages such as Hebrew, Arabic, and Persian.</para>
+            
+            <para>
+                The content direction affects various layout structures. In RTL mode, items are typically aligned to the right.
+                This mode also influences the direction of items in certain layouts. For instance, in a row element with RTL mode,
+                the first item is positioned on the right, while the last item is on the left.
+            </para>
+        </remarks>
     </doc>
 </documentation>
