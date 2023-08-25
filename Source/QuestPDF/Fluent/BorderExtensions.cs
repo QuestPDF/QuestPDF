@@ -17,7 +17,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets a uniform border (all edges) for its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>
         public static IContainer Border(this IContainer element, float value, Unit unit = Unit.Point)
@@ -29,7 +28,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets a vertical border (left and right) for its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>
         public static IContainer BorderVertical(this IContainer element, float value, Unit unit = Unit.Point)
@@ -41,7 +39,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets a horizontal border (top and bottom) for its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>
         public static IContainer BorderHorizontal(this IContainer element, float value, Unit unit = Unit.Point)
@@ -53,7 +50,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets a border on the left side of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>
         public static IContainer BorderLeft(this IContainer element, float value, Unit unit = Unit.Point)
@@ -63,7 +59,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets a border on the right side of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>
         public static IContainer BorderRight(this IContainer element, float value, Unit unit = Unit.Point)
@@ -73,7 +68,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets a border on the top side of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>
         public static IContainer BorderTop(this IContainer element, float value, Unit unit = Unit.Point)
@@ -83,7 +77,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets a border on the bottom side of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>        
         public static IContainer BorderBottom(this IContainer element, float value, Unit unit = Unit.Point)
@@ -93,7 +86,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Adjusts color of the border element.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />

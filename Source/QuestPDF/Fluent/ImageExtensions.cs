@@ -166,7 +166,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Draws the <see cref="Infrastructure.Image" /> object. Allows to optimize the generation process.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />

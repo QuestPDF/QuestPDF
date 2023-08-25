@@ -16,7 +16,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets the exact width of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/width.html">Learn more</a>
         /// </summary>
         /// <returns>The container with the specified exact width.</returns>
@@ -29,7 +28,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets the minimum width of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/width.html">Learn more</a>
         /// </summary>
         /// <returns>The container with the specified minimum width.</returns>
@@ -40,7 +38,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets the maximum width of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/width.html">Learn more</a>
         /// </summary>
         /// <returns>The container with the specified maximum width.</returns>
@@ -51,7 +48,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets the exact height of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/height.html">Learn more</a>
         /// </summary>
         /// <returns>The container with the specified exact height.</returns>
@@ -64,7 +60,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets the minimum height of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/height.html">Learn more</a>
         /// </summary>
         /// <returns>The container with the specified minimum height.</returns>
@@ -75,7 +70,6 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Sets the maximum height of its content.
-        /// <br />
         /// <a href="https://www.questpdf.com/api-reference/height.html">Learn more</a>
         /// </summary>
         /// <returns>The container with the specified maximum height.</returns>

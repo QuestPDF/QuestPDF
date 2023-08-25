@@ -16,6 +16,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Rotates its content 90 degrees counterclockwise.
+        /// <a href="https://www.questpdf.com/api-reference/rotate.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// Note: Rotation can alter certain attributes; for example, 'width' might effectively become 'height'.
@@ -27,6 +28,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Rotates its content 90 degrees clockwise.
+        /// <a href="https://www.questpdf.com/api-reference/rotate.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// Note: Rotation can alter certain attributes; for example, 'width' might effectively become 'height'.
@@ -38,6 +40,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Rotates its content clockwise by a given angle.
+        /// <a href="https://www.questpdf.com/api-reference/rotate.html">Learn more</a>
         /// </summary>
         /// <param name="angle">Rotation angle in degrees. A value of 360 degrees represents a full rotation.</param>
         public static IContainer Rotate(this IContainer element, float angle)
