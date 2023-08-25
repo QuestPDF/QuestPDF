@@ -15,6 +15,63 @@
         <param name="factor">The scaling factor. Values greater than 1 enlarge the content, while values less than 1 reduce it.</param>
     </doc>
 
+    <doc for="image.remarks">
+        <remarks>
+            <para>
+                Please note that there is a significant difference between image resolution (number of pixels vertically and horizontally) and its physical size described in points.
+                Therefore, the resolution of an image is not used for determining its physical size on the document.
+            </para>
+
+            <para>
+                Multiple strategies exist for the Image element to determine its final size. 
+                By default, the image fills all the available width. 
+                This behavior can be customized using options within the <see cref="Fluent.ImageDescriptor">descriptor</see> class.
+            </para>
+            
+            <para>
+                Images are automatically resized and compressed based on the descriptor's setup.
+                It defaults to <see cref="DocumentSettings">global document's settings</see>.
+            </para>
+            
+            <para>Supported formats: PNG, JPEG and WEBP.</para>
+        </remarks>
+    </doc>
+
+    <doc for="image.useOriginalImage">
+        <summary>
+            When enabled, the library does not resize the image to achieve the target DPI, nor compress it with target image quality.
+        </summary>
+    </doc>
+    
+    <doc for="image.rasterDPI">
+        <summary>
+            <para>Specifies the DPI (dots-per-inch) for rasterizing images.</para>
+            <para>The target resolution is computed by multiplying the DPI with the physical image size on the document.</para>
+            <para>Higher DPI results in superior image quality but may increase the output file size.</para>
+            <para>Default DPI value is 288 DPI.</para>
+        </summary>
+        
+        <remarks>
+            If the image has lower resolution that the one calculated from the DPI setting, it will NOT be rescaled.
+        </remarks>
+        
+        <example>
+            Consider an image of dimensions 3x4 inches. Using a DPI value of 300, the final resolution translates to 900x1200 pixels.
+        </example>
+    </doc>
+
+    <doc for="image.compressionQuality">
+        <summary>
+            <para>Controls the balance between encoding quality and file size.</para>
+            <para>Opaque images are JPEG-encoded based on this setting, while images with an alpha channel default to PNG format, disregarding this option.</para>
+            <para>Default is set to "high quality".</para>
+        </summary>
+    </doc>
+
+    <doc for="image.descriptor">
+        <returns>Descriptor allowing adjustments to image attributes, such as scaling behavior, compression quality, and target DPI.</returns>
+    </doc>
+
     <doc for="contentDirection.ltr.remarks">
         <remarks>
             <para>This writing system is used by most of modern languages.</para>
