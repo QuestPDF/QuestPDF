@@ -17,7 +17,7 @@ namespace QuestPDF.Elements
         {
             return availableSpace.IsNegative() 
                 ? SpacePlan.Wrap() 
-                : SpacePlan.FullRender(availableSpace);
+                : SpacePlan.FullRender(Size.Zero);
         }
 
         internal override void Draw(Size availableSpace)
