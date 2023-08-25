@@ -1,5 +1,21 @@
 ﻿namespace QuestPDF.Helpers
 {
+    /// <summary>
+    /// Offers a palette of colors defined by the Google Material Design System guidelines.
+    /// Each primary color (like red, blue, green) has associated shades and accent variations.
+    /// <br />
+    /// <a href="https://m2.material.io/design/color/the-color-system.html#tools-for-picking-colors">Learn more</a>
+    /// </summary>
+    /// <example>
+    /// Access colors using the following pattern:
+    /// <code>
+    /// Colors.Black;
+    /// Colors.Red.Lighten5;
+    /// Colors.Blue.Medium; 
+    /// Colors.Green.Darken4; 
+    /// Colors.Yellow.Accent2; 
+    /// </code>
+    /// </example>
     public class Colors
     {
         public const string Black = "#000000";
