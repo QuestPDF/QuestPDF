@@ -3,6 +3,16 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Helpers
 {
+    /// <summary>
+    /// Defines the physical dimensions (width and height) of a page.
+    /// </summary>
+    /// <remarks>
+    /// <para>Commonly used page sizes are available in the <see cref="PageSizes"/> class.</para>
+    /// <para>Change page orientation with the <see cref="PageSizeExtensions.Portrait">Portrait</see> and <see cref="PageSizeExtensions.Landscape">Landscape</see> extension methods.</para>
+    /// </remarks>
+    /// <example>
+    /// <c>PageSizes.A4.Landscape();</c>
+    /// </example>
     public class PageSize
     {
         public readonly float Width;
@@ -17,7 +27,10 @@ namespace QuestPDF.Helpers
         public static implicit operator Size(PageSize pageSize) => new Size(pageSize.Width, pageSize.Height);
     }
 
-    public struct PageSizes
+    /// <summary>
+    /// Contains a collection of predefined, common and standard page sizes, such as A4 with dimensions of 595.4 inches in width and 842 inches in height.
+    /// </summary>
+    public static class PageSizes
     {
         public const int PointsPerInch = 72;
 
