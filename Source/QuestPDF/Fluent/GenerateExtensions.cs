@@ -111,7 +111,7 @@ namespace QuestPDF.Fluent
 
         #region Helpers
 
-        private static void OpenFileUsingDefaultProgram(string filePath)
+        internal static void OpenFileUsingDefaultProgram(string filePath)
         {
             var process = new Process
             {
