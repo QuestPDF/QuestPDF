@@ -7,3 +7,7 @@ Version 2023.6.1
 - Fix: incorrect layout exception when debugging is disabled
 - Fix: the page number functionality for sections do not work (#609)
 - Improvement: enhanced the message about the QuestPDF Previewer application version incompatibility
+
+Version 2023.6.2
+- Fix: improved `Image.FitUnproportionally` behavior to ensure it now respects minimal size constraints and doesn't just expand to use all the available space.
+- Adjustment: increased the default DPI setting from 144 to 288 to better match industry standards and provide visuals of expected quality. To counterbalance for potential output size increase, the image quality has been decreased from "very high" to "high" (JPEG 90 to 75).
