@@ -172,7 +172,7 @@ namespace QuestPDF.Fluent
         /// Items may be auto-placed based on the order they're called or can have assigned specific column and row positions. Cells can also span multiple columns and/or rows.
         /// </para>
         /// </summary>
-        /// <param name="handler">Delegate to shape the table content.</param>
+        /// <param name="handler">Handler to define the table content.</param>
         public static void Table(this IContainer element, Action<TableDescriptor> handler)
         {
             var descriptor = new TableDescriptor();
