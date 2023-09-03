@@ -66,7 +66,7 @@ namespace QuestPDF.Previewer
                             .Column(column =>
                             {
                                 column.Item().Text("Exception").FontSize(36).FontColor(Colors.Red.Medium).Bold();
-                                column.Item().PaddingTop(-10).Text("Don't panic! Just analyze what's happened...").FontSize(18).FontColor(Colors.Red.Medium).Bold();
+                                column.Item().PaddingTop(-10).Text("Please refer to the details for further insight and troubleshooting.").FontSize(18).FontColor(Colors.Red.Medium).Bold();
                             }); 
                     });
 

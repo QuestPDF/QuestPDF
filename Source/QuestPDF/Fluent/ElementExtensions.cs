@@ -217,7 +217,7 @@ namespace QuestPDF.Fluent
         /// Creates a clickable area that redirects the user to a designated webpage.
         /// <a href="https://www.questpdf.com/api-reference/hyperlink.html">Learn more</a>
         /// </summary>
-        /// <param name="url">The URL of the webpage to which the user will be redirected.</param>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="param.url"]/*' />
         public static IContainer Hyperlink(this IContainer element, string url)
         {
             return element.Element(new Hyperlink
@@ -260,7 +260,7 @@ namespace QuestPDF.Fluent
         /// Creates a clickable area that navigates the user to a designated section.
         /// <a href="https://www.questpdf.com/api-reference/section-link.html">Learn more</a>
         /// </summary>
-        /// <param name="sectionName">The text key corresponding to the value used when defining the <see cref="ElementExtensions.Section">Section</see> element.</param>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="param.sectionName"]/*' />
         public static IContainer SectionLink(this IContainer element, string sectionName)
         {
             return element.Element(new SectionLink

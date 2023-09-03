@@ -1,8 +1,20 @@
 <documentation>
+    <!-- SHARED -->
+    
     <doc for="colorParam">
         <param name="color">Color in a <a href="https://www.questpdf.com/concepts/colors.html">valid format</a> (like <c>#FF8800</c> for orange) or from the predefined <see cref="Colors"/> set (like <c>Colors.Red.Lighten1</c>).</param>
     </doc>
 
+    <doc for="param.sectionName">
+        <param name="sectionName">The text key corresponding to the value used when defining the <see cref="ElementExtensions.Section">Section</see> element.</param>
+    </doc>
+
+    <doc for="param.url">
+        <param name="url">The URL of the webpage to which the user will be redirected.</param>
+    </doc>
+    
+    <!-- SCALE -->
+    
     <doc for="scale.remarks">
         <remarks>
             <para>Although this adjustment modifies the space available to its inner content, some elements might use their own strategies to fill that space.</para>
@@ -15,6 +27,8 @@
         <param name="factor">The scaling factor. Values greater than 1 enlarge the content, while values less than 1 reduce it.</param>
     </doc>
 
+    <!-- IMAGE -->
+    
     <doc for="image.remarks">
         <remarks>
             <para>
@@ -72,6 +86,8 @@
         <returns>Descriptor allowing adjustments to image attributes, such as scaling behavior, compression quality, and target DPI.</returns>
     </doc>
 
+    <!-- CONTENT DIRECTION -->
+    
     <doc for="contentDirection.ltr.remarks">
         <remarks>
             <para>This writing system is used by most of modern languages.</para>
@@ -107,14 +123,6 @@
             <para>Handler for adjusting the appearance of the text span, including attributes like color, size, and background.</para>
             <para>Additionally, it provides formatting options, like displaying the page number in custom text format (e.g. Roman numerals).</para>
         </returns>
-    </doc>
-
-    <doc for="param.sectionName">
-        <param name="sectionName">The text key corresponding to the value used when defining the <see cref="ElementExtensions.Section">Section</see> element.</param>
-    </doc>
-
-    <doc for="param.url">
-        <param name="url">The URL of the webpage to which the user will be redirected.</param>
     </doc>
     
     <!-- TEXT ATTRIBUTES -->
