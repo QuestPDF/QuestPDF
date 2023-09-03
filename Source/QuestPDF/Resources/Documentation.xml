@@ -95,4 +95,258 @@
             </para>
         </remarks>
     </doc>
+    
+    <!-- TEXT ATTRIBUTES -->
+
+    <doc for="text.fontColor">
+        <summary>
+            Sets the font color.
+        </summary>
+    </doc>
+
+    <doc for="text.backgroundColor">
+        <summary>
+            Sets a solid background color for the text.
+        </summary>
+    </doc>
+    
+    <doc for="text.fontFamily">
+        <summary>
+            Sets the text's font family.
+        </summary>
+
+        <remarks>
+            By default, the library searches for the target font through all available in the runtime environment.
+            This usually works in the development environment, but might not in the cloud where many fonts are not installed.
+            It is a safe practice to include all font files with your application and register them using the <see cref="Drawing.FontManager">FontManager</see> class.
+        </remarks>
+
+        <param name="value">The font family name (like "Times New Roman" or "Calibri") or a custom name from the <see cref="Drawing.FontManager.RegisterFontWithCustomName">FontManager</see> method.</param>
+        
+        <summary>
+            <para>Sets the font family of the text.</para>
+        </summary>
+        
+        <remarks>
+            <para>By default, the library searches all fonts available in the runtime environment.</para>
+            <para>This may work well on the development environment but may fail in the cloud where fonts are usually not installed.</para>
+            <para>It is safest deploy font files along with the application and then register them using the <see cref="Drawing.FontManager">FontManager</see> class.</para>
+        </remarks>
+        
+        <param name="value">Actual font family (e.g. "Times New Roman", "Calibri", "Lato") or custom identifier used when invoking the <see cref="Drawing.FontManager.RegisterFontWithCustomName">FontManager</see> method.</param>
+    </doc>
+    
+    <doc for="text.fontSize">
+        <summary>
+            Sets font size for the text.
+        </summary>
+
+        <remarks>
+            The visual size of the text is determined by its font size. 
+            However, it's worth noting that different fonts may render text with distinct visual sizes, even when assigned the same numerical font size.
+        </remarks>
+    </doc>
+
+    <doc for="text.wrapAnywhere">
+        <summary>
+            Allows text to wrap at any character, not just spaces.
+        </summary>
+    </doc>
+    
+    <doc for="text.lineHeight">
+        <summary>
+            Adjusts the vertical spacing between text lines.
+            The added space is proportional to the text size. 
+            A <paramref name="factor"/> value of 1 retains the original spacing.
+            <a href="https://www.questpdf.com/api-reference/text.html#line-height">Learn more</a>
+        </summary>
+
+        <param name="factor">
+            <para>Sets the proportion of vertical spacing relative to the original.</para> 
+            <para>A value greater than 1 increases spacing, while a value less than 1 reduces it. Must be greater than 0.</para>
+        </param>
+    </doc>
+
+    <doc for="text.letterSpacing">
+        <summary>
+            Adjusts the horizontal spacing between characters in the text.
+            The adjustment is proportional to the text size, where a <paramref name="factor"/> value of 1 maintains the original spacing.
+            <a href="https://www.questpdf.com/api-reference/text.html#letter-spacing">Learn more</a>
+        </summary>
+
+        <param name="factor">
+            <para>Sets the proportion by which the horizontal space between characters is changed.</para>
+            <para>A factor greater than 1 spreads characters further apart, while a factor less than 1 (but more than 0) brings them closer together.</para> 
+            <para>Must be greater than 0.</para>
+        </param>
+    </doc>
+    
+    <!-- TEXT EFFECTS -->
+
+    <doc for="text.italic">
+        <summary>
+            Draws text with a italic effect, where letters are slightly slanted to the right.
+        </summary>
+    </doc>
+
+    <doc for="text.strikethrough">
+        <summary>
+            Draws a simple solid line through the middle of the text.
+        </summary>
+    </doc>
+
+    <doc for="text.underline">
+        <summary>
+            Draws a simple solid line under the text.
+        </summary>
+    </doc>
+    
+    <!-- TEXT WEIGHT -->
+    
+    <doc for="text.weight.thin">
+        <summary>
+            Sets the font weight to "thin" (equivalent to CSS 100).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.extraLight">
+        <summary>
+            Sets the font weight to "extra light" (equivalent to CSS 200).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.light">
+        <summary>
+            Sets the font weight to "light" (equivalent to CSS 300).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.normal">
+        <summary>
+            Sets the font weight to "normal" or "regular (equivalent to CSS 400).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.medium">
+        <summary>
+            Sets the font weight to "medium" (equivalent to CSS 500).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.semiBold">
+        <summary>
+            Sets the font weight to "semi bold" (equivalent to CSS 600).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.bold">
+        <summary>
+            Sets the font weight to "bold" (equivalent to CSS 700).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.extraBold">
+        <summary>
+            Sets the font weight to "extra bold" (equivalent to CSS 800).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.black">
+        <summary>
+            Sets the font weight to "black" (equivalent to CSS 900).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.extraBlack">
+        <summary>
+            Sets the font weight to "extra black" (equivalent to CSS 1000).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.remarks">
+        <remarks>
+            Not all fonts support every weight. 
+            If the specified weight isn't available, the library selects the closest available option.
+        </remarks>
+    </doc>
+    
+    <!-- TEXT POSITION -->
+    
+    <doc for="text.position.normal">
+        <summary>
+            Resets the text position and size to default, utilizing the full available line height.
+            <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.position.subscript">
+        <summary>
+            Sets the text style to subscript, making it smaller and positioning it below the baseline.
+            <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.position.superscript">
+        <summary>
+            Sets the text style to subscript, making it smaller and positioning it above the baseline.
+            <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
+        </summary>
+    </doc>
+    
+    <!-- TEXT DIRECTION -->
+
+    <doc for="text.direction.auto">
+        <summary>
+            Resets the text direction, enabling content to follow the automatically detected direction.
+            <a href="https://www.questpdf.com/api-reference/text.html#forcing-text-direction-rtl">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.direction.ltr">
+        <summary>
+            Enforces a left-to-right text direction.
+            <a href="https://www.questpdf.com/api-reference/text.html#forcing-text-direction-rtl">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.direction.rtl">
+        <summary>
+            Enforces a right-to-left text direction.
+            <a href="https://www.questpdf.com/api-reference/text.html#forcing-text-direction-rtl">Learn more</a>
+        </summary>
+    </doc>
+    
+    <!-- TEXT OTHERS -->
+    <doc for="text.style">
+        <summary>
+            Sets a font style using the typography pattern.
+            <a href="https://www.questpdf.com/api-reference/text.html#typography-pattern">Learn more</a>
+        </summary>
+        
+        <remarks>
+            This API reduces the garbage collector pressure and offers the best performance.
+        </remarks>
+    </doc>
+
+    <doc for="text.fontFallback">
+        <summary>
+            Specifies an alternative text style to be used when the primary font family does not support certain character glyphs.
+            <a href="https://www.questpdf.com/api-reference/text.html#font-fallback">Learn more</a>
+        </summary>
+        
+        <remarks>
+            The library supports nested font fallbacks, ensuring a series of alternative fonts. 
+            Individual properties can be adjusted for each level of fallback.
+        </remarks>
+    </doc>
 </documentation>
