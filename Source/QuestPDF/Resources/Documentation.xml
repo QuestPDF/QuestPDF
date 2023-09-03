@@ -95,15 +95,17 @@
             </para>
         </remarks>
     </doc>
+    
+    <!-- TEXT ELEMENT -->
 
     <doc for="text.returns.spanDescriptor">
-        <returns>Handler that allows to customize style of the text span, e.g. color, size, text color, background, etc.</returns>
+        <returns>Handler for adjusting the appearance of the text span, including attributes like color, size, and background.</returns>
     </doc>
 
     <doc for="text.returns.pageNumberDescriptor">
         <returns>
-            <para>Handler that allows to customize style of the text span, e.g. color, size, text color, background, etc.</para>
-            <para>It also allows to change text formatting, e.g. represent page number as a roman numeral</para>
+            <para>Handler for adjusting the appearance of the text span, including attributes like color, size, and background.</para>
+            <para>Additionally, it provides formatting options, like displaying the page number in custom text format (e.g. Roman numerals).</para>
         </returns>
     </doc>
 
