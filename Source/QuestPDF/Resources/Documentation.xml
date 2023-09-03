@@ -95,6 +95,25 @@
             </para>
         </remarks>
     </doc>
+
+    <doc for="text.returns.spanDescriptor">
+        <returns>Handler that allows to customize style of the text span, e.g. color, size, text color, background, etc.</returns>
+    </doc>
+
+    <doc for="text.returns.pageNumberDescriptor">
+        <returns>
+            <para>Handler that allows to customize style of the text span, e.g. color, size, text color, background, etc.</para>
+            <para>It also allows to change text formatting, e.g. represent page number as a roman numeral</para>
+        </returns>
+    </doc>
+
+    <doc for="param.sectionName">
+        <param name="sectionName">The text key corresponding to the value used when defining the <see cref="ElementExtensions.Section">Section</see> element.</param>
+    </doc>
+
+    <doc for="param.url">
+        <param name="url">The URL of the webpage to which the user will be redirected.</param>
+    </doc>
     
     <!-- TEXT ATTRIBUTES -->
 
