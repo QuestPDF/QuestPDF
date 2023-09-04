@@ -141,18 +141,6 @@
     
     <doc for="text.fontFamily">
         <summary>
-            Sets the text's font family.
-        </summary>
-
-        <remarks>
-            By default, the library searches for the target font through all available in the runtime environment.
-            This usually works in the development environment, but might not in the cloud where many fonts are not installed.
-            It is a safe practice to include all font files with your application and register them using the <see cref="Drawing.FontManager">FontManager</see> class.
-        </remarks>
-
-        <param name="value">The font family name (like "Times New Roman" or "Calibri") or a custom name from the <see cref="Drawing.FontManager.RegisterFontWithCustomName">FontManager</see> method.</param>
-        
-        <summary>
             <para>Sets the font family of the text.</para>
         </summary>
         
