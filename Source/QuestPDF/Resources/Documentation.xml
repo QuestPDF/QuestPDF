@@ -378,4 +378,30 @@
             Individual properties can be adjusted for each level of fallback.
         </remarks>
     </doc>
+
+    <!-- PREVIEWER -->
+
+    <doc for="previewer.support">
+        <summary>
+            Connects to the QuestPDF Previewer application to automatically preview the document being currently implemented after every code modification,
+            without the need to recompile the code or restart the application.
+            <a href="https://www.questpdf.com/document-previewer.html">Learn more</a>
+        </summary>
+        
+        <remarks>
+            For details on the hot-reload functionality, please refer to the documentation of your preferred IDE.
+        </remarks>
+        
+        <param name="port">Specifies port for communication with the QuestPDF Previewer application. Default value is 12500.</param>
+    </doc>
+
+    <doc for="previewer.notSupported">
+        <summary>
+            The hot-reload feature and QuestPDF Previewer integration are available only in the .NET 6 environment or later.
+            Please consider updating your project.
+            <a href="https://www.questpdf.com/document-previewer.html">Learn more</a>
+        </summary>
+        
+        <param name="port">This parameter is ignored.</param>
+    </doc>
 </documentation>
