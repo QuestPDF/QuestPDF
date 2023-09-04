@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
 {
-    public readonly struct SpacePlan
+    internal readonly struct SpacePlan
     {
         public readonly SpacePlanType Type;
         public readonly float Width;
