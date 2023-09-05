@@ -1,12 +1,12 @@
 ﻿namespace QuestPDF.Helpers
 {
-    public class Colors
+    public static class Colors
     {
         public const string Black = "#000000";
         public const string White = "#ffffff";
         public const string Transparent = "#00000000";
 
-        public class Red
+        public static class Red
         {
             public const string Lighten5 = "#ffebee";
             public const string Lighten4 = "#ffcdd2";
@@ -27,7 +27,7 @@
             public const string Accent4 = "#d50000";
         }
 
-        public class Pink
+        public static class Pink
         {
             public const string Lighten5 = "#fce4ec";
             public const string Lighten4 = "#f8bbd0";
@@ -48,7 +48,7 @@
             public const string Accent4 = "#c51162";
         }
 
-        public class Purple
+        public static class Purple
         {
             public const string Lighten5 = "#f3e5f5";
             public const string Lighten4 = "#e1bee7";
@@ -69,7 +69,7 @@
             public const string Accent4 = "#aa00ff";
         }
 
-        public class DeepPurple
+        public static class DeepPurple
         {
             public const string Lighten5 = "#ede7f6";
             public const string Lighten4 = "#d1c4e9";
@@ -90,7 +90,7 @@
             public const string Accent4 = "#6200ea";
         }
 
-        public class Indigo
+        public static class Indigo
         {
             public const string Lighten5 = "#e8eaf6";
             public const string Lighten4 = "#c5cae9";
@@ -111,7 +111,7 @@
             public const string Accent4 = "#304ffe";
         }
 
-        public class Blue
+        public static class Blue
         {
             public const string Lighten5 = "#e3f2fd";
             public const string Lighten4 = "#bbdefb";
@@ -132,7 +132,7 @@
             public const string Accent4 = "#2962ff";
         }
 
-        public class LightBlue
+        public static class LightBlue
         {
             public const string Lighten5 = "#e1f5fe";
             public const string Lighten4 = "#b3e5fc";
@@ -153,7 +153,7 @@
             public const string Accent4 = "#0091ea";
         }
 
-        public class Cyan
+        public static class Cyan
         {
             public const string Lighten5 = "#e0f7fa";
             public const string Lighten4 = "#b2ebf2";
@@ -174,7 +174,7 @@
             public const string Accent4 = "#00b8d4";
         }
 
-        public class Teal
+        public static class Teal
         {
             public const string Lighten5 = "#e0f2f1";
             public const string Lighten4 = "#b2dfdb";
@@ -195,7 +195,7 @@
             public const string Accent4 = "#00bfa5";
         }
 
-        public class Green
+        public static class Green
         {
             public const string Lighten5 = "#e8f5e9";
             public const string Lighten4 = "#c8e6c9";
@@ -216,7 +216,7 @@
             public const string Accent4 = "#00c853";
         }
 
-        public class LightGreen
+        public static class LightGreen
         {
             public const string Lighten5 = "#f1f8e9";
             public const string Lighten4 = "#dcedc8";
@@ -237,7 +237,7 @@
             public const string Accent4 = "#64dd17";
         }
 
-        public class Lime
+        public static class Lime
         {
             public const string Lighten5 = "#f9fbe7";
             public const string Lighten4 = "#f0f4c3";
@@ -258,7 +258,7 @@
             public const string Accent4 = "#aeea00";
         }
 
-        public class Yellow
+        public static class Yellow
         {
             public const string Lighten5 = "#fffde7";
             public const string Lighten4 = "#fff9c4";
@@ -279,7 +279,7 @@
             public const string Accent4 = "#ffd600";
         }
 
-        public class Amber
+        public static class Amber
         {
             public const string Lighten5 = "#fff8e1";
             public const string Lighten4 = "#ffecb3";
@@ -300,7 +300,7 @@
             public const string Accent4 = "#ffab00";
         }
 
-        public class Orange
+        public static class Orange
         {
             public const string Lighten5 = "#fff3e0";
             public const string Lighten4 = "#ffe0b2";
@@ -321,7 +321,7 @@
             public const string Accent4 = "#ff6d00";
         }
 
-        public class DeepOrange
+        public static class DeepOrange
         {
             public const string Lighten5 = "#fbe9e7";
             public const string Lighten4 = "#ffccbc";
@@ -342,7 +342,7 @@
             public const string Accent4 = "#dd2c00";
         }
 
-        public class Brown
+        public static class Brown
         {
             public const string Lighten5 = "#efebe9";
             public const string Lighten4 = "#d7ccc8";
@@ -358,7 +358,7 @@
             public const string Darken4 = "#3e2723";
         }
 
-        public class Grey
+        public static class Grey
         {
             public const string Lighten5 = "#fafafa";
             public const string Lighten4 = "#f5f5f5";
@@ -374,7 +374,7 @@
             public const string Darken4 = "#212121";
         }
 
-        public class BlueGrey
+        public static class BlueGrey
         {
             public const string Lighten5 = "#eceff1";
             public const string Lighten4 = "#cfd8dc";
