@@ -406,8 +406,5 @@
             Consider the scenario of a company-wide page header. 
             Instead of replicating the same header design across various documents, a single component can be created and referenced wherever needed.
         </example>
-        <param name="component">An instance of the class implementing the <see cref="IComponent" /> interface.</param>
-    </doc>   
-    
-    
+    </doc>
 </documentation>

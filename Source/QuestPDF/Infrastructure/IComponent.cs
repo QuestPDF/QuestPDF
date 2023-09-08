@@ -14,7 +14,6 @@ namespace QuestPDF.Infrastructure
     
     /// <summary>
     /// <para>This interface represents a reusable document fragment.</para>
-    ///
     /// <para>
     /// Components serve as modular building blocks for abstracting document layouts. 
     /// They promote code reusability across multiple sections or types of documents. 
