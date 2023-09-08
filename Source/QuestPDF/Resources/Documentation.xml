@@ -392,4 +392,22 @@
         
         <param name="port">This parameter is ignored.</param>
     </doc>
+    
+    <!-- COMPONENTS -->
+
+    <doc for="component">
+        <summary>
+            Components serve as modular building blocks for abstracting document layouts. 
+            They promote code reusability across multiple sections or types of documents. 
+            Using a component, you can generate content based on its internal state.
+            <a href="https://www.questpdf.com/concepts/components.html">Learn more</a>
+        </summary>
+        <example>
+            Consider the scenario of a company-wide page header. 
+            Instead of replicating the same header design across various documents, a single component can be created and referenced wherever needed.
+        </example>
+        <param name="component">An instance of the class implementing the <see cref="IComponent" /> interface.</param>
+    </doc>   
+    
+    
 </documentation>
