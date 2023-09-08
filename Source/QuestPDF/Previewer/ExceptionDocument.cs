@@ -7,7 +7,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Previewer
 {
-    public class ExceptionDocument : IDocument
+    internal class ExceptionDocument : IDocument
     {
         private Exception Exception { get; }
     

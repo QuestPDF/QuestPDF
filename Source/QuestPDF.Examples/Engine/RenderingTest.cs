@@ -115,9 +115,9 @@ namespace QuestPDF.Examples.Engine
             {
                 Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
                 document.GenerateImages(x => fileNameSchema(x));
-                
+
                 if (ShowResult && ShowingResultsEnabled)
-                    Process.Start("explorer", fileNameSchema(0));
+                    GenerateExtensions.OpenFileUsingDefaultProgram(fileNameSchema(0));
             }
 
             if (ResultType == RenderingTestResult.Pdf)
