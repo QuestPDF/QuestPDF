@@ -116,7 +116,7 @@ namespace QuestPDF.Examples.Engine
                 var generationSettings = new ImageGenerationSettings { RasterDpi = 144 };
                 
                 Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
-                document.GenerateImages(fileNameSchema, generationSettings);
+                document.GenerateImages(index => fileNameSchema(index), generationSettings);
 
                 if (ShowResult && ShowingResultsEnabled)
                 {
