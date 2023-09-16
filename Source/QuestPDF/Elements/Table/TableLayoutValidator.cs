@@ -25,6 +25,12 @@ namespace QuestPDF.Elements.Table
                 if (cell.Row < 1)
                     throw new DocumentComposeException($"{prefix} A cell row position should be greater or equal to 1. Got {cell.Row}.");
                 
+                if (cell.ColumnSpan < 1)
+                    throw new DocumentComposeException($"{prefix} A cell must span at least one column. Got {cell.ColumnSpan}.");
+                
+                if (cell.RowSpan < 1)
+                    throw new DocumentComposeException($"{prefix} A cell must span at least one row. Got {cell.RowSpan}.");
+                
                 if (cell.Column > columnsCount)
                     throw new DocumentComposeException($"{prefix} Cell starts at column that does not exist. Cell details: {GetCellDetails(cell)}.");
                 

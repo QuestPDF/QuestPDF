@@ -12,6 +12,11 @@ using SkiaSharp.HarfBuzz;
 
 namespace QuestPDF.Drawing
 {
+    /// <summary>
+    /// <para>By default, the library searches all fonts available in the runtime environment.</para>
+    /// <para>This may work well on the development environment but may fail in the cloud where fonts are usually not installed.</para>
+    /// <para>It is safest deploy font files along with the application and then register them using this class.</para>
+    /// </summary>
     public static class FontManager
     {
         private static readonly ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
@@ -49,6 +54,11 @@ namespace QuestPDF.Drawing
             RegisterFontWithCustomName(fontName, stream);
         }
         
+        /// <summary>
+        /// Registers a TrueType font from a stream under the provided custom <paramref name="fontName"/>.
+        /// Refer to this font by using the same name as a font family in the <see cref="TextStyle"/> API later on.
+        /// <a href="https://www.questpdf.com/going-production/font-management.html">Learn more</a>
+        /// </summary>
         public static void RegisterFontWithCustomName(string fontName, Stream stream)
         {
             using var fontData = SKData.Create(stream);
@@ -56,12 +66,21 @@ namespace QuestPDF.Drawing
             RegisterFontType(fontData, customName: fontName);
         }
 
+        /// <summary>
+        /// Registers a TrueType font from a stream. The font family name and all related attributes are detected automatically.
+        /// <a href="https://www.questpdf.com/going-production/font-management.html">Learn more</a>
+        /// </summary>
         public static void RegisterFont(Stream stream)
         {
             using var fontData = SKData.Create(stream);
             RegisterFontType(fontData);
         }
         
+        /// <summary>
+        /// Registers a TrueType font from an embedded resource. The font family name and all related attributes are detected automatically.
+        /// <a href="https://www.questpdf.com/going-production/font-management.html">Learn more</a>
+        /// </summary>
+        /// <param name="pathName">Path to the embedded resource (the case-sensitive name of the manifest resource being requested).</param>
         public static void RegisterFontFromEmbeddedResource(string pathName)
         {
             using var stream = Assembly.GetCallingAssembly().GetManifestResourceStream(pathName);
