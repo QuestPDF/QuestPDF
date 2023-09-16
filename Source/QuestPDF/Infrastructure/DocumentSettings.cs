@@ -17,6 +17,7 @@
         /// When the image contains an alpha channel, it is always encoded using the PNG format and this option is ignored.
         /// The default value is "high quality".
         /// </summary>
+
         /// <remarks>
         /// This setting is taken into account only when the image is in the JPG format, otherwise it is ignored.
         /// </remarks>

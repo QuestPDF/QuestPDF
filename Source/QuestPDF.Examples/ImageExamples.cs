@@ -140,6 +140,24 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        public void FitUnproportionally()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(400, 600)
+                .ProduceImages()
+                .ShowResults()
+                .Render(page =>
+                {
+                    page.Padding(15).MinimalBox().Background(Colors.Grey.Lighten3).Row(row =>
+                    {
+                        row.RelativeItem().Padding(5).Text(Placeholders.LoremIpsum());
+                        row.RelativeItem().Image("photo.jpg").FitUnproportionally();
+                    });
+                });
+        }
+        
+        [Test]
         public void Exception()
         {
             Assert.Throws<DocumentComposeException>(() =>

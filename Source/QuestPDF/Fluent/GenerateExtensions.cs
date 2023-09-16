@@ -151,6 +151,7 @@ namespace QuestPDF.Fluent
             };
 
             process.Start();
+            process.WaitForExit();
         }
         
         #endregion
