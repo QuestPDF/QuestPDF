@@ -843,5 +843,46 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+        public void DrawOverflow()
+        {
+            RenderingTest
+                .Create()
+                .ShowResults()
+                .ProducePdf()
+                .RenderDocument(document =>
+                {
+                    document.Page(page =>
+                    {
+                        page.Size(PageSizes.A4);
+                        page.Margin(24);
+                        page.DefaultTextStyle(TextStyle.Default.FontSize(16));
+
+                        page.Header().Text("Document header").FontSize(24).Bold().FontColor(Colors.Blue.Accent2);
+
+                        page.Content().PaddingVertical(24).Column(column =>
+                        {
+                            column.Spacing(16);
+
+                            foreach (var size in Enumerable.Range(20, 20))
+                                column.Item().Width(size * 10).Height(40).Background(Colors.Grey.Lighten3);
+                            
+                            column.Item().Row(row =>
+                            {
+                                row.RelativeItem().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Text("Will it work?").FontSize(20);
+                                row.RelativeItem().Border(1).Background(Colors.Grey.Lighten3).Padding(5).ContentOverflowDebugArea().ShowEntire().Text(Placeholders.LoremIpsum()).FontSize(20);
+                            });
+                        });
+                        
+                        page.Footer().AlignCenter().Text(text =>
+                        {
+                            text.CurrentPageNumber();
+                            text.Span(" / ");
+                            text.TotalPages();
+                        });
+                    });
+                });
+        }
     }
 }
