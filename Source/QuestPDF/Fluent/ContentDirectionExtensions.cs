@@ -24,7 +24,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Sets the left-to-right (LTR) direction for its entire content.
+        /// Sets the right-to-left (RTL) direction for its entire content.
         /// <a href="https://www.questpdf.com/api-reference/content-direction.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="contentDirection.rtl.remarks"]/*' />

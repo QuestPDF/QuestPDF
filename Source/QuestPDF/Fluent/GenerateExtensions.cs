@@ -102,7 +102,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Generates the document as a series of images and returns them as a collection of byte arrays.
         /// </summary>
-        /// <param name="settings">Optional settings to customize the output images, such as resolution, compression ratio, and more.</param>
+        /// <param name="settings">Optional settings to customize the generation process, such as image resolution, compression ratio, and more.</param>
         public static IEnumerable<byte[]> GenerateImages(this IDocument document, ImageGenerationSettings? settings = null)
         {
             settings ??= ImageGenerationSettings.Default;

@@ -24,7 +24,7 @@
     </doc>
     
     <doc for="scale.factorParam">
-        <param name="factor">The scaling factor. Values greater than 1 enlarge the content, while values less than 1 reduce it.</param>
+        <param name="factor">The scaling factor. Values greater than one enlarge the content, while values less than one reduce it.</param>
     </doc>
 
     <!-- IMAGE -->
@@ -308,14 +308,14 @@
 
     <doc for="text.position.subscript">
         <summary>
-            Sets the text style to subscript, making it smaller and positioning it below the baseline.
+            Sets the text style to subscript, making it smaller and positioning it below the baseline, e.g.: H₂0
             <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.position.superscript">
         <summary>
-            Sets the text style to subscript, making it smaller and positioning it above the baseline.
+            Sets the text style to subscript, making it smaller and positioning it above the baseline, e.g.: y² + x² = 1.
             <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
         </summary>
     </doc>

@@ -148,7 +148,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Applies a default text style to all &lt;see cref="TextExtensions.Text"&gt;Text&lt;/see&gt; elements within the page set.
+        /// Applies a default text style to all <see cref="TextExtensions.Text">Text</see> elements within the page set.
         /// </summary>
         /// <remarks>
         /// Use this method to achieve consistent text styling across entire document.
@@ -170,7 +170,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Applies a left-to-right (LTR) content direction to all elements within the page set.
+        /// Applies a right-to-left (RTL) content direction to all elements within the page set.
         /// <a href="https://www.questpdf.com/api-reference/content-direction.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="contentDirection.rtl.remarks"]/*' />
@@ -277,7 +277,7 @@ namespace QuestPDF.Fluent
         /// The length of each set depends on its content.
         /// </summary>
         /// <remarks>
-        /// By leveraging multiple page sets, you can produce documents containing pages of distinct sizes.
+        /// By leveraging multiple page sets, you can produce documents containing pages of distinct sizes and characteristics.
         /// </remarks>
         /// <param name="handler">Delegate to define page content (layout and visual elements).</param>
         /// <returns>Continuation of the Document API chain, permitting the definition of other page sets.</returns>

@@ -15,7 +15,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Forces its content to occupy the full available space, maximizing both width and height.
+        /// Forces its content to occupy entire available space, maximizing both width and height.
         /// <a href="https://www.questpdf.com/api-reference/extend.html">Learn more</a>
         /// </summary>
         public static IContainer Extend(this IContainer element)
@@ -24,7 +24,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Forces its content to occupy the full available vertical space, maximizing height usage.
+        /// Forces its content to occupy entire available vertical space, maximizing height usage.
         /// <a href="https://www.questpdf.com/api-reference/extend.html">Learn more</a>
         /// </summary>
         public static IContainer ExtendVertical(this IContainer element)
@@ -33,7 +33,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Expands its content to occupy the full available horizontal space, maximizing width usage.
+        /// Expands its content to occupy entire available horizontal space, maximizing width usage.
         /// <a href="https://www.questpdf.com/api-reference/extend.html">Learn more</a>
         /// </summary>
         public static IContainer ExtendHorizontal(this IContainer element)

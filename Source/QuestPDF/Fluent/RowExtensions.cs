@@ -67,9 +67,9 @@ namespace QuestPDF.Fluent
         /// Adds a new item to the row element. The size of this item adjusts based on its content.
         /// </summary>
         /// <remarks>
-        /// The AutoItem requests as much horizontal space as its content requires.
-        /// It doesn't adjust its size based on other items and may frequently result in a <see cref="DocumentLayoutException" />.
-        /// It's recommended to use this API in conjunction with the <c>MaxWidth</c> element.
+        /// <para>The AutoItem requests as much horizontal space as its content requires.</para>
+        /// <para>It doesn't adjust its size based on other items and may frequently result in a <see cref="DocumentLayoutException" />.</para>
+        /// <para>It's recommended to use this API in conjunction with the <see cref="ConstrainedExtensions.MaxWidth">MaxWidth</see> element.</para>
         /// </remarks>
         /// <returns>The container of the newly created item.</returns>
         public IContainer AutoItem()
@@ -88,7 +88,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         /// <remarks>
         /// <para>Supports paging.</para>
-        /// <para>Depending on its content, the Row element may repeatedly draw certain items across multiple pages. Use the ShowOnce element to modify this behavior if it's not desired.</para>
+        /// <para>Depending on its content, the Row element may repeatedly draw certain items across multiple pages. Use the <see cref="ElementExtensions.ShowOnce">ShowOnce</see> element to modify this behavior if it's not desired.</para>
         /// </remarks>
         /// <param name="handler">The action to configure the row's content.</param>
         public static void Row(this IContainer element, Action<RowDescriptor> handler)

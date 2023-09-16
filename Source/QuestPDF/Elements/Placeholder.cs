@@ -24,7 +24,7 @@ namespace QuestPDF.Elements
                 .Element(x =>
                 {
                     if (string.IsNullOrWhiteSpace(Text))
-                        x.MaxHeight(32).Image(ImageData, ImageScaling.FitArea);
+                        x.MaxHeight(32).Image(ImageData).FitArea();
                     
                     else
                         x.Text(Text).FontSize(14);

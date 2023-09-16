@@ -104,7 +104,7 @@ namespace QuestPDF.Helpers
         }
 
         /// <summary>
-        /// Generates random text ideal for single sentences, like product descriptions.
+        /// Generates random text ideal for single sentences, like product description.
         /// </summary>
         /// <example>
         /// Vero a id optio consequuntur dignissimos repellendus provident blanditiis.
@@ -126,7 +126,7 @@ namespace QuestPDF.Helpers
         }
 
         /// <summary>
-        /// Generates random text suited for paragraphs, like detailed product descriptions.
+        /// Generates random text suited for paragraphs, like detailed product description.
         /// </summary>
         public static string Paragraph()
         {

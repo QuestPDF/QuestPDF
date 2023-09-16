@@ -188,7 +188,7 @@ namespace QuestPDF.Fluent
         }
 
         /// <summary>
-        /// Inserts a break that pushes the inner content to start on a new page.
+        /// Inserts a break that pushes the subsequent content to start on a new page.
         /// <a href="https://www.questpdf.com/api-reference/page-break.html">Learn more</a>
         /// </summary>
         public static void PageBreak(this IContainer element)
@@ -303,7 +303,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Renders its content in the most compact size achievable. 
-        /// Ideal for situations where the parent element provides more than necessary.
+        /// Ideal for situations where the parent element provides more space than necessary.
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/minimal-box.html">Learn more</a>
         /// </summary>
@@ -323,6 +323,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Applies a default text style to all nested <see cref="TextExtensions.Text">Text</see> elements.
+        /// <a href="https://www.questpdf.com/api-reference/default-text-style.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// If multiple text elements have a similar style, using this element can help simplify your code.
@@ -338,6 +339,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Applies a default text style to all nested <see cref="TextExtensions.Text">Text</see> elements.
+        /// <a href="https://www.questpdf.com/api-reference/default-text-style.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// If multiple text elements have a similar style, using this element can help simplify your code.
