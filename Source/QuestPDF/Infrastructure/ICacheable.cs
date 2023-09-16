@@ -1,6 +1,6 @@
 ﻿namespace QuestPDF.Infrastructure
 {
-    public interface ICacheable
+    internal interface ICacheable
     {
         
     }

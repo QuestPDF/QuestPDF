@@ -7,7 +7,7 @@ using System;
 namespace QuestPDF.Previewer
 {
     /// <summary>
-    /// Helper for subscribing to hot reload notifications.
+    /// Helper to subscribe to hot reload notifications.
     /// </summary>
     internal static class HotReloadManager
     {

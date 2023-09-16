@@ -7,7 +7,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    public class PreviewerPicture
+    internal class PreviewerPicture
     {
         public SKPicture Picture { get; set; }
         public Size Size { get; set; }

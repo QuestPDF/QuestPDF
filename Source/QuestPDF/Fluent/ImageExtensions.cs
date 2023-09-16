@@ -7,6 +7,37 @@ using SkiaSharp;
 
 namespace QuestPDF.Fluent
 {
+    public class DynamicImageDescriptor
+    {
+        private Elements.DynamicImage ImageElement { get; }
+        
+        internal DynamicImageDescriptor(Elements.DynamicImage imageElement)
+        {
+            ImageElement = imageElement;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.useOriginalImage"]/*' />
+        public DynamicImageDescriptor UseOriginalImage(bool value = true)
+        {
+            ImageElement.UseOriginalImage = value;
+            return this;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.rasterDPI"]/*' />
+        public DynamicImageDescriptor WithRasterDpi(int dpi)
+        {
+            ImageElement.TargetDpi = dpi;
+            return this;
+        }
+
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.compressionQuality"]/*' />
+        public DynamicImageDescriptor WithCompressionQuality(ImageCompressionQuality quality)
+        {
+            ImageElement.CompressionQuality = quality;
+            return this;
+        }
+    }
+    
     public class ImageDescriptor
     {
         private Elements.Image ImageElement { get; }
@@ -22,33 +53,21 @@ namespace QuestPDF.Fluent
             ImageAspectRatio = imageSize.Width / (float)imageSize.Height;
         }
         
-        /// <summary>
-        /// When enabled, the library will not attempt to resize the image to fit the target DPI, nor save it with target image quality.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.useOriginalImage"]/*' />
         public ImageDescriptor UseOriginalImage(bool value = true)
         {
             ImageElement.UseOriginalImage = value;
             return this;
         }
         
-        /// <summary>
-        /// The DPI (pixels-per-inch) at which images and features without native PDF support will be rasterized.
-        /// A larger DPI would create a PDF that reflects the original intent with better fidelity, but it can make for larger PDF files too, which would use more memory while rendering, and it would be slower to be processed or sent online or to printer.
-        /// When generating images, this parameter also controls the resolution of the generated content.
-        /// Default value is 288.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.rasterDPI"]/*' />
         public ImageDescriptor WithRasterDpi(int dpi)
         {
             ImageElement.TargetDpi = dpi;
             return this;
         }
 
-        /// <summary>
-        /// Encoding quality controls the trade-off between size and quality.
-        /// When the image is opaque, it will be encoded using the JPEG format with the selected quality setting.
-        /// When the image contains an alpha channel, it is always encoded using the PNG format and this option is ignored.
-        /// The default value is "high quality".
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.compressionQuality"]/*' />
         public ImageDescriptor WithCompressionQuality(ImageCompressionQuality quality)
         {
             ImageElement.CompressionQuality = quality;
@@ -58,7 +77,7 @@ namespace QuestPDF.Fluent
         #region Aspect Ratio
         
         /// <summary>
-        /// The image scales to take the entire available width. Default.
+        /// Scales the image to fill the full width of its container. This is the default behavior.
         /// </summary>
         public ImageDescriptor FitWidth()
         {
@@ -66,7 +85,8 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// The images scales to take the entire available height. Good in conjunction with constraining elements.
+        /// <para>The image stretches vertically to fit the full available height.</para>
+        /// <para>Often used with height-constraining elements such as: <see cref="ConstrainedExtensions.Height">Height</see>, <see cref="ConstrainedExtensions.MaxHeight">MaxHeight</see>, etc.</para>
         /// </summary>
         public ImageDescriptor FitHeight()
         {
@@ -74,20 +94,21 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// This is the combination of both of the FitWidth and the FitHeight options. 
-        /// The element scales to occupy the entire available area while preserving its aspect ratio.
-        /// This means that sometimes it occupies the entire width and sometimes the entire height.
-        /// This is the safest option.
+        /// Combines the FitWidth and FitHeight settings.
+        /// The image resizes itself to utilize all available space, preserving its aspect ratio.
+        /// It will either fill the width or height based on the container's dimensions.
         /// </summary>
+        /// <remarks>
+        /// An optimal and safe choice.
+        /// </remarks>
         public ImageDescriptor FitArea()
         {
             return SetAspectRatio(AspectRatioOption.FitArea);
         }
         
         /// <summary>
-        /// The image resizes itself to occupy the entire available space.
-        /// It does not preserve proportions.
-        /// The image may look incorrectly scaled, and is not desired in most of the cases.
+        /// The image adjusts to fill all the available space, disregarding its original proportions.
+        /// This can lead to distorted scaling and is generally not recommended for most scenarios.
         /// </summary>
         public ImageDescriptor FitUnproportionally()
         {
@@ -107,24 +128,48 @@ namespace QuestPDF.Fluent
     
     public static class ImageExtensions
     {
+        /// <summary>
+        /// Draws an image by decoding it from a provided byte array.
+        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.descriptor"]/*' />
         public static ImageDescriptor Image(this IContainer parent, byte[] imageData)
         {
             var image = Infrastructure.Image.FromBinaryData(imageData);
             return parent.Image(image);
         }
         
+        /// <summary>
+        /// Draws the image loaded from a file located at the provided path.
+        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.descriptor"]/*' />
         public static ImageDescriptor Image(this IContainer parent, string filePath)
         {
             var image = Infrastructure.Image.FromFile(filePath);
             return parent.Image(image);
         }
         
+        /// <summary>
+        /// Draws the image loaded from a stream.
+        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.descriptor"]/*' />
         public static ImageDescriptor Image(this IContainer parent, Stream fileStream)
         {
             var image = Infrastructure.Image.FromStream(fileStream);
             return parent.Image(image);
         }
         
+        /// <summary>
+        /// Draws the <see cref="Infrastructure.Image" /> object. Allows to optimize the generation process.
+        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.descriptor"]/*' />
         public static ImageDescriptor Image(this IContainer parent, Infrastructure.Image image)
         {
             if (image == null)
@@ -143,13 +188,26 @@ namespace QuestPDF.Fluent
             parent.Element(aspectRationElement);
             return new ImageDescriptor(imageElement, aspectRationElement).FitWidth();
         }
-
-        public static void Image(this IContainer element, GenerateDynamicImageDelegate dynamicImageSource)
+        
+        /// <summary>
+        /// Renders an image of dynamic size dictated by the document layout constraints.
+        /// </summary>
+        /// <remarks>
+        /// Ideal for generating pixel-perfect images that might lose quality upon scaling, such as maps or charts.
+        /// </remarks>
+        /// <param name="dynamicImageSource">
+        /// A delegate that requests an image of desired resolution calculated based on target physical image size and provided DPI.
+        /// </param>
+        /// <returns>A descriptor for adjusting image attributes like scaling behavior, compression quality, and resolution.</returns>
+        public static DynamicImageDescriptor Image(this IContainer element, GenerateDynamicImageDelegate dynamicImageSource)
         {
-            element.Element(new DynamicImage
+            var dynamicImage = new DynamicImage
             {
                 Source = dynamicImageSource
-            });
+            };
+            
+            element.Element(dynamicImage);
+            return new DynamicImageDescriptor(dynamicImage);
         }
         
         #region Obsolete
