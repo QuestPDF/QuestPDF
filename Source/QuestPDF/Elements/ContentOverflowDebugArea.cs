@@ -121,7 +121,8 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
             using var paint = new SKPaint
             {
                 Color = SKColor.Parse(LineColor),
-                PathEffect = SKPathEffect.Create2DLine(StripeThickness, matrix)
+                PathEffect = SKPathEffect.Create2DLine(StripeThickness, matrix),
+                IsAntialias = true
             };
             
             var targetArea = new SKRect(0,0,contentSize.Width, contentSize.Height);
