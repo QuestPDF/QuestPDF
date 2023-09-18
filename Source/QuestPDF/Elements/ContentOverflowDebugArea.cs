@@ -22,36 +22,40 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
         
     internal override void Draw(Size availableSpace)
     {
+        // measure content area
         var childSize = base.Measure(availableSpace);
-
+        
         if (childSize.Type != SpacePlanType.Wrap)
         {
             Child?.Draw(availableSpace);
             return;
         }
         
-        var contentSpace = 
+        // check overflow area
+        var contentSize = 
             TryVerticalOverflow(availableSpace) 
             ?? TryHorizontalOverflow(availableSpace) 
-            ?? TryExpandedOverflow(availableSpace) 
+            ?? TryUnconstrainedOverflow(availableSpace) 
             ?? Size.Max;
         
+        // draw content
         var translate = ContentDirection == ContentDirection.RightToLeft
-            ? new Position(availableSpace.Width - contentSpace.Width, 0)
+            ? new Position(availableSpace.Width - contentSize.Width, 0)
             : Position.Zero;
         
         Canvas.Translate(translate);
-        Child?.Draw(contentSpace);
+        Child?.Draw(contentSize);
         Canvas.Translate(translate.Reverse());
         
+        // draw overflow area
         var overflowTranslate = ContentDirection == ContentDirection.RightToLeft ? new Position(availableSpace.Width, 0) : Position.Zero;
         var overflowScale = ContentDirection == ContentDirection.RightToLeft ? -1 : 1;
         
         Canvas.Translate(overflowTranslate);
         Canvas.Scale(overflowScale, 1);
         
-        DrawTargetAreaBorder(contentSpace);
-        DrawOverflowArea(availableSpace, contentSpace);
+        DrawTargetAreaBorder(contentSize);
+        DrawOverflowArea(availableSpace, contentSize);
         
         Canvas.Scale(overflowScale, 1);
         Canvas.Translate(overflowTranslate.Reverse());
@@ -75,7 +79,7 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
         return TryOverflow(overflowSpace);
     }
     
-    private Size? TryExpandedOverflow(Size availableSpace)
+    private Size? TryUnconstrainedOverflow(Size availableSpace)
     {
         var overflowSpace = new Size(Size.Infinity, Size.Infinity);
         return TryOverflow(overflowSpace);
@@ -107,7 +111,7 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
             borderColor);
     }
     
-    private void DrawOverflowArea(Size availableSpace, Size contentSpace)
+    private void DrawOverflowArea(Size availableSpace, Size contentSize)
     {
         if (Canvas is not SkiaCanvasBase canvasBase)
             return;
@@ -126,8 +130,8 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
             const string lightCellColor = "#44f44336";
             const string darkCellColor = "#88f44336";
             
-            var boardSizeX = (int)Math.Ceiling(contentSpace.Width / checkerboardSize);
-            var boardSizeY = (int)Math.Ceiling(contentSpace.Height / checkerboardSize);
+            var boardSizeX = (int)Math.Ceiling(contentSize.Width / checkerboardSize);
+            var boardSizeY = (int)Math.Ceiling(contentSize.Height / checkerboardSize);
 
             foreach (var x in Enumerable.Range(0, boardSizeX))
             {
@@ -147,17 +151,9 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
         {
             var path = new SKPath();
 
-            var middleWidth = Math.Min(availableSpace.Width, contentSpace.Width);
-            var middleHeight = Math.Min(availableSpace.Height, contentSpace.Height);
-            
-            path.MoveTo(availableSpace.Width, 0);
-            path.LineTo(contentSpace.Width, 0);
-            path.LineTo(contentSpace.Width, contentSpace.Height);
-            path.LineTo(0, contentSpace.Height);
-            path.LineTo(0, middleHeight);
-            path.LineTo(middleWidth, middleHeight);
-            path.LineTo(middleWidth, 0);
-            
+            path.AddRect(new SKRect(0, 0, contentSize.Width, contentSize.Height), SKPathDirection.Clockwise);
+            path.AddRect(new SKRect(0, 0, Math.Min(availableSpace.Width, contentSize.Width), Math.Min(availableSpace.Height, contentSize.Height)), SKPathDirection.CounterClockwise);
+
             skiaCanvas.Save();
             skiaCanvas.ClipPath(path);
         }
