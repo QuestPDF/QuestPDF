@@ -908,6 +908,8 @@ namespace QuestPDF.Examples
                 {
                     container.Padding(24).Row(row =>
                     {
+                        row.Spacing(50);
+                        
                         row.RelativeItem().ContentFromLeftToRight().Element(GenerateOverflowPatterns);
                         row.RelativeItem().ContentFromRightToLeft().Element(GenerateOverflowPatterns);
                     });
@@ -916,43 +918,47 @@ namespace QuestPDF.Examples
                     {
                         container.Column(column =>
                         {
-                            column.Spacing(100);
+                            column.Spacing(50);
 
                             column
                                 .Item()
-
-                                .Width(100)
-                                .Height(100)
-                                .Background(Colors.Grey.Lighten3)
-
-                                .ContentOverflowDebugArea()
-
+                                .Element(DrawTestcaseArea)
+                                
                                 .Width(50)
-                                .Height(150);
+                                .Height(150)
+                                
+                                .Text("Test");
                         
                             column
                                 .Item()
-
-                                .Width(100)
-                                .Height(100)
-                                .Background(Colors.Grey.Lighten3)
-
-                                .ContentOverflowDebugArea()
+                                .Element(DrawTestcaseArea)
 
                                 .Width(150)
-                                .Height(50);
+                                .Height(50)
+                                
+                                .Text("Test");
                         
                             column
                                 .Item()
-
-                                .Width(100)
-                                .Height(100)
-                                .Background(Colors.Grey.Lighten3)
-
-                                .ContentOverflowDebugArea()
+                                .Element(DrawTestcaseArea)
 
                                 .Width(200)
-                                .Height(150);
+                                .Height(150)
+                                
+                                .Text("Test");
+
+                            IContainer DrawTestcaseArea(IContainer container)
+                            {
+                                return container
+                                    .Height(200)
+                                    .Background(Colors.Grey.Lighten4)
+
+                                    .Width(100)
+                                    .Height(100)
+                                    .Background(Colors.Grey.Lighten1)
+                                    
+                                    .ContentOverflowDebugArea();
+                            }
                         });
                     }
                 });

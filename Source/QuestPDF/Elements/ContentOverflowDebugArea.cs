@@ -6,8 +6,10 @@ using SkiaSharp;
 
 namespace QuestPDF.Elements;
 
-internal class ContentOverflowDebugArea : ContainerElement
+internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAware
 {
+    public ContentDirection ContentDirection { get; set; }
+    
     internal override SpacePlan Measure(Size availableSpace)
     {
         var childSize = base.Measure(availableSpace);
@@ -28,15 +30,31 @@ internal class ContentOverflowDebugArea : ContainerElement
             return;
         }
         
-        var overflowSpace = TryVerticalOverflow(availableSpace) 
-            ?? TryVerticalOverflow(availableSpace) 
+        var contentSpace = 
+            TryVerticalOverflow(availableSpace) 
+            ?? TryHorizontalOverflow(availableSpace) 
             ?? TryExpandedOverflow(availableSpace) 
             ?? Size.Max;
         
-        Child?.Draw(overflowSpace);
-
-        DrawTargetAreaBorder(overflowSpace);
-        DrawOverflowArea(availableSpace, overflowSpace);
+        var translate = ContentDirection == ContentDirection.RightToLeft
+            ? new Position(availableSpace.Width - contentSpace.Width, 0)
+            : Position.Zero;
+        
+        Canvas.Translate(translate);
+        Child?.Draw(contentSpace);
+        Canvas.Translate(translate.Reverse());
+        
+        var overflowTranslate = ContentDirection == ContentDirection.RightToLeft ? new Position(availableSpace.Width, 0) : Position.Zero;
+        var overflowScale = ContentDirection == ContentDirection.RightToLeft ? -1 : 1;
+        
+        Canvas.Translate(overflowTranslate);
+        Canvas.Scale(overflowScale, 1);
+        
+        DrawTargetAreaBorder(contentSpace);
+        DrawOverflowArea(availableSpace, contentSpace);
+        
+        Canvas.Scale(overflowScale, 1);
+        Canvas.Translate(overflowTranslate.Reverse());
     }
 
     private Size? TryOverflow(Size targetSpace)
@@ -89,7 +107,7 @@ internal class ContentOverflowDebugArea : ContainerElement
             borderColor);
     }
     
-    private void DrawOverflowArea(Size availableSpace, Size contentSize)
+    private void DrawOverflowArea(Size availableSpace, Size contentSpace)
     {
         if (Canvas is not SkiaCanvasBase canvasBase)
             return;
@@ -100,11 +118,6 @@ internal class ContentOverflowDebugArea : ContainerElement
         ClipOverflowAreaVisibility();
         DrawCheckerboardPattern();
         skiaCanvas.Restore();
-        
-        if (Canvas is SkiaCanvasBase bases2)
-        {
-            bases2.Canvas.Restore();
-        }
 
         void DrawCheckerboardPattern()
         {
@@ -113,8 +126,8 @@ internal class ContentOverflowDebugArea : ContainerElement
             const string lightCellColor = "#44f44336";
             const string darkCellColor = "#88f44336";
             
-            var boardSizeX = (int)Math.Ceiling(contentSize.Width / checkerboardSize);
-            var boardSizeY = (int)Math.Ceiling(contentSize.Height / checkerboardSize);
+            var boardSizeX = (int)Math.Ceiling(contentSpace.Width / checkerboardSize);
+            var boardSizeY = (int)Math.Ceiling(contentSpace.Height / checkerboardSize);
 
             foreach (var x in Enumerable.Range(0, boardSizeX))
             {
@@ -129,17 +142,18 @@ internal class ContentOverflowDebugArea : ContainerElement
             }
         }
 
+        // creates and applies an L-shaped clipping mask
         void ClipOverflowAreaVisibility()
         {
             var path = new SKPath();
 
-            var middleWidth = Math.Min(availableSpace.Width, contentSize.Width);
-            var middleHeight = Math.Min(availableSpace.Height, contentSize.Height);
+            var middleWidth = Math.Min(availableSpace.Width, contentSpace.Width);
+            var middleHeight = Math.Min(availableSpace.Height, contentSpace.Height);
             
             path.MoveTo(availableSpace.Width, 0);
-            path.LineTo(contentSize.Width, 0);
-            path.LineTo(contentSize.Width, contentSize.Height);
-            path.LineTo(0, contentSize.Height);
+            path.LineTo(contentSpace.Width, 0);
+            path.LineTo(contentSpace.Width, contentSpace.Height);
+            path.LineTo(0, contentSpace.Height);
             path.LineTo(0, middleHeight);
             path.LineTo(middleWidth, middleHeight);
             path.LineTo(middleWidth, 0);
