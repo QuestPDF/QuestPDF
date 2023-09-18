@@ -473,18 +473,29 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(300, 150)
+                .PageSize(500, 200)
+                .ProduceImages()
+                .ShowResults()
                 .Render(container =>
                 {
-                    container
-                        .Background("#FFF")
-                        .Padding(15)
-                        .Border(4)
-                        .BorderColor(Colors.Blue.Medium)
-                        //.MinimalBox()
-                        .Background(Colors.Grey.Lighten2)
-                        .Padding(15)
-                        .Text("Test of the \n box element").FontSize(20);
+                    container.Padding(20).Row(row =>
+                    {
+                        row.RelativeItem().ContentFromLeftToRight().Element(Content);
+                        row.RelativeItem().ContentFromRightToLeft().Element(Content);
+                    });
+
+                    void Content(IContainer container)
+                    {
+                        container
+                            .ExtendVertical()
+                            .Padding(15)
+                            .Border(4)
+                            .BorderColor(Colors.Blue.Medium)
+                            .MinimalBox()
+                            .Background(Colors.Grey.Lighten2)
+                            .Padding(15)
+                            .Text("Test of the \nbox element").FontSize(20);
+                    }
                 });
         }
 
@@ -882,6 +893,68 @@ namespace QuestPDF.Examples
                             text.TotalPages();
                         });
                     });
+                });
+        }
+        
+        [Test]
+        public void DrawOverflowCases()
+        {
+            RenderingTest
+                .Create()
+                .ShowResults()
+                .PageSize(PageSizes.A4)
+                .ProducePdf()
+                .Render(container =>
+                {
+                    container.Padding(24).Row(row =>
+                    {
+                        row.RelativeItem().ContentFromLeftToRight().Element(GenerateOverflowPatterns);
+                        row.RelativeItem().ContentFromRightToLeft().Element(GenerateOverflowPatterns);
+                    });
+
+                    void GenerateOverflowPatterns(IContainer container)
+                    {
+                        container.Column(column =>
+                        {
+                            column.Spacing(100);
+
+                            column
+                                .Item()
+
+                                .Width(100)
+                                .Height(100)
+                                .Background(Colors.Grey.Lighten3)
+
+                                .ContentOverflowDebugArea()
+
+                                .Width(50)
+                                .Height(150);
+                        
+                            column
+                                .Item()
+
+                                .Width(100)
+                                .Height(100)
+                                .Background(Colors.Grey.Lighten3)
+
+                                .ContentOverflowDebugArea()
+
+                                .Width(150)
+                                .Height(50);
+                        
+                            column
+                                .Item()
+
+                                .Width(100)
+                                .Height(100)
+                                .Background(Colors.Grey.Lighten3)
+
+                                .ContentOverflowDebugArea()
+
+                                .Width(200)
+                                .Height(150);
+                        });
+                    }
                 });
         }
     }
