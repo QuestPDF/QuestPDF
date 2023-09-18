@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
+using SkiaSharp;
 
 namespace QuestPDF.Elements;
 
@@ -90,40 +91,61 @@ internal class ContentOverflowDebugArea : ContainerElement
     
     private void DrawOverflowArea(Size availableSpace, Size contentSize)
     {
-        const float checkerboardSize = 8;
+        if (Canvas is not SkiaCanvasBase canvasBase)
+            return;
 
-        const string lightCellColor = "#44f44336";
-        const string darkCellColor = "#88f44336";
+        var skiaCanvas = canvasBase.Canvas;
+
+        skiaCanvas.Save();
+        ClipOverflowAreaVisibility();
+        DrawCheckerboardPattern();
+        skiaCanvas.Restore();
         
-        var overflowPosition = new Position(0, availableSpace.Height);
-        var overflowSize = new Size(contentSize.Width, contentSize.Height - availableSpace.Height);
-        
-        var boardSizeX = (int)Math.Ceiling(overflowSize.Width / checkerboardSize);
-        var boardSizeY = (int)Math.Ceiling(overflowSize.Height / checkerboardSize);
-        
-        Canvas.Translate(overflowPosition);
-        
-        foreach (var x in Enumerable.Range(0, boardSizeX))
+        if (Canvas is SkiaCanvasBase bases2)
         {
-            foreach (var y in Enumerable.Range(0, boardSizeY))
+            bases2.Canvas.Restore();
+        }
+
+        void DrawCheckerboardPattern()
+        {
+            const float checkerboardSize = 8;
+
+            const string lightCellColor = "#44f44336";
+            const string darkCellColor = "#88f44336";
+            
+            var boardSizeX = (int)Math.Ceiling(contentSize.Width / checkerboardSize);
+            var boardSizeY = (int)Math.Ceiling(contentSize.Height / checkerboardSize);
+
+            foreach (var x in Enumerable.Range(0, boardSizeX))
             {
-                var cellColor = (x + y) % 2 == 0 ? lightCellColor : darkCellColor;
-
-                var cellPosition = new Position(
-                    x * checkerboardSize, 
-                    y * checkerboardSize);
-
-                var isLastCellX = x + 1 == boardSizeX;
-                var isLastCellY = y + 1 == boardSizeY;
+                foreach (var y in Enumerable.Range(0, boardSizeY))
+                {
+                    var cellColor = (x + y) % 2 == 0 ? lightCellColor : darkCellColor;
+                    var cellPosition = new Position(x * checkerboardSize, y * checkerboardSize);
+                    var cellSize = new Size(checkerboardSize, checkerboardSize);
                 
-                var cellSize = new Size(
-                    isLastCellX ? overflowSize.Width - x * checkerboardSize : checkerboardSize, 
-                    isLastCellY ? overflowSize.Height - y * checkerboardSize : checkerboardSize);
-                
-                Canvas.DrawRectangle(cellPosition, cellSize, cellColor);
+                    Canvas.DrawRectangle(cellPosition, cellSize, cellColor);
+                }
             }
         }
-        
-        Canvas.Translate(overflowPosition.Reverse());
+
+        void ClipOverflowAreaVisibility()
+        {
+            var path = new SKPath();
+
+            var middleWidth = Math.Min(availableSpace.Width, contentSize.Width);
+            var middleHeight = Math.Min(availableSpace.Height, contentSize.Height);
+            
+            path.MoveTo(availableSpace.Width, 0);
+            path.LineTo(contentSize.Width, 0);
+            path.LineTo(contentSize.Width, contentSize.Height);
+            path.LineTo(0, contentSize.Height);
+            path.LineTo(0, middleHeight);
+            path.LineTo(middleWidth, middleHeight);
+            path.LineTo(middleWidth, 0);
+            
+            skiaCanvas.Save();
+            skiaCanvas.ClipPath(path);
+        }
     }
 }
