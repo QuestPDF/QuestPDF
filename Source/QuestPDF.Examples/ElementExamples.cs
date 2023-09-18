@@ -897,6 +897,33 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        public void DrawOverflowSimpleExample()
+        {
+            var image = Placeholders.Image(400, 300);
+            
+            RenderingTest
+                .Create()
+                .ShowResults()
+                .PageSize(PageSizes.A4)
+                .ProducePdf()
+                .Render(container =>
+                {
+                    container
+                        .Padding(24)
+
+                        // constrain area to square 200 x 200
+                        .Width(200)
+                        .Height(200)
+                        .Background(Colors.Grey.Lighten3)
+
+                        // draw image that fits height (and therefore will overflow)
+                        .ContentOverflowDebugArea()
+                        .Image(image)
+                        .FitHeight();
+                });
+        }
+        
+        [Test]
         public void DrawOverflowCases()
         {
             RenderingTest
