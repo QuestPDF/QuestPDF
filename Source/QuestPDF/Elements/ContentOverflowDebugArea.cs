@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -8,6 +8,11 @@ namespace QuestPDF.Elements;
 
 internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAware
 {
+    private const float BorderThickness = 1.5f;
+    private const float StripeThickness = 1.5f;
+    private const float StripeScale = 6f;
+    private const string LineColor = Colors.Red.Medium;
+    
     public ContentDirection ContentDirection { get; set; }
     
     internal override SpacePlan Measure(Size availableSpace)
@@ -54,7 +59,6 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
         Canvas.Translate(overflowTranslate);
         Canvas.Scale(overflowScale, 1);
         
-        DrawTargetAreaBorder(contentSize);
         DrawOverflowArea(availableSpace, contentSize);
         
         Canvas.Scale(overflowScale, 1);
@@ -85,32 +89,6 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
         return TryOverflow(overflowSpace);
     }
     
-    private void DrawTargetAreaBorder(Size contentSize)
-    {
-        const float borderWidth = 2;
-        const string borderColor = "#f44336";
-        
-        Canvas.DrawRectangle(
-            new Position(-borderWidth/2, -borderWidth/2), 
-            new Size(contentSize.Width + borderWidth/2 + borderWidth/2, borderWidth), 
-            borderColor);
-            
-        Canvas.DrawRectangle(
-            new Position(-borderWidth/2, -borderWidth/2), 
-            new Size(borderWidth, contentSize.Height + borderWidth/2 + borderWidth/2), 
-            borderColor);
-            
-        Canvas.DrawRectangle(
-            new Position(-borderWidth/2, contentSize.Height-borderWidth/2), 
-            new Size(contentSize.Width + borderWidth/2 + borderWidth/2, borderWidth), 
-            borderColor);
-            
-        Canvas.DrawRectangle(
-            new Position(contentSize.Width-borderWidth/2, -borderWidth/2), 
-            new Size(borderWidth, contentSize.Height + borderWidth/2 + borderWidth/2), 
-            borderColor);
-    }
-    
     private void DrawOverflowArea(Size availableSpace, Size contentSize)
     {
         if (Canvas is not SkiaCanvasBase canvasBase)
@@ -119,31 +97,37 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
         var skiaCanvas = canvasBase.Canvas;
 
         skiaCanvas.Save();
+        DrawTargetAreaBorder();
         ClipOverflowAreaVisibility();
         DrawCheckerboardPattern();
         skiaCanvas.Restore();
 
+        void DrawTargetAreaBorder()
+        {
+            using var paint = new SKPaint
+            {
+                Color = SKColor.Parse(LineColor),
+                IsStroke = true,
+                StrokeWidth = BorderThickness
+            };
+        
+            skiaCanvas.DrawRect(0, 0, contentSize.Width, contentSize.Height, paint);
+        }
+        
         void DrawCheckerboardPattern()
         {
-            const float checkerboardSize = 8;
+            var matrix = SKMatrix.CreateScale(StripeScale, StripeScale).PostConcat(SKMatrix.CreateRotation((float)(Math.PI / 4)));
 
-            const string lightCellColor = "#44f44336";
-            const string darkCellColor = "#88f44336";
-            
-            var boardSizeX = (int)Math.Ceiling(contentSize.Width / checkerboardSize);
-            var boardSizeY = (int)Math.Ceiling(contentSize.Height / checkerboardSize);
-
-            foreach (var x in Enumerable.Range(0, boardSizeX))
+            using var paint = new SKPaint
             {
-                foreach (var y in Enumerable.Range(0, boardSizeY))
-                {
-                    var cellColor = (x + y) % 2 == 0 ? lightCellColor : darkCellColor;
-                    var cellPosition = new Position(x * checkerboardSize, y * checkerboardSize);
-                    var cellSize = new Size(checkerboardSize, checkerboardSize);
-                
-                    Canvas.DrawRectangle(cellPosition, cellSize, cellColor);
-                }
-            }
+                Color = SKColor.Parse(LineColor),
+                PathEffect = SKPathEffect.Create2DLine(StripeThickness, matrix)
+            };
+            
+            var targetArea = new SKRect(0,0,contentSize.Width, contentSize.Height);
+            targetArea.Inflate(StripeScale * 2, StripeScale * 2);
+            
+            skiaCanvas.DrawRect(targetArea, paint);
         }
 
         // creates and applies an L-shaped clipping mask
