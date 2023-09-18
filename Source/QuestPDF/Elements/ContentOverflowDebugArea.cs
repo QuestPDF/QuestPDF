@@ -40,7 +40,7 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
         var contentSize = 
             TryVerticalOverflow(availableSpace) 
             ?? TryHorizontalOverflow(availableSpace) 
-            ?? TryUnconstrainedOverflow(availableSpace) 
+            ?? TryUnconstrainedOverflow() 
             ?? Size.Max;
         
         // draw content
@@ -83,7 +83,7 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
         return TryOverflow(overflowSpace);
     }
     
-    private Size? TryUnconstrainedOverflow(Size availableSpace)
+    private Size? TryUnconstrainedOverflow()
     {
         var overflowSpace = new Size(Size.Infinity, Size.Infinity);
         return TryOverflow(overflowSpace);
