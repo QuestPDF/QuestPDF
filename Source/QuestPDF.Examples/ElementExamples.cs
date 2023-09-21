@@ -897,6 +897,43 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        public void DrawOverflowRealExample()
+        {
+            var image = Placeholders.Image(400, 300);
+     
+            RenderingTest
+                .Create()
+                .ShowResults()
+                .PageSize(PageSizes.A4)
+                .ProducePdf()
+                .EnableDebugging()
+                .Render(container =>
+                {
+                    container.Column(column =>
+                    {
+                        foreach (var i in Enumerable.Range(0, 50))
+                            column.Item().Height(30).Width(i * 5 + 100).Background(Placeholders.BackgroundColor());
+                       
+                        column.Item()
+                            .Padding(24)
+
+                            // constrain area to square 200 x 200
+                            .Width(200)
+                            .Height(200)
+                            .Background(Colors.Grey.Lighten3)
+
+                            // draw image that fits height (and therefore will overflow)
+                            //.ContentOverflowDebugArea()
+                            .Image(image)
+                            .FitHeight();
+                        
+                        foreach (var i in Enumerable.Range(0, 50))
+                            column.Item().Height(30).Width(i * 5 + 100).Background(Placeholders.BackgroundColor());
+                    });
+                });
+        }
+        
+        [Test]
         public void DrawOverflowSimpleExample()
         {
             var image = Placeholders.Image(400, 300);
@@ -905,6 +942,7 @@ namespace QuestPDF.Examples
                 .Create()
                 .ShowResults()
                 .PageSize(PageSizes.A4)
+                .EnableDebugging()
                 .ProducePdf()
                 .Render(container =>
                 {
@@ -917,7 +955,7 @@ namespace QuestPDF.Examples
                         .Background(Colors.Grey.Lighten3)
 
                         // draw image that fits height (and therefore will overflow)
-                        .ContentOverflowDebugArea()
+                        //.ContentOverflowDebugArea()
                         .Image(image)
                         .FitHeight();
                 });
@@ -930,6 +968,7 @@ namespace QuestPDF.Examples
                 .Create()
                 .ShowResults()
                 .PageSize(PageSizes.A4)
+                .EnableDebugging()
                 .ProducePdf()
                 .Render(container =>
                 {
@@ -955,11 +994,11 @@ namespace QuestPDF.Examples
                                 .Height(150)
                                 
                                 .Text("Test");
-                        
+                            
                             column
                                 .Item()
                                 .Element(DrawTestcaseArea)
-
+                            
                                 .Width(150)
                                 .Height(50)
                                 
@@ -982,9 +1021,7 @@ namespace QuestPDF.Examples
 
                                     .Width(100)
                                     .Height(100)
-                                    .Background(Colors.Grey.Lighten1)
-                                    
-                                    .ContentOverflowDebugArea();
+                                    .Background(Colors.Grey.Lighten1);
                             }
                         });
                     }

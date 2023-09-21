@@ -14,7 +14,7 @@ namespace QuestPDF.Elements
         Relative
     }
     
-    internal class RowItem : Container
+    internal class RowItem : ContainerElement
     {
         public bool IsRendered { get; set; }
         public float Width { get; set; }

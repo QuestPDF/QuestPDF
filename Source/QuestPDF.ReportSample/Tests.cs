@@ -28,6 +28,7 @@ namespace QuestPDF.ReportSample
         [Test] 
         public void GeneratePdfAndShow()
         {
+            Settings.EnableDebugging = true;
             Report.GeneratePdfAndShow();
         }
         

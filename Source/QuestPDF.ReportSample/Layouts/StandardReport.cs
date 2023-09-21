@@ -91,10 +91,12 @@ namespace QuestPDF.ReportSample.Layouts
                     column.Item().Section(section.Title).Component(new SectionTemplate(section));
                 
                 column.Item().PageBreak();
-                column.Item().Section("Photos");
                 
-                foreach (var photo in Model.Photos)
-                    column.Item().Component(new PhotoTemplate(photo));
+                column.Item().Section("Photos").Column(photos =>
+                {
+                    foreach (var photo in Model.Photos)
+                        photos.Item().Component(new PhotoTemplate(photo));
+                });
             });
         }
     }

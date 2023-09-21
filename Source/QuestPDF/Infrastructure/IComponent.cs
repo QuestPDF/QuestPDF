@@ -7,7 +7,7 @@ namespace QuestPDF.Infrastructure
         
     }
 
-    class Slot : Container, ISlot
+    class Slot : ContainerElement, ISlot
     {
         
     }

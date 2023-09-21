@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using QuestPDF.Drawing.Exceptions;
@@ -10,6 +11,7 @@ using QuestPDF.Elements.Text.Items;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
 
 namespace QuestPDF.Drawing
 {
@@ -188,24 +190,30 @@ namespace QuestPDF.Drawing
         private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)
             where TCanvas : ICanvas, IRenderingCanvas
         {
-            InjectDependencies(content, pageContext, canvas);
+            content.InjectDependencies(pageContext, canvas);
             content.VisitChildren(x => (x as IStateResettable)?.ResetState());
             
             while(true)
             {
-                pageContext.IncrementPageNumber();
                 debuggingState?.Reset();
                 
                 var spacePlan = content.Measure(Size.Max);
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
+                    if (Settings.EnableDebugging)
+                    {
+                        ApplyLayoutDebugging();
+                        continue;
+                    }
+                    
                     canvas.EndDocument();
                     ThrowLayoutException();
                 }
 
                 try
                 {
+                    pageContext.IncrementPageNumber();
                     canvas.BeginPage(spacePlan);
                     content.Draw(spacePlan);
                 }
@@ -219,6 +227,12 @@ namespace QuestPDF.Drawing
 
                 if (pageContext.CurrentPage >= Settings.DocumentLayoutExceptionThreshold)
                 {
+                    if (Settings.EnableDebugging)
+                    {
+                        ApplyLayoutDebugging();
+                        continue;
+                    }
+                    
                     canvas.EndDocument();
                     ThrowLayoutException();
                 }
@@ -227,16 +241,31 @@ namespace QuestPDF.Drawing
                     break;
             }
 
+            void ApplyLayoutDebugging()
+            {
+                content.RemoveExistingProxies();
+                content.ApplyInfiniteLayoutDebugging();
+                content.Measure(Size.Max);
+
+                var overflowState = content.ExtractProxyOfType<OverflowDebuggingProxy>();
+                overflowState.ApplyOverlayDebugging();
+                content.ApplyContentDirection();
+                content.InjectDependencies(pageContext, canvas);
+
+                content.RemoveExistingProxies();
+            }
+            
             void ThrowLayoutException()
             {
-                var message = $"Composed layout generates infinite document. This may happen in two cases. " +
-                              $"1) Your document and its layout configuration is correct but the content takes more than {Settings.DocumentLayoutExceptionThreshold} pages. " +
-                              $"In this case, please increase the value {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.DocumentLayoutExceptionThreshold)} static property. " +
-                              $"2) The layout configuration of your document is invalid. Some of the elements require more space than is provided." +
-                              $"Please analyze your documents structure to detect this element and fix its size constraints.";
-
+                var message = 
+                    $"Composed layout generates infinite document. This may happen in two cases. " +
+                    $"1) Your document and its layout configuration is correct but the content takes more than {Settings.DocumentLayoutExceptionThreshold} pages. " +
+                    $"In this case, please increase the value {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.DocumentLayoutExceptionThreshold)} static property. " +
+                    $"2) The layout configuration of your document is invalid. Some of the elements require more space than is provided." +
+                    $"Please analyze your documents structure to detect this element and fix its size constraints.";
+                
                 var elementTrace = debuggingState?.BuildTrace() ?? "Debug trace is available only in the DEBUG mode.";
-
+                
                 throw new DocumentLayoutException(message, elementTrace);
             }
         }
@@ -273,7 +302,7 @@ namespace QuestPDF.Drawing
             });
         }
         
-        internal static void ApplyContentDirection(this Element? content, ContentDirection direction)
+        internal static void ApplyContentDirection(this Element? content, ContentDirection? direction = null)
         {
             if (content == null)
                 return;
@@ -285,7 +314,7 @@ namespace QuestPDF.Drawing
             }
 
             if (content is IContentDirectionAware contentDirectionAware)
-                contentDirectionAware.ContentDirection = direction;
+                contentDirectionAware.ContentDirection = direction ?? contentDirectionAware.ContentDirection;
             
             foreach (var child in content.GetChildren())
                 ApplyContentDirection(child, direction);

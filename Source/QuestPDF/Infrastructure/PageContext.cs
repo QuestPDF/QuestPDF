@@ -6,11 +6,10 @@ namespace QuestPDF.Infrastructure
 {
     internal class PageContext : IPageContext
     {
-        public int DocumentLength { get; private set; }
-        private List<DocumentLocation> Locations { get; } = new();
-        
         public int CurrentDocumentId { get; private set; }
+        public int DocumentLength { get; private set; }
         public int CurrentPage { get; private set; }
+        private List<DocumentLocation> Locations { get; } = new();
 
         internal void SetDocumentId(int id)
         {
@@ -27,7 +26,7 @@ namespace QuestPDF.Infrastructure
             CurrentPage++;
             DocumentLength = Math.Max(DocumentLength, CurrentPage);
         }
-
+        
         public void SetSectionPage(string name)
         {
             var location = GetLocation(name);

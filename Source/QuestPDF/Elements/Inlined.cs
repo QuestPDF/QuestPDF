@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class InlinedElement : Container
+    internal class InlinedElement : ContainerElement
     {
 
     }

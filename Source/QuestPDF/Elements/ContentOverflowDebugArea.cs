@@ -12,9 +12,12 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
     private const float StripeThickness = 1.5f;
     private const float StripeScale = 6f;
     private const string LineColor = Colors.Red.Medium;
-    
+    private const string AvailableAreaColor = Colors.Green.Medium;
+    private const string OverflowAreaColor = Colors.Red.Medium;
+    private const byte AreaOpacity = 64;
+
     public ContentDirection ContentDirection { get; set; }
-    
+
     internal override SpacePlan Measure(Size availableSpace)
     {
         var childSize = base.Measure(availableSpace);
@@ -93,25 +96,49 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
     {
         if (Canvas is not SkiaCanvasBase canvasBase)
             return;
-
+        
         var skiaCanvas = canvasBase.Canvas;
 
+        DrawAvailableSpaceBackground();
+
         skiaCanvas.Save();
-        DrawTargetAreaBorder();
         ClipOverflowAreaVisibility();
+        DrawOverflowArea();
         DrawCheckerboardPattern();
         skiaCanvas.Restore();
 
-        void DrawTargetAreaBorder()
+        DrawContentAreaBorder();
+
+        void DrawAvailableSpaceBackground()
         {
             using var paint = new SKPaint
+            {
+                Color = SKColor.Parse(AvailableAreaColor).WithAlpha(AreaOpacity)
+            };
+        
+            skiaCanvas.DrawRect(0, 0, availableSpace.Width, availableSpace.Height, paint);
+        }
+        
+        void DrawContentAreaBorder()
+        {
+            using var borderPaint = new SKPaint
             {
                 Color = SKColor.Parse(LineColor),
                 IsStroke = true,
                 StrokeWidth = BorderThickness
             };
+
+            skiaCanvas.DrawRect(0, 0, contentSize.Width, contentSize.Height, borderPaint);
+        }
         
-            skiaCanvas.DrawRect(0, 0, contentSize.Width, contentSize.Height, paint);
+        void DrawOverflowArea()
+        {
+            using var areaPaint = new SKPaint
+            {
+                Color = SKColor.Parse(OverflowAreaColor).WithAlpha(AreaOpacity)
+            };
+
+            skiaCanvas.DrawRect(0, 0, contentSize.Width, contentSize.Height, areaPaint);
         }
         
         void DrawCheckerboardPattern()
@@ -131,7 +158,6 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
             skiaCanvas.DrawRect(targetArea, paint);
         }
 
-        // creates and applies an L-shaped clipping mask
         void ClipOverflowAreaVisibility()
         {
             var path = new SKPath();

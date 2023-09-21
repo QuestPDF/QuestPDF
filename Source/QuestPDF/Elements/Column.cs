@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class ColumnItem : Container
+    internal class ColumnItem : ContainerElement
     {
         public bool IsRendered { get; set; }
     }
