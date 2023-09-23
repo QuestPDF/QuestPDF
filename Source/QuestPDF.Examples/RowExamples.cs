@@ -141,5 +141,31 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+        public void RowElementShouldRespectProvidedVerticalSpace()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .MaxPages(100)
+                .PageSize(250, 400)
+                .Render(container =>
+                {
+                    container
+                        .Padding(25)
+                        .Height(200)
+                        .Border(1)
+                        .Row(row =>
+                        {
+                            row.Spacing(50);
+
+                            row.RelativeItem().AlignTop().Height(50).Background(Placeholders.BackgroundColor());
+                            row.RelativeItem().AlignMiddle().Height(50).Background(Placeholders.BackgroundColor());
+                            row.RelativeItem().AlignBottom().Height(50).Background(Placeholders.BackgroundColor());
+                        });
+                });
+        }
     }
 }
