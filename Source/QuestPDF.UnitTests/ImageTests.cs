@@ -22,7 +22,7 @@ namespace QuestPDF.UnitTests
     public class ImageTests
     {
         [Test]
-        public void Measure_TakesAvailableSpaceRegardlessOfSize()
+        public void Measure_TakesMinimalSpaceRegardlessOfSize()
         {
             TestPlan
                 .For(x => new ImageElement
@@ -30,7 +30,7 @@ namespace QuestPDF.UnitTests
                     DocumentImage = GenerateDocumentImage(400, 300)
                 })
                 .MeasureElement(new Size(300, 200))
-                .CheckMeasureResult(SpacePlan.FullRender(300, 200));
+                .CheckMeasureResult(SpacePlan.FullRender(0, 0));
         }
         
         [Test]
