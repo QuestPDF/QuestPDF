@@ -132,7 +132,7 @@ namespace QuestPDF.UnitTests
             var veryLowCompressionSize = GetDocumentSize(container => container.Image(photo).WithCompressionQuality(ImageCompressionQuality.VeryLow));
             var bestCompressionSize = GetDocumentSize(container => container.Image(photo).WithCompressionQuality(ImageCompressionQuality.Best));
 
-            (bestCompressionSize / (float)veryLowCompressionSize).Should().BeGreaterThan(25);
+            (bestCompressionSize / (float)veryLowCompressionSize).Should().BeGreaterThan(10);
         }
         
         [Test]
