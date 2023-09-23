@@ -843,5 +843,88 @@ namespace QuestPDF.Examples
                         });
                 });
         }
+        
+        [Test]
+        public void DividingPageIntoPartsOfEqualSize()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .PageSize(PageSizes.A4)
+                .Render(container =>
+                {
+                    var labelsVertically = 9;
+                    var labelsHorizontally = 3;
+
+                    container
+                        .Padding(25)
+                        .RotateRight()
+                        .Row(verticalRow =>
+                        {
+                            foreach (var y in Enumerable.Range(1, labelsVertically))
+                            {
+                                verticalRow.RelativeItem().RotateLeft().Row(horizontalRow =>
+                                {
+                                    foreach (var x in Enumerable.Range(1, labelsHorizontally))
+                                    {
+                                        horizontalRow.RelativeItem()
+                                            .Border(1)
+                                            .Background(Placeholders.BackgroundColor())
+                                            .AlignCenter()
+                                            .AlignMiddle()
+                                            .Text($"{x} x {y}")
+                                            .FontSize(20);
+                                    }
+                                });
+                            }
+                        });
+                });
+        }
+        
+        [Test]
+        public void DividingPageIntoPartsOfExpectedSize()
+        {
+            RenderingTest
+                .Create()
+                .ProduceImages()
+                .ShowResults()
+                .PageSize(PageSizes.A4)
+                .Render(container =>
+                {
+                    var labelsVertically = 9;
+                    var labelsHorizontally = 3;
+
+                    var labelWidth = 150;
+                    var labelHeight = 100;
+
+                    container
+                        .Padding(25)
+                        .Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                foreach (var i in Enumerable.Range(0, labelsHorizontally))
+                                    columns.ConstantColumn(labelWidth);
+                            });
+                            
+                            foreach (var y in Enumerable.Range(1, labelsVertically))
+                            {
+                                foreach (var x in Enumerable.Range(1, labelsHorizontally))
+                                {
+                                    table.Cell()
+                                        .Width(labelWidth)
+                                        .Height(labelHeight)
+                                        .Border(1)
+                                        .Background(Placeholders.BackgroundColor())
+                                        .AlignCenter()
+                                        .AlignMiddle()
+                                        .Text($"{x} x {y}")
+                                        .FontSize(20);
+                                }
+                            }
+                        });
+                });
+        }
     }
 }
