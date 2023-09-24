@@ -1,6 +1,7 @@
 using System.Linq;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
 
 namespace QuestPDF.Drawing.Proxy;
@@ -42,6 +43,14 @@ internal static class Helpers
         }
     }
 
+    public static void RemoveProxiesOfType<T>(this Container content) where T : ElementProxy
+    {
+        content.VisitChildren(x =>
+        {
+            x.CreateProxy(y => y is T proxy ? proxy.Child : y);
+        });
+    }
+    
     public static void RemoveExistingProxies(this Container content)
     {
         content.VisitChildren(x =>

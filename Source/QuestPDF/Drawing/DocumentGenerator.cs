@@ -242,13 +242,15 @@ namespace QuestPDF.Drawing
             }
 
             void ApplyLayoutDebugging()
-            {
+            { 
                 content.RemoveExistingProxies();
+                
                 content.ApplyInfiniteLayoutDebugging();
                 content.Measure(Size.Max);
 
                 var overflowState = content.ExtractProxyOfType<OverflowDebuggingProxy>();
                 overflowState.ApplyOverlayDebugging();
+                
                 content.ApplyContentDirection();
                 content.InjectDependencies(pageContext, canvas);
 

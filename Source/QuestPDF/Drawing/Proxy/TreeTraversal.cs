@@ -29,13 +29,9 @@ internal static class TreeTraversal
             {
                 var result = new TreeNode<T>(proxy, new List<TreeNode<T>>());
                 
-                proxy
-                    .Child!
-                    .GetChildren()
-                    .SelectMany(Traverse)
-                    .ToList()
-                    .ForEach(result.Children.Add);
-
+                foreach (var treeNode in proxy.Child!.GetChildren().SelectMany(Traverse))
+                    result.Children.Add(treeNode);
+                
                 yield return result;
             }
             else
