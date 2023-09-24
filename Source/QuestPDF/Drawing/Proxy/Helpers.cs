@@ -1,5 +1,7 @@
 using System.Linq;
 using QuestPDF.Elements;
+using QuestPDF.Elements.Text;
+using QuestPDF.Elements.Text.Items;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
@@ -58,5 +60,65 @@ internal static class Helpers
         {
             x.CreateProxy(y => y is ElementProxy proxy ? proxy.Child : y);
         });
+    }
+    
+    public static void ApplyCanvasCache(this Element hierarchyRoot)
+    {
+        Traverse(hierarchyRoot);
+        
+        /// returns true when certain elements meets all criteria to be cached
+        bool Traverse(Element parent)
+        {
+            if (!CanBeCached(parent))
+                return false;
+            
+            if (parent is IContainer container)
+            {
+                return Traverse(container.Child as Element);
+            }
+
+            var children = parent.GetChildren().ToList();
+            var childrenAreApplicable = children.Select(Traverse).ToArray();
+
+            if (childrenAreApplicable.All(x => x))
+                return true;
+
+            var proxyIndex = 0;
+            
+            parent.CreateProxy(element =>
+            {
+                var isApplicable = childrenAreApplicable[proxyIndex];
+                proxyIndex++;
+
+                return isApplicable ? new CanvasCacheProxy(element) : element;
+            });
+
+            return false;
+        }
+
+        bool CanBeCached(IElement element)
+        {
+            if (element is TextBlock textBlock)
+            {
+                foreach (var textBlockItem in textBlock.Items)
+                {
+                    if (textBlockItem is TextBlockPageNumber)
+                        return false;
+                    
+                    if (textBlockItem is TextBlockElement textBlockElement && !Traverse(textBlockElement.Element))
+                        return false;
+                }
+
+                return true;
+            }
+            else if (element is DynamicHost dynamicHost)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }

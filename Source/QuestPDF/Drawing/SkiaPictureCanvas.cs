@@ -24,7 +24,7 @@ namespace QuestPDF.Drawing
         private SKPictureRecorder? PictureRecorder { get; set; }
         private Size? CurrentPageSize { get; set; }
 
-        public ICollection<PreviewerPicture> Pictures { get; } = new List<PreviewerPicture>();
+        public IList<PreviewerPicture> Pictures { get; } = new List<PreviewerPicture>();
         
         public override void BeginDocument()
         {

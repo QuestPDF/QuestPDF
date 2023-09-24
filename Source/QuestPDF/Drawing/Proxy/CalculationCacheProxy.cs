@@ -3,12 +3,12 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy
 {
-    internal class CacheProxy : ElementProxy
+    internal class CalculationCacheProxy : ElementProxy
     {
         public Size? AvailableSpace { get; set; }
         public SpacePlan? MeasurementResult { get; set; }
 
-        public CacheProxy(Element child)
+        public CalculationCacheProxy(Element child)
         {
             Child = child;
         }

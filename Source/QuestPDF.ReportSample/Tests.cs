@@ -22,14 +22,30 @@ namespace QuestPDF.ReportSample
             var model = DataSource.GetReport();
             Report = new StandardReport(model);
             
-            //ImagePlaceholder.Solid = true;
+            ImagePlaceholder.Solid = true;
         }
         
         [Test] 
         public void GeneratePdfAndShow()
         {
-            Settings.EnableDebugging = true;
+            //Settings.EnableDebugging = true;
             Report.GeneratePdfAndShow();
+            return;
+            
+
+            var times = Enumerable.Range(0, 1).Select(_ => MeasureTime()).ToList();
+            Console.WriteLine(string.Join(",", times));
+            Console.WriteLine(times.Sum());
+
+            long MeasureTime()
+            {
+                var sw = new Stopwatch();
+                sw.Start();
+                Report.GeneratePdf();
+                sw.Stop();
+
+                return sw.ElapsedMilliseconds;
+            }
         }
         
         [Test] 

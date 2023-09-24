@@ -114,6 +114,8 @@ namespace QuestPDF.Drawing
 
             var content = ConfigureContent(document, settings, debuggingState, documentId, useOriginalImages);
 
+            content.ApplyCanvasCache();
+            
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
             pageContext.ResetPageNumber();
@@ -280,6 +282,10 @@ namespace QuestPDF.Drawing
                     return;
                 
                 x.PageContext = pageContext;
+                
+                if (x.Canvas is SkiaPictureCanvas)
+                    return;
+                
                 x.Canvas = canvas;
             });
         }
@@ -289,7 +295,7 @@ namespace QuestPDF.Drawing
             content.VisitChildren(x =>
             {
                 if (x is ICacheable)
-                    x.CreateProxy(y => new CacheProxy(y));
+                    x.CreateProxy(y => new CalculationCacheProxy(y));
             });
         }
 

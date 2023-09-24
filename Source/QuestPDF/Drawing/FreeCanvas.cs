@@ -50,6 +50,11 @@ namespace QuestPDF.Drawing
         {
             
         }
+        
+        public void DrawPicture(SKPicture picture)
+        {
+            
+        }
 
         public void DrawHyperlink(string url, Size size)
         {
