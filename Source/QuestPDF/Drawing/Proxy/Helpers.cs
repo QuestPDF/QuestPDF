@@ -27,10 +27,11 @@ internal static class Helpers
             
             if (parent.Value.SpacePlanType == SpacePlanType.FullRender)
                 return;
-
+            
             var hasWraps = parent.Children.Any(x => x.Value.SpacePlanType == SpacePlanType.Wrap);
             var hasPartialRenders = parent.Children.Any(x => x.Value.SpacePlanType == SpacePlanType.PartialRender);
 
+            // TODO: using hasPartialRenders in the condition below, helps in certain cases and breaks others, investigate reasons
             if (hasWraps || hasPartialRenders)
             {
                 foreach (var child in parent.Children)
