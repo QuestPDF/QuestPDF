@@ -1,2 +1,3 @@
 Version 2023.9.0
+- In-code IntelliSense documentation for all public APIs,
 - Improvement: the Row element respects now available vertical space, which is closer to expected behavior
