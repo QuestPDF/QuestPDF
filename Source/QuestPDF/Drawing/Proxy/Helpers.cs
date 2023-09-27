@@ -8,7 +8,7 @@ namespace QuestPDF.Drawing.Proxy;
 
 internal static class Helpers
 {
-    public static void ApplyLayoutOverflowDetection(this Container container)
+    public static void ApplyLayoutOverflowDetection(this Element container)
     {
         container.VisitChildren(x =>
         {
@@ -28,12 +28,16 @@ internal static class Helpers
             if (parent.Value.SpacePlanType == SpacePlanType.FullRender)
                 return;
             
-            var hasInternalIssue = parent.Children.Any(x => x.Value.SpacePlanType is SpacePlanType.Wrap or SpacePlanType.PartialRender);
+            var childrenWithWraps = parent.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.Wrap).ToList();
+            var childrenWithPartialRenders = parent.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.PartialRender).ToList();
 
-            if (hasInternalIssue)
+            if (childrenWithWraps.Any())
             {
-                foreach (var child in parent.Children)
-                    Traverse(child);
+                childrenWithWraps.ForEach(Traverse);
+            }
+            else if (childrenWithPartialRenders.Any())
+            {
+                childrenWithPartialRenders.ForEach(Traverse);
             }
             else
             {
@@ -42,7 +46,7 @@ internal static class Helpers
         }
     }
 
-    public static void RemoveExistingProxies(this Container content)
+    public static void RemoveExistingProxies(this Element content)
     {
         content.VisitChildren(x =>
         {
