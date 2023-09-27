@@ -1,10 +1,9 @@
-using System;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Alignment : ContainerElement
+    internal sealed class Alignment : ContainerElement
     {
         public VerticalAlignment? Vertical { get; set; }
         public HorizontalAlignment? Horizontal { get; set; }

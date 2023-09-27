@@ -2,7 +2,7 @@
 
 namespace QuestPDF.Elements
 {
-    internal class ContentDirectionSetter : ContainerElement
+    internal sealed class ContentDirectionSetter : ContainerElement
     {
         public ContentDirection ContentDirection { get; set; }
     }

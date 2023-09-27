@@ -1,13 +1,12 @@
 ﻿using System;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal class XpsCanvas : SkiaDocumentCanvasBase
+    internal sealed class XpsCanvas : SkiaDocumentCanvasBase
     {
         public XpsCanvas(Stream stream, DocumentSettings documentSettings) 
             : base(CreateXps(stream, documentSettings))

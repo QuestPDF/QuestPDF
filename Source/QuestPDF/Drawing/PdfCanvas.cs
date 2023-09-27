@@ -7,7 +7,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal class PdfCanvas : SkiaDocumentCanvasBase
+    internal sealed class PdfCanvas : SkiaDocumentCanvasBase
     {
         public PdfCanvas(Stream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings) 
             : base(CreatePdf(stream, documentMetadata, documentSettings))

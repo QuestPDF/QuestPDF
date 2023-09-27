@@ -7,7 +7,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
 {
-    internal class DocumentContainer : IDocumentContainer
+    internal sealed class DocumentContainer : IDocumentContainer
     {
         internal List<IComponent> Pages { get; set; } = new List<IComponent>();
         

@@ -2,19 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class DecorationItemRenderingCommand
+    internal sealed class DecorationItemRenderingCommand
     {
         public Element Element { get; set; }
         public SpacePlan Measurement { get; set; }
         public Position Offset { get; set; }
     }
-    
-    internal class Decoration : Element, ICacheable, IContentDirectionAware
+
+    internal sealed class Decoration : Element, ICacheable, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

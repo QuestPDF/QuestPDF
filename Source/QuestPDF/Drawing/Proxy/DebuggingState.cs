@@ -9,7 +9,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy
 {
-    internal class DebuggingState
+    internal sealed class DebuggingState
     {
         private DebugStackItem? Root { get; set; }
         private Stack<DebugStackItem> Stack { get; set; }

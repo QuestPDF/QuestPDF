@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal class FreeCanvas : ICanvas, IRenderingCanvas
+    internal sealed class FreeCanvas : ICanvas, IRenderingCanvas
     {
         #region IRenderingCanvas
 

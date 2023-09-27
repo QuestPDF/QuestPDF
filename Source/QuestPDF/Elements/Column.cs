@@ -6,20 +6,20 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class ColumnItem : Container
+    internal sealed class ColumnItem : Container
     {
         public bool IsRendered { get; set; }
     }
-    
-    internal class ColumnItemRenderingCommand
+
+    internal sealed class ColumnItemRenderingCommand
     {
         public ColumnItem ColumnItem { get; set; }
         public SpacePlan Measurement { get; set; }
         public Size Size { get; set; }
         public Position Offset { get; set; }
     }
-    
-    internal class Column : Element, ICacheable, IStateResettable
+
+    internal sealed class Column : Element, ICacheable, IStateResettable
     {
         internal List<ColumnItem> Items { get; } = new();
         internal float Spacing { get; set; }

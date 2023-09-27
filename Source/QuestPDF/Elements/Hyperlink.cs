@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Hyperlink : ContainerElement
+    internal sealed class Hyperlink : ContainerElement
     {
         public string Url { get; set; } = "https://www.questpdf.com";
         

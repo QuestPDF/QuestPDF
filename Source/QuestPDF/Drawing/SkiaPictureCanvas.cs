@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal class PreviewerPicture
+    internal sealed class PreviewerPicture
     {
         public SKPicture Picture { get; set; }
         public Size Size { get; set; }
@@ -18,8 +15,8 @@ namespace QuestPDF.Drawing
             Size = size;
         }
     }
-    
-    internal class SkiaPictureCanvas : SkiaCanvasBase
+
+    internal sealed class SkiaPictureCanvas : SkiaCanvasBase
     {
         private SKPictureRecorder? PictureRecorder { get; set; }
         private Size? CurrentPageSize { get; set; }

@@ -5,7 +5,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal class FontStyleSet
+    internal sealed class FontStyleSet
     {
         private ConcurrentDictionary<SKFontStyle, SKTypeface> Styles { get; } = new();
 

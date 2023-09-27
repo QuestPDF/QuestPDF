@@ -5,7 +5,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal class ImageCanvas : SkiaCanvasBase
+    internal sealed class ImageCanvas : SkiaCanvasBase
     {
         private ImageGenerationSettings Settings { get; }
         private SKSurface Surface { get; set; }
