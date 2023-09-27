@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Placeholder : IComponent
+    internal sealed class Placeholder : IComponent
     {
         public string Text { get; set; }
         private static readonly byte[] ImageData;

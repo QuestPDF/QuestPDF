@@ -2,7 +2,7 @@
 
 namespace QuestPDF.Elements.Text.Calculation
 {
-    internal class TextMeasurementRequest
+    internal sealed class TextMeasurementRequest
     {
         public ICanvas Canvas { get; set; }
         public IPageContext PageContext { get; set; }

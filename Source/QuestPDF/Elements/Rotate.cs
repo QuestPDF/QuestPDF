@@ -2,7 +2,7 @@
 
 namespace QuestPDF.Elements
 {
-    internal class Rotate : ContainerElement
+    internal sealed class Rotate : ContainerElement
     {
         public float Angle { get; set; } = 0;
 

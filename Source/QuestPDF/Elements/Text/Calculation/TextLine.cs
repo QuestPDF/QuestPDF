@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using QuestPDF.Elements.Text.Items;
 
 namespace QuestPDF.Elements.Text.Calculation
 {
-    internal class TextLine
+    internal sealed class TextLine
     {
         public ICollection<TextLineElement> Elements { get; private set; }
 

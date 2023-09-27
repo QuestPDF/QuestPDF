@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class SkipOnce : ContainerElement, IStateResettable
+    internal sealed class SkipOnce : ContainerElement, IStateResettable
     {
         private bool FirstPageWasSkipped { get; set; }
 

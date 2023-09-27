@@ -1,10 +1,9 @@
 ﻿using System;
 using QuestPDF.Elements;
-using QuestPDF.Helpers;
 
 namespace QuestPDF.Infrastructure
 {
-    internal class DynamicComponentProxy
+    internal sealed class DynamicComponentProxy
     {
         internal Action<object> SetState { get; private set; }
         internal Func<object> GetState { get; private set; }

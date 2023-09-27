@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class PageBreak : Element, IStateResettable
+    internal sealed class PageBreak : Element, IStateResettable
     {
         private bool IsRendered { get; set; }
         

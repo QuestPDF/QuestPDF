@@ -1,12 +1,11 @@
 using System;
-using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Page : IComponent
+    internal sealed class Page : IComponent
     {
         public ContentDirection ContentDirection { get; set; }
         public TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;

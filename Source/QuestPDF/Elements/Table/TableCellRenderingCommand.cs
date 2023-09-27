@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
 {
-    internal class TableCellRenderingCommand
+    internal sealed class TableCellRenderingCommand
     {
         public TableCell Cell { get; set; }
         public SpacePlan Measurement { get; set; }

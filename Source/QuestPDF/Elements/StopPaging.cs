@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class StopPaging : ContainerElement
+    internal sealed class StopPaging : ContainerElement
     {
         internal override SpacePlan Measure(Size availableSpace)
         {
