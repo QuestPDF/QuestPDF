@@ -12,7 +12,7 @@ class CommunicationService
 {
     public static CommunicationService Instance { get; } = new ();
     
-    public event Action<ICollection<PreviewPage>>? OnDocumentRefreshed;
+    public event Action<DocumentSnapshot>? OnDocumentRefreshed;
 
     private WebApplication? Application { get; set; }
 
@@ -60,20 +60,15 @@ class CommunicationService
     
     private async Task<IResult> HandleUpdatePreview(HttpRequest request)
     {
-        var command = JsonSerializer.Deserialize<DocumentSnapshot>(request.Form["command"], JsonSerializerOptions);
+        var documentSnapshot = JsonSerializer.Deserialize<DocumentSnapshot>(request.Form["command"], JsonSerializerOptions);
 
-        var pages = command
-            .Pages
-            .Select(page =>
-            {
-                using var stream = request.Form.Files[page.Id].OpenReadStream();
-                var picture = SKPicture.Deserialize(stream);
-                        
-                return new PreviewPage(picture, page.Width, page.Height);
-            })
-            .ToList();
+        foreach (var pageSnapshot in documentSnapshot.Pages)
+        {
+            using var stream = request.Form.Files[pageSnapshot.Id].OpenReadStream();
+            pageSnapshot.Picture = SKPicture.Deserialize(stream);
+        }
 
-        Task.Run(() => OnDocumentRefreshed(pages));
+        Task.Run(() => OnDocumentRefreshed(documentSnapshot));
         return Results.Ok();
     }
 }

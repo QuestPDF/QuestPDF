@@ -9,7 +9,7 @@ namespace QuestPDF.Previewer;
 class InteractiveCanvas : ICustomDrawOperation
 {
     public Rect Bounds { get; set; }
-    public ICollection<PreviewPage> Pages { get; set; }
+    public ICollection<DocumentSnapshot.PageSnapshot> Pages { get; set; }
 
     private float Width => (float)Bounds.Width;
     private float Height => (float)Bounds.Height;
@@ -133,12 +133,20 @@ class InteractiveCanvas : ICustomDrawOperation
         {
             canvas.Translate(-page.Width / 2f, 0);
             DrawBlankPage(canvas, page.Width, page.Height);
-            canvas.DrawPicture(page.Picture);
+            DrawPageSnapshot(canvas, page);
             canvas.Translate(page.Width / 2f, page.Height + PageSpacing);
         }
 
         canvas.SetMatrix(originalMatrix);
         DrawInnerGradient(canvas);
+    }
+
+    private static void DrawPageSnapshot(SKCanvas canvas, DocumentSnapshot.PageSnapshot pageSnapshot)
+    {
+        canvas.Save();
+        canvas.ClipRect(new SKRect(0, 0, pageSnapshot.Width, pageSnapshot.Height));
+        canvas.DrawPicture(pageSnapshot.Picture);
+        canvas.Restore();
     }
     
     public void Dispose() { }

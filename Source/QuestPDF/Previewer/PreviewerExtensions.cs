@@ -39,16 +39,16 @@ namespace QuestPDF.Previewer
                 var pictures = GetPictures();
                 return previewerService.RefreshPreview(pictures);
                 
-                ICollection<PreviewerPicture> GetPictures()
+                PreviewerDocumentSnapshot GetPictures()
                 {
                     try
                     {
-                        return DocumentGenerator.GeneratePreviewerPictures(document);
+                        return DocumentGenerator.GeneratePreviewerContent(document);
                     }
                     catch (Exception exception)
                     {
                         var exceptionDocument = new ExceptionDocument(exception);
-                        return DocumentGenerator.GeneratePreviewerPictures(exceptionDocument);
+                        return DocumentGenerator.GeneratePreviewerContent(exceptionDocument);
                     }
                 }
             }
