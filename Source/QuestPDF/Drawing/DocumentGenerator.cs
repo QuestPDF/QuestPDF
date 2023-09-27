@@ -187,11 +187,13 @@ namespace QuestPDF.Drawing
             return content;
         }
 
-        private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, Container content, DebuggingState? debuggingState)
+        private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, ContainerElement content, DebuggingState? debuggingState)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             content.InjectDependencies(pageContext, canvas);
             content.VisitChildren(x => (x as IStateResettable)?.ResetState());
+
+            LayoutOverflowPageMarker? layoutOverflowPageMarker = null;
             
             while(true)
             {
@@ -211,9 +213,9 @@ namespace QuestPDF.Drawing
 
                 try
                 {
-                    pageContext.IncrementPageNumber();
                     canvas.BeginPage(spacePlan);
                     content.Draw(spacePlan);
+                    pageContext.IncrementPageNumber();
                 }
                 catch (Exception exception)
                 {
@@ -241,6 +243,19 @@ namespace QuestPDF.Drawing
 
             void ApplyLayoutDebugging()
             {
+                if (layoutOverflowPageMarker == null)
+                {
+                    layoutOverflowPageMarker = new LayoutOverflowPageMarker();
+                    
+                    content.CreateProxy(child =>
+                    {
+                        layoutOverflowPageMarker.Child = child;
+                        return layoutOverflowPageMarker;
+                    });
+                }
+                
+                layoutOverflowPageMarker.PageNumbersWithLayoutIssues.Add(pageContext.CurrentPage);
+                
                 content.RemoveExistingProxies();
 
                 content.ApplyLayoutOverflowDetection();
