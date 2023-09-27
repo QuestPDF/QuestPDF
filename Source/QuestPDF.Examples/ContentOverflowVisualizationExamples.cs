@@ -39,6 +39,9 @@ public class ContentOverflowVisualizationExamples
                             row.RelativeItem().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Text("Will it work?").FontSize(20);
                             row.RelativeItem().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Height(100).ShowEntire().Text(Placeholders.LoremIpsum()).FontSize(20);
                         });
+                        
+                        foreach (var size in Enumerable.Range(20, 20))
+                            column.Item().Width(size * 10).Height(40).Background(Colors.Grey.Lighten3);
                     });
                     
                     page.Footer().AlignCenter().Text(text =>

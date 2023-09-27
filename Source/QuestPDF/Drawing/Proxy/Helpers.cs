@@ -1,14 +1,14 @@
 using System.Linq;
+using System.Text;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 
 namespace QuestPDF.Drawing.Proxy;
 
 internal static class Helpers
 {
-    public static void ApplyInfiniteLayoutDebugging(this Container container)
+    public static void ApplyLayoutOverflowDetection(this Container container)
     {
         container.VisitChildren(x =>
         {
@@ -16,7 +16,7 @@ internal static class Helpers
         });
     }
     
-    public static void ApplyOverlayDebugging(this TreeNode<OverflowDebuggingProxy> hierarchyRoot)
+    public static void ApplyLayoutOverflowVisualization(this TreeNode<OverflowDebuggingProxy> hierarchyRoot)
     {
         Traverse(hierarchyRoot);
         
@@ -28,35 +28,53 @@ internal static class Helpers
             if (parent.Value.SpacePlanType == SpacePlanType.FullRender)
                 return;
             
-            var hasWraps = parent.Children.Any(x => x.Value.SpacePlanType == SpacePlanType.Wrap);
-            var hasPartialRenders = parent.Children.Any(x => x.Value.SpacePlanType == SpacePlanType.PartialRender);
+            var hasInternalIssue = parent.Children.Any(x => x.Value.SpacePlanType is SpacePlanType.Wrap or SpacePlanType.PartialRender);
 
-            // TODO: using hasPartialRenders in the condition below, helps in certain cases and breaks others, investigate reasons
-            if (hasWraps || hasPartialRenders)
+            if (hasInternalIssue)
             {
                 foreach (var child in parent.Children)
                     Traverse(child);
             }
             else
             {
-                parent.Value.CreateProxy(x => new ContentOverflowDebugArea { Child = x });
+                parent.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });
             }
         }
     }
 
-    public static void RemoveProxiesOfType<T>(this Container content) where T : ElementProxy
-    {
-        content.VisitChildren(x =>
-        {
-            x.CreateProxy(y => y is T proxy ? proxy.Child : y);
-        });
-    }
-    
     public static void RemoveExistingProxies(this Container content)
     {
         content.VisitChildren(x =>
         {
             x.CreateProxy(y => y is ElementProxy proxy ? proxy.Child : y);
         });
+    }
+
+    public static string HierarchyToString(this Element root)
+    {
+        var indentationCache = Enumerable.Range(0, 128).Select(x => new string(' ', x)).ToArray();
+        
+        var indentationLevel = 0;
+        var result = new StringBuilder();
+        
+        Traverse(root);
+
+        return result.ToString();
+        
+        void Traverse(Element parent)
+        {
+            var elementName = (parent as DebugPointer)?.Target ?? parent.GetType().Name;
+            
+            result.AppendLine();
+            result.Append(indentationCache[indentationLevel]);
+            result.Append(elementName);
+
+            indentationLevel++;
+            
+            foreach (var child in parent.GetChildren())
+                Traverse(child);
+
+            indentationLevel--;
+        }
     }
 }

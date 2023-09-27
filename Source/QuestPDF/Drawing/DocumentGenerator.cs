@@ -195,8 +195,6 @@ namespace QuestPDF.Drawing
             
             while(true)
             {
-                debuggingState?.Reset();
-                
                 var spacePlan = content.Measure(Size.Max);
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
@@ -242,14 +240,14 @@ namespace QuestPDF.Drawing
             }
 
             void ApplyLayoutDebugging()
-            { 
+            {
                 content.RemoveExistingProxies();
-                
-                content.ApplyInfiniteLayoutDebugging();
+
+                content.ApplyLayoutOverflowDetection();
                 content.Measure(Size.Max);
 
                 var overflowState = content.ExtractProxyOfType<OverflowDebuggingProxy>();
-                overflowState.ApplyOverlayDebugging();
+                overflowState.ApplyLayoutOverflowVisualization();
                 
                 content.ApplyContentDirection();
                 content.InjectDependencies(pageContext, canvas);

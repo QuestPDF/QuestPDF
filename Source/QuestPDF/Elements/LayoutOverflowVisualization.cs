@@ -6,7 +6,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Elements;
 
-internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAware
+internal class LayoutOverflowVisualization : ContainerElement, IContentDirectionAware
 {
     private const float BorderThickness = 1.5f;
     private const float StripeThickness = 1.5f;
@@ -22,10 +22,10 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
     {
         var childSize = base.Measure(availableSpace);
         
-        if (childSize.Type == SpacePlanType.Wrap)
-            return SpacePlan.FullRender(availableSpace);
-
-        return childSize;
+        if (childSize.Type == SpacePlanType.FullRender)
+            return childSize;
+        
+        return SpacePlan.FullRender(availableSpace);
     }
         
     internal override void Draw(Size availableSpace)
@@ -33,7 +33,7 @@ internal class ContentOverflowDebugArea : ContainerElement, IContentDirectionAwa
         // measure content area
         var childSize = base.Measure(availableSpace);
         
-        if (childSize.Type != SpacePlanType.Wrap)
+        if (childSize.Type == SpacePlanType.FullRender)
         {
             Child?.Draw(availableSpace);
             return;

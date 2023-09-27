@@ -374,10 +374,5 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new ScaleToFit());
         }
-        
-        internal static IContainer ContentOverflowDebugArea(this IContainer element)
-        {
-            return element.Element(new ContentOverflowDebugArea());
-        }
     }
 }
