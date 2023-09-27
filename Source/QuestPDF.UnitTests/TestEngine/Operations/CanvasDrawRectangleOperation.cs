@@ -2,7 +2,7 @@
 
 namespace QuestPDF.UnitTests.TestEngine.Operations
 {
-    internal class CanvasDrawRectangleOperation : OperationBase
+    internal sealed class CanvasDrawRectangleOperation : OperationBase
     {
         public Position Position { get; } 
         public Size Size { get; }

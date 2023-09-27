@@ -4,7 +4,7 @@ using Avalonia.Markup.Xaml;
 
 namespace QuestPDF.Previewer
 {
-    internal class PreviewerApp : Application
+    internal sealed class PreviewerApp : Application
     {
         public override void Initialize()
         {
