@@ -10,10 +10,10 @@ namespace QuestPDF.Previewer
     {
         private InteractiveCanvas InteractiveCanvas { get; set; } = new ();
         
-        public static readonly StyledProperty<ObservableCollection<PreviewPage>> PagesProperty =
-            AvaloniaProperty.Register<PreviewerControl, ObservableCollection<PreviewPage>>(nameof(Pages));
+        public static readonly StyledProperty<ObservableCollection<DocumentSnapshot.PageSnapshot>> PagesProperty =
+            AvaloniaProperty.Register<PreviewerControl, ObservableCollection<DocumentSnapshot.PageSnapshot>>(nameof(Pages));
         
-        public ObservableCollection<PreviewPage>? Pages
+        public ObservableCollection<DocumentSnapshot.PageSnapshot>? Pages
         {
             get => GetValue(PagesProperty);
             set => SetValue(PagesProperty, value);

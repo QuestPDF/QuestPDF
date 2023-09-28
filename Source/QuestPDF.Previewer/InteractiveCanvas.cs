@@ -9,7 +9,7 @@ namespace QuestPDF.Previewer;
 class InteractiveCanvas : ICustomDrawOperation
 {
     public Rect Bounds { get; set; }
-    public ICollection<PreviewPage> Pages { get; set; }
+    public ICollection<DocumentSnapshot.PageSnapshot> Pages { get; set; }
 
     private float Width => (float)Bounds.Width;
     private float Height => (float)Bounds.Height;

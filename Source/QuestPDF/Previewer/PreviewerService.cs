@@ -131,13 +131,13 @@ namespace QuestPDF.Previewer
             }
         }
         
-        public async Task RefreshPreview(ICollection<PreviewerPicture> pictures)
+        public async Task RefreshPreview(PreviewerDocumentSnapshot previewerDocumentSnapshot)
         {
             using var multipartContent = new MultipartFormDataContent();
 
             var pages = new List<PreviewerRefreshCommand.Page>();
             
-            foreach (var picture in pictures)
+            foreach (var picture in previewerDocumentSnapshot.Pictures)
             {
                 var page = new PreviewerRefreshCommand.Page
                 {
@@ -153,6 +153,7 @@ namespace QuestPDF.Previewer
 
             var command = new PreviewerRefreshCommand
             {
+                DocumentContentHasLayoutOverflowIssues = previewerDocumentSnapshot.DocumentContentHasLayoutOverflowIssues,
                 Pages = pages
             };
             
@@ -160,7 +161,7 @@ namespace QuestPDF.Previewer
 
             using var _ = await HttpClient.PostAsync("/update/preview", multipartContent);
 
-            foreach (var picture in pictures)
+            foreach (var picture in previewerDocumentSnapshot.Pictures)
                 picture.Picture.Dispose();
         }
     }

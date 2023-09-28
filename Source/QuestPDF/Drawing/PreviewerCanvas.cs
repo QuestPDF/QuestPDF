@@ -1,34 +1,37 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal class PreviewerPicture
+    internal class PreviewerPageSnapshot
     {
         public SKPicture Picture { get; set; }
         public Size Size { get; set; }
 
-        public PreviewerPicture(SKPicture picture, Size size)
+        public PreviewerPageSnapshot(SKPicture picture, Size size)
         {
             Picture = picture;
             Size = size;
         }
     }
     
-    internal class SkiaPictureCanvas : SkiaCanvasBase
+    internal class PreviewerDocumentSnapshot
+    {
+        public ICollection<PreviewerPageSnapshot> Pictures { get; set; }
+        public bool DocumentContentHasLayoutOverflowIssues { get; set; }
+    }
+    
+    internal class PreviewerCanvas : SkiaCanvasBase
     {
         private SKPictureRecorder? PictureRecorder { get; set; }
         private Size? CurrentPageSize { get; set; }
 
-        public ICollection<PreviewerPicture> Pictures { get; } = new List<PreviewerPicture>();
+        private ICollection<PreviewerPageSnapshot> PageSnapshots { get; } = new List<PreviewerPageSnapshot>();
         
         public override void BeginDocument()
         {
-            Pictures.Clear();
+            PageSnapshots.Clear();
         }
 
         public override void BeginPage(Size size)
@@ -44,12 +47,21 @@ namespace QuestPDF.Drawing
             var picture = PictureRecorder?.EndRecording();
             
             if (picture != null && CurrentPageSize.HasValue)
-                Pictures.Add(new PreviewerPicture(picture, CurrentPageSize.Value));
+                PageSnapshots.Add(new PreviewerPageSnapshot(picture, CurrentPageSize.Value));
 
             PictureRecorder?.Dispose();
             PictureRecorder = null;
         }
 
         public override void EndDocument() { }
+
+        public PreviewerDocumentSnapshot GetContent()
+        {
+            return new PreviewerDocumentSnapshot
+            {
+                Pictures = PageSnapshots,
+                DocumentContentHasLayoutOverflowIssues = DocumentContentHasLayoutOverflowIssues,
+            };
+        }
     }
 }

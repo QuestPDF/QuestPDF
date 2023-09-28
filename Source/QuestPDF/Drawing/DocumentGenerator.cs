@@ -84,11 +84,11 @@ namespace QuestPDF.Drawing
             };
         }
 
-        internal static ICollection<PreviewerPicture> GeneratePreviewerPictures(IDocument document)
+        internal static PreviewerDocumentSnapshot GeneratePreviewerContent(IDocument document)
         {
-            var canvas = new SkiaPictureCanvas();
+            var canvas = new PreviewerCanvas();
             RenderDocument(canvas, document, DocumentSettings.Default);
-            return canvas.Pictures;
+            return canvas.GetContent();
         }
         
         private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
@@ -223,6 +223,7 @@ namespace QuestPDF.Drawing
             if (Settings.EnableDebugging)
             {
                 ConfigureLayoutOverflowMarker();
+                CheckIfDocumentHasLayoutOverflowIssues();
             }
 
             void ApplyLayoutDebugging()
@@ -258,6 +259,16 @@ namespace QuestPDF.Drawing
                     .Distinct();
 
                 layoutOverflowPageMarker.PageNumbersWithLayoutIssues = new HashSet<int>(pageNumbersWithLayoutIssues);
+            }
+
+            void CheckIfDocumentHasLayoutOverflowIssues()
+            {
+                var hasLayoutOverflowVisualizationElements = content
+                    .ExtractElementsOfType<LayoutOverflowVisualization>()
+                    .SelectMany(x => x.Flatten())
+                    .Any();
+
+                canvas.DocumentContentHasLayoutOverflowIssues |= hasLayoutOverflowVisualizationElements;
             }
             
             void ThrowLayoutException()

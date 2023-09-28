@@ -7,6 +7,8 @@ namespace QuestPDF.Drawing
     {
         #region IRenderingCanvas
 
+        public bool DocumentContentHasLayoutOverflowIssues { get; set; }
+        
         public void BeginDocument()
         {
             

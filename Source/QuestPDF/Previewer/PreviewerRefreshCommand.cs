@@ -8,6 +8,7 @@ namespace QuestPDF.Previewer
 {
     internal class PreviewerRefreshCommand
     {
+        public bool DocumentContentHasLayoutOverflowIssues { get; set; }
         public ICollection<Page> Pages { get; set; }
 
         public class Page

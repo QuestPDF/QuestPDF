@@ -2,6 +2,8 @@
 {
     internal interface IRenderingCanvas
     {
+        bool DocumentContentHasLayoutOverflowIssues { get; set; }
+        
         void BeginDocument();
         void EndDocument();
         

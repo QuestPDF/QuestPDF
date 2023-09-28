@@ -52,6 +52,18 @@
 			                            ScrollViewportSize="{Binding ScrollViewportSize, Mode=OneWayToSource}"
 			                            Pages="{Binding Pages, Mode=OneWay}" />
 			
+			<Border IsVisible="{Binding DocumentContentHasLayoutOverflowIssues}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="16,8" Background="#F44336" CornerRadius="8" BoxShadow="0 0 8 0 #44000000" Margin="32">
+				<StackPanel Orientation="Horizontal" Spacing="8">
+					<Viewbox Width="24" Height="24">
+						<Canvas Width="24" Height="24">
+							<Path Fill="White" Data="M20 17H22V15H20V17M20 7V13H22V7M6 16H11V18H6M6 12H14V14H6M4 2C2.89 2 2 2.89 2 4V20C2 21.11 2.89 22 4 22H16C17.11 22 18 21.11 18 20V8L12 2M4 4H11V9H16V20H4Z" />
+						</Canvas>
+					</Viewbox>
+					
+					<TextBlock VerticalAlignment="Center">Document has layout problems</TextBlock>
+				</StackPanel>
+			</Border>
+			
 			<StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Bottom" Spacing="16" Margin="32">
 				<Button Classes="actions"
 				        Command="{Binding ShowPdfCommand, Mode=OneTime}"
