@@ -193,8 +193,6 @@ namespace QuestPDF.Drawing
             content.InjectDependencies(pageContext, canvas);
             content.VisitChildren(x => (x as IStateResettable)?.ResetState());
 
-            LayoutOverflowPageMarker? layoutOverflowPageMarker = null;
-            
             while(true)
             {
                 var spacePlan = content.Measure(Size.Max);
@@ -227,12 +225,6 @@ namespace QuestPDF.Drawing
 
                 if (pageContext.CurrentPage >= Settings.DocumentLayoutExceptionThreshold)
                 {
-                    if (Settings.EnableDebugging)
-                    {
-                        ApplyLayoutDebugging();
-                        continue;
-                    }
-                    
                     canvas.EndDocument();
                     ThrowLayoutException();
                 }
@@ -241,33 +233,44 @@ namespace QuestPDF.Drawing
                     break;
             }
 
+            if (Settings.EnableDebugging)
+            {
+                ConfigureLayoutOverflowMarker();
+            }
+
             void ApplyLayoutDebugging()
             {
-                if (layoutOverflowPageMarker == null)
-                {
-                    layoutOverflowPageMarker = new LayoutOverflowPageMarker();
-                    
-                    content.CreateProxy(child =>
-                    {
-                        layoutOverflowPageMarker.Child = child;
-                        return layoutOverflowPageMarker;
-                    });
-                }
-                
-                layoutOverflowPageMarker.PageNumbersWithLayoutIssues.Add(pageContext.CurrentPage);
-                
                 content.RemoveExistingProxies();
 
                 content.ApplyLayoutOverflowDetection();
                 content.Measure(Size.Max);
 
-                var overflowState = content.ExtractProxyOfType<OverflowDebuggingProxy>();
+                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().FirstOrDefault();
                 overflowState.ApplyLayoutOverflowVisualization();
                 
                 content.ApplyContentDirection();
                 content.InjectDependencies(pageContext, canvas);
 
                 content.RemoveExistingProxies();
+            }
+
+            void ConfigureLayoutOverflowMarker()
+            {
+                var layoutOverflowPageMarker = new LayoutOverflowPageMarker();
+                    
+                content.CreateProxy(child =>
+                {
+                    layoutOverflowPageMarker.Child = child;
+                    return layoutOverflowPageMarker;
+                });
+
+                var pageNumbersWithLayoutIssues = content
+                    .ExtractElementsOfType<LayoutOverflowVisualization>()
+                    .SelectMany(x => x.Flatten())
+                    .SelectMany(x => x.Value.VisibleOnPageNumbers)
+                    .Distinct();
+
+                layoutOverflowPageMarker.PageNumbersWithLayoutIssues = new HashSet<int>(pageNumbersWithLayoutIssues);
             }
             
             void ThrowLayoutException()

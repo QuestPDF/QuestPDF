@@ -17,26 +17,30 @@ internal class TreeNode<T>
 
 internal static class TreeTraversal
 {
-    public static TreeNode<T> ExtractProxyOfType<T>(this Element root) where T : ElementProxy
+    public static IEnumerable<TreeNode<T>> ExtractElementsOfType<T>(this Element element) where T : Element
     {
-        return Traverse(root).FirstOrDefault();
-
-        IEnumerable<TreeNode<T>> Traverse(Element element)
+        if (element is T proxy)
         {
-            if (element is T proxy)
-            {
-                var result = new TreeNode<T>(proxy);
+            var result = new TreeNode<T>(proxy);
                 
-                foreach (var treeNode in proxy.Child!.GetChildren().SelectMany(Traverse))
-                    result.Children.Add(treeNode);
+            foreach (var treeNode in proxy.GetChildren().SelectMany(ExtractElementsOfType<T>))
+                result.Children.Add(treeNode);
                 
-                yield return result;
-            }
-            else
-            {
-                foreach (var treeNode in element.GetChildren().SelectMany(Traverse))
-                    yield return treeNode;
-            }
+            yield return result;
         }
+        else
+        {
+            foreach (var treeNode in element.GetChildren().SelectMany(ExtractElementsOfType<T>))
+                yield return treeNode;
+        }
+    }
+    
+    public static IEnumerable<TreeNode<T>> Flatten<T>(this TreeNode<T> element) where T : Element
+    {
+        yield return element;
+
+        foreach (var child in element.Children)
+            foreach (var innerChild in Flatten(child))
+                yield return innerChild;
     }
 }

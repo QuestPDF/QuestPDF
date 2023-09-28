@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using QuestPDF.Drawing;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
@@ -9,11 +10,12 @@ namespace QuestPDF.Elements;
 
 internal class LayoutOverflowPageMarker : ContainerElement
 {
-    public HashSet<int> PageNumbersWithLayoutIssues { get; } = new();
+    public HashSet<int> PageNumbersWithLayoutIssues { get; set; } = new();
     
     private const string LineColor = Colors.Red.Medium;
-    private const float BorderThickness = 16f;
-    
+    private const byte LineOpacity = 64;
+    private const float BorderThickness = 24f;
+
     internal override void Draw(Size availableSpace)
     {
         Child?.Draw(availableSpace);
@@ -32,7 +34,7 @@ internal class LayoutOverflowPageMarker : ContainerElement
         using var indicatorPaint = new SKPaint
         {
             StrokeWidth = BorderThickness * 2, // half of the width will be outside of the page area
-            Color = SKColor.Parse(LineColor).WithAlpha(128),
+            Color = SKColor.Parse(LineColor).WithAlpha(LineOpacity),
             IsStroke = true
         };
         

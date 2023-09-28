@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -17,6 +18,7 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
     private const byte AreaOpacity = 64;
 
     public ContentDirection ContentDirection { get; set; }
+    public ICollection<int> VisibleOnPageNumbers { get; set; } = new List<int>();
 
     internal override SpacePlan Measure(Size availableSpace)
     {
@@ -30,6 +32,8 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
         
     internal override void Draw(Size availableSpace)
     {
+        VisibleOnPageNumbers.Add(PageContext.CurrentPage);
+        
         // measure content area
         var childSize = base.Measure(availableSpace);
         
