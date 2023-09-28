@@ -107,23 +107,19 @@ namespace QuestPDF.Drawing
         private static void RenderSingleDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings)
             where TCanvas : ICanvas, IRenderingCanvas
         {
-            const int documentId = 0;
-            
-            var debuggingState = new DebuggingState();
             var useOriginalImages = canvas is ImageCanvas;
 
-            var content = ConfigureContent(document, settings, debuggingState, documentId, useOriginalImages);
+            var content = ConfigureContent(document, settings, useOriginalImages);
 
             var pageContext = new PageContext();
-            RenderPass(pageContext, new FreeCanvas(), content, debuggingState);
+            RenderPass(pageContext, new FreeCanvas(), content);
             pageContext.ResetPageNumber();
-            RenderPass(pageContext, canvas, content, debuggingState);
+            RenderPass(pageContext, canvas, content);
         }
         
         private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)
             where TCanvas : ICanvas, IRenderingCanvas
         {
-            var debuggingState = new DebuggingState();
             var useOriginalImages = canvas is ImageCanvas;
             
             var documentParts = Enumerable
@@ -131,7 +127,7 @@ namespace QuestPDF.Drawing
                 .Select(index => new
                 {
                     DocumentId = index,
-                    Content = ConfigureContent(document.Documents[index], settings, debuggingState, index, useOriginalImages)
+                    Content = ConfigureContent(document.Documents[index], settings, useOriginalImages)
                 })
                 .ToList();
 
@@ -142,7 +138,7 @@ namespace QuestPDF.Drawing
                 foreach (var documentPart in documentParts)
                 {
                     documentPageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content, debuggingState);
+                    RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content);
                 }
                 
                 documentPageContext.ResetPageNumber();
@@ -150,7 +146,7 @@ namespace QuestPDF.Drawing
                 foreach (var documentPart in documentParts)
                 {
                     documentPageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPageContext, canvas, documentPart.Content, debuggingState);   
+                    RenderPass(documentPageContext, canvas, documentPart.Content);   
                 }
             }
             else
@@ -160,14 +156,14 @@ namespace QuestPDF.Drawing
                     var pageContext = new PageContext();
                     pageContext.SetDocumentId(documentPart.DocumentId);
                     
-                    RenderPass(pageContext, new FreeCanvas(), documentPart.Content, debuggingState);
+                    RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
                     pageContext.ResetPageNumber();
-                    RenderPass(pageContext, canvas, documentPart.Content, debuggingState);
+                    RenderPass(pageContext, canvas, documentPart.Content);
                 }
             }
         }
 
-        private static Container ConfigureContent(IDocument document, DocumentSettings settings, DebuggingState debuggingState, int documentIndex, bool useOriginalImages)
+        private static Container ConfigureContent(IDocument document, DocumentSettings settings, bool useOriginalImages)
         {
             var container = new DocumentContainer();
             document.Compose(container);
@@ -180,14 +176,11 @@ namespace QuestPDF.Drawing
                     
             if (Settings.EnableCaching)
                 content.ApplyCaching();
-
-            if (Settings.EnableDebugging)
-                content.ApplyDebugging(debuggingState);
-
+            
             return content;
         }
 
-        private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, ContainerElement content, DebuggingState? debuggingState)
+        private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, ContainerElement content)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             content.InjectDependencies(pageContext, canvas);
@@ -223,12 +216,6 @@ namespace QuestPDF.Drawing
 
                 canvas.EndPage();
 
-                if (pageContext.CurrentPage >= Settings.DocumentLayoutExceptionThreshold)
-                {
-                    canvas.EndDocument();
-                    ThrowLayoutException();
-                }
-                
                 if (spacePlan.Type == SpacePlanType.FullRender)
                     break;
             }
@@ -275,16 +262,17 @@ namespace QuestPDF.Drawing
             
             void ThrowLayoutException()
             {
-                var message = 
-                    $"Composed layout generates infinite document. This may happen in two cases. " +
-                    $"1) Your document and its layout configuration is correct but the content takes more than {Settings.DocumentLayoutExceptionThreshold} pages. " +
-                    $"In this case, please increase the value {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.DocumentLayoutExceptionThreshold)} static property. " +
-                    $"2) The layout configuration of your document is invalid. Some of the elements require more space than is provided." +
-                    $"Please analyze your documents structure to detect this element and fix its size constraints.";
+                var newLine = Environment.NewLine;
+                var newParagraph = newLine + newLine;
+                    
+                var message =
+                    $"The provided document content contains conflicting size constraints. " +
+                    $"For example, some elements may require more space than is available. {newParagraph}" +
+                    $"To quickly determine the place where the problem is likely occurring, please generate the document with the attached debugger. " +
+                    $"The library will generate a PDF document with visually annotated places where layout constraints are invalid. {newParagraph}" +
+                    $"Alternatively, if you don’t want to or cannot attach the debugger, you can set the {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDebugging)} flag to true.";
                 
-                var elementTrace = debuggingState?.BuildTrace() ?? "Debug trace is available only in the DEBUG mode.";
-                
-                throw new DocumentLayoutException(message, elementTrace);
+                throw new DocumentLayoutException(message);
             }
         }
 
@@ -309,17 +297,6 @@ namespace QuestPDF.Drawing
             });
         }
 
-        private static void ApplyDebugging(this Container content, DebuggingState? debuggingState)
-        {
-            if (debuggingState == null)
-                return;
-            
-            content.VisitChildren(x =>
-            {
-                x.CreateProxy(y => new DebuggingProxy(debuggingState, y));
-            });
-        }
-        
         internal static void ApplyContentDirection(this Element? content, ContentDirection? direction = null)
         {
             if (content == null)
