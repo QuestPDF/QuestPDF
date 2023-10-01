@@ -149,6 +149,7 @@ namespace QuestPDF.Drawing
                     TextSize = (style.Size ?? 12) * GetTextScale(style),
                     IsAntialias = true,
                     TextSkewX = GetTextSkew(style, targetTypeface),
+                    FakeBoldText = UseFakeBoldText(style, targetTypeface)
                 };
             }
 
@@ -204,6 +205,12 @@ namespace QuestPDF.Drawing
                 var useObliqueText = originalTextStyle.IsItalic == true && !targetTypeface.IsItalic;
                 
                 return useObliqueText ? -0.25f : 0;
+            }
+            
+            static bool UseFakeBoldText(TextStyle originalTextStyle, SKTypeface targetTypeface)
+            {
+                // requested bold text but got typeface that is not bold
+                return originalTextStyle.FontWeight > FontWeight.Medium && !targetTypeface.IsBold;
             }
         }
 
