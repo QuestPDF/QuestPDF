@@ -140,12 +140,15 @@ namespace QuestPDF.Drawing
 
             static SKPaint Convert(TextStyle style)
             {
+                var targetTypeface = GetTypeface(style);
+                
                 return new SKPaint
                 {
                     Color = SKColor.Parse(style.Color),
-                    Typeface = GetTypeface(style),
+                    Typeface = targetTypeface,
                     TextSize = (style.Size ?? 12) * GetTextScale(style),
                     IsAntialias = true,
+                    TextSkewX = GetTextSkew(style, targetTypeface),
                 };
             }
 
@@ -193,6 +196,14 @@ namespace QuestPDF.Drawing
                     FontPosition.Superscript => 0.625f,
                     _ => throw new ArgumentOutOfRangeException()
                 };
+            }
+
+            static float GetTextSkew(TextStyle originalTextStyle, SKTypeface targetTypeface)
+            {
+                // requested italic text but got typeface that is not italic
+                var useObliqueText = originalTextStyle.IsItalic == true && !targetTypeface.IsItalic;
+                
+                return useObliqueText ? -0.25f : 0;
             }
         }
 
