@@ -20,7 +20,7 @@ namespace QuestPDF.Drawing
     public static class FontManager
     {
         private static readonly ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
-        private static readonly ConcurrentDictionary<TextStyle, SKFontMetrics> FontMetrics = new();
+        private static readonly ConcurrentDictionary<TextStyle, FontMetrics> FontMetrics = new();
         private static readonly ConcurrentDictionary<TextStyle, SKPaint> FontPaints = new();
         private static readonly ConcurrentDictionary<string, SKPaint> ColorPaints = new();
         private static readonly ConcurrentDictionary<TextStyle, Font> ShaperFonts = new();
@@ -214,9 +214,47 @@ namespace QuestPDF.Drawing
             }
         }
 
-        internal static SKFontMetrics ToFontMetrics(this TextStyle style)
+        internal static FontMetrics ToFontMetrics(this TextStyle style)
         {
-            return FontMetrics.GetOrAdd(style, key => key.NormalPosition().ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(style, key =>
+            {
+                var skiaFontMetrics = key.NormalPosition().ToPaint().FontMetrics;
+                
+                return new FontMetrics
+                {
+                    Ascent = skiaFontMetrics.Ascent,
+                    Descent = skiaFontMetrics.Descent,
+                    
+                    UnderlineThickness = GetUnderlineThickness(),
+                    UnderlinePosition = GetUnderlinePosition(),
+                    
+                    StrikeoutThickness = GetStrikeoutThickness(),
+                    StrikeoutPosition = GetStrikeoutPosition()
+                };
+
+                // HACK: On MacOS, certain font metrics are not determined accurately.
+                // Provide defaults based on other metrics.
+                
+                float GetUnderlineThickness()
+                {
+                    return skiaFontMetrics.UnderlineThickness ?? (skiaFontMetrics.XHeight * 0.1f);
+                }
+                
+                float GetUnderlinePosition()
+                {
+                    return skiaFontMetrics.UnderlinePosition ?? (skiaFontMetrics.XHeight * 0.2f);
+                }
+                
+                float GetStrikeoutThickness()
+                {
+                    return skiaFontMetrics.StrikeoutThickness ?? (skiaFontMetrics.XHeight * 0.1f);
+                }
+                
+                float GetStrikeoutPosition()
+                {
+                    return skiaFontMetrics.StrikeoutPosition ?? (-skiaFontMetrics.XHeight * 0.5f);
+                }
+            });
         }
 
         internal static Font ToShaperFont(this TextStyle style)
