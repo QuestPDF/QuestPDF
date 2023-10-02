@@ -1,9 +1,8 @@
 ﻿using System;
-using QuestPDF.Drawing;
 
 namespace QuestPDF.Elements.Text.Calculation
 {
-    internal class TextMeasurementResult
+    internal sealed class TextMeasurementResult
     {
         public float Width { get; set; }
         public float Height => Math.Abs(Descent) + Math.Abs(Ascent);

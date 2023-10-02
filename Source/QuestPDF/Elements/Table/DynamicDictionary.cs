@@ -7,7 +7,7 @@ namespace QuestPDF.Elements.Table
     /// This dictionary allows to access key that does not exist.
     /// Instead of throwing an exception, it returns a default value.
     /// </summary>
-    internal class DynamicDictionary<TKey, TValue>
+    internal sealed class DynamicDictionary<TKey, TValue>
     {
         private TValue Default { get; }
         private IDictionary<TKey, TValue> Dictionary { get; } = new Dictionary<TKey, TValue>();

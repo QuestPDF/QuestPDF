@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class MinimalBox : ContainerElement, IContentDirectionAware
+    internal sealed class MinimalBox : ContainerElement, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

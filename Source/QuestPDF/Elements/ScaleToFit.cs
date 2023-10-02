@@ -1,11 +1,10 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class ScaleToFit : ContainerElement
+    internal sealed class ScaleToFit : ContainerElement
     {
         internal override SpacePlan Measure(Size availableSpace)
         {

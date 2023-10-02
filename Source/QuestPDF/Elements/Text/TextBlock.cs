@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
@@ -8,7 +7,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text
 {
-    internal class TextBlock : Element, IStateResettable, IContentDirectionAware
+    internal sealed class TextBlock : Element, IStateResettable, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

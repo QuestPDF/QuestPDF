@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class InlinedElement : Container
+    internal sealed class InlinedElement : Container
     {
 
     }
@@ -25,8 +24,8 @@ namespace QuestPDF.Elements
         public Element Element { get; set; }
         public SpacePlan Size { get; set; }
     }
-    
-    internal class Inlined : Element, IStateResettable, IContentDirectionAware
+
+    internal sealed class Inlined : Element, IStateResettable, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

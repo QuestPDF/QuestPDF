@@ -1,5 +1,4 @@
 ﻿using System;
-using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -7,7 +6,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Previewer
 {
-    internal class ExceptionDocument : IDocument
+    internal sealed class ExceptionDocument : IDocument
     {
         private Exception Exception { get; }
     

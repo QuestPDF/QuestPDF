@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace QuestPDF.Infrastructure
+﻿namespace QuestPDF.Infrastructure
 {
-    internal class DocumentLocation
+    internal sealed class DocumentLocation
     {
         public int DocumentId { get; set; }
         public string Name { get; set; }

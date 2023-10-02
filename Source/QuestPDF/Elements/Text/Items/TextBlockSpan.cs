@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
-using SkiaSharp.HarfBuzz;
 using Size = QuestPDF.Infrastructure.Size;
 
 namespace QuestPDF.Elements.Text.Items

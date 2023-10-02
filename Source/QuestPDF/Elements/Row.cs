@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
@@ -13,8 +12,8 @@ namespace QuestPDF.Elements
         Constant,
         Relative
     }
-    
-    internal class RowItem : Container
+
+    internal sealed class RowItem : Container
     {
         public bool IsRendered { get; set; }
         public float Width { get; set; }
@@ -23,15 +22,15 @@ namespace QuestPDF.Elements
         public float Size { get; set; }
     }
 
-    internal class RowItemRenderingCommand
+    internal sealed class RowItemRenderingCommand
     {
         public RowItem RowItem { get; set; }
         public SpacePlan Measurement { get; set; }
         public Size Size { get; set; }
         public Position Offset { get; set; }
     }
-    
-    internal class Row : Element, ICacheable, IStateResettable, IContentDirectionAware
+
+    internal sealed class Row : Element, ICacheable, IStateResettable, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

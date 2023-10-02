@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
 {
-    internal class TextBlockPageNumber : TextBlockSpan
+    internal sealed class TextBlockPageNumber : TextBlockSpan
     {
         public const string PageNumberPlaceholder = "123";
         public Func<IPageContext, string> Source { get; set; } = _ => PageNumberPlaceholder;
