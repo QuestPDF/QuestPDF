@@ -11,7 +11,7 @@ using QuestPDF.UnitTests.TestEngine.Operations;
 
 namespace QuestPDF.UnitTests.TestEngine
 {
-    internal class TestPlan
+    internal sealed class TestPlan
     {
         private const string DefaultChildName = "child";
 

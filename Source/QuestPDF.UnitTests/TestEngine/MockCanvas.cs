@@ -1,11 +1,10 @@
 ﻿using System;
-using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.UnitTests.TestEngine
 {
-    internal class MockCanvas : ICanvas
+    internal sealed class MockCanvas : ICanvas
     {
         public Action<Position> TranslateFunc { get; set; }
         public Action<float> RotateFunc { get; set; }

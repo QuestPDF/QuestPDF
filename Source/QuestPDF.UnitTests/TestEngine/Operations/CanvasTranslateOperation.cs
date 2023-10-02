@@ -2,7 +2,7 @@
 
 namespace QuestPDF.UnitTests.TestEngine.Operations
 {
-    internal class CanvasTranslateOperation : OperationBase
+    internal sealed class CanvasTranslateOperation : OperationBase
     {
         public Position Position { get; }
 

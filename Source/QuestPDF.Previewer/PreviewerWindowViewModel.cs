@@ -1,12 +1,12 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Avalonia.Threading;
 using ReactiveUI;
 using Unit = System.Reactive.Unit;
-using Avalonia.Threading;
 
 namespace QuestPDF.Previewer
 {
-    internal class PreviewerWindowViewModel : ReactiveObject
+    internal sealed class PreviewerWindowViewModel : ReactiveObject
     {
         private ObservableCollection<PreviewPage> _pages = new();
         public ObservableCollection<PreviewPage> Pages

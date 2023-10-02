@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.UnitTests.TestEngine.Operations
 {
-    internal class ChildMeasureOperation : OperationBase
+    internal sealed class ChildMeasureOperation : OperationBase
     {
         public string ChildId { get; }
         public Size Input { get; }

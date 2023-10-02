@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine.Operations;
 using SkiaSharp;
 
 namespace QuestPDF.UnitTests.TestEngine
 {
-    internal class OperationRecordingCanvas : ICanvas
+    internal sealed class OperationRecordingCanvas : ICanvas
     {
         public ICollection<OperationBase> Operations { get; } = new List<OperationBase>();
 
