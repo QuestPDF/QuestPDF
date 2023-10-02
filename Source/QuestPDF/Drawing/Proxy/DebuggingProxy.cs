@@ -2,7 +2,7 @@
 
 namespace QuestPDF.Drawing.Proxy
 {
-    internal class DebuggingProxy : ElementProxy
+    internal sealed class DebuggingProxy : ElementProxy
     {
         private DebuggingState DebuggingState { get; }
 

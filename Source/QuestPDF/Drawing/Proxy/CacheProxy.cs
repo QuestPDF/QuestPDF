@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy
 {
-    internal class CacheProxy : ElementProxy
+    internal sealed class CacheProxy : ElementProxy
     {
         public Size? AvailableSpace { get; set; }
         public SpacePlan? MeasurementResult { get; set; }

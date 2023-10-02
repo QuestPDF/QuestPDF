@@ -6,8 +6,8 @@ using SkiaSharp;
 namespace QuestPDF.Elements
 {
     public delegate void DrawOnCanvas(SKCanvas canvas, Size availableSpace);
-    
-    internal class Canvas : Element, ICacheable
+
+    internal sealed class Canvas : Element, ICacheable
     {
         public DrawOnCanvas Handler { get; set; }
         

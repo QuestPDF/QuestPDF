@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Linq;
 using HarfBuzzSharp;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 using Buffer = HarfBuzzSharp.Buffer;
 
 namespace QuestPDF.Drawing
 {
-    internal class TextShaper
+    internal sealed class TextShaper
     {
         public const int FontShapingScale = 512;
         
@@ -108,8 +107,8 @@ namespace QuestPDF.Drawing
         public SKTextBlob SkTextBlob;
         public float TextOffsetX;
     }
-    
-    internal class TextShapingResult
+
+    internal sealed class TextShapingResult
     {
         private Direction Direction { get; }
         private ShapedGlyph[] Glyphs { get; }

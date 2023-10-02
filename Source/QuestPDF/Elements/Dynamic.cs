@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class DynamicHost : Element, IStateResettable, IContentDirectionAware
+    internal sealed class DynamicHost : Element, IStateResettable, IContentDirectionAware
     {
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
@@ -148,7 +148,7 @@ namespace QuestPDF.Elements
         Size Size { get; }
     }
 
-    internal class DynamicElement : ContainerElement, IDynamicElement
+    internal sealed class DynamicElement : ContainerElement, IDynamicElement
     {
         public Size Size { get; internal set; }
     }

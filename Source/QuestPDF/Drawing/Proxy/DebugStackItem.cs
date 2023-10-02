@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy
 {
-    internal class DebugStackItem
+    internal sealed class DebugStackItem
     {
         public IElement Element { get; internal set; }
         public Size AvailableSpace { get; internal set; }

@@ -1,9 +1,8 @@
-﻿using QuestPDF.Drawing;
-using QuestPDF.Infrastructure;
+﻿using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class DefaultTextStyle : ContainerElement
+    internal sealed class DefaultTextStyle : ContainerElement
     {
         public TextStyle TextStyle { get; set; } = TextStyle.Default;
     }

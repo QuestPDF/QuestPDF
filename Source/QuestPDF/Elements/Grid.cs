@@ -5,13 +5,13 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class GridElement
+    internal sealed class GridElement
     {
         public int Columns { get; set; } = 1;
         public Element? Child { get; set; }
     }
-    
-    internal class Grid : IComponent
+
+    internal sealed class Grid : IComponent
     {
         public const int DefaultColumnsCount = 12;
         
