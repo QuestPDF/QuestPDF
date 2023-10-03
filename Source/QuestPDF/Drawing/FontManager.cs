@@ -15,7 +15,7 @@ namespace QuestPDF.Drawing
     public static class FontManager
     {
         private static readonly ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
-        private static readonly ConcurrentDictionary<TextStyle, SKFontMetrics> FontMetrics = new();
+        private static readonly ConcurrentDictionary<TextStyle, FontMetrics> FontMetrics = new();
         private static readonly ConcurrentDictionary<TextStyle, SKPaint> FontPaints = new();
         private static readonly ConcurrentDictionary<string, SKPaint> ColorPaints = new();
         private static readonly ConcurrentDictionary<TextStyle, Font> ShaperFonts = new();
@@ -121,12 +121,16 @@ namespace QuestPDF.Drawing
 
             static SKPaint Convert(TextStyle style)
             {
+                var targetTypeface = GetTypeface(style);
+                
                 return new SKPaint
                 {
                     Color = SKColor.Parse(style.Color),
-                    Typeface = GetTypeface(style),
+                    Typeface = targetTypeface,
                     TextSize = (style.Size ?? 12) * GetTextScale(style),
                     IsAntialias = true,
+                    TextSkewX = GetTextSkew(style, targetTypeface),
+                    FakeBoldText = UseFakeBoldText(style, targetTypeface)
                 };
             }
 
@@ -175,11 +179,63 @@ namespace QuestPDF.Drawing
                     _ => throw new ArgumentOutOfRangeException()
                 };
             }
+
+            static float GetTextSkew(TextStyle originalTextStyle, SKTypeface targetTypeface)
+            {
+                // requested italic text but got typeface that is not italic
+                var useObliqueText = originalTextStyle.IsItalic == true && !targetTypeface.IsItalic;
+                
+                return useObliqueText ? -0.25f : 0;
+            }
+            
+            static bool UseFakeBoldText(TextStyle originalTextStyle, SKTypeface targetTypeface)
+            {
+                // requested bold text but got typeface that is not bold
+                return originalTextStyle.FontWeight > FontWeight.Medium && !targetTypeface.IsBold;
+            }
         }
 
-        internal static SKFontMetrics ToFontMetrics(this TextStyle style)
+        internal static FontMetrics ToFontMetrics(this TextStyle style)
         {
-            return FontMetrics.GetOrAdd(style, key => key.NormalPosition().ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(style, key =>
+            {
+                var skiaFontMetrics = key.NormalPosition().ToPaint().FontMetrics;
+                
+                return new FontMetrics
+                {
+                    Ascent = skiaFontMetrics.Ascent,
+                    Descent = skiaFontMetrics.Descent,
+                    
+                    UnderlineThickness = GetUnderlineThickness(),
+                    UnderlinePosition = GetUnderlinePosition(),
+                    
+                    StrikeoutThickness = GetStrikeoutThickness(),
+                    StrikeoutPosition = GetStrikeoutPosition()
+                };
+
+                // HACK: On MacOS, certain font metrics are not determined accurately.
+                // Provide defaults based on other metrics.
+                
+                float GetUnderlineThickness()
+                {
+                    return skiaFontMetrics.UnderlineThickness ?? (skiaFontMetrics.XHeight * 0.1f);
+                }
+                
+                float GetUnderlinePosition()
+                {
+                    return skiaFontMetrics.UnderlinePosition ?? (skiaFontMetrics.XHeight * 0.2f);
+                }
+                
+                float GetStrikeoutThickness()
+                {
+                    return skiaFontMetrics.StrikeoutThickness ?? (skiaFontMetrics.XHeight * 0.1f);
+                }
+                
+                float GetStrikeoutPosition()
+                {
+                    return skiaFontMetrics.StrikeoutPosition ?? (-skiaFontMetrics.XHeight * 0.5f);
+                }
+            });
         }
 
         internal static Font ToShaperFont(this TextStyle style)
