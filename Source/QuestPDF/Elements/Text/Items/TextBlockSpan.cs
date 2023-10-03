@@ -145,19 +145,19 @@ namespace QuestPDF.Elements.Text.Items
                 request.Canvas.DrawText(textDrawingCommand.Value.SkTextBlob, new Position(textDrawingCommand.Value.TextOffsetX, glyphOffsetY), Style);
 
             // draw underline
-            if ((Style.HasUnderline ?? false) && fontMetrics.UnderlinePosition.HasValue)
+            if (Style.HasUnderline ?? false)
             {
                 var underlineOffset = Style.FontPosition == FontPosition.Superscript ? 0 : glyphOffsetY;
-                DrawLine(fontMetrics.UnderlinePosition.Value + underlineOffset, fontMetrics.UnderlineThickness ?? 1);
+                DrawLine(fontMetrics.UnderlinePosition + underlineOffset, fontMetrics.UnderlineThickness);
             }
             
             // draw stroke
-            if ((Style.HasStrikethrough ?? false) && fontMetrics.StrikeoutPosition.HasValue)
+            if (Style.HasStrikethrough ?? false)
             {
-                var strikeoutThickness = fontMetrics.StrikeoutThickness ?? 1;
+                var strikeoutThickness = fontMetrics.StrikeoutThickness;
                 strikeoutThickness *= Style.FontPosition == FontPosition.Normal ? 1f : 0.625f;
                 
-                DrawLine(fontMetrics.StrikeoutPosition.Value + glyphOffsetY, strikeoutThickness);
+                DrawLine(fontMetrics.StrikeoutPosition + glyphOffsetY, strikeoutThickness);
             }
             
             void DrawLine(float offset, float thickness)
