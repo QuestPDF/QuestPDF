@@ -237,7 +237,7 @@ namespace QuestPDF.Drawing
                 
                 float GetUnderlineThickness()
                 {
-                    return skiaFontMetrics.UnderlineThickness ?? (skiaFontMetrics.XHeight * 0.1f);
+                    return skiaFontMetrics.UnderlineThickness ?? (skiaFontMetrics.XHeight * 0.15f);
                 }
                 
                 float GetUnderlinePosition()
@@ -247,12 +247,12 @@ namespace QuestPDF.Drawing
                 
                 float GetStrikeoutThickness()
                 {
-                    return skiaFontMetrics.StrikeoutThickness ?? (skiaFontMetrics.XHeight * 0.1f);
+                    return skiaFontMetrics.StrikeoutThickness ?? (skiaFontMetrics.XHeight * 0.15f);
                 }
                 
                 float GetStrikeoutPosition()
                 {
-                    return skiaFontMetrics.StrikeoutPosition ?? (-skiaFontMetrics.XHeight * 0.5f);
+                    return skiaFontMetrics.StrikeoutPosition ?? (-skiaFontMetrics.XHeight * 0.6f);
                 }
             });
         }
