@@ -11,26 +11,36 @@ namespace QuestPDF.Examples
     public class SvgImageExample
     {
         [Test]
-        public void BorderRadius()
+        public void ImageSVG()
         {
+            using var svg = new SKSvg();
+            svg.Load("pdf-icon.svg");
+            
             RenderingTest
                 .Create()
-                .PageSize(175, 100)
-                .ProduceImages()
+                .PageSize(300, 200)
+                .ProducePdf()
                 .ShowResults()
                 .Render(container =>
                 {
                     container
-                        .Background(Colors.Grey.Lighten2)
                         .Padding(25)
-                        .Canvas((canvas, space) =>
-                        {
-                            using var svg = new SKSvg();
-                            svg.Load("pdf-icon.svg");
-                            
-                            canvas.DrawPicture(svg.Picture);
-                        });
+                        .Svg(svg);
                 });
+        }
+    }
+    
+    public static class SvgExtensions
+    {
+        public static void Svg(this IContainer container, SKSvg svg)
+        {
+            container
+                .AlignCenter()
+                .AlignMiddle()
+                .ScaleToFit()
+                .Width(svg.Picture.CullRect.Width)
+                .Height(svg.Picture.CullRect.Height)
+                .Canvas((canvas, space) => canvas.DrawPicture(svg.Picture));
         }
     }
 }
