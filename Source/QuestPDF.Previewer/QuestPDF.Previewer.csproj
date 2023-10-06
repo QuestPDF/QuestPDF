@@ -47,6 +47,6 @@
         <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="2.88.3" />
         <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.3" />
         <PackageReference Include="System.Reactive" Version="5.0.0" />
-        <PackageReference Include="SkiaSharp" Version="2.88.3" />
+        <PackageReference Include="SkiaSharp" Version="2.88.6" />
     </ItemGroup>
 </Project>
