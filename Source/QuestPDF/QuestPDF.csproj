@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
@@ -26,7 +26,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SkiaSharp" Version="2.88.3" />
+      <PackageReference Include="SkiaSharp" Version="2.88.6" />
       <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.3" />
     </ItemGroup>
 
