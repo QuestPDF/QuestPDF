@@ -4,7 +4,7 @@ namespace QuestPDF.Previewer;
 
 class Helpers
 {
-    public static void GeneratePdfFromDocumentSnapshots(string filePath, ICollection<PreviewPage> pages)
+    public static void GeneratePdfFromDocumentSnapshots(string filePath, ICollection<DocumentSnapshot.PageSnapshot> pages)
     {
         using var stream = File.Create(filePath);
             

@@ -14,11 +14,12 @@ namespace QuestPDF.Infrastructure
         internal void SetDocumentId(int id)
         {
             CurrentDocumentId = id;
+            ResetPageNumber();
         }
         
         internal void ResetPageNumber()
         {
-            CurrentPage = 0;
+            CurrentPage = 1;
         }
         
         internal void IncrementPageNumber()

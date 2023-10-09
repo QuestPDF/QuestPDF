@@ -33,7 +33,7 @@ namespace QuestPDF.Previewer
                 page.Margin(50);
                 page.DefaultTextStyle(x => x.FontSize(16));
 
-                page.Foreground().PaddingTop(5).Border(10).BorderColor(Colors.Red.Medium);
+                page.Foreground().Border(12).BorderColor(Colors.Red.Medium);
                 
                 page.Header()
                     .ShowOnce()
@@ -65,7 +65,7 @@ namespace QuestPDF.Previewer
                             .Column(column =>
                             {
                                 column.Item().Text("Exception").FontSize(36).FontColor(Colors.Red.Medium).Bold();
-                                column.Item().PaddingTop(-10).Text("Please refer to the details for further insight and troubleshooting.").FontSize(18).FontColor(Colors.Red.Medium).Bold();
+                                column.Item().PaddingTop(-5).Text("Please refer to the details for further insight and troubleshooting.").FontSize(18).FontColor(Colors.Red.Medium).Bold();
                             }); 
                     });
 
