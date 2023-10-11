@@ -160,7 +160,7 @@ namespace QuestPDF.UnitTests
                 .Length;
         }
 
-        DocumentImage GenerateDocumentImage(int width, int height)
+        static DocumentImage GenerateDocumentImage(int width, int height)
         {
             var image = Placeholders.Image(width, height);
             return DocumentImage.FromBinaryData(image);

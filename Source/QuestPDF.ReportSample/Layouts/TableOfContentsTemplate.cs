@@ -39,7 +39,7 @@ namespace QuestPDF.ReportSample.Layouts
                 });
         }
 
-        private void DrawLink(IContainer container, int number, string locationName)
+        private static void DrawLink(IContainer container, int number, string locationName)
         {
             container
                 .SectionLink(locationName)

@@ -134,7 +134,7 @@ namespace QuestPDF.Elements.Table
                 ResetState();
         }
 
-        private int FindLastRenderedRow(ICollection<TableCellRenderingCommand> commands)
+        private static int FindLastRenderedRow(ICollection<TableCellRenderingCommand> commands)
         {
             return commands
                 .GroupBy(x => x.Cell.Row)

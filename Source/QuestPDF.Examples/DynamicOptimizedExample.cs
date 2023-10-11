@@ -74,7 +74,7 @@ namespace QuestPDF.Examples
             };
         }
 
-        private IDynamicElement ComposeHeader(DynamicContext context)
+        private static IDynamicElement ComposeHeader(DynamicContext context)
         {
             return context.CreateElement(element =>
             {
@@ -95,7 +95,7 @@ namespace QuestPDF.Examples
             });
         }
         
-        private IDynamicElement ComposeFooter(DynamicContext context, IEnumerable<OrderItem> items)
+        private static IDynamicElement ComposeFooter(DynamicContext context, IEnumerable<OrderItem> items)
         {
             var total = items.Sum(x => x.Count * x.Price);
 

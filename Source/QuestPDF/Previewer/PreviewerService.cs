@@ -95,7 +95,7 @@ namespace QuestPDF.Previewer
             }
         }
 
-        private void CheckVersionCompatibility(Version version)
+        private static void CheckVersionCompatibility(Version version)
         {
             if (version.Major == RequiredPreviewerVersionMajor && version.Minor == RequiredPreviewerVersionMinor)
                 return;

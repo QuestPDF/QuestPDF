@@ -170,7 +170,7 @@ class InteractiveCanvas : ICustomDrawOperation
             SKImageFilter.CreateDropShadowOnly(0, 10, 14, 14, SKColors.Black.WithAlpha(32)))
     };
     
-    private void DrawBlankPage(SKCanvas canvas, float width, float height)
+    private static void DrawBlankPage(SKCanvas canvas, float width, float height)
     {
         canvas.DrawRect(0, 0, width, height, BlankPageShadowPaint);
         canvas.DrawRect(0, 0, width, height, BlankPagePaint);
