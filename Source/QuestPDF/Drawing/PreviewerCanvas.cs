@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer.LayoutInspection;
 using SkiaSharp;
 
 namespace QuestPDF.Drawing
@@ -19,7 +20,7 @@ namespace QuestPDF.Drawing
     internal class PreviewerDocumentSnapshot
     {
         public ICollection<PreviewerPageSnapshot> Pictures { get; set; }
-        public bool DocumentContentHasLayoutOverflowIssues { get; set; }
+        public DocumentInspectionElement DocumentHierarchy { get; set; }
     }
     
     internal class PreviewerCanvas : SkiaCanvasBase
@@ -60,7 +61,7 @@ namespace QuestPDF.Drawing
             return new PreviewerDocumentSnapshot
             {
                 Pictures = PageSnapshots,
-                DocumentContentHasLayoutOverflowIssues = DocumentContentHasLayoutOverflowIssues,
+                
             };
         }
     }

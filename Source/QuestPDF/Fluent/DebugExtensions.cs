@@ -40,17 +40,23 @@ namespace QuestPDF.Fluent
         /// This debug element does not appear in the final PDF output.
         /// </remarks>
         /// <param name="elementTraceText">Text visible somewhere in the "element trace" content identifying given document fragment.</param>
-        public static IContainer DebugPointer(this IContainer parent, string elementTraceText)
+        public static IContainer DebugPointer(this IContainer parent, string label)
         {
-            return parent.DebugPointer(elementTraceText, true);
+            return parent.InspectionPointer(label, InspectorPointerType.Custom);
         }
         
-        internal static IContainer DebugPointer(this IContainer parent, string elementTraceText, bool highlight)
+        internal static IContainer InspectionPointer(this IContainer parent, string? label, InspectorPointerType type)
         {
-            return parent.Element(new DebugPointer
+            if (!System.Diagnostics.Debugger.IsAttached)
+                return parent;
+            
+            if (string.IsNullOrWhiteSpace(label))
+                return parent;
+            
+            return parent.Element(new InspectorPointer
             {
-                Target = elementTraceText,
-                Highlight = highlight
+                Label = label.PrettifyName(),
+                Type = type
             });
         }
     }

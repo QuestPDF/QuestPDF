@@ -1,4 +1,5 @@
 ﻿using QuestPDF.Infrastructure;
+using QuestPDF.Previewer.LayoutInspection;
 using SkiaSharp;
 
 namespace QuestPDF.Drawing
@@ -7,8 +8,8 @@ namespace QuestPDF.Drawing
     {
         #region IRenderingCanvas
 
-        public bool DocumentContentHasLayoutOverflowIssues { get; set; }
-        
+        public DocumentInspectionElement? DocumentInspectionHierarchy { get; set; }
+
         public void BeginDocument()
         {
             

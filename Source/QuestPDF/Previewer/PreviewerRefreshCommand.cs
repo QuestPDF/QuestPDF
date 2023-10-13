@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer.LayoutInspection;
 
 #if NET6_0_OR_GREATER
 
@@ -8,7 +9,7 @@ namespace QuestPDF.Previewer
 {
     internal class PreviewerRefreshCommand
     {
-        public bool DocumentContentHasLayoutOverflowIssues { get; set; }
+        public DocumentInspectionElement DocumentHierarchy { get; set; }
         public ICollection<Page> Pages { get; set; }
 
         public class Page

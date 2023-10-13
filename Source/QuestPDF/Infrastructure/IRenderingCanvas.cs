@@ -1,9 +1,11 @@
-﻿namespace QuestPDF.Infrastructure
+﻿using QuestPDF.Previewer.LayoutInspection;
+
+namespace QuestPDF.Infrastructure
 {
     internal interface IRenderingCanvas
     {
-        bool DocumentContentHasLayoutOverflowIssues { get; set; }
-        
+        DocumentInspectionElement? DocumentInspectionHierarchy { get; set; }
+
         void BeginDocument();
         void EndDocument();
         

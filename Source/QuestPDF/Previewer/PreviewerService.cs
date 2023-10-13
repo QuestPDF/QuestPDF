@@ -153,7 +153,7 @@ namespace QuestPDF.Previewer
 
             var command = new PreviewerRefreshCommand
             {
-                DocumentContentHasLayoutOverflowIssues = previewerDocumentSnapshot.DocumentContentHasLayoutOverflowIssues,
+                DocumentHierarchy = previewerDocumentSnapshot.DocumentHierarchy,
                 Pages = pages
             };
             

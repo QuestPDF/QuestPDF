@@ -29,6 +29,7 @@ namespace QuestPDF.Drawing
                 }
 
                 container
+                    .InspectionPointer("Document", InspectorPointerType.PageStructure)
                     .Column(column =>
                     {
                         Pages

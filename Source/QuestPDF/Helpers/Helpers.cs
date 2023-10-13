@@ -12,6 +12,8 @@ namespace QuestPDF.Helpers
 {
     internal static class Helpers
     {
+        private static Regex PrettifyNameRegex { get; } = new Regex(@"([a-z])([A-Z])", RegexOptions.Compiled);
+        
         internal static byte[] LoadEmbeddedResource(string resourceName)
         {
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
@@ -43,7 +45,7 @@ namespace QuestPDF.Helpers
 
         internal static string PrettifyName(this string text)
         {
-            return Regex.Replace(text, @"([a-z])([A-Z])", "$1 $2", RegexOptions.Compiled);
+            return PrettifyNameRegex.Replace(text, "$1 $2").Replace('_', ' ');
         }
 
         internal static void VisitChildren(this Element? element, Action<Element?> handler)

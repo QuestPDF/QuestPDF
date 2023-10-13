@@ -30,6 +30,7 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
+                .InspectionPointer("Page Group", InspectorPointerType.PageStructure)
                 .ContentDirection(ContentDirection)
                 .Background(BackgroundColor)
                 .DefaultTextStyle(DefaultTextStyle)
@@ -37,7 +38,7 @@ namespace QuestPDF.Elements
                 {
                     layers
                         .Layer()
-                        .DebugPointer("Page background layer")
+                        .InspectionPointer("Page Background Layer", InspectorPointerType.PageStructure)
                         .Element(Background);
                     
                     layers
@@ -57,25 +58,25 @@ namespace QuestPDF.Elements
                         {
                             decoration
                                 .Before()
-                                .DebugPointer("Page header")
+                                .InspectionPointer("Page Header", InspectorPointerType.PageStructure)
                                 .Element(Header);
 
                             decoration
                                 .Content()
                                 .Element(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
                                 .Element(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
-                                .DebugPointer("Page content")
+                                .InspectionPointer("Page Content", InspectorPointerType.PageStructure)
                                 .Element(Content);
 
                             decoration
                                 .After()
-                                .DebugPointer("Page footer")
+                                .InspectionPointer("Page Footer", InspectorPointerType.PageStructure)
                                 .Element(Footer);
                         });
                     
                     layers
                         .Layer()
-                        .DebugPointer("Page foreground layer")
+                        .InspectionPointer("Page Foreground Layer", InspectorPointerType.PageStructure)
                         .Element(Foreground);
                 });
 

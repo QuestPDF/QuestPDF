@@ -4,6 +4,12 @@ using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
+#if NETCOREAPP3_0_OR_GREATER
+
+using System.Runtime.CompilerServices;
+
+#endif
+
 namespace QuestPDF.Fluent
 {
     public static class ElementExtensions
@@ -32,34 +38,68 @@ namespace QuestPDF.Fluent
             return child;
         }
         
-        /// <summary>
-        /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
-        /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
-        /// </summary>
-        /// <remarks>
-        /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
-        /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
-        /// </remarks>
-        /// <param name="handler">A delegate that takes the current container and populates it with content.</param>
-        public static void Element(this IContainer parent, Action<IContainer> handler)
-        {
-            handler(parent.Container());
-        }
-        
-        /// <summary>
-        /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
-        /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
-        /// </summary>
-        /// <remarks>
-        /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
-        /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
-        /// </remarks>
-        /// <param name="handler">A method that accepts the current container, optionally populates it with content, and returns a subsequent container to continue the Fluent API chain.</param>
-        /// <returns>The container returned by the <paramref name="handler"/> method.</returns>
-        public static IContainer Element(this IContainer parent, Func<IContainer, IContainer> handler)
-        {
-            return handler(parent.Container()).Container();
-        }
+        #if NETCOREAPP3_0_OR_GREATER
+            /// <summary>
+            /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
+            /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
+            /// </summary>
+            /// <remarks>
+            /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
+            /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
+            /// </remarks>
+            /// <param name="handler">A delegate that takes the current container and populates it with content.</param>
+            public static void Element(
+                this IContainer parent, 
+                Action<IContainer> handler,
+                [CallerArgumentExpression("handler")] string? handlerName=null)
+            {
+                handler(parent.Container().InspectionPointer(handlerName, InspectorPointerType.Method));
+            }
+            
+            /// <summary>
+            /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
+            /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
+            /// </summary>
+            /// <remarks>
+            /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
+            /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
+            /// </remarks>
+            /// <param name="handler">A method that accepts the current container, optionally populates it with content, and returns a subsequent container to continue the Fluent API chain.</param>
+            /// <returns>The container returned by the <paramref name="handler"/> method.</returns>
+            public static IContainer Element(this IContainer parent, Func<IContainer, IContainer> handler)
+            {
+                return handler(parent.Container()).Container();
+            }
+        #else
+            /// <summary>
+            /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
+            /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
+            /// </summary>
+            /// <remarks>
+            /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
+            /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
+            /// </remarks>
+            /// <param name="handler">A delegate that takes the current container and populates it with content.</param>
+            public static void Element(this IContainer parent, Action<IContainer> handler)
+            {
+                handler(parent.Container());
+            }
+            
+            /// <summary>
+            /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
+            /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
+            /// </summary>
+            /// <remarks>
+            /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
+            /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
+            /// </remarks>
+            /// <param name="handler">A method that accepts the current container, optionally populates it with content, and returns a subsequent container to continue the Fluent API chain.</param>
+            /// <returns>The container returned by the <paramref name="handler"/> method.</returns>
+            public static IContainer Element(this IContainer parent, Func<IContainer, IContainer> handler)
+            {
+                return handler(parent.Container()).Container();
+            }
+        #endif
         
         /// <summary>
         /// Constrains its content to maintain a given aspect ratio.
@@ -244,10 +284,12 @@ namespace QuestPDF.Fluent
         /// <param name="sectionName">An internal text key representing the section. It should be unique and won't appear in the final document.</param>
         public static IContainer Section(this IContainer element, string sectionName)
         {
-            return element.Element(new Section
-            {
-                SectionName = sectionName
-            });
+            return element
+                .InspectionPointer(sectionName, InspectorPointerType.Section)
+                .Element(new Section
+                {
+                    SectionName = sectionName
+                });
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]
@@ -322,7 +364,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Applies a default text style to all nested <see cref="TextExtensions.Text">Text</see> elements.
+        /// Applies a default text style to all nested <see cref="MediaTypeNames.Text">Text</see> elements.
         /// <a href="https://www.questpdf.com/api-reference/default-text-style.html">Learn more</a>
         /// </summary>
         /// <remarks>
@@ -338,7 +380,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Applies a default text style to all nested <see cref="TextExtensions.Text">Text</see> elements.
+        /// Applies a default text style to all nested <see cref="MediaTypeNames.Text">Text</see> elements.
         /// <a href="https://www.questpdf.com/api-reference/default-text-style.html">Learn more</a>
         /// </summary>
         /// <remarks>

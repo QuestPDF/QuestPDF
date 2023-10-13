@@ -13,6 +13,19 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
 
+#if  NET6_0_OR_GREATER
+using System.Text.Json;
+
+public class LowerCaseNamingPolicy : JsonNamingPolicy
+{
+    public override string ConvertName(string name)
+    {
+        return char.ToLower(name[0]) + name[1..];
+    }
+}
+#endif
+
+
 namespace QuestPDF.Drawing
 {
     static class DocumentGenerator
@@ -111,6 +124,12 @@ namespace QuestPDF.Drawing
 
             var content = ConfigureContent(document, settings, useOriginalImages);
 
+            if (Settings.EnableDebugging)
+            {
+                content.RemoveExistingProxies();
+                content.ApplyLayoutDebugging();
+            }
+            
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content);
             pageContext.ResetPageNumber();
@@ -228,18 +247,14 @@ namespace QuestPDF.Drawing
 
             void ApplyLayoutDebugging()
             {
-                content.RemoveExistingProxies();
-
-                content.ApplyLayoutOverflowDetection();
+                content.ExtractElementsOfType<LayoutDebuggingProxy>().First().ResetLayoutOverflowDetection();
                 content.Measure(Size.Max);
-
-                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().FirstOrDefault();
-                overflowState.ApplyLayoutOverflowVisualization();
                 
+                var overflowState = content.ExtractElementsOfType<LayoutDebuggingProxy>().FirstOrDefault(); 
+                overflowState.ApplyLayoutOverflowVisualization();
+
                 content.ApplyContentDirection();
                 content.InjectDependencies(pageContext, canvas);
-
-                content.RemoveExistingProxies();
             }
 
             void ConfigureLayoutOverflowMarker()
@@ -263,12 +278,16 @@ namespace QuestPDF.Drawing
 
             void CheckIfDocumentHasLayoutOverflowIssues()
             {
-                var hasLayoutOverflowVisualizationElements = content
-                    .ExtractElementsOfType<LayoutOverflowVisualization>()
-                    .SelectMany(x => x.Flatten())
-                    .Any();
+                canvas.DocumentInspectionHierarchy = content
+                    .ExtractElementsOfType<LayoutDebuggingProxy>()
+                    .First()
+                    .ToDocumentInspectionHierarchy();
 
-                canvas.DocumentContentHasLayoutOverflowIssues |= hasLayoutOverflowVisualizationElements;
+#if  NET6_0_OR_GREATER
+                var json = JsonSerializer.Serialize(canvas.DocumentInspectionHierarchy, new JsonSerializerOptions { PropertyNamingPolicy = new LowerCaseNamingPolicy(), MaxDepth = 256 });
+                File.WriteAllText("document_hierarchy.json", json);
+#endif
+                
             }
             
             void ThrowLayoutException()
