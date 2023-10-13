@@ -1,10 +1,2 @@
-Version 2023.9.0
-- In-code IntelliSense documentation for all public APIs,
-- Improvement: the Row element respects now available vertical space, which is closer to expected behavior
-
-Version 2023.9.1
-- Text rendering enhancement: a fake underline is drawn when the font typeface lacks an underline effect configuration or it is unavailable on runtime operating system
-- Text rendering enhancement: a fake strikethrough is drawn when the font typeface lacks a strikethrough effect configuration or it is unavailable on runtime operating system
-- Text rendering enhancement: a fake skew operation is applied to mimic an italic effect when the provided font lacks an italic variant
-- Text rendering enhancement: a fake bold effect is applied when the font doesn't offer variants of higher weight
-- Code quality improvements.
+Version 2023.10.0
+Quality of Life: improved the developer experience during debugging of document layout issues. The library now marks problematic sections directly in the generated PDF.
