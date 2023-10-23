@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
+using Avalonia.Threading;
 
 namespace QuestPDF.Previewer
 {
@@ -46,7 +47,7 @@ namespace QuestPDF.Previewer
             CurrentScrollProperty.Changed.Subscribe(x =>
             {
                 InteractiveCanvas.ScrollPercentY = x.NewValue.Value;
-                InvalidateVisual();
+                Dispatcher.UIThread.InvokeAsync(InvalidateVisual).GetTask();
             });
 
             ClipToBounds = true;

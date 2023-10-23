@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
@@ -109,16 +110,24 @@ class InteractiveCanvas : ICustomDrawOperation
     
     #region rendering
     
-    public void Render(IDrawingContextImpl context)
+    public void Render(ImmediateDrawingContext context)
     {
+        // get SkiaSharp canvas
+        var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
+        using var lease = leaseFeature.Lease();
+
+        var canvas = lease.SkCanvas;
+
+        if (canvas == null)
+            return;
+        
+        // draw document
         if (Pages.Count <= 0)
             return;
 
         LimitScale();
         LimitTranslate();
-        
-        var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
-        
+    
         if (canvas == null)
             throw new InvalidOperationException($"Context needs to be ISkiaDrawingContextImpl but got {nameof(context)}");
 
