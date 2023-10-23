@@ -43,10 +43,10 @@
         <PackageReference Include="Avalonia.Markup.Xaml.Loader" Version="0.10.18" />
         <PackageReference Include="Avalonia.ReactiveUI" Version="0.10.19" />
         <PackageReference Include="ReactiveUI" Version="18.4.44" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.3" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="2.88.3" />
-        <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.3" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.6" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="2.88.6" />
+        <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.6" />
         <PackageReference Include="System.Reactive" Version="5.0.0" />
-        <PackageReference Include="SkiaSharp" Version="2.88.3" />
+        <PackageReference Include="SkiaSharp" Version="2.88.6" />
     </ItemGroup>
 </Project>
