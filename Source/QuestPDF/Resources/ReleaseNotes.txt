@@ -34,3 +34,7 @@ Version 2022.12.7:
 - Text rendering enhancement: a fake strikethrough is drawn when the font typeface lacks a strikethrough effect configuration or it is unavailable on runtime operating system
 - Text rendering enhancement: a fake skew operation is applied to mimic an italic effect when the provided font lacks an italic variant
 - Text rendering enhancement: a fake bold effect is applied when the font doesn't offer variants of higher weight
+
+Version 2022.12.8:
+- Updated SkiaSharp dependency from 2.88.3 to 2.88.6
+- Updated QuestPDF Previewer dependencies: from Avalonia 0.10.X to 11.0.X
