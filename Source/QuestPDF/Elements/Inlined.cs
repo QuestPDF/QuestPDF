@@ -184,8 +184,8 @@ namespace QuestPDF.Elements
                 ? InlinedAlignment.Left
                 : InlinedAlignment.Right;
         }
-        
-        Size GetLineSize(ICollection<InlinedMeasurement> measurements)
+
+        static Size GetLineSize(ICollection<InlinedMeasurement> measurements)
         {
             var width = measurements.Sum(x => x.Size.Width);
             var height = measurements.Max(x => x.Size.Height);
