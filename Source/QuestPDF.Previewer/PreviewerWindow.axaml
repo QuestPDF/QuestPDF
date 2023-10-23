@@ -102,7 +102,7 @@
 			           AllowAutoHide="False" 
 			           Minimum="0" Maximum="1" 
 			           IsVisible="{Binding VerticalScrollbarVisible, Mode=OneWay}"
-			           Value="{Binding CurrentScroll, Mode=TwoWay}" 
+			           Value="{Binding CurrentScroll, Mode=TwoWay}"
 			           ViewportSize="{Binding ScrollViewportSize, Mode=OneWay}"></ScrollBar>
 		</Grid>
 	</Panel>
