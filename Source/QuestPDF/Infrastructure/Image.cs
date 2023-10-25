@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
@@ -78,11 +76,14 @@ namespace QuestPDF.Infrastructure
         public static Image FromBinaryData(byte[] imageData)
         {
             var image = SKImage.FromEncodedData(imageData);
-            
-            if (image == null)
-                throw new DocumentComposeException(CannotDecodeExceptionMessage);
-            
-            return new Image(image);
+
+            switch (image)
+            {
+                case null:
+                    throw new DocumentComposeException(CannotDecodeExceptionMessage);
+                default:
+                    return new Image(image);
+            }
         }
 
         /// <summary>
@@ -94,14 +95,15 @@ namespace QuestPDF.Infrastructure
         {
             var image = SKImage.FromEncodedData(filePath);
 
-            if (image == null)
+            switch (image)
             {
-                throw File.Exists(filePath) 
-                    ? new DocumentComposeException(CannotDecodeExceptionMessage)
-                    : new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
+                case null:
+                    throw File.Exists(filePath)
+                                    ? new DocumentComposeException(CannotDecodeExceptionMessage)
+                                    : new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
+                default:
+                    return new Image(image);
             }
-            
-            return new Image(image);
         }
 
         /// <summary>
@@ -112,11 +114,12 @@ namespace QuestPDF.Infrastructure
         public static Image FromStream(Stream fileStream)
         {
             var image = SKImage.FromEncodedData(fileStream);
-            
-            if (image == null)
-                throw new DocumentComposeException(CannotDecodeExceptionMessage);
-            
-            return new Image(image);
+
+            return image switch
+            {
+                null => throw new DocumentComposeException(CannotDecodeExceptionMessage),
+                _ => new Image(image),
+            };
         }
 
         #endregion

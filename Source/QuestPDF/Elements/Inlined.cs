@@ -16,7 +16,7 @@ namespace QuestPDF.Elements
         Center,
         Right,
         Justify,
-        SpaceAround
+        SpaceAround,
     }
 
     internal struct InlinedMeasurement
@@ -135,14 +135,15 @@ namespace QuestPDF.Elements
                 {
                     var difference = availableSpace.Width - lineSize.Width;
 
-                    if (lineMeasurements.Count == 1)
-                        return 0;
-
-                    return ElementsAlignment switch
+                    return lineMeasurements.Count switch
                     {
-                        InlinedAlignment.Justify => difference / (lineMeasurements.Count - 1),
-                        InlinedAlignment.SpaceAround => difference / (lineMeasurements.Count + 1),
-                        _ => HorizontalSpacing
+                        1 => 0,
+                        _ => ElementsAlignment switch
+                        {
+                            InlinedAlignment.Justify => difference / (lineMeasurements.Count - 1),
+                            InlinedAlignment.SpaceAround => difference / (lineMeasurements.Count + 1),
+                            _ => HorizontalSpacing
+                        },
                     };
                 }
 

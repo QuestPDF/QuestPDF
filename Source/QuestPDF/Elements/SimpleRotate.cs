@@ -11,9 +11,13 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (NormalizedTurnCount == 0 || NormalizedTurnCount == 2)
-                return base.Measure(availableSpace);
-            
+            switch (NormalizedTurnCount)
+            {
+                case 0:
+                case 2:
+                    return base.Measure(availableSpace);
+            }
+
             availableSpace = new Size(availableSpace.Height, availableSpace.Width);
             var childSpace = base.Measure(availableSpace);
 
@@ -22,13 +26,12 @@ namespace QuestPDF.Elements
 
             var targetSpace = new Size(childSpace.Height, childSpace.Width);
 
-            if (childSpace.Type == SpacePlanType.FullRender)
-                return SpacePlan.FullRender(targetSpace);
-            
-            if (childSpace.Type == SpacePlanType.PartialRender)
-                return SpacePlan.PartialRender(targetSpace);
-
-            throw new ArgumentException();
+            return childSpace.Type switch
+            {
+                SpacePlanType.FullRender => SpacePlan.FullRender(targetSpace),
+                SpacePlanType.PartialRender => SpacePlan.PartialRender(targetSpace),
+                _ => throw new ArgumentException(),
+            };
         }
         
         internal override void Draw(Size availableSpace)
@@ -41,10 +44,15 @@ namespace QuestPDF.Elements
             
             Canvas.Translate(translate);
             Canvas.Rotate(rotate);
-            
-            if (NormalizedTurnCount == 1 || NormalizedTurnCount == 3)
-                availableSpace = new Size(availableSpace.Height, availableSpace.Width);
-            
+
+            switch (NormalizedTurnCount)
+            {
+                case 1:
+                case 3:
+                    availableSpace = new Size(availableSpace.Height, availableSpace.Width);
+                    break;
+            }
+
             Child?.Draw(availableSpace);
             
             Canvas.Rotate(-rotate);

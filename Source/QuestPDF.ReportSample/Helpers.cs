@@ -30,27 +30,33 @@ namespace QuestPDF.ReportSample
 
         public static string FormatAsRomanNumeral(this int number)
         {
-            if (number < 0 || number > 3999) 
-                throw new ArgumentOutOfRangeException(nameof(number), "Number should be in range from 1 to 3999");
-            
-            return RomanNumeralCache.GetOrAdd(number, x =>
+            switch (number)
             {
-                if (x >= 1000) return "M" + FormatAsRomanNumeral(x - 1000);
-                if (x >= 900) return "CM" + FormatAsRomanNumeral(x - 900); 
-                if (x >= 500) return "D" + FormatAsRomanNumeral(x - 500);
-                if (x >= 400) return "CD" + FormatAsRomanNumeral(x - 400);
-                if (x >= 100) return "C" + FormatAsRomanNumeral(x - 100);            
-                if (x >= 90) return "XC" + FormatAsRomanNumeral(x - 90);
-                if (x >= 50) return "L" + FormatAsRomanNumeral(x - 50);
-                if (x >= 40) return "XL" + FormatAsRomanNumeral(x - 40);
-                if (x >= 10) return "X" + FormatAsRomanNumeral(x - 10);
-                if (x >= 9) return "IX" + FormatAsRomanNumeral(x - 9);
-                if (x >= 5) return "V" + FormatAsRomanNumeral(x - 5);
-                if (x >= 4) return "IV" + FormatAsRomanNumeral(x - 4);
-                if (x >= 1) return "I" + FormatAsRomanNumeral(x - 1);
-                
-                return string.Empty;  
-            });
+                case < 0:
+                case > 3999:
+                    throw new ArgumentOutOfRangeException(nameof(number), "Number should be in range from 1 to 3999");
+                default:
+                    return RomanNumeralCache.GetOrAdd(number, x =>
+                    {
+                        return x switch
+                        {
+                            >= 1000 => "M"  + (x - 1000).FormatAsRomanNumeral(),
+                            >=  900 => "CM" + (x -  900).FormatAsRomanNumeral(),
+                            >=  500 => "D"  + (x -  500).FormatAsRomanNumeral(),
+                            >=  400 => "CD" + (x -  400).FormatAsRomanNumeral(),
+                            >=  100 => "C"  + (x -  100).FormatAsRomanNumeral(),
+                            >=   90 => "XC" + (x -   90).FormatAsRomanNumeral(),
+                            >=   50 => "L"  + (x -   50).FormatAsRomanNumeral(),
+                            >=   40 => "XL" + (x -   40).FormatAsRomanNumeral(),
+                            >=   10 => "X"  + (x -   10).FormatAsRomanNumeral(),
+                            >=    9 => "IX" + (x -    9).FormatAsRomanNumeral(),
+                            >=    5 => "V"  + (x -    5).FormatAsRomanNumeral(),
+                            >=    4 => "IV" + (x -    4).FormatAsRomanNumeral(),
+                            >=    1 => "I"  + (x -    1).FormatAsRomanNumeral(),
+                            _ => string.Empty,
+                        };
+                    });
+            }
         }
     }
 }

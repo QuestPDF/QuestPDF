@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using QuestPDF.Drawing.Exceptions;
@@ -8,10 +7,8 @@ using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
-using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 
 namespace QuestPDF.Drawing
 {
@@ -94,13 +91,17 @@ namespace QuestPDF.Drawing
         private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
         {
             canvas.BeginDocument();
-            
-            if (document is MergedDocument mergedDocument)
-                RenderMergedDocument(canvas, mergedDocument, settings);
-            
-            else
-                RenderSingleDocument(canvas, document, settings);
-            
+
+            switch (document)
+            {
+                case MergedDocument mergedDocument:
+                    RenderMergedDocument(canvas, mergedDocument, settings);
+                    break;
+                default:
+                    RenderSingleDocument(canvas, document, settings);
+                    break;
+            }
+
             canvas.EndDocument();
         }
 
@@ -131,35 +132,43 @@ namespace QuestPDF.Drawing
                 })
                 .ToList();
 
-            if (document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous)
+            switch (document.PageNumberStrategy)
             {
-                var documentPageContext = new PageContext();
+                case MergedDocumentPageNumberStrategy.Continuous:
+                    {
+                        var documentPageContext = new PageContext();
 
-                foreach (var documentPart in documentParts)
-                {
-                    documentPageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content);
-                }
-                
-                documentPageContext.ResetPageNumber();
+                        foreach (var documentPart in documentParts)
+                        {
+                            documentPageContext.SetDocumentId(documentPart.DocumentId);
+                            RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content);
+                        }
 
-                foreach (var documentPart in documentParts)
-                {
-                    documentPageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPageContext, canvas, documentPart.Content);   
-                }
-            }
-            else
-            {
-                foreach (var documentPart in documentParts)
-                {
-                    var pageContext = new PageContext();
-                    pageContext.SetDocumentId(documentPart.DocumentId);
-                    
-                    RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
-                    pageContext.ResetPageNumber();
-                    RenderPass(pageContext, canvas, documentPart.Content);
-                }
+                        documentPageContext.ResetPageNumber();
+
+                        foreach (var documentPart in documentParts)
+                        {
+                            documentPageContext.SetDocumentId(documentPart.DocumentId);
+                            RenderPass(documentPageContext, canvas, documentPart.Content);
+                        }
+
+                        break;
+                    }
+
+                default:
+                    {
+                        foreach (var documentPart in documentParts)
+                        {
+                            var pageContext = new PageContext();
+                            pageContext.SetDocumentId(documentPart.DocumentId);
+
+                            RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
+                            pageContext.ResetPageNumber();
+                            RenderPass(pageContext, canvas, documentPart.Content);
+                        }
+
+                        break;
+                    }
             }
         }
 
@@ -310,18 +319,18 @@ namespace QuestPDF.Drawing
 
         internal static void ApplyContentDirection(this Element? content, ContentDirection? direction = null)
         {
-            if (content == null)
-                return;
-
-            if (content is ContentDirectionSetter contentDirectionSetter)
+            switch (content)
             {
-                ApplyContentDirection(contentDirectionSetter.Child, contentDirectionSetter.ContentDirection);
-                return;
+                case null:
+                    return;
+                case ContentDirectionSetter contentDirectionSetter:
+                    contentDirectionSetter.Child.ApplyContentDirection(contentDirectionSetter.ContentDirection);
+                    return;
+                case IContentDirectionAware contentDirectionAware:
+                    contentDirectionAware.ContentDirection = direction ?? contentDirectionAware.ContentDirection;
+                    break;
             }
 
-            if (content is IContentDirectionAware contentDirectionAware)
-                contentDirectionAware.ContentDirection = direction ?? contentDirectionAware.ContentDirection;
-            
             foreach (var child in content.GetChildren())
                 ApplyContentDirection(child, direction);
         }
@@ -363,26 +372,29 @@ namespace QuestPDF.Drawing
 
         internal static void ApplyInheritedAndGlobalTexStyle(this Element? content, TextStyle documentDefaultTextStyle)
         {
-            if (content == null)
-                return;
-            
-            if (content is TextBlock textBlock)
+            switch (content)
             {
-                foreach (var textBlockItem in textBlock.Items)
-                {
-                    if (textBlockItem is TextBlockSpan textSpan)
-                        textSpan.Style = textSpan.Style.ApplyInheritedStyle(documentDefaultTextStyle).ApplyGlobalStyle();
-                    
-                    if (textBlockItem is TextBlockElement textElement)
-                        ApplyInheritedAndGlobalTexStyle(textElement.Element, documentDefaultTextStyle);
-                }
-                
-                return;
+                case null:
+                    return;
+                case TextBlock textBlock:
+                    {
+                        foreach (var textBlockItem in textBlock.Items)
+                        {
+                            if (textBlockItem is TextBlockSpan textSpan)
+                                textSpan.Style = textSpan.Style.ApplyInheritedStyle(documentDefaultTextStyle).ApplyGlobalStyle();
+
+                            if (textBlockItem is TextBlockElement textElement)
+                                textElement.Element.ApplyInheritedAndGlobalTexStyle(documentDefaultTextStyle);
+                        }
+
+                        return;
+                    }
+
+                case DynamicHost dynamicHost:
+                    dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
+                    break;
             }
 
-            if (content is DynamicHost dynamicHost)
-                dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
-            
             if (content is DefaultTextStyle defaultTextStyleElement)
                documentDefaultTextStyle = defaultTextStyleElement.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
 

@@ -3,7 +3,6 @@ using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 namespace QuestPDF.Fluent
 {
@@ -238,17 +237,21 @@ namespace QuestPDF.Fluent
         
         internal static void ApplyScaling(this ImageDescriptor descriptor, ImageScaling scaling)
         {
-            if (scaling == ImageScaling.Resize)
-                descriptor.FitUnproportionally();
-
-            else if (scaling == ImageScaling.FitWidth)
-                descriptor.FitWidth();
-            
-            else if (scaling == ImageScaling.FitHeight)
-                descriptor.FitHeight();
-            
-            else if (scaling == ImageScaling.FitArea)
-                descriptor.FitArea();
+            switch (scaling)
+            {
+                case ImageScaling.Resize:
+                    descriptor.FitUnproportionally();
+                    break;
+                case ImageScaling.FitWidth:
+                    descriptor.FitWidth();
+                    break;
+                case ImageScaling.FitHeight:
+                    descriptor.FitHeight();
+                    break;
+                case ImageScaling.FitArea:
+                    descriptor.FitArea();
+                    break;
+            }
         }
         
         #endregion

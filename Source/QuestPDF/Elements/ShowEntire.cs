@@ -9,10 +9,11 @@ namespace QuestPDF.Elements
         {
             var childMeasurement = base.Measure(availableSpace);
 
-            if (childMeasurement.Type == SpacePlanType.FullRender)
-                return childMeasurement;
-
-            return SpacePlan.Wrap();
+            return childMeasurement.Type switch
+            {
+                SpacePlanType.FullRender => childMeasurement,
+                _ => SpacePlan.Wrap(),
+            };
         }
     }
 }

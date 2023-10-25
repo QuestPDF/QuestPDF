@@ -17,14 +17,13 @@ namespace QuestPDF.Elements
                 return childSize;
             
             var targetSize = GetTargetSize(availableSpace, childSize);
-            
-            if (childSize.Type == SpacePlanType.PartialRender)
-                return SpacePlan.PartialRender(targetSize);
-            
-            if (childSize.Type == SpacePlanType.FullRender)
-                return SpacePlan.FullRender(targetSize);
-            
-            throw new NotSupportedException();
+
+            return childSize.Type switch
+            {
+                SpacePlanType.PartialRender => SpacePlan.PartialRender(targetSize),
+                SpacePlanType.FullRender => SpacePlan.FullRender(targetSize),
+                _ => throw new NotSupportedException(),
+            };
         }
 
         private Size GetTargetSize(Size availableSpace, Size childSize)

@@ -52,21 +52,22 @@ namespace QuestPDF.Drawing
             // First check font width
             // For normal and condensed widths prefer smaller widths
             // For expanded widths prefer larger widths
-            if (target.Width <= (int)SKFontStyleWidth.Normal)
+            switch (target.Width)
             {
-                if (a.Width <= target.Width && b.Width > target.Width) 
-                    return true;
-                
-                if (a.Width > target.Width && b.Width <= target.Width) 
-                    return false;
-            }
-            else
-            {
-                if (a.Width >= target.Width && b.Width < target.Width) 
-                    return true;
-                
-                if (a.Width < target.Width && b.Width >= target.Width) 
-                    return false;
+                case <= (int)SKFontStyleWidth.Normal:
+                    if (a.Width <= target.Width && b.Width > target.Width)
+                        return true;
+
+                    if (a.Width > target.Width && b.Width <= target.Width)
+                        return false;
+                    break;
+                default:
+                    if (a.Width >= target.Width && b.Width < target.Width)
+                        return true;
+
+                    if (a.Width < target.Width && b.Width >= target.Width)
+                        return false;
+                    break;
             }
 
             // Prefer closest match
@@ -105,21 +106,22 @@ namespace QuestPDF.Drawing
                     return false;
             }
 
-            if (target.Weight < 450)
+            switch (target.Weight)
             {
-                if (a.Weight <= target.Weight && b.Weight > target.Weight) 
-                    return true;
-                
-                if (a.Weight > target.Weight && b.Weight <= target.Weight)
-                    return false;
-            }
-            else
-            {
-                if (a.Weight >= target.Weight && b.Weight < target.Weight) 
-                    return true;
-                
-                if (a.Weight < target.Weight && b.Weight >= target.Weight) 
-                    return false;
+                case < 450:
+                    if (a.Weight <= target.Weight && b.Weight > target.Weight)
+                        return true;
+
+                    if (a.Weight > target.Weight && b.Weight <= target.Weight)
+                        return false;
+                    break;
+                default:
+                    if (a.Weight >= target.Weight && b.Weight < target.Weight)
+                        return true;
+
+                    if (a.Weight < target.Weight && b.Weight >= target.Weight)
+                        return false;
+                    break;
             }
 
             // Prefer closest weight

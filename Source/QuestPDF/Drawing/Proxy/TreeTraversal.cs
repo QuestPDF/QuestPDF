@@ -19,19 +19,25 @@ internal static class TreeTraversal
 {
     public static IEnumerable<TreeNode<T>> ExtractElementsOfType<T>(this Element element) where T : Element
     {
-        if (element is T proxy)
+        switch (element)
         {
-            var result = new TreeNode<T>(proxy);
-                
-            foreach (var treeNode in proxy.GetChildren().SelectMany(ExtractElementsOfType<T>))
-                result.Children.Add(treeNode);
-                
-            yield return result;
-        }
-        else
-        {
-            foreach (var treeNode in element.GetChildren().SelectMany(ExtractElementsOfType<T>))
-                yield return treeNode;
+            case T proxy:
+                {
+                    var result = new TreeNode<T>(proxy);
+
+                    foreach (var treeNode in proxy.GetChildren().SelectMany(ExtractElementsOfType<T>))
+                        result.Children.Add(treeNode);
+
+                    yield return result;
+                    break;
+                }
+
+            default:
+                {
+                    foreach (var treeNode in element.GetChildren().SelectMany(ExtractElementsOfType<T>))
+                        yield return treeNode;
+                    break;
+                }
         }
     }
     

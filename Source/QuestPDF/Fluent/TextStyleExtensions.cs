@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -50,28 +49,31 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontSize"]/*' />
         public static TextStyle FontSize(this TextStyle style, float value)
         {
-            if (value <= 0)
-                throw new ArgumentException("Font size must be greater than 0.");
-            
-            return style.Mutate(TextStyleProperty.Size, value);
+            return value switch
+            {
+                <= 0 => throw new ArgumentException("Font size must be greater than 0."),
+                _ => style.Mutate(TextStyleProperty.Size, value),
+            };
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.lineHeight"]/*' />
         public static TextStyle LineHeight(this TextStyle style, float factor = 1)
         {
-            if (factor <= 0)
-                throw new ArgumentException("Line height must be greater than 0.");
-            
-            return style.Mutate(TextStyleProperty.LineHeight, factor);
+            return factor switch
+            {
+                <= 0 => throw new ArgumentException("Line height must be greater than 0."),
+                _ => style.Mutate(TextStyleProperty.LineHeight, factor),
+            };
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.letterSpacing"]/*' />
         public static TextStyle LetterSpacing(this TextStyle style, float factor = 1)
         {
-            if (factor <= 0)
-                throw new ArgumentException("Letter spacing must be greater than 0.");
-            
-            return style.Mutate(TextStyleProperty.LetterSpacing, factor);
+            return factor switch
+            {
+                <= 0 => throw new ArgumentException("Letter spacing must be greater than 0."),
+                _ => style.Mutate(TextStyleProperty.LetterSpacing, factor),
+            };
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.italic"]/*' />

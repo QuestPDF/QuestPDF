@@ -121,13 +121,17 @@ namespace QuestPDF.Elements.Text.Items
             }
 
             // text contains space that can be used to wrap
-            if (lastSpaceIndex > 1 && lastSpaceIndex >= startIndex)
-                return (lastSpaceIndex - 1, lastSpaceIndex + 1);
-                
-            // there is no available space to wrap text
-            // if the item is first within the line, perform safe mode and chop the word
-            // otherwise, move the item into the next line
-            return isFirstElementInLine ? (endIndex, endIndex + 1) : null;
+            switch (lastSpaceIndex)
+            {
+                case > 1 when lastSpaceIndex >= startIndex:
+                    return (lastSpaceIndex - 1, lastSpaceIndex + 1);
+                default:
+
+                    // there is no available space to wrap text
+                    // if the item is first within the line, perform safe mode and chop the word
+                    // otherwise, move the item into the next line
+                    return isFirstElementInLine ? (endIndex, endIndex + 1) : null;
+            }
         }
         
         public virtual void Draw(TextDrawingRequest request)

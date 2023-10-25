@@ -22,12 +22,14 @@ internal static class Helpers
         
         void Traverse(TreeNode<OverflowDebuggingProxy> parent)
         {
-            if (parent.Value.SpacePlanType == null)
-                return;
-            
-            if (parent.Value.SpacePlanType == SpacePlanType.FullRender)
-                return;
-            
+            switch (parent.Value.SpacePlanType)
+            {
+                case null:
+                    return;
+                case SpacePlanType.FullRender:
+                    return;
+            }
+
             var childrenWithWraps = parent.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.Wrap).ToList();
             var childrenWithPartialRenders = parent.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.PartialRender).ToList();
 

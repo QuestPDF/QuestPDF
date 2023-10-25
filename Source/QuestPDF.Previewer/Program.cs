@@ -28,11 +28,10 @@ AppBuilder
 static int GetCommunicationPort()
 {
     const int defaultApplicationPort = 12500;
-    
     var arguments = Environment.GetCommandLineArgs();
-
-    if (arguments.Length < 2)
-        return defaultApplicationPort;
-
-    return int.TryParse(arguments[1], out var port) ? port : defaultApplicationPort;
-}    
+    return arguments.Length switch
+    {
+        < 2 => defaultApplicationPort,
+        _ => int.TryParse(arguments[1], out var port) ? port : defaultApplicationPort,
+    };
+}

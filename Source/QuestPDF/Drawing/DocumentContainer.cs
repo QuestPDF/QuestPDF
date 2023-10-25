@@ -19,13 +19,13 @@ namespace QuestPDF.Drawing
 
             void ComposeContainer(IContainer container)
             {
-                if (Pages.Count == 0)
-                    return;
-                
-                if (Pages.Count == 1)
+                switch (Pages.Count)
                 {
-                    container.Component(Pages.First());
-                    return;
+                    case 0:
+                        return;
+                    case 1:
+                        container.Component(Pages.First());
+                        return;
                 }
 
                 container
