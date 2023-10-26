@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using QuestPDF.Helpers;
 
 namespace QuestPDF.Infrastructure
@@ -38,6 +39,40 @@ namespace QuestPDF.Infrastructure
             Direction = TextDirection.Auto,
             Fallback = null
         };
+
+        internal object? GetValue(TextStyleProperty property)
+        {
+            return GetPropertyEntry(property)?
+                .GetValue(this);
+        }
+
+        internal void SetValue(TextStyleProperty property, object? value)
+        {
+            GetPropertyEntry(property)?
+                .SetValue(this, value);
+        }
+
+        private PropertyInfo? GetPropertyEntry(TextStyleProperty property)
+        {
+            var propertyName = Enum.GetName(typeof(TextStyleProperty), property);
+
+            if (propertyName is null)
+                throw ProvidedPropertyTypeIsNotSupported(property);
+
+            const BindingFlags bindingFlags = 
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            
+            return GetType()
+                .GetProperty(propertyName, bindingFlags);
+            
+            static Exception ProvidedPropertyTypeIsNotSupported(TextStyleProperty property)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(property),
+                    property,
+                    "Expected to mutate the TextStyle object. Provided property type is not supported.");
+            }
+        }
 
         public static TextStyle Default { get; } = new();
     }
