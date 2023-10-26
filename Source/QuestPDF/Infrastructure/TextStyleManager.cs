@@ -87,7 +87,7 @@ namespace QuestPDF.Infrastructure
             {
                 OverrideStyle = false,
                 OverrideFontFamily = false,
-                AllowFallback = false
+                AllowFallback = true
             };
             
             return TextStyleApplyGlobalCache.GetOrAdd(style, tuple => tuple.ApplyStyleProperties(TextStyle.LibraryDefault, options).UpdateFontFallback(overrideStyle: false));
