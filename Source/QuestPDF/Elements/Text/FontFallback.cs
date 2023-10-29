@@ -42,11 +42,16 @@ namespace QuestPDF.Elements.Text
                 if (newFallbackOption == spanFallbackOption)
                     continue;
 
-                yield return new TextRun
+                var fallbackGlyphCount = i - spanStartIndex;
+
+                if (spanStartIndex != fallbackGlyphCount)
                 {
-                    Content = text.Substring(spanStartIndex, i - spanStartIndex),
-                    Style = spanFallbackOption.Style
-                };
+                    yield return new TextRun
+                    {
+                        Content = text.Substring(spanStartIndex, fallbackGlyphCount),
+                        Style = spanFallbackOption.Style
+                    };
+                }
 
                 spanStartIndex = i;
                 spanFallbackOption = newFallbackOption;
