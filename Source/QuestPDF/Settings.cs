@@ -1,4 +1,8 @@
-﻿namespace QuestPDF
+using System;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
+
+namespace QuestPDF
 {
     public static class Settings
     {
@@ -36,5 +40,10 @@
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
         public static bool CheckIfAllTextGlyphsAreAvailable { get; set; } = System.Diagnostics.Debugger.IsAttached;
+
+        static Settings()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
     }
 }

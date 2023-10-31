@@ -1,11 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
     public class Document : IDocument
     {
+        static Document()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         private Action<IDocumentContainer> ContentSource { get; }
         private DocumentMetadata Metadata { get; set; } = DocumentMetadata.Default;
 

@@ -7,6 +7,11 @@ namespace QuestPDF.Helpers
 {
     public static class Placeholders
     {
+        static Placeholders()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         public static readonly Random Random = new Random();
         
         #region Word Cache

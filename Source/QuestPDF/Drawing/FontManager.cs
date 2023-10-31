@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using HarfBuzzSharp;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
@@ -24,6 +25,7 @@ namespace QuestPDF.Drawing
 
         static FontManager()
         {
+            NativeDependencyCompatibilityChecker.Test();
             RegisterLibraryDefaultFonts();
         }
         
