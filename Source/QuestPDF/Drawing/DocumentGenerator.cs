@@ -76,8 +76,9 @@ namespace QuestPDF.Drawing
                 $"QuestPDF is a modern open-source library. " +
                 $"We identify the importance of the library in your projects and therefore want to make sure you can safely and confidently continue the development. " +
                 $"Being a healthy and growing community is the primary goal that motivates us to pursue professionalism. {newParagraph}" +
-                $"Please refer to the QuestPDF License and Pricing webpage for more details. (https://www.questpdf.com/pricing.html) {newParagraph}" +
-                $"If you are an existing QuestPDF user and for any reason cannot update, you can stay with the 2022.12.X release with the extended quality support but without any new features, improvements, or optimizations. That release will always be available under the MIT license, free for commercial usage. {newParagraph}" +
+                $"Please refer to the QuestPDF License and Pricing webpage for more details. (https://www.questpdf.com/license/) {newParagraph}" +
+                $"If you are an existing QuestPDF user and for any reason cannot update, you can stay with the 2022.12.X release with the extended quality support but without any new features, improvements, or optimizations. " +
+                $"That release will always be available under the MIT license, free for commercial usage. We are planning to sunset support for the 2022.12.X branch around Q1 2024. Until then, it will continue to receive quality and bug-fix updates. {newParagraph}" +
                 $"The library does not require any license key. We trust our users, and therefore the process is simple. " +
                 $"To disable license validation and turn off this exception, please configure an eligible license using the QuestPDF.Settings.License API, for example: {newParagraph}" +
                 $"\"QuestPDF.Settings.License = LicenseType.Community;\" {newParagraph}" +

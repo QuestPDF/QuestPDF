@@ -3,3 +3,7 @@ Version 2023.10.0
 - Updated dependency SkiaSharp from 2.88.3 to 2.88.6
 - Updated QuestPDF Previewer dependencies: from Avalonia 0.10.X to 11.0.X
 - Improved code quality
+
+Version 2023.10.1
+- Enhanced developer experience by refining the accuracy of the exception message thrown when native SkiaSharp dependencies are unavailable in the runtime environment.
+- Fixed link in the license-related message.
