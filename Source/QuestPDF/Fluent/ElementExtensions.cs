@@ -8,6 +8,11 @@ namespace QuestPDF.Fluent
 {
     public static class ElementExtensions
     {
+        static ElementExtensions()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         internal static Container Create(Action<IContainer> factory)
         {
             var container = new Container();
