@@ -12,6 +12,11 @@ namespace QuestPDF.Helpers
 {
     internal static class Helpers
     {
+        static Helpers()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         internal static byte[] LoadEmbeddedResource(string resourceName)
         {
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);

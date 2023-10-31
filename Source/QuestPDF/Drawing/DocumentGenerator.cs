@@ -17,6 +17,11 @@ namespace QuestPDF.Drawing
 {
     static class DocumentGenerator
     {
+        static DocumentGenerator()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         internal static void GeneratePdf(Stream stream, IDocument document)
         {
             ValidateLicense();
