@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configurat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.Previewer", "QuestPDF.Previewer\QuestPDF.Previewer.csproj", "{B2FF6003-3A45-4A78-A85D-B86C7F01D054}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.LayoutTests", "QuestPDF.LayoutTests\QuestPDF.LayoutTests.csproj", "{37DC7D64-CBAC-4C00-B4CE-CA50ABF764EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,5 +49,9 @@ Global
 		{B2FF6003-3A45-4A78-A85D-B86C7F01D054}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2FF6003-3A45-4A78-A85D-B86C7F01D054}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2FF6003-3A45-4A78-A85D-B86C7F01D054}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37DC7D64-CBAC-4C00-B4CE-CA50ABF764EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37DC7D64-CBAC-4C00-B4CE-CA50ABF764EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37DC7D64-CBAC-4C00-B4CE-CA50ABF764EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37DC7D64-CBAC-4C00-B4CE-CA50ABF764EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
