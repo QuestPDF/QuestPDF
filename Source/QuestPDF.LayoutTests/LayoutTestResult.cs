@@ -41,9 +41,9 @@ public class Tests
                     .TakenAreaSize(400, 300)
                     .Content(page =>
                     {
-                        page.Child("a").Position(0, 0).Size(250, 200);
-                        page.Child("b").Position(150, 50).Size(50, 150);
-                        page.Child("c").Position(200, 100).Size(100, 50);
+                        page.Mock("a").Position(0, 0).Size(250, 200);
+                        page.Mock("b").Position(150, 50).Size(50, 150);
+                        page.Mock("c").Position(200, 100).Size(100, 50);
                     });
                 
                 document
@@ -51,9 +51,9 @@ public class Tests
                     .TakenAreaSize(400, 300)
                     .Content(page =>
                     {
-                        page.Child("a").Position(0, 0).Size(150, 100);
-                        page.Child("b").Position(250, 150).Size(50, 150);
-                        page.Child("c").Position(300, 200).Size(100, 50);
+                        page.Mock("a").Position(0, 0).Size(150, 100);
+                        page.Mock("b").Position(250, 150).Size(50, 150);
+                        page.Mock("c").Position(300, 200).Size(100, 50);
                     });
             });
             //.CompareVisually();
@@ -81,8 +81,8 @@ public class Tests
                     .TakenAreaSize(150, 200)
                     .Content(page =>
                     {
-                        page.Child("a").Position(0, 0).Size(150, 150);
-                        page.Child("b").Position(0, 175).Size(125, 25);
+                        page.Mock("a").Position(0, 0).Size(150, 150);
+                        page.Mock("b").Position(0, 175).Size(125, 25);
                     });
                 
                 document
@@ -90,7 +90,7 @@ public class Tests
                     .TakenAreaSize(125, 75)
                     .Content(page =>
                     {
-                        page.Child("b").Position(0, 0).Size(125, 75);
+                        page.Mock("b").Position(0, 0).Size(125, 75);
                     });
             })
             .Validate();
@@ -116,12 +116,12 @@ public class Tests
                     .TakenAreaSize(150, 100)
                     .Content(page =>
                     {
-                        page.Child("b").Position(0, 0).Size(150, 100);
-                        page.Child("a").Position(0, 0).Size(100, 150);
+                        page.Mock("b").Position(0, 0).Size(150, 100);
+                        page.Mock("a").Position(0, 0).Size(100, 150);
                         
                     });
             })
-            .CompareVisually();
-           //.Validate();
+            //.CompareVisually();
+           .Validate();
     }
 }

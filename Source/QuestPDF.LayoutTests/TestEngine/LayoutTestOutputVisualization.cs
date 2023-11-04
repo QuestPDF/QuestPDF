@@ -6,7 +6,7 @@ using SkiaSharp;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
-internal class LayoutTestResultVisualization
+internal static class LayoutTestResultVisualization
 {
     // visual settings
     private const string DocumentBackgroundColor = Colors.Grey.Lighten1;

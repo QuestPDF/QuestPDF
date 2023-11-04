@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
-internal class LayoutTestExecutor
+internal static class LayoutTestExecutor
 {
     public static ICollection<LayoutTestResult.PageLayoutSnapshot> Execute(Size pageSize, Container container)
     {

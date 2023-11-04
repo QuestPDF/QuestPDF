@@ -1,6 +1,6 @@
 namespace QuestPDF.LayoutTests.TestEngine;
 
-public class LayoutTestException : Exception
+public sealed class LayoutTestException : Exception
 {
     internal LayoutTestException(string message) : base(message)
     {
