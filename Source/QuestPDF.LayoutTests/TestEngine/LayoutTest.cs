@@ -136,81 +136,9 @@ internal class LayoutTest
         var container = new Container();
         container.Element(handler);
 
-        TestResult.GeneratedLayout = GenerateResult(TestResult.PageSize, container);
+        TestResult.GeneratedLayout = LayoutTestExecutor.Execute(TestResult.PageSize, container);
         
         return this;
-    }
-
-    private static ICollection<LayoutTestResult.PageLayoutSnapshot> GenerateResult(Size pageSize, Container container)
-    {
-        // inject dependencies
-        var pageContext = new PageContext();
-        pageContext.ResetPageNumber();
-
-        var canvas = new PreviewerCanvas();
-        
-        container.InjectDependencies(pageContext, canvas);
-        
-        // distribute global state
-        container.ApplyInheritedAndGlobalTexStyle(TextStyle.Default);
-        container.ApplyContentDirection(ContentDirection.LeftToRight);
-        container.ApplyDefaultImageConfiguration(DocumentSettings.Default.ImageRasterDpi, DocumentSettings.Default.ImageCompressionQuality, true);
-        
-        // render
-        container.VisitChildren(x => (x as IStateResettable)?.ResetState());
-        
-        canvas.BeginDocument();
-
-        var pageSizes = new List<Size>();
-        
-        while(true)
-        {
-            var spacePlan = container.Measure(pageSize);
-            pageSizes.Add(spacePlan);
-            
-            if (spacePlan.Type == SpacePlanType.Wrap)
-            {
-                throw new Exception();
-            }
-
-            try
-            {
-                canvas.BeginPage(pageSize);
-                container.Draw(pageSize);
-                
-                pageContext.IncrementPageNumber();
-            }
-            catch (Exception exception)
-            {
-                canvas.EndDocument();
-                throw new Exception();
-            }
-
-            canvas.EndPage();
-
-            if (spacePlan.Type == SpacePlanType.FullRender)
-                break;
-        }
-        
-        // extract results
-        var mocks = container.ExtractElementsOfType<ElementMock>().Select(x => x.Value); // mock cannot contain another mock, flat structure
-
-        return mocks
-            .SelectMany(x => x.DrawingCommands)
-            .GroupBy(x => x.PageNumber)
-            .Select(x => new LayoutTestResult.PageLayoutSnapshot
-            {
-                RequiredArea = pageSizes[x.Key - 1],
-                MockPositions = x
-                    .Select(y => new LayoutTestResult.MockLayoutPosition
-                    {
-                        MockId = y.MockId,
-                        Size = y.Size,
-                        Position = y.Position
-                    })
-                    .ToList()
-            })
-            .ToList();
     }
     
     public void ExpectWrap()
