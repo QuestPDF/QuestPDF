@@ -96,19 +96,36 @@ internal class ExpectedLayoutChildPosition
     public Size Size { get; set; }
 }
 
-public static class ElementExtensions
+internal static class ElementExtensions
 {
-    public static void Mock(this IContainer element, string id, float width, float height)
+    public static MockDescriptor Mock(this IContainer element, string id)
     {
-        var mock = new MockChild
+        var mock = new ElementMock
         {
-            Id = id,
-            TotalWidth = width,
-            TotalHeight = height
+            Id = id
         };
         
         element.Element(mock);
+        return new MockDescriptor(mock);
     } 
+}
+
+internal class MockDescriptor
+{
+    private ElementMock Mock { get; }
+
+    public MockDescriptor(ElementMock mock)
+    {
+        Mock = mock;
+    }
+
+    public MockDescriptor Size(float width, float height)
+    {
+        Mock.TotalWidth = width;
+        Mock.TotalHeight = height;
+
+        return this;
+    }
 }
 
 internal class LayoutTest
@@ -116,6 +133,7 @@ internal class LayoutTest
     private const string DocumentColor = Colors.Grey.Lighten1;
     private const string PageColor = Colors.Grey.Lighten3;
     private const string TargetColor = Colors.White;
+    private const string GridColor = Colors.Grey.Lighten1;
     
     public Size PageSize { get; set; }
     public ICollection<PageDrawingCommand> ActualCommands { get; set; }
@@ -192,7 +210,7 @@ internal class LayoutTest
         }
         
         // extract results
-        var mocks = container.ExtractElementsOfType<MockChild>().Select(x => x.Value); // mock cannot contain another mock, flat structure
+        var mocks = container.ExtractElementsOfType<ElementMock>().Select(x => x.Value); // mock cannot contain another mock, flat structure
 
         return mocks
             .SelectMany(x => x.DrawingCommands)
@@ -203,7 +221,7 @@ internal class LayoutTest
                 Children = x
                     .Select(y => new ChildDrawingCommand
                     {
-                        ChildId = y.ChildId,
+                        ChildId = y.ElementId,
                         Size = y.Size,
                         Position = y.Position
                     })
@@ -349,8 +367,12 @@ internal class LayoutTest
         const int pagePadding = 25;
         var imageInfo = new SKImageInfo((int)pageSize.Width * 2 + pagePadding * 4, (int)(pageSize.Height * matrixHeight + pagePadding * (matrixHeight + 2)));
 
+        const int outputScale = 2;
+        
         using var pdf = SKDocument.CreatePdf(path);
-        using var canvas = pdf.BeginPage(imageInfo.Width, imageInfo.Height);
+        using var canvas = pdf.BeginPage(imageInfo.Width * outputScale, imageInfo.Height * outputScale);
+        
+        canvas.Scale(outputScale, outputScale);
         
         // page background
         canvas.Clear(SKColor.Parse(DocumentColor));
@@ -412,6 +434,27 @@ internal class LayoutTest
             canvas.Restore();
         }
 
+        void DrawPageGrid(Size pageSize)
+        {
+            using var paint = new SKPaint
+            {
+                Color = SKColor.Parse(GridColor),
+                StrokeWidth = 1
+            };
+
+            const float GridSize = 10f;
+            
+            foreach (var i in Enumerable.Range(1, (int)Math.Floor(pageSize.Width / GridSize)))
+            {
+                canvas.DrawLine(new SKPoint(i * GridSize, 0), new SKPoint(i * GridSize, pageSize.Height), paint);
+            }
+            
+            foreach (var i in Enumerable.Range(1, (int)Math.Floor(pageSize.Height / GridSize)))
+            {
+                canvas.DrawLine(new SKPoint(0, i * GridSize), new SKPoint(pageSize.Width, i * GridSize), paint);
+            }
+        }
+
         void DrawPage(PageDrawingCommand command)
         {
             // available area
@@ -430,10 +473,14 @@ internal class LayoutTest
             
             canvas.DrawRect(0, 0, command.RequiredArea.Width, command.RequiredArea.Height, takenAreaPaint);
         
+            DrawPageGrid(pageSize);
+            
             // draw children
             foreach (var child in command.Children)
             {
                 canvas.Save();
+
+                const float strokeWidth = 3f;
 
                 var color = colors[child.ChildId];
             
@@ -441,7 +488,7 @@ internal class LayoutTest
                 {
                     Color = SKColor.Parse(color),
                     IsStroke = true,
-                    StrokeWidth = 2
+                    StrokeWidth = strokeWidth
                 };
             
                 using var childAreaPaint = new SKPaint
@@ -451,7 +498,7 @@ internal class LayoutTest
             
                 canvas.Translate(child.Position.X, child.Position.Y);
                 canvas.DrawRect(0, 0, child.Size.Width, child.Size.Height, childAreaPaint);
-                canvas.DrawRect(0, 0, child.Size.Width, child.Size.Height, childBorderPaint);
+                canvas.DrawRect(strokeWidth / 2, strokeWidth / 2, child.Size.Width - strokeWidth, child.Size.Height - strokeWidth, childBorderPaint);
             
                 canvas.Restore();
             }

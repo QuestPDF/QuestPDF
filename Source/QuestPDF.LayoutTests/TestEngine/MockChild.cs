@@ -6,13 +6,13 @@ namespace QuestPDF.LayoutTests.TestEngine;
 
 internal class MockDrawingCommand
 {
-    public string ChildId { get; set; }
+    public string ElementId { get; set; }
     public int PageNumber { get; set; }
     public Position Position { get; set; }
     public Size Size { get; set; }
 }
 
-internal class MockChild : Element
+internal class ElementMock : Element
 {
     public string Id { get; set; }
     public string Color { get; set; } = Placeholders.Color();
@@ -59,7 +59,7 @@ internal class MockChild : Element
         
         DrawingCommands.Add(new MockDrawingCommand
         {
-            ChildId = Id,
+            ElementId = Id,
             PageNumber = PageContext.CurrentPage,
             Position = new Position(matrix.TransX / matrix.ScaleX, matrix.TransY / matrix.ScaleY),
             Size = size

@@ -24,14 +24,14 @@ public class Tests
                 {
                     column.Spacing(25);
 
-                    column.Item().Mock("a", 150, 200);
-                    column.Item().Mock("b", 150, 150);
-                    column.Item().Mock("c", 150, 100);
-                    column.Item().Mock("d", 150, 150);
-                    column.Item().Mock("e", 150, 300);
-                    column.Item().Mock("f", 150, 150);
-                    column.Item().Mock("g", 150, 100);
-                    column.Item().Mock("h", 150, 500);
+                    column.Item().Mock("a").Size(150, 200);
+                    column.Item().Mock("b").Size(150, 150);
+                    column.Item().Mock("c").Size(150, 100);
+                    column.Item().Mock("d").Size(150, 150);
+                    column.Item().Mock("e").Size(150, 300);
+                    column.Item().Mock("f").Size(150, 150);
+                    column.Item().Mock("g").Size(150, 100);
+                    column.Item().Mock("h").Size(150, 500);
                 });
             })
             .ExpectedDrawResult(document =>
@@ -70,8 +70,8 @@ public class Tests
                 {
                     column.Spacing(25);
 
-                    column.Item().Mock("a", 150, 150);
-                    column.Item().Mock("b", 125, 100);
+                    column.Item().Mock("a").Size(150, 150);
+                    column.Item().Mock("b").Size(125, 100);
                 });
             })
             .ExpectedDrawResult(document =>
@@ -105,8 +105,8 @@ public class Tests
             {
                 content.Layers(layers =>
                 {
-                    layers.Layer().Mock("a", 100, 150);
-                    layers.PrimaryLayer().Mock("b", 150, 100);
+                    layers.Layer().Mock("a").Size(100, 150);
+                    layers.PrimaryLayer().Mock("b").Size(150, 100);
                 });
             })
             .ExpectedDrawResult(document =>
