@@ -6,17 +6,24 @@ internal static class LayoutTestValidator
 {
     public static void Validate(LayoutTestResult result)
     {
-        if (result.ActualLayout.Count != result.ExpectedLayout.Count)
-            throw new LayoutTestException($"Content return layout with {result.ActualLayout.Count} pages but expected {result.ExpectedLayout.Count} pages");
-
-        var numberOfPages = result.ActualLayout.Count;
+        if (result.ActualLayout.GeneratesInfiniteLayout && !result.ExpectedLayout.GeneratesInfiniteLayout)
+            throw new LayoutTestException("Provided content generates unexpected infinite layout");
         
-        foreach (var i in Enumerable.Range(0, numberOfPages))
+        if (!result.ActualLayout.GeneratesInfiniteLayout && result.ExpectedLayout.GeneratesInfiniteLayout)
+            throw new LayoutTestException("Provided content is expected to generate infinite layout but it does not");
+
+        var actualPages = result.ActualLayout.Pages;
+        var expectedPages = result.ExpectedLayout.Pages;
+        
+        if (actualPages.Count != expectedPages.Count)
+            throw new LayoutTestException($"Content return layout with {actualPages.Count} pages but expected {expectedPages.Count} pages");
+        
+        foreach (var i in Enumerable.Range(0, actualPages.Count))
         {
             try
             {
-                var actualPage = result.ActualLayout.ElementAt(i);
-                var expectedPage = result.ExpectedLayout.ElementAt(i);
+                var actualPage = actualPages.ElementAt(i);
+                var expectedPage = expectedPages.ElementAt(i);
 
                 ValidatePage(actualPage, expectedPage);
             }
@@ -30,7 +37,7 @@ internal static class LayoutTestValidator
             }
         }
 
-        static void ValidatePage(LayoutTestResult.PageLayoutSnapshot actualLayout, LayoutTestResult.PageLayoutSnapshot expectedLayout)
+        static void ValidatePage(LayoutTestResult.PageLayout actualLayout, LayoutTestResult.PageLayout expectedLayout)
         {
             if (Math.Abs(actualLayout.RequiredArea.Width - expectedLayout.RequiredArea.Width) > Size.Epsilon)
                 throw new LayoutTestException($"Taken horizontal area is equal to {actualLayout.RequiredArea.Width} but expected {expectedLayout.RequiredArea.Width}");
@@ -38,19 +45,19 @@ internal static class LayoutTestValidator
             if (Math.Abs(actualLayout.RequiredArea.Height - expectedLayout.RequiredArea.Height) > Size.Epsilon)
                 throw new LayoutTestException($"Taken vertical area is equal to {actualLayout.RequiredArea.Height} but expected {expectedLayout.RequiredArea.Height}");
             
-            if (actualLayout.MockPositions.Count != expectedLayout.MockPositions.Count)
-                throw new LayoutTestException($"Visible {actualLayout.MockPositions.Count} mocks but expected {expectedLayout.MockPositions.Count}");
+            if (actualLayout.Mocks.Count != expectedLayout.Mocks.Count)
+                throw new LayoutTestException($"Visible {actualLayout.Mocks.Count} mocks but expected {expectedLayout.Mocks.Count}");
 
             ValidatePositionAndSizeOfMocks(actualLayout, expectedLayout);
             ValidateDrawingOrder(actualLayout, expectedLayout);
         }
 
-        static void ValidatePositionAndSizeOfMocks(LayoutTestResult.PageLayoutSnapshot actualLayout, LayoutTestResult.PageLayoutSnapshot expectedLayout)
+        static void ValidatePositionAndSizeOfMocks(LayoutTestResult.PageLayout actualLayout, LayoutTestResult.PageLayout expectedLayout)
         {
-            foreach (var expectedMock in expectedLayout.MockPositions)
+            foreach (var expectedMock in expectedLayout.Mocks)
             {
                 var matchingActualMock = actualLayout
-                    .MockPositions
+                    .Mocks
                     .Where(x => x.MockId == expectedMock.MockId)
                     .Where(x => Position.Equal(x.Position, expectedMock.Position))
                     .Where(x => Size.Equal(x.Size, expectedMock.Size))
@@ -64,10 +71,10 @@ internal static class LayoutTestValidator
             }
         }
 
-        static void ValidateDrawingOrder(LayoutTestResult.PageLayoutSnapshot actualLayout, LayoutTestResult.PageLayoutSnapshot expectedLayout)
+        static void ValidateDrawingOrder(LayoutTestResult.PageLayout actualLayout, LayoutTestResult.PageLayout expectedLayout)
         {
-            var actualOverlaps = GetOverlappingItems(actualLayout.MockPositions).ToList();
-            var expectedOverlaps = GetOverlappingItems(expectedLayout.MockPositions).ToList();
+            var actualOverlaps = GetOverlappingItems(actualLayout.Mocks).ToList();
+            var expectedOverlaps = GetOverlappingItems(expectedLayout.Mocks).ToList();
             
             foreach (var expectedOverlap in expectedOverlaps)
             {

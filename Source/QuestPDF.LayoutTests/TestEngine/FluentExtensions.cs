@@ -5,25 +5,30 @@ namespace QuestPDF.LayoutTests.TestEngine;
 
 internal class ExpectedDocumentLayoutDescriptor
 {
-    public List<LayoutTestResult.PageLayoutSnapshot> PageLayouts { get; } = new(); 
+    public LayoutTestResult.DocumentLayout DocumentLayout { get; } = new(); 
     
     public ExpectedPageLayoutDescriptor Page()
     {
-        var page = new LayoutTestResult.PageLayoutSnapshot();
-        PageLayouts.Add(page);
+        var page = new LayoutTestResult.PageLayout();
+        DocumentLayout.Pages.Add(page);
         return new ExpectedPageLayoutDescriptor(page);
+    }
+    
+    public void ExpectInfiniteLayoutException()
+    {
+        DocumentLayout.GeneratesInfiniteLayout = true;
     }
 }
 
 internal class ExpectedPageLayoutDescriptor
 {
-    private LayoutTestResult.PageLayoutSnapshot PageLayout { get; }
+    private LayoutTestResult.PageLayout PageLayout { get; }
 
-    public ExpectedPageLayoutDescriptor(LayoutTestResult.PageLayoutSnapshot pageLayout)
+    public ExpectedPageLayoutDescriptor(LayoutTestResult.PageLayout pageLayout)
     {
         PageLayout = pageLayout;
     }
-
+    
     public ExpectedPageLayoutDescriptor TakenAreaSize(float width, float height)
     {
         PageLayout.RequiredArea = new Size(width, height);
@@ -35,7 +40,7 @@ internal class ExpectedPageLayoutDescriptor
         var pageContent = new ExpectedPageContentDescriptor();
         content(pageContent);
         
-        PageLayout.MockPositions = pageContent.MockPositions;
+        PageLayout.Mocks = pageContent.MockPositions;
         return this;
     }
 }

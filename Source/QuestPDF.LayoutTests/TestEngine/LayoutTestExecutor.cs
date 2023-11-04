@@ -8,13 +8,17 @@ namespace QuestPDF.LayoutTests.TestEngine;
 
 internal static class LayoutTestExecutor
 {
-    public static ICollection<LayoutTestResult.PageLayoutSnapshot> Execute(Size pageSize, Container container)
+    public static LayoutTestResult.DocumentLayout Execute(Size pageSize, Container container)
     {
-        var pageSizes = new List<Size>();
-        GenerateDocument();
-        return CollectMockInformation();
+        var (pageSizes, generatesInfiniteLayout) = GenerateDocument();
 
-        void GenerateDocument()
+        return new LayoutTestResult.DocumentLayout
+        {
+            Pages = CollectMockInformation(pageSizes),
+            GeneratesInfiniteLayout = generatesInfiniteLayout
+        };
+
+        (List<Size> pageSizes, bool generatesInfiniteLayout) GenerateDocument()
         {
             // inject dependencies
             var pageContext = new PageContext();
@@ -33,6 +37,8 @@ internal static class LayoutTestExecutor
             container.VisitChildren(x => (x as IStateResettable)?.ResetState());
         
             canvas.BeginDocument();
+            
+            var pageSizes = new List<Size>();
         
             while(true)
             {
@@ -42,7 +48,7 @@ internal static class LayoutTestExecutor
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
                     canvas.EndDocument();
-                    throw new LayoutTestException("Provided layout generates infinite document");
+                    return (pageSizes, true);
                 }
 
                 try
@@ -63,9 +69,11 @@ internal static class LayoutTestExecutor
                 if (spacePlan.Type == SpacePlanType.FullRender)
                     break;
             }
+
+            return (pageSizes, false);
         }
 
-        ICollection<LayoutTestResult.PageLayoutSnapshot> CollectMockInformation()
+        ICollection<LayoutTestResult.PageLayout> CollectMockInformation(ICollection<Size> pageSizes)
         {
             // mock cannot contain another mock, flat structure
             var mocks = container.ExtractElementsOfType<ElementMock>().Select(x => x.Value); 
@@ -73,10 +81,10 @@ internal static class LayoutTestExecutor
             return mocks
                 .SelectMany(x => x.DrawingCommands)
                 .GroupBy(x => x.PageNumber)
-                .Select(x => new LayoutTestResult.PageLayoutSnapshot
+                .Select(x => new LayoutTestResult.PageLayout
                 {
-                    RequiredArea = pageSizes[x.Key - 1],
-                    MockPositions = x
+                    RequiredArea = pageSizes.ElementAt(x.Key - 1),
+                    Mocks = x
                         .Select(y => new LayoutTestResult.MockLayoutPosition
                         {
                             MockId = y.MockId,

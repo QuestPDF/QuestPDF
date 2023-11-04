@@ -1,11 +1,6 @@
-using System.Collections;
-using QuestPDF.Drawing;
-using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
@@ -41,7 +36,7 @@ internal sealed class LayoutTest
         var builder = new ExpectedDocumentLayoutDescriptor();
         handler(builder);
 
-        TestResult.ExpectedLayout = builder.PageLayouts;
+        TestResult.ExpectedLayout = builder.DocumentLayout;
         return this;
     }
 

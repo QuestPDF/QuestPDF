@@ -38,7 +38,7 @@ internal static class LayoutTestResultVisualization
     public static void Visualize(LayoutTestResult result, Stream stream)
     {
         // determine output dimenstions
-        var numberOfPages = Math.Max(result.ActualLayout.Count, result.ExpectedLayout.Count);
+        var numberOfPages = Math.Max(result.ActualLayout.Pages.Count, result.ExpectedLayout.Pages.Count);
 
         var canvasWidth = result.PageSize.Width * 2 + Padding * 4;
         var canvasHeight = result.PageSize.Height * numberOfPages + Padding * (numberOfPages + 2);
@@ -54,13 +54,13 @@ internal static class LayoutTestResultVisualization
         var mockColors = AssignColorsToMocks();
         
         canvas.Translate(Padding, Padding);
-        DrawLayout("ACTUAL", result.ActualLayout);
+        DrawDocument("ACTUAL", result.ActualLayout);
         
         canvas.Translate(result.PageSize.Width + Padding, 0);
         DrawPageNumbers();
         
         canvas.Translate(Padding, 0);
-        DrawLayout("EXPECTED", result.ActualLayout);
+        DrawDocument("EXPECTED", result.ActualLayout);
 
         // finish generation
         pdf.EndPage();
@@ -69,8 +69,8 @@ internal static class LayoutTestResultVisualization
         IDictionary<string, string> AssignColorsToMocks()
         {
             var mocks = Enumerable
-                .Concat(result.ActualLayout, result.ExpectedLayout)
-                .SelectMany(x => x.MockPositions)
+                .Concat(result.ActualLayout.Pages, result.ExpectedLayout.Pages)
+                .SelectMany(x => x.Mocks)
                 .Select(x => x.MockId)
                 .Distinct()
                 .ToList();
@@ -80,7 +80,7 @@ internal static class LayoutTestResultVisualization
                 .ToDictionary(i => mocks[i], i => DefaultElementColors[i]);
         }
         
-        void DrawLayout(string title, ICollection<LayoutTestResult.PageLayoutSnapshot> commands)
+        void DrawDocument(string title, LayoutTestResult.DocumentLayout documentLayout)
         {
             // draw title
             using var titlePaint = TextStyle.LibraryDefault.FontSize(16).Bold().ToPaint().Clone();
@@ -93,9 +93,9 @@ internal static class LayoutTestResultVisualization
             canvas.Save();
             canvas.Translate(0, Padding);
             
-            foreach (var pageDrawingCommand in commands)
+            foreach (var pageLayout in documentLayout.Pages)
             {
-                DrawPage(pageDrawingCommand);
+                DrawPage(pageLayout);
                 canvas.Translate(0, result.PageSize.Height + Padding);
             }
             
@@ -120,7 +120,7 @@ internal static class LayoutTestResultVisualization
             canvas.Restore();
         }
 
-        void DrawPage(LayoutTestResult.PageLayoutSnapshot pageLayout)
+        void DrawPage(LayoutTestResult.PageLayout pageLayout)
         {
             // draw page
             using var availableAreaPaint = new SKPaint
@@ -139,7 +139,7 @@ internal static class LayoutTestResultVisualization
             DrawGridLines();
             
             // draw mocks
-            foreach (var mock in pageLayout.MockPositions)
+            foreach (var mock in pageLayout.Mocks)
             {
                 canvas.Save();
 

@@ -120,8 +120,10 @@ public class Tests
                         page.Mock("a").Position(0, 0).Size(100, 150);
                         
                     });
+                
+                document.ExpectInfiniteLayoutException();
             })
-            //.CompareVisually();
+           // .CompareVisually();
            .Validate();
     }
 }
