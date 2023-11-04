@@ -1,12 +1,11 @@
 using QuestPDF.Drawing;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
 internal class MockDrawingCommand
 {
-    public string ElementId { get; set; }
+    public string MockId { get; set; }
     public int PageNumber { get; set; }
     public Position Position { get; set; }
     public Size Size { get; set; }
@@ -14,8 +13,7 @@ internal class MockDrawingCommand
 
 internal class ElementMock : Element
 {
-    public string Id { get; set; }
-    public string Color { get; set; } = Placeholders.Color();
+    public string MockId { get; set; }
     
     public float TotalWidth { get; set; }
     public float TotalHeight { get; set; }
@@ -48,8 +46,6 @@ internal class ElementMock : Element
         var height = Math.Min(TotalHeight - HeightOffset, availableSpace.Height);
         var size = new Size(TotalWidth, height);
         
-        Canvas.DrawRectangle(Position.Zero, size, Color);
-
         HeightOffset += height;
         
         if (Canvas is not SkiaCanvasBase canvasBase)
@@ -59,7 +55,7 @@ internal class ElementMock : Element
         
         DrawingCommands.Add(new MockDrawingCommand
         {
-            ElementId = Id,
+            MockId = MockId,
             PageNumber = PageContext.CurrentPage,
             Position = new Position(matrix.TransX / matrix.ScaleX, matrix.TransY / matrix.ScaleY),
             Size = size

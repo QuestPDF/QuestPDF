@@ -19,11 +19,11 @@ internal class LayoutBuilderDescriptor
 
 internal class DocumentLayoutBuilder
 {
-    public List<PageDrawingCommand> Commands { get; } = new(); 
+    public List<LayoutTestResult.PageLayoutSnapshot> Commands { get; } = new(); 
     
     public PageLayoutDescriptor Page()
     {
-        var page = new PageDrawingCommand();
+        var page = new LayoutTestResult.PageLayoutSnapshot();
         Commands.Add(page);
         return new PageLayoutDescriptor(page);
     }
@@ -31,9 +31,9 @@ internal class DocumentLayoutBuilder
 
 internal class PageLayoutDescriptor
 {
-    private PageDrawingCommand Command { get; }
+    private LayoutTestResult.PageLayoutSnapshot Command { get; }
 
-    public PageLayoutDescriptor(PageDrawingCommand command)
+    public PageLayoutDescriptor(LayoutTestResult.PageLayoutSnapshot command)
     {
         Command = command;
     }
@@ -48,18 +48,18 @@ internal class PageLayoutDescriptor
     {
         var pageContent = new PageLayoutBuilder();
         content(pageContent);
-        Command.Children = pageContent.Commands;
+        Command.MockPositions = pageContent.Commands;
         return this;
     }
 }
 
 internal class PageLayoutBuilder
 {
-    public List<ChildDrawingCommand> Commands { get;} = new();
+    public List<LayoutTestResult.MockLayoutPosition> Commands { get;} = new();
     
-    public ChildLayoutDescriptor Child(string childId)
+    public ChildLayoutDescriptor Child(string mockId)
     {
-        var child = new ChildDrawingCommand { ChildId = childId };
+        var child = new LayoutTestResult.MockLayoutPosition { MockId = mockId };
         Commands.Add(child);
         return new ChildLayoutDescriptor(child);
     }
@@ -67,9 +67,9 @@ internal class PageLayoutBuilder
 
 internal class ChildLayoutDescriptor
 {
-    private ChildDrawingCommand Command { get; }
+    private LayoutTestResult.MockLayoutPosition Command { get; }
 
-    public ChildLayoutDescriptor(ChildDrawingCommand command)
+    public ChildLayoutDescriptor(LayoutTestResult.MockLayoutPosition command)
     {
         Command = command;
     }
@@ -87,22 +87,13 @@ internal class ChildLayoutDescriptor
     }
 }
 
-internal class ExpectedLayoutChildPosition
-{
-    public string ElementId { get; set; }
-    public int PageNumber { get; set; }
-    public int DepthIndex { get; set; }
-    public Position Position { get; set; }
-    public Size Size { get; set; }
-}
-
 internal static class ElementExtensions
 {
     public static MockDescriptor Mock(this IContainer element, string id)
     {
         var mock = new ElementMock
         {
-            Id = id
+            MockId = id
         };
         
         element.Element(mock);
@@ -130,21 +121,13 @@ internal class MockDescriptor
 
 internal class LayoutTest
 {
-    private const string DocumentColor = Colors.Grey.Lighten1;
-    private const string PageColor = Colors.Grey.Lighten3;
-    private const string TargetColor = Colors.White;
-    private const string GridColor = Colors.Grey.Lighten1;
-    
-    public Size PageSize { get; set; }
-    public ICollection<PageDrawingCommand> ActualCommands { get; set; }
-    public ICollection<PageDrawingCommand> ExpectedCommands { get; set; }
-    
+    private LayoutTestResult TestResult { get; } = new LayoutTestResult();
+  
     public static LayoutTest HavingSpaceOfSize(float width, float height)
     {
-        return new LayoutTest
-        {
-            PageSize = new Size(width, height)
-        };
+        var result = new LayoutTest();
+        result.TestResult.PageSize = new Size(width, height);
+        return result;
     }
 
     public LayoutTest WithContent(Action<IContainer> handler)
@@ -153,12 +136,12 @@ internal class LayoutTest
         var container = new Container();
         container.Element(handler);
 
-        ActualCommands = GenerateResult(PageSize, container);
+        TestResult.GeneratedLayout = GenerateResult(TestResult.PageSize, container);
         
         return this;
     }
 
-    private static ICollection<PageDrawingCommand> GenerateResult(Size pageSize, Container container)
+    private static ICollection<LayoutTestResult.PageLayoutSnapshot> GenerateResult(Size pageSize, Container container)
     {
         // inject dependencies
         var pageContext = new PageContext();
@@ -215,13 +198,13 @@ internal class LayoutTest
         return mocks
             .SelectMany(x => x.DrawingCommands)
             .GroupBy(x => x.PageNumber)
-            .Select(x => new PageDrawingCommand
+            .Select(x => new LayoutTestResult.PageLayoutSnapshot
             {
                 RequiredArea = pageSizes[x.Key - 1],
-                Children = x
-                    .Select(y => new ChildDrawingCommand
+                MockPositions = x
+                    .Select(y => new LayoutTestResult.MockLayoutPosition
                     {
-                        ChildId = y.ElementId,
+                        MockId = y.MockId,
                         Size = y.Size,
                         Position = y.Position
                     })
@@ -240,28 +223,28 @@ internal class LayoutTest
         var builder = new DocumentLayoutBuilder();
         handler(builder);
 
-        ExpectedCommands = builder.Commands;
+        TestResult.ExpectedLayout = builder.Commands;
         return this;
     }
 
     public void CompareVisually()
     {
-        VisualizeExpectedResult(PageSize, ActualCommands, ExpectedCommands);
+        LayoutTestResultVisualization.Visualize(TestResult);
     }
 
     public void Validate()
     {
-        if (ActualCommands.Count != ExpectedCommands.Count)
-            throw new Exception($"Generated {ActualCommands.Count} but expected {ExpectedCommands.Count} pages.");
+        if (TestResult.GeneratedLayout.Count != TestResult.ExpectedLayout.Count)
+            throw new Exception($"Generated {TestResult.GeneratedLayout.Count} but expected {TestResult.ExpectedLayout.Count} pages.");
 
-        var numberOfPages = ActualCommands.Count;
+        var numberOfPages = TestResult.GeneratedLayout.Count;
         
         foreach (var i in Enumerable.Range(0, numberOfPages))
         {
             try
             {
-                var actual = ActualCommands.ElementAt(i);
-                var expected = ExpectedCommands.ElementAt(i);
+                var actual = TestResult.GeneratedLayout.ElementAt(i);
+                var expected = TestResult.ExpectedLayout.ElementAt(i);
 
                 if (Math.Abs(actual.RequiredArea.Width - expected.RequiredArea.Width) > Size.Epsilon)
                     throw new Exception($"Taken area width is equal to {actual.RequiredArea.Width} but expected {expected.RequiredArea.Width}");
@@ -269,28 +252,28 @@ internal class LayoutTest
                 if (Math.Abs(actual.RequiredArea.Height - expected.RequiredArea.Height) > Size.Epsilon)
                     throw new Exception($"Taken area height is equal to {actual.RequiredArea.Height} but expected {expected.RequiredArea.Height}");
                 
-                if (actual.Children.Count != expected.Children.Count)
-                    throw new Exception($"Visible {actual.Children.Count} but expected {expected.Children.Count}");
+                if (actual.MockPositions.Count != expected.MockPositions.Count)
+                    throw new Exception($"Visible {actual.MockPositions.Count} but expected {expected.MockPositions.Count}");
 
-                foreach (var child in expected.Children)
+                foreach (var child in expected.MockPositions)
                 {
                     var matchingActualElements = actual
-                        .Children
-                        .Where(x => x.ChildId == child.ChildId)
+                        .MockPositions
+                        .Where(x => x.MockId == child.MockId)
                         .Where(x => Position.Equal(x.Position, child.Position))
                         .Where(x => Size.Equal(x.Size, child.Size))
                         .Count();
 
                     if (matchingActualElements == 0)
-                        throw new Exception($"Cannot find actual drawing command for child {child.ChildId} on position {child.Position} and size {child.Size}");
+                        throw new Exception($"Cannot find actual drawing command for child {child.MockId} on position {child.Position} and size {child.Size}");
                     
                     if (matchingActualElements > 1)
-                        throw new Exception($"Found multiple drawing commands for child {child.ChildId} on position {child.Position} and size {child.Size}");
+                        throw new Exception($"Found multiple drawing commands for child {child.MockId} on position {child.Position} and size {child.Size}");
                 }
                 
                 // todo: add z-depth testing
-                var actualOverlaps = GetOverlappingItems(actual.Children);
-                var expectedOverlaps = GetOverlappingItems(expected.Children);
+                var actualOverlaps = GetOverlappingItems(actual.MockPositions);
+                var expectedOverlaps = GetOverlappingItems(expected.MockPositions);
                 
                 foreach (var overlap in expectedOverlaps)
                 {
@@ -300,7 +283,7 @@ internal class LayoutTest
                         throw new Exception($"Element {overlap.Item1} should be visible underneath element {overlap.Item2}");
                 }
                 
-                IEnumerable<(string, string)> GetOverlappingItems(ICollection<ChildDrawingCommand> items)
+                IEnumerable<(string, string)> GetOverlappingItems(ICollection<LayoutTestResult.MockLayoutPosition> items)
                 {
                     for (var i = 0; i < items.Count; i++)
                     {
@@ -317,7 +300,7 @@ internal class LayoutTest
                             if (intersection == null)
                                 continue;
 
-                            yield return (beforeChild.ChildId, afterChild.ChildId);
+                            yield return (beforeChild.MockId, afterChild.MockId);
                         }
                     }
                 }
@@ -327,184 +310,5 @@ internal class LayoutTest
                 throw new Exception($"Error on page {i + 1}: {e.Message}");
             }
         }
-    }
-        
-    private static void VisualizeExpectedResult(Size pageSize, ICollection<PageDrawingCommand> left, ICollection<PageDrawingCommand> right)
-    {
-        var path = "test.pdf";
-        
-        if (File.Exists(path))
-            File.Delete(path);
-        
-        // default colors
-        var defaultColors = new string[]
-        {
-            Colors.Red.Medium,
-            Colors.Green.Medium,
-            Colors.Blue.Medium,
-            Colors.Pink.Medium,
-            Colors.Orange.Medium,
-            Colors.Lime.Medium,
-            Colors.Cyan.Medium,
-            Colors.Indigo.Medium
-        };
-        
-        // determine children colors
-        var children = Enumerable
-            .Concat(left, right)
-            .SelectMany(x => x.Children)
-            .Select(x => x.ChildId)
-            .Distinct()
-            .ToList();
-
-        var colors = Enumerable
-            .Range(0, children.Count)
-            .ToDictionary(i => children[i], i => defaultColors[i]);
-
-        // create new pdf document output
-        var matrixHeight = Math.Max(left.Count, right.Count);
-        
-        const int pagePadding = 25;
-        var imageInfo = new SKImageInfo((int)pageSize.Width * 2 + pagePadding * 4, (int)(pageSize.Height * matrixHeight + pagePadding * (matrixHeight + 2)));
-
-        const int outputScale = 2;
-        
-        using var pdf = SKDocument.CreatePdf(path);
-        using var canvas = pdf.BeginPage(imageInfo.Width * outputScale, imageInfo.Height * outputScale);
-        
-        canvas.Scale(outputScale, outputScale);
-        
-        // page background
-        canvas.Clear(SKColor.Parse(DocumentColor));
-        
-        // chain titles
-        
-        // available area
-        using var titlePaint = TextStyle.LibraryDefault.FontSize(16).Bold().ToPaint().Clone();
-        titlePaint.TextAlign = SKTextAlign.Center;
-
-        canvas.Save();
-        
-        canvas.Translate(pagePadding + pageSize.Width / 2f, pagePadding + titlePaint.TextSize / 2);
-        canvas.DrawText("RESULT", 0, 0, titlePaint);
-        
-        canvas.Translate(pagePadding * 2 + pageSize.Width, 0);
-        canvas.DrawText("EXPECTED", 0, 0, titlePaint);
-        
-        canvas.Restore();
-
-        // side visualization
-        canvas.Save();
-        
-        canvas.Translate(pagePadding, pagePadding * 2);
-        DrawSide(left);
-        
-        canvas.Translate(pageSize.Width + pagePadding * 2, 0);
-        DrawSide(right);
-        
-        canvas.Restore();
-        
-        
-        // draw page numbers
-        canvas.Save();
-        
-        canvas.Translate(pagePadding * 2 + pageSize.Width, pagePadding * 2 + titlePaint.TextSize);
-        
-        foreach (var i in Enumerable.Range(0, matrixHeight))
-        {
-            canvas.DrawText((i + 1).ToString(), 0, 0, titlePaint);
-            canvas.Translate(0, pagePadding + pageSize.Height);
-        }
-        
-        canvas.Restore();
-
-        pdf.EndPage();
-        pdf.Close();
-        
-        void DrawSide(ICollection<PageDrawingCommand> commands)
-        {
-            canvas.Save();
-            
-            foreach (var pageDrawingCommand in commands)
-            {
-                DrawPage(pageDrawingCommand);
-                canvas.Translate(0, pageSize.Height + pagePadding);
-            }
-            
-            canvas.Restore();
-        }
-
-        void DrawPageGrid(Size pageSize)
-        {
-            using var paint = new SKPaint
-            {
-                Color = SKColor.Parse(GridColor),
-                StrokeWidth = 1
-            };
-
-            const float GridSize = 10f;
-            
-            foreach (var i in Enumerable.Range(1, (int)Math.Floor(pageSize.Width / GridSize)))
-            {
-                canvas.DrawLine(new SKPoint(i * GridSize, 0), new SKPoint(i * GridSize, pageSize.Height), paint);
-            }
-            
-            foreach (var i in Enumerable.Range(1, (int)Math.Floor(pageSize.Height / GridSize)))
-            {
-                canvas.DrawLine(new SKPoint(0, i * GridSize), new SKPoint(pageSize.Width, i * GridSize), paint);
-            }
-        }
-
-        void DrawPage(PageDrawingCommand command)
-        {
-            // available area
-            using var availableAreaPaint = new SKPaint
-            {
-                Color = SKColor.Parse(PageColor)
-            };
-            
-            canvas.DrawRect(0, 0, pageSize.Width, pageSize.Height, availableAreaPaint);
-            
-            // taken area
-            using var takenAreaPaint = new SKPaint
-            {
-                Color = SKColor.Parse(TargetColor)
-            };
-            
-            canvas.DrawRect(0, 0, command.RequiredArea.Width, command.RequiredArea.Height, takenAreaPaint);
-        
-            DrawPageGrid(pageSize);
-            
-            // draw children
-            foreach (var child in command.Children)
-            {
-                canvas.Save();
-
-                const float strokeWidth = 3f;
-
-                var color = colors[child.ChildId];
-            
-                using var childBorderPaint = new SKPaint
-                {
-                    Color = SKColor.Parse(color),
-                    IsStroke = true,
-                    StrokeWidth = strokeWidth
-                };
-            
-                using var childAreaPaint = new SKPaint
-                {
-                    Color = SKColor.Parse(color).WithAlpha(128)
-                };
-            
-                canvas.Translate(child.Position.X, child.Position.Y);
-                canvas.DrawRect(0, 0, child.Size.Width, child.Size.Height, childAreaPaint);
-                canvas.DrawRect(strokeWidth / 2, strokeWidth / 2, child.Size.Width - strokeWidth, child.Size.Height - strokeWidth, childBorderPaint);
-            
-                canvas.Restore();
-            }
-        }
-        
-        // save
-        GenerateExtensions.OpenFileUsingDefaultProgram(path);
     }
 }
