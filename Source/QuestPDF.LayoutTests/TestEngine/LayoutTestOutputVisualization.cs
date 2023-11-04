@@ -8,6 +8,7 @@ namespace QuestPDF.LayoutTests.TestEngine;
 
 internal class LayoutTestResultVisualization
 {
+    // visual settings
     private const string DocumentBackgroundColor = Colors.Grey.Lighten1;
     private const string PageBackgroundColor = Colors.Grey.Lighten3;
     private const string RequiredAreaBackgroundColor = Colors.White;
@@ -24,100 +25,147 @@ internal class LayoutTestResultVisualization
         Colors.Cyan.Medium,
         Colors.Indigo.Medium
     };
+
+    private const int Padding = 32;
+    private const int OutputImageScale = 2;
+
+    private const float GridSize = 10;
     
-    public static void Visualize(LayoutTestResult result)
+    private const float MockBorderThickness = 3;
+    private const byte MockBackgroundOpacity = 128;
+    
+    // implementations
+    public static void Visualize(LayoutTestResult result, Stream stream)
     {
-        var path = "test.pdf";
-        
-        if (File.Exists(path))
-            File.Delete(path);
-        
-        // determine children colors
-        var mocks = Enumerable
-            .Concat(result.GeneratedLayout, result.ExpectedLayout)
-            .SelectMany(x => x.MockPositions)
-            .Select(x => x.MockId)
-            .Distinct()
-            .ToList();
+        // determine output dimenstions
+        var numberOfPages = Math.Max(result.GeneratedLayout.Count, result.ExpectedLayout.Count);
 
-        var colors = Enumerable
-            .Range(0, mocks.Count)
-            .ToDictionary(i => mocks[i], i => DefaultElementColors[i]);
+        var canvasWidth = result.PageSize.Width * 2 + Padding * 4;
+        var canvasHeight = result.PageSize.Height * numberOfPages + Padding * (numberOfPages + 2);
 
-        // create new pdf document output
-        var matrixHeight = Math.Max(result.GeneratedLayout.Count, result.ExpectedLayout.Count);
+        // create PDF
+        using var pdf = SKDocument.CreatePdf(stream);
+        using var canvas = pdf.BeginPage(canvasWidth * OutputImageScale, canvasHeight * OutputImageScale);
         
-        const int pagePadding = 25;
-        var imageInfo = new SKImageInfo((int)result.PageSize.Width * 2 + pagePadding * 4, (int)(result.PageSize.Height * matrixHeight + pagePadding * (matrixHeight + 2)));
-
-        const int outputScale = 2;
-        
-        using var pdf = SKDocument.CreatePdf(path);
-        using var canvas = pdf.BeginPage(imageInfo.Width * outputScale, imageInfo.Height * outputScale);
-        
-        canvas.Scale(outputScale, outputScale);
-        
-        // page background
+        canvas.Scale(OutputImageScale, OutputImageScale);
         canvas.Clear(SKColor.Parse(DocumentBackgroundColor));
-        
-        // chain titles
-        
-        // available area
-        using var titlePaint = TextStyle.LibraryDefault.FontSize(16).Bold().ToPaint().Clone();
-        titlePaint.TextAlign = SKTextAlign.Center;
 
-        canvas.Save();
+        // draw content
+        var mockColors = AssignColorsToMocks();
         
-        canvas.Translate(pagePadding + result.PageSize.Width / 2f, pagePadding + titlePaint.TextSize / 2);
-        canvas.DrawText("RESULT", 0, 0, titlePaint);
+        canvas.Translate(Padding, Padding);
+        DrawLayout("GENERATED", result.GeneratedLayout);
         
-        canvas.Translate(pagePadding * 2 + result.PageSize.Width, 0);
-        canvas.DrawText("EXPECTED", 0, 0, titlePaint);
+        canvas.Translate(result.PageSize.Width + Padding, 0);
+        DrawPageNumbers();
         
-        canvas.Restore();
+        canvas.Translate(Padding, 0);
+        DrawLayout("EXPECTED", result.GeneratedLayout);
 
-        // side visualization
-        canvas.Save();
-        
-        canvas.Translate(pagePadding, pagePadding * 2);
-        DrawSide(result.GeneratedLayout);
-        
-        canvas.Translate(result.PageSize.Width + pagePadding * 2, 0);
-        DrawSide(result.ExpectedLayout);
-        
-        canvas.Restore();
-        
-        
-        // draw page numbers
-        canvas.Save();
-        
-        canvas.Translate(pagePadding * 2 + result.PageSize.Width, pagePadding * 2 + titlePaint.TextSize);
-        
-        foreach (var i in Enumerable.Range(0, matrixHeight))
-        {
-            canvas.DrawText((i + 1).ToString(), 0, 0, titlePaint);
-            canvas.Translate(0, pagePadding + result.PageSize.Height);
-        }
-        
-        canvas.Restore();
-
+        // finish generation
         pdf.EndPage();
         pdf.Close();
-        
-        void DrawSide(ICollection<LayoutTestResult.PageLayoutSnapshot> commands)
+
+        IDictionary<string, string> AssignColorsToMocks()
         {
+            var mocks = Enumerable
+                .Concat(result.GeneratedLayout, result.ExpectedLayout)
+                .SelectMany(x => x.MockPositions)
+                .Select(x => x.MockId)
+                .Distinct()
+                .ToList();
+
+            return Enumerable
+                .Range(0, mocks.Count)
+                .ToDictionary(i => mocks[i], i => DefaultElementColors[i]);
+        }
+        
+        void DrawLayout(string title, ICollection<LayoutTestResult.PageLayoutSnapshot> commands)
+        {
+            // draw title
+            using var titlePaint = TextStyle.LibraryDefault.FontSize(16).Bold().ToPaint().Clone();
+            titlePaint.TextAlign = SKTextAlign.Center;
+
+            var titlePosition = new SKPoint(result.PageSize.Width / 2, titlePaint.TextSize / 2);
+            canvas.DrawText(title, titlePosition, titlePaint);
+            
+            // draw pages
             canvas.Save();
+            canvas.Translate(0, Padding);
             
             foreach (var pageDrawingCommand in commands)
             {
                 DrawPage(pageDrawingCommand);
-                canvas.Translate(0, result.PageSize.Height + pagePadding);
+                canvas.Translate(0, result.PageSize.Height + Padding);
             }
             
             canvas.Restore();
         }
 
-        void DrawPageGrid(Size pageSize)
+        void DrawPageNumbers()
+        {
+            using var textPaint = TextStyle.LibraryDefault.FontSize(16).Bold().ToPaint().Clone();
+            textPaint.TextAlign = SKTextAlign.Center;
+            
+            canvas.Save();
+        
+            canvas.Translate(0, Padding + textPaint.TextSize);
+        
+            foreach (var pageNumber in Enumerable.Range(1, numberOfPages))
+            {
+                canvas.DrawText(pageNumber.ToString(), 0, 0, textPaint);
+                canvas.Translate(0, Padding + result.PageSize.Height);
+            }
+        
+            canvas.Restore();
+        }
+
+        void DrawPage(LayoutTestResult.PageLayoutSnapshot pageLayout)
+        {
+            // draw page
+            using var availableAreaPaint = new SKPaint
+            {
+                Color = SKColor.Parse(PageBackgroundColor)
+            };
+            
+            using var requiredAreaPaint = new SKPaint
+            {
+                Color = SKColor.Parse(RequiredAreaBackgroundColor)
+            };
+            
+            canvas.DrawRect(0, 0, result.PageSize.Width, result.PageSize.Height, availableAreaPaint);
+            canvas.DrawRect(0, 0, pageLayout.RequiredArea.Width, pageLayout.RequiredArea.Height, requiredAreaPaint);
+            
+            DrawGridLines();
+            
+            // draw mocks
+            foreach (var mock in pageLayout.MockPositions)
+            {
+                canvas.Save();
+
+                var color = mockColors[mock.MockId];
+            
+                using var mockBorderPaint = new SKPaint
+                {
+                    Color = SKColor.Parse(color),
+                    IsStroke = true,
+                    StrokeWidth = MockBorderThickness
+                };
+            
+                using var mockAreaPaint = new SKPaint
+                {
+                    Color = SKColor.Parse(color).WithAlpha(MockBackgroundOpacity)
+                };
+            
+                canvas.Translate(mock.Position.X, mock.Position.Y);
+                canvas.DrawRect(0, 0, mock.Size.Width, mock.Size.Height, mockAreaPaint);
+                canvas.DrawRect(MockBorderThickness / 2, MockBorderThickness / 2, mock.Size.Width - MockBorderThickness, mock.Size.Height - MockBorderThickness, mockBorderPaint);
+            
+                canvas.Restore();
+            }
+        }
+        
+        void DrawGridLines()
         {
             using var paint = new SKPaint
             {
@@ -125,69 +173,14 @@ internal class LayoutTestResultVisualization
                 StrokeWidth = 1
             };
 
-            const float GridSize = 10f;
+            var verticalLineCount = (int)Math.Floor(result.PageSize.Width / GridSize);
+            var horizontalLineCount = (int)Math.Floor(result.PageSize.Height / GridSize);
             
-            foreach (var i in Enumerable.Range(1, (int)Math.Floor(pageSize.Width / GridSize)))
-            {
-                canvas.DrawLine(new SKPoint(i * GridSize, 0), new SKPoint(i * GridSize, pageSize.Height), paint);
-            }
+            foreach (var i in Enumerable.Range(1, verticalLineCount))
+                canvas.DrawLine(new SKPoint(i * GridSize, 0), new SKPoint(i * GridSize, result.PageSize.Height), paint);
             
-            foreach (var i in Enumerable.Range(1, (int)Math.Floor(pageSize.Height / GridSize)))
-            {
-                canvas.DrawLine(new SKPoint(0, i * GridSize), new SKPoint(pageSize.Width, i * GridSize), paint);
-            }
+            foreach (var i in Enumerable.Range(1, horizontalLineCount))
+                canvas.DrawLine(new SKPoint(0, i * GridSize), new SKPoint(result.PageSize.Width, i * GridSize), paint);
         }
-
-        void DrawPage(LayoutTestResult.PageLayoutSnapshot command)
-        {
-            // available area
-            using var availableAreaPaint = new SKPaint
-            {
-                Color = SKColor.Parse(PageBackgroundColor)
-            };
-            
-            canvas.DrawRect(0, 0, result.PageSize.Width, result.PageSize.Height, availableAreaPaint);
-            
-            // taken area
-            using var takenAreaPaint = new SKPaint
-            {
-                Color = SKColor.Parse(RequiredAreaBackgroundColor)
-            };
-            
-            canvas.DrawRect(0, 0, command.RequiredArea.Width, command.RequiredArea.Height, takenAreaPaint);
-        
-            DrawPageGrid(result.PageSize);
-            
-            // draw children
-            foreach (var child in command.MockPositions)
-            {
-                canvas.Save();
-
-                const float strokeWidth = 3f;
-
-                var color = colors[child.MockId];
-            
-                using var childBorderPaint = new SKPaint
-                {
-                    Color = SKColor.Parse(color),
-                    IsStroke = true,
-                    StrokeWidth = strokeWidth
-                };
-            
-                using var childAreaPaint = new SKPaint
-                {
-                    Color = SKColor.Parse(color).WithAlpha(128)
-                };
-            
-                canvas.Translate(child.Position.X, child.Position.Y);
-                canvas.DrawRect(0, 0, child.Size.Width, child.Size.Height, childAreaPaint);
-                canvas.DrawRect(strokeWidth / 2, strokeWidth / 2, child.Size.Width - strokeWidth, child.Size.Height - strokeWidth, childBorderPaint);
-            
-                canvas.Restore();
-            }
-        }
-        
-        // save
-        GenerateExtensions.OpenFileUsingDefaultProgram(path);
     }
 }

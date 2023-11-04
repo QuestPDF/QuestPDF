@@ -1,4 +1,5 @@
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.LayoutTests.TestEngine;
@@ -47,6 +48,8 @@ internal class ElementMock : Element
         var size = new Size(TotalWidth, height);
         
         HeightOffset += height;
+        
+        Canvas.DrawRectangle(Position.Zero, size, Colors.Grey.Medium);
         
         if (Canvas is not SkiaCanvasBase canvasBase)
             return;

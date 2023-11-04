@@ -229,7 +229,16 @@ internal class LayoutTest
 
     public void CompareVisually()
     {
-        LayoutTestResultVisualization.Visualize(TestResult);
+        var path = "output.pdf";
+        
+        if (File.Exists(path))
+            File.Delete(path);
+        
+        var stream = new FileStream(path, FileMode.CreateNew);
+        LayoutTestResultVisualization.Visualize(TestResult, stream);
+        stream.Dispose();
+        
+        GenerateExtensions.OpenFileUsingDefaultProgram(path);
     }
 
     public void Validate()
