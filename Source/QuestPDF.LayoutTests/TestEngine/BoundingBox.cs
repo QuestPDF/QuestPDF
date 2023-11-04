@@ -12,8 +12,6 @@ internal class BoundingBox
     public double Width => MaxX - MinX;
     public double Height => MaxY - MinY;
 
-    public override string ToString() => $"BBox(Min: {MinX:N0}x{MinY:N0}, Max: {MaxX:N0}x{MaxY:N0}, W: {Width:N0}, H: {Height:N0})";
-
     public static BoundingBox From(Position position, Size size)
     {
         return new BoundingBox

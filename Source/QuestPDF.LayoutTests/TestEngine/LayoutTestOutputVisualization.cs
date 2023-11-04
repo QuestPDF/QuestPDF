@@ -38,7 +38,7 @@ internal class LayoutTestResultVisualization
     public static void Visualize(LayoutTestResult result, Stream stream)
     {
         // determine output dimenstions
-        var numberOfPages = Math.Max(result.GeneratedLayout.Count, result.ExpectedLayout.Count);
+        var numberOfPages = Math.Max(result.ActualLayout.Count, result.ExpectedLayout.Count);
 
         var canvasWidth = result.PageSize.Width * 2 + Padding * 4;
         var canvasHeight = result.PageSize.Height * numberOfPages + Padding * (numberOfPages + 2);
@@ -54,13 +54,13 @@ internal class LayoutTestResultVisualization
         var mockColors = AssignColorsToMocks();
         
         canvas.Translate(Padding, Padding);
-        DrawLayout("GENERATED", result.GeneratedLayout);
+        DrawLayout("ACTUAL", result.ActualLayout);
         
         canvas.Translate(result.PageSize.Width + Padding, 0);
         DrawPageNumbers();
         
         canvas.Translate(Padding, 0);
-        DrawLayout("EXPECTED", result.GeneratedLayout);
+        DrawLayout("EXPECTED", result.ActualLayout);
 
         // finish generation
         pdf.EndPage();
@@ -69,7 +69,7 @@ internal class LayoutTestResultVisualization
         IDictionary<string, string> AssignColorsToMocks()
         {
             var mocks = Enumerable
-                .Concat(result.GeneratedLayout, result.ExpectedLayout)
+                .Concat(result.ActualLayout, result.ExpectedLayout)
                 .SelectMany(x => x.MockPositions)
                 .Select(x => x.MockId)
                 .Distinct()

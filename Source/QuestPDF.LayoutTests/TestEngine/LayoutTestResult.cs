@@ -6,7 +6,7 @@ internal class LayoutTestResult
 {
     public Size PageSize { get; set; }
     
-    public ICollection<PageLayoutSnapshot> GeneratedLayout { get; set; }
+    public ICollection<PageLayoutSnapshot> ActualLayout { get; set; }
     public ICollection<PageLayoutSnapshot> ExpectedLayout { get; set; }
 
     public class PageLayoutSnapshot

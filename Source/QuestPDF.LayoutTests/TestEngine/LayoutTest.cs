@@ -136,7 +136,7 @@ internal class LayoutTest
         var container = new Container();
         container.Element(handler);
 
-        TestResult.GeneratedLayout = LayoutTestExecutor.Execute(TestResult.PageSize, container);
+        TestResult.ActualLayout = LayoutTestExecutor.Execute(TestResult.PageSize, container);
         
         return this;
     }
@@ -171,81 +171,6 @@ internal class LayoutTest
 
     public void Validate()
     {
-        if (TestResult.GeneratedLayout.Count != TestResult.ExpectedLayout.Count)
-            throw new Exception($"Generated {TestResult.GeneratedLayout.Count} but expected {TestResult.ExpectedLayout.Count} pages.");
-
-        var numberOfPages = TestResult.GeneratedLayout.Count;
-        
-        foreach (var i in Enumerable.Range(0, numberOfPages))
-        {
-            try
-            {
-                var actual = TestResult.GeneratedLayout.ElementAt(i);
-                var expected = TestResult.ExpectedLayout.ElementAt(i);
-
-                if (Math.Abs(actual.RequiredArea.Width - expected.RequiredArea.Width) > Size.Epsilon)
-                    throw new Exception($"Taken area width is equal to {actual.RequiredArea.Width} but expected {expected.RequiredArea.Width}");
-                
-                if (Math.Abs(actual.RequiredArea.Height - expected.RequiredArea.Height) > Size.Epsilon)
-                    throw new Exception($"Taken area height is equal to {actual.RequiredArea.Height} but expected {expected.RequiredArea.Height}");
-                
-                if (actual.MockPositions.Count != expected.MockPositions.Count)
-                    throw new Exception($"Visible {actual.MockPositions.Count} but expected {expected.MockPositions.Count}");
-
-                foreach (var child in expected.MockPositions)
-                {
-                    var matchingActualElements = actual
-                        .MockPositions
-                        .Where(x => x.MockId == child.MockId)
-                        .Where(x => Position.Equal(x.Position, child.Position))
-                        .Where(x => Size.Equal(x.Size, child.Size))
-                        .Count();
-
-                    if (matchingActualElements == 0)
-                        throw new Exception($"Cannot find actual drawing command for child {child.MockId} on position {child.Position} and size {child.Size}");
-                    
-                    if (matchingActualElements > 1)
-                        throw new Exception($"Found multiple drawing commands for child {child.MockId} on position {child.Position} and size {child.Size}");
-                }
-                
-                // todo: add z-depth testing
-                var actualOverlaps = GetOverlappingItems(actual.MockPositions);
-                var expectedOverlaps = GetOverlappingItems(expected.MockPositions);
-                
-                foreach (var overlap in expectedOverlaps)
-                {
-                    var matchingActualElements = actualOverlaps.Count(x => x.Item1 == overlap.Item1 && x.Item2 == overlap.Item2);
-
-                    if (matchingActualElements != 1)
-                        throw new Exception($"Element {overlap.Item1} should be visible underneath element {overlap.Item2}");
-                }
-                
-                IEnumerable<(string, string)> GetOverlappingItems(ICollection<LayoutTestResult.MockLayoutPosition> items)
-                {
-                    for (var i = 0; i < items.Count; i++)
-                    {
-                        for (var j = i; j < items.Count; j++)
-                        {
-                            var beforeChild = items.ElementAt(i);
-                            var afterChild = items.ElementAt(j);
-
-                            var beforeBoundingBox = BoundingBox.From(beforeChild.Position, beforeChild.Size);
-                            var afterBoundingBox = BoundingBox.From(afterChild.Position, afterChild.Size);
-
-                            var intersection = BoundingBoxExtensions.Intersection(beforeBoundingBox, afterBoundingBox);
-                            
-                            if (intersection == null)
-                                continue;
-
-                            yield return (beforeChild.MockId, afterChild.MockId);
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                throw new Exception($"Error on page {i + 1}: {e.Message}");
-            }
-        }
+        LayoutTestValidator.Validate(TestResult);
     }
 }
