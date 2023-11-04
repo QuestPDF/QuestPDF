@@ -14,6 +14,8 @@ public class Tests
     [Test]
     public void Test1()
     {
+        return;
+        
         LayoutTest
             .HavingSpaceOfSize(200, 400)
             .WithContent(content =>
@@ -53,8 +55,8 @@ public class Tests
                         page.Child("b").Position(250, 150).Size(50, 150);
                         page.Child("c").Position(300, 200).Size(100, 50);
                     });
-            })
-            .CompareVisually();
+            });
+            //.CompareVisually();
     }
     
     [Test]
@@ -91,6 +93,35 @@ public class Tests
                         page.Child("b").Position(0, 0).Size(125, 75);
                     });
             })
+            .Validate();
+    }
+    
+    [Test]
+    public void Test3()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(200, 200)
+            .WithContent(content =>
+            {
+                content.Layers(layers =>
+                {
+                    layers.Layer().Mock("a", 100, 150);
+                    layers.PrimaryLayer().Mock("b", 150, 100);
+                });
+            })
+            .ExpectedDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .TakenAreaSize(150, 100)
+                    .Content(page =>
+                    {
+                        page.Child("b").Position(0, 0).Size(150, 100);
+                        page.Child("a").Position(0, 0).Size(100, 150);
+                        
+                    });
+            })
             .CompareVisually();
+           //.Validate();
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
@@ -229,7 +230,87 @@ internal class LayoutTest
     {
         VisualizeExpectedResult(PageSize, ActualCommands, ExpectedCommands);
     }
-    
+
+    public void Validate()
+    {
+        if (ActualCommands.Count != ExpectedCommands.Count)
+            throw new Exception($"Generated {ActualCommands.Count} but expected {ExpectedCommands.Count} pages.");
+
+        var numberOfPages = ActualCommands.Count;
+        
+        foreach (var i in Enumerable.Range(0, numberOfPages))
+        {
+            try
+            {
+                var actual = ActualCommands.ElementAt(i);
+                var expected = ExpectedCommands.ElementAt(i);
+
+                if (Math.Abs(actual.RequiredArea.Width - expected.RequiredArea.Width) > Size.Epsilon)
+                    throw new Exception($"Taken area width is equal to {actual.RequiredArea.Width} but expected {expected.RequiredArea.Width}");
+                
+                if (Math.Abs(actual.RequiredArea.Height - expected.RequiredArea.Height) > Size.Epsilon)
+                    throw new Exception($"Taken area height is equal to {actual.RequiredArea.Height} but expected {expected.RequiredArea.Height}");
+                
+                if (actual.Children.Count != expected.Children.Count)
+                    throw new Exception($"Visible {actual.Children.Count} but expected {expected.Children.Count}");
+
+                foreach (var child in expected.Children)
+                {
+                    var matchingActualElements = actual
+                        .Children
+                        .Where(x => x.ChildId == child.ChildId)
+                        .Where(x => Position.Equal(x.Position, child.Position))
+                        .Where(x => Size.Equal(x.Size, child.Size))
+                        .Count();
+
+                    if (matchingActualElements == 0)
+                        throw new Exception($"Cannot find actual drawing command for child {child.ChildId} on position {child.Position} and size {child.Size}");
+                    
+                    if (matchingActualElements > 1)
+                        throw new Exception($"Found multiple drawing commands for child {child.ChildId} on position {child.Position} and size {child.Size}");
+                }
+                
+                // todo: add z-depth testing
+                var actualOverlaps = GetOverlappingItems(actual.Children);
+                var expectedOverlaps = GetOverlappingItems(expected.Children);
+                
+                foreach (var overlap in expectedOverlaps)
+                {
+                    var matchingActualElements = actualOverlaps.Count(x => x.Item1 == overlap.Item1 && x.Item2 == overlap.Item2);
+
+                    if (matchingActualElements != 1)
+                        throw new Exception($"Element {overlap.Item1} should be visible underneath element {overlap.Item2}");
+                }
+                
+                IEnumerable<(string, string)> GetOverlappingItems(ICollection<ChildDrawingCommand> items)
+                {
+                    for (var i = 0; i < items.Count; i++)
+                    {
+                        for (var j = i; j < items.Count; j++)
+                        {
+                            var beforeChild = items.ElementAt(i);
+                            var afterChild = items.ElementAt(j);
+
+                            var beforeBoundingBox = BoundingBox.From(beforeChild.Position, beforeChild.Size);
+                            var afterBoundingBox = BoundingBox.From(afterChild.Position, afterChild.Size);
+
+                            var intersection = BoundingBoxExtensions.Intersection(beforeBoundingBox, afterBoundingBox);
+                            
+                            if (intersection == null)
+                                continue;
+
+                            yield return (beforeChild.ChildId, afterChild.ChildId);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Error on page {i + 1}: {e.Message}");
+            }
+        }
+    }
+        
     private static void VisualizeExpectedResult(Size pageSize, ICollection<PageDrawingCommand> left, ICollection<PageDrawingCommand> right)
     {
         var path = "test.pdf";
@@ -291,11 +372,29 @@ internal class LayoutTest
         canvas.Restore();
 
         // side visualization
+        canvas.Save();
+        
         canvas.Translate(pagePadding, pagePadding * 2);
         DrawSide(left);
         
         canvas.Translate(pageSize.Width + pagePadding * 2, 0);
         DrawSide(right);
+        
+        canvas.Restore();
+        
+        
+        // draw page numbers
+        canvas.Save();
+        
+        canvas.Translate(pagePadding * 2 + pageSize.Width, pagePadding * 2 + titlePaint.TextSize);
+        
+        foreach (var i in Enumerable.Range(0, matrixHeight))
+        {
+            canvas.DrawText((i + 1).ToString(), 0, 0, titlePaint);
+            canvas.Translate(0, pagePadding + pageSize.Height);
+        }
+        
+        canvas.Restore();
 
         pdf.EndPage();
         pdf.Close();
@@ -347,7 +446,7 @@ internal class LayoutTest
             
                 using var childAreaPaint = new SKPaint
                 {
-                    Color = SKColor.Parse(color).WithAlpha(64)
+                    Color = SKColor.Parse(color).WithAlpha(128)
                 };
             
                 canvas.Translate(child.Position.X, child.Position.Y);
