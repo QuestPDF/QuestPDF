@@ -16,7 +16,7 @@ internal class LayoutTestValidator
             try
             {
                 var actualPage = result.ActualLayout.ElementAt(i);
-                var expectedPage = result.ActualLayout.ElementAt(i);
+                var expectedPage = result.ExpectedLayout.ElementAt(i);
 
                 ValidatePage(actualPage, expectedPage);
             }
@@ -81,7 +81,7 @@ internal class LayoutTestValidator
             {
                 for (var i = 0; i < items.Count; i++)
                 {
-                    for (var j = i; j < items.Count; j++)
+                    for (var j = i + 1; j < items.Count; j++)
                     {
                         var beforeChild = items.ElementAt(i);
                         var afterChild = items.ElementAt(j);
