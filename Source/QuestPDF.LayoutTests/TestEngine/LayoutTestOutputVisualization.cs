@@ -16,14 +16,19 @@ internal static class LayoutTestResultVisualization
 
     private static readonly string[] DefaultElementColors =
     {
-        Colors.Red.Medium,
-        Colors.Green.Medium,
-        Colors.Blue.Medium,
-        Colors.Pink.Medium,
-        Colors.Orange.Medium,
-        Colors.Lime.Medium,
-        Colors.Cyan.Medium,
-        Colors.Indigo.Medium
+        Colors.Green.Darken2,
+        Colors.Blue.Darken2,
+        Colors.Orange.Darken2,
+        Colors.Lime.Darken2,
+        Colors.Cyan.Darken2,
+        Colors.Indigo.Darken2,
+        
+        Colors.Green.Lighten1,
+        Colors.Blue.Lighten1,
+        Colors.Orange.Lighten1,
+        Colors.Lime.Lighten1,
+        Colors.Cyan.Lighten1,
+        Colors.Indigo.Lighten1
     };
 
     private const int Padding = 32;
@@ -31,7 +36,7 @@ internal static class LayoutTestResultVisualization
 
     private const float GridSize = 10;
     
-    private const float MockBorderThickness = 3;
+    private const float MockBorderThickness = 2;
     private const byte MockBackgroundOpacity = 128;
     
     // implementations
@@ -52,15 +57,7 @@ internal static class LayoutTestResultVisualization
 
         // draw content
         var mockColors = AssignColorsToMocks();
-        
-        canvas.Translate(Padding, Padding);
-        DrawDocument("ACTUAL", result.ActualLayout);
-        
-        canvas.Translate(result.PageSize.Width + Padding, 0);
-        DrawPageNumbers();
-        
-        canvas.Translate(Padding, 0);
-        DrawDocument("EXPECTED", result.ActualLayout);
+        DrawDocument();
 
         // finish generation
         pdf.EndPage();
@@ -79,48 +76,47 @@ internal static class LayoutTestResultVisualization
                 .Range(0, mocks.Count)
                 .ToDictionary(i => mocks[i], i => DefaultElementColors[i]);
         }
-        
-        void DrawDocument(string title, LayoutTestResult.DocumentLayout documentLayout)
-        {
-            // draw title
-            using var titlePaint = TextStyle.LibraryDefault.FontSize(16).Bold().ToPaint().Clone();
-            titlePaint.TextAlign = SKTextAlign.Center;
 
-            var titlePosition = new SKPoint(result.PageSize.Width / 2, titlePaint.TextSize / 2);
-            canvas.DrawText(title, titlePosition, titlePaint);
+        void DrawDocument()
+        {
+            canvas.Translate(Padding, Padding);
+            
+            // draw title
+            using var textPaint = TextStyle.LibraryDefault.FontSize(16).Bold().ToPaint().Clone();
+            textPaint.TextAlign = SKTextAlign.Center;
+
+            var actualHeaderPosition = new SKPoint(result.PageSize.Width / 2, textPaint.TextSize / 2);
+            canvas.DrawText("ACTUAL", actualHeaderPosition, textPaint);
+            
+            var expectedHeaderPosition = new SKPoint(Padding * 2 + result.PageSize.Width * 1.5f, textPaint.TextSize / 2);
+            canvas.DrawText("EXPECTED", expectedHeaderPosition, textPaint);
             
             // draw pages
             canvas.Save();
             canvas.Translate(0, Padding);
             
-            foreach (var pageLayout in documentLayout.Pages)
+            foreach (var pageIndex in Enumerable.Range(0, numberOfPages))
             {
-                DrawPage(pageLayout);
-                canvas.Translate(0, result.PageSize.Height + Padding);
+                var actualPage = result.ActualLayout.Pages.ElementAtOrDefault(pageIndex);
+                var expectedPage = result.ExpectedLayout.Pages.ElementAtOrDefault(pageIndex);
+                
+                DrawPage(actualPage);
+                DrawLayoutDifferences(actualPage, expectedPage);
+                
+                canvas.Translate(result.PageSize.Width + Padding, 0);
+                canvas.DrawText((pageIndex + 1).ToString(), 0, textPaint.TextSize, textPaint);
+                
+                canvas.Translate(Padding, 0);
+                DrawPage(expectedPage);
+                DrawLayoutDifferences(expectedPage, actualPage);
+                
+                canvas.Translate(-result.PageSize.Width - Padding * 2, result.PageSize.Height + Padding);
             }
-            
+
             canvas.Restore();
         }
-
-        void DrawPageNumbers()
-        {
-            using var textPaint = TextStyle.LibraryDefault.FontSize(16).Bold().ToPaint().Clone();
-            textPaint.TextAlign = SKTextAlign.Center;
-            
-            canvas.Save();
         
-            canvas.Translate(0, Padding + textPaint.TextSize);
-        
-            foreach (var pageNumber in Enumerable.Range(1, numberOfPages))
-            {
-                canvas.DrawText(pageNumber.ToString(), 0, 0, textPaint);
-                canvas.Translate(0, Padding + result.PageSize.Height);
-            }
-        
-            canvas.Restore();
-        }
-
-        void DrawPage(LayoutTestResult.PageLayout pageLayout)
+        void DrawPage(LayoutTestResult.PageLayout? pageLayout)
         {
             // draw page
             using var availableAreaPaint = new SKPaint
@@ -134,9 +130,12 @@ internal static class LayoutTestResultVisualization
             };
             
             canvas.DrawRect(0, 0, result.PageSize.Width, result.PageSize.Height, availableAreaPaint);
-            canvas.DrawRect(0, 0, pageLayout.RequiredArea.Width, pageLayout.RequiredArea.Height, requiredAreaPaint);
+            canvas.DrawRect(0, 0, pageLayout?.RequiredArea.Width ?? 0, pageLayout?.RequiredArea.Height ?? 0, requiredAreaPaint);
             
             DrawGridLines();
+            
+            if (pageLayout == null)
+                return;
             
             // draw mocks
             foreach (var mock in pageLayout.Mocks)
@@ -181,6 +180,37 @@ internal static class LayoutTestResultVisualization
             
             foreach (var i in Enumerable.Range(1, horizontalLineCount))
                 canvas.DrawLine(new SKPoint(0, i * GridSize), new SKPoint(result.PageSize.Width, i * GridSize), paint);
+        }
+
+        void DrawLayoutDifferences(LayoutTestResult.PageLayout? target, LayoutTestResult.PageLayout? compareWith)
+        {
+            using var targetPath = BuildPathFromLayout(target);
+            using var compareWithPath = BuildPathFromLayout(compareWith);
+
+            using var differencePath = targetPath.Op(compareWithPath, SKPathOp.Difference);
+            
+            AnnotateInvalidAreaHelper.Annotate(canvas, differencePath);
+            
+            SKPath BuildPathFromLayout(LayoutTestResult.PageLayout? layout)
+            {
+                var resultPath = new SKPath();
+
+                if (layout == null)
+                    return resultPath;
+                
+                foreach (var mock in layout.Mocks)
+                {
+                    var position = new SKRect(
+                        mock.Position.X, 
+                        mock.Position.Y, 
+                        mock.Position.X + mock.Size.Width, 
+                        mock.Position.Y + mock.Size.Height);
+                    
+                    resultPath.AddRect(position);
+                }
+
+                return resultPath;
+            }
         }
     }
 }

@@ -25,12 +25,7 @@ internal sealed class LayoutTest
         
         return this;
     }
-    
-    public void ExpectWrap()
-    {
-        
-    }
-    
+
     public LayoutTest ExpectedDrawResult(Action<ExpectedDocumentLayoutDescriptor> handler)
     {
         var builder = new ExpectedDocumentLayoutDescriptor();
