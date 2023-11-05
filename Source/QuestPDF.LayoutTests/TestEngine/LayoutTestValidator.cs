@@ -73,37 +73,15 @@ internal static class LayoutTestValidator
 
         static void ValidateDrawingOrder(LayoutTestResult.PageLayout actualLayout, LayoutTestResult.PageLayout expectedLayout)
         {
-            var actualOverlaps = GetOverlappingItems(actualLayout.Mocks).ToList();
-            var expectedOverlaps = GetOverlappingItems(expectedLayout.Mocks).ToList();
+            var actualOverlaps = actualLayout.Mocks.GetOverlappingItems().ToList();
+            var expectedOverlaps = expectedLayout.Mocks.GetOverlappingItems().ToList();
             
             foreach (var expectedOverlap in expectedOverlaps)
             {
-                var matchingActualElements = actualOverlaps.Count(actualOverlap => actualOverlap == expectedOverlap);
+                var matchingActualElements = actualOverlaps.Count(actualOverlap => actualOverlap.belowMockId == expectedOverlap.belowMockId && actualOverlap.aboveMockId == expectedOverlap.aboveMockId);
 
                 if (matchingActualElements != 1)
                     throw new Exception($"Mock '{expectedOverlap.belowMockId}' should be visible below '{expectedOverlap.aboveMockId}' mock");
-            }
-            
-            IEnumerable<(string belowMockId, string aboveMockId)> GetOverlappingItems(ICollection<LayoutTestResult.MockLayoutPosition> items)
-            {
-                for (var i = 0; i < items.Count; i++)
-                {
-                    for (var j = i + 1; j < items.Count; j++)
-                    {
-                        var beforeChild = items.ElementAt(i);
-                        var afterChild = items.ElementAt(j);
-
-                        var beforeBoundingBox = BoundingBox.From(beforeChild.Position, beforeChild.Size);
-                        var afterBoundingBox = BoundingBox.From(afterChild.Position, afterChild.Size);
-
-                        var intersection = BoundingBoxExtensions.Intersection(beforeBoundingBox, afterBoundingBox);
-                        
-                        if (intersection == null)
-                            continue;
-
-                        yield return (beforeChild.MockId, afterChild.MockId);
-                    }
-                }
             }
         }
     }

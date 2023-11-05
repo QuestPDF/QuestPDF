@@ -28,3 +28,28 @@ internal sealed class LayoutTestResult
         public Size Size { get; set; }
     }
 }
+
+internal static class LayoutTestResultHelpers
+{
+    public static IEnumerable<(LayoutTestResult.MockLayoutPosition belowMockId, LayoutTestResult.MockLayoutPosition aboveMockId)> GetOverlappingItems(this ICollection<LayoutTestResult.MockLayoutPosition> items)
+    {
+        for (var i = 0; i < items.Count; i++)
+        {
+            for (var j = i + 1; j < items.Count; j++)
+            {
+                var beforeChild = items.ElementAt(i);
+                var afterChild = items.ElementAt(j);
+
+                var beforeBoundingBox = BoundingBox.From(beforeChild.Position, beforeChild.Size);
+                var afterBoundingBox = BoundingBox.From(afterChild.Position, afterChild.Size);
+
+                var intersection = BoundingBoxExtensions.Intersection(beforeBoundingBox, afterBoundingBox);
+                        
+                if (intersection == null)
+                    continue;
+
+                yield return (beforeChild, afterChild);
+            }
+        }
+    }
+}

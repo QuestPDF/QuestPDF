@@ -8,17 +8,28 @@ namespace QuestPDF.LayoutTests.TestEngine;
 
 internal static class LayoutTestResultVisualization
 {
-    // visual settings
-    private const string DocumentBackgroundColor = Colors.Grey.Lighten1;
-    private const string PageBackgroundColor = Colors.Grey.Lighten3;
+    // output settings
+    private const int OutputImageScale = 2;
+    private const int Padding = 10;
+    
+    // document colors
+    private const string DocumentBackgroundColor = Colors.Grey.Darken2;
+    private const string PageBackgroundColor = Colors.Grey.Lighten1;
     private const string RequiredAreaBackgroundColor = Colors.White;
-    private const string GridLineColor = Colors.Grey.Lighten1;
+    
+    // grid configuration
+    private const float GridSize = 10;
+    private const float GridLineThickness = 0.25f;
+    private const string GridLineColor = Colors.Grey.Darken3;
+    
+    // mock drawing settings
+    private const byte OccludedMockBorderThickness = 5;
 
     private static readonly string[] DefaultElementColors =
     {
-        Colors.Green.Darken2,
-        Colors.Blue.Darken2,
-        Colors.Orange.Darken2,
+        Colors.Green.Medium,
+        Colors.Blue.Medium,
+        Colors.Orange.Medium,
         Colors.Lime.Darken2,
         Colors.Cyan.Darken2,
         Colors.Indigo.Darken2,
@@ -30,14 +41,6 @@ internal static class LayoutTestResultVisualization
         Colors.Cyan.Lighten1,
         Colors.Indigo.Lighten1
     };
-
-    private const int Padding = 32;
-    private const int OutputImageScale = 2;
-
-    private const float GridSize = 10;
-    
-    private const float MockBorderThickness = 2;
-    private const byte MockBackgroundOpacity = 128;
     
     // implementations
     public static void Visualize(LayoutTestResult result, Stream stream)
@@ -82,7 +85,7 @@ internal static class LayoutTestResultVisualization
             canvas.Translate(Padding, Padding);
             
             // draw title
-            using var textPaint = TextStyle.LibraryDefault.FontSize(16).Bold().ToPaint().Clone();
+            using var textPaint = TextStyle.LibraryDefault.FontSize(8).FontColor(Colors.White).Bold().ToPaint().Clone();
             textPaint.TextAlign = SKTextAlign.Center;
 
             var actualHeaderPosition = new SKPoint(result.PageSize.Width / 2, textPaint.TextSize / 2);
@@ -124,44 +127,67 @@ internal static class LayoutTestResultVisualization
                 Color = SKColor.Parse(PageBackgroundColor)
             };
             
+            canvas.DrawRect(0, 0, result.PageSize.Width, result.PageSize.Height, availableAreaPaint);
+            
+            if (pageLayout == null)
+            {
+                DrawGridLines();
+                return;
+            }
+            
+            // draw required area
             using var requiredAreaPaint = new SKPaint
             {
                 Color = SKColor.Parse(RequiredAreaBackgroundColor)
             };
             
-            canvas.DrawRect(0, 0, result.PageSize.Width, result.PageSize.Height, availableAreaPaint);
-            canvas.DrawRect(0, 0, pageLayout?.RequiredArea.Width ?? 0, pageLayout?.RequiredArea.Height ?? 0, requiredAreaPaint);
-            
-            DrawGridLines();
-            
-            if (pageLayout == null)
-                return;
+            canvas.DrawRect(0, 0, pageLayout.RequiredArea.Width, pageLayout.RequiredArea.Height, requiredAreaPaint);
             
             // draw mocks
             foreach (var mock in pageLayout.Mocks)
-            {
-                canvas.Save();
+                DrawMock(mock);
+            
+            foreach (var mock in pageLayout.Mocks.GetOverlappingItems())
+                DrawOccludedMock(mock.belowMockId);
+            
+            DrawGridLines();
+        }
 
-                var color = mockColors[mock.MockId];
+        void DrawMock(LayoutTestResult.MockLayoutPosition mock)
+        {
+            var color = mockColors[mock.MockId];
+                
+            using var mockAreaPaint = new SKPaint
+            {
+                Color = SKColor.Parse(color)
+            };
             
-                using var mockBorderPaint = new SKPaint
-                {
-                    Color = SKColor.Parse(color),
-                    IsStroke = true,
-                    StrokeWidth = MockBorderThickness
-                };
+            canvas.Save();
             
-                using var mockAreaPaint = new SKPaint
-                {
-                    Color = SKColor.Parse(color).WithAlpha(MockBackgroundOpacity)
-                };
+            canvas.Translate(mock.Position.X, mock.Position.Y);
+            canvas.DrawRect(0, 0, mock.Size.Width, mock.Size.Height, mockAreaPaint);
+
+            canvas.Restore();
+        }
+        
+        void DrawOccludedMock(LayoutTestResult.MockLayoutPosition mock)
+        {
+            var color = mockColors[mock.MockId];
+                
+            using var mockBorderPaint = new SKPaint
+            {
+                Color = SKColor.Parse(color),
+                IsStroke = true,
+                StrokeWidth = OccludedMockBorderThickness
+            };
+
+            var borderPosition = new SKRect(0, 0, mock.Size.Width, mock.Size.Height);
+            borderPosition.Inflate(-OccludedMockBorderThickness / 2f, -OccludedMockBorderThickness / 2f);
             
-                canvas.Translate(mock.Position.X, mock.Position.Y);
-                canvas.DrawRect(0, 0, mock.Size.Width, mock.Size.Height, mockAreaPaint);
-                canvas.DrawRect(MockBorderThickness / 2, MockBorderThickness / 2, mock.Size.Width - MockBorderThickness, mock.Size.Height - MockBorderThickness, mockBorderPaint);
-            
-                canvas.Restore();
-            }
+            canvas.Save();
+            canvas.Translate(mock.Position.X, mock.Position.Y);
+            canvas.DrawRect(borderPosition, mockBorderPaint);
+            canvas.Restore();
         }
         
         void DrawGridLines()
@@ -169,7 +195,7 @@ internal static class LayoutTestResultVisualization
             using var paint = new SKPaint
             {
                 Color = SKColor.Parse(GridLineColor),
-                StrokeWidth = 1
+                StrokeWidth = GridLineThickness
             };
 
             var verticalLineCount = (int)Math.Floor(result.PageSize.Width / GridSize);

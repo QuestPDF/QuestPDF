@@ -5,8 +5,8 @@ namespace QuestPDF.LayoutTests.TestEngine;
 
 internal static class AnnotateInvalidAreaHelper
 {
-    private const float StripeThickness = 2f;
-    private const float StripeScale = 6f;
+    private const float StripeThickness = 1f;
+    private const float StripeScale = 3f;
     private const string LineColor = Colors.Red.Medium;
     
     public static void Annotate(SKCanvas canvas, SKPath area)
