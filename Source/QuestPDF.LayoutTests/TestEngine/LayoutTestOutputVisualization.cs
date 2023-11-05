@@ -20,26 +20,28 @@ internal static class LayoutTestResultVisualization
     // grid configuration
     private const float GridSize = 10;
     private const float GridLineThickness = 0.25f;
-    private const string GridLineColor = Colors.Grey.Darken3;
+    private const byte GridLineTransparency = 48;
     
     // mock drawing settings
     private const byte OccludedMockBorderThickness = 5;
 
     private static readonly string[] DefaultElementColors =
     {
-        Colors.Green.Medium,
-        Colors.Blue.Medium,
-        Colors.Orange.Medium,
-        Colors.Lime.Darken2,
-        Colors.Cyan.Darken2,
-        Colors.Indigo.Darken2,
+        Colors.DeepPurple.Lighten2,
+        Colors.Blue.Lighten2,
+        Colors.Cyan.Lighten2,
+        Colors.Green.Lighten2,
+        Colors.Lime.Lighten2,
+        Colors.Amber.Lighten2,
+        Colors.Brown.Lighten2,
         
-        Colors.Green.Lighten1,
-        Colors.Blue.Lighten1,
-        Colors.Orange.Lighten1,
-        Colors.Lime.Lighten1,
-        Colors.Cyan.Lighten1,
-        Colors.Indigo.Lighten1
+        Colors.DeepPurple.Medium,
+        Colors.Blue.Medium,
+        Colors.Cyan.Medium,
+        Colors.Green.Medium,
+        Colors.Lime.Medium,
+        Colors.Amber.Medium,
+        Colors.Brown.Medium,
     };
     
     // implementations
@@ -194,7 +196,7 @@ internal static class LayoutTestResultVisualization
         {
             using var paint = new SKPaint
             {
-                Color = SKColor.Parse(GridLineColor),
+                Color = SKColor.Parse(Colors.Black).WithAlpha(GridLineTransparency),
                 StrokeWidth = GridLineThickness
             };
 

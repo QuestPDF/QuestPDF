@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -6,18 +8,26 @@ namespace QuestPDF.LayoutTests.TestEngine;
 
 internal sealed class LayoutTest
 {
+    private string TestIdentifier { get; set; }
     private LayoutTestResult TestResult { get; } = new LayoutTestResult();
   
-    public static LayoutTest HavingSpaceOfSize(float width, float height)
+    public static LayoutTest HavingSpaceOfSize(float width, float height, [CallerMemberName] string testIdentifier = "test")
     {
-        var result = new LayoutTest();
-        result.TestResult.PageSize = new Size(width, height);
-        return result;
+        var layoutTest = new LayoutTest
+        {
+            TestIdentifier = testIdentifier,
+            
+            TestResult =
+            {
+                PageSize = new Size(width, height)
+            }
+        };
+
+        return layoutTest;
     }
 
     public LayoutTest WithContent(Action<IContainer> handler)
     {
-        // compose content
         var container = new Container();
         container.Element(handler);
 
@@ -26,18 +36,26 @@ internal sealed class LayoutTest
         return this;
     }
 
-    public LayoutTest ExpectedDrawResult(Action<ExpectedDocumentLayoutDescriptor> handler)
+    public void ExpectedDrawResult(Action<ExpectedDocumentLayoutDescriptor> handler)
     {
         var builder = new ExpectedDocumentLayoutDescriptor();
         handler(builder);
 
         TestResult.ExpectedLayout = builder.DocumentLayout;
-        return this;
+
+        GenerateTestPreview();
+        LayoutTestValidator.Validate(TestResult);
     }
 
-    public void CompareVisually()
+    private void GenerateTestPreview()
     {
-        var path = "output.pdf";
+        if (!Debugger.IsAttached)
+        {
+            Console.WriteLine("Debugger is not attached. Skipping test preview generation");
+            return;
+        }
+        
+        var path = Path.Combine(Path.GetTempPath(), $"{TestIdentifier}.pdf");
         
         if (File.Exists(path))
             File.Delete(path);
@@ -46,11 +64,6 @@ internal sealed class LayoutTest
         LayoutTestResultVisualization.Visualize(TestResult, stream);
         stream.Dispose();
         
-        GenerateExtensions.OpenFileUsingDefaultProgram(path);
-    }
-
-    public void Validate()
-    {
-        LayoutTestValidator.Validate(TestResult);
+        Console.WriteLine($"Generated test case preview: {path}");
     }
 }
