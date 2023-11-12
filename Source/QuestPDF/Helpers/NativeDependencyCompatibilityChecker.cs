@@ -28,7 +28,7 @@ namespace QuestPDF.Helpers
             var initializationExceptionMessage = 
                 $"The QuestPDF library has encountered an issue while loading one of its dependencies. " +
                 $"This type of error often occurs when the current runtime is missing necessary NuGet packages. {paragraph}" +
-                $"Please ensure the following NuGet packages are added to your project and has matching versions:";
+                $"Please ensure the following NuGet packages are added to your primary/startup project and has matching versions:";
 
             foreach (var nuget in GetRecommendedNugetDependencies())
                 initializationExceptionMessage += $"{newLine}- {nuget}";
@@ -43,10 +43,10 @@ namespace QuestPDF.Helpers
             try
             {
                 // accessing any SkiaSharp object triggers loading of SkiaSharp-related DLL dependency
-                var typeface = SkiaSharp.SKTypeface.Default;
+                using var typeface = new SkiaSharp.SKPaint();
 
                 // accessing any HarfBuzzSharp object triggers loading of HarfBuzz-related DLL dependency
-                using var shaper = new SkiaSharp.HarfBuzz.SKShaper(typeface);
+                using var shaper = new HarfBuzzSharp.Buffer();
 
                 // everything loads and works correctly
                 return null;
