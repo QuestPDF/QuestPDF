@@ -29,6 +29,11 @@ namespace QuestPDF.Drawing
             
         }
 
+        public void MarkCurrentPageAsHavingLayoutIssues()
+        {
+            
+        }
+
         #endregion
 
         #region ICanvas
