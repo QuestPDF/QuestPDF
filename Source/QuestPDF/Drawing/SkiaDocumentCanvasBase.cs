@@ -33,10 +33,14 @@ namespace QuestPDF.Drawing
         public override void BeginPage(Size size)
         {
             Canvas = Document.BeginPage(size.Width, size.Height);
+            
+            base.BeginPage(size);
         }
 
         public override void EndPage()
         {
+            base.EndPage();
+            
             Document.EndPage();
             Canvas.Dispose();
         }

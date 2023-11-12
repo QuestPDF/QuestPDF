@@ -210,9 +210,9 @@ namespace QuestPDF.Drawing
 
                 try
                 {
+                    pageContext.IncrementPageNumber();
                     canvas.BeginPage(spacePlan);
                     content.Draw(spacePlan);
-                    pageContext.IncrementPageNumber();
                 }
                 catch (Exception exception)
                 {
@@ -224,12 +224,6 @@ namespace QuestPDF.Drawing
 
                 if (spacePlan.Type == SpacePlanType.FullRender)
                     break;
-            }
-
-            if (Settings.EnableDebugging)
-            {
-                ConfigureLayoutOverflowMarker();
-                CheckIfDocumentHasLayoutOverflowIssues();
             }
 
             void ApplyLayoutDebugging()
@@ -246,35 +240,6 @@ namespace QuestPDF.Drawing
                 content.InjectDependencies(pageContext, canvas);
 
                 content.RemoveExistingProxies();
-            }
-
-            void ConfigureLayoutOverflowMarker()
-            {
-                var layoutOverflowPageMarker = new LayoutOverflowPageMarker();
-                    
-                content.CreateProxy(child =>
-                {
-                    layoutOverflowPageMarker.Child = child;
-                    return layoutOverflowPageMarker;
-                });
-
-                var pageNumbersWithLayoutIssues = content
-                    .ExtractElementsOfType<LayoutOverflowVisualization>()
-                    .SelectMany(x => x.Flatten())
-                    .SelectMany(x => x.Value.VisibleOnPageNumbers)
-                    .Distinct();
-
-                layoutOverflowPageMarker.PageNumbersWithLayoutIssues = new HashSet<int>(pageNumbersWithLayoutIssues);
-            }
-
-            void CheckIfDocumentHasLayoutOverflowIssues()
-            {
-                var hasLayoutOverflowVisualizationElements = content
-                    .ExtractElementsOfType<LayoutOverflowVisualization>()
-                    .SelectMany(x => x.Flatten())
-                    .Any();
-
-                canvas.DocumentContentHasLayoutOverflowIssues |= hasLayoutOverflowVisualizationElements;
             }
             
             void ThrowLayoutException()
