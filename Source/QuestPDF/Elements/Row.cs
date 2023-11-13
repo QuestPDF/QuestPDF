@@ -147,6 +147,9 @@ namespace QuestPDF.Elements
                 renderingCommands.Add(command);
                 leftOffset += item.Width + Spacing;
             }
+
+            if (renderingCommands.Any(x => x.Measurement.Type == SpacePlanType.Wrap))
+                return renderingCommands;
             
             var rowHeight = renderingCommands
                 .Where(x => !x.RowItem.IsRendered)
