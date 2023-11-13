@@ -15,12 +15,27 @@ namespace QuestPDF.Elements.Text.Items
         private TextShapingResult? TextShapingResult { get; set; }
         private ushort? SpaceCodepoint { get; set; }
         
-        private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new ();
-        protected virtual bool EnableTextCache => true; 
+        private Dictionary<MeasurementCacheKey, TextMeasurementResult?> MeasureCache = new ();
+        protected virtual bool EnableTextCache => true;
 
+        private record struct MeasurementCacheKey
+        {
+            public int StartIndex { get; set; }
+            public float AvailableWidth { get; set; }
+        
+            public bool IsFirstElementInBlock { get; set; }
+            public bool IsFirstElementInLine { get; set; }
+        }
+        
         public virtual TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
-            var cacheKey = (request.StartIndex, request.AvailableWidth);
+            var cacheKey = new MeasurementCacheKey
+            {
+                StartIndex = request.StartIndex,
+                AvailableWidth = request.AvailableWidth,
+                IsFirstElementInBlock = request.IsFirstElementInBlock,
+                IsFirstElementInLine = request.IsFirstElementInLine
+            };
              
             if (!MeasureCache.ContainsKey(cacheKey))
                 MeasureCache[cacheKey] = MeasureWithoutCache(request);
