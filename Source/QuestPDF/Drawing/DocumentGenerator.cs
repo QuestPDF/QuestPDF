@@ -17,6 +17,11 @@ namespace QuestPDF.Drawing
 {
     static class DocumentGenerator
     {
+        static DocumentGenerator()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         internal static void GeneratePdf(Stream stream, IDocument document)
         {
             ValidateLicense();
@@ -71,12 +76,13 @@ namespace QuestPDF.Drawing
                 $"QuestPDF is a modern open-source library. " +
                 $"We identify the importance of the library in your projects and therefore want to make sure you can safely and confidently continue the development. " +
                 $"Being a healthy and growing community is the primary goal that motivates us to pursue professionalism. {newParagraph}" +
-                $"Please refer to the QuestPDF License and Pricing webpage for more details. (https://www.questpdf.com/pricing.html) {newParagraph}" +
-                $"If you are an existing QuestPDF user and for any reason cannot update, you can stay with the 2022.12.X release with the extended quality support but without any new features, improvements, or optimizations. That release will always be available under the MIT license, free for commercial usage. {newParagraph}" +
+                $"Please refer to the QuestPDF License and Pricing webpage for more details. (https://www.questpdf.com/license/) {newParagraph}" +
+                $"If you are an existing QuestPDF user and for any reason cannot update, you can stay with the 2022.12.X release with the extended quality support but without any new features, improvements, or optimizations. " +
+                $"That release will always be available under the MIT license, free for commercial usage. We are planning to sunset support for the 2022.12.X branch around Q1 2024. Until then, it will continue to receive quality and bug-fix updates. {newParagraph}" +
                 $"The library does not require any license key. We trust our users, and therefore the process is simple. " +
                 $"To disable license validation and turn off this exception, please configure an eligible license using the QuestPDF.Settings.License API, for example: {newParagraph}" +
                 $"\"QuestPDF.Settings.License = LicenseType.Community;\" {newParagraph}" +
-                $"Learn more on: https://www.questpdf.com/license-configuration.html {newParagraph}";
+                $"Learn more on: https://www.questpdf.com/license/configuration.html {newParagraph}";
             
             throw new Exception(exceptionMessage)
             {
@@ -204,9 +210,9 @@ namespace QuestPDF.Drawing
 
                 try
                 {
+                    pageContext.IncrementPageNumber();
                     canvas.BeginPage(spacePlan);
                     content.Draw(spacePlan);
-                    pageContext.IncrementPageNumber();
                 }
                 catch (Exception exception)
                 {
@@ -218,12 +224,6 @@ namespace QuestPDF.Drawing
 
                 if (spacePlan.Type == SpacePlanType.FullRender)
                     break;
-            }
-
-            if (Settings.EnableDebugging)
-            {
-                ConfigureLayoutOverflowMarker();
-                CheckIfDocumentHasLayoutOverflowIssues();
             }
 
             void ApplyLayoutDebugging()
@@ -240,35 +240,6 @@ namespace QuestPDF.Drawing
                 content.InjectDependencies(pageContext, canvas);
 
                 content.RemoveExistingProxies();
-            }
-
-            void ConfigureLayoutOverflowMarker()
-            {
-                var layoutOverflowPageMarker = new LayoutOverflowPageMarker();
-                    
-                content.CreateProxy(child =>
-                {
-                    layoutOverflowPageMarker.Child = child;
-                    return layoutOverflowPageMarker;
-                });
-
-                var pageNumbersWithLayoutIssues = content
-                    .ExtractElementsOfType<LayoutOverflowVisualization>()
-                    .SelectMany(x => x.Flatten())
-                    .SelectMany(x => x.Value.VisibleOnPageNumbers)
-                    .Distinct();
-
-                layoutOverflowPageMarker.PageNumbersWithLayoutIssues = new HashSet<int>(pageNumbersWithLayoutIssues);
-            }
-
-            void CheckIfDocumentHasLayoutOverflowIssues()
-            {
-                var hasLayoutOverflowVisualizationElements = content
-                    .ExtractElementsOfType<LayoutOverflowVisualization>()
-                    .SelectMany(x => x.Flatten())
-                    .Any();
-
-                canvas.DocumentContentHasLayoutOverflowIssues |= hasLayoutOverflowVisualizationElements;
             }
             
             void ThrowLayoutException()

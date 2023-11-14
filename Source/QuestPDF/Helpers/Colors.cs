@@ -1,4 +1,6 @@
-﻿namespace QuestPDF.Helpers
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+namespace QuestPDF.Helpers
 {
     /// <summary>
     /// Offers a palette of colors defined by the Google Material Design System guidelines.
