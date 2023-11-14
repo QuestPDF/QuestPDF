@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
@@ -12,9 +12,9 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Adjusts horizontal spacing between items.
         /// </summary>
-        public void Spacing(float value)
+        public void Spacing(float value, Unit unit = Unit.Point)
         {
-            Row.Spacing = value;
+            Row.Spacing = value.ToPoints(unit);
         }
 
         private IContainer Item(RowItemType type, float size = 0)
