@@ -119,6 +119,14 @@ namespace QuestPDF.Fluent
                 Text = text ?? string.Empty
             });
         }
+        
+        public static IContainer ShowWhen(this IContainer element, Predicate<ShowWhenContext> predicate)
+        {
+            return element.Element(new ShowWhen
+            {
+                VisibilityPredicate = predicate
+            });
+        }
 
         /// <summary>
         /// If the container spans multiple pages, its content appears only on the first one.
