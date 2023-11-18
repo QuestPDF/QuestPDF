@@ -1,5 +1,3 @@
-﻿
-
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -76,7 +74,7 @@ namespace QuestPDF.Previewer
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="previewer.notSupported"]/*' />
-        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500)
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken token = default)
         {
             throw new Exception("The hot-reload feature requires .NET 6 or later.");
         }
