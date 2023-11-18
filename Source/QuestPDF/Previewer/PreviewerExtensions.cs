@@ -20,19 +20,21 @@ namespace QuestPDF.Previewer
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="previewer.supported"]/*' />
-        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500)
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken token = default)
         {
             var previewerService = new PreviewerService(port);
             
             using var cancellationTokenSource = new CancellationTokenSource();
             previewerService.OnPreviewerStopped += () => cancellationTokenSource.Cancel();
+
+            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, token);
             
             await previewerService.Connect();
             await RefreshPreview();
             
             HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
             
-            await WaitForPreviewerExit(cancellationTokenSource.Token);
+            await WaitForPreviewerExit(linkedCts.Token);
             
             Task RefreshPreview()
             {
