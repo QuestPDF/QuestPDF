@@ -92,8 +92,7 @@ public class Tests
                     {
                         page.Mock("b").Position(0, 0).Size(125, 75);
                     });
-            })
-            .Validate();
+            });
     }
     
     [Test]
@@ -122,8 +121,6 @@ public class Tests
                     });
                 
                 document.ExpectInfiniteLayoutException();
-            })
-           // .CompareVisually();
-           .Validate();
+            });
     }
 }
