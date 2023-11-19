@@ -6,10 +6,14 @@ namespace QuestPDF.Fluent
 {
     public static class ConstrainedExtensions
     {
-        private static IContainer Constrained(this IContainer element, Action<Constrained> handler)
+        #region Width
+        
+        private static IContainer ConstrainedWidth(this IContainer element, float? min = 0, float? max = 0)
         {
             var constrained = element as Constrained ?? new Constrained();
-            handler(constrained);
+
+            constrained.MinWidth = min;
+            constrained.MaxWidth = max;
             
             return element.Element(constrained);
         }
@@ -21,9 +25,8 @@ namespace QuestPDF.Fluent
         /// <returns>The container with the specified exact width.</returns>
         public static IContainer Width(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element
-                .MinWidth(value, unit)
-                .MaxWidth(value, unit);
+            value = value.ToPoints(unit);
+            return element.ConstrainedWidth(min: value, max: value);
         }
         
         /// <summary>
@@ -33,7 +36,8 @@ namespace QuestPDF.Fluent
         /// <returns>The container with the specified minimum width.</returns>
         public static IContainer MinWidth(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Constrained(x => x.MinWidth = value.ToPoints(unit));
+            value = value.ToPoints(unit);
+            return element.ConstrainedWidth(min: value);
         }
         
         /// <summary>
@@ -43,7 +47,22 @@ namespace QuestPDF.Fluent
         /// <returns>The container with the specified maximum width.</returns>
         public static IContainer MaxWidth(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Constrained(x => x.MaxWidth = value.ToPoints(unit));
+            value = value.ToPoints(unit);
+            return element.ConstrainedWidth(max: value);
+        }
+        
+        #endregion
+        
+        #region Height
+        
+        private static IContainer ConstrainedHeight(this IContainer element, float? min = 0, float? max = 0)
+        {
+            var constrained = element as Constrained ?? new Constrained();
+
+            constrained.MinHeight = min;
+            constrained.MaxHeight = max;
+            
+            return element.Element(constrained);
         }
         
         /// <summary>
@@ -53,9 +72,8 @@ namespace QuestPDF.Fluent
         /// <returns>The container with the specified exact height.</returns>
         public static IContainer Height(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element
-                .MinHeight(value, unit)
-                .MaxHeight(value, unit);
+            value = value.ToPoints(unit);
+            return element.ConstrainedHeight(min: value, max: value);
         }
         
         /// <summary>
@@ -65,7 +83,8 @@ namespace QuestPDF.Fluent
         /// <returns>The container with the specified minimum height.</returns>
         public static IContainer MinHeight(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Constrained(x => x.MinHeight = value.ToPoints(unit));
+            value = value.ToPoints(unit);
+            return element.ConstrainedHeight(min: value);
         }
         
         /// <summary>
@@ -75,7 +94,10 @@ namespace QuestPDF.Fluent
         /// <returns>The container with the specified maximum height.</returns>
         public static IContainer MaxHeight(this IContainer element, float value, Unit unit = Unit.Point)
         {
-            return element.Constrained(x => x.MaxHeight = value.ToPoints(unit));
+            value = value.ToPoints(unit);
+            return element.ConstrainedHeight(max: value);
         }
+        
+        #endregion
     }
 }
