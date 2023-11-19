@@ -6,10 +6,12 @@ namespace QuestPDF.Fluent
 {
     public static class ScaleExtensions
     {
-        private static IContainer Scale(this IContainer element, Action<Scale> handler)
+        private static IContainer ScaleValue(this IContainer element, float x = 1, float y = 1)
         {
             var scale = element as Scale ?? new Scale();
-            handler(scale);
+
+            scale.ScaleX *= x;
+            scale.ScaleY *= y;
             
             return element.Element(scale);
         }
@@ -22,7 +24,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="scale.factorParam"]/*' />
         public static IContainer Scale(this IContainer element, float factor)
         {
-            return element.ScaleHorizontal(factor).ScaleVertical(factor);
+            return element.ScaleValue(x: factor, y: factor);
         }
         
         /// <summary>
@@ -33,7 +35,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="scale.factorParam"]/*' />
         public static IContainer ScaleHorizontal(this IContainer element, float factor)
         {
-            return element.Scale(x => x.ScaleX *= factor);
+            return element.ScaleValue(x: factor);
         }
         
         /// <summary>
@@ -44,7 +46,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="scale.factorParam"]/*' />
         public static IContainer ScaleVertical(this IContainer element, float factor)
         {
-            return element.Scale(x => x.ScaleY *= factor);
+            return element.ScaleValue(y: factor);
         }
         
         /// <summary>
@@ -56,7 +58,7 @@ namespace QuestPDF.Fluent
         /// </example>
         public static IContainer FlipHorizontal(this IContainer element)
         {
-            return element.ScaleHorizontal(-1);
+            return element.ScaleValue(x: -1);
         }
         
         /// <summary>
@@ -68,7 +70,7 @@ namespace QuestPDF.Fluent
         /// </example>
         public static IContainer FlipVertical(this IContainer element)
         {
-            return element.ScaleVertical(-1);
+            return element.ScaleValue(y: -1);
         }
         
         /// <summary>
@@ -80,7 +82,7 @@ namespace QuestPDF.Fluent
         /// </example>
         public static IContainer FlipOver(this IContainer element)
         {
-            return element.FlipHorizontal().FlipVertical();
+            return element.ScaleValue(x: -1, y: -1);
         }
     }
 }

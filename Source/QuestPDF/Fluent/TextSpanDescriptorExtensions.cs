@@ -13,14 +13,14 @@ namespace QuestPDF.Fluent
             if (style == null)
                 return descriptor;
             
-            descriptor.MutateTextStyle(x => x.OverrideStyle(style));
+            descriptor.MutateTextStyle(TextStyleManager.OverrideStyle, style);
             return descriptor;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
         public static T Fallback<T>(this T descriptor, TextStyle? value = null) where T : TextSpanDescriptor
         {
-            descriptor.TextStyle.Fallback = value;
+            descriptor.MutateTextStyle(TextStyleExtensions.Fallback, value);
             return descriptor;
         }
         
@@ -35,7 +35,7 @@ namespace QuestPDF.Fluent
         public static T FontColor<T>(this T descriptor, string color) where T : TextSpanDescriptor
         {
             ColorValidator.Validate(color);
-            descriptor.MutateTextStyle(x => x.FontColor(color));
+            descriptor.MutateTextStyle(TextStyleExtensions.FontColor, color);
             return descriptor;
         }
         
@@ -44,14 +44,14 @@ namespace QuestPDF.Fluent
         public static T BackgroundColor<T>(this T descriptor, string color) where T : TextSpanDescriptor
         {
             ColorValidator.Validate(color);
-            descriptor.MutateTextStyle(x => x.BackgroundColor(color));
+            descriptor.MutateTextStyle(TextStyleExtensions.BackgroundColor, color);
             return descriptor;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFamily"]/*' />
         public static T FontFamily<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.FontFamily(value));
+            descriptor.MutateTextStyle(TextStyleExtensions.FontFamily, value);
             return descriptor;
         }
         
@@ -61,7 +61,7 @@ namespace QuestPDF.Fluent
             if (value <= 0)
                 throw new ArgumentException("Font size must be greater than 0.");
             
-            descriptor.MutateTextStyle(x => x.FontSize(value));
+            descriptor.MutateTextStyle(TextStyleExtensions.FontSize, value);
             return descriptor;
         }
         
@@ -71,7 +71,7 @@ namespace QuestPDF.Fluent
             if (factor <= 0)
                 throw new ArgumentException("Line height must be greater than 0.");
             
-            descriptor.MutateTextStyle(x => x.LineHeight(factor));
+            descriptor.MutateTextStyle(TextStyleExtensions.LineHeight, factor);
             return descriptor;
         }
 
@@ -81,35 +81,35 @@ namespace QuestPDF.Fluent
             if (factor <= 0)
                 throw new ArgumentException("Letter spacing must be greater than 0.");
             
-            descriptor.MutateTextStyle(x => x.LetterSpacing(factor));
+            descriptor.MutateTextStyle(TextStyleExtensions.LetterSpacing, factor);
             return descriptor;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.italic"]/*' />
         public static T Italic<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Italic(value));
+            descriptor.MutateTextStyle(TextStyleExtensions.Italic, value);
             return descriptor;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.strikethrough"]/*' />
         public static T Strikethrough<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Strikethrough(value));
+            descriptor.MutateTextStyle(TextStyleExtensions.Strikethrough, value);
             return descriptor;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.underline"]/*' />
         public static T Underline<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Underline(value));
+            descriptor.MutateTextStyle(TextStyleExtensions.Underline, value);
             return descriptor;
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
         public static T WrapAnywhere<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.WrapAnywhere(value));
+            descriptor.MutateTextStyle(TextStyleExtensions.WrapAnywhere, value);
             return descriptor;
         }
 
@@ -119,7 +119,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T Thin<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Thin());
+            descriptor.MutateTextStyle(TextStyleExtensions.Thin);
             return descriptor;
         }
         
@@ -127,7 +127,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T ExtraLight<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.ExtraLight());
+            descriptor.MutateTextStyle(TextStyleExtensions.ExtraLight);
             return descriptor;
         }
         
@@ -135,7 +135,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T Light<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Light());
+            descriptor.MutateTextStyle(TextStyleExtensions.Light);
             return descriptor;
         }
         
@@ -143,7 +143,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T NormalWeight<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.NormalWeight());
+            descriptor.MutateTextStyle(TextStyleExtensions.NormalWeight);
             return descriptor;
         }
         
@@ -151,7 +151,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T Medium<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Medium());
+            descriptor.MutateTextStyle(TextStyleExtensions.Medium);
             return descriptor;
         }
         
@@ -159,7 +159,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T SemiBold<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.SemiBold());
+            descriptor.MutateTextStyle(TextStyleExtensions.SemiBold);
             return descriptor;
         }
         
@@ -167,7 +167,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T Bold<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Bold());
+            descriptor.MutateTextStyle(TextStyleExtensions.Bold);
             return descriptor;
         }
         
@@ -175,7 +175,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T ExtraBold<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.ExtraBold());
+            descriptor.MutateTextStyle(TextStyleExtensions.ExtraBold);
             return descriptor;
         }
         
@@ -183,7 +183,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T Black<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Black());
+            descriptor.MutateTextStyle(TextStyleExtensions.Black);
             return descriptor;
         }
         
@@ -191,7 +191,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
         public static T ExtraBlack<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.ExtraBlack());
+            descriptor.MutateTextStyle(TextStyleExtensions.ExtraBlack);
             return descriptor;
         }
 
@@ -202,21 +202,21 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.position.normal"]/*' />
         public static T NormalPosition<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.NormalPosition());
+            descriptor.MutateTextStyle(TextStyleExtensions.NormalPosition);
             return descriptor;
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.position.subscript"]/*' />
         public static T Subscript<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Subscript());
+            descriptor.MutateTextStyle(TextStyleExtensions.Subscript);
             return descriptor;
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.position.superscript"]/*' />
         public static T Superscript<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.Superscript());
+            descriptor.MutateTextStyle(TextStyleExtensions.Superscript);
             return descriptor;
         }
         
@@ -227,21 +227,21 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.direction.auto"]/*' />
         public static T DirectionAuto<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.DirectionAuto());
+            descriptor.MutateTextStyle(TextStyleExtensions.DirectionAuto);
             return descriptor;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.direction.ltr"]/*' />
         public static T DirectionFromLeftToRight<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.DirectionFromLeftToRight());
+            descriptor.MutateTextStyle(TextStyleExtensions.DirectionFromLeftToRight);
             return descriptor;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.direction.rtl"]/*' />
         public static T DirectionFromRightToLeft<T>(this T descriptor) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(x => x.DirectionFromRightToLeft());
+            descriptor.MutateTextStyle(TextStyleExtensions.DirectionFromRightToLeft);
             return descriptor;
         }
 

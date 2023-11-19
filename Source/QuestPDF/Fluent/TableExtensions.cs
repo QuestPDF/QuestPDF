@@ -66,8 +66,6 @@ namespace QuestPDF.Fluent
     
     public class TableDescriptor
     {
-        internal List<TableColumnDefinition> Columns { get; private set; }
-
         private Table HeaderTable { get; } = new();
         private Table ContentTable { get; } = new();
         private Table FooterTable { get; } = new();
@@ -183,14 +181,6 @@ namespace QuestPDF.Fluent
 
     public static class TableCellExtensions
     {
-        private static ITableCellContainer TableCell(this ITableCellContainer element, Action<TableCell> handler)
-        {
-            if (element is TableCell tableCell)
-                handler(tableCell);
-            
-            return element;
-        }
-        
         /// <summary>
         /// Specifies the column position (horizontal axis) of the cell.
         /// <a href="https://www.questpdf.com/api-reference/table.html#basic-usage">Learn more</a>
@@ -198,7 +188,10 @@ namespace QuestPDF.Fluent
         /// <param name="value">Columns are numbered starting with 1.</param>
         public static ITableCellContainer Column(this ITableCellContainer tableCellContainer, uint value)
         {
-            return tableCellContainer.TableCell(x => x.Column = (int)value);
+            if (tableCellContainer is TableCell tableCell)
+                tableCell.Column = (int)value;
+
+            return tableCellContainer;
         }
         
         /// <summary>
@@ -210,7 +203,10 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public static ITableCellContainer ColumnSpan(this ITableCellContainer tableCellContainer, uint value)
         {
-            return tableCellContainer.TableCell(x => x.ColumnSpan = (int)value);
+            if (tableCellContainer is TableCell tableCell)
+                tableCell.ColumnSpan = (int)value;
+
+            return tableCellContainer;
         }
         
         /// <summary>
@@ -220,7 +216,10 @@ namespace QuestPDF.Fluent
         /// <param name="value">Rows are numbered starting with 1.</param>
         public static ITableCellContainer Row(this ITableCellContainer tableCellContainer, uint value)
         {
-            return tableCellContainer.TableCell(x => x.Row = (int)value);
+            if (tableCellContainer is TableCell tableCell)
+                tableCell.Row = (int)value;
+
+            return tableCellContainer;
         }
         
         /// <summary>
@@ -232,7 +231,10 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public static ITableCellContainer RowSpan(this ITableCellContainer tableCellContainer, uint value)
         {
-            return tableCellContainer.TableCell(x => x.RowSpan = (int)value);
+            if (tableCellContainer is TableCell tableCell)
+                tableCell.RowSpan = (int)value;
+
+            return tableCellContainer;
         }
     }
 }

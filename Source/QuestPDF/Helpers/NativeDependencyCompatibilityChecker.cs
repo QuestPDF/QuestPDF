@@ -43,10 +43,10 @@ namespace QuestPDF.Helpers
             try
             {
                 // accessing any SkiaSharp object triggers loading of SkiaSharp-related DLL dependency
-                using var typeface = new SkiaSharp.SKPaint();
+                using var paint = new SkiaSharp.SKPaint();
 
                 // accessing any HarfBuzzSharp object triggers loading of HarfBuzz-related DLL dependency
-                using var shaper = new HarfBuzzSharp.Buffer();
+                using var buffer = new HarfBuzzSharp.Buffer();
 
                 // everything loads and works correctly
                 return null;
