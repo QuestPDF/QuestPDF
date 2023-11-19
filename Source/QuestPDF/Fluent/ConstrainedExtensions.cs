@@ -8,12 +8,15 @@ namespace QuestPDF.Fluent
     {
         #region Width
         
-        private static IContainer ConstrainedWidth(this IContainer element, float? min = 0, float? max = 0)
+        private static IContainer ConstrainedWidth(this IContainer element, float? min = null, float? max = null)
         {
             var constrained = element as Constrained ?? new Constrained();
 
-            constrained.MinWidth = min;
-            constrained.MaxWidth = max;
+            if (min.HasValue)
+                constrained.MinWidth = min;
+            
+            if (max.HasValue)
+                constrained.MaxWidth = max;
             
             return element.Element(constrained);
         }
@@ -55,12 +58,15 @@ namespace QuestPDF.Fluent
         
         #region Height
         
-        private static IContainer ConstrainedHeight(this IContainer element, float? min = 0, float? max = 0)
+        private static IContainer ConstrainedHeight(this IContainer element, float? min = null, float? max = null)
         {
             var constrained = element as Constrained ?? new Constrained();
 
-            constrained.MinHeight = min;
-            constrained.MaxHeight = max;
+            if (min.HasValue) 
+                constrained.MinHeight = min;
+            
+            if (max.HasValue)
+                constrained.MaxHeight = max;
             
             return element.Element(constrained);
         }
