@@ -10,7 +10,7 @@ namespace QuestPDF.Elements
     /// </summary>
     /// <param name="size">Desired resolution of the image in pixels.</param>
     /// <returns>An image in PNG, JPEG, or WEBP image format returned as byte array.</returns>
-    public delegate byte[] GenerateDynamicImageDelegate(ImageSize size);
+    public delegate byte[]? GenerateDynamicImageDelegate(ImageSize size);
 
     internal sealed class DynamicImage : Element
     {
