@@ -6,11 +6,12 @@ namespace QuestPDF.Fluent
 {
     public static class AlignmentExtensions
     {
-        private static IContainer Alignment(this IContainer element, Action<Alignment> handler)
+        #region Horizontal
+        
+        private static IContainer AlignHorizontal(this IContainer element, HorizontalAlignment horizontalAlignment)
         {
             var alignment = element as Alignment ?? new Alignment();
-            handler(alignment);
-            
+            alignment.Horizontal = horizontalAlignment;
             return element.Element(alignment);
         }
         
@@ -20,7 +21,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer AlignLeft(this IContainer element)
         {
-            return element.Alignment(x => x.Horizontal = HorizontalAlignment.Left);
+            return element.AlignHorizontal(HorizontalAlignment.Left);
         }
         
         /// <summary>
@@ -29,7 +30,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer AlignCenter(this IContainer element)
         {
-            return element.Alignment(x => x.Horizontal = HorizontalAlignment.Center);
+            return element.AlignHorizontal(HorizontalAlignment.Center);
         }
         
         /// <summary>
@@ -38,7 +39,18 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer AlignRight(this IContainer element)
         {
-            return element.Alignment(x => x.Horizontal = HorizontalAlignment.Right);
+            return element.AlignHorizontal(HorizontalAlignment.Right);
+        }
+        
+        #endregion
+        
+        #region Vertical
+        
+        private static IContainer AlignVertical(this IContainer element, VerticalAlignment verticalAlignment)
+        {
+            var alignment = element as Alignment ?? new Alignment();
+            alignment.Vertical = verticalAlignment;
+            return element.Element(alignment);
         }
         
         /// <summary>
@@ -47,7 +59,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer AlignTop(this IContainer element)
         {
-            return element.Alignment(x => x.Vertical = VerticalAlignment.Top);
+            return element.AlignVertical(VerticalAlignment.Top);
         }
         
         /// <summary>
@@ -56,7 +68,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer AlignMiddle(this IContainer element)
         {
-            return element.Alignment(x => x.Vertical = VerticalAlignment.Middle);
+            return element.AlignVertical(VerticalAlignment.Middle);
         }
         
         /// <summary>
@@ -65,7 +77,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer AlignBottom(this IContainer element)
         {
-            return element.Alignment(x => x.Vertical = VerticalAlignment.Bottom);
+            return element.AlignVertical(VerticalAlignment.Bottom);
         }
+        
+        #endregion
     }
 }

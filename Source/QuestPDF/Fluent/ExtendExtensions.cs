@@ -6,10 +6,12 @@ namespace QuestPDF.Fluent
 {
     public static class ExtendExtensions
     {
-        private static IContainer Extend(this IContainer element, Action<Extend> handler)
+        private static IContainer Extend(this IContainer element, bool vertical = false, bool horizontal = false)
         {
             var extend = element as Extend ?? new Extend();
-            handler(extend);
+
+            extend.ExtendVertical |= vertical;
+            extend.ExtendHorizontal |= horizontal;
             
             return element.Element(extend);
         }
@@ -20,7 +22,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer Extend(this IContainer element)
         {
-            return element.ExtendVertical().ExtendHorizontal();
+            return element.Extend(horizontal: true, vertical: true);
         }
         
         /// <summary>
@@ -29,7 +31,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer ExtendVertical(this IContainer element)
         {
-            return element.Extend(x => x.ExtendVertical = true);
+            return element.Extend(vertical: true);
         }
         
         /// <summary>
@@ -38,7 +40,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer ExtendHorizontal(this IContainer element)
         {
-            return element.Extend(x => x.ExtendHorizontal = true);
+            return element.Extend(horizontal: true);
         }
     }
 }
