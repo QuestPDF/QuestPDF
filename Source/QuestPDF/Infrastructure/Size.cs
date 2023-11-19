@@ -1,4 +1,6 @@
-﻿namespace QuestPDF.Infrastructure
+﻿using System;
+
+namespace QuestPDF.Infrastructure
 {
     public readonly struct Size
     {
@@ -15,6 +17,17 @@
         {
             Width = width;
             Height = height;
+        }
+        
+        internal static bool Equal(Size first, Size second)
+        {
+            if (Math.Abs(first.Width - second.Width) > Size.Epsilon)
+                return false;
+            
+            if (Math.Abs(first.Height - second.Height) > Size.Epsilon)
+                return false;
+
+            return true;
         }
         
         public override string ToString() => $"(Width: {Width:N3}, Height: {Height:N3})";
