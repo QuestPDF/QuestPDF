@@ -83,7 +83,7 @@ internal static class LayoutTestExecutor
                 .GroupBy(x => x.PageNumber)
                 .Select(x => new LayoutTestResult.PageLayout
                 {
-                    RequiredArea = pageSizes.ElementAt(x.Key - 1),
+                    RequiredArea = pageSizes.ElementAt(x.Key),
                     Mocks = x
                         .Select(y => new LayoutTestResult.MockLayoutPosition
                         {
