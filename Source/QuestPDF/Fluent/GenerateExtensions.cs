@@ -49,7 +49,7 @@ namespace QuestPDF.Fluent
             
             var filePath = Path.Combine(Path.GetTempPath(), $"QuestPDF Document {GenerateAndShowCounter}.pdf");
             document.GeneratePdf(filePath);
-            OpenFileUsingDefaultProgram(filePath);
+            Helpers.Helpers.OpenFileUsingDefaultProgram(filePath);
         }
 
         #endregion
@@ -92,7 +92,7 @@ namespace QuestPDF.Fluent
             
             var filePath = Path.Combine(Path.GetTempPath(), $"QuestPDF Document {GenerateAndShowCounter}.xps");
             document.GenerateXps(filePath);
-            OpenFileUsingDefaultProgram(filePath);
+            Helpers.Helpers.OpenFileUsingDefaultProgram(filePath);
         }
         
         #endregion
@@ -136,24 +136,6 @@ namespace QuestPDF.Fluent
             }
         }
 
-        #endregion
-
-        #region Helpers
-
-        internal static void OpenFileUsingDefaultProgram(string filePath)
-        {
-            var process = new Process
-            {
-                StartInfo = new ProcessStartInfo(filePath)
-                {
-                    UseShellExecute = true
-                }
-            };
-
-            process.Start();
-            process.WaitForExit();
-        }
-        
         #endregion
     }
 }
