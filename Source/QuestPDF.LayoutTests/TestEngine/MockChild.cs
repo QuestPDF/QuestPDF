@@ -61,7 +61,7 @@ internal class ElementMock : Element
             MockId = MockId,
             PageNumber = PageContext.CurrentPage,
             Position = new Position(matrix.TransX / matrix.ScaleX, matrix.TransY / matrix.ScaleY),
-            Size = size
+            Size = availableSpace
         });
     }
 }

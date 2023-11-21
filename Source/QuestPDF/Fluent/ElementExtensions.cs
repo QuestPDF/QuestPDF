@@ -308,23 +308,6 @@ namespace QuestPDF.Fluent
             });
         }
         
-        [Obsolete("This element has been renamed since version 2022.1. Please use the MinimalBox method.")]
-        public static IContainer Box(this IContainer element)
-        {
-            return element.Element(new MinimalBox());
-        }
-        
-        /// <summary>
-        /// Renders its content in the most compact size achievable. 
-        /// Ideal for situations where the parent element provides more space than necessary.
-        /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/minimal-box.html">Learn more</a>
-        /// </summary>
-        public static IContainer MinimalBox(this IContainer element)
-        {
-            return element.Element(new MinimalBox());
-        }
-        
         /// <summary>
         /// Removes size constraints and grants its content virtually unlimited space.
         /// <a href="https://www.questpdf.com/api-reference/unconstrained.html">Learn more</a>

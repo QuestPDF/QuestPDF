@@ -29,7 +29,7 @@ internal class ExpectedPageLayoutDescriptor
         PageLayout = pageLayout;
     }
     
-    public ExpectedPageLayoutDescriptor TakenAreaSize(float width, float height)
+    public ExpectedPageLayoutDescriptor RequiredAreaSize(float width, float height)
     {
         PageLayout.RequiredArea = new Size(width, height);
         return this;
@@ -49,7 +49,7 @@ internal class ExpectedPageContentDescriptor
 {
     public List<LayoutTestResult.MockLayoutPosition> MockPositions { get;} = new();
     
-    public ExpectedMockPositionDescriptor Mock(string mockId)
+    public ExpectedMockPositionDescriptor Mock(string mockId = MockFluent.DefaultMockId)
     {
         var child = new LayoutTestResult.MockLayoutPosition { MockId = mockId };
         MockPositions.Add(child);
@@ -79,9 +79,11 @@ internal class ExpectedMockPositionDescriptor
     }
 }
 
-internal static class ElementExtensions
+internal static class MockFluent
 {
-    public static MockDescriptor Mock(this IContainer element, string id)
+    public const string DefaultMockId = "$mock";
+    
+    public static MockDescriptor Mock(this IContainer element, string id = DefaultMockId)
     {
         var mock = new ElementMock
         {
@@ -109,4 +111,12 @@ internal class MockDescriptor
 
         return this;
     }
+}
+
+internal static class WrapFluent
+{
+    public static void Wrap(this IContainer element)
+    {
+        element.Element(new WrapChild());
+    } 
 }

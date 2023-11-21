@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -128,6 +129,20 @@ namespace QuestPDF.Helpers
             return one.EncodedData.Size < second.EncodedData.Size
                 ? one
                 : second;
+        }
+        
+        internal static void OpenFileUsingDefaultProgram(string filePath)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(filePath)
+                {
+                    UseShellExecute = true
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

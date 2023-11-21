@@ -40,10 +40,10 @@ internal static class LayoutTestValidator
         static void ValidatePage(LayoutTestResult.PageLayout actualLayout, LayoutTestResult.PageLayout expectedLayout)
         {
             if (Math.Abs(actualLayout.RequiredArea.Width - expectedLayout.RequiredArea.Width) > Size.Epsilon)
-                throw new LayoutTestException($"Taken horizontal area is equal to {actualLayout.RequiredArea.Width} but expected {expectedLayout.RequiredArea.Width}");
+                throw new LayoutTestException($"Required horizontal area is equal to {actualLayout.RequiredArea.Width} but expected {expectedLayout.RequiredArea.Width}");
             
             if (Math.Abs(actualLayout.RequiredArea.Height - expectedLayout.RequiredArea.Height) > Size.Epsilon)
-                throw new LayoutTestException($"Taken vertical area is equal to {actualLayout.RequiredArea.Height} but expected {expectedLayout.RequiredArea.Height}");
+                throw new LayoutTestException($"Required vertical area is equal to {actualLayout.RequiredArea.Height} but expected {expectedLayout.RequiredArea.Height}");
             
             if (actualLayout.Mocks.Count != expectedLayout.Mocks.Count)
                 throw new LayoutTestException($"Visible {actualLayout.Mocks.Count} mocks but expected {expectedLayout.Mocks.Count}");

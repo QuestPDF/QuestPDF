@@ -43,18 +43,26 @@ internal sealed class LayoutTest
 
         TestResult.ExpectedLayout = builder.DocumentLayout;
 
-        GenerateTestPreview();
-        LayoutTestValidator.Validate(TestResult);
+        try
+        {
+            LayoutTestValidator.Validate(TestResult);
+        }
+        catch
+        {
+            if (Settings.LayoutTestVisualizationStrategy != LayoutTestVisualizationStrategy.Never)
+                GenerateTestPreview();
+                
+            throw;
+        }
+        finally
+        {
+            if (Settings.LayoutTestVisualizationStrategy == LayoutTestVisualizationStrategy.Always)
+                GenerateTestPreview();
+        }
     }
 
     private void GenerateTestPreview()
     {
-        if (!Debugger.IsAttached)
-        {
-            Console.WriteLine("Debugger is not attached. Skipping test preview generation");
-            return;
-        }
-        
         var path = Path.Combine(Path.GetTempPath(), $"{TestIdentifier}.pdf");
         
         if (File.Exists(path))
@@ -64,6 +72,6 @@ internal sealed class LayoutTest
         LayoutTestResultVisualization.Visualize(TestResult, stream);
         stream.Dispose();
         
-        Console.WriteLine($"Generated test case preview: {path}");
+        Helpers.Helpers.OpenFileUsingDefaultProgram(path);
     }
 }
