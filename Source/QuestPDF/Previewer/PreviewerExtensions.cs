@@ -1,5 +1,3 @@
-﻿#if NET6_0_OR_GREATER
-
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -11,24 +9,26 @@ namespace QuestPDF.Previewer
 {
     public static class Extensions
     {
+        #if NET6_0_OR_GREATER
+        
         public static void ShowInPreviewer(this IDocument document, int port = 12500)
         {
             document.ShowInPreviewerAsync(port).ConfigureAwait(true).GetAwaiter().GetResult();
         }
         
-        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500)
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
             var previewerService = new PreviewerService(port);
             
-            using var cancellationTokenSource = new CancellationTokenSource();
+            using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             previewerService.OnPreviewerStopped += () => cancellationTokenSource.Cancel();
-            
+
             await previewerService.Connect();
             await RefreshPreview();
             
             HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
             
-            await WaitForPreviewerExit(cancellationTokenSource.Token);
+            await KeepApplicationAlive(cancellationTokenSource.Token);
             
             Task RefreshPreview()
             {
@@ -49,7 +49,7 @@ namespace QuestPDF.Previewer
                 }
             }
 
-            async Task WaitForPreviewerExit(CancellationToken cancellationToken)
+            async Task KeepApplicationAlive(CancellationToken cancellationToken)
             {
                 while (true)
                 {
@@ -60,7 +60,18 @@ namespace QuestPDF.Previewer
                 }
             }
         }
+        
+        #else
+
+        public static void ShowInPreviewer(this IDocument document, int port = 12500)
+        {
+            throw new Exception("The hot-reload feature requires .NET 6 or later.");
+        }
+
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
+        {
+            throw new Exception("The hot-reload feature requires .NET 6 or later.");
+        }
+        #endif
     }
 }
-
-#endif
