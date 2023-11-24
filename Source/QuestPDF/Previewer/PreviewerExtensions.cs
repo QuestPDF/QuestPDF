@@ -18,21 +18,19 @@ namespace QuestPDF.Previewer
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="previewer.supported"]/*' />
-        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken token = default)
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
             var previewerService = new PreviewerService(port);
             
-            using var cancellationTokenSource = new CancellationTokenSource();
+            using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             previewerService.OnPreviewerStopped += () => cancellationTokenSource.Cancel();
 
-            using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationTokenSource.Token, token);
-            
             await previewerService.Connect();
             await RefreshPreview();
             
             HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
             
-            await WaitForPreviewerExit(linkedCts.Token);
+            await KeepApplicationAlive(cancellationTokenSource.Token);
             
             Task RefreshPreview()
             {
@@ -53,7 +51,7 @@ namespace QuestPDF.Previewer
                 }
             }
 
-            async Task WaitForPreviewerExit(CancellationToken cancellationToken)
+            async Task KeepApplicationAlive(CancellationToken cancellationToken)
             {
                 while (true)
                 {
@@ -74,7 +72,7 @@ namespace QuestPDF.Previewer
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="previewer.notSupported"]/*' />
-        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken token = default)
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
             throw new Exception("The hot-reload feature requires .NET 6 or later.");
         }
