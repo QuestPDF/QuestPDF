@@ -1,5 +1,3 @@
-﻿
-
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -20,19 +18,19 @@ namespace QuestPDF.Previewer
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="previewer.supported"]/*' />
-        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500)
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
             var previewerService = new PreviewerService(port);
             
-            using var cancellationTokenSource = new CancellationTokenSource();
+            using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             previewerService.OnPreviewerStopped += () => cancellationTokenSource.Cancel();
-            
+
             await previewerService.Connect();
             await RefreshPreview();
             
             HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
             
-            await WaitForPreviewerExit(cancellationTokenSource.Token);
+            await KeepApplicationAlive(cancellationTokenSource.Token);
             
             Task RefreshPreview()
             {
@@ -53,7 +51,7 @@ namespace QuestPDF.Previewer
                 }
             }
 
-            async Task WaitForPreviewerExit(CancellationToken cancellationToken)
+            async Task KeepApplicationAlive(CancellationToken cancellationToken)
             {
                 while (true)
                 {
@@ -74,7 +72,7 @@ namespace QuestPDF.Previewer
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="previewer.notSupported"]/*' />
-        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500)
+        public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
             throw new Exception("The hot-reload feature requires .NET 6 or later.");
         }

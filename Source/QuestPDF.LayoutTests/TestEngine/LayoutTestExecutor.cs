@@ -43,14 +43,13 @@ internal static class LayoutTestExecutor
             while(true)
             {
                 pageContext.IncrementPageNumber();
-                
+              
                 var spacePlan = container.Measure(pageSize);
                 pageSizes.Add(spacePlan);
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
                     pageContext.DecrementPageNumber();
-                    
                     canvas.EndDocument();
                     return (pageSizes, true);
                 }
