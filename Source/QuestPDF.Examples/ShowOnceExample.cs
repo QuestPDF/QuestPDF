@@ -54,7 +54,7 @@ namespace QuestPDF.Examples
         }
         
         [Test]
-        public void ShowWhen()
+        public void ShowIf()
         {
             RenderingTest
                 .Create()
@@ -89,7 +89,7 @@ namespace QuestPDF.Examples
                                 }   
                                 
                                 column.Item().PageBreak();
-                                column.Item().ShowWhen(x => x.PageNumber % 2 == 0).PageBreak();
+                                column.Item().ShowIf(x => x.PageNumber % 2 == 0).PageBreak();
                             }
                         });
                         

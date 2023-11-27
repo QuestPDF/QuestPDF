@@ -21,6 +21,11 @@ namespace QuestPDF.Infrastructure
             CurrentPage = 0;
         }
         
+        internal void DecrementPageNumber()
+        {
+            CurrentPage--;
+        }
+        
         internal void IncrementPageNumber()
         {
             CurrentPage++;

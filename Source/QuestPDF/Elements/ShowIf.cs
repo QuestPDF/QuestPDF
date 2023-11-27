@@ -4,15 +4,15 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-public class ShowWhenContext
+public class ShowIfContext
 {
     public int PageNumber { get; internal set; }
     public int TotalPages { get; internal set; }
 }
 
-internal class ShowWhen : ContainerElement
+internal class ShowIf : ContainerElement
 {
-    public Predicate<ShowWhenContext> VisibilityPredicate { get; set; }
+    public Predicate<ShowIfContext> VisibilityPredicate { get; set; }
     
     internal override SpacePlan Measure(Size availableSpace)
     {
@@ -30,7 +30,7 @@ internal class ShowWhen : ContainerElement
 
     private bool CheckVisibility()
     {
-        var context = new ShowWhenContext
+        var context = new ShowIfContext
         {
             PageNumber = PageContext.CurrentPage,
             TotalPages = PageContext.DocumentLength

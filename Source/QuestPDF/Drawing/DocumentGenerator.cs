@@ -194,10 +194,13 @@ namespace QuestPDF.Drawing
 
             while(true)
             {
+                pageContext.IncrementPageNumber();
                 var spacePlan = content.Measure(Size.Max);
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
+                    pageContext.DecrementPageNumber();
+                    
                     if (Settings.EnableDebugging)
                     {
                         ApplyLayoutDebugging();
@@ -210,7 +213,6 @@ namespace QuestPDF.Drawing
 
                 try
                 {
-                    pageContext.IncrementPageNumber();
                     canvas.BeginPage(spacePlan);
                     content.Draw(spacePlan);
                 }
