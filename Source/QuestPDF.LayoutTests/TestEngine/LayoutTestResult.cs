@@ -31,7 +31,7 @@ internal sealed class LayoutTestResult
 
 internal static class LayoutTestResultHelpers
 {
-    public static IEnumerable<(LayoutTestResult.MockLayoutPosition belowMockId, LayoutTestResult.MockLayoutPosition aboveMockId)> GetOverlappingItems(this ICollection<LayoutTestResult.MockLayoutPosition> items)
+    public static IEnumerable<(LayoutTestResult.MockLayoutPosition Below, LayoutTestResult.MockLayoutPosition Above)> GetOverlappingItems(this ICollection<LayoutTestResult.MockLayoutPosition> items)
     {
         for (var i = 0; i < items.Count; i++)
         {

@@ -64,7 +64,7 @@ internal static class LayoutTestValidator
                     .Count();
 
                 if (matchingActualMock == 0)
-                    throw new Exception($"Cannot find '{expectedMock.MockId}' mock on position {expectedMock.Position} and size {expectedMock.Size}");
+                    throw new Exception($"Cannot find '{expectedMock.MockId}' mock on position {expectedMock.Position.ToString()} and size {expectedMock.Size}");
                 
                 if (matchingActualMock > 1)
                     throw new Exception($"Found multiple '{expectedMock.MockId}' mocks on position {expectedMock.Position} and size {expectedMock.Size}");
@@ -78,10 +78,10 @@ internal static class LayoutTestValidator
             
             foreach (var expectedOverlap in expectedOverlaps)
             {
-                var matchingActualElements = actualOverlaps.Count(actualOverlap => actualOverlap.belowMockId == expectedOverlap.belowMockId && actualOverlap.aboveMockId == expectedOverlap.aboveMockId);
+                var matchingActualElements = actualOverlaps.Count(actualOverlap => actualOverlap.Below.MockId == expectedOverlap.Below.MockId && actualOverlap.Above.MockId == expectedOverlap.Above.MockId);
 
                 if (matchingActualElements != 1)
-                    throw new Exception($"Mock '{expectedOverlap.belowMockId}' should be visible below '{expectedOverlap.aboveMockId}' mock");
+                    throw new Exception($"Mock '{expectedOverlap.Below.MockId}' should be visible below '{expectedOverlap.Above.MockId}' mock");
             }
         }
     }

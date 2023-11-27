@@ -20,7 +20,7 @@ public class ShrinkTests
                     .RequiredAreaSize(60, 120)
                     .Content(page =>
                     {
-                        page.Mock().Position(0, 0).Size(60, 120);
+                        page.Mock().Position(0, 0).Size(60, 110);
                     });
                 
                 document
