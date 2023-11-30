@@ -9,16 +9,17 @@ internal class MultiColumn : ContainerElement
     {
         var columnChild = Child as Column;
         
-        Child.InjectDependencies(PageContext, new FreeCanvas());
-        var originalState = columnChild.State;
+        Child.InjectDependencies(PageContext, new FreeCanvas()); // TODO: optimize to pass only canvas
+        var originalState = columnChild.State; // TODO: traverse the Child's tree and extract state to the ICollection(ElementReference, State)
         
         var leftSize = columnChild.Measure(availableSpace);
         columnChild.Draw(availableSpace);
         var rightSize = columnChild.Measure(availableSpace);
 
-        Child.InjectDependencies(PageContext, Canvas);
-        columnChild.State = originalState;
+        Child.InjectDependencies(PageContext, Canvas); // TODO: optimize to pass only canvas
+        columnChild.State = originalState; // TODO: traverse the Child's tree to apply original state
 
+        // TODO: MultiColumn takes entire horizontal space, binary search for the minimal height
         if (leftSize.Type == SpacePlanType.FullRender || rightSize.Type == SpacePlanType.FullRender)
             return SpacePlan.FullRender(availableSpace);
         
