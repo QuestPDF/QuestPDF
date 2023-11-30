@@ -23,12 +23,7 @@ namespace QuestPDF.Fluent
         public IContainer Item()
         {
             var container = new Container();
-            
-            Column.Items.Add(new ColumnItem
-            {
-                Child = container
-            });
-            
+            Column.Items.Add(container);
             return container;
         }
     }
@@ -54,6 +49,11 @@ namespace QuestPDF.Fluent
             var descriptor = new ColumnDescriptor();
             handler(descriptor);
             element.Element(descriptor.Column);
+        }
+        
+        public static void MultiColumn(this IContainer element, Action<ColumnDescriptor> handler)
+        {
+            element.Element(new MultiColumn()).Column(handler);
         }
     }
 }

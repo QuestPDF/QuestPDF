@@ -6,27 +6,35 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class ColumnItem : Container
-    {
-        public bool IsRendered { get; set; }
-    }
-
     internal sealed class ColumnItemRenderingCommand
     {
-        public ColumnItem ColumnItem { get; set; }
+        public Element ColumnItem { get; set; }
         public SpacePlan Measurement { get; set; }
         public Size Size { get; set; }
         public Position Offset { get; set; }
     }
 
-    internal sealed class Column : Element, ICacheable, IStateResettable
+    internal struct ColumnState
     {
-        internal List<ColumnItem> Items { get; } = new();
+        public int ChildIndex = 0;
+        public bool IsRendered = false;
+        
+        public ColumnState()
+        {
+            
+        }
+    }
+    
+    internal sealed class Column : Element, ICacheable, IStateResettable, IStateful<int>
+    {
+        public int State { get; set; } = 0; // index of item to be rendered next
+        
+        internal List<Element> Items { get; } = new();
         internal float Spacing { get; set; }
 
         public void ResetState()
         {
-            Items.ForEach(x => x.IsRendered = false);
+            State = 0;
         }
         
         internal override IEnumerable<Element?> GetChildren()
@@ -36,7 +44,7 @@ namespace QuestPDF.Elements
         
         internal override void CreateProxy(Func<Element?, Element?> create)
         {
-            Items.ForEach(x => x.Child = create(x.Child));
+            Items.ForEach(x => x = create(x));
         }
 
         internal override SpacePlan Measure(Size availableSpace)
@@ -56,7 +64,7 @@ namespace QuestPDF.Elements
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();
             
-            var totalRenderedItems = Items.Count(x => x.IsRendered) + renderingCommands.Count(x => x.Measurement.Type == SpacePlanType.FullRender);
+            var totalRenderedItems = State + renderingCommands.Count(x => x.Measurement.Type == SpacePlanType.FullRender);
             var willBeFullyRendered = totalRenderedItems == Items.Count;
 
             return willBeFullyRendered
@@ -71,7 +79,7 @@ namespace QuestPDF.Elements
             foreach (var command in renderingCommands)
             {
                 if (command.Measurement.Type == SpacePlanType.FullRender)
-                    command.ColumnItem.IsRendered = true;
+                    State++;
 
                 var targetSize = new Size(availableSpace.Width, command.Size.Height);
 
@@ -80,7 +88,7 @@ namespace QuestPDF.Elements
                 Canvas.Translate(command.Offset.Reverse());
             }
             
-            if (Items.All(x => x.IsRendered))
+            if (State == Items.Count)
                 ResetState();
         }
 
@@ -90,10 +98,9 @@ namespace QuestPDF.Elements
             var targetWidth = 0f;
             var commands = new List<ColumnItemRenderingCommand>();
 
-            foreach (var item in Items)
+            for (var i = State; i < Items.Count; i++)
             {
-                if (item.IsRendered)
-                    continue;
+                var item = Items[i];
 
                 var availableHeight = availableSpace.Height - topOffset;
                 

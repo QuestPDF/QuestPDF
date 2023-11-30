@@ -52,5 +52,39 @@ namespace QuestPDF.Examples
                         .Column(column => { });
                 });
         }
+        
+        [Test]
+        public void MultiColumn()
+        {
+            RenderingTest
+                .Create()
+                .ProducePdf()
+                .ShowResults()
+                .EnableDebugging()
+                .PageSize(PageSizes.A4)
+                .MaxPages(100)
+                .Render(container =>
+                {
+                    container
+                        .Padding(20)
+                        .MultiColumn(content =>
+                        {
+                            content.Spacing(20);
+
+                            foreach (var i in Enumerable.Range(1, 70))
+                            {
+                                content
+                                    .Item()
+                                    .Width(150 + (float)Math.Sin(i * 2 * Math.PI / 10) * 50)
+                                    .Height(40)
+                                    .Border(1)
+                                    .Background(Colors.Grey.Lighten4)
+                                    .AlignCenter()
+                                    .AlignMiddle()
+                                    .Text(i.ToString());
+                            }
+                        });
+                });
+        }
     }
 }
