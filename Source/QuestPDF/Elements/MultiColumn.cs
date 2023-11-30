@@ -7,6 +7,8 @@ internal class MultiColumn : ContainerElement
 {
     internal override SpacePlan Measure(Size availableSpace)
     {
+        // TODO: this feature requires to adjust all QuestPDF layout elements to implement IStateful interface to standardize the state and allow eternal manipulation
+        
         var columnChild = Child as Column;
         
         Child.InjectDependencies(PageContext, new FreeCanvas()); // TODO: optimize to pass only canvas
@@ -28,6 +30,9 @@ internal class MultiColumn : ContainerElement
         
     internal override void Draw(Size availableSpace)
     {
+        // TODO: support for more than 2 columns?
+        // TODO: support for spacing between columns
+        // TODO: drawing separator between columns as secondary child?
         var childSpace = new Size(availableSpace.Width / 2, availableSpace.Height);
         var rightOffset = new Position(availableSpace.Width / 2, 0);
         
