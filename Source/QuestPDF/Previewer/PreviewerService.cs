@@ -19,7 +19,7 @@ namespace QuestPDF.Previewer
         public  event Action? OnPreviewerStopped;
 
         private const int RequiredPreviewerVersionMajor = 2023;
-        private const int RequiredPreviewerVersionMinor = 10;
+        private const int RequiredPreviewerVersionMinor = 12;
         
         public PreviewerService(int port)
         {
