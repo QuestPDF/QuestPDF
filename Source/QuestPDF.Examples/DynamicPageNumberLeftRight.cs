@@ -9,10 +9,8 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {
-    public class FooterWithAlternatingAlignment : IDynamicComponent<int>
+    public class FooterWithAlternatingAlignment : IDynamicComponent
     {
-        public int State { get; set; }
-        
         public DynamicComponentComposeResult Compose(DynamicContext context)
         {
             var content = context.CreateElement(element =>

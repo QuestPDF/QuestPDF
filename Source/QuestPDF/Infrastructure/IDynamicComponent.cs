@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using QuestPDF.Elements;
 
 namespace QuestPDF.Infrastructure
@@ -15,6 +15,16 @@ namespace QuestPDF.Infrastructure
             {
                 GetState = () => component.State,
                 SetState = x => component.State = (TState)x,
+                Compose = component.Compose
+            };
+        }
+        
+        internal static DynamicComponentProxy CreateFrom(IDynamicComponent component)
+        {
+            return new DynamicComponentProxy
+            {
+                GetState = () => null,
+                SetState = _ => { },
                 Compose = component.Compose
             };
         }
@@ -38,6 +48,26 @@ namespace QuestPDF.Infrastructure
     }
     
     /// <summary>
+    /// Represents a dynamically generated section of the document.
+    /// Components are page-aware, understand their positioning, can dynamically construct other content elements, and assess their dimensions, enabling complex layout creations.
+    /// </summary>
+    /// <remarks>
+    /// Though dynamic components offer great flexibility, be cautious of potential performance impacts.
+    /// </remarks>
+    public interface IDynamicComponent
+    {
+        /// <summary>
+        /// Method invoked by the library to plan and create new content for each page. 
+        /// </summary>
+        /// <remarks>
+        /// Remember, the QuestPDF library can invoke the Compose method more than once for each page and might adjust the state internally.
+        /// </remarks>
+        /// <param name="context">Context offering additional information (like current page number, entire document size) and the capability to produce dynamic content elements.</param>
+        /// <returns>Representation of content that should be placed on the current page.</returns>
+        DynamicComponentComposeResult Compose(DynamicContext context);
+    }
+    
+    /// <summary>
     /// Represents a section of the document dynamically created based on its inner state.
     /// Components are page-aware, understand their positioning, can dynamically construct other content elements, and assess their dimensions, enabling complex layout creations.
     /// </summary>
@@ -45,7 +75,7 @@ namespace QuestPDF.Infrastructure
     /// Though dynamic components offer great flexibility, be cautious of potential performance impacts.
     /// </remarks>
     /// <typeparam name="TState">Structure type representing the internal state of the component.</typeparam>
-    public interface IDynamicComponent<TState> where TState : struct
+    public interface IDynamicComponent<TState> : IDynamicComponent where TState : struct
     {
         /// <summary>
         /// Represents the component's current state.
@@ -59,15 +89,5 @@ namespace QuestPDF.Infrastructure
         /// <para>Remember, the QuestPDF library can invoke the Compose method more than once for each page and might adjust the state internally.</para>
         /// </remarks>
         TState State { get; set; }
-        
-        /// <summary>
-        /// Method invoked by the library to plan and create new content for each page. 
-        /// </summary>
-        /// <remarks>
-        /// Remember, the QuestPDF library can invoke the Compose method more than once for each page and might adjust the state internally.
-        /// </remarks>
-        /// <param name="context">Context offering additional information (like current page number, entire document size) and the capability to produce dynamic content elements.</param>
-        /// <returns>Representation of content that should be placed on the current page.</returns>
-        DynamicComponentComposeResult Compose(DynamicContext context);
     }
 }
