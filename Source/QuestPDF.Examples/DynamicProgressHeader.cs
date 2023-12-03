@@ -41,7 +41,7 @@ namespace QuestPDF.Examples
                 .Create()
                 .ShowResults()
                 .MaxPages(100)
-                .ProduceImages()
+                .ProducePdf()
                 .RenderDocument(container =>
                 {
                     container.Page(page =>
