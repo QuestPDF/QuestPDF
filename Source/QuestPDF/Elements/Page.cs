@@ -1,12 +1,11 @@
 using System;
-using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Page : IComponent
+    internal sealed class Page : IComponent
     {
         public ContentDirection ContentDirection { get; set; }
         public TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;
@@ -19,7 +18,7 @@ namespace QuestPDF.Elements
         public float MarginTop { get; set; }
         public float MarginBottom { get; set; }
 
-        public string BackgroundColor { get; set; } = Colors.Transparent;
+        public string BackgroundColor { get; set; } = Colors.White;
         
         public Element Background { get; set; } = Empty.Instance;
         public Element Foreground { get; set; } = Empty.Instance;
@@ -33,6 +32,7 @@ namespace QuestPDF.Elements
             container
                 .ContentDirection(ContentDirection)
                 .Background(BackgroundColor)
+                .DefaultTextStyle(DefaultTextStyle)
                 .Layers(layers =>
                 {
                     layers
@@ -52,8 +52,6 @@ namespace QuestPDF.Elements
                         .PaddingRight(MarginRight)
                         .PaddingTop(MarginTop)
                         .PaddingBottom(MarginBottom)
-                
-                        .DefaultTextStyle(DefaultTextStyle)
                 
                         .Decoration(decoration =>
                         {

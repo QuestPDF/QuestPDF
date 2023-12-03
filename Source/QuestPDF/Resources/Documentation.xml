@@ -1,0 +1,410 @@
+<documentation>
+    <!-- SHARED -->
+    
+    <doc for="colorParam">
+        <param name="color">Color in a <a href="https://www.questpdf.com/concepts/colors.html">valid format</a> (like <c>#FF8800</c> for orange) or from the predefined <see cref="Colors"/> set (like <c>Colors.Red.Lighten1</c>).</param>
+    </doc>
+
+    <doc for="param.sectionName">
+        <param name="sectionName">The text key corresponding to the value used when defining the <see cref="ElementExtensions.Section">Section</see> element.</param>
+    </doc>
+
+    <doc for="param.url">
+        <param name="url">The URL of the webpage to which the user will be redirected.</param>
+    </doc>
+    
+    <!-- SCALE -->
+    
+    <doc for="scale.remarks">
+        <remarks>
+            <para>Although this adjustment modifies the space available to its inner content, some elements might use their own strategies to fill that space.</para>
+            <para>For example, an Image with the <see cref="Infrastructure.ImageScaling.FitWidth" /> setting may retain its size, but its quality could vary based on the DPI setting.</para>
+            <para>In contrast, text will not only appear smaller or bigger; but also a different number of words may fit each line.</para>
+        </remarks>
+    </doc>
+    
+    <doc for="scale.factorParam">
+        <param name="factor">The scaling factor. Values greater than one enlarge the content, while values less than one reduce it.</param>
+    </doc>
+
+    <!-- IMAGE -->
+    
+    <doc for="image.remarks">
+        <remarks>
+            <para>
+                Please note that there is a significant difference between image resolution (number of pixels vertically and horizontally) and its physical size described in points.
+                Therefore, the resolution of an image is not used for determining its physical size on the document.
+            </para>
+
+            <para>
+                Multiple strategies exist for the Image element to determine its final size. 
+                By default, the image fills all the available width. 
+                This behavior can be customized using options within the <see cref="Fluent.ImageDescriptor">descriptor</see> class.
+            </para>
+            
+            <para>
+                Images are automatically resized and compressed based on the descriptor's setup.
+                It defaults to <see cref="DocumentSettings">global document's settings</see>.
+            </para>
+            
+            <para>Supported formats: PNG, JPEG and WEBP.</para>
+        </remarks>
+    </doc>
+
+    <doc for="image.useOriginalImage">
+        <summary>
+            When enabled, the library does not resize the image to achieve the target DPI, nor compress it with target image quality.
+        </summary>
+    </doc>
+    
+    <doc for="image.rasterDPI">
+        <summary>
+            <para>Specifies the DPI (dots-per-inch) for rasterizing images.</para>
+            <para>The target resolution is computed by multiplying the DPI with the physical image size on the document.</para>
+            <para>Higher DPI results in superior image quality but may increase the output file size.</para>
+            <para>Default DPI value is 288 DPI.</para>
+        </summary>
+        
+        <remarks>
+            If the image has lower resolution that the one calculated from the DPI setting, it will NOT be rescaled.
+        </remarks>
+        
+        <example>
+            Consider an image of dimensions 3x4 inches. Using a DPI value of 300, the final resolution translates to 900x1200 pixels.
+        </example>
+    </doc>
+
+    <doc for="image.compressionQuality">
+        <summary>
+            <para>Controls the balance between encoding quality and file size.</para>
+            <para>Opaque images are JPEG-encoded based on this setting, while images with an alpha channel default to PNG format, disregarding this option.</para>
+            <para>Default is set to "high quality".</para>
+        </summary>
+    </doc>
+
+    <doc for="image.descriptor">
+        <returns>Descriptor allowing adjustments to image attributes, such as scaling behavior, compression quality, and target DPI.</returns>
+    </doc>
+
+    <!-- CONTENT DIRECTION -->
+    
+    <doc for="contentDirection.ltr.remarks">
+        <remarks>
+            <para>This writing system is used by most of modern languages.</para>
+            
+            <para>
+                The content direction affects various layout structures. In LTR mode, items are typically aligned to the left.
+                This mode also influences the direction of items in certain layouts. For instance, in a row element with LTR mode,
+                the first item is positioned on the left, while the last item is on the right.
+            </para>
+        </remarks>
+    </doc>
+
+    <doc for="contentDirection.rtl.remarks">
+        <remarks>
+            <para>This writing system is used by languages such as Hebrew, Arabic, and Persian.</para>
+            
+            <para>
+                The content direction affects various layout structures. In RTL mode, items are typically aligned to the right.
+                This mode also influences the direction of items in certain layouts. For instance, in a row element with RTL mode,
+                the first item is positioned on the right, while the last item is on the left.
+            </para>
+        </remarks>
+    </doc>
+    
+    <!-- TEXT ELEMENT -->
+
+    <doc for="text.returns.spanDescriptor">
+        <returns>Handler for adjusting the appearance of the text span, including attributes like color, size, and background.</returns>
+    </doc>
+
+    <doc for="text.returns.pageNumberDescriptor">
+        <returns>
+            <para>Handler for adjusting the appearance of the text span, including attributes like color, size, and background.</para>
+            <para>Additionally, it provides formatting options, like displaying the page number in custom text format (e.g. Roman numerals).</para>
+        </returns>
+    </doc>
+    
+    <!-- TEXT ATTRIBUTES -->
+
+    <doc for="text.fontColor">
+        <summary>
+            Sets the font color.
+        </summary>
+    </doc>
+
+    <doc for="text.backgroundColor">
+        <summary>
+            Sets a solid background color for the text.
+        </summary>
+    </doc>
+    
+    <doc for="text.fontFamily">
+        <summary>
+            <para>Sets the font family of the text.</para>
+        </summary>
+        
+        <remarks>
+            <para>By default, the library searches all fonts available in the runtime environment.</para>
+            <para>This may work well on the development environment but may fail in the cloud where fonts are usually not installed.</para>
+            <para>It is safest deploy font files along with the application and then register them using the <see cref="Drawing.FontManager">FontManager</see> class.</para>
+        </remarks>
+        
+        <param name="value">Actual font family (e.g. "Times New Roman", "Calibri", "Lato") or custom identifier used when invoking the <see cref="Drawing.FontManager.RegisterFontWithCustomName">FontManager</see> method.</param>
+    </doc>
+    
+    <doc for="text.fontSize">
+        <summary>
+            Sets font size for the text.
+        </summary>
+
+        <remarks>
+            The visual size of the text is determined by its font size. 
+            However, it's worth noting that different fonts may render text with distinct visual sizes, even when assigned the same numerical font size.
+        </remarks>
+    </doc>
+
+    <doc for="text.wrapAnywhere">
+        <summary>
+            Allows text to wrap at any character, not just spaces.
+        </summary>
+    </doc>
+    
+    <doc for="text.lineHeight">
+        <summary>
+            Adjusts the vertical spacing between text lines.
+            The added space is proportional to the text size. 
+            A <paramref name="factor"/> value of 1 retains the original spacing.
+            <a href="https://www.questpdf.com/api-reference/text.html#line-height">Learn more</a>
+        </summary>
+
+        <param name="factor">
+            <para>Sets the proportion of vertical spacing relative to the original.</para> 
+            <para>A value greater than 1 increases spacing, while a value less than 1 reduces it. Must be greater than 0.</para>
+        </param>
+    </doc>
+
+    <doc for="text.letterSpacing">
+        <summary>
+            Adjusts the horizontal spacing between characters in the text.
+            The adjustment is proportional to the text size, where a <paramref name="factor"/> value of 1 maintains the original spacing.
+            <a href="https://www.questpdf.com/api-reference/text.html#letter-spacing">Learn more</a>
+        </summary>
+
+        <param name="factor">
+            <para>Sets the proportion by which the horizontal space between characters is changed.</para>
+            <para>A factor greater than 1 spreads characters further apart, while a factor less than 1 (but more than 0) brings them closer together.</para> 
+            <para>Must be greater than 0.</para>
+        </param>
+    </doc>
+    
+    <!-- TEXT EFFECTS -->
+
+    <doc for="text.italic">
+        <summary>
+            Draws text with a italic effect, where letters are slightly slanted to the right.
+        </summary>
+    </doc>
+
+    <doc for="text.strikethrough">
+        <summary>
+            Draws a simple solid line through the middle of the text.
+        </summary>
+    </doc>
+
+    <doc for="text.underline">
+        <summary>
+            Draws a simple solid line under the text.
+        </summary>
+    </doc>
+    
+    <!-- TEXT WEIGHT -->
+    
+    <doc for="text.weight.thin">
+        <summary>
+            Sets the font weight to "thin" (equivalent to CSS 100).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.extraLight">
+        <summary>
+            Sets the font weight to "extra light" (equivalent to CSS 200).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.light">
+        <summary>
+            Sets the font weight to "light" (equivalent to CSS 300).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.normal">
+        <summary>
+            Sets the font weight to "normal" or "regular (equivalent to CSS 400).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.medium">
+        <summary>
+            Sets the font weight to "medium" (equivalent to CSS 500).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.semiBold">
+        <summary>
+            Sets the font weight to "semi bold" (equivalent to CSS 600).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.bold">
+        <summary>
+            Sets the font weight to "bold" (equivalent to CSS 700).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.extraBold">
+        <summary>
+            Sets the font weight to "extra bold" (equivalent to CSS 800).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.black">
+        <summary>
+            Sets the font weight to "black" (equivalent to CSS 900).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.extraBlack">
+        <summary>
+            Sets the font weight to "extra black" (equivalent to CSS 1000).
+            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.weight.remarks">
+        <remarks>
+            Not all fonts support every weight. 
+            If the specified weight isn't available, the library selects the closest available option.
+        </remarks>
+    </doc>
+    
+    <!-- TEXT POSITION -->
+    
+    <doc for="text.position.normal">
+        <summary>
+            Resets the text position and size to default, utilizing the full available line height.
+            <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.position.subscript">
+        <summary>
+            Sets the text style to subscript, making it smaller and positioning it below the baseline, e.g.: H₂0
+            <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.position.superscript">
+        <summary>
+            Sets the text style to subscript, making it smaller and positioning it above the baseline, e.g.: y² + x² = 1.
+            <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
+        </summary>
+    </doc>
+    
+    <!-- TEXT DIRECTION -->
+
+    <doc for="text.direction.auto">
+        <summary>
+            Resets the text direction, enabling content to follow the automatically detected direction.
+            <a href="https://www.questpdf.com/api-reference/text.html#forcing-text-direction-rtl">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.direction.ltr">
+        <summary>
+            Enforces a left-to-right text direction.
+            <a href="https://www.questpdf.com/api-reference/text.html#forcing-text-direction-rtl">Learn more</a>
+        </summary>
+    </doc>
+
+    <doc for="text.direction.rtl">
+        <summary>
+            Enforces a right-to-left text direction.
+            <a href="https://www.questpdf.com/api-reference/text.html#forcing-text-direction-rtl">Learn more</a>
+        </summary>
+    </doc>
+    
+    <!-- TEXT OTHERS -->
+    <doc for="text.style">
+        <summary>
+            Sets a font style using the typography pattern.
+            <a href="https://www.questpdf.com/api-reference/text.html#typography-pattern">Learn more</a>
+        </summary>
+        
+        <remarks>
+            This API reduces the garbage collector pressure and offers the best performance.
+        </remarks>
+    </doc>
+
+    <doc for="text.fontFallback">
+        <summary>
+            Specifies an alternative text style to be used when the primary font family does not support certain character glyphs.
+            <a href="https://www.questpdf.com/api-reference/text.html#font-fallback">Learn more</a>
+        </summary>
+        
+        <remarks>
+            The library supports nested font fallbacks, ensuring a series of alternative fonts. 
+            Individual properties can be adjusted for each level of fallback.
+        </remarks>
+    </doc>
+
+    <!-- PREVIEWER -->
+
+    <doc for="previewer.support">
+        <summary>
+            Connects to the QuestPDF Previewer application to automatically preview the document being currently implemented after every code modification,
+            without the need to recompile the code or restart the application.
+            <a href="https://www.questpdf.com/document-previewer.html">Learn more</a>
+        </summary>
+        
+        <remarks>
+            For details on the hot-reload functionality, please refer to the documentation of your preferred IDE.
+        </remarks>
+        
+        <param name="port">Specifies port for communication with the QuestPDF Previewer application. Default value is 12500.</param>
+    </doc>
+
+    <doc for="previewer.notSupported">
+        <summary>
+            The hot-reload feature and QuestPDF Previewer integration are available only in the .NET 6 environment or later.
+            Please consider updating your project.
+            <a href="https://www.questpdf.com/document-previewer.html">Learn more</a>
+        </summary>
+        
+        <param name="port">This parameter is ignored.</param>
+    </doc>
+    
+    <!-- COMPONENTS -->
+
+    <doc for="component">
+        <summary>
+            Components serve as modular building blocks for abstracting document layouts. 
+            They promote code reusability across multiple sections or types of documents. 
+            Using a component, you can generate content based on its internal state.
+            <a href="https://www.questpdf.com/concepts/components.html">Learn more</a>
+        </summary>
+        <example>
+            Consider the scenario of a company-wide page header. 
+            Instead of replicating the same header design across various documents, a single component can be created and referenced wherever needed.
+        </example>
+    </doc>
+</documentation>

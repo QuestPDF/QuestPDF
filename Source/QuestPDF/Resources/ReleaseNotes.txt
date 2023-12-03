@@ -1,9 +1,15 @@
-Version 2023.6.0
-- Improvement: the library received a final version of the licensing model, which has been enhanced to be more accommodating to both the business and community.
-- Feature: generating merged PDF documents.
-- Improvement: image loading exception better describes the failure reason.
+Version 2023.10.0
+- Primary focus: Improved the developer experience by enhancing debugging for document layout issues. Now, the library visually marks the places where problems occur.
+- Updated dependency SkiaSharp from 2.88.3 to 2.88.6
+- Updated QuestPDF Previewer dependencies: from Avalonia 0.10.X to 11.0.X
+- Improved code quality.
 
-Version 2023.6.1
-- Fix: incorrect layout exception when debugging is disabled
-- Fix: the page number functionality for sections do not work (#609)
-- Improvement: enhanced the message about the QuestPDF Previewer application version incompatibility
+Version 2023.10.1
+- Enhanced developer experience by refining the accuracy of the exception message thrown when native SkiaSharp dependencies are unavailable in the runtime environment.
+- Fixed link in the license-related message.
+
+Version 2023.10.2
+- Resolved issue with page numbering errors in merged documents.
+- Enhanced SkiaSharp native dependency detection for increased compatibility.
+- Fixed rare instances of text rendering inaccurately due to cache-related faults.
+- Fixed a rare problem where the Row element does not always respect layout issues in its children.

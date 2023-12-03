@@ -1,6 +1,6 @@
 ﻿namespace QuestPDF.Infrastructure
 {
-    public struct ImageSize
+    public readonly struct ImageSize
     {
         public readonly int Width;
         public readonly int Height;

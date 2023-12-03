@@ -9,7 +9,7 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class FontStyleSetTests
     {
-        private void ExpectComparisonOrder(SKFontStyle target, SKFontStyle[] styles)
+        private static void ExpectComparisonOrder(SKFontStyle target, SKFontStyle[] styles)
         {
             for (var i = 0; i < styles.Length - 1; i++)
             {

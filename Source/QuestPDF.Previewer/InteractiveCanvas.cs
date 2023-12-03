@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
 using Avalonia.Skia;
@@ -9,7 +10,7 @@ namespace QuestPDF.Previewer;
 class InteractiveCanvas : ICustomDrawOperation
 {
     public Rect Bounds { get; set; }
-    public ICollection<PreviewPage> Pages { get; set; }
+    public ICollection<DocumentSnapshot.PageSnapshot> Pages { get; set; }
 
     private float Width => (float)Bounds.Width;
     private float Height => (float)Bounds.Height;
@@ -109,16 +110,24 @@ class InteractiveCanvas : ICustomDrawOperation
     
     #region rendering
     
-    public void Render(IDrawingContextImpl context)
+    public void Render(ImmediateDrawingContext context)
     {
+        // get SkiaSharp canvas
+        var leaseFeature = context.TryGetFeature<ISkiaSharpApiLeaseFeature>();
+        using var lease = leaseFeature.Lease();
+
+        var canvas = lease.SkCanvas;
+
+        if (canvas == null)
+            return;
+        
+        // draw document
         if (Pages.Count <= 0)
             return;
 
         LimitScale();
         LimitTranslate();
-        
-        var canvas = (context as ISkiaDrawingContextImpl)?.SkCanvas;
-        
+    
         if (canvas == null)
             throw new InvalidOperationException($"Context needs to be ISkiaDrawingContextImpl but got {nameof(context)}");
 
@@ -133,12 +142,20 @@ class InteractiveCanvas : ICustomDrawOperation
         {
             canvas.Translate(-page.Width / 2f, 0);
             DrawBlankPage(canvas, page.Width, page.Height);
-            canvas.DrawPicture(page.Picture);
+            DrawPageSnapshot(canvas, page);
             canvas.Translate(page.Width / 2f, page.Height + PageSpacing);
         }
 
         canvas.SetMatrix(originalMatrix);
         DrawInnerGradient(canvas);
+    }
+    
+    private static void DrawPageSnapshot(SKCanvas canvas, DocumentSnapshot.PageSnapshot pageSnapshot)
+    {
+        canvas.Save();
+        canvas.ClipRect(new SKRect(0, 0, pageSnapshot.Width, pageSnapshot.Height));
+        canvas.DrawPicture(pageSnapshot.Picture);
+        canvas.Restore();
     }
     
     public void Dispose() { }
@@ -162,7 +179,7 @@ class InteractiveCanvas : ICustomDrawOperation
             SKImageFilter.CreateDropShadowOnly(0, 10, 14, 14, SKColors.Black.WithAlpha(32)))
     };
     
-    private void DrawBlankPage(SKCanvas canvas, float width, float height)
+    private static void DrawBlankPage(SKCanvas canvas, float width, float height)
     {
         canvas.DrawRect(0, 0, width, height, BlankPageShadowPaint);
         canvas.DrawRect(0, 0, width, height, BlankPagePaint);

@@ -949,13 +949,13 @@ namespace QuestPDF.Examples
                                 text.Span(" - ");
                                 
                                 // record start
-                                text.Element().Width(0).Height(0)
+                                text.Element().Width(1).Height(1)
                                     .Canvas((canvas, size) => start = canvas.TotalMatrix.TransY / canvas.TotalMatrix.ScaleY);
                                 
                                 text.Span(Placeholders.LoremIpsum()).BackgroundColor(Colors.Red.Lighten4);
                                 
                                 // record end
-                                text.Element().Width(0).Height(0)
+                                text.Element().Width(1).Height(1)
                                     .Canvas((canvas, size) => end = canvas.TotalMatrix.TransY / canvas.TotalMatrix.ScaleY);
                             
                                 text.Span(" - ");
@@ -1039,5 +1039,28 @@ namespace QuestPDF.Examples
                     });
                 });
         }
+         
+         [Test]
+         public void TextShouldInheritAlignment()
+         {
+             RenderingTest
+                 .Create()
+                 .ProduceImages()
+                 .ShowResults()
+                 .PageSize(PageSizes.A4)
+                 .Render(container =>
+                 {
+                     var text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+                     
+                     container.Padding(20).Width(400).Column(column =>
+                     {
+                         column.Spacing(20);
+
+                         column.Item().Background(Colors.Grey.Lighten3).AlignLeft().Text(text);
+                         column.Item().Background(Colors.Grey.Lighten3).AlignCenter().Text(text);
+                         column.Item().Background(Colors.Grey.Lighten3).AlignRight().Text(text);
+                     });
+                 });
+         }
     }
 }

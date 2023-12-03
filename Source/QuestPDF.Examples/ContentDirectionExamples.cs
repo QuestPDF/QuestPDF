@@ -12,7 +12,7 @@ namespace QuestPDF.Examples
 {
     public class ContentDirectionExamples
     {
-        private Action<IContainer> ContentDirectionTemplate(Action<IContainer> content)
+        private static Action<IContainer> ContentDirectionTemplate(Action<IContainer> content)
         {
             return container =>
             {

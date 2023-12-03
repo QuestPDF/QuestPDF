@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
-using SkiaSharp.HarfBuzz;
 using Size = QuestPDF.Infrastructure.Size;
 
 namespace QuestPDF.Elements.Text.Items
@@ -18,12 +15,27 @@ namespace QuestPDF.Elements.Text.Items
         private TextShapingResult? TextShapingResult { get; set; }
         private ushort? SpaceCodepoint { get; set; }
         
-        private Dictionary<(int startIndex, float availableWidth), TextMeasurementResult?> MeasureCache = new ();
-        protected virtual bool EnableTextCache => true; 
+        private Dictionary<MeasurementCacheKey, TextMeasurementResult?> MeasureCache = new ();
+        protected virtual bool EnableTextCache => true;
 
+        private record struct MeasurementCacheKey
+        {
+            public int StartIndex { get; set; }
+            public float AvailableWidth { get; set; }
+        
+            public bool IsFirstElementInBlock { get; set; }
+            public bool IsFirstElementInLine { get; set; }
+        }
+        
         public virtual TextMeasurementResult? Measure(TextMeasurementRequest request)
         {
-            var cacheKey = (request.StartIndex, request.AvailableWidth);
+            var cacheKey = new MeasurementCacheKey
+            {
+                StartIndex = request.StartIndex,
+                AvailableWidth = request.AvailableWidth,
+                IsFirstElementInBlock = request.IsFirstElementInBlock,
+                IsFirstElementInLine = request.IsFirstElementInLine
+            };
              
             if (!MeasureCache.ContainsKey(cacheKey))
                 MeasureCache[cacheKey] = MeasureWithoutCache(request);
@@ -148,19 +160,19 @@ namespace QuestPDF.Elements.Text.Items
                 request.Canvas.DrawText(textDrawingCommand.Value.SkTextBlob, new Position(textDrawingCommand.Value.TextOffsetX, glyphOffsetY), Style);
 
             // draw underline
-            if ((Style.HasUnderline ?? false) && fontMetrics.UnderlinePosition.HasValue)
+            if (Style.HasUnderline ?? false)
             {
                 var underlineOffset = Style.FontPosition == FontPosition.Superscript ? 0 : glyphOffsetY;
-                DrawLine(fontMetrics.UnderlinePosition.Value + underlineOffset, fontMetrics.UnderlineThickness ?? 1);
+                DrawLine(fontMetrics.UnderlinePosition + underlineOffset, fontMetrics.UnderlineThickness);
             }
             
             // draw stroke
-            if ((Style.HasStrikethrough ?? false) && fontMetrics.StrikeoutPosition.HasValue)
+            if (Style.HasStrikethrough ?? false)
             {
-                var strikeoutThickness = fontMetrics.StrikeoutThickness ?? 1;
+                var strikeoutThickness = fontMetrics.StrikeoutThickness;
                 strikeoutThickness *= Style.FontPosition == FontPosition.Normal ? 1f : 0.625f;
                 
-                DrawLine(fontMetrics.StrikeoutPosition.Value + glyphOffsetY, strikeoutThickness);
+                DrawLine(fontMetrics.StrikeoutPosition + glyphOffsetY, strikeoutThickness);
             }
             
             void DrawLine(float offset, float thickness)

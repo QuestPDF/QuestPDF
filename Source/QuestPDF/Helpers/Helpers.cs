@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -12,6 +13,11 @@ namespace QuestPDF.Helpers
 {
     internal static class Helpers
     {
+        static Helpers()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         internal static byte[] LoadEmbeddedResource(string resourceName)
         {
             using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
@@ -123,6 +129,20 @@ namespace QuestPDF.Helpers
             return one.EncodedData.Size < second.EncodedData.Size
                 ? one
                 : second;
+        }
+        
+        internal static void OpenFileUsingDefaultProgram(string filePath)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(filePath)
+                {
+                    UseShellExecute = true
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

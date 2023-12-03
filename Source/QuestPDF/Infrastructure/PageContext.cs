@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace QuestPDF.Infrastructure
 {
-    internal class PageContext : IPageContext
+    internal sealed class PageContext : IPageContext
     {
         public int DocumentLength { get; private set; }
         private List<DocumentLocation> Locations { get; } = new();
@@ -20,6 +19,11 @@ namespace QuestPDF.Infrastructure
         internal void ResetPageNumber()
         {
             CurrentPage = 0;
+        }
+        
+        internal void DecrementPageNumber()
+        {
+            CurrentPage--;
         }
         
         internal void IncrementPageNumber()

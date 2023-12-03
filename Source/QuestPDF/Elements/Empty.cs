@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Empty : Element
+    internal sealed class Empty : Element
     {
         internal static Empty Instance { get; } = new Empty();
         

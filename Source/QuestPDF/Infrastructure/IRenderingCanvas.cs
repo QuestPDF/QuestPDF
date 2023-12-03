@@ -1,7 +1,10 @@
 ﻿namespace QuestPDF.Infrastructure
 {
-    public interface IRenderingCanvas
+    internal interface IRenderingCanvas
     {
+        bool DocumentContentHasLayoutOverflowIssues { get; set; }
+        void MarkCurrentPageAsHavingLayoutIssues();
+        
         void BeginDocument();
         void EndDocument();
         

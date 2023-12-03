@@ -3,10 +3,12 @@ using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {
-    internal class FreeCanvas : ICanvas, IRenderingCanvas
+    internal sealed class FreeCanvas : ICanvas, IRenderingCanvas
     {
         #region IRenderingCanvas
 
+        public bool DocumentContentHasLayoutOverflowIssues { get; set; }
+        
         public void BeginDocument()
         {
             
@@ -23,6 +25,11 @@ namespace QuestPDF.Drawing
         }
 
         public void EndPage()
+        {
+            
+        }
+
+        public void MarkCurrentPageAsHavingLayoutIssues()
         {
             
         }

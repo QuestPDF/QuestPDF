@@ -1,9 +1,8 @@
-﻿using QuestPDF.Drawing;
-using QuestPDF.Infrastructure;
+﻿using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Calculation
 {
-    internal class TextDrawingRequest
+    internal sealed class TextDrawingRequest
     {
         public ICanvas Canvas { get; set; }
         public IPageContext PageContext { get; set; }

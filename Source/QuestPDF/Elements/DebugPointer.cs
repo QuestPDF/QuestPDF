@@ -1,8 +1,6 @@
-﻿using System.ComponentModel;
-
-namespace QuestPDF.Elements
+﻿namespace QuestPDF.Elements
 {
-    internal class DebugPointer : Container
+    internal sealed class DebugPointer : Container
     {
         public string Target { get; set; }
         public bool Highlight { get; set; }

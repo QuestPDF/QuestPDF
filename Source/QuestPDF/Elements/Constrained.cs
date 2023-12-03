@@ -1,11 +1,10 @@
 using System;
-using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Constrained : ContainerElement, ICacheable, IContentDirectionAware
+    internal sealed class Constrained : ContainerElement, ICacheable, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

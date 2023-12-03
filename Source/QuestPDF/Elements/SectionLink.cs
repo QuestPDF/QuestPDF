@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class SectionLink : ContainerElement
+    internal sealed class SectionLink : ContainerElement
     {
         public string SectionName { get; set; }
         

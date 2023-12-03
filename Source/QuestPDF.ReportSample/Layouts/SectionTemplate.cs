@@ -48,8 +48,8 @@ namespace QuestPDF.ReportSample.Layouts
                     });
                 });
         }
-        
-        void MapElement(IContainer container, ReportSectionMap model)
+
+        static void MapElement(IContainer container, ReportSectionMap model)
         {
             if (model.Location == null)
             {
@@ -65,8 +65,8 @@ namespace QuestPDF.ReportSample.Layouts
                 column.Item().Text(model.Location.Format());
             });
         }
-        
-        void PhotosElement(IContainer container, ReportSectionPhotos model)
+
+        static void PhotosElement(IContainer container, ReportSectionPhotos model)
         {
             if (model.PhotoCount == 0)
             {

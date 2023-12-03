@@ -2,8 +2,9 @@
 
 namespace QuestPDF.Previewer;
 
-internal class DocumentSnapshot
+internal sealed class DocumentSnapshot
 {
+    public bool DocumentContentHasLayoutOverflowIssues { get; set; }
     public ICollection<PageSnapshot> Pages { get; set; }
 
     public class PageSnapshot

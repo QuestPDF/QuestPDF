@@ -83,8 +83,8 @@ namespace QuestPDF.UnitTests
             var image = GenerateImage(size.Width, size.Height);
             return image.Encode(SKEncodedImageFormat.Png, 100).ToArray();
         }
-        
-        SKImage GenerateImage(int width, int height)
+
+        static SKImage GenerateImage(int width, int height)
         {
             var imageInfo = new SKImageInfo(width, height);
             using var surface = SKSurface.Create(imageInfo);

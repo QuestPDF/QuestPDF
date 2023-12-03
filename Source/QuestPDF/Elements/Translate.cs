@@ -1,9 +1,8 @@
-﻿
-using QuestPDF.Infrastructure;
+﻿using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Translate : ContainerElement
+    internal sealed class Translate : ContainerElement
     {
         public float TranslateX { get; set; } = 0;
         public float TranslateY { get; set; } = 0;

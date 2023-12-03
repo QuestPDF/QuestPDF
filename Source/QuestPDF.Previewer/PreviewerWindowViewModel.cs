@@ -1,18 +1,25 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
+using Avalonia.Threading;
 using ReactiveUI;
 using Unit = System.Reactive.Unit;
-using Avalonia.Threading;
 
 namespace QuestPDF.Previewer
 {
-    internal class PreviewerWindowViewModel : ReactiveObject
+    internal sealed class PreviewerWindowViewModel : ReactiveObject
     {
-        private ObservableCollection<PreviewPage> _pages = new();
-        public ObservableCollection<PreviewPage> Pages
+        private ObservableCollection<DocumentSnapshot.PageSnapshot> _pages = new();
+        public ObservableCollection<DocumentSnapshot.PageSnapshot> Pages
         {
             get => _pages;
             set => this.RaiseAndSetIfChanged(ref _pages, value);
+        }
+        
+        private bool _documentContentHasLayoutOverflowIssues;
+        public bool DocumentContentHasLayoutOverflowIssues
+        {
+            get => _documentContentHasLayoutOverflowIssues;
+            set => this.RaiseAndSetIfChanged(ref _documentContentHasLayoutOverflowIssues, value);
         }
         
         private float _currentScroll;
@@ -61,7 +68,7 @@ namespace QuestPDF.Previewer
             OpenLink(filePath);
         }
         
-        private void OpenLink(string path)
+        private static void OpenLink(string path)
         {
             using var openBrowserProcess = new Process
             {
@@ -75,12 +82,13 @@ namespace QuestPDF.Previewer
             openBrowserProcess.Start();
         }
         
-        private void HandleUpdatePreview(ICollection<PreviewPage> pages)
+        private void HandleUpdatePreview(DocumentSnapshot documentSnapshot)
         {
             var oldPages = Pages;
             
             Pages.Clear();
-            Pages = new ObservableCollection<PreviewPage>(pages);
+            Pages = new ObservableCollection<DocumentSnapshot.PageSnapshot>(documentSnapshot.Pages);
+            DocumentContentHasLayoutOverflowIssues = documentSnapshot.DocumentContentHasLayoutOverflowIssues;
             
             foreach (var page in oldPages)
                 page.Picture.Dispose();

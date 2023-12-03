@@ -7,6 +7,11 @@ namespace QuestPDF.Helpers
 {
     public static class Placeholders
     {
+        static Placeholders()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         public static readonly Random Random = new Random();
         
         #region Word Cache
@@ -82,12 +87,52 @@ namespace QuestPDF.Helpers
             return string.Join(" ", words);
         }
 
-        public static string LoremIpsum() => CommonParagraph;
-        
-        public static string Label() => RandomWords(2, 3).FirstCharToUpper();
-        public static string Sentence() => RandomWords(6, 12).FirstCharToUpper() + ".";
-        public static string Question() => RandomWords(4, 8).FirstCharToUpper() + "?";
+        /// <summary>
+        /// Returns the commonly used 'Lorem ipsum dolor sit amet' placeholder text.
+        /// </summary>
+        public static string LoremIpsum()
+        {
+            return CommonParagraph;
+        }
 
+        /// <summary>
+        /// Generates a random text ideal for concise labels like product names.
+        /// </summary>
+        /// <example>
+        /// "Beatae dolor" <br />
+        /// "Rerum quibusdam perspiciatis" <br />
+        /// "Fugiat aperiam officiis"
+        /// </example>
+        public static string Label()
+        {
+            return RandomWords(2, 3).FirstCharToUpper();
+        }
+
+        /// <summary>
+        /// Generates random text ideal for single sentences, like product description.
+        /// </summary>
+        /// <example>
+        /// Vero a id optio consequuntur dignissimos repellendus provident blanditiis.
+        /// </example>
+        public static string Sentence()
+        {
+            return RandomWords(6, 12).FirstCharToUpper() + ".";
+        }
+
+        /// <summary>
+        /// Generates random text formatted as a question.
+        /// </summary>
+        /// <example>
+        /// Sequi enim voluptas quasi modi aspernatur dolorem?
+        /// </example>
+        public static string Question()
+        {
+            return RandomWords(4, 8).FirstCharToUpper() + "?";
+        }
+
+        /// <summary>
+        /// Generates random text suited for paragraphs, like detailed product description.
+        /// </summary>
         public static string Paragraph()
         {
             var length = Random.Next(3, 6);
@@ -99,6 +144,9 @@ namespace QuestPDF.Helpers
             return string.Join(" ", sentences);
         }
         
+        /// <summary>
+        /// Generates random text ideal for multiple paragraphs, resembling an article.
+        /// </summary>
         public static string Paragraphs()
         {
             var length = Random.Next(2, 5);
@@ -110,16 +158,36 @@ namespace QuestPDF.Helpers
             return string.Join("\n", sentences);
         }
         
+        /// <summary>
+        /// Generates random text in the format of an email address.
+        /// </summary>
+        /// <example>
+        /// consequuntur35@blanditiis.com
+        /// </example>
         public static string Email()
         {
             return $"{LongRandomWord()}{Random.Next(10, 99)}@{LongRandomWord()}.com";
         }
 
+        /// <summary>
+        /// Generates random text looking like a two-word name, with capitalized initials.
+        /// </summary>
+        /// <example>
+        /// "Voluptates Inventore" <br />
+        /// "Praesentium Consectetur" <br />
+        /// "Voluptatibus Molestias" <br />
+        /// </example>
         public static string Name()
         {
             return LongRandomWord().FirstCharToUpper() + " " + LongRandomWord().FirstCharToUpper();
         }
         
+        /// <summary>
+        /// Generates random text in the format of a phone number.
+        /// </summary>
+        /// <example>
+        /// 180-204-1358
+        /// </example>
         public static string PhoneNumber()
         {
             return $"{Random.Next(100, 999)}-{Random.Next(100, 999)}-{Random.Next(1000, 9999)}";
@@ -134,20 +202,93 @@ namespace QuestPDF.Helpers
         
         #region Time
 
-        private static DateTime RandomDate() => System.DateTime.Now - TimeSpan.FromDays(Random.NextDouble());
+        private static DateTime RandomDate()
+        {
+            var dayOffset = (Random.NextDouble() - 0.5) * 1000;
+            return System.DateTime.Now - TimeSpan.FromDays(dayOffset);
+        }
 
-        public static string Time() => RandomDate().ToString("T");
-        public static string ShortDate() => RandomDate().ToString("d");
-        public static string LongDate() => RandomDate().ToString("D");
-        public static string DateTime() => RandomDate().ToString("G");
+        /// <summary>
+        /// Generates random text representation of a random time.
+        /// </summary>
+        /// <example>
+        /// 18:34:47
+        /// </example>
+        public static string Time()
+        {
+            return RandomDate().ToString("T");
+        }
+
+        /// <summary>
+        /// Generates random text that resembles a date value using short formatting.
+        /// </summary>
+        /// <example>
+        /// 04/09/2023
+        /// </example>
+        public static string ShortDate()
+        {
+            return RandomDate().ToString("d");
+        }
+
+        /// <summary>
+        /// Generates random text that resembles a full date value.
+        /// </summary>
+        /// <example>
+        /// Monday, 18 November 2024
+        /// </example>
+        public static string LongDate()
+        {
+            return RandomDate().ToString("D");
+        }
+
+        /// <summary>
+        /// Generates random text that resembles a datetime value.
+        /// </summary>
+        /// <example>
+        /// 04/03/2024 20:43:15
+        /// </example>
+        public static string DateTime()
+        {
+            return RandomDate().ToString("G");
+        }
 
         #endregion
 
         #region Numbers
 
-        public static string Integer() => Random.Next(0, 10_000).ToString();
-        public static string Decimal() => (Random.NextDouble() * Random.Next(0, 100)).ToString("N2");
-        public static string Percent() => (Random.NextDouble() * 100).ToString("N0") + "%";
+        /// <summary>
+        /// Generates random text mimicking an integer value, ranging from 0 to 10,000.
+        /// </summary>
+        public static string Integer()
+        {
+            return Random.Next(0, 10_000).ToString();
+        }
+
+        /// <summary>
+        /// Generates random text in the style of a local-formatted decimal, values from 0 to 100 with two decimal points precision.
+        /// </summary>
+        /// <example>
+        /// 1,28 <br />
+        /// 7,94 <br />
+        /// 67,30
+        /// </example>
+        public static string Decimal()
+        {
+            return (Random.NextDouble() * Random.Next(0, 100)).ToString("N2");
+        }
+
+        /// <summary>
+        /// Generates random text resembling a percentage value.
+        /// </summary>
+        /// <example>
+        /// 48% <br />
+        /// 14% <br />
+        /// 23%
+        /// </example>
+        public static string Percent()
+        {
+            return (Random.NextDouble() * 100).ToString("N0") + "%";
+        }
 
         #endregion
 
@@ -176,12 +317,28 @@ namespace QuestPDF.Helpers
             Colors.BlueGrey.Lighten3
         };
         
+        /// <summary>
+        /// Returns a random bright color from the Material Design palette.
+        /// </summary>
+        /// <example>
+        /// #ffab91 <br />
+        /// #bcaaa4 <br />
+        /// #ffab91
+        /// </example>
         public static string BackgroundColor()
         {
             var index = Random.Next(0, BackgroundColors.Length);
             return BackgroundColors[index];
         }
         
+        /// <summary>
+        /// Returns a random color from the Material Design palette.
+        /// </summary>
+        /// <example>
+        /// #9e9e9e <br />
+        /// #f44336 <br />
+        /// #9c27b0
+        /// </example>
         public static string Color()
         {
             var colors = new[]
@@ -211,11 +368,25 @@ namespace QuestPDF.Helpers
             return colors[index];
         }
 
+        /// <summary>
+        /// Generates a random image with a soft color gradient with provided <paramref name="width" /> and <paramref name="height" />.
+        /// </summary>
+        /// <remarks>
+        /// Caution: using this method may significantly reduce document generation performance. Please do not use it when performing benchmarks.
+        /// </remarks>
+        /// <returns>Random image encoded in the JPEG format.</returns>
         public static byte[] Image(int width, int height)
         {
             return Image(new ImageSize(width, height));
         }
         
+        /// <summary>
+        /// Generates a random image with a soft color gradient of the given <paramref name="size" />.
+        /// </summary>
+        /// <remarks>
+        /// Caution: using this method may significantly reduce document generation performance. Please do not use it when performing benchmarks.
+        /// </remarks>
+        /// <returns>Random image encoded in the JPEG format.</returns>
         public static byte[] Image(ImageSize size)
         {
             // shuffle corner positions

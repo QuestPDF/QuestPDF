@@ -1,5 +1,4 @@
 ﻿using System;
-using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -7,7 +6,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Previewer
 {
-    public class ExceptionDocument : IDocument
+    internal sealed class ExceptionDocument : IDocument
     {
         private Exception Exception { get; }
     
@@ -34,7 +33,7 @@ namespace QuestPDF.Previewer
                 page.Margin(50);
                 page.DefaultTextStyle(x => x.FontSize(16));
 
-                page.Foreground().PaddingTop(5).Border(10).BorderColor(Colors.Red.Medium);
+                page.Foreground().Border(12).BorderColor(Colors.Red.Medium);
                 
                 page.Header()
                     .ShowOnce()
@@ -66,7 +65,7 @@ namespace QuestPDF.Previewer
                             .Column(column =>
                             {
                                 column.Item().Text("Exception").FontSize(36).FontColor(Colors.Red.Medium).Bold();
-                                column.Item().PaddingTop(-10).Text("Don't panic! Just analyze what's happened...").FontSize(18).FontColor(Colors.Red.Medium).Bold();
+                                column.Item().PaddingTop(-5).Text("Please refer to the details for further insight and troubleshooting.").FontSize(18).FontColor(Colors.Red.Medium).Bold();
                             }); 
                     });
 

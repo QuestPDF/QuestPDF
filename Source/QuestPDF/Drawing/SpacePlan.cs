@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
 {
-    public readonly struct SpacePlan
+    internal readonly struct SpacePlan
     {
         public readonly SpacePlanType Type;
         public readonly float Width;
@@ -16,7 +16,7 @@ namespace QuestPDF.Drawing
             Height = height;
         }
 
-        internal static SpacePlan Wrap() => new SpacePlan(SpacePlanType.Wrap, 0, 0);
+        internal static SpacePlan  Wrap() => new SpacePlan(SpacePlanType.Wrap, 0, 0);
         
         internal static SpacePlan PartialRender(float width, float height) => new SpacePlan(SpacePlanType.PartialRender, width, height);
 

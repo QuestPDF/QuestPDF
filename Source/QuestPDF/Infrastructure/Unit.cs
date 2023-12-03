@@ -5,9 +5,14 @@ namespace QuestPDF.Infrastructure
 {
     public enum Unit
     {
+        /// <summary>
+        /// Point is a standard unit for all PDF documents.
+        /// 72 points equal 1 inch
+        /// </summary>
         Point,
-        
+            
         Meter,
+            
         Centimetre,
         Millimetre,
         
@@ -17,7 +22,7 @@ namespace QuestPDF.Infrastructure
         /// <summary>
         /// 1/1000th of inch
         /// </summary>
-        Mill
+        Mil
     }
 
     internal static class UnitExtensions
@@ -39,7 +44,7 @@ namespace QuestPDF.Infrastructure
                     Millimetre => 0.1f / InchToCentimetre * InchToPoints,
                     Feet => 12 * InchToPoints,
                     Inch => InchToPoints,
-                    Mill => InchToPoints / 1000f,
+                    Mil => InchToPoints / 1000f,
                     _ => throw new ArgumentOutOfRangeException(nameof(unit), unit, null)
                 };
             }

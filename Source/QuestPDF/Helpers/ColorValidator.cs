@@ -6,6 +6,11 @@ namespace QuestPDF.Helpers
 {
     internal static class ColorValidator
     {
+        static ColorValidator()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         private static readonly ConcurrentDictionary<string, bool> Colors = new();
         
         public static void Validate(string? color)

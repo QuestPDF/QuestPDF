@@ -1,15 +1,18 @@
-﻿using System;
-using System.Security;
-using QuestPDF.Drawing;
+﻿using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.Elements
 {
-    public delegate byte[] GenerateDynamicImageDelegate(ImageSize size);
-    
-    internal class DynamicImage : Element
+    /// <summary>
+    /// Generates an image based on the given resolution.
+    /// </summary>
+    /// <param name="size">Desired resolution of the image in pixels.</param>
+    /// <returns>An image in PNG, JPEG, or WEBP image format returned as byte array.</returns>
+    public delegate byte[]? GenerateDynamicImageDelegate(ImageSize size);
+
+    internal sealed class DynamicImage : Element
     {
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }

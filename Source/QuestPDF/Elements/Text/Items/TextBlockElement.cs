@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
 {
-    internal class TextBlockElement : ITextBlockItem
+    internal sealed class TextBlockElement : ITextBlockItem
     {
         public Element Element { get; set; } = Empty.Instance;
         

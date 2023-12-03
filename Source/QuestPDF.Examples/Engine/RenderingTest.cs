@@ -113,11 +113,16 @@ namespace QuestPDF.Examples.Engine
         {
             if (ResultType == RenderingTestResult.Images)
             {
-                Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
-                document.GenerateImages(fileNameSchema);
+                var generationSettings = new ImageGenerationSettings { RasterDpi = 144 };
                 
+                Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
+                document.GenerateImages(index => fileNameSchema(index), generationSettings);
+
                 if (ShowResult && ShowingResultsEnabled)
-                    Process.Start("explorer", fileNameSchema(0));
+                {
+                    var firstImagePath = fileNameSchema(0);
+                    Helpers.Helpers.OpenFileUsingDefaultProgram(firstImagePath);
+                }
             }
 
             if (ResultType == RenderingTestResult.Pdf)

@@ -6,16 +6,22 @@ using System.Linq;
 using System.Reflection;
 using HarfBuzzSharp;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 using SkiaSharp.HarfBuzz;
 
 namespace QuestPDF.Drawing
 {
+    /// <summary>
+    /// <para>By default, the library searches all fonts available in the runtime environment.</para>
+    /// <para>This may work well on the development environment but may fail in the cloud where fonts are usually not installed.</para>
+    /// <para>It is safest deploy font files along with the application and then register them using this class.</para>
+    /// </summary>
     public static class FontManager
     {
         private static readonly ConcurrentDictionary<string, FontStyleSet> StyleSets = new();
-        private static readonly ConcurrentDictionary<TextStyle, SKFontMetrics> FontMetrics = new();
+        private static readonly ConcurrentDictionary<TextStyle, FontMetrics> FontMetrics = new();
         private static readonly ConcurrentDictionary<TextStyle, SKPaint> FontPaints = new();
         private static readonly ConcurrentDictionary<string, SKPaint> ColorPaints = new();
         private static readonly ConcurrentDictionary<TextStyle, Font> ShaperFonts = new();
@@ -24,6 +30,7 @@ namespace QuestPDF.Drawing
 
         static FontManager()
         {
+            NativeDependencyCompatibilityChecker.Test();
             RegisterLibraryDefaultFonts();
         }
         
@@ -49,6 +56,11 @@ namespace QuestPDF.Drawing
             RegisterFontWithCustomName(fontName, stream);
         }
         
+        /// <summary>
+        /// Registers a TrueType font from a stream under the provided custom <paramref name="fontName"/>.
+        /// Refer to this font by using the same name as a font family in the <see cref="TextStyle"/> API later on.
+        /// <a href="https://www.questpdf.com/going-production/font-management.html">Learn more</a>
+        /// </summary>
         public static void RegisterFontWithCustomName(string fontName, Stream stream)
         {
             using var fontData = SKData.Create(stream);
@@ -56,12 +68,21 @@ namespace QuestPDF.Drawing
             RegisterFontType(fontData, customName: fontName);
         }
 
+        /// <summary>
+        /// Registers a TrueType font from a stream. The font family name and all related attributes are detected automatically.
+        /// <a href="https://www.questpdf.com/going-production/font-management.html">Learn more</a>
+        /// </summary>
         public static void RegisterFont(Stream stream)
         {
             using var fontData = SKData.Create(stream);
             RegisterFontType(fontData);
         }
         
+        /// <summary>
+        /// Registers a TrueType font from an embedded resource. The font family name and all related attributes are detected automatically.
+        /// <a href="https://www.questpdf.com/going-production/font-management.html">Learn more</a>
+        /// </summary>
+        /// <param name="pathName">Path to the embedded resource (the case-sensitive name of the manifest resource being requested).</param>
         public static void RegisterFontFromEmbeddedResource(string pathName)
         {
             using var stream = Assembly.GetCallingAssembly().GetManifestResourceStream(pathName);
@@ -121,12 +142,16 @@ namespace QuestPDF.Drawing
 
             static SKPaint Convert(TextStyle style)
             {
+                var targetTypeface = GetTypeface(style);
+                
                 return new SKPaint
                 {
                     Color = SKColor.Parse(style.Color),
-                    Typeface = GetTypeface(style),
+                    Typeface = targetTypeface,
                     TextSize = (style.Size ?? 12) * GetTextScale(style),
                     IsAntialias = true,
+                    TextSkewX = GetTextSkew(style, targetTypeface),
+                    FakeBoldText = UseFakeBoldText(style, targetTypeface)
                 };
             }
 
@@ -175,11 +200,63 @@ namespace QuestPDF.Drawing
                     _ => throw new ArgumentOutOfRangeException()
                 };
             }
+
+            static float GetTextSkew(TextStyle originalTextStyle, SKTypeface targetTypeface)
+            {
+                // requested italic text but got typeface that is not italic
+                var useObliqueText = originalTextStyle.IsItalic == true && !targetTypeface.IsItalic;
+                
+                return useObliqueText ? -0.25f : 0;
+            }
+            
+            static bool UseFakeBoldText(TextStyle originalTextStyle, SKTypeface targetTypeface)
+            {
+                // requested bold text but got typeface that is not bold
+                return originalTextStyle.FontWeight > FontWeight.Medium && !targetTypeface.IsBold;
+            }
         }
 
-        internal static SKFontMetrics ToFontMetrics(this TextStyle style)
+        internal static FontMetrics ToFontMetrics(this TextStyle style)
         {
-            return FontMetrics.GetOrAdd(style, key => key.NormalPosition().ToPaint().FontMetrics);
+            return FontMetrics.GetOrAdd(style, key =>
+            {
+                var skiaFontMetrics = key.NormalPosition().ToPaint().FontMetrics;
+                
+                return new FontMetrics
+                {
+                    Ascent = skiaFontMetrics.Ascent,
+                    Descent = skiaFontMetrics.Descent,
+                    
+                    UnderlineThickness = GetUnderlineThickness(),
+                    UnderlinePosition = GetUnderlinePosition(),
+                    
+                    StrikeoutThickness = GetStrikeoutThickness(),
+                    StrikeoutPosition = GetStrikeoutPosition()
+                };
+
+                // HACK: On MacOS, certain font metrics are not determined accurately.
+                // Provide defaults based on other metrics.
+                
+                float GetUnderlineThickness()
+                {
+                    return skiaFontMetrics.UnderlineThickness ?? (skiaFontMetrics.XHeight * 0.15f);
+                }
+                
+                float GetUnderlinePosition()
+                {
+                    return skiaFontMetrics.UnderlinePosition ?? (skiaFontMetrics.XHeight * 0.2f);
+                }
+                
+                float GetStrikeoutThickness()
+                {
+                    return skiaFontMetrics.StrikeoutThickness ?? (skiaFontMetrics.XHeight * 0.15f);
+                }
+                
+                float GetStrikeoutPosition()
+                {
+                    return skiaFontMetrics.StrikeoutPosition ?? (-skiaFontMetrics.XHeight * 0.6f);
+                }
+            });
         }
 
         internal static Font ToShaperFont(this TextStyle style)

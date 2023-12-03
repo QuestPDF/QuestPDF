@@ -5,7 +5,7 @@ using SkiaSharp;
 
 namespace QuestPDF.Elements
 {
-    internal class DebugArea : IComponent
+    internal sealed class DebugArea : IComponent
     {
         public IElement? Child { get; set; }
         

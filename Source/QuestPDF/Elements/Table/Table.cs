@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using QuestPDF.Drawing;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
 {
-    internal class Table : Element, IStateResettable, IContentDirectionAware
+    internal sealed class Table : Element, IStateResettable, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         
@@ -137,7 +134,7 @@ namespace QuestPDF.Elements.Table
                 ResetState();
         }
 
-        private int FindLastRenderedRow(ICollection<TableCellRenderingCommand> commands)
+        private static int FindLastRenderedRow(ICollection<TableCellRenderingCommand> commands)
         {
             return commands
                 .GroupBy(x => x.Cell.Row)

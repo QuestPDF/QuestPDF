@@ -1,9 +1,10 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Markup.Xaml;
 
 namespace QuestPDF.Previewer
 {
-    class PreviewerWindow : Window
+    internal partial class PreviewerWindow : Window
     {
         public PreviewerWindow()
         {

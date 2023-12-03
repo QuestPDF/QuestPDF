@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class DynamicHost : Element, IStateResettable, IContentDirectionAware
+    internal sealed class DynamicHost : Element, IStateResettable, IContentDirectionAware
     {
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
@@ -80,6 +80,9 @@ namespace QuestPDF.Elements
         }
     }
 
+    /// <summary>
+    /// Stores all contextual information available for the dynamic component.
+    /// </summary>
     public class DynamicContext
     {
         internal IPageContext PageContext { get; set; }
@@ -92,10 +95,30 @@ namespace QuestPDF.Elements
         internal ImageCompressionQuality ImageCompressionQuality { get; set; }
         internal bool UseOriginalImage { get; set; }
         
+        /// <summary>
+        /// Returns the number of the page being rendered at the moment.
+        /// </summary>
         public int PageNumber { get; internal set; }
+        
+        /// <summary>
+        /// Returns the total count of pages in the document.
+        /// </summary>
+        /// <remarks>
+        /// Document rendering occurs in two phases.
+        /// The value of this property might be imprecise during the initial rendering phase.
+        /// </remarks>
         public int TotalPages { get; internal set; }
+        
+        /// <summary>
+        /// Returns the vertical and horizontal space, in points, available to the dynamic component.
+        /// </summary>
         public Size AvailableSize { get; internal set; }
 
+        /// <summary>
+        /// Enables the creation of unattached layout structures and provides their size measurements.
+        /// </summary>
+        /// <param name="content">The handler responsible for constructing the new layout structure.</param>
+        /// <returns>A newly created content, with its physical size.</returns>
         public IDynamicElement CreateElement(Action<IContainer> content)
         {
             var container = new DynamicElement();
@@ -114,12 +137,18 @@ namespace QuestPDF.Elements
         }
     }
 
+    /// <summary>
+    /// Represents any unattached content element, created by the dynamic component.
+    /// </summary>
     public interface IDynamicElement : IElement
     {
+        /// <summary>
+        /// Specifies the vertical and horizontal size, measured in points, required by the element to be drawn completely, assuming infinite canvas.
+        /// </summary>
         Size Size { get; }
     }
 
-    internal class DynamicElement : ContainerElement, IDynamicElement
+    internal sealed class DynamicElement : ContainerElement, IDynamicElement
     {
         public Size Size { get; internal set; }
     }

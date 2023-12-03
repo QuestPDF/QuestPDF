@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Background : ContainerElement
+    internal sealed class Background : ContainerElement
     {
         public string Color { get; set; } = Colors.Black;
         

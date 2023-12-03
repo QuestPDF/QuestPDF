@@ -1,4 +1,6 @@
-﻿using QuestPDF.Infrastructure;
+﻿using System;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF
 {
@@ -6,17 +8,11 @@ namespace QuestPDF
     {
         /// <summary>
         /// <para>Please kindly select license type that applies to your usage of the QuestPDF library.</para>
-        /// <para>For more details, please check the QuestPDF License and Pricing webpage: https://www.questpdf.com/pricing.html</para>
+        /// <para>For more details, please check the <a href="https://www.questpdf.com/pricing.html">QuestPDF License and Pricing webpage</a></para>
         /// </summary>
         public static LicenseType? License { get; set; }
         
-        /// <summary>
-        /// This value represents the maximum number of pages that the library produces.
-        /// This is useful when layout constraints are too strong, e.g. one element does not fit in another.
-        /// In such cases, the library would produce document of infinite length, consuming all available resources.
-        /// To break the algorithm and save the environment, the library breaks the rendering process after reaching specified length of document.
-        /// If your content requires generating longer documents, please assign the most reasonable value.
-        /// </summary>
+        [Obsolete("This setting is ignored since the 2023.10 version. The new infinite layout detection algorithm works automatically. You can safely remove this setting from your codebase.")]
         public static int DocumentLayoutExceptionThreshold { get; set; } = 250;
         
         /// <summary>
@@ -28,10 +24,9 @@ namespace QuestPDF
         
         /// <summary>
         /// This flag generates additional document elements to improve layout debugging experience.
-        /// When the DocumentLayoutException is thrown, the library is able to provide additional execution context.
-        /// It includes layout calculation results and path to the problematic area.
+        /// When the provided content contains size constraints impossible to meet, the library generates special visual annotations to help determining the root cause.
         /// </summary>
-        /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
+        /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>  
         public static bool EnableDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
         
         /// <summary>
@@ -44,5 +39,10 @@ namespace QuestPDF
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
         public static bool CheckIfAllTextGlyphsAreAvailable { get; set; } = System.Diagnostics.Debugger.IsAttached;
+
+        static Settings()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
     }
 }

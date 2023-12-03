@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.UnitTests.TestEngine
 {
-    internal class ElementMock : Element
+    internal sealed class ElementMock : Element
     {
         public string Id { get; set; }
         public Func<Size, SpacePlan> MeasureFunc { get; set; }

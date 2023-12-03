@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
 {
-    internal class TextBlockHyperlink : TextBlockSpan
+    internal sealed class TextBlockHyperlink : TextBlockSpan
     {
         public string Url { get; set; }
         
