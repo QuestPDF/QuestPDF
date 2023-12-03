@@ -381,10 +381,8 @@ namespace QuestPDF.Examples
             }
         }
         
-        class SimpleDynamic : IDynamicComponent<int>
+        class SimpleDynamic : IDynamicComponent
         {
-            public int State { get; set; }
-
             public DynamicComponentComposeResult Compose(DynamicContext context)
             {
                 var content = context.CreateElement(container =>
