@@ -46,3 +46,10 @@ Version 2023.12.10
 - Enhanced SkiaSharp native dependency detection for increased compatibility.
 - Fixed rare instances of text rendering inaccurately due to cache-related faults.
 - Fixed a rare problem where the Row element does not always respect layout issues in its children.
+
+Version 2023.12.11
+- Back-ported feature as part of extended support: simplified development loop by introducing cross-platform methods GeneratePdfAndShow() and GenerateXpsAndShow() 
+- Back-ported community-developed feature: added functionality to specify unit types for the Spacing property in the Row element, improving Fluent API consistency (by @sclarke81)
+- Back-ported community-developed improvement: integrated CancellationToken support in the ShowInPreviewer method (by @marcmognol)
+- Back-ported community-developed improvement: simplified DynamicComponent usage by introducing a state-less component model (by @bennetbo)
+
