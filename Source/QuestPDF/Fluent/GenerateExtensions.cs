@@ -28,6 +28,18 @@ namespace QuestPDF.Fluent
             DocumentGenerator.GeneratePdf(stream, document);
         }
         
+        private static int GenerateAndShowCounter = 0;
+        
+        public static void GeneratePdfAndShow(this IDocument document)
+        {
+            GenerateAndShowCounter++;
+            
+            var filePath = Path.Combine(Path.GetTempPath(), $"QuestPDF Document {GenerateAndShowCounter}.pdf");
+            document.GeneratePdf(filePath);
+            Helpers.Helpers.OpenFileUsingDefaultProgram(filePath);
+        }
+
+        
         #endregion
 
         #region XPS
@@ -48,6 +60,15 @@ namespace QuestPDF.Fluent
         public static void GenerateXps(this IDocument document, Stream stream)
         {
             DocumentGenerator.GenerateXps(stream, document);
+        }
+        
+        public static void GenerateXpsAndShow(this IDocument document)
+        {
+            GenerateAndShowCounter++;
+            
+            var filePath = Path.Combine(Path.GetTempPath(), $"QuestPDF Document {GenerateAndShowCounter}.xps");
+            document.GenerateXps(filePath);
+            Helpers.Helpers.OpenFileUsingDefaultProgram(filePath);
         }
         
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -64,6 +65,20 @@ namespace QuestPDF.Helpers
         internal static bool IsNegative(this Size size)
         {
             return size.Width < 0f || size.Height < 0f;
+        }
+        
+        internal static void OpenFileUsingDefaultProgram(string filePath)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(filePath)
+                {
+                    UseShellExecute = true
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

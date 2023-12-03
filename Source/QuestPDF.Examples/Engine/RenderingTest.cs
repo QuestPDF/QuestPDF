@@ -114,19 +114,18 @@ namespace QuestPDF.Examples.Engine
             if (ResultType == RenderingTestResult.Images)
             {
                 Func<int, string> fileNameSchema = i => $"{FileNamePrefix}-${i}.png";
-                document.GenerateImages(fileNameSchema);
-                
+                document.GenerateImages(index => fileNameSchema(index));
+
                 if (ShowResult && ShowingResultsEnabled)
-                    Process.Start("explorer", fileNameSchema(0));
+                {
+                    var firstImagePath = fileNameSchema(0);
+                    Helpers.Helpers.OpenFileUsingDefaultProgram(firstImagePath);
+                }
             }
 
             if (ResultType == RenderingTestResult.Pdf)
             {
-                var fileName = $"{FileNamePrefix}.pdf";
-                document.GeneratePdf(fileName);
-                
-                if (ShowResult && ShowingResultsEnabled)
-                    Process.Start("explorer", fileName);
+                document.GeneratePdfAndShow();
             }
         }
     }
