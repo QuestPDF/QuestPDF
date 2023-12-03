@@ -33,7 +33,7 @@ internal class ElementMock : Element
 
         var remainingHeight = TotalHeight - HeightOffset;
 
-        if (remainingHeight == 0)
+        if (remainingHeight < Size.Epsilon)
             return SpacePlan.FullRender(Size.Zero);
         
         if (remainingHeight > availableSpace.Height)
@@ -63,5 +63,8 @@ internal class ElementMock : Element
             Position = new Position(matrix.TransX / matrix.ScaleX, matrix.TransY / matrix.ScaleY),
             Size = availableSpace
         });
+
+        if (HeightOffset > TotalHeight - Size.Epsilon)
+            HeightOffset = 0;
     }
 }

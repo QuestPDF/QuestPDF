@@ -42,11 +42,14 @@ internal static class LayoutTestExecutor
         
             while(true)
             {
+                pageContext.IncrementPageNumber();
+              
                 var spacePlan = container.Measure(pageSize);
                 pageSizes.Add(spacePlan);
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
+                    pageContext.DecrementPageNumber();
                     canvas.EndDocument();
                     return (pageSizes, true);
                 }
@@ -55,8 +58,6 @@ internal static class LayoutTestExecutor
                 {
                     canvas.BeginPage(pageSize);
                     container.Draw(pageSize);
-                
-                    pageContext.IncrementPageNumber();
                 }
                 catch (Exception exception)
                 {
@@ -81,9 +82,10 @@ internal static class LayoutTestExecutor
             return mocks
                 .SelectMany(x => x.DrawingCommands)
                 .GroupBy(x => x.PageNumber)
+                .OrderBy(x => x.Key)
                 .Select(x => new LayoutTestResult.PageLayout
                 {
-                    RequiredArea = pageSizes.ElementAt(x.Key),
+                    RequiredArea = pageSizes.ElementAt(x.Key - 1),
                     Mocks = x
                         .Select(y => new LayoutTestResult.MockLayoutPosition
                         {

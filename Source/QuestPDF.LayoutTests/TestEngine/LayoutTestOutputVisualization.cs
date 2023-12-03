@@ -150,7 +150,7 @@ internal static class LayoutTestResultVisualization
                 DrawMock(mock);
             
             foreach (var mock in pageLayout.Mocks.GetOverlappingItems())
-                DrawOccludedMock(mock.belowMockId);
+                DrawOccludedMock(mock.Below);
             
             DrawGridLines();
         }
