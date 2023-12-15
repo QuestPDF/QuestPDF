@@ -42,14 +42,16 @@ Version 2022.12.8:
 Version 2022.12.9:
 - Enhanced developer experience by refining the accuracy of the exception message thrown when native SkiaSharp dependencies are unavailable in the runtime environment.
 
-Version 2023.12.10
+Version 2022.12.10
 - Enhanced SkiaSharp native dependency detection for increased compatibility.
 - Fixed rare instances of text rendering inaccurately due to cache-related faults.
 - Fixed a rare problem where the Row element does not always respect layout issues in its children.
 
-Version 2023.12.11
+Version 2022.12.11
 - Back-ported feature as part of extended support: simplified development loop by introducing cross-platform methods GeneratePdfAndShow() and GenerateXpsAndShow() 
 - Back-ported community-developed feature: added functionality to specify unit types for the Spacing property in the Row element, improving Fluent API consistency (by @sclarke81)
 - Back-ported community-developed improvement: integrated CancellationToken support in the ShowInPreviewer method (by @marcmognol)
 - Back-ported community-developed improvement: simplified DynamicComponent usage by introducing a state-less component model (by @bennetbo)
 
+Version 2022.12.12
+- Fixed: table layout renders incorrectly if one of its cells spans at least three pages
