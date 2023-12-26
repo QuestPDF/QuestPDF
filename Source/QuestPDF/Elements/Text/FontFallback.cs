@@ -4,7 +4,6 @@ using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements.Text.Items;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 

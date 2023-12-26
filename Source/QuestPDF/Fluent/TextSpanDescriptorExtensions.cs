@@ -1,6 +1,5 @@
 ﻿using System;
 using QuestPDF.Helpers;
-using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent

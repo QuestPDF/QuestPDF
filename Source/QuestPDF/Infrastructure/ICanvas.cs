@@ -1,4 +1,3 @@
-using QuestPDF.Drawing;
 using SkiaSharp;
 
 namespace QuestPDF.Infrastructure

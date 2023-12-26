@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;

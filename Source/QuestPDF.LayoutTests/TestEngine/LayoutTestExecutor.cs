@@ -2,7 +2,6 @@ using QuestPDF.Drawing;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 

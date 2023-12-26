@@ -1,9 +1,7 @@
-using Microcharts;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.Examples

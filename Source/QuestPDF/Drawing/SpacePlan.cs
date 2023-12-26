@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using QuestPDF.Infrastructure;
+﻿using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
 {

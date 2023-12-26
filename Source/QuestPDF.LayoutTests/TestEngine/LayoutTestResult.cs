@@ -1,5 +1,3 @@
-using QuestPDF.Infrastructure;
-
 namespace QuestPDF.LayoutTests.TestEngine;
 
 internal sealed class LayoutTestResult

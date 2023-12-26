@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
 

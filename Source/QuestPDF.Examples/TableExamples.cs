@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
-using QuestPDF.Drawing;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;

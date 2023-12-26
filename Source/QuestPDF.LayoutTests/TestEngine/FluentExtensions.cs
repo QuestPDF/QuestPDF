@@ -1,6 +1,3 @@
-using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
-
 namespace QuestPDF.LayoutTests.TestEngine;
 
 internal class ExpectedDocumentLayoutDescriptor

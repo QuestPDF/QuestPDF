@@ -1,5 +1,4 @@
-﻿using System.Drawing;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;

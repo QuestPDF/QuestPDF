@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
-using QuestPDF.Elements.Text;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;

@@ -1,6 +1,5 @@
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 

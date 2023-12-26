@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.UnitTests.TestEngine;

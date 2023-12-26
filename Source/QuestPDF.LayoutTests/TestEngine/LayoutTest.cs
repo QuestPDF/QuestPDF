@@ -1,8 +1,5 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using QuestPDF.Elements;
-using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 

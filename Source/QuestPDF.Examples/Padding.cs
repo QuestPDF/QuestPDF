@@ -1,7 +1,6 @@
 ﻿using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
 {

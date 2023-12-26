@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using QuestPDF.Drawing.Exceptions;
@@ -8,10 +7,8 @@ using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
-using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 
 namespace QuestPDF.Drawing
 {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
-using System.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Drawing;
@@ -12,7 +10,6 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine;
-using SkiaSharp;
 using ImageElement = QuestPDF.Elements.Image;
 using DocumentImage = QuestPDF.Infrastructure.Image;
 

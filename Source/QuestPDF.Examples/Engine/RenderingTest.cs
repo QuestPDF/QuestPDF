@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
