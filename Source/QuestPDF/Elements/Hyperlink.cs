@@ -15,13 +15,13 @@ namespace QuestPDF.Elements
             if (targetSize.Type == SpacePlanType.Wrap)
                 return;
             
-            var horizontalOffset = ContentDirection == ContentDirection.LeftToRight
+            var offset = ContentDirection == ContentDirection.LeftToRight
                 ? Position.Zero
                 : new Position(availableSpace.Width - targetSize.Width, 0);
 
-            Canvas.Translate(horizontalOffset);
+            Canvas.Translate(offset);
             Canvas.DrawHyperlink(Url, availableSpace);
-            Canvas.Translate(horizontalOffset.Reverse());
+            Canvas.Translate(offset.Reverse());
             
             base.Draw(availableSpace);
         }

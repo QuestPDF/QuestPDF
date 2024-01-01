@@ -55,3 +55,7 @@ Version 2022.12.11
 
 Version 2022.12.12
 - Fixed: table layout renders incorrectly if one of its cells spans at least three pages
+
+Version 2022.12.13
+- Fixed: The hyperlink element was annotating the incorrect location, in specific layout scenarios when used with right-to-left content direction
+- Maintenance: The QuestPDF Previewer application has been updated to utilize the latest version of the Avalonia library
