@@ -119,7 +119,7 @@ namespace QuestPDF.Drawing
 
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content);
-            pageContext.ResetPageNumber();
+            pageContext.ProceedToNextRenderingPhase();
             RenderPass(pageContext, canvas, content);
         }
         
@@ -147,7 +147,7 @@ namespace QuestPDF.Drawing
                     RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content);
                 }
                 
-                documentPageContext.ResetPageNumber();
+                documentPageContext.ProceedToNextRenderingPhase();
 
                 foreach (var documentPart in documentParts)
                 {
@@ -163,7 +163,7 @@ namespace QuestPDF.Drawing
                     pageContext.SetDocumentId(documentPart.DocumentId);
                     
                     RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
-                    pageContext.ResetPageNumber();
+                    pageContext.ProceedToNextRenderingPhase();
                     RenderPass(pageContext, canvas, documentPart.Content);
                 }
             }

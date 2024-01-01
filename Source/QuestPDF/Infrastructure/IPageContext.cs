@@ -11,6 +11,7 @@
     
     internal interface IPageContext
     {
+        bool IsInitialRenderingPhase { get; }
         int DocumentLength { get; }
         int CurrentPage { get; }
         void SetSectionPage(string name);

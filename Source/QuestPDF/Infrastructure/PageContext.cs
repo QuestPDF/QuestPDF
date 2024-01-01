@@ -5,6 +5,7 @@ namespace QuestPDF.Infrastructure
 {
     internal sealed class PageContext : IPageContext
     {
+        public bool IsInitialRenderingPhase { get; private set; } = true;
         public int DocumentLength { get; private set; }
         private List<DocumentLocation> Locations { get; } = new();
         
@@ -16,8 +17,9 @@ namespace QuestPDF.Infrastructure
             CurrentDocumentId = id;
         }
         
-        internal void ResetPageNumber()
+        internal void ProceedToNextRenderingPhase()
         {
+            IsInitialRenderingPhase = false;
             CurrentPage = 0;
         }
         

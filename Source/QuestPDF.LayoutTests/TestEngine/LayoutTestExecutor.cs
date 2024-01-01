@@ -22,7 +22,7 @@ internal static class LayoutTestExecutor
         {
             // inject dependencies
             var pageContext = new PageContext();
-            pageContext.ResetPageNumber();
+            pageContext.ProceedToNextRenderingPhase();
 
             var canvas = new PreviewerCanvas();
         
