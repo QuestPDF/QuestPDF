@@ -3,8 +3,9 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Hyperlink : ContainerElement
+    internal class Hyperlink : ContainerElement, IContentDirectionAware
     {
+        public ContentDirection ContentDirection { get; set; }
         public string Url { get; set; } = "https://www.questpdf.com";
         
         internal override void Draw(Size availableSpace)
@@ -13,8 +14,15 @@ namespace QuestPDF.Elements
 
             if (targetSize.Type == SpacePlanType.Wrap)
                 return;
+            
+            var horizontalOffset = ContentDirection == ContentDirection.LeftToRight
+                ? Position.Zero
+                : new Position(availableSpace.Width - targetSize.Width, 0);
 
-            Canvas.DrawHyperlink(Url, targetSize);
+            Canvas.Translate(horizontalOffset);
+            Canvas.DrawHyperlink(Url, availableSpace);
+            Canvas.Translate(horizontalOffset.Reverse());
+            
             base.Draw(availableSpace);
         }
     }
