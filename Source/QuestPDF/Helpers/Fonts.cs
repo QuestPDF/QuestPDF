@@ -1,4 +1,6 @@
-﻿namespace QuestPDF.Helpers
+﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+
+namespace QuestPDF.Helpers
 {
     /// <summary>
     /// Contains a collection of fonts defined by the PDF standard.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using QuestPDF.Drawing.Exceptions;
@@ -7,13 +8,20 @@ using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
 
 namespace QuestPDF.Drawing
 {
     static class DocumentGenerator
     {
+        static DocumentGenerator()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         internal static void GeneratePdf(Stream stream, IDocument document)
         {
             ValidateLicense();
@@ -68,12 +76,13 @@ namespace QuestPDF.Drawing
                 $"QuestPDF is a modern open-source library. " +
                 $"We identify the importance of the library in your projects and therefore want to make sure you can safely and confidently continue the development. " +
                 $"Being a healthy and growing community is the primary goal that motivates us to pursue professionalism. {newParagraph}" +
-                $"Please refer to the QuestPDF License and Pricing webpage for more details. (https://www.questpdf.com/pricing.html) {newParagraph}" +
-                $"If you are an existing QuestPDF user and for any reason cannot update, you can stay with the 2022.12.X release with the extended quality support but without any new features, improvements, or optimizations. That release will always be available under the MIT license, free for commercial usage. {newParagraph}" +
+                $"Please refer to the QuestPDF License and Pricing webpage for more details. (https://www.questpdf.com/license/) {newParagraph}" +
+                $"If you are an existing QuestPDF user and for any reason cannot update, you can stay with the 2022.12.X release with the extended quality support but without any new features, improvements, or optimizations. " +
+                $"That release will always be available under the MIT license, free for commercial usage. We are planning to sunset support for the 2022.12.X branch around Q1 2024. Until then, it will continue to receive quality and bug-fix updates. {newParagraph}" +
                 $"The library does not require any license key. We trust our users, and therefore the process is simple. " +
                 $"To disable license validation and turn off this exception, please configure an eligible license using the QuestPDF.Settings.License API, for example: {newParagraph}" +
                 $"\"QuestPDF.Settings.License = LicenseType.Community;\" {newParagraph}" +
-                $"Learn more on: https://www.questpdf.com/license-configuration.html {newParagraph}";
+                $"Learn more on: https://www.questpdf.com/license/configuration.html {newParagraph}";
             
             throw new Exception(exceptionMessage)
             {
@@ -91,17 +100,13 @@ namespace QuestPDF.Drawing
         private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
         {
             canvas.BeginDocument();
-
-            switch (document)
-            {
-                case MergedDocument mergedDocument:
-                    RenderMergedDocument(canvas, mergedDocument, settings);
-                    break;
-                default:
-                    RenderSingleDocument(canvas, document, settings);
-                    break;
-            }
-
+            
+            if (document is MergedDocument mergedDocument)
+                RenderMergedDocument(canvas, mergedDocument, settings);
+            
+            else
+                RenderSingleDocument(canvas, document, settings);
+            
             canvas.EndDocument();
         }
 
@@ -114,7 +119,7 @@ namespace QuestPDF.Drawing
 
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content);
-            pageContext.ResetPageNumber();
+            pageContext.ProceedToNextRenderingPhase();
             RenderPass(pageContext, canvas, content);
         }
         
@@ -132,43 +137,35 @@ namespace QuestPDF.Drawing
                 })
                 .ToList();
 
-            switch (document.PageNumberStrategy)
+            if (document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous)
             {
-                case MergedDocumentPageNumberStrategy.Continuous:
-                    {
-                        var documentPageContext = new PageContext();
+                var documentPageContext = new PageContext();
 
-                        foreach (var documentPart in documentParts)
-                        {
-                            documentPageContext.SetDocumentId(documentPart.DocumentId);
-                            RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content);
-                        }
+                foreach (var documentPart in documentParts)
+                {
+                    documentPageContext.SetDocumentId(documentPart.DocumentId);
+                    RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content);
+                }
+                
+                documentPageContext.ProceedToNextRenderingPhase();
 
-                        documentPageContext.ResetPageNumber();
-
-                        foreach (var documentPart in documentParts)
-                        {
-                            documentPageContext.SetDocumentId(documentPart.DocumentId);
-                            RenderPass(documentPageContext, canvas, documentPart.Content);
-                        }
-
-                        break;
-                    }
-
-                default:
-                    {
-                        foreach (var documentPart in documentParts)
-                        {
-                            var pageContext = new PageContext();
-                            pageContext.SetDocumentId(documentPart.DocumentId);
-
-                            RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
-                            pageContext.ResetPageNumber();
-                            RenderPass(pageContext, canvas, documentPart.Content);
-                        }
-
-                        break;
-                    }
+                foreach (var documentPart in documentParts)
+                {
+                    documentPageContext.SetDocumentId(documentPart.DocumentId);
+                    RenderPass(documentPageContext, canvas, documentPart.Content);   
+                }
+            }
+            else
+            {
+                foreach (var documentPart in documentParts)
+                {
+                    var pageContext = new PageContext();
+                    pageContext.SetDocumentId(documentPart.DocumentId);
+                    
+                    RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
+                    pageContext.ProceedToNextRenderingPhase();
+                    RenderPass(pageContext, canvas, documentPart.Content);
+                }
             }
         }
 
@@ -197,10 +194,13 @@ namespace QuestPDF.Drawing
 
             while(true)
             {
+                pageContext.IncrementPageNumber();
                 var spacePlan = content.Measure(Size.Max);
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
+                    pageContext.DecrementPageNumber();
+                    
                     if (Settings.EnableDebugging)
                     {
                         ApplyLayoutDebugging();
@@ -215,7 +215,6 @@ namespace QuestPDF.Drawing
                 {
                     canvas.BeginPage(spacePlan);
                     content.Draw(spacePlan);
-                    pageContext.IncrementPageNumber();
                 }
                 catch (Exception exception)
                 {
@@ -227,12 +226,6 @@ namespace QuestPDF.Drawing
 
                 if (spacePlan.Type == SpacePlanType.FullRender)
                     break;
-            }
-
-            if (Settings.EnableDebugging)
-            {
-                ConfigureLayoutOverflowMarker();
-                CheckIfDocumentHasLayoutOverflowIssues();
             }
 
             void ApplyLayoutDebugging()
@@ -249,35 +242,6 @@ namespace QuestPDF.Drawing
                 content.InjectDependencies(pageContext, canvas);
 
                 content.RemoveExistingProxies();
-            }
-
-            void ConfigureLayoutOverflowMarker()
-            {
-                var layoutOverflowPageMarker = new LayoutOverflowPageMarker();
-                    
-                content.CreateProxy(child =>
-                {
-                    layoutOverflowPageMarker.Child = child;
-                    return layoutOverflowPageMarker;
-                });
-
-                var pageNumbersWithLayoutIssues = content
-                    .ExtractElementsOfType<LayoutOverflowVisualization>()
-                    .SelectMany(x => x.Flatten())
-                    .SelectMany(x => x.Value.VisibleOnPageNumbers)
-                    .Distinct();
-
-                layoutOverflowPageMarker.PageNumbersWithLayoutIssues = new HashSet<int>(pageNumbersWithLayoutIssues);
-            }
-
-            void CheckIfDocumentHasLayoutOverflowIssues()
-            {
-                var hasLayoutOverflowVisualizationElements = content
-                    .ExtractElementsOfType<LayoutOverflowVisualization>()
-                    .SelectMany(x => x.Flatten())
-                    .Any();
-
-                canvas.DocumentContentHasLayoutOverflowIssues |= hasLayoutOverflowVisualizationElements;
             }
             
             void ThrowLayoutException()
@@ -319,18 +283,18 @@ namespace QuestPDF.Drawing
 
         internal static void ApplyContentDirection(this Element? content, ContentDirection? direction = null)
         {
-            switch (content)
+            if (content == null)
+                return;
+
+            if (content is ContentDirectionSetter contentDirectionSetter)
             {
-                case null:
-                    return;
-                case ContentDirectionSetter contentDirectionSetter:
-                    contentDirectionSetter.Child.ApplyContentDirection(contentDirectionSetter.ContentDirection);
-                    return;
-                case IContentDirectionAware contentDirectionAware:
-                    contentDirectionAware.ContentDirection = direction ?? contentDirectionAware.ContentDirection;
-                    break;
+                ApplyContentDirection(contentDirectionSetter.Child, contentDirectionSetter.ContentDirection);
+                return;
             }
 
+            if (content is IContentDirectionAware contentDirectionAware)
+                contentDirectionAware.ContentDirection = direction ?? contentDirectionAware.ContentDirection;
+            
             foreach (var child in content.GetChildren())
                 ApplyContentDirection(child, direction);
         }
@@ -372,29 +336,26 @@ namespace QuestPDF.Drawing
 
         internal static void ApplyInheritedAndGlobalTexStyle(this Element? content, TextStyle documentDefaultTextStyle)
         {
-            switch (content)
+            if (content == null)
+                return;
+            
+            if (content is TextBlock textBlock)
             {
-                case null:
-                    return;
-                case TextBlock textBlock:
-                    {
-                        foreach (var textBlockItem in textBlock.Items)
-                        {
-                            if (textBlockItem is TextBlockSpan textSpan)
-                                textSpan.Style = textSpan.Style.ApplyInheritedStyle(documentDefaultTextStyle).ApplyGlobalStyle();
-
-                            if (textBlockItem is TextBlockElement textElement)
-                                textElement.Element.ApplyInheritedAndGlobalTexStyle(documentDefaultTextStyle);
-                        }
-
-                        return;
-                    }
-
-                case DynamicHost dynamicHost:
-                    dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
-                    break;
+                foreach (var textBlockItem in textBlock.Items)
+                {
+                    if (textBlockItem is TextBlockSpan textSpan)
+                        textSpan.Style = textSpan.Style.ApplyInheritedStyle(documentDefaultTextStyle).ApplyGlobalStyle();
+                    
+                    if (textBlockItem is TextBlockElement textElement)
+                        ApplyInheritedAndGlobalTexStyle(textElement.Element, documentDefaultTextStyle);
+                }
+                
+                return;
             }
 
+            if (content is DynamicHost dynamicHost)
+                dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
+            
             if (content is DefaultTextStyle defaultTextStyleElement)
                documentDefaultTextStyle = defaultTextStyleElement.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
 

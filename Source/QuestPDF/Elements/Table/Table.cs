@@ -99,7 +99,7 @@ namespace QuestPDF.Elements.Table
             if (tableSize.Width > availableSpace.Width + Size.Epsilon)
                 return SpacePlan.Wrap();
 
-            return FindLastRenderedRow(renderingCommands) == StartingRowsCount 
+            return CalculateCurrentRow(renderingCommands) > StartingRowsCount 
                 ? SpacePlan.FullRender(tableSize) 
                 : SpacePlan.PartialRender(tableSize);
         }
@@ -126,22 +126,22 @@ namespace QuestPDF.Elements.Table
                 Canvas.Translate(offset.Reverse());
             }
 
-            CurrentRow = FindLastRenderedRow(renderingCommands) + 1;
+            CurrentRow = CalculateCurrentRow(renderingCommands);
+            var isFullyRendered = CurrentRow > StartingRowsCount;
             
-            var isFullRender = FindLastRenderedRow(renderingCommands) == StartingRowsCount;
-            
-            if (isFullRender)
+            if (isFullyRendered)
                 ResetState();
         }
 
-        private static int FindLastRenderedRow(ICollection<TableCellRenderingCommand> commands)
+        private int CalculateCurrentRow(ICollection<TableCellRenderingCommand> commands)
         {
-            return commands
+            var lastFullyRenderedRow = commands
                 .GroupBy(x => x.Cell.Row)
                 .Where(x => x.All(y => y.Cell.IsRendered || y.Measurement.Type == SpacePlanType.FullRender))
                 .Select(x => x.Key)
-                .DefaultIfEmpty(0)
-                .Max();
+                .ToArray();
+            
+            return lastFullyRenderedRow.Any() ? lastFullyRenderedRow.Max() + 1 : CurrentRow;
         }
         
         private void UpdateColumnsWidth(float availableWidth)

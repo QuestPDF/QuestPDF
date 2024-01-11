@@ -1,5 +1,16 @@
-Version 2023.10.0
-- Primary focus: Improved the developer experience by enhancing debugging for document layout issues. Now, the library visually marks the places where problems occur
-- Updated dependency SkiaSharp from 2.88.3 to 2.88.6
-- Updated QuestPDF Previewer dependencies: from Avalonia 0.10.X to 11.0.X
-- Improved code quality
+Version 2023.12.0
+- Feature: added a Shrink element that enables relaxation of layout constraints from the parent element, applicable to both vertical and horizontal axes independently
+- Feature: developed the ShowIf API, allowing conditional visibility of elements based on rendering context (initially supports PageNumber only)
+- Feature: added functionality to specify unit types for the Spacing property in the Row element, improving Fluent API consistency
+- Optimization: reduced memory usage and decreased Garbage Collector pressure in the FluentAPI, enhancing performance
+- Improvement: integrated CancellationToken support in the ShowInPreviewer method
+- Improvement: simplified DynamicComponent usage by introducing a state-less component model
+- Testing: introduced a new internal layout-testing engine (prototype)
+
+Version 2023.12.1
+- Fixed: table layout renders incorrectly if one of its cells spans at least three pages
+
+Version 2023.12.2
+- Fixed: The hyperlink element was annotating the incorrect location, in specific layout scenarios when used with right-to-left content direction
+- Enhancement: Improved layout stability for dynamic components utilizing the TotalPages property to generate content
+- Maintenance: The QuestPDF Previewer application has been updated to utilize the latest version of the Avalonia library

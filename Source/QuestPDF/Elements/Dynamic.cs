@@ -67,7 +67,7 @@ namespace QuestPDF.Elements
                 UseOriginalImage = UseOriginalImage,
                 
                 PageNumber = PageContext.CurrentPage,
-                TotalPages = PageContext.DocumentLength,
+                TotalPages = PageContext.IsInitialRenderingPhase ? int.MaxValue : PageContext.DocumentLength,
                 AvailableSize = availableSize
             };
             
@@ -104,8 +104,11 @@ namespace QuestPDF.Elements
         /// Returns the total count of pages in the document.
         /// </summary>
         /// <remarks>
-        /// Document rendering occurs in two phases.
-        /// The value of this property might be imprecise during the initial rendering phase.
+        /// <para>
+        /// Document rendering process is performed in two phases.
+        /// During the first phase, the value of this property is equal to <c>int.MaxValue</c> to indicate its unavailability.
+        /// </para>
+        /// <para>Please note that using this property may result with unstable layouts and unpredicted behaviors, especially when generating conditional content of various sizes.</para>
         /// </remarks>
         public int TotalPages { get; internal set; }
         

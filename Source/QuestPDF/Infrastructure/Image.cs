@@ -23,6 +23,11 @@ namespace QuestPDF.Infrastructure
     /// </remarks>
     public class Image
     {
+        static Image()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         internal SKImage SkImage { get; }
         internal ImageSize Size { get; }
 

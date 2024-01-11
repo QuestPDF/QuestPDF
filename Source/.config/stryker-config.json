@@ -1,0 +1,15 @@
+{
+  "stryker-config":
+  {
+    "solution": "../QuestPDF.sln",
+    "project": "QuestPDF/QuestPDF.csproj",
+    "test-projects": ["../QuestPDF.LayoutTests/QuestPDF.LayoutTests.csproj"],
+    "mutate": ["**/*Column.cs"],
+    "reporters": [
+      "progress",
+      "html"
+    ],
+    "disable-mix-mutants": true,
+    "disable-bail": true
+  }
+}

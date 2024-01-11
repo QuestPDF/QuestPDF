@@ -121,7 +121,7 @@ namespace QuestPDF.Examples.Engine
                 if (ShowResult && ShowingResultsEnabled)
                 {
                     var firstImagePath = fileNameSchema(0);
-                    GenerateExtensions.OpenFileUsingDefaultProgram(firstImagePath);
+                    Helpers.Helpers.OpenFileUsingDefaultProgram(firstImagePath);
                 }
             }
 

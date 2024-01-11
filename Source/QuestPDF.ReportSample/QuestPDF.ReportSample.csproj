@@ -8,10 +8,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" Version="0.13.9" />
-        <PackageReference Include="nunit" Version="3.13.2" />
+        <PackageReference Include="BenchmarkDotNet" Version="0.13.11" />
+        <PackageReference Include="nunit" Version="4.0.1" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
         <PackageReference Include="SkiaSharp" Version="2.88.6" />
     </ItemGroup>
 

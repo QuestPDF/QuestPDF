@@ -17,7 +17,7 @@
 ### QuestPDF is a modern open-source .NET library for PDF document generation. Offering comprehensive layout engine powered by concise and discoverable C# Fluent API.
 
 <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
- 
+
 <table>
 <tr>
     <td>👨‍💻</td>
@@ -56,7 +56,7 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 
 ⭐ Please give this repository a star. It takes seconds and help thousands of developers! ⭐
 
-<img src="https://github.com/QuestPDF/QuestPDF/assets/9263853/50d4c3dc-4b92-437f-ae2b-0cfc3fed090d" width="800" />
+<img src="https://github.com/QuestPDF/QuestPDF/assets/9263853/8a49c037-aa0c-4f8a-9c4c-0f7cfdf95021" width="700" />
 
 
 ## Please share with the community

@@ -8,6 +8,11 @@ namespace QuestPDF.Fluent
 {
     public static class ElementExtensions
     {
+        static ElementExtensions()
+        {
+            NativeDependencyCompatibilityChecker.Test();
+        }
+        
         internal static Container Create(Action<IContainer> factory)
         {
             var container = new Container();
@@ -270,13 +275,27 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Conditionally draws or hides its content.
+        /// Conditionally draws or hides its inner content.
         /// <a href="https://www.questpdf.com/api-reference/show-if.html">Learn more</a>
         /// </summary>
         /// <param name="condition">If the value is <see langword="true"/>, its content is visible. Otherwise, it's hidden.</param>
         public static IContainer ShowIf(this IContainer element, bool condition)
         {
             return condition ? element : new Container();
+        }
+        
+        /// <summary>
+        /// Conditionally draws or hides its inner content depending on drawing context.
+        /// Please use carefully as certain predicates may produce unstable layouts resulting with unexpected content or exceptions.
+        /// <a href="https://www.questpdf.com/api-reference/show-if.html">Learn more</a>
+        /// </summary>
+        /// <param name="predicate">If the predicate returns <see langword="true"/>, its content is visible. Otherwise, it's hidden.</param>
+        public static IContainer ShowIf(this IContainer element, Predicate<ShowIfContext> predicate)
+        {
+            return element.Element(new ShowIf
+            {
+                VisibilityPredicate = predicate
+            });
         }
         
         /// <summary>
@@ -293,23 +312,6 @@ namespace QuestPDF.Fluent
             {
                 Handler = handler
             });
-        }
-        
-        [Obsolete("This element has been renamed since version 2022.1. Please use the MinimalBox method.")]
-        public static IContainer Box(this IContainer element)
-        {
-            return element.Element(new MinimalBox());
-        }
-        
-        /// <summary>
-        /// Renders its content in the most compact size achievable. 
-        /// Ideal for situations where the parent element provides more space than necessary.
-        /// <br />
-        /// <a href="https://www.questpdf.com/api-reference/minimal-box.html">Learn more</a>
-        /// </summary>
-        public static IContainer MinimalBox(this IContainer element)
-        {
-            return element.Element(new MinimalBox());
         }
         
         /// <summary>

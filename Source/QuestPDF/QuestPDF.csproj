@@ -3,7 +3,7 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2023.10.0</Version>
+        <Version>2023.12.2</Version>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API. Easily generate PDF reports, invoices, exports, etc.</PackageDescription>
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
         <LangVersion>10</LangVersion>
@@ -34,6 +34,7 @@
         <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
         <InternalsVisibleTo Include="QuestPDF.ReportSample" />
         <InternalsVisibleTo Include="QuestPDF.UnitTests" />
+        <InternalsVisibleTo Include="QuestPDF.LayoutTests" />
         <InternalsVisibleTo Include="QuestPDF.Examples" />
         <InternalsVisibleTo Include="QuestPDF.Previewer" />
     </ItemGroup>

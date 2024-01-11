@@ -18,7 +18,6 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
     private const byte AreaOpacity = 64;
 
     public ContentDirection ContentDirection { get; set; }
-    public ICollection<int> VisibleOnPageNumbers { get; set; } = new List<int>();
 
     internal override SpacePlan Measure(Size availableSpace)
     {
@@ -33,8 +32,6 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
         
     internal override void Draw(Size availableSpace)
     {
-        VisibleOnPageNumbers.Add(PageContext.CurrentPage);
-        
         // measure content area
         var childSize = base.Measure(availableSpace);
         
@@ -43,6 +40,9 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
             Child?.Draw(availableSpace);
             return;
         }
+        
+        if (Canvas is SkiaCanvasBase skiaCanvasBase)
+            skiaCanvasBase.MarkCurrentPageAsHavingLayoutIssues();
         
         // check overflow area
         var contentSize = 

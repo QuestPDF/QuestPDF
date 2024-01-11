@@ -6,11 +6,10 @@ namespace QuestPDF.Fluent
 {
     public static class RotateExtensions
     {
-        private static IContainer SimpleRotate(this IContainer element, Action<SimpleRotate> handler)
+        private static IContainer SimpleRotate(this IContainer element, int turnDirection)
         {
             var scale = element as SimpleRotate ?? new SimpleRotate();
-            handler(scale);
-            
+            scale.TurnCount += turnDirection;
             return element.Element(scale);
         }
         
@@ -23,7 +22,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public static IContainer RotateLeft(this IContainer element)
         {
-            return element.SimpleRotate(x => x.TurnCount--);
+            return element.SimpleRotate(-1);
         }
         
         /// <summary>
@@ -35,7 +34,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public static IContainer RotateRight(this IContainer element)
         {
-            return element.SimpleRotate(x => x.TurnCount++);
+            return element.SimpleRotate(1);
         }
         
         /// <summary>
