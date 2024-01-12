@@ -20,7 +20,7 @@ namespace QuestPDF.Infrastructure
         Fallback,
         Direction,
     }
-    
+
     internal static class TextStyleManager
     {
         private static readonly ConcurrentDictionary<(TextStyle origin, TextStyleProperty property, object value), TextStyle> TextStyleMutateCache = new();
@@ -227,41 +227,41 @@ namespace QuestPDF.Infrastructure
                     throw new ArgumentOutOfRangeException(nameof(property), property, "Expected to mutate the TextStyle object. Provided property type is not supported.");
             }
         }
-        
+
         internal static TextStyle ApplyInheritedStyle(this TextStyle style, TextStyle parent)
         {
             var cacheKey = (style, parent);
             return TextStyleApplyInheritedCache.GetOrAdd(cacheKey, key => key.origin.ApplyStyleProperties(key.parent, overrideStyle: false, overrideFontFamily: false, applyFallback: true).UpdateFontFallback(overrideStyle: true));
         }
-        
+
         internal static TextStyle ApplyGlobalStyle(this TextStyle style)
         {
             return TextStyleApplyGlobalCache.GetOrAdd(style, key => key.ApplyStyleProperties(TextStyle.LibraryDefault, overrideStyle: false, overrideFontFamily: false, applyFallback: true).UpdateFontFallback(overrideStyle: false));
         }
-        
+
         private static TextStyle UpdateFontFallback(this TextStyle style, bool overrideStyle)
         {
             var targetFallbackStyle = style
                 ?.Fallback
                 ?.ApplyStyleProperties(style, overrideStyle: overrideStyle, overrideFontFamily: false, applyFallback: false)
                 ?.UpdateFontFallback(overrideStyle);
-            
+
             return style.MutateStyle(TextStyleProperty.Fallback, targetFallbackStyle, overrideValue: true);
         }
-        
+
         internal static TextStyle OverrideStyle(this TextStyle style, TextStyle parent)
         {
             var cacheKey = (style, parent);
             return TextStyleOverrideCache.GetOrAdd(cacheKey, key => ApplyStyleProperties(key.origin, key.parent, overrideStyle: true, overrideFontFamily: true, applyFallback: true));
         }
-        
+
         private static TextStyle ApplyStyleProperties(this TextStyle style, TextStyle parent, bool overrideStyle, bool overrideFontFamily, bool applyFallback)
         {
             var result = style;
-            
+
             if (string.IsNullOrWhiteSpace(result.FontFamily) || overrideFontFamily)
                 result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideStyle);
-                
+
             result = MutateStyle(result, TextStyleProperty.Color, parent.Color, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.BackgroundColor, parent.BackgroundColor, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.Size, parent.Size, overrideStyle);
@@ -274,7 +274,7 @@ namespace QuestPDF.Infrastructure
             result = MutateStyle(result, TextStyleProperty.HasUnderline, parent.HasUnderline, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.WrapAnywhere, parent.WrapAnywhere, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.Direction, parent.Direction, overrideStyle);
-            
+
             if (applyFallback)
                 result = MutateStyle(result, TextStyleProperty.Fallback, parent.Fallback, overrideStyle);
 

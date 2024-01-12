@@ -128,8 +128,10 @@ namespace QuestPDF.Elements.Text
                 switch (textBlockItem)
                 {
                     case TextBlockPageNumber or TextBlockElement:
-                        yield return textBlockItem;
-                        break;
+                        {
+                            yield return textBlockItem;
+                            break;
+                        }
                     case TextBlockSpan textBlockSpan:
                         {
                             if (!Settings.CheckIfAllTextGlyphsAreAvailable && textBlockSpan.Style.Fallback == null)

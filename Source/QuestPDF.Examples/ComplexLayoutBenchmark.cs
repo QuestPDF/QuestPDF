@@ -29,33 +29,27 @@ namespace QuestPDF.Examples
 
             level--;
 
-            switch (level % 3)
+            if (level % 3 == 0)
             {
-                case 0:
+                container
+                    .Border(level / 4f)
+                    .BorderColor(Colors.Black)
+                    .Row(row =>
                     {
-                        container
-                            .Border(level / 4f)
-                            .BorderColor(Colors.Black)
-                            .Row(row =>
-                            {
-                                row.RelativeItem().Element(x => GenerateStructure(x, level));
-                                row.RelativeItem().Element(x => GenerateStructure(x, level));
-                            });
-                        break;
-                    }
-
-                default:
+                        row.RelativeItem().Element(x => GenerateStructure(x, level));
+                        row.RelativeItem().Element(x => GenerateStructure(x, level));
+                    });
+            }
+            else
+            {
+                container
+                    .Border(level / 4f)
+                    .BorderColor(Colors.Black)
+                    .Column(column =>
                     {
-                        container
-                            .Border(level / 4f)
-                            .BorderColor(Colors.Black)
-                            .Column(column =>
-                            {
-                                column.Item().Element(x => GenerateStructure(x, level));
-                                column.Item().Element(x => GenerateStructure(x, level));
-                            });
-                        break;
-                    }
+                        column.Item().Element(x => GenerateStructure(x, level));
+                        column.Item().Element(x => GenerateStructure(x, level));
+                    });
             }
         }
     }
