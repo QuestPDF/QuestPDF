@@ -61,6 +61,5 @@ Version 2022.12.13
 - Maintenance: The QuestPDF Previewer application has been updated to utilize the latest version of the Avalonia library
 
 Version 2022.12.14
-- Improvement: enhanced the automated layout issue detection algorithm to cover a broader range of cases.
 - Update: upgraded the SkiaSharp dependency to version 2.88.7. This update addresses issues with JPEG images being incorrectly encoded/decoded on ARM devices.
 - Maintenance: added .NET 8 as an official build target for the library.
