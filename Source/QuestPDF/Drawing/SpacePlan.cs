@@ -15,28 +15,29 @@ namespace QuestPDF.Drawing
             Height = height;
         }
 
-        internal static SpacePlan  Wrap() => new SpacePlan(SpacePlanType.Wrap, 0, 0);
-        
-        internal static SpacePlan PartialRender(float width, float height) => new SpacePlan(SpacePlanType.PartialRender, width, height);
+        internal static SpacePlan Wrap()
+            => new(SpacePlanType.Wrap, 0, 0);
 
-        internal static SpacePlan PartialRender(Size size) => PartialRender(size.Width, size.Height);
-        
-        internal static SpacePlan FullRender(float width, float height) => new SpacePlan(SpacePlanType.FullRender, width, height);
+        internal static SpacePlan PartialRender(float width, float height)
+            => new(SpacePlanType.PartialRender, width, height);
 
-        internal static SpacePlan FullRender(Size size) => FullRender(size.Width, size.Height);
+        internal static SpacePlan PartialRender(Size size)
+            => PartialRender(size.Width, size.Height);
+
+        internal static SpacePlan FullRender(float width, float height)
+            => new(SpacePlanType.FullRender, width, height);
+
+        internal static SpacePlan FullRender(Size size)
+            => FullRender(size.Width, size.Height);
 
         public override string ToString()
-        {
-            return Type switch
+            => Type switch
             {
                 SpacePlanType.Wrap => Type.ToString(),
                 _ => $"{Type} (Width: {Width:N3}, Height: {Height:N3})",
             };
-        }
 
         public static implicit operator Size(SpacePlan spacePlan)
-        {
-            return new Size(spacePlan.Width, spacePlan.Height);
-        }
+            => new(spacePlan.Width, spacePlan.Height);
     }
 }
