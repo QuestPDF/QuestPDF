@@ -19,7 +19,7 @@
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
         <PackageTags>pdf report file export generate generation tool create creation render portable document format quest html library converter open source free standard core</PackageTags>
         <Nullable>enable</Nullable>
-        <TargetFrameworks>netstandard2.0;netcoreapp3.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netcoreapp3.0;net6.0;net8.0</TargetFrameworks>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
