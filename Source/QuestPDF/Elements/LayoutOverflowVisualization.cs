@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.Proxy;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
@@ -44,11 +45,7 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
             skiaCanvasBase.MarkCurrentPageAsHavingLayoutIssues();
         
         // check overflow area
-        var contentSize = 
-            TryVerticalOverflow(availableSpace) 
-            ?? TryHorizontalOverflow(availableSpace) 
-            ?? TryUnconstrainedOverflow() 
-            ?? Size.Max;
+        var contentSize = Child.TryMeasureWithOverflow(availableSpace) ?? Size.Max;
         
         // draw content
         var translate = ContentDirection == ContentDirection.RightToLeft
@@ -72,30 +69,6 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
         Canvas.Translate(overflowTranslate.Reverse());
     }
 
-    private Size? TryOverflow(Size targetSpace)
-    {
-        var contentSize = base.Measure(targetSpace);
-        return contentSize.Type == SpacePlanType.Wrap ? null : contentSize;
-    }
-    
-    private Size? TryVerticalOverflow(Size availableSpace)
-    {
-        var overflowSpace = new Size(availableSpace.Width, Size.Infinity);
-        return TryOverflow(overflowSpace);
-    }
-    
-    private Size? TryHorizontalOverflow(Size availableSpace)
-    {
-        var overflowSpace = new Size(Size.Infinity, availableSpace.Height);
-        return TryOverflow(overflowSpace);
-    }
-    
-    private Size? TryUnconstrainedOverflow()
-    {
-        var overflowSpace = new Size(Size.Infinity, Size.Infinity);
-        return TryOverflow(overflowSpace);
-    }
-    
     private void DrawOverflowArea(Size availableSpace, Size contentSize)
     {
         if (Canvas is not SkiaCanvasBase canvasBase)

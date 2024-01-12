@@ -8,6 +8,37 @@ namespace QuestPDF.Drawing.Proxy;
 
 internal static class Helpers
 {
+    internal static Size? TryMeasureWithOverflow(this Element element, Size availableSpace)
+    {
+        return TryVerticalOverflow()
+               ?? TryHorizontalOverflow() 
+               ?? TryUnconstrainedOverflow();
+
+        Size? TryOverflow(Size targetSpace)
+        {
+            var contentSize = element.Measure(targetSpace);
+            return contentSize.Type == SpacePlanType.Wrap ? null : contentSize;
+        }
+    
+        Size? TryVerticalOverflow()
+        {
+            var overflowSpace = new Size(availableSpace.Width, Size.Infinity);
+            return TryOverflow(overflowSpace);
+        }
+    
+        Size? TryHorizontalOverflow()
+        {
+            var overflowSpace = new Size(Size.Infinity, availableSpace.Height);
+            return TryOverflow(overflowSpace);
+        }
+    
+        Size? TryUnconstrainedOverflow()
+        {
+            var overflowSpace = new Size(Size.Infinity, Size.Infinity);
+            return TryOverflow(overflowSpace);
+        }
+    }
+    
     public static void ApplyLayoutOverflowDetection(this Element container)
     {
         container.VisitChildren(x =>
@@ -20,28 +51,49 @@ internal static class Helpers
     {
         Traverse(hierarchyRoot);
         
-        void Traverse(TreeNode<OverflowDebuggingProxy> parent)
+        void Traverse(TreeNode<OverflowDebuggingProxy> element)
         {
-            if (parent.Value.SpacePlanType == null)
+            if (element.Value.SpacePlanType is null or SpacePlanType.FullRender)
                 return;
-            
-            if (parent.Value.SpacePlanType == SpacePlanType.FullRender)
-                return;
-            
-            var childrenWithWraps = parent.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.Wrap).ToList();
-            var childrenWithPartialRenders = parent.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.PartialRender).ToList();
 
-            if (childrenWithWraps.Any())
+            if (element.Value.SpacePlanType is SpacePlanType.PartialRender)
             {
-                childrenWithWraps.ForEach(Traverse);
+                foreach (var child in element.Children)
+                    Traverse(child);
+                
+                return;
             }
-            else if (childrenWithPartialRenders.Any())
+            
+            // strategy: element wrap can be caused by any child that returned wrap
+            if (element.Children.Any(x => x.Value.SpacePlanType == SpacePlanType.Wrap))
             {
-                childrenWithPartialRenders.ForEach(Traverse);
+                if (TryFixChildrenOfType(SpacePlanType.Wrap))
+                    return;
             }
-            else
+ 
+            // strategy: there could be more complex inner/hidden layout constraint issue,
+            // if element cannot be successfully drawn on infinite canvas
+            if (element.Value.TryMeasureWithOverflow(element.Value.MeasurementSize) == null)
             {
-                parent.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });
+                if (TryFixChildrenOfType(SpacePlanType.PartialRender))
+                    return;
+            }
+  
+            // fixing children does not help, fix the element itself
+            element.Value.RemoveExistingProxies();
+            element.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });
+
+            bool TryFixChildrenOfType(SpacePlanType spacePlanType)
+            {
+                var suspectedChildren = element.Children.Where(x => x.Value.SpacePlanType == spacePlanType);
+
+                if (!suspectedChildren.Any())
+                    return false;
+
+                foreach (var child in suspectedChildren)
+                    Traverse(child);
+
+                return element.Value.TryMeasureWithOverflow(element.Value.MeasurementSize).HasValue;
             }
         }
     }
