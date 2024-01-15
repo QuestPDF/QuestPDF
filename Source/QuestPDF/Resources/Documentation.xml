@@ -187,14 +187,13 @@
     <doc for="text.letterSpacing">
         <summary>
             Adjusts the horizontal spacing between characters in the text.
-            The adjustment is proportional to the text size, where a <paramref name="factor"/> value of 1 maintains the original spacing.
+            The adjustment is proportional to the text size.
             <a href="https://www.questpdf.com/api-reference/text.html#letter-spacing">Learn more</a>
         </summary>
 
         <param name="factor">
             <para>Sets the proportion by which the horizontal space between characters is changed.</para>
-            <para>A factor greater than 1 spreads characters further apart, while a factor less than 1 (but more than 0) brings them closer together.</para> 
-            <para>Must be greater than 0.</para>
+            <para>A value of 0 maintains the original spacing. When the value is positive, the text is more spread out. When it is negative, the text is more condensed.</para>
         </param>
     </doc>
     

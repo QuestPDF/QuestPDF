@@ -19,3 +19,6 @@ Version 2023.12.3
 - Improvement: enhanced the automated layout issue detection algorithm to cover a broader range of cases.
 - Update: upgraded the SkiaSharp dependency to version 2.88.7. This update addresses issues with JPEG images being incorrectly encoded/decoded on ARM devices.
 - Maintenance: added .NET 8 as an official build target for the library.
+
+Version 2023.12.4
+- Fixed: the TextStyle.LetterSpacing property was not documented correctly, and the FluentAPI code prevented its correct use.

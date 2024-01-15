@@ -66,11 +66,8 @@ namespace QuestPDF.Fluent
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.letterSpacing"]/*' />
-        public static TextStyle LetterSpacing(this TextStyle style, float factor = 1)
+        public static TextStyle LetterSpacing(this TextStyle style, float factor = 0)
         {
-            if (factor <= 0)
-                throw new ArgumentException("Letter spacing must be greater than 0.");
-            
             return style.Mutate(TextStyleProperty.LetterSpacing, factor);
         }
 
