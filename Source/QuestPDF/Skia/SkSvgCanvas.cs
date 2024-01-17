@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace NativeSkia;
+namespace QuestPDF.Skia;
 
 internal class SkSvgCanvas
 {

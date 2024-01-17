@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace NativeSkia;
+namespace QuestPDF.Skia;
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct SkRect

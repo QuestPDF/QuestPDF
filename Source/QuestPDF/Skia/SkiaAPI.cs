@@ -1,4 +1,4 @@
-namespace NativeSkia;
+namespace QuestPDF.Skia;
 
 internal static class SkiaAPI
 {

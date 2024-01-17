@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace NativeSkia.Text;
+namespace QuestPDF.Skia.Text;
 
 internal class SkTypefaceProvider : IDisposable
 {

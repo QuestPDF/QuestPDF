@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace NativeSkia;
+namespace QuestPDF.Skia;
 
 internal class SkData : IDisposable
 {

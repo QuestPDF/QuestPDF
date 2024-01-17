@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
-using NativeSkia.Text;
+using QuestPDF.Skia.Text;
 
-namespace NativeSkia;
+namespace QuestPDF.Skia;
 
 internal class SkCanvas : IDisposable
 {
