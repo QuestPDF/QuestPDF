@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using SkiaSharp;
 
 namespace QuestPDF.Helpers
 {

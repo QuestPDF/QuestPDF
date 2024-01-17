@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 

@@ -1,6 +1,3 @@
-using QuestPDF.Drawing;
-using SkiaSharp;
-
 namespace QuestPDF.Infrastructure
 {
     internal interface ICanvas

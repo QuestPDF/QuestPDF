@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {

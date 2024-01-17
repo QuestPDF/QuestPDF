@@ -1,6 +1,4 @@
-﻿using SkiaSharp;
-
-namespace QuestPDF.Infrastructure
+﻿namespace QuestPDF.Infrastructure
 {
     public class ImageGenerationSettings
     {

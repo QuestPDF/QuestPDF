@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 namespace QuestPDF.Elements;
 

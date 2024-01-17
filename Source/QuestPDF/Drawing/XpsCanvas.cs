@@ -2,7 +2,6 @@
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 namespace QuestPDF.Drawing
 {

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Linq;
-using HarfBuzzSharp;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 using Buffer = HarfBuzzSharp.Buffer;
 
 namespace QuestPDF.Drawing

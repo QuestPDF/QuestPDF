@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
 
 namespace QuestPDF.Helpers
 {
