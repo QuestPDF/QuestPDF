@@ -3,7 +3,7 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2023.12.2</Version>
+        <Version>2023.12.4</Version>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API. Easily generate PDF reports, invoices, exports, etc.</PackageDescription>
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
         <LangVersion>10</LangVersion>
@@ -19,15 +19,15 @@
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
         <PackageTags>pdf report file export generate generation tool create creation render portable document format quest html library converter open source free standard core</PackageTags>
         <Nullable>enable</Nullable>
-        <TargetFrameworks>netstandard2.0;netcoreapp3.0;net6.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0;netcoreapp3.0;net6.0;net8.0</TargetFrameworks>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="SkiaSharp" Version="2.88.6" />
-      <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.6" />
+      <PackageReference Include="SkiaSharp" Version="2.88.7" />
+      <PackageReference Include="SkiaSharp.HarfBuzz" Version="2.88.7" />
     </ItemGroup>
 
     <ItemGroup>

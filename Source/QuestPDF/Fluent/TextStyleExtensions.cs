@@ -55,12 +55,10 @@ namespace QuestPDF.Fluent
             };
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.letterSpacing"]/*' />
-        public static TextStyle LetterSpacing(this TextStyle style, float factor = 1)
-            => factor switch
-            {
-                <= 0 => throw new ArgumentException("Letter spacing must be greater than 0."),
-                _ => style.Mutate(TextStyleProperty.LetterSpacing, factor),
-            };
+        public static TextStyle LetterSpacing(this TextStyle style, float factor = 0)
+        {
+            return style.Mutate(TextStyleProperty.LetterSpacing, factor);
+        }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.italic"]/*' />
         public static TextStyle Italic(this TextStyle style, bool value = true)

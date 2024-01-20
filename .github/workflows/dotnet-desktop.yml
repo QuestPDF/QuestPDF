@@ -28,10 +28,10 @@ jobs:
       - name: 📝 Fetch Sources 📝
         uses: actions/checkout@v3
 
-      - name: ⚙ Setup .NET 6.0 SDK ⚙
+      - name: ⚙ Setup .NET 8.0 SDK ⚙
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
           
       - name: 🔄 Restore Nuget Packages 🔄
         shell: bash
