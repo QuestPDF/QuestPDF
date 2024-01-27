@@ -299,22 +299,6 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Provides direct access to the low-level SkiaSharp API.
-        /// <a href="https://www.questpdf.com/api-reference/canvas.html">Learn more</a>
-        /// </summary>
-        /// <example>
-        /// <para>Use this element when needing to render advanced shapes not directly available in the QuestPDF API.</para>
-        /// <para>It's also ideal for integrating with other SkiaSharp-based libraries, such as charting tools, to produce pixel-perfect vector graphics.</para>
-        /// </example>
-        public static void Canvas(this IContainer element, DrawOnCanvas handler)
-        {
-            element.Element(new Canvas
-            {
-                Handler = handler
-            });
-        }
-        
-        /// <summary>
         /// Removes size constraints and grants its content virtually unlimited space.
         /// <a href="https://www.questpdf.com/api-reference/unconstrained.html">Learn more</a>
         /// </summary>
@@ -376,5 +360,25 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new ScaleToFit());
         }
+
+        #region Canvas [Obsolete]
+
+        public delegate void DrawOnCanvas(object canvas, Size availableSpace);
+        
+        /// <summary>
+        /// Provides direct access to the low-level SkiaSharp API.
+        /// <a href="https://www.questpdf.com/api-reference/canvas.html">Learn more</a>
+        /// </summary>
+        /// <example>
+        /// <para>Use this element when needing to render advanced shapes not directly available in the QuestPDF API.</para>
+        /// <para>It's also ideal for integrating with other SkiaSharp-based libraries, such as charting tools, to produce pixel-perfect vector graphics.</para>
+        /// </example>
+        [Obsolete("This element has been deprecated since version 2024.2. Please the SVG functionality to provide custom content.")]
+        public static void Canvas(this IContainer element, DrawOnCanvas handler)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
     }
 }

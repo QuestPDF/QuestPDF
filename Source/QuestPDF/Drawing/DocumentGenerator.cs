@@ -9,6 +9,7 @@ using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
@@ -19,10 +20,9 @@ namespace QuestPDF.Drawing
             NativeDependencyCompatibilityChecker.Test();
         }
         
-        internal static void GeneratePdf(Stream stream, IDocument document)
+        internal static void GeneratePdf(SkWriteStream stream, IDocument document)
         {
             ValidateLicense();
-            CheckIfStreamIsCompatible(stream);
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
@@ -30,23 +30,13 @@ namespace QuestPDF.Drawing
             RenderDocument(canvas, document, settings);
         }
         
-        internal static void GenerateXps(Stream stream, IDocument document)
+        internal static void GenerateXps(SkWriteStream stream, IDocument document)
         {
             ValidateLicense();
-            CheckIfStreamIsCompatible(stream);
             
             var settings = document.GetSettings();
             var canvas = new XpsCanvas(stream, settings);
             RenderDocument(canvas, document, settings);
-        }
-
-        private static void CheckIfStreamIsCompatible(Stream stream)
-        {
-            if (!stream.CanWrite)
-                throw new ArgumentException("The library requires a Stream object with the 'write' capability available (the CanWrite flag). Please consider using the MemoryStream class.");
-            
-            if (!stream.CanSeek)
-                throw new ArgumentException("The library requires a Stream object with the 'seek' capability available (the CanSeek flag). Please consider using the MemoryStream class.");
         }
         
         internal static ICollection<byte[]> GenerateImages(IDocument document, ImageGenerationSettings imageGenerationSettings)

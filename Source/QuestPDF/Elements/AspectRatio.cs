@@ -16,7 +16,7 @@ namespace QuestPDF.Elements
             if (Ratio == 0)
                 return SpacePlan.FullRender(0, 0);
             
-            if(Child == null)
+            if (Child == null)
                 return SpacePlan.FullRender(0, 0);
             
             var targetSize = GetTargetSize(availableSpace);

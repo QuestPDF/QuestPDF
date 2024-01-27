@@ -21,6 +21,8 @@ namespace QuestPDF.ReportSample.Layouts
                 Title = Model.Title
             };
         }
+        
+        public DocumentSettings GetSettings() => DocumentSettings.Default;
 
         public void Compose(IDocumentContainer container)
         {

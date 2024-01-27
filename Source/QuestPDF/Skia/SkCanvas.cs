@@ -4,10 +4,10 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Skia;
 
-internal class SkCanvas : IDisposable
+internal sealed class SkCanvas : IDisposable
 {
-    internal IntPtr Instance;
-    internal bool DisposeNativeObject = true;
+    public IntPtr Instance { get; private set; }
+    private bool DisposeNativeObject = true;
 
     public SkCanvas(IntPtr instance, bool disposeNativeObject = true)
     {
@@ -119,6 +119,11 @@ internal class SkCanvas : IDisposable
         API.canvas_flush(Instance);
     }
     
+    public CanvasMatrix GetCurrentTotalMatrix()
+    {
+        return API.canvas_get_matrix(Instance);
+    }
+    
     ~SkCanvas()
     {
         Dispose();
@@ -133,6 +138,15 @@ internal class SkCanvas : IDisposable
             API.canvas_delete(Instance);
         
         Instance = IntPtr.Zero;
+    }
+    
+    public struct CanvasMatrix
+    {
+        public float ScaleX;
+        public float TranslateX;
+
+        public float ScaleY;
+        public float TranslateY;
     }
 
     private static class API
@@ -199,5 +213,8 @@ internal class SkCanvas : IDisposable
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void canvas_flush(IntPtr canvas);
+        
+        [DllImport(SkiaAPI.LibraryName)]
+        public static extern CanvasMatrix canvas_get_matrix(IntPtr canvas);
     }
 }

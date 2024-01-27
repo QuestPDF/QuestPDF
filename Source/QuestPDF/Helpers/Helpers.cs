@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Helpers
 {
@@ -65,17 +66,6 @@ namespace QuestPDF.Helpers
             return size.Width < 0f || size.Height < 0f;
         }
         
-        internal static SKEncodedImageFormat ToSkImageFormat(this ImageFormat format)
-        {
-            return format switch
-            {
-                ImageFormat.Jpeg => SKEncodedImageFormat.Jpeg,
-                ImageFormat.Png => SKEncodedImageFormat.Png,
-                ImageFormat.Webp=> SKEncodedImageFormat.Webp,
-                _ => throw new ArgumentOutOfRangeException(nameof(format), format, null)
-            };
-        }
-        
         internal static int ToQualityValue(this ImageCompressionQuality quality)
         {
             return quality switch
@@ -90,40 +80,19 @@ namespace QuestPDF.Helpers
             };
         }
         
-        internal static SKImage ScaleImage(this SKImage image, ImageSize targetResolution)
+        internal static SkImage CompressImage(this SkImage image, ImageCompressionQuality compressionQuality)
         {
-            var imageInfo = new SKImageInfo(targetResolution.Width, targetResolution.Height, image.Info.ColorType, image.Info.AlphaType, image.Info.ColorSpace);
-            
-            using var bitmap = SKBitmap.FromImage(image);
-            using var resultBitmap = bitmap.Resize(imageInfo, SKFilterQuality.Medium);
-            return SKImage.FromBitmap(resultBitmap);
-        }
-        
-        internal static SKImage CompressImage(this SKImage image, ImageCompressionQuality compressionQuality)
-        {
-            var targetFormat = image.Info.IsOpaque 
-                ? SKEncodedImageFormat.Jpeg 
-                : SKEncodedImageFormat.Png;
-
-            if (targetFormat == SKEncodedImageFormat.Png)
-                compressionQuality = ImageCompressionQuality.Best;
-            
-            var data = image.Encode(targetFormat, compressionQuality.ToQualityValue());
-            return SKImage.FromEncodedData(data);
+            return image.ResizeAndCompress(image.Width, image.Height, compressionQuality.ToQualityValue());
         }
 
-        internal static SKImage ResizeAndCompressImage(this SKImage image, ImageSize targetResolution, ImageCompressionQuality compressionQuality)
+        internal static SkImage ResizeAndCompressImage(this SkImage image, ImageSize targetResolution, ImageCompressionQuality compressionQuality)
         {
-            if (image.Width == targetResolution.Width && image.Height == targetResolution.Height)
-                return CompressImage(image, compressionQuality);
-            
-            using var scaledImage = image.ScaleImage(targetResolution);
-            return CompressImage(scaledImage, compressionQuality);
+            return image.ResizeAndCompress(targetResolution.Width, targetResolution.Height, compressionQuality.ToQualityValue());
         }
 
-        internal static SKImage GetImageWithSmallerSize(SKImage one, SKImage second)
+        internal static SkImage GetImageWithSmallerSize(SkImage one, SkImage second)
         {
-            return one.EncodedData.Size < second.EncodedData.Size
+            return one.EncodedDataSize < second.EncodedDataSize
                 ? one
                 : second;
         }

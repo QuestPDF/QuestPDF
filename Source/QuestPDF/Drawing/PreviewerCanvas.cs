@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
     internal class PreviewerPageSnapshot
     {
-        public SKPicture Picture { get; set; }
+        public SkPicture Picture { get; set; }
         public Size Size { get; set; }
 
-        public PreviewerPageSnapshot(SKPicture picture, Size size)
+        public PreviewerPageSnapshot(SkPicture picture, Size size)
         {
             Picture = picture;
             Size = size;
@@ -23,7 +24,7 @@ namespace QuestPDF.Drawing
     
     internal class PreviewerCanvas : SkiaCanvasBase
     {
-        private SKPictureRecorder? PictureRecorder { get; set; }
+        private SkPictureRecorder? PictureRecorder { get; set; }
         private Size? CurrentPageSize { get; set; }
 
         private ICollection<PreviewerPageSnapshot> PageSnapshots { get; } = new List<PreviewerPageSnapshot>();
@@ -36,9 +37,9 @@ namespace QuestPDF.Drawing
         public override void BeginPage(Size size)
         {
             CurrentPageSize = size;
-            PictureRecorder = new SKPictureRecorder();
+            PictureRecorder = new SkPictureRecorder();
 
-            Canvas = PictureRecorder.BeginRecording(new SKRect(0, 0, size.Width, size.Height));
+            Canvas = PictureRecorder.BeginRecording(size.Width, size.Height);
         }
 
         public override void EndPage()

@@ -1,9 +1,7 @@
-using Microcharts;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.Examples
@@ -26,7 +24,7 @@ namespace QuestPDF.Examples
                         .MinimalBox()
                         .Layers(layers =>
                         {
-                            layers.Layer().Canvas((canvas, size) =>
+                            layers.Layer().SkiaSharpCanvas((canvas, size) =>
                             {
                                 DrawRoundedRectangle(Colors.White, false);
                                 DrawRoundedRectangle(Colors.Blue.Darken2, true);

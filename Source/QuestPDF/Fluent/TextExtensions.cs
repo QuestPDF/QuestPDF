@@ -11,46 +11,21 @@ namespace QuestPDF.Fluent
 {
     public class TextSpanDescriptor
     {
-        // optimization: only of fields below has value, where TextBlockSpan is more frequent
-        private TextBlockSpan? TextBlockSpan;
-        private ICollection<TextBlockSpan>? TextBlockSpans;
+        private TextBlockSpan TextBlockSpan;
 
         internal TextSpanDescriptor(TextBlockSpan textBlockSpan)
         {
             TextBlockSpan = textBlockSpan;
         }
-        
-        internal TextSpanDescriptor(ICollection<TextBlockSpan> textBlockSpans)
-        {
-            TextBlockSpans = textBlockSpans;
-        }
 
         internal void MutateTextStyle<T>(Func<TextStyle, T, TextStyle> handler, T argument)
         {
-            if (TextBlockSpan != null)
-            {
-                TextBlockSpan.Style = handler(TextBlockSpan.Style, argument);
-                return;
-            }
-            
-            foreach (var textBlockSpan in TextBlockSpans)
-            {
-                textBlockSpan.Style = handler(textBlockSpan.Style, argument);
-            }
+            TextBlockSpan.Style = handler(TextBlockSpan.Style, argument);
         }
         
         internal void MutateTextStyle(Func<TextStyle, TextStyle> handler)
         {
-            if (TextBlockSpan != null)
-            {
-                TextBlockSpan.Style = handler(TextBlockSpan.Style);
-                return;
-            }
-            
-            foreach (var textBlockSpan in TextBlockSpans)
-            {
-                textBlockSpan.Style = handler(textBlockSpan.Style);
-            }
+            TextBlockSpan.Style = handler(TextBlockSpan.Style);
         }
     }
 
@@ -86,7 +61,7 @@ namespace QuestPDF.Fluent
     
     public class TextDescriptor
     {
-        private ICollection<TextBlock> TextBlocks { get; } = new List<TextBlock>();
+        private TextBlock TextBlock { get; } = new();
         private TextStyle? DefaultStyle { get; set; }
         internal HorizontalAlignment? Alignment { get; set; }
         private float Spacing { get; set; } = 0f;
@@ -141,26 +116,6 @@ namespace QuestPDF.Fluent
             Spacing = value.ToPoints(unit);
         }
 
-        private void AddItemToLastTextBlock(ITextBlockItem item)
-        {
-            if (!TextBlocks.Any())
-                TextBlocks.Add(new TextBlock());
-            
-            var lastTextBlock = TextBlocks.Last();
-
-            // TextBlock with only one Span with empty text is a special case.
-            // It represents an empty line with a given text style (e.g. text height).
-            // When more content is put to text block, the first items should be ignored (removed in this case).
-            // This change fixes inconsistent line height problem.
-            if (lastTextBlock.Items.Count == 1 && lastTextBlock.Items[0] is TextBlockSpan { Text: "" })
-            {
-                lastTextBlock.Items[0] = item;
-                return;
-            }
-            
-            lastTextBlock.Items.Add(item);
-        }
-        
         [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
         public void Span(string? text, TextStyle style)
         {
@@ -174,37 +129,11 @@ namespace QuestPDF.Fluent
         public TextSpanDescriptor Span(string? text)
         {
             if (text == null)
-                return new TextSpanDescriptor(Array.Empty<TextBlockSpan>());
+                return new TextSpanDescriptor(new TextBlockSpan());
 
-            if (text.Contains('\r'))
-                text = text.Replace("\r", string.Empty);
-            
-            if (!text.Contains('\n'))
-            {
-                var textBlockSpan = new TextBlockSpan { Text = text };
-                AddItemToLastTextBlock(textBlockSpan);
-                return new TextSpanDescriptor(textBlockSpan);
-            }
-            
-            var items = text
-                .Split(new[] { '\n' }, StringSplitOptions.None)
-                .Select(x => new TextBlockSpan
-                {
-                    Text = x
-                })
-                .ToArray();
-
-            AddItemToLastTextBlock(items.First());
-            
-            foreach (var textBlockSpan in items.Skip(1))
-            {
-                TextBlocks.Add(new TextBlock
-                {   
-                    Items = new List<ITextBlockItem> { textBlockSpan }
-                });
-            }
-
-            return new TextSpanDescriptor(items);
+            var textSpan = new TextBlockSpan() { Text = text };
+            TextBlock.Items.Add(textSpan);
+            return new TextSpanDescriptor(textSpan);
         }
 
         /// <summary>
@@ -229,7 +158,7 @@ namespace QuestPDF.Fluent
         private TextPageNumberDescriptor PageNumber(Func<IPageContext, int?> pageNumber)
         {
             var textBlockItem = new TextBlockPageNumber();
-            AddItemToLastTextBlock(textBlockItem);
+            TextBlock.Items.Add(textBlockItem);
             
             return new TextPageNumberDescriptor(textBlockItem, x => textBlockItem.Source = context => x(pageNumber(context)));
         }
@@ -315,7 +244,7 @@ namespace QuestPDF.Fluent
                 throw new ArgumentException("Section name cannot be null or empty", nameof(sectionName));
 
             if (IsNullOrEmpty(text))
-                return new TextSpanDescriptor(Array.Empty<TextBlockSpan>());
+                return new TextSpanDescriptor(new TextBlockSpan());
 
             var textBlockItem = new TextBlockSectionLink
             {
@@ -323,7 +252,7 @@ namespace QuestPDF.Fluent
                 SectionName = sectionName
             };
 
-            AddItemToLastTextBlock(textBlockItem);
+            TextBlock.Items.Add(textBlockItem);
             return new TextSpanDescriptor(textBlockItem);
         }
         
@@ -344,7 +273,7 @@ namespace QuestPDF.Fluent
                 throw new ArgumentException("Url cannot be null or empty", nameof(url));
 
             if (IsNullOrEmpty(text))
-                return new TextSpanDescriptor(Array.Empty<TextBlockSpan>());
+                return new TextSpanDescriptor(new TextBlockSpan());
             
             var textBlockItem = new TextBlockHyperlink
             {
@@ -352,7 +281,7 @@ namespace QuestPDF.Fluent
                 Url = url
             };
 
-            AddItemToLastTextBlock(textBlockItem);
+            TextBlock.Items.Add(textBlockItem);
             return new TextSpanDescriptor(textBlockItem);
         }
         
@@ -373,7 +302,7 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
                 
-            AddItemToLastTextBlock(new TextBlockElement
+            TextBlock.Items.Add(new TextBlockElement
             {
                 Element = container
             });
@@ -393,7 +322,7 @@ namespace QuestPDF.Fluent
             var container = new Container();
             handler(container.AlignBottom().MinimalBox());
                 
-            AddItemToLastTextBlock(new TextBlockElement
+            TextBlock.Items.Add(new TextBlockElement
             {
                 Element = container
             });
@@ -401,24 +330,12 @@ namespace QuestPDF.Fluent
         
         internal void Compose(IContainer container)
         {
-            TextBlocks.ToList().ForEach(x => x.Alignment ??= Alignment);
+            TextBlock.Alignment ??= Alignment;
             
             if (DefaultStyle != null)
                 container = container.DefaultTextStyle(DefaultStyle);
 
-            if (TextBlocks.Count == 1)
-            {
-                container.Element(TextBlocks.First());
-                return;
-            }
-            
-            container.Column(column =>
-            {
-                column.Spacing(Spacing);
-
-                foreach (var textBlock in TextBlocks)
-                    column.Item().Element(textBlock);
-            }); 
+            container.Element(TextBlock);
         }
     }
     

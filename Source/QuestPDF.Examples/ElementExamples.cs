@@ -63,6 +63,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(740, 200)
+                .ShowResults()
                 .Render(container =>
                 {
                     container
@@ -229,7 +230,7 @@ namespace QuestPDF.Examples
                     container
                         .Background("#FFF")
                         .Padding(25)
-                        .Canvas((canvas, size) =>
+                        .SkiaSharpCanvas((canvas, size) =>
                         {
                             using var paint = new SKPaint
                             {
@@ -450,7 +451,7 @@ namespace QuestPDF.Examples
                                 column.Item().PaddingTop(40).Text("Text 2");
                             });
                     
-                            layers.Layer().Canvas((canvas, size) =>
+                            layers.Layer().SkiaSharpCanvas((canvas, size) =>
                             {
                                 using var paint = new SKPaint
                                 {

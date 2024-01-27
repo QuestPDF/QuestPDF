@@ -1,6 +1,7 @@
 ﻿using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
@@ -12,7 +13,7 @@ namespace QuestPDF.Elements
         public string Color { get; set; } = Colors.Red.Medium;
         public void Compose(IContainer container)
         {
-            var backgroundColor = SKColor.Parse(Color).WithAlpha(50).ToString();
+            var backgroundColor = SkColor.Parse(Color).ColorWithAlpha(50).ColorToString();
             
             container
                 .Border(1)

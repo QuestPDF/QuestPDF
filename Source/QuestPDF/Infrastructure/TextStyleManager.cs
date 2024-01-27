@@ -17,7 +17,6 @@ namespace QuestPDF.Infrastructure
         HasStrikethrough,
         HasUnderline,
         WrapAnywhere,
-        Fallback,
         Direction
     }
     
@@ -194,20 +193,7 @@ namespace QuestPDF.Infrastructure
                 
                 return origin with { WrapAnywhere = castedValue };
             }
-            
-            if (property == TextStyleProperty.Fallback)
-            {
-                if (!overrideValue && origin.Fallback != null)
-                    return origin;
 
-                var castedValue = (TextStyle?)value;
-                
-                if (origin.Fallback == castedValue)
-                    return origin;
-                
-                return origin with { Fallback = castedValue };
-            }
-            
             if (property == TextStyleProperty.Direction)
             {
                 if (!overrideValue && origin.Direction != null)
@@ -227,31 +213,21 @@ namespace QuestPDF.Infrastructure
         internal static TextStyle ApplyInheritedStyle(this TextStyle style, TextStyle parent)
         {
             var cacheKey = (style, parent);
-            return TextStyleApplyInheritedCache.GetOrAdd(cacheKey, key => key.origin.ApplyStyleProperties(key.parent, overrideStyle: false, overrideFontFamily: false, applyFallback: true).UpdateFontFallback(overrideStyle: true));
+            return TextStyleApplyInheritedCache.GetOrAdd(cacheKey, key => key.origin.ApplyStyleProperties(key.parent, overrideStyle: false, overrideFontFamily: false));
         }
         
         internal static TextStyle ApplyGlobalStyle(this TextStyle style)
         {
-            return TextStyleApplyGlobalCache.GetOrAdd(style, key => key.ApplyStyleProperties(TextStyle.LibraryDefault, overrideStyle: false, overrideFontFamily: false, applyFallback: true).UpdateFontFallback(overrideStyle: false));
+            return TextStyleApplyGlobalCache.GetOrAdd(style, key => key.ApplyStyleProperties(TextStyle.LibraryDefault, overrideStyle: false, overrideFontFamily: false));
         }
-        
-        private static TextStyle UpdateFontFallback(this TextStyle style, bool overrideStyle)
-        {
-            var targetFallbackStyle = style
-                ?.Fallback
-                ?.ApplyStyleProperties(style, overrideStyle: overrideStyle, overrideFontFamily: false, applyFallback: false)
-                ?.UpdateFontFallback(overrideStyle);
-            
-            return style.MutateStyle(TextStyleProperty.Fallback, targetFallbackStyle, overrideValue: true);
-        }
-        
+
         internal static TextStyle OverrideStyle(this TextStyle style, TextStyle parent)
         {
             var cacheKey = (style, parent);
-            return TextStyleOverrideCache.GetOrAdd(cacheKey, key => ApplyStyleProperties(key.origin, key.parent, overrideStyle: true, overrideFontFamily: true, applyFallback: true));
+            return TextStyleOverrideCache.GetOrAdd(cacheKey, key => ApplyStyleProperties(key.origin, key.parent, overrideStyle: true, overrideFontFamily: true));
         }
         
-        private static TextStyle ApplyStyleProperties(this TextStyle style, TextStyle parent, bool overrideStyle, bool overrideFontFamily, bool applyFallback)
+        private static TextStyle ApplyStyleProperties(this TextStyle style, TextStyle parent, bool overrideStyle, bool overrideFontFamily)
         {
             var result = style;
             
@@ -270,9 +246,6 @@ namespace QuestPDF.Infrastructure
             result = MutateStyle(result, TextStyleProperty.HasUnderline, parent.HasUnderline, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.WrapAnywhere, parent.WrapAnywhere, overrideStyle);
             result = MutateStyle(result, TextStyleProperty.Direction, parent.Direction, overrideStyle);
-            
-            if (applyFallback)
-                result = MutateStyle(result, TextStyleProperty.Fallback, parent.Fallback, overrideStyle);
 
             return result;
         }

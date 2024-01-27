@@ -77,7 +77,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(400, 600)
-                .ProduceImages()
+                .ProducePdf()
                 .ShowResults()
                 .Render(page =>
                 {
@@ -85,7 +85,7 @@ namespace QuestPDF.Examples
                     {
                         column.Spacing(15);
                         
-                        column.Item().Image("photo.jpg").WithRasterDpi(16).FitUnproportionally();
+                        column.Item().Image("photo.jpg").WithRasterDpi(16);
                         column.Item().Image("photo.jpg").WithRasterDpi(72);
                     });
                 });
@@ -97,7 +97,7 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(400, 600)
-                .ProduceImages()
+                .ProducePdf()
                 .ShowResults()
                 .Render(page =>
                 {
@@ -106,7 +106,7 @@ namespace QuestPDF.Examples
                         column.Spacing(15);
                         
                         column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.VeryLow).WithRasterDpi(72);
-                        column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.High).WithRasterDpi(72);
+                        column.Item().Image("photo.jpg").WithCompressionQuality(ImageCompressionQuality.VeryHigh).WithRasterDpi(72);
                     });
                 });
         }
@@ -160,7 +160,7 @@ namespace QuestPDF.Examples
         [Test]
         public void Exception()
         {
-            Assert.Throws<DocumentComposeException>(() =>
+            Assert.Throws<Exception>(() =>
             {
                 RenderingTest
                     .Create()

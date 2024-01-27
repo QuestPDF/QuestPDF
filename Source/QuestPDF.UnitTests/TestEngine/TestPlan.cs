@@ -240,7 +240,7 @@ namespace QuestPDF.UnitTests.TestEngine
                 {
                     CompressionQuality = ImageCompressionQuality.Medium,
                     TargetDpi = DocumentSettings.DefaultRasterDpi,
-                    Source = Placeholders.Image
+                    Source = paylaod => Placeholders.Image(paylaod.ImageSize)
                 }
             };
         }

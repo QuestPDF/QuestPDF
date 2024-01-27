@@ -209,6 +209,27 @@ namespace QuestPDF.Fluent
             return new DynamicImageDescriptor(dynamicImage);
         }
         
+        /// <summary>
+        /// Renders an image of dynamic size dictated by the document layout constraints.
+        /// </summary>
+        /// <remarks>
+        /// Ideal for generating pixel-perfect images that might lose quality upon scaling, such as maps or charts.
+        /// </remarks>
+        /// <param name="dynamicImageSource">
+        /// A delegate that requests an image of desired resolution calculated based on target physical image size and provided DPI.
+        /// </param>
+        /// <returns>A descriptor for adjusting image attributes like scaling behavior, compression quality, and resolution.</returns>
+        public static DynamicImageDescriptor Image(this IContainer element, Func<ImageSize, byte[]> dynamicImageSource)
+        {
+            var dynamicImage = new DynamicImage
+            {
+                Source = payload => dynamicImageSource(payload.ImageSize)
+            };
+            
+            element.Element(dynamicImage);
+            return new DynamicImageDescriptor(dynamicImage);
+        }
+        
         #region Obsolete
         
         [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that takes the GenerateDynamicImageDelegate as an argument.")]

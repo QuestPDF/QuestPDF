@@ -2,6 +2,7 @@
 using System.IO;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent
 {
@@ -14,9 +15,11 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static byte[] GeneratePdf(this IDocument document)
         {
-            using var stream = new MemoryStream();
-            document.GeneratePdf(stream);
-            return stream.ToArray();
+            using var stream = new SkWriteStream();
+            DocumentGenerator.GeneratePdf(stream, document);
+            
+            using var data = stream.DetachData();
+            return data.ToSpan().ToArray();
         }
         
         /// <summary>
@@ -24,8 +27,12 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static void GeneratePdf(this IDocument document, string filePath)
         {
-            using var stream = new FileStream(filePath, FileMode.Create);
-            document.GeneratePdf(stream);
+            var data = document.GeneratePdf();
+            
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+            
+            File.WriteAllBytes(filePath, data);
         }
 
         /// <summary>
@@ -33,7 +40,8 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static void GeneratePdf(this IDocument document, Stream stream)
         {
-            DocumentGenerator.GeneratePdf(stream, document);
+            var data = document.GeneratePdf();
+            stream.Write(data, 0, data.Length);
         }
         
         private static int GenerateAndShowCounter = 0;
@@ -59,9 +67,11 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static byte[] GenerateXps(this IDocument document)
         {
-            using var stream = new MemoryStream();
-            document.GenerateXps(stream);
-            return stream.ToArray();
+            using var stream = new SkWriteStream();
+            DocumentGenerator.GenerateXps(stream, document);
+            
+            using var data = stream.DetachData();
+            return data.ToSpan().ToArray();
         }
         
         /// <summary>
@@ -69,8 +79,12 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static void GenerateXps(this IDocument document, string filePath)
         {
-            using var stream = new FileStream(filePath, FileMode.Create);
-            document.GenerateXps(stream);
+            var data = document.GenerateXps();
+            
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+            
+            File.WriteAllBytes(filePath, data);
         }
 
         /// <summary>
@@ -78,7 +92,8 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static void GenerateXps(this IDocument document, Stream stream)
         {
-            DocumentGenerator.GenerateXps(stream, document);
+            var data = document.GenerateXps();
+            stream.Write(data, 0, data.Length);
         }
         
         /// <summary>

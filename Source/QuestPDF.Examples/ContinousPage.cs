@@ -12,6 +12,7 @@ namespace QuestPDF.Examples
     public class ContinuousPageDocument : IDocument
     {
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
+        public DocumentSettings GetSettings() => DocumentSettings.Default;
 
         public void Compose(IDocumentContainer container)
         {

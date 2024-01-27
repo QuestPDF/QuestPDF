@@ -19,7 +19,7 @@ namespace QuestPDF.UnitTests
                 {
                     TargetDpi = DocumentSettings.DefaultRasterDpi,
                     CompressionQuality = ImageCompressionQuality.High,
-                    Source = GenerateImage
+                    Source = payload => GenerateImage(payload.ImageSize)
                 })
                 .MeasureElement(new Size(300, 200))
                 .CheckMeasureResult(SpacePlan.FullRender(300, 200));
@@ -47,7 +47,7 @@ namespace QuestPDF.UnitTests
                 {
                     TargetDpi = DocumentSettings.DefaultRasterDpi,
                     CompressionQuality = ImageCompressionQuality.High,
-                    Source = GenerateImage
+                    Source = payload => GenerateImage(payload.ImageSize)
                 })
                 .DrawElement(new Size(300, 200))
                 .ExpectCanvasDrawImage(Position.Zero, new Size(300, 200))
@@ -64,10 +64,10 @@ namespace QuestPDF.UnitTests
                 {
                     TargetDpi = DocumentSettings.DefaultRasterDpi * 3,
                     CompressionQuality = ImageCompressionQuality.High,
-                    Source = size =>
+                    Source = payload =>
                     {
-                        passedSize = size;
-                        return GenerateImage(size);
+                        passedSize = payload.ImageSize;
+                        return GenerateImage(payload.ImageSize);
                     }
                 })
                 .DrawElement(new Size(400, 300))

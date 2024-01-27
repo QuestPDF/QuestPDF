@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
 
-internal class SkImage : IDisposable
+internal sealed class SkImage : IDisposable
 {
-    internal IntPtr Instance;
+    public IntPtr Instance { get; private set; }
 
     public readonly int Width;
     public readonly int Height;
@@ -28,6 +28,10 @@ internal class SkImage : IDisposable
     public static SkImage FromData(SkData data)
     {
         var instance = API.image_create_from_data(data.Instance);
+        
+        if (instance == IntPtr.Zero)
+            throw new Exception("Cannot decode the provided image.");
+        
         data.SetAsOwnedByAnotherObject();
         return new SkImage(instance);
     }

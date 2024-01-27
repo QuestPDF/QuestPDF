@@ -67,7 +67,7 @@ namespace QuestPDF.Examples
                                 .Border(1)
                                 .ExtendHorizontal()
                                 .Height(300)
-                                .Canvas((canvas, size) =>
+                                .SkiaSharpCanvas((canvas, size) =>
                                 {
                                     var chart = new BarChart
                                     {

@@ -8,6 +8,7 @@ namespace QuestPDF.ReportSample.Layouts
     public class DifferentHeadersTemplate : IDocument
     {
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
+        public DocumentSettings GetSettings() => DocumentSettings.Default;
 
         public void Compose(IDocumentContainer container)
         {

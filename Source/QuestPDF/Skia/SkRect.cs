@@ -17,4 +17,7 @@ internal struct SkRect
         Right = right;
         Bottom = bottom;
     }
+    
+    public float Width => Right - Left;
+    public float Height => Bottom - Top;
 }

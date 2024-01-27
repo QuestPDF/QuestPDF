@@ -14,6 +14,10 @@ internal class SkSvgImage : IDisposable
         data.SetAsOwnedByAnotherObject();
         
         Instance = API.svg_create(data.Instance);
+        
+        if (Instance == IntPtr.Zero)
+            throw new Exception("Cannot decode the provided SVG image.");
+        
         API.svg_get_viewbox(Instance, out ViewBox);
     }
     

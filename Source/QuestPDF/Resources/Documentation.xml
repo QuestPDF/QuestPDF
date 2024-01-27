@@ -86,6 +86,21 @@
         <returns>Descriptor allowing adjustments to image attributes, such as scaling behavior, compression quality, and target DPI.</returns>
     </doc>
 
+    <!-- SVG -->
+
+    <doc for="svg.remarks">
+        <remarks>
+            Multiple strategies exist for the Image element to determine its final size.
+            By default, the image fills all the available width.
+            This behavior can be customized using options within the <see cref="Fluent.SvgImageDescriptor">descriptor</see> class.
+        </remarks>
+    </doc>
+
+    <doc for="svg.descriptor">
+        <returns>Descriptor allowing adjustments to the SVG image scaling behavior.</returns>
+    </doc>
+
+
     <!-- CONTENT DIRECTION -->
     
     <doc for="contentDirection.ltr.remarks">

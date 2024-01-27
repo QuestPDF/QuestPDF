@@ -75,4 +75,11 @@
         <None Remove="Resources\DefaultFont\Lato-ThinItalic.ttf" />
         <EmbeddedResource Include="Resources\DefaultFont\Lato-ThinItalic.ttf" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="skia_questpdf.dylib" />
+      <Content Include="skia_questpdf.dylib">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
 </Project>

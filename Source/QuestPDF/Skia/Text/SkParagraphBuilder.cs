@@ -62,7 +62,7 @@ internal class SkParagraphBuilder : IDisposable
 {
     internal IntPtr Instance;
     
-    public SkParagraphBuilder(IntPtr instance)
+    private SkParagraphBuilder(IntPtr instance)
     {
         Instance = instance;
     }

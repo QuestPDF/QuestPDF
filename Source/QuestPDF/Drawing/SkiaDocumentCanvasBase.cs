@@ -1,12 +1,13 @@
 ﻿using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
     internal class SkiaDocumentCanvasBase : SkiaCanvasBase
     {
-        private SKDocument? Document { get; }
+        private SkDocument? Document { get; }
 
-        protected SkiaDocumentCanvasBase(SKDocument document)
+        protected SkiaDocumentCanvasBase(SkDocument document)
         {
             Document = document;
         }

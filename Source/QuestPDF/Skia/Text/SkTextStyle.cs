@@ -21,6 +21,7 @@ internal struct TextStyleConfiguration
     
     public float LetterSpacing;
     public float WordSpacing;
+    public float BaselineOffset;
     
     public enum FontWeights
     {

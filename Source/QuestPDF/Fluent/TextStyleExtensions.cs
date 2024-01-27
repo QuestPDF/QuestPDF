@@ -205,7 +205,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
         public static TextStyle Fallback(this TextStyle style, TextStyle? value = null)
         {
-            return style.Mutate(TextStyleProperty.Fallback, value);
+            return style;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />

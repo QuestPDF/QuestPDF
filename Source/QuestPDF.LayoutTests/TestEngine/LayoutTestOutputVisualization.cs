@@ -87,9 +87,14 @@ internal static class LayoutTestResultVisualization
             canvas.Translate(Padding, Padding);
             
             // draw title
-            using var textPaint = TextStyle.LibraryDefault.FontSize(8).FontColor(Colors.White).Bold().ToPaint().Clone();
-            textPaint.TextAlign = SKTextAlign.Center;
-
+            using var textPaint = new SKPaint
+            {
+                TextSize = 8,
+                Color = Colors.White.ColorToCode(),
+                Typeface = SKTypeface.FromFamilyName("Calibri", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
+                TextAlign = SKTextAlign.Center
+            };
+            
             var actualHeaderPosition = new SKPoint(result.PageSize.Width / 2, textPaint.TextSize / 2);
             canvas.DrawText("ACTUAL", actualHeaderPosition, textPaint);
             

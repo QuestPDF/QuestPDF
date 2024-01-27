@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia.Text;
 
-internal class SkParagraph : IDisposable
+internal sealed class SkParagraph : IDisposable
 {
-    internal IntPtr Instance;
+    public IntPtr Instance { get; private set; }
     
     public SkParagraph(IntPtr instance)
     {
@@ -17,12 +17,19 @@ internal class SkParagraph : IDisposable
         API.paragraph_plan_layout(Instance, availableWidth);
     }
     
-    public double[] GetLineHeights()
+    public SkSize[] GetLineMetrics()
     {
-        API.paragraph_get_line_heights(Instance, out var array, out var arrayLength);
+        API.paragraph_get_line_metrics(Instance, out var array, out var arrayLength);
         
-        var managedArray = new double[arrayLength];
-        Marshal.Copy(array, managedArray,  0, arrayLength);
+        var managedArray = new SkSize[arrayLength];
+        
+        var size = Marshal.SizeOf<SkSize>();
+        
+        for (var i = 0; i < arrayLength; i++)
+        {
+            var ptr = IntPtr.Add(array, i * size);
+            managedArray[i] = Marshal.PtrToStructure<SkSize>(ptr);
+        }
 
         return managedArray;
     }
@@ -40,6 +47,23 @@ internal class SkParagraph : IDisposable
     public SkRect[] GetPlaceholderPositions()
     {
         API.paragraph_get_placeholder_positions(Instance, out var array, out var arrayLength);
+        
+        var managedArray = new SkRect[arrayLength];
+        
+        var size = Marshal.SizeOf<SkRect>();
+        
+        for (var i = 0; i < arrayLength; i++)
+        {
+            var ptr = IntPtr.Add(array, i * size);
+            managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
+        }
+
+        return managedArray;
+    }
+    
+    public SkRect[] GetTextRangePositions(int rangeStart, int rangeEnd)
+    {
+        API.paragraph_get_text_range_positions(Instance, rangeStart, rangeEnd, out var array, out var arrayLength);
         
         var managedArray = new SkRect[arrayLength];
         
@@ -74,13 +98,16 @@ internal class SkParagraph : IDisposable
         public static extern void paragraph_plan_layout(IntPtr paragraph, float availableWidth);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void paragraph_get_line_heights(IntPtr paragraph, out IntPtr array, out int arrayLength);
+        public static extern void paragraph_get_line_metrics(IntPtr paragraph, out IntPtr array, out int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void paragraph_get_unresolved_codepoints(IntPtr paragraph, out IntPtr array, out int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void paragraph_get_placeholder_positions(IntPtr paragraph, out IntPtr array, out int arrayLength);
+        
+        [DllImport(SkiaAPI.LibraryName)]
+        public static extern void paragraph_get_text_range_positions(IntPtr paragraph, int rangeStart, int rangeEnd, out IntPtr array, out int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void paragraph_delete(IntPtr paragraph);

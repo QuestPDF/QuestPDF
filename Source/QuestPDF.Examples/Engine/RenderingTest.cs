@@ -103,9 +103,7 @@ namespace QuestPDF.Examples.Engine
 
         public void RenderDocument(Action<IDocumentContainer> content)
         {
-            MaxPagesThreshold ??= ResultType == RenderingTestResult.Pdf ? 1000 : 10;
-            var document = new SimpleDocument(content, MaxPagesThreshold.Value, ApplyCaching, ApplyDebugging);
-
+            var document = new SimpleDocument(content, ApplyCaching, ApplyDebugging);
             Render(document);
         }
         

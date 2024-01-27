@@ -3,22 +3,23 @@ using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
     internal sealed class PdfCanvas : SkiaDocumentCanvasBase
     {
-        public PdfCanvas(Stream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings) 
+        public PdfCanvas(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings) 
             : base(CreatePdf(stream, documentMetadata, documentSettings))
         {
             
         }
 
-        private static SKDocument CreatePdf(Stream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
+        private static SkDocument CreatePdf(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
         {
             try
             {
-                return SKDocument.CreatePdf(stream, MapMetadata(documentMetadata, documentSettings));
+                return SkPdfDocument.Create(stream, MapMetadata(documentMetadata, documentSettings));
             }
             catch (TypeInitializationException exception)
             {
@@ -26,9 +27,9 @@ namespace QuestPDF.Drawing
             }
         }
 
-        private static SKDocumentPdfMetadata MapMetadata(DocumentMetadata metadata, DocumentSettings documentSettings)
+        private static SkPdfDocumentMetadata MapMetadata(DocumentMetadata metadata, DocumentSettings documentSettings)
         {
-            return new SKDocumentPdfMetadata
+            return new SkPdfDocumentMetadata
             {
                 Title = metadata.Title,
                 Author = metadata.Author,
@@ -37,12 +38,12 @@ namespace QuestPDF.Drawing
                 Creator = metadata.Creator,
                 Producer = metadata.Producer,
                 
-                Creation = metadata.CreationDate,
-                Modified = metadata.ModifiedDate,
+                CreationDate = new SkDateTime(metadata.CreationDate),
+                ModificationDate = new SkDateTime(metadata.ModifiedDate),
                 
-                RasterDpi = documentSettings.ImageRasterDpi,
-                EncodingQuality = documentSettings.ImageCompressionQuality.ToQualityValue(),
-                PdfA = documentSettings.PdfA
+                RasterDPI = documentSettings.ImageRasterDpi,
+                ImageEncodingQuality = documentSettings.ImageCompressionQuality.ToQualityValue(),
+                SupportPDFA = documentSettings.PdfA
             };
         }
     }

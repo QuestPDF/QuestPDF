@@ -1,14 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
     internal sealed class ImageCanvas : SkiaCanvasBase
     {
         private ImageGenerationSettings Settings { get; }
-        private SKSurface Surface { get; set; }
+        private SkBitmap Bitmap { get; set; }
 
+        // TODO: consider using SkSurface to cache drawing operations and then encode the surface to an image at the very end of the generation process      
+        // this change should reduce memory usage and improve performance
         internal ICollection<byte[]> Images { get; } = new List<byte[]>();
         
         public ImageCanvas(ImageGenerationSettings settings)
@@ -23,29 +27,38 @@ namespace QuestPDF.Drawing
 
         public override void EndDocument()
         {
-            Canvas?.Dispose();
-            Surface?.Dispose();
+            
         }
 
         public override void BeginPage(Size size)
         {
             var scalingFactor = Settings.RasterDpi / (float) PageSizes.PointsPerInch;
-            var imageInfo = new SKImageInfo((int) (size.Width * scalingFactor), (int) (size.Height * scalingFactor));
+
+            Bitmap = new SkBitmap((int) (size.Width * scalingFactor), (int) (size.Height * scalingFactor));
+            Canvas = SkCanvas.CreateFromBitmap(Bitmap);
             
-            Surface = SKSurface.Create(imageInfo);
-            Canvas = Surface.Canvas;
-            
-            Canvas.Scale(scalingFactor);
+            Canvas.Scale(scalingFactor, scalingFactor);
         }
 
         public override void EndPage()
         {
             Canvas.Save();
-            var image = Surface.Snapshot().Encode(Settings.ImageFormat.ToSkImageFormat(), Settings.ImageCompressionQuality.ToQualityValue()).ToArray();
-            Images.Add(image);
+            using var imageData = EncodeBitmap();
+            var imageBytes = imageData.ToSpan().ToArray();
+            Images.Add(imageBytes);
             
-            Canvas.Dispose();
-            Surface.Dispose();
+            Bitmap.Dispose();
+
+            SkData EncodeBitmap()
+            {
+                return Settings.ImageFormat switch
+                {
+                    ImageFormat.Jpeg => Bitmap.EncodeAsJpeg(Settings.ImageCompressionQuality.ToQualityValue()),
+                    ImageFormat.Png => Bitmap.EncodeAsPng(),
+                    ImageFormat.Webp => Bitmap.EncodeAsWebp(Settings.ImageCompressionQuality.ToQualityValue()),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            }
         }
     }
 }
