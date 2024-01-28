@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
@@ -49,7 +50,10 @@ namespace QuestPDF.Elements.Text
             if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > Size.Epsilon)
             {
                 WidthForLineMetricsCalculation = availableSpace.Width;
+                
                 Paragraph.PlanLayout(availableSpace.Width + 1);
+                CheckUnresolvedGlyphs();
+                
                 LineMetrics = Paragraph.GetLineMetrics();
                 PlaceholderPositions = Paragraph.GetPlaceholderPositions();
                 MaximumWidth = LineMetrics.Max(x => x.Width);
@@ -292,6 +296,36 @@ namespace QuestPDF.Elements.Text
                     _ => throw new Exception()
                 };
             }
+        }
+        
+        private void CheckUnresolvedGlyphs()
+        {
+            if (!Settings.CheckIfAllTextGlyphsAreAvailable)
+                return;
+                
+            var unsupportedGlyphs = Paragraph.GetUnresolvedCodepoints();
+                   
+            if (!unsupportedGlyphs.Any())
+                return;
+                
+            var formattedGlyphs = unsupportedGlyphs    
+                .Select(codepoint =>
+                {
+                    var character = char.ConvertFromUtf32(codepoint);
+                    return $"U-{codepoint:X4} '{character}'";
+                });
+                
+            var glyphs = string.Join("\n", formattedGlyphs);
+
+            throw new DocumentDrawingException(
+                $"Could not find an appropriate font fallback for the following glyphs: \n" +
+                $"${glyphs} \n\n" +
+                $"Possible solutions: \n" +
+                $"1) Install fonts that contain missing glyphs in your runtime environment. \n" +
+                $"2) Configure the fallback TextStyle using the 'TextStyle.FontFamilyFallback' method. \n" +
+                $"3) Register additional application specific fonts using the 'FontManager.RegisterFont' method. \n\n" +
+                $"You can disable this check by setting the 'Settings.CheckIfAllTextGlyphsAreAvailable' option to 'false'. \n" +
+                $"However, this may result with text glyphs being incorrectly rendered without any warning.");
         }
     }
 }

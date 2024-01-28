@@ -960,11 +960,7 @@ namespace QuestPDF.Examples
                         page.DefaultTextStyle(x => x
                             .FontSize(24)
                             .Bold()
-                            .FontFamily("Times New Roman")
-                            .Fallback(y => y
-                                .FontFamily("Microsoft YaHei")
-                                .Underline()
-                                .BackgroundColor(Colors.Red.Lighten2)));
+                            .FontFamily("Times New Roman"));
 
                         page.Content().Text(text =>
                         {

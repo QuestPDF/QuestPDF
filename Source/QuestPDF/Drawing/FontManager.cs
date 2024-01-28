@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -16,8 +15,12 @@ namespace QuestPDF.Drawing
     /// </summary>
     public static class FontManager
     {
-        internal static SkTypefaceProvider TypefaceProvider { get; } = new SkTypefaceProvider();
-        internal static SkFontCollection FontCollection { get; } = SkFontCollection.Create(FontManager.TypefaceProvider, true, true);
+        internal static SkTypefaceProvider TypefaceProvider { get; } = new();
+        
+        private static SkFontCollection LocalFontCollection { get; } = SkFontCollection.Create(FontManager.TypefaceProvider, false, true);
+        private static SkFontCollection GlobalFontCollection { get; } = SkFontCollection.Create(FontManager.TypefaceProvider, true, true);
+        
+        internal static SkFontCollection FontCollection => Settings.UseEnvironmentFonts ? GlobalFontCollection : LocalFontCollection;
         
         static FontManager()
         {

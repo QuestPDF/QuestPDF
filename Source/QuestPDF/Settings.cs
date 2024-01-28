@@ -40,6 +40,16 @@ namespace QuestPDF
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
         public static bool CheckIfAllTextGlyphsAreAvailable { get; set; } = System.Diagnostics.Debugger.IsAttached;
 
+        /// <summary>
+        /// Decides whether the application should use the fonts available in the environment.
+        /// </summary>
+        /// <remarks>
+        /// <para>When set to <c>true</c>, the application will use the fonts installed on the system where it is running. This is the default behavior.</para>
+        /// <para>When set to <c>false</c>, the application will only use the fonts that have been registered using the <c>FontManager</c> class in the QuestPDF library.</para>
+        /// <para>This property is useful when you want to control the fonts used by your application, especially in cases where the environment might not have the necessary fonts installed.</para>
+        /// </remarks>
+        public static bool UseEnvironmentFonts { get; set; } = true;
+        
         static Settings()
         {
             NativeDependencyCompatibilityChecker.Test();
