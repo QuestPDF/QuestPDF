@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
 
-internal class SkSvgImage : IDisposable
+internal sealed class SkSvgImage : IDisposable
 {
-    internal IntPtr Instance;
+    public IntPtr Instance { get; private set; }
     public SkRect ViewBox;
     
     public SkSvgImage(string svgString)

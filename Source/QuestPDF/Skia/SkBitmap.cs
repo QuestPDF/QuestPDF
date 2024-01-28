@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
 
-internal class SkBitmap : IDisposable
+internal sealed class SkBitmap : IDisposable
 {
-    internal IntPtr Instance;
+    public IntPtr Instance { get; private set; }
     
     public SkBitmap(IntPtr instance)
     {

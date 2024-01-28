@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
 
-internal class SkData : IDisposable
+internal sealed class SkData : IDisposable
 {
-    internal IntPtr Instance;
-    internal bool DisposeNativeObject = true;
+    public IntPtr Instance { get; private set; }
+    private bool DisposeNativeObject = true;
     
     public SkData(IntPtr instance, bool disposeNativeObject = true)
     {

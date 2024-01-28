@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
 
-internal class SkWriteStream : IDisposable
+internal sealed class SkWriteStream : IDisposable
 {
-    internal IntPtr Instance;
+    public IntPtr Instance { get; private set; }
     
     public SkWriteStream()
     {

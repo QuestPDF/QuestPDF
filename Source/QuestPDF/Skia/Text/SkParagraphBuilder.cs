@@ -3,6 +3,29 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia.Text;
 
+[StructLayout(LayoutKind.Sequential)]
+internal struct ParagraphStyleConfiguration
+{
+    public TextAlign Alignment;
+    public TextDirection Direction;
+    public int MaxLinesVisible;
+
+    internal enum TextAlign
+    {
+        Left,
+        Right,
+        Center,
+        Justify,
+        Start,
+        End
+    }
+    
+    internal enum TextDirection
+    {
+        Rtl,
+        Ltr
+    }
+}
 
 [StructLayout(LayoutKind.Sequential)]
 internal struct SkPlaceholderStyle
@@ -58,18 +81,18 @@ internal struct SkPlaceholderStyle
     }
 }
 
-internal class SkParagraphBuilder : IDisposable
+internal sealed class SkParagraphBuilder : IDisposable
 {
-    internal IntPtr Instance;
+    public IntPtr Instance { get; private set; }
     
-    private SkParagraphBuilder(IntPtr instance)
+    public SkParagraphBuilder(IntPtr instance)
     {
         Instance = instance;
     }
     
-    public static SkParagraphBuilder Create(SkParagraphStyle paragraphStyle, SkFontCollection fontCollection)
+    public static SkParagraphBuilder Create(ParagraphStyleConfiguration paragraphStyleConfiguration, SkFontCollection fontCollection)
     {
-        var instance = API.paragraph_builder_create(paragraphStyle.Instance, fontCollection.Instance);
+        var instance = API.paragraph_builder_create(paragraphStyleConfiguration, fontCollection.Instance);
         return new SkParagraphBuilder(instance);
     }
     
@@ -106,7 +129,7 @@ internal class SkParagraphBuilder : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern IntPtr paragraph_builder_create(IntPtr paragraphStyle, IntPtr fontCollection);
+        public static extern IntPtr paragraph_builder_create(ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr fontCollection);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void paragraph_builder_add_text(IntPtr paragraphBuilder, string text, IntPtr textStyle);

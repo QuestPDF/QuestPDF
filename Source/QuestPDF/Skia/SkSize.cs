@@ -7,7 +7,7 @@ internal class SkSize
 {
     public float Width;
     public float Height;
-    
+
     public SkSize()
     {
         

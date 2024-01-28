@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
 
-internal class SkSvgCanvas
+internal sealed class SkSvgCanvas
 {
     public static SkCanvas CreateSvg(float width, float height, SkWriteStream writeStream)
     {

@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
 
-internal class SkPictureRecorder : IDisposable
+internal sealed class SkPictureRecorder : IDisposable
 {
-    internal IntPtr Instance;
+    public IntPtr Instance { get; private set; }
     
     public SkPictureRecorder()
     {

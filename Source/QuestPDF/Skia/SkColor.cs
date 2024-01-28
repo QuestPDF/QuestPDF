@@ -85,7 +85,7 @@ internal static class SkColor
 
         return false;
     }
-    
+
     public static uint ColorWithAlpha(this uint color, byte alpha)
     {
         return (color & 0x00FFFFFF) | ((uint)alpha << 24);

@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia.Text;
 
-internal class SkTypefaceProvider : IDisposable
+internal sealed class SkTypefaceProvider : IDisposable
 {
-    internal IntPtr Instance;
+    public IntPtr Instance { get; private set; }
     
     public SkTypefaceProvider()
     {

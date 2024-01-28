@@ -8,8 +8,10 @@ internal struct TextStyleConfiguration
 {
     public float FontSize;
     public FontWeights FontWeight;
+    public bool IsItalic;
 
-    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 8)] public string[] FontFamilies;
+    public string FontFamily;
+    public string? FontFamilyFallback;
     
     public uint ForegroundColor;
     public uint BackgroundColor;
@@ -63,9 +65,9 @@ internal struct TextStyleConfiguration
     }
 }
 
-internal class SkTextStyle : IDisposable
+internal sealed class SkTextStyle : IDisposable
 {
-    internal IntPtr Instance;
+    public IntPtr Instance { get; private set; }
     
     public SkTextStyle(IntPtr instance)
     {
