@@ -43,7 +43,9 @@ namespace QuestPDF.Drawing
                 
                 RasterDPI = documentSettings.ImageRasterDpi,
                 ImageEncodingQuality = documentSettings.ImageCompressionQuality.ToQualityValue(),
-                SupportPDFA = documentSettings.PdfA
+                
+                SupportPDFA = documentSettings.PdfA,
+                CompressDocument = documentSettings.CompressDocument
             };
         }
     }

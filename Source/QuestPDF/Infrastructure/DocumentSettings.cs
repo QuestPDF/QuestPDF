@@ -12,6 +12,11 @@
         public bool PdfA { get; set; } = false;
 
         /// <summary>
+        /// Gets or sets a value indicating whether the generated document should be additionally compressed. May greatly reduce file size with a small increase in generation time.
+        /// </summary>
+        public bool CompressDocument { get; set; } = true;
+        
+        /// <summary>
         /// Encoding quality controls the trade-off between size and quality.
         /// When the image is opaque, it will be encoded using the JPEG format with the selected quality setting.
         /// When the image contains an alpha channel, it is always encoded using the PNG format and this option is ignored.
