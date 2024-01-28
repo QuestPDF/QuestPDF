@@ -1,5 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
+using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Infrastructure
 {
@@ -8,6 +13,7 @@ namespace QuestPDF.Infrastructure
         Color,
         BackgroundColor,
         FontFamily,
+        FontFamilyFallback,
         Size,
         LineHeight,
         LetterSpacing,
@@ -16,238 +22,92 @@ namespace QuestPDF.Infrastructure
         IsItalic,
         HasStrikethrough,
         HasUnderline,
-        WrapAnywhere,
         Direction
     }
     
     internal static class TextStyleManager
     {
-        private static readonly ConcurrentDictionary<(TextStyle origin, TextStyleProperty property, object value), TextStyle> TextStyleMutateCache = new();
-        private static readonly ConcurrentDictionary<(TextStyle origin, TextStyle parent), TextStyle> TextStyleApplyInheritedCache = new();
-        private static readonly ConcurrentDictionary<TextStyle, TextStyle> TextStyleApplyGlobalCache = new();
-        private static readonly ConcurrentDictionary<(TextStyle origin, TextStyle parent), TextStyle> TextStyleOverrideCache = new();
+        private static readonly List<TextStyle> TextStyles = new()
+        {
+            TextStyle.Default,
+            TextStyle.LibraryDefault
+        };
+
+        private static readonly List<SkTextStyle> SkTextStyles = new();
+
+        private static readonly ConcurrentDictionary<(int originId, TextStyleProperty property, object value), TextStyle> TextStyleMutateCache = new();
+        private static readonly ConcurrentDictionary<(int originId, int parentId), TextStyle> TextStyleApplyInheritedCache = new();
+        private static readonly ConcurrentDictionary<int, TextStyle> TextStyleApplyGlobalCache = new();
+        private static readonly ConcurrentDictionary<(int originId, int parentId), TextStyle> TextStyleOverrideCache = new();
+        
+        private static readonly object MutationLock = new();
 
         public static TextStyle Mutate(this TextStyle origin, TextStyleProperty property, object value)
         {
-            var cacheKey = (origin, property, value);
-            return TextStyleMutateCache.GetOrAdd(cacheKey, x => MutateStyle(x.origin, x.property, x.value, overrideValue: true));
+            var cacheKey = (origin.Id, property, value);
+            return TextStyleMutateCache.GetOrAdd(cacheKey, x => MutateStyle(TextStyles[x.originId], x.property, x.value, overrideValue: true));
         }
 
-        private static TextStyle MutateStyle(this TextStyle origin, TextStyleProperty property, object? value, bool overrideValue)
+        private static TextStyle MutateStyle(this TextStyle origin, TextStyleProperty targetProperty, object? newValue, bool overrideValue)
         {
-            if (overrideValue && value == null)
-                return origin;
-            
-            if (property == TextStyleProperty.Color)
+            lock (MutationLock)
             {
-                if (!overrideValue && origin.Color != null)
+                if (overrideValue && newValue is null)
                     return origin;
                 
-                var castedValue = (string?)value;
-
-                if (origin.Color == castedValue)
+                var property = typeof(TextStyle).GetProperty(targetProperty.ToString(), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                Debug.Assert(property != null);
+                
+                var oldValue = property.GetValue(origin);
+                
+                if (!overrideValue && oldValue is not null)
                     return origin;
 
-                return origin with { Color = castedValue };
+                if (oldValue == newValue) 
+                    return origin;
+                
+                var newIndex = TextStyles.Count;
+                var newTextStyle = origin with { Id = newIndex };
+                newTextStyle.Id = newIndex;
+                property.SetValue(newTextStyle, newValue);
+
+                TextStyles.Add(newTextStyle);
+                return newTextStyle;
             }
-            
-            if (property == TextStyleProperty.BackgroundColor)
-            {
-                if (!overrideValue && origin.BackgroundColor != null)
-                    return origin;
-                
-                var castedValue = (string?)value;
-                
-                if (origin.BackgroundColor == castedValue)
-                    return origin;
-
-                return origin with { BackgroundColor = castedValue };
-            }
-            
-            if (property == TextStyleProperty.FontFamily)
-            {
-                if (!overrideValue && origin.FontFamily != null)
-                    return origin;
-                
-                var castedValue = (string?)value;
-                
-                if (origin.FontFamily == castedValue)
-                    return origin;
-
-                return origin with { FontFamily = castedValue };
-            }
-            
-            if (property == TextStyleProperty.Size)
-            {
-                if (!overrideValue && origin.Size != null)
-                    return origin;
-                
-                var castedValue = (float?)value;
-                
-                if (origin.Size == castedValue)
-                    return origin;
-
-                return origin with { Size = castedValue };
-            }
-            
-            if (property == TextStyleProperty.LineHeight)
-            {
-                if (!overrideValue && origin.LineHeight != null)
-                    return origin;
-                
-                var castedValue = (float?)value;
-                
-                if (origin.LineHeight == castedValue)
-                    return origin;
-
-                return origin with { LineHeight = castedValue };
-            }
-
-            if(property == TextStyleProperty.LetterSpacing)
-            {
-                if (!overrideValue && origin.LetterSpacing != null)
-                    return origin;
-
-                var castedValue = (float?)value;
-
-                if (origin.LetterSpacing == castedValue)
-                    return origin;
-
-                return origin with { LetterSpacing = castedValue };
-            }
-            
-            if (property == TextStyleProperty.FontWeight)
-            {
-                if (!overrideValue && origin.FontWeight != null)
-                    return origin;
-                
-                var castedValue = (FontWeight?)value;
-                
-                if (origin.FontWeight == castedValue)
-                    return origin;
-
-                return origin with { FontWeight = castedValue };
-            }
-            
-            if (property == TextStyleProperty.FontPosition)
-            {
-                if (!overrideValue && origin.FontPosition != null)
-                    return origin;
-                
-                var castedValue = (FontPosition?)value;
-                
-                if (origin.FontPosition == castedValue)
-                    return origin;
-
-                return origin with { FontPosition = castedValue };
-            }
-            
-            if (property == TextStyleProperty.IsItalic)
-            {
-                if (!overrideValue && origin.IsItalic != null)
-                    return origin;
-                
-                var castedValue = (bool?)value;
-                
-                if (origin.IsItalic == castedValue)
-                    return origin;
-
-                return origin with { IsItalic = castedValue };
-            }
-            
-            if (property == TextStyleProperty.HasStrikethrough)
-            {
-                if (!overrideValue && origin.HasStrikethrough != null)
-                    return origin;
-                
-                var castedValue = (bool?)value;
-                
-                if (origin.HasStrikethrough == castedValue)
-                    return origin;
-
-                return origin with { HasStrikethrough = castedValue };
-            }
-            
-            if (property == TextStyleProperty.HasUnderline)
-            {
-                if (!overrideValue && origin.HasUnderline != null)
-                    return origin;
-                
-                var castedValue = (bool?)value;
-                
-                if (origin.HasUnderline == castedValue)
-                    return origin;
-
-                return origin with { HasUnderline = castedValue };
-            }
-            
-            if (property == TextStyleProperty.WrapAnywhere)
-            {
-                if (!overrideValue && origin.WrapAnywhere != null)
-                    return origin;
-
-                var castedValue = (bool?)value;
-                
-                if (origin.WrapAnywhere == castedValue)
-                    return origin;
-                
-                return origin with { WrapAnywhere = castedValue };
-            }
-
-            if (property == TextStyleProperty.Direction)
-            {
-                if (!overrideValue && origin.Direction != null)
-                    return origin;
-
-                var castedValue = (TextDirection?)value;
-                
-                if (origin.Direction == castedValue)
-                    return origin;
-                
-                return origin with { Direction = castedValue };
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(property), property, "Expected to mutate the TextStyle object. Provided property type is not supported.");
         }
         
         internal static TextStyle ApplyInheritedStyle(this TextStyle style, TextStyle parent)
         {
-            var cacheKey = (style, parent);
-            return TextStyleApplyInheritedCache.GetOrAdd(cacheKey, key => key.origin.ApplyStyleProperties(key.parent, overrideStyle: false, overrideFontFamily: false));
+            return TextStyleApplyInheritedCache.GetOrAdd((style.Id, parent.Id), key => ApplyStyleProperties(key.originId, key.parentId, overrideStyle: false));
         }
         
         internal static TextStyle ApplyGlobalStyle(this TextStyle style)
         {
-            return TextStyleApplyGlobalCache.GetOrAdd(style, key => key.ApplyStyleProperties(TextStyle.LibraryDefault, overrideStyle: false, overrideFontFamily: false));
+            return TextStyleApplyGlobalCache.GetOrAdd(style.Id, key => ApplyStyleProperties(key, TextStyle.LibraryDefault.Id, overrideStyle: false));
         }
 
         internal static TextStyle OverrideStyle(this TextStyle style, TextStyle parent)
         {
-            var cacheKey = (style, parent);
-            return TextStyleOverrideCache.GetOrAdd(cacheKey, key => ApplyStyleProperties(key.origin, key.parent, overrideStyle: true, overrideFontFamily: true));
+            return TextStyleOverrideCache.GetOrAdd((style.Id, parent.Id), key => ApplyStyleProperties(key.originId, key.parentId, overrideStyle: true));
         }
         
-        private static TextStyle ApplyStyleProperties(this TextStyle style, TextStyle parent, bool overrideStyle, bool overrideFontFamily)
+        private static TextStyle ApplyStyleProperties(int styleId, int parentId, bool overrideStyle)
         {
-            var result = style;
+            var style = TextStyles[styleId];
+            var parent = TextStyles[parentId];
             
-            if (string.IsNullOrWhiteSpace(result.FontFamily) || overrideFontFamily)
-                result = MutateStyle(result, TextStyleProperty.FontFamily, parent.FontFamily, overrideStyle);
-                
-            result = MutateStyle(result, TextStyleProperty.Color, parent.Color, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.BackgroundColor, parent.BackgroundColor, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.Size, parent.Size, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.LineHeight, parent.LineHeight, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.LetterSpacing, parent.LetterSpacing, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.FontWeight, parent.FontWeight, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.FontPosition, parent.FontPosition, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.IsItalic, parent.IsItalic, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.HasStrikethrough, parent.HasStrikethrough, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.HasUnderline, parent.HasUnderline, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.WrapAnywhere, parent.WrapAnywhere, overrideStyle);
-            result = MutateStyle(result, TextStyleProperty.Direction, parent.Direction, overrideStyle);
+            return Enum
+                .GetValues(typeof(TextStyleProperty))
+                .Cast<TextStyleProperty>()
+                .Aggregate(style, (mutableStyle, nextProperty) =>
+                {
+                    var getParentProperty = typeof(TextStyle).GetProperty(nextProperty.ToString(), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    Debug.Assert(getParentProperty != null);
+                    
+                    var newValue = getParentProperty.GetValue(parent);
 
-            return result;
+                    return mutableStyle.MutateStyle(nextProperty, newValue, overrideStyle);
+                });
         }
     }
 }
