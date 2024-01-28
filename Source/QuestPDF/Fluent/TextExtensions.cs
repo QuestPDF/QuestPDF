@@ -63,8 +63,7 @@ namespace QuestPDF.Fluent
     {
         private TextBlock TextBlock { get; } = new();
         private TextStyle? DefaultStyle { get; set; }
-        internal HorizontalAlignment? Alignment { get; set; }
-        private float Spacing { get; set; } = 0f;
+        internal TextHorizontalAlignment? Alignment { get; set; }
 
         /// <summary>
         /// Applies a consistent text style for the whole content within this <see cref="TextExtensions.Text">Text</see> element.
@@ -89,7 +88,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignLeft()
         {
-            Alignment = HorizontalAlignment.Left;
+            Alignment = TextHorizontalAlignment.Left;
         }
         
         /// <summary>
@@ -97,7 +96,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignCenter()
         {
-            Alignment = HorizontalAlignment.Center;
+            Alignment = TextHorizontalAlignment.Center;
         }
         
         /// <summary>
@@ -105,15 +104,47 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignRight()
         {
-            Alignment = HorizontalAlignment.Right;
+            Alignment = TextHorizontalAlignment.Right;
         }
-
+        
         /// <summary>
-        /// Adjusts the gap between successive paragraphs (separated by line breaks).
+        /// <para>
+        /// Justifies the text within its container.
+        /// </para>
+        ///
+        /// <para>
+        /// This method sets the horizontal alignment of the text to be justified, meaning it aligns along both the left and right margins.
+        /// This is achieved by adjusting the spacing between words and characters as necessary so that each line of text stretches from one end of the text column to the other.
+        /// This creates a clean, block-like appearance for the text.
+        /// </para>
         /// </summary>
+        public void Justify()
+        {
+            Alignment = TextHorizontalAlignment.Justify;
+        }
+        
+        /// <summary>
+        /// Aligns the text horizontally to the start of the container. 
+        /// This method sets the horizontal alignment of the text to the start (left for left-to-right languages, right for right-to-left languages).
+        /// </summary>
+        public void AlignStart()
+        {
+            Alignment = TextHorizontalAlignment.Start;
+        }
+        
+        /// <summary>
+        /// Aligns the text horizontally to the end of the container. 
+        /// This method sets the horizontal alignment of the text to the end (right for left-to-right languages, start for right-to-left languages).
+        /// </summary>
+        public void AlignEnd()
+        {
+            Alignment = TextHorizontalAlignment.End;
+        }
+        
+        [Obsolete("This method is not supported since the 2024.3 version. Please split your text into separate paragraphs, combine using the Column element that also provides the Spacing capability.")]
         public void ParagraphSpacing(float value, Unit unit = Unit.Point)
         {
-            Spacing = value.ToPoints(unit);
+            
         }
 
         [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
@@ -350,7 +381,7 @@ namespace QuestPDF.Fluent
             var descriptor = new TextDescriptor();
             
             if (element is Alignment alignment)
-                descriptor.Alignment = alignment.Horizontal;
+                descriptor.Alignment = MapAlignment(alignment.Horizontal);
             
             content?.Invoke(descriptor);
             descriptor.Compose(element);
@@ -377,12 +408,23 @@ namespace QuestPDF.Fluent
             var textDescriptor = new TextDescriptor();
             
             if (element is Alignment alignment)
-                textDescriptor.Alignment = alignment.Horizontal;
+                textDescriptor.Alignment = MapAlignment(alignment.Horizontal);
             
             var span = textDescriptor.Span(text);
             textDescriptor.Compose(element);
 
             return span;
+        }
+        
+        private static TextHorizontalAlignment? MapAlignment(HorizontalAlignment? alignment)
+        {
+            return alignment switch
+            {
+                HorizontalAlignment.Left => TextHorizontalAlignment.Left,
+                HorizontalAlignment.Center => TextHorizontalAlignment.Center,
+                HorizontalAlignment.Right => TextHorizontalAlignment.Right,
+                _ => null
+            };
         }
     }
 }

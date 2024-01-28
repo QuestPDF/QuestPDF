@@ -371,14 +371,9 @@
 
     <doc for="text.fontFallback">
         <summary>
-            Specifies an alternative text style to be used when the primary font family does not support certain character glyphs.
+            Specifies an alternative font family to be used when the primary font family does not support certain character glyphs.
             <a href="https://www.questpdf.com/api-reference/text.html#font-fallback">Learn more</a>
         </summary>
-        
-        <remarks>
-            The library supports nested font fallbacks, ensuring a series of alternative fonts. 
-            Individual properties can be adjusted for each level of fallback.
-        </remarks>
     </doc>
 
     <!-- PREVIEWER -->

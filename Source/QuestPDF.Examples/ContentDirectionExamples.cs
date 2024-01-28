@@ -316,16 +316,19 @@ namespace QuestPDF.Examples
                     column.Item().Element(ContentWithAlignment(null));
                     
                     column.Item().Text("Left alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(HorizontalAlignment.Left));
+                    column.Item().Element(ContentWithAlignment(TextHorizontalAlignment.Left));
                     
                     column.Item().Text("Center alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(HorizontalAlignment.Center));
+                    column.Item().Element(ContentWithAlignment(TextHorizontalAlignment.Center));
                     
                     column.Item().Text("Right alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(HorizontalAlignment.Right));
+                    column.Item().Element(ContentWithAlignment(TextHorizontalAlignment.Right));
+                    
+                    column.Item().Text("Justify alignment").FontSize(14).SemiBold();
+                    column.Item().Element(ContentWithAlignment(TextHorizontalAlignment.Right));
                 });
 
-                static Action<IContainer> ContentWithAlignment(HorizontalAlignment? alignment)
+                static Action<IContainer> ContentWithAlignment(TextHorizontalAlignment? alignment)
                 {
                     return container =>
                     {

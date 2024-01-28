@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -37,20 +38,12 @@ namespace QuestPDF.UnitTests
             // assert
             var expectedStyle = TextStyle.LibraryDefault with
             {
+                Id = 20, // expect to break when adding new TextStyle properties
                 Size = 20, 
                 FontFamily = "Times New Roman",
                 FontWeight = FontWeight.Bold,
                 BackgroundColor = Colors.Red.Lighten2,
-                HasStrikethrough = true,
-                Fallback = TextStyle.LibraryDefault with
-                {
-                    Size = 20,
-                    FontFamily = "Microsoft YaHei",
-                    FontWeight = FontWeight.Bold,
-                    BackgroundColor = Colors.Red.Lighten2,
-                    HasUnderline = true,
-                    HasStrikethrough = true
-                }
+                HasStrikethrough = true
             };
 
             targetStyle.Should().BeEquivalentTo(expectedStyle);

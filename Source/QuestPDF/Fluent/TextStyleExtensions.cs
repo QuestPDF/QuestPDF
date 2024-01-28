@@ -40,6 +40,12 @@ namespace QuestPDF.Fluent
             return style.Mutate(TextStyleProperty.FontFamily, value);
         }
         
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
+        public static TextStyle FontFamilyFallback(this TextStyle style, string value)
+        {
+            return style.Mutate(TextStyleProperty.FontFamilyFallback, value);
+        }
+        
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontSize method.")]
         public static TextStyle Size(this TextStyle style, float value)
         {
@@ -89,9 +95,10 @@ namespace QuestPDF.Fluent
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
+        [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
         public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)
         {
-            return style.Mutate(TextStyleProperty.WrapAnywhere, value);
+            return style;
         }
 
         #region Weight
@@ -202,13 +209,13 @@ namespace QuestPDF.Fluent
 
         #region Fallback
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
+        [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
         public static TextStyle Fallback(this TextStyle style, TextStyle? value = null)
         {
             return style;
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
+        [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
         public static TextStyle Fallback(this TextStyle style, Func<TextStyle, TextStyle> handler)
         {
             return style.Fallback(handler(TextStyle.Default));

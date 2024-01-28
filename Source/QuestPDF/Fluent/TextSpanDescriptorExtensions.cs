@@ -16,14 +16,14 @@ namespace QuestPDF.Fluent
             return descriptor;
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
+        [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
         public static T Fallback<T>(this T descriptor, TextStyle? value = null) where T : TextSpanDescriptor
         {
             descriptor.MutateTextStyle(TextStyleExtensions.Fallback, value);
             return descriptor;
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
+        [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
         public static T Fallback<T>(this T descriptor, Func<TextStyle, TextStyle> handler) where T : TextSpanDescriptor
         {
             return descriptor.Fallback(handler(TextStyle.Default));
@@ -51,6 +51,13 @@ namespace QuestPDF.Fluent
         public static T FontFamily<T>(this T descriptor, string value) where T : TextSpanDescriptor
         {
             descriptor.MutateTextStyle(TextStyleExtensions.FontFamily, value);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
+        public static T FontFamilyFallback<T>(this T descriptor, string value) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.FontFamilyFallback, value);
             return descriptor;
         }
         
@@ -103,9 +110,9 @@ namespace QuestPDF.Fluent
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
+        [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
         public static T WrapAnywhere<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(TextStyleExtensions.WrapAnywhere, value);
             return descriptor;
         }
 

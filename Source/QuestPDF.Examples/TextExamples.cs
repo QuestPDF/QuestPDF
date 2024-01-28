@@ -138,7 +138,7 @@ namespace QuestPDF.Examples
                         .Padding(20)
                         .Column(column =>
                         {
-                            var letterSpacing = new[] { -0.1f, 0f, 0.2f };
+                            var letterSpacing = new[] { -1f, 0f, 2f };
                             var paragraph = Placeholders.Sentence().ToUpper();
 
                             foreach (var spacing in letterSpacing)
@@ -180,7 +180,7 @@ namespace QuestPDF.Examples
                         .Padding(50)
                         .Column(column =>
                         {
-                            var letterSpacing = new[] { -0.1f, 0f, 0.2f };
+                            var letterSpacing = new[] { -1f, 0f, 2f };
                             var paragraph = "ينا الألم. في بعض الأحيان ونظراً للالتزامات التي يفرضها علينا";
                             foreach (var spacing in letterSpacing)
                             {
@@ -222,7 +222,7 @@ namespace QuestPDF.Examples
                         .Padding(50)
                         .Column(column =>
                         {
-                            var letterSpacing = new[] { 0f, 0.5f };
+                            var letterSpacing = new[] { 0f, 5f };
                             
                             
                             

@@ -21,6 +21,7 @@ internal struct TextStyleConfiguration
     public TextDecorationMode DecorationMode;
     public TextDecorationStyle DecorationStyle;
     
+    public float LineHeight;
     public float LetterSpacing;
     public float WordSpacing;
     public float BaselineOffset;

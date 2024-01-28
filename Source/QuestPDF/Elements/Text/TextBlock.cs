@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Elements.Text.Items;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -14,7 +13,7 @@ namespace QuestPDF.Elements.Text
     {
         public ContentDirection ContentDirection { get; set; }
         
-        public HorizontalAlignment? Alignment { get; set; }
+        public TextHorizontalAlignment? Alignment { get; set; }
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
         private bool RebuildParagraphForEveryPage { get; set; }
@@ -40,28 +39,17 @@ namespace QuestPDF.Elements.Text
             CurrentTopOffset = 0;
         }
         
-        void SetDefaultAlignment()
-        {
-            if (Alignment.HasValue)
-                return;
-
-            Alignment = ContentDirection == ContentDirection.LeftToRight
-                ? HorizontalAlignment.Left
-                : HorizontalAlignment.Right;
-        }
-
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (Items.Count == 0)
                 return SpacePlan.FullRender(Size.Zero);
             
-            SetDefaultAlignment();
             Initialize();
 
             if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > Size.Epsilon)
             {
                 WidthForLineMetricsCalculation = availableSpace.Width;
-                Paragraph.PlanLayout(availableSpace.Width);
+                Paragraph.PlanLayout(availableSpace.Width + 1);
                 LineMetrics = Paragraph.GetLineMetrics();
                 PlaceholderPositions = Paragraph.GetPlaceholderPositions();
                 MaximumWidth = LineMetrics.Max(x => x.Width);
@@ -233,13 +221,15 @@ namespace QuestPDF.Elements.Text
 
         private void BuildParagraph()
         {
-            using var paragraphStyle = new SkParagraphStyle(new ParagraphStyleConfiguration
+            var paragraphStyle = new ParagraphStyleConfiguration
             {
-                Alignment = ParagraphStyleConfiguration.TextAlign.Justify,
-                Direction = ParagraphStyleConfiguration.TextDirection.Ltr,
-                MaxLinesVisible = 1000000,
-                Ellipsis = "..."
-            });
+                Alignment = MapAlignment(Alignment ?? TextHorizontalAlignment.Start),
+                Direction = MapDirection(ContentDirection),
+                
+                // TODO: add API to support specifying the maximum number of lines to render
+                // if the text is longer than maximum number of lines, the ellipsis will be rendered 
+                MaxLinesVisible = 1_000_000
+            };
             
             using var paragraphBuilder = SkParagraphBuilder.Create(paragraphStyle, FontManager.FontCollection);
             var currentTextIndex = 0;
@@ -248,16 +238,6 @@ namespace QuestPDF.Elements.Text
             {
                 if (textBlockItem is TextBlockSpan textBlockSpan)
                 {
-                    var style = textBlockSpan.Style;
-                
-                    var textStyle = new SkTextStyle(new TextStyleConfiguration
-                    {
-                        FontFamilies = new string[8] { style.FontFamily, null, null, null, null, null, null, null },
-                        FontSize = style.Size.Value,
-                        FontWeight = (TextStyleConfiguration.FontWeights)style.FontWeight.Value,
-                        ForegroundColor = style.Color.ColorToCode()
-                    });
-
                     if (textBlockItem is TextBlockSectionLink textBlockSectionLink)
                         textBlockSectionLink.ParagraphBeginIndex = currentTextIndex;
 
@@ -267,6 +247,7 @@ namespace QuestPDF.Elements.Text
                     else if (textBlockItem is TextBlockPageNumber textBlockPageNumber)
                         textBlockPageNumber.UpdatePageNumberText(PageContext);
                 
+                    var textStyle = textBlockSpan.Style.GetSkTextStyle();
                     paragraphBuilder.AddText(textBlockSpan.Text, textStyle);
                     currentTextIndex += textBlockSpan.Text.Length;
                 }
@@ -277,6 +258,8 @@ namespace QuestPDF.Elements.Text
                     {
                         Width = textBlockElement.ElementSize.Width,
                         Height = textBlockElement.ElementSize.Height,
+                        
+                        // TODO: add API support for exact positioning of text-injected elements
                         Alignment = SkPlaceholderStyle.PlaceholderAlignment.AboveBaseline,
                         Baseline = SkPlaceholderStyle.PlaceholderBaseline.Alphabetic,
                         BaselineOffset = 0
@@ -285,6 +268,30 @@ namespace QuestPDF.Elements.Text
             }
 
             Paragraph = paragraphBuilder.CreateParagraph();
+            
+            static ParagraphStyleConfiguration.TextAlign MapAlignment(TextHorizontalAlignment alignment)
+            {
+                return alignment switch
+                {
+                    TextHorizontalAlignment.Left => ParagraphStyleConfiguration.TextAlign.Left,
+                    TextHorizontalAlignment.Center => ParagraphStyleConfiguration.TextAlign.Center,
+                    TextHorizontalAlignment.Right => ParagraphStyleConfiguration.TextAlign.Right,
+                    TextHorizontalAlignment.Justify => ParagraphStyleConfiguration.TextAlign.Justify,
+                    TextHorizontalAlignment.Start => ParagraphStyleConfiguration.TextAlign.Start,
+                    TextHorizontalAlignment.End => ParagraphStyleConfiguration.TextAlign.End,
+                    _ => throw new Exception()
+                };
+            }
+
+            static ParagraphStyleConfiguration.TextDirection MapDirection(ContentDirection direction)
+            {
+                return direction switch
+                {
+                    ContentDirection.LeftToRight => ParagraphStyleConfiguration.TextDirection.Ltr,
+                    ContentDirection.RightToLeft => ParagraphStyleConfiguration.TextDirection.Rtl,
+                    _ => throw new Exception()
+                };
+            }
         }
     }
 }
