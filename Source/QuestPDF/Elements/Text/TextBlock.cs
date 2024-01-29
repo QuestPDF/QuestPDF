@@ -159,6 +159,8 @@ namespace QuestPDF.Elements.Text
                 {
                     var placeholder = PlaceholderPositions[placeholderIndex];
                     var associatedElement = elementItems[placeholderIndex];
+                    
+                    associatedElement.ConfigureElement(PageContext, Canvas);
 
                     var offset = new Position(placeholder.Left, placeholder.Top);
                     
@@ -261,7 +263,9 @@ namespace QuestPDF.Elements.Text
                 }
                 else if (textBlockItem is TextBlockElement textBlockElement)
                 {
-                    textBlockElement.UpdateElementSize(PageContext, Canvas);
+                    textBlockElement.ConfigureElement(PageContext, Canvas);
+                    textBlockElement.UpdateElementSize();
+                    
                     paragraphBuilder.AddPlaceholder(new SkPlaceholderStyle
                     {
                         Width = textBlockElement.ElementSize.Width,

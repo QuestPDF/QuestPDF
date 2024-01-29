@@ -9,11 +9,14 @@ namespace QuestPDF.Elements.Text.Items
         public Element Element { get; set; } = Empty.Instance;
         public Size ElementSize { get; set; } = Size.Zero;
 
-        public void UpdateElementSize(IPageContext pageContext, ICanvas canvas)
+        public void ConfigureElement(IPageContext pageContext, ICanvas canvas)
         {
             Element.VisitChildren(x => (x as IStateResettable)?.ResetState());
             Element.InjectDependencies(pageContext, canvas);
-            
+        }
+        
+        public void UpdateElementSize()
+        {
             ElementSize = Element.Measure(Size.Max);
         }
     }
