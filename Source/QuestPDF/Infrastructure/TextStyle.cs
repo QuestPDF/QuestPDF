@@ -66,7 +66,7 @@ namespace QuestPDF.Infrastructure
                 DecorationType = CreateDecoration(),
                 
                 // TODO: create public API to support these properties
-                DecorationMode = TextStyleConfiguration.TextDecorationMode.Gaps,
+                DecorationMode = TextStyleConfiguration.TextDecorationMode.Through,
                 DecorationStyle = TextStyleConfiguration.TextDecorationStyle.Solid,
                 WordSpacing = 0,
                 
