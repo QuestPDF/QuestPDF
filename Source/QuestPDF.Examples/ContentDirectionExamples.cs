@@ -325,7 +325,7 @@ namespace QuestPDF.Examples
                     column.Item().Element(ContentWithAlignment(TextHorizontalAlignment.Right));
                     
                     column.Item().Text("Justify alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(TextHorizontalAlignment.Right));
+                    column.Item().Element(ContentWithAlignment(TextHorizontalAlignment.Justify));
                 });
 
                 static Action<IContainer> ContentWithAlignment(TextHorizontalAlignment? alignment)

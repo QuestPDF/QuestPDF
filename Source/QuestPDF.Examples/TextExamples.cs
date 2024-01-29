@@ -750,7 +750,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .ProduceImages()
+                .ProducePdf()
                 .ShowResults()
                 .RenderDocument(container =>
                 {
@@ -1009,6 +1009,66 @@ namespace QuestPDF.Examples
                  .Render(container =>
                  {
                      container.Padding(25).Background(Colors.Grey.Lighten3).AlignLeft().Text(longText);
+                 });
+         }
+         
+         [Test]
+         public void TextAlignment()
+         {
+             RenderingTest
+                 .Create()
+                 .ProducePdf()
+                 .ShowResults()
+                 .PageSize(PageSizes.A4)
+                 .Render(container =>
+                 {
+                     container.Padding(25).Column(column =>
+                     {
+                         column.Spacing(25);
+
+                         foreach (var contentDirection in Enum.GetValues<ContentDirection>())
+                         {
+                             column.Item().Text(contentDirection.ToString()).FontSize(20).Bold();
+                             
+                             foreach (var horizontalAlignment in Enum.GetValues<HorizontalAlignment>())
+                                 foreach (var textHorizontalAlignment in Enum.GetValues<TextHorizontalAlignment>())
+                                     column.Item().Element(GenerateTextCase(contentDirection, horizontalAlignment, textHorizontalAlignment));
+                         }
+                     });
+
+                     Action<IContainer> GenerateTextCase(ContentDirection contentDirection, HorizontalAlignment horizontalAlignment, TextHorizontalAlignment textAlignment)
+                     {
+                         return container =>
+                         {
+                             container
+                                 .ContentDirection(contentDirection)
+                                 .Element(element =>
+                                 {
+                                     return horizontalAlignment switch
+                                     {
+                                         HorizontalAlignment.Left => element.AlignLeft(),
+                                         HorizontalAlignment.Center => element.AlignCenter(),
+                                         HorizontalAlignment.Right => element.AlignRight(),
+                                         _ => throw new Exception()
+                                     };
+                                 })
+                                 .Background(Colors.Grey.Lighten3)
+                                 .Padding(10)
+                                 .Text(text =>
+                                 {
+                                     if (textAlignment == TextHorizontalAlignment.Left)
+                                         text.AlignLeft();
+                                     else if (textAlignment == TextHorizontalAlignment.Center)
+                                         text.AlignCenter();
+                                     else if (textAlignment == TextHorizontalAlignment.Right)
+                                         text.AlignRight();
+                                     else if (textAlignment == TextHorizontalAlignment.Justify)
+                                         text.Justify();
+                                     
+                                     text.Span($"{horizontalAlignment.ToString()} - {textAlignment.ToString()}");
+                                 });
+                         };
+                     }
                  });
          }
     }

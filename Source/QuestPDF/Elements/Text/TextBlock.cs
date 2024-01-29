@@ -4,6 +4,7 @@ using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements.Text.Items;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -46,6 +47,7 @@ namespace QuestPDF.Elements.Text
                 return SpacePlan.FullRender(Size.Zero);
             
             Initialize();
+            CalculateParagraphMetrics(availableSpace);
 
             if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > Size.Epsilon)
             {
@@ -95,7 +97,9 @@ namespace QuestPDF.Elements.Text
             if (Items.Count == 0)
                 return;
             
-            var (linesToDraw, takenHeight) = CalculateDrawingMetrics();
+            CalculateParagraphMetrics(availableSpace);
+            
+            var (linesToDraw, takenHeight) = DetermineLinesToDraw();
             DrawParagraph();
             
             CurrentLineIndex += linesToDraw;
@@ -106,7 +110,7 @@ namespace QuestPDF.Elements.Text
             
             return;
 
-            (int linesToDraw, float takenHeight) CalculateDrawingMetrics()
+            (int linesToDraw, float takenHeight) DetermineLinesToDraw()
             {
                 var linesToDraw = 0;
                 var takenHeight = 0f;
@@ -296,6 +300,24 @@ namespace QuestPDF.Elements.Text
                     _ => throw new Exception()
                 };
             }
+        }
+        
+        private void CalculateParagraphMetrics(Size availableSpace)
+        {
+            // SkParagraph seems to require a bigger space buffer to calculate metrics correctly
+            const float epsilon = 1f;
+            
+            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) < epsilon) 
+                return;
+            
+            WidthForLineMetricsCalculation = availableSpace.Width;
+                
+            Paragraph.PlanLayout(availableSpace.Width + epsilon);
+            CheckUnresolvedGlyphs();
+                
+            LineMetrics = Paragraph.GetLineMetrics();
+            PlaceholderPositions = Paragraph.GetPlaceholderPositions();
+            MaximumWidth = LineMetrics.Max(x => x.Width);
         }
         
         private void CheckUnresolvedGlyphs()
