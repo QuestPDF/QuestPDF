@@ -71,7 +71,7 @@ namespace QuestPDF.Infrastructure
                 WordSpacing = 0,
                 
                 LineHeight = LineHeight ?? 1,
-                LetterSpacing = LetterSpacing ?? 0,
+                LetterSpacing = (LetterSpacing ?? 0) * (Size ?? 1),
                 BaselineOffset = CalculateBaselineOffset(),
             });
             
