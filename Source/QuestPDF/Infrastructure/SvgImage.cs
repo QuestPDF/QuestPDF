@@ -32,8 +32,8 @@ public class SvgImage
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
     public static SvgImage FromFile(string filePath)
     {
-        if (File.Exists(filePath))
-            new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
+        if (!File.Exists(filePath))
+            throw new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
             
         var svg = File.ReadAllText(filePath);
         return new SvgImage(svg);

@@ -38,7 +38,7 @@ namespace QuestPDF.UnitTests
             // assert
             var expectedStyle = TextStyle.LibraryDefault with
             {
-                Id = 20, // expect to break when adding new TextStyle properties
+                Id = targetStyle.Id, // expect to break when adding new TextStyle properties, so use the real one
                 Size = 20, 
                 FontFamily = "Times New Roman",
                 FontWeight = FontWeight.Bold,
@@ -46,6 +46,7 @@ namespace QuestPDF.UnitTests
                 HasStrikethrough = true
             };
 
+            spanTextStyle.Id.Should().BeGreaterThan(1);
             targetStyle.Should().BeEquivalentTo(expectedStyle);
         }
     }
