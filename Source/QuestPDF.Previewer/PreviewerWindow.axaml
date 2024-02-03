@@ -49,8 +49,7 @@
 			                            HorizontalAlignment="Stretch" 
 			                            VerticalAlignment="Stretch"
 			                            CurrentScroll="{Binding CurrentScroll, Mode=TwoWay}"
-			                            ScrollViewportSize="{Binding ScrollViewportSize, Mode=OneWayToSource}"
-			                            Pages="{Binding Pages, Mode=OneWay}" />
+			                            ScrollViewportSize="{Binding ScrollViewportSize, Mode=OneWayToSource}" />
 			
 			<Border IsVisible="{Binding DocumentContentHasLayoutOverflowIssues}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="16,8" Background="#F44336" CornerRadius="8" BoxShadow="0 0 8 0 #44000000" Margin="32">
 				<StackPanel Orientation="Horizontal" Spacing="8">

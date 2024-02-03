@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
@@ -16,10 +17,12 @@ namespace QuestPDF.Previewer
         private int Port { get; }
         private HttpClient HttpClient { get; }
         
-        public  event Action? OnPreviewerStopped;
+        public event Action? OnPreviewerStopped;
 
         private const int RequiredPreviewerVersionMajor = 2023;
         private const int RequiredPreviewerVersionMinor = 12;
+        
+        private static PreviewerDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
         
         public PreviewerService(int port)
         {
@@ -133,36 +136,81 @@ namespace QuestPDF.Previewer
         
         public async Task RefreshPreview(PreviewerDocumentSnapshot previewerDocumentSnapshot)
         {
-            using var multipartContent = new MultipartFormDataContent();
-
-            var pages = new List<PreviewerRefreshCommand.Page>();
-            
-            foreach (var picture in previewerDocumentSnapshot.Pictures)
+            // clean old state
+            if (CurrentDocumentSnapshot != null)
             {
-                var page = new PreviewerRefreshCommand.Page
-                {
-                    Width = picture.Size.Width,
-                    Height = picture.Size.Height
-                };
-                
-                pages.Add(page);
-
-                var pictureStream = picture.Picture.Serialize().AsStream();
-                multipartContent.Add(new StreamContent(pictureStream), page.Id, page.Id);
+                foreach (var previewerPageSnapshot in CurrentDocumentSnapshot.Pictures)
+                    previewerPageSnapshot.Picture.Dispose();
             }
-
-            var command = new PreviewerRefreshCommand
+            
+            // set new state
+            CurrentDocumentSnapshot = previewerDocumentSnapshot;
+            
+            var documentStructure = new DocumentStructure
             {
                 DocumentContentHasLayoutOverflowIssues = previewerDocumentSnapshot.DocumentContentHasLayoutOverflowIssues,
-                Pages = pages
+                
+                Pages = previewerDocumentSnapshot
+                    .Pictures
+                    .Select(x => new DocumentStructure.PageSize()
+                    {
+                        Width = x.Size.Width,
+                        Height = x.Size.Height
+                    })
+                    .ToArray()
             };
             
-            multipartContent.Add(JsonContent.Create(command), "command");
+            await HttpClient.PostAsync("/preview/update", JsonContent.Create(documentStructure));
+        }
+        
+        public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
+        {
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    var sw = new Stopwatch();
+                    sw.Start();
+                    await RenderRequestedPageSnapshots();
+                    sw.Stop();
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+                }
+            });
+        }
+        
+        private async Task RenderRequestedPageSnapshots()
+        {
+            // get requests
+            var getRequestedSnapshots = await HttpClient.GetAsync("/preview/getRenderingRequests");
+            var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
+            
+            if (!requestedSnapshots.Any())
+                return;
+      
+            // render snapshots
+            using var multipartContent = new MultipartFormDataContent();
 
-            using var _ = await HttpClient.PostAsync("/update/preview", multipartContent);
+            var renderingTasks = requestedSnapshots
+                .Select(async index =>
+                {
+                    var image = CurrentDocumentSnapshot
+                        .Pictures
+                        .ElementAt(index.PageIndex)
+                        .RenderImage(index.ZoomLevel);
 
-            foreach (var picture in previewerDocumentSnapshot.Pictures)
-                picture.Picture.Dispose();
+                    return (index, image);
+                })
+                .ToList();
+
+            var renderedSnapshots = await Task.WhenAll(renderingTasks);
+            
+            // prepare response and send
+            foreach (var (index, image) in renderedSnapshots)
+                multipartContent.Add(new ByteArrayContent(image), index.ToString(), index.ToString());
+
+            multipartContent.Add(JsonContent.Create(requestedSnapshots), "metadata");
+
+            await HttpClient.PostAsync("/preview/provideRenderedImages", multipartContent);
         }
     }
 }

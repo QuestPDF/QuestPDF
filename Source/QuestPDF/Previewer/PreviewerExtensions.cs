@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
@@ -24,6 +25,7 @@ namespace QuestPDF.Previewer
             previewerService.OnPreviewerStopped += () => cancellationTokenSource.Cancel();
 
             await previewerService.Connect();
+            previewerService.StartRenderRequestedPageSnapshotsTask(cancellationToken);
             await RefreshPreview();
             
             HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();

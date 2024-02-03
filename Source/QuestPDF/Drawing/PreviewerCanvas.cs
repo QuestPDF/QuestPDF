@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
@@ -13,6 +14,17 @@ namespace QuestPDF.Drawing
         {
             Picture = picture;
             Size = size;
+        }
+        
+        public byte[] RenderImage(int zoomLevel)
+        {
+            var scale = (float)Math.Pow(2, zoomLevel);
+            
+            using var bitmap = new SkBitmap((int)(Size.Width * scale), (int)(Size.Height * scale));
+            using var canvas = SkCanvas.CreateFromBitmap(bitmap);
+            canvas.Scale(scale, scale);
+            canvas.DrawPicture(Picture);
+            return bitmap.EncodeAsJpeg(90).ToSpan().ToArray();
         }
     }
     

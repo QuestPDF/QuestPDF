@@ -9,16 +9,7 @@ namespace QuestPDF.Previewer
 {
     class PreviewerControl : Control
     {
-        private InteractiveCanvas InteractiveCanvas { get; set; } = new ();
-        
-        public static readonly StyledProperty<ObservableCollection<DocumentSnapshot.PageSnapshot>> PagesProperty =
-            AvaloniaProperty.Register<PreviewerControl, ObservableCollection<DocumentSnapshot.PageSnapshot>>(nameof(Pages));
-        
-        public ObservableCollection<DocumentSnapshot.PageSnapshot>? Pages
-        {
-            get => GetValue(PagesProperty);
-            set => SetValue(PagesProperty, value);
-        }
+        private InteractiveCanvas InteractiveCanvas { get; set; } = new();
 
         public static readonly StyledProperty<float> CurrentScrollProperty = AvaloniaProperty.Register<PreviewerControl, float>(nameof(CurrentScroll));
         
@@ -38,11 +29,19 @@ namespace QuestPDF.Previewer
         
         public PreviewerControl()
         {
-            PagesProperty.Changed.Subscribe(x =>
+            CommunicationService.Instance.OnDocumentUpdated += document =>
             {
-                InteractiveCanvas.Pages = x.NewValue.Value;
-                InvalidateVisual();
-            });
+                InteractiveCanvas.SetNewDocumentStructure(document);
+                Dispatcher.UIThread.InvokeAsync(InvalidateVisual).GetTask();
+            };
+            
+            CommunicationService.Instance.OnPageSnapshotsRequested += InteractiveCanvas.GetMissingSnapshots;
+            
+            CommunicationService.Instance.OnPageSnapshotsProvided += snapshots =>
+            {
+                InteractiveCanvas.AddSnapshots(snapshots);
+                Dispatcher.UIThread.InvokeAsync(InvalidateVisual).GetTask();
+            };
 
             CurrentScrollProperty.Changed.Subscribe(x =>
             {
@@ -109,7 +108,8 @@ namespace QuestPDF.Previewer
         {
             CurrentScroll = InteractiveCanvas.ScrollPercentY;
             ScrollViewportSize = InteractiveCanvas.ScrollViewportSizeY;
-    
+
+            InteractiveCanvas.RenderingScale = (float)VisualRoot.RenderScaling;
             InteractiveCanvas.Bounds = new Rect(0, 0, Bounds.Width, Bounds.Height);
 
             context.Custom(InteractiveCanvas);

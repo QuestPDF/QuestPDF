@@ -12,7 +12,9 @@ class CommunicationService
 {
     public static CommunicationService Instance { get; } = new ();
     
-    public event Action<DocumentSnapshot>? OnDocumentRefreshed;
+    public event Action<DocumentStructure>? OnDocumentUpdated;
+    public Func<ICollection<PageSnapshotIndex>>? OnPageSnapshotsRequested { get; set; }
+    public Action<ICollection<RenderedPageSnapshot>> OnPageSnapshotsProvided  { get; set; }
 
     private WebApplication? Application { get; set; }
 
@@ -35,7 +37,9 @@ class CommunicationService
 
         Application.MapGet("ping", HandlePing);
         Application.MapGet("version", HandleVersion);
-        Application.MapPost("update/preview", HandleUpdatePreview);
+        Application.MapPost("preview/update", HandlePreviewRefresh);
+        Application.MapGet("preview/getRenderingRequests", HandleGetRequests);
+        Application.MapPost("preview/provideRenderedImages", HandleProvidedSnapshotImages);
             
         return Application.RunAsync($"http://localhost:{port}/");
     }
@@ -48,7 +52,7 @@ class CommunicationService
 
     private async Task<IResult> HandlePing()
     {
-        return OnDocumentRefreshed == null 
+        return OnDocumentUpdated == null 
             ? Results.StatusCode(StatusCodes.Status503ServiceUnavailable) 
             : Results.Ok();
     }
@@ -58,17 +62,27 @@ class CommunicationService
         return Results.Json(GetType().Assembly.GetName().Version);
     }
     
-    private async Task<IResult> HandleUpdatePreview(HttpRequest request)
+    private async Task HandlePreviewRefresh(DocumentStructure documentStructure)
     {
-        var documentSnapshot = JsonSerializer.Deserialize<DocumentSnapshot>(request.Form["command"], JsonSerializerOptions);
+        Task.Run(() => OnDocumentUpdated(documentStructure));
+    }
 
-        foreach (var pageSnapshot in documentSnapshot.Pages)
+    private async Task<ICollection<PageSnapshotIndex>> HandleGetRequests()
+    {
+        return OnPageSnapshotsRequested();
+    }
+    
+    private async Task HandleProvidedSnapshotImages(HttpRequest request)
+    {
+        var renderedPages = JsonSerializer.Deserialize<ICollection<RenderedPageSnapshot>>(request.Form["metadata"], JsonSerializerOptions);
+
+        foreach (var renderedPage in renderedPages)
         {
-            using var stream = request.Form.Files[pageSnapshot.Id].OpenReadStream();
-            pageSnapshot.Picture = SKPicture.Deserialize(stream);
+            using var memoryStream = new MemoryStream();
+            await request.Form.Files.GetFile(renderedPage.ToString()).CopyToAsync(memoryStream);
+            renderedPage.Image = SKImage.FromEncodedData(memoryStream.ToArray());
         }
 
-        Task.Run(() => OnDocumentRefreshed(documentSnapshot));
-        return Results.Ok();
+        Task.Run(() => OnPageSnapshotsProvided(renderedPages));
     }
 }
