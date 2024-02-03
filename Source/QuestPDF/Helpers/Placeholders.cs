@@ -381,14 +381,16 @@ namespace QuestPDF.Helpers
         }
         
         /// <summary>
-        /// Generates a random image with a soft color gradient of the given <paramref name="size" />.
+        /// Generates a random image with a soft color gradient.
         /// </summary>
         /// <remarks>
-        /// Caution: using this method may significantly reduce document generation performance. Please do not use it when performing benchmarks.
+        /// For performance reasons, this method may reduce the <paramref name="size" /> argument to at most 64 pixels, while preserving its aspect ratio.
         /// </remarks>
         /// <returns>Random image encoded in the JPEG format.</returns>
         public static byte[] Image(ImageSize size)
         {
+            size = LimitSize(size);
+            
             var colors = BackgroundColors
                 .OrderBy(_ => Random.Next())
                 .Take(2)
@@ -398,6 +400,16 @@ namespace QuestPDF.Helpers
             using var placeholderImage = SkImage.GeneratePlaceholder(size.Width, size.Height, colors[0], colors[1]);
             using var imageData = placeholderImage.GetEncodedData();
             return imageData.ToSpan().ToArray();
+
+            static ImageSize LimitSize(ImageSize size, int maxSize = 64)
+            {
+                if (size.Width < maxSize && size.Height < maxSize)
+                    return size;
+
+                return size.Width > size.Height
+                    ? new ImageSize(maxSize, maxSize * size.Height / size.Width)
+                    : new ImageSize(maxSize * size.Width / size.Height, maxSize);
+            }
         }
         
         #endregion
