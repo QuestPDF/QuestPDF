@@ -80,7 +80,7 @@ class CommunicationService
         {
             using var memoryStream = new MemoryStream();
             await request.Form.Files.GetFile(renderedPage.ToString()).CopyToAsync(memoryStream);
-            renderedPage.Image = SKImage.FromEncodedData(memoryStream.ToArray());
+            renderedPage.Image = SKImage.FromEncodedData(memoryStream.ToArray()).ToRasterImage(true);
         }
 
         Task.Run(() => OnPageSnapshotsProvided(renderedPages));

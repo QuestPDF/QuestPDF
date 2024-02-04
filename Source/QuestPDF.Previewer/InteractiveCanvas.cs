@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System.Collections.Concurrent;
+using Avalonia;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
@@ -13,7 +14,7 @@ class InteractiveCanvas : ICustomDrawOperation
     public float RenderingScale { get; set; }
 
     private List<DocumentStructure.PageSize> PageSizes { get; set; } = new();
-    private List<RenderedPageSnapshot> PageSnapshotCache { get; set; } = new();
+    private ConcurrentBag<RenderedPageSnapshot> PageSnapshotCache { get; set; } = new();
 
     private float Width => (float)Bounds.Width;
     private float Height => (float)Bounds.Height;
@@ -84,7 +85,8 @@ class InteractiveCanvas : ICustomDrawOperation
 
     public void AddSnapshots(ICollection<RenderedPageSnapshot> snapshots)
     {
-        PageSnapshotCache.AddRange(snapshots);
+        foreach (var snapshot in snapshots)
+            PageSnapshotCache.Add(snapshot);
     }
     
     #endregion
@@ -147,7 +149,7 @@ class InteractiveCanvas : ICustomDrawOperation
     
     #region rendering
 
-    private int PreferredZoomLevel => (int)Math.Clamp(Math.Ceiling(Math.Log2(Scale * RenderingScale)), -2, 2);
+    private int PreferredZoomLevel => (int)Math.Min(3, Math.Ceiling(Math.Log2(Scale * RenderingScale)));
     
     private IEnumerable<(int pageIndex, float verticalOffset)> GetVisiblePages(float padding = 100)
     {
@@ -227,7 +229,7 @@ class InteractiveCanvas : ICustomDrawOperation
         
         using var drawImagePaint = new SKPaint
         {
-            FilterQuality = SKFilterQuality.High
+            FilterQuality = SKFilterQuality.Medium // optimal for down-scaling
         };
 
         var renderingScale = (float)Math.Pow(2, renderedSnapshot.ZoomLevel);
