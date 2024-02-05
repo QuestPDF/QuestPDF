@@ -109,12 +109,10 @@ namespace QuestPDF.Examples
                                 .ToArray();
                             
                             using var plot = new Plot();
-                            plot.Add.Scatter(points, Color.FromHex("#009688"));
-
-                            canvas.Save();
+                            plot.Add.Scatter(points, Color.FromHex(Colors.Teal.Medium));
+                            
                             canvas.ClipRect(new SKRect(0, 0, availableSpace.Width, availableSpace.Height));
                             plot.Render(canvas, (int)availableSpace.Width, (int)availableSpace.Height);
-                            canvas.Restore();
                         });
                 });
         }
