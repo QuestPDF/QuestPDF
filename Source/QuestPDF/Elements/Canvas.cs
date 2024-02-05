@@ -26,7 +26,12 @@ namespace QuestPDF.Elements
                 return;
 
             var originalMatrix = skiaCanvas.TotalMatrix;
+            skiaCanvas.Save();
+            
+            skiaCanvas.ClipRect(new SKRect(0, 0, availableSpace.Width, availableSpace.Height));
             Handler.Invoke(skiaCanvas, availableSpace);
+            
+            skiaCanvas.Restore();
             skiaCanvas.SetMatrix(originalMatrix);
         }
     }
