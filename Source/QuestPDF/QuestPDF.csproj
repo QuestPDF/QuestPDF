@@ -39,41 +39,10 @@
         <None Include="Resources\PackageReadme.md" Pack="true" PackagePath="\" />
         <None Include="Resources\PackageLicense.md" Pack="true" PackagePath="\" />
 
-        <None Include="Resources\Logo.png" Pack="true" PackagePath="\" />
-        <EmbeddedResource Include="Resources\Logo.png" />
-        
-        <None Remove="ImagePlaceholder.png" />
-        <EmbeddedResource Include="Resources\ImagePlaceholder.png" />
-        
-        <None Remove="Resources\DefaultFont\Lato-Black.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-Black.ttf" />
-        
-        <None Remove="Resources\DefaultFont\Lato-BlackItalic.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-BlackItalic.ttf" />
-        
-        <None Remove="Resources\DefaultFont\Lato-Bold.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-Bold.ttf" />
-        
-        <None Remove="Resources\DefaultFont\Lato-BoldItalic.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-BoldItalic.ttf" />
-        
-        <None Remove="Resources\DefaultFont\Lato-Italic.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-Italic.ttf" />
-        
-        <None Remove="Resources\DefaultFont\Lato-Light.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-Light.ttf" />
-        
-        <None Remove="Resources\DefaultFont\Lato-LightItalic.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-LightItalic.ttf" />
-        
-        <None Remove="Resources\DefaultFont\Lato-Regular.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-Regular.ttf" />
-        
-        <None Remove="Resources\DefaultFont\Lato-Thin.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-Thin.ttf" />
-        
-        <None Remove="Resources\DefaultFont\Lato-ThinItalic.ttf" />
-        <EmbeddedResource Include="Resources\DefaultFont\Lato-ThinItalic.ttf" />
+        <EmbeddedResource Include="Resources\**\*.*">
+            <Pack>true</Pack>
+            <PackagePath>%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+        </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
