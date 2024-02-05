@@ -119,7 +119,7 @@ namespace QuestPDF.Examples.Engine
                 if (ShowResult && ShowingResultsEnabled)
                 {
                     var firstImagePath = fileNameSchema(0);
-                    Helpers.Helpers.OpenFileUsingDefaultProgram(firstImagePath);
+                    OpenFileUsingDefaultProgram(firstImagePath);
                 }
             }
 
@@ -127,6 +127,20 @@ namespace QuestPDF.Examples.Engine
             {
                 document.GeneratePdfAndShow();
             }
+        }
+        
+        static void OpenFileUsingDefaultProgram(string filePath)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(filePath)
+                {
+                    UseShellExecute = true
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

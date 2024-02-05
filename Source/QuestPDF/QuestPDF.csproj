@@ -30,7 +30,6 @@
         <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
         <InternalsVisibleTo Include="QuestPDF.UnitTests" />
         <InternalsVisibleTo Include="QuestPDF.LayoutTests" />
-        <InternalsVisibleTo Include="QuestPDF.Examples" />
     </ItemGroup>
 
     <ItemGroup>

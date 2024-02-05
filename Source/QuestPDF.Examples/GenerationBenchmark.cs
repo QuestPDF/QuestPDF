@@ -65,75 +65,77 @@ namespace QuestPDF.Examples
         
         static ProcessRunningTime GenerateAndCollect(int attemptNumber)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            
-            var container = new Container();
-            
-            container
-                .Padding(10)
-                .MinimalBox()
-                .Border(1)
-                .Column(column =>
+            var fluentTime = TimeSpan.Zero;
+
+            var document = Document.Create(document =>
+            {
+                document.Page(page =>
                 {
-                    column.Item().Text($"Attempts {attemptNumber}");
-                    
-                    const int numberOfRows = 100;
-                    const int numberOfColumns = 10;
-
-                    for (var y = 0; y < numberOfRows; y++)
-                    {
-                        column.Item().Row(row =>
+                    page.Content()
+                        .Padding(10)
+                        .Shrink()
+                        .Border(1)
+                        .Column(column =>
                         {
-                            for (var x = 0; x < numberOfColumns; x++)
+                            var fluentTimeStopwatch = new Stopwatch();
+                            fluentTimeStopwatch.Start();
+                            
+                            column.Item().Text($"Attempts {attemptNumber}");
+
+                            const int numberOfRows = 100;
+                            const int numberOfColumns = 10;
+
+                            for (var y = 0; y < numberOfRows; y++)
                             {
-                                row.RelativeItem()
-                                    
-                                    .Background(Colors.Red.Lighten5)
-                                    .Padding(3)
-                                    
-                                    .Background(Colors.Red.Lighten4)
-                                    .Padding(3)
-                                    
-                                    .Background(Colors.Red.Lighten3)
-                                    .Padding(3)
-                                    
-                                    .Background(Colors.Red.Lighten2)
-                                    .Padding(3)
-                                    
-                                    .Background(Colors.Red.Lighten1)
-                                    .Padding(3)
-                                    
-                                    .Background(Colors.Red.Medium)
-                                    .Padding(3)
-                                    
-                                    .Background(Colors.Red.Darken1)
-                                    .Padding(3)
-                                    
-                                    .Background(Colors.Red.Darken2)
-                                    .Padding(3)
-                                    
-                                    .Background(Colors.Red.Darken3)
-                                    .Padding(3)
-                                    
-                                    .Background(Colors.Red.Darken4)
-                                    .Height(3);
+                                column.Item().Row(row =>
+                                {
+                                    for (var x = 0; x < numberOfColumns; x++)
+                                    {
+                                        row.RelativeItem()
+
+                                            .Background(Colors.Red.Lighten5)
+                                            .Padding(3)
+
+                                            .Background(Colors.Red.Lighten4)
+                                            .Padding(3)
+
+                                            .Background(Colors.Red.Lighten3)
+                                            .Padding(3)
+
+                                            .Background(Colors.Red.Lighten2)
+                                            .Padding(3)
+
+                                            .Background(Colors.Red.Lighten1)
+                                            .Padding(3)
+
+                                            .Background(Colors.Red.Medium)
+                                            .Padding(3)
+
+                                            .Background(Colors.Red.Darken1)
+                                            .Padding(3)
+
+                                            .Background(Colors.Red.Darken2)
+                                            .Padding(3)
+
+                                            .Background(Colors.Red.Darken3)
+                                            .Padding(3)
+
+                                            .Background(Colors.Red.Darken4)
+                                            .Height(3);
+                                    }
+                                });
                             }
+                            
+                            fluentTime = fluentTimeStopwatch.Elapsed;
                         });
-                    }  
                 });
+            });
 
-            var fluentTime = stopwatch.Elapsed;
+            var generationTimeStopWatch = new Stopwatch();
             
-            stopwatch.Reset();
-            stopwatch.Start();
-
-            var size = Document
-                .Create(x => x.Page(page => page.Content().Element(container)))
-                .GeneratePdf()
-                .Length;
-
-            var generationTime = stopwatch.Elapsed;
+            generationTimeStopWatch.Start();
+            var size = document.GeneratePdf().Length;
+            var generationTime = generationTimeStopWatch.Elapsed;
             
             return new ProcessRunningTime
             {

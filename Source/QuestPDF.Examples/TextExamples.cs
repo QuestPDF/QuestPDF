@@ -1041,7 +1041,15 @@ namespace QuestPDF.Examples
                          return container =>
                          {
                              container
-                                 .ContentDirection(contentDirection)
+                                 .Element(element =>
+                                 {
+                                     return contentDirection switch
+                                     {
+                                         ContentDirection.LeftToRight => element.ContentFromLeftToRight(),
+                                         ContentDirection.RightToLeft => element.ContentFromRightToLeft(),
+                                         _ => throw new Exception()
+                                     };
+                                 })
                                  .Element(element =>
                                  {
                                      return horizontalAlignment switch
@@ -1053,6 +1061,7 @@ namespace QuestPDF.Examples
                                      };
                                  })
                                  .Background(Colors.Grey.Lighten3)
+                                 .Width(200)
                                  .Padding(10)
                                  .Text(text =>
                                  {
@@ -1064,6 +1073,10 @@ namespace QuestPDF.Examples
                                          text.AlignRight();
                                      else if (textAlignment == TextHorizontalAlignment.Justify)
                                          text.Justify();
+                                     else if (textAlignment == TextHorizontalAlignment.Start)
+                                         text.AlignStart();
+                                     else if (textAlignment == TextHorizontalAlignment.End)
+                                         text.AlignEnd();
                                      
                                      text.Span($"{horizontalAlignment.ToString()} - {textAlignment.ToString()}");
                                  });
