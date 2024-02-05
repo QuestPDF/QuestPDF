@@ -40,12 +40,11 @@
             <Pack>true</Pack>
             <PackagePath>%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </EmbeddedResource>
-    </ItemGroup>
 
-    <ItemGroup>
-      <None Remove="skia_questpdf.dylib" />
-      <Content Include="skia_questpdf.dylib">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+        <None Include="runtimes\**\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Pack>true</Pack>
+            <PackagePath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+        </None>
     </ItemGroup>
 </Project>
