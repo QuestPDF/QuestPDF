@@ -80,10 +80,15 @@ public static class SvgExtensions
     /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
     /// </summary>
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="svg.remarks"]/*' />
+    /// <param name="svg">
+    /// Either a path to the SVG file or the SVG content itself.
+    /// </param>
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="svg.descriptor"]/*' />
     public static SvgImageDescriptor Svg(this IContainer container, string svg)
     {
-        var image = SvgImage.FromText(svg);
+        var isFile = Path.GetExtension(svg).Equals("svg", StringComparison.OrdinalIgnoreCase);
+        
+        var image = isFile ? SvgImage.FromFile(svg) : SvgImage.FromText(svg);
         return container.Svg(image);
     }
     
