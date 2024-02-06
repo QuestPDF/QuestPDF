@@ -25,3 +25,4 @@ Version 2023.12.4
 
 Version 2023.12.5
 - Improvement: when drawing content with the Canvas element, the library clips drawn content to the element's boundaries, preventing potential overflow when integrating with other libraries.
+- Improved layout stability.
