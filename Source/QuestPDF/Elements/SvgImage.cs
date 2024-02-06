@@ -1,13 +1,12 @@
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
 internal class SvgImage : Element
 {
-    public SkSvgImage Svg { get; set; }
+    public Infrastructure.SvgImage Image { get; set; }
     
     internal override SpacePlan Measure(Size availableSpace)
     {
@@ -18,6 +17,6 @@ internal class SvgImage : Element
 
     internal override void Draw(Size availableSpace)
     {
-        Canvas.DrawSvg(Svg, availableSpace);
+        Canvas.DrawSvg(Image.SkSvgImage, availableSpace);
     }
 }
