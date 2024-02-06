@@ -24,5 +24,6 @@ Version 2023.12.4
 - Fixed: the TextStyle.LetterSpacing property was not documented correctly, and the FluentAPI code prevented its correct use.
 
 Version 2023.12.5
+- Improvement: redesigned the automated layout issue detection algorithm,
 - Improvement: when drawing content with the Canvas element, the library clips drawn content to the element's boundaries, preventing potential overflow when integrating with other libraries.
 - Improved layout stability.

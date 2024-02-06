@@ -45,7 +45,11 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
             skiaCanvasBase.MarkCurrentPageAsHavingLayoutIssues();
         
         // check overflow area
-        var contentSize = Child.TryMeasureWithOverflow(availableSpace) ?? Size.Max;
+        var contentArea = Child.TryMeasureWithOverflow(availableSpace);
+
+        var contentSize = contentArea.Type is SpacePlanType.Wrap
+            ? Size.Max
+            : contentArea;
         
         // draw content
         var translate = ContentDirection == ContentDirection.RightToLeft
