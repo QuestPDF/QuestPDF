@@ -16,14 +16,15 @@ Version 2023.12.2
 - Maintenance: The QuestPDF Previewer application has been updated to utilize the latest version of the Avalonia library
 
 Version 2023.12.3
-- Improvement: enhanced the automated layout issue detection algorithm to cover a broader range of cases.
-- Update: upgraded the SkiaSharp dependency to version 2.88.7. This update addresses issues with JPEG images being incorrectly encoded/decoded on ARM devices.
-- Maintenance: added .NET 8 as an official build target for the library.
+- Improvement: enhanced the automated layout issue detection algorithm to cover a broader range of cases
+- Update: upgraded the SkiaSharp dependency to version 2.88.7. This update addresses issues with JPEG images being incorrectly encoded/decoded on ARM devices
+- Maintenance: added .NET 8 as an official build target for the library
 
 Version 2023.12.4
-- Fixed: the TextStyle.LetterSpacing property was not documented correctly, and the FluentAPI code prevented its correct use.
+- Fixed: the TextStyle.LetterSpacing property was not documented correctly, and the FluentAPI code prevented its correct use
 
 Version 2023.12.5
-- Improvement: redesigned the automated layout issue detection algorithm,
-- Improvement: when drawing content with the Canvas element, the library clips drawn content to the element's boundaries, preventing potential overflow when integrating with other libraries.
-- Improved layout stability.
+- Improvement: redesigned the automated layout issue detection algorithm
+- Improvement: when drawing content with the Canvas element, the library now clips drawn content to the element's boundaries. This prevents potential overflow when integrating with other libraries
+- Fix: resolved an issue where the Column element applies double spacing when its child does not occupy any space
+- Improvement: enhanced layout stability
