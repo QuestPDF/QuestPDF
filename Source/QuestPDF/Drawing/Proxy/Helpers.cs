@@ -54,6 +54,11 @@ internal static class Helpers
         
         void Traverse(TreeNode<OverflowDebuggingProxy> element)
         {
+            // before assessing the element,
+            // reset layout state by measuring the element with original space
+            // in case when parent has altered the layout state with different overflow test
+            element.Value.Measure(element.Value.MeasurementSize);
+            
             // element was not part of the current layout measurement,
             // it could not impact the process
             if (element.Value.SpacePlanType is null)
@@ -70,6 +75,8 @@ internal static class Helpers
             {
                 foreach (var child in element.Children)
                     Traverse(child);
+                
+                return;
             }
             
             // all of the code below relates to element that is wrapping,
