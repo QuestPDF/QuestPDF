@@ -100,7 +100,7 @@ internal static class Helpers
             // strategy:
             // element contains wrapping children, they are likely the root cause,
             // traverse them and attempt to fix them
-            foreach (var child in element.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.Wrap).ToArray())
+            foreach (var child in element.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.Wrap))
                 Traverse(child);
                 
             // check if fixing wrapping children helped
@@ -113,7 +113,7 @@ internal static class Helpers
             // strategy:
             // element has layout issues but no obvious/trivial root causes
             // possibly the problem is in nested children of partial rendering children
-            foreach (var child in element.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.PartialRender).ToArray())
+            foreach (var child in element.Children.Where(x => x.Value.SpacePlanType is SpacePlanType.PartialRender))
                 Traverse(child);
                 
             // check if fixing partial children helped
