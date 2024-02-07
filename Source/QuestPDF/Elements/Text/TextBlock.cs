@@ -24,6 +24,7 @@ namespace QuestPDF.Elements.Text
         public void ResetState()
         {
             ApplyFontFallback();
+            ApplyPageContextToSectionLinks();
             InitializeQueue();
             CurrentElementIndex = 0;
 
@@ -49,6 +50,12 @@ namespace QuestPDF.Elements.Text
 
                 Items = Items.ApplyFontFallback().ToList();
                 FontFallbackApplied = true;
+            }
+
+            void ApplyPageContextToSectionLinks()
+            {
+                foreach (var sectionLink in Items.OfType<TextBlockSectionLink>())
+                    sectionLink.PageContext = PageContext;
             }
         }
         
