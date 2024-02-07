@@ -106,6 +106,10 @@ namespace QuestPDF.Elements
                 if (measurement.Type == SpacePlanType.Wrap)
                     break;
 
+                // when the item does not take any space, do not add spacing
+                if (measurement.Width < Size.Epsilon && measurement.Height < Size.Epsilon)
+                    topOffset -= Spacing;
+                
                 commands.Add(new ColumnItemRenderingCommand
                 {
                     ColumnItem = item,
