@@ -64,7 +64,7 @@ namespace QuestPDF.Helpers
 
         internal static bool IsNegative(this Size size)
         {
-            return size.Width < 0f || size.Height < 0f;
+            return size.Width < -Size.Epsilon || size.Height < -Size.Epsilon;
         }
         
         internal static void OpenFileUsingDefaultProgram(string filePath)
