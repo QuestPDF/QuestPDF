@@ -63,3 +63,9 @@ Version 2022.12.13
 Version 2022.12.14
 - Update: upgraded the SkiaSharp dependency to version 2.88.7. This update addresses issues with JPEG images being incorrectly encoded/decoded on ARM devices.
 - Maintenance: added .NET 8 as an official build target for the library.
+
+Version 2023.12.15
+- Improvement: when drawing content with the Canvas element, the library now clips drawn content to the element's boundaries. This prevents potential overflow when integrating with other libraries
+- Fix: resolved an issue where the Column element applies double spacing when its child does not occupy any space
+- Improvement: enhanced layout stability
+- Previewer: updated Avalonia to 11.0.7
