@@ -18,12 +18,12 @@ namespace QuestPDF.UnitTests.TestEngine
         public void Rotate(float angle) => Operations.Add(new CanvasRotateOperation(angle));
         public void Scale(float scaleX, float scaleY) => Operations.Add(new CanvasScaleOperation(scaleX, scaleY));
 
-        public void DrawFilledRectangle(Position vector, Size size, string color) => Operations.Add(new CanvasDrawRectangleOperation(vector, size, color));
-        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, string color) => throw new NotImplementedException();
+        public void DrawFilledRectangle(Position vector, Size size, Color color) => Operations.Add(new CanvasDrawRectangleOperation(vector, size, color));
+        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color) => throw new NotImplementedException();
         public void DrawParagraph(SkParagraph paragraph) => throw new NotImplementedException();
         public void DrawImage(SkImage image, Size size) => Operations.Add(new CanvasDrawImageOperation(Position.Zero, size));
         public void DrawPicture(SkPicture picture) => throw new NotImplementedException();
-        public void DrawSvgPath(string path, uint color) => throw new NotImplementedException();
+        public void DrawSvgPath(string path, Color color) => throw new NotImplementedException();
         public void DrawSvg(SkSvgImage svgImage, Size size) => throw new NotImplementedException();
         
         public void DrawOverflowArea(SkRect area) => throw new NotImplementedException();

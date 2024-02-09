@@ -89,10 +89,8 @@ namespace QuestPDF.Fluent
         /// <a href="https://www.questpdf.com/api-reference/background.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static IContainer Background(this IContainer element, string color)
+        public static IContainer Background(this IContainer element, Color color)
         {
-            ColorValidator.Validate(color);
-            
             return element.Element(new Background
             {
                 Color = color

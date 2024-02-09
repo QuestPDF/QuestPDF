@@ -18,7 +18,7 @@ namespace QuestPDF.Elements
         public float MarginTop { get; set; }
         public float MarginBottom { get; set; }
 
-        public string BackgroundColor { get; set; } = Colors.White;
+        public Color BackgroundColor { get; set; } = Colors.White;
         
         public Element Background { get; set; } = Empty.Instance;
         public Element Foreground { get; set; } = Empty.Instance;

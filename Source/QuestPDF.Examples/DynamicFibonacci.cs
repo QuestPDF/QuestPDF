@@ -19,7 +19,7 @@ namespace QuestPDF.Examples
     {
         public FibonacciHeaderState State { get; set; }
         
-        public static readonly string[] ColorsTable =
+        public static readonly Color[] ColorsTable =
         {
             Colors.Red.Lighten2,
             Colors.Orange.Lighten2,

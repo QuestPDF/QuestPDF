@@ -27,7 +27,7 @@ namespace QuestPDF.Examples
                         page.DefaultTextStyle(TextStyle.Default.FontSize(16));
                         page.PageColor(Colors.White);
 
-                        const string transparentBlue = "#662196f3";
+                        var transparentBlue = Colors.LightBlue.Medium.WithAlpha(64);
 
                         page.Background()
                             .AlignTop()

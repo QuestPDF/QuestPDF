@@ -13,9 +13,9 @@ internal static class LayoutTestResultVisualization
     private const int Padding = 10;
     
     // document colors
-    private const string DocumentBackgroundColor = Colors.Grey.Darken2;
-    private const string PageBackgroundColor = Colors.Grey.Lighten1;
-    private const string RequiredAreaBackgroundColor = Colors.White;
+    private static readonly Color DocumentBackgroundColor = Colors.Grey.Darken2;
+    private static readonly Color PageBackgroundColor = Colors.Grey.Lighten1;
+    private static readonly Color RequiredAreaBackgroundColor = Colors.White;
     
     // grid configuration
     private const float GridSize = 10;
@@ -25,7 +25,7 @@ internal static class LayoutTestResultVisualization
     // mock drawing settings
     private const byte OccludedMockBorderThickness = 5;
 
-    private static readonly string[] DefaultElementColors =
+    private static readonly Color[] DefaultElementColors =
     {
         Colors.DeepPurple.Lighten2,
         Colors.Blue.Lighten2,
@@ -58,7 +58,7 @@ internal static class LayoutTestResultVisualization
         using var canvas = pdf.BeginPage(canvasWidth * OutputImageScale, canvasHeight * OutputImageScale);
         
         canvas.Scale(OutputImageScale, OutputImageScale);
-        canvas.Clear(SKColor.Parse(DocumentBackgroundColor));
+        canvas.Clear(new SKColor(DocumentBackgroundColor));
 
         // draw content
         var mockColors = AssignColorsToMocks();
@@ -68,7 +68,7 @@ internal static class LayoutTestResultVisualization
         pdf.EndPage();
         pdf.Close();
 
-        IDictionary<string, string> AssignColorsToMocks()
+        IDictionary<string, Color> AssignColorsToMocks()
         {
             var mocks = Enumerable
                 .Concat(result.ActualLayout.Pages, result.ExpectedLayout.Pages)
@@ -90,7 +90,7 @@ internal static class LayoutTestResultVisualization
             using var textPaint = new SKPaint
             {
                 TextSize = 8,
-                Color = Colors.White.ColorToCode(),
+                Color = SKColors.White,
                 Typeface = SKTypeface.FromFamilyName("Calibri", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright),
                 TextAlign = SKTextAlign.Center
             };
@@ -131,7 +131,7 @@ internal static class LayoutTestResultVisualization
             // draw page
             using var availableAreaPaint = new SKPaint
             {
-                Color = SKColor.Parse(PageBackgroundColor)
+                Color = new SKColor(PageBackgroundColor)
             };
             
             canvas.DrawRect(0, 0, result.PageSize.Width, result.PageSize.Height, availableAreaPaint);
@@ -145,7 +145,7 @@ internal static class LayoutTestResultVisualization
             // draw required area
             using var requiredAreaPaint = new SKPaint
             {
-                Color = SKColor.Parse(RequiredAreaBackgroundColor)
+                Color = new SKColor(RequiredAreaBackgroundColor)
             };
             
             canvas.DrawRect(0, 0, pageLayout.RequiredArea.Width, pageLayout.RequiredArea.Height, requiredAreaPaint);
@@ -166,7 +166,7 @@ internal static class LayoutTestResultVisualization
                 
             using var mockAreaPaint = new SKPaint
             {
-                Color = SKColor.Parse(color)
+                Color = new SKColor(color)
             };
             
             canvas.Save();
@@ -183,7 +183,7 @@ internal static class LayoutTestResultVisualization
                 
             using var mockBorderPaint = new SKPaint
             {
-                Color = SKColor.Parse(color),
+                Color = new SKColor(color),
                 IsStroke = true,
                 StrokeWidth = OccludedMockBorderThickness
             };
@@ -201,7 +201,7 @@ internal static class LayoutTestResultVisualization
         {
             using var paint = new SKPaint
             {
-                Color = SKColor.Parse(Colors.Black).WithAlpha(GridLineTransparency),
+                Color = SKColors.Black.WithAlpha(GridLineTransparency),
                 StrokeWidth = GridLineThickness
             };
 

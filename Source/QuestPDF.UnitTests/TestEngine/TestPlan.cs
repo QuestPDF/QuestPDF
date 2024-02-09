@@ -184,7 +184,7 @@ namespace QuestPDF.UnitTests.TestEngine
             return AddOperation(new CanvasRotateOperation(angle));
         }
         
-        public TestPlan ExpectCanvasDrawRectangle(Position position, Size size, string color)
+        public TestPlan ExpectCanvasDrawRectangle(Position position, Size size, Color color)
         {
             return AddOperation(new CanvasDrawRectangleOperation(position, size, color));
         }

@@ -31,18 +31,16 @@ namespace QuestPDF.Fluent
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontColor"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static T FontColor<T>(this T descriptor, string color) where T : TextSpanDescriptor
+        public static T FontColor<T>(this T descriptor, Color color) where T : TextSpanDescriptor
         {
-            ColorValidator.Validate(color);
             descriptor.MutateTextStyle(TextStyleExtensions.FontColor, color);
             return descriptor;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.backgroundColor"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static T BackgroundColor<T>(this T descriptor, string color) where T : TextSpanDescriptor
+        public static T BackgroundColor<T>(this T descriptor, Color color) where T : TextSpanDescriptor
         {
-            ColorValidator.Validate(color);
             descriptor.MutateTextStyle(TextStyleExtensions.BackgroundColor, color);
             return descriptor;
         }

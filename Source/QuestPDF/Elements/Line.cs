@@ -18,7 +18,7 @@ namespace QuestPDF.Elements
     internal sealed class Line : Element, ILine, ICacheable
     {
         public LineType Type { get; set; } = LineType.Vertical;
-        public string Color { get; set; } = Colors.Black;
+        public Color Color { get; set; } = Colors.Black;
         public float Size { get; set; } = 1;
         
         internal override SpacePlan Measure(Size availableSpace)

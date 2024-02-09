@@ -5,7 +5,7 @@ namespace QuestPDF.Elements
 {
     internal sealed class Border : ContainerElement
     {
-        public string Color { get; set; } = Colors.Black;
+        public Color Color { get; set; } = Colors.Black;
 
         public float Top { get; set; }
         public float Right { get; set; }

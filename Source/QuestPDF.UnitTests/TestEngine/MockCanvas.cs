@@ -12,7 +12,7 @@ namespace QuestPDF.UnitTests.TestEngine
         public Action<float> RotateFunc { get; set; }
         public Action<float, float> ScaleFunc { get; set; }
         public Action<SkImage, Position, Size> DrawImageFunc { get; set; }
-        public Action<Position, Size, string> DrawRectFunc { get; set; }
+        public Action<Position, Size, Color> DrawRectFunc { get; set; }
 
         public void Save() => throw new NotImplementedException();
         public void Restore() => throw new NotImplementedException();
@@ -21,12 +21,12 @@ namespace QuestPDF.UnitTests.TestEngine
         public void Rotate(float angle) => RotateFunc(angle);
         public void Scale(float scaleX, float scaleY) => ScaleFunc(scaleX, scaleY);
 
-        public void DrawFilledRectangle(Position vector, Size size, string color) => DrawRectFunc(vector, size, color);
-        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, string color) => throw new NotImplementedException();
+        public void DrawFilledRectangle(Position vector, Size size, Color color) => DrawRectFunc(vector, size, color);
+        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color) => throw new NotImplementedException();
         public void DrawParagraph(SkParagraph paragraph) => throw new NotImplementedException();
         public void DrawImage(SkImage image, Size size) => DrawImageFunc(image, Position.Zero, size);
         public void DrawPicture(SkPicture picture) => throw new NotImplementedException();
-        public void DrawSvgPath(string path, uint color) => throw new NotImplementedException();
+        public void DrawSvgPath(string path, Color color) => throw new NotImplementedException();
         public void DrawSvg(SkSvgImage svgImage, Size size) => throw new NotImplementedException();
         
         public void DrawOverflowArea(SkRect area) => throw new NotImplementedException();

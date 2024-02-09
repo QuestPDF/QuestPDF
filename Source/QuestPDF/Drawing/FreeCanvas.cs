@@ -54,12 +54,12 @@ namespace QuestPDF.Drawing
             
         }
 
-        public void DrawFilledRectangle(Position vector, Size size, string color)
+        public void DrawFilledRectangle(Position vector, Size size, Color color)
         {
             
         }
 
-        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, string color)
+        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color)
         {
             
         }
@@ -79,7 +79,7 @@ namespace QuestPDF.Drawing
             
         }
 
-        public void DrawSvgPath(string path, uint color)
+        public void DrawSvgPath(string path, Color color)
         {
             
         }

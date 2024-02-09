@@ -8,7 +8,7 @@ namespace QuestPDF.Elements;
 internal class SvgPath : Element
 {
     public string Path { get; set; } = string.Empty;
-    public string FillColor { get; set; } = Colors.Black;
+    public Color FillColor { get; set; } = Colors.Black;
     
     internal override SpacePlan Measure(Size availableSpace)
     {
@@ -19,6 +19,6 @@ internal class SvgPath : Element
 
     internal override void Draw(Size availableSpace)
     {
-        Canvas.DrawSvgPath(Path, SkColor.Parse(FillColor));
+        Canvas.DrawSvgPath(Path, FillColor);
     }
 }

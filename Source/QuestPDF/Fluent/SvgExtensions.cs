@@ -66,7 +66,7 @@ public class SvgImageDescriptor
 
 public static class SvgExtensions
 {
-    internal static void SvgPath(this IContainer container, string svgPath, string color)
+    internal static void SvgPath(this IContainer container, string svgPath, Color color)
     {
         container.Element(new SvgPath
         {

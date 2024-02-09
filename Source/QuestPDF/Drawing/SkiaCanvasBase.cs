@@ -40,11 +40,11 @@ namespace QuestPDF.Drawing
         private void DrawLayoutIssuesIndicatorOnCurrentPage()
         {
             // visual configuration
-            const string lineColor = Colors.Red.Medium;
+            var lineColor = Colors.Red.Medium;
             const byte lineOpacity = 64;
         
             // implementation
-            var indicatorColor = SkColor.Parse(lineColor).ColorWithAlpha(lineOpacity);
+            var indicatorColor = lineColor.WithAlpha(lineOpacity);
             var position = new SkRect(0, 0, CurrentPageSize.Width, CurrentPageSize.Height);
             Canvas.DrawFilledRectangle(position, indicatorColor);
         }
@@ -68,22 +68,22 @@ namespace QuestPDF.Drawing
             Canvas.Translate(vector.X, vector.Y);
         }
 
-        public void DrawFilledRectangle(Position vector, Size size, string color)
+        public void DrawFilledRectangle(Position vector, Size size, Color color)
         {
             if (size.Width < Size.Epsilon || size.Height < Size.Epsilon)
                 return;
 
             var position = new SkRect(vector.X, vector.Y, vector.X + size.Width, vector.Y + size.Height);
-            Canvas.DrawFilledRectangle(position, color.ColorToCode());
+            Canvas.DrawFilledRectangle(position, color);
         }
         
-        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, string color)
+        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color)
         {
             if (size.Width < Size.Epsilon || size.Height < Size.Epsilon)
                 return;
 
             var position = new SkRect(vector.X, vector.Y, vector.X + size.Width, vector.Y + size.Height);
-            Canvas.DrawStrokeRectangle(position, strokeWidth, color.ColorToCode());
+            Canvas.DrawStrokeRectangle(position, strokeWidth, color);
         }
 
         public void DrawParagraph(SkParagraph paragraph)
@@ -101,7 +101,7 @@ namespace QuestPDF.Drawing
             Canvas.DrawPicture(picture);
         }
 
-        public void DrawSvgPath(string path, uint color)
+        public void DrawSvgPath(string path, Color color)
         {
             Canvas.DrawSvgPath(path, color);
         }

@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
@@ -17,16 +18,16 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FDD")
+                        .Background(Colors.Red.Lighten2)
                         .Padding(50)
 
-                        .Background("#AFA")
+                        .Background(Colors.Green.Lighten2)
                         .PaddingVertical(50)
 
-                        .Background("#77F")
+                        .Background(Colors.Blue.Lighten2)
                         .PaddingHorizontal(50)
 
-                        .Background("#444");
+                        .Background(Colors.Grey.Darken2);
                 });
         }
         
@@ -39,15 +40,15 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#EEE")
+                        .Background(Colors.Grey.Lighten3)
                         .Padding(25)
 
                         .AlignBottom()
                         .AlignCenter()
                         .BorderBottom(2)
-                        .BorderColor("#000")
+                        .BorderColor(Colors.Black)
                 
-                        .Background("FFF")
+                        .Background(Colors.White)
                         .Padding(5)
                         .AlignCenter()
                         .Text("Sample text")
@@ -69,38 +70,38 @@ namespace QuestPDF.Examples
                             column
                                 .Item()
                                 .Height(100)
-                                .Background("#FFF")
+                                .Background(Colors.White)
                         
                                 .AlignLeft()
                                 .AlignMiddle()
 
                                 .Width(50)
                                 .Height(50)
-                                .Background("#444");
+                                .Background(Colors.Grey.Darken2);
                     
                             column
                                 .Item()
                                 .Height(100)
-                                .Background("#DDD")
+                                .Background(Colors.Grey.Lighten4)
                         
                                 .AlignCenter()
                                 .AlignMiddle()
 
                                 .Width(50)
                                 .Height(50)
-                                .Background("#222");
+                                .Background(Colors.Grey.Darken3);
                     
                             column
                                 .Item()
                                 .Height(100)
-                                .Background("#BBB")
+                                .Background(Colors.Grey.Lighten3)
                         
                                 .AlignRight()
                                 .AlignMiddle()
 
                                 .Width(50)
                                 .Height(50)
-                                .Background("#000");
+                                .Background(Colors.Black);
                         });
                 });
         }
@@ -123,19 +124,19 @@ namespace QuestPDF.Examples
                                 {
                                     row.RelativeItem()
                                         .Extend()
-                                        .Background("FFF")
+                                        .Background(Colors.White)
 
                                         .Height(50)
                                         .Width(50)
-                                        .Background("444");
+                                        .Background(Colors.Grey.Darken2);
                             
                                     row.RelativeItem()
                                         .Extend()
-                                        .Background("BBB")
+                                        .Background(Colors.Grey.Lighten3)
 
                                         .Height(50)
                                         .ExtendHorizontal()
-                                        .Background("444");
+                                        .Background(Colors.Grey.Darken2);
                                 });
                     
                             column
@@ -145,19 +146,19 @@ namespace QuestPDF.Examples
                                 {
                                     row.RelativeItem()
                                         .Extend()
-                                        .Background("BBB")
+                                        .Background(Colors.Grey.Lighten3)
 
                                         .ExtendVertical()
                                         .Width(50)
-                                        .Background("444");
+                                        .Background(Colors.Grey.Darken2);
                             
                                     row.RelativeItem()
                                         .Extend()
-                                        .Background("BBB")
+                                        .Background(Colors.Grey.Lighten3)
 
                                         .ExtendVertical()
                                         .ExtendHorizontal()
-                                        .Background("444");
+                                        .Background(Colors.Grey.Darken2);
                                 });
                         });
                 });

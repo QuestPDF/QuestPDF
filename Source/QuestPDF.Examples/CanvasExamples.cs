@@ -2,6 +2,7 @@ using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.Examples
@@ -29,11 +30,11 @@ namespace QuestPDF.Examples
                                 DrawRoundedRectangle(Colors.White, false);
                                 DrawRoundedRectangle(Colors.Blue.Darken2, true);
 
-                                void DrawRoundedRectangle(string color, bool isStroke)
+                                void DrawRoundedRectangle(Color color, bool isStroke)
                                 {
                                     using var paint = new SKPaint
                                     {
-                                        Color = SKColor.Parse(color),
+                                        Color = new SKColor(color.Hex),
                                         IsStroke = isStroke,
                                         StrokeWidth = 2,
                                         IsAntialias = true

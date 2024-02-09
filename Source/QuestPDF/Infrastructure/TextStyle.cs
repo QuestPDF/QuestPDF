@@ -8,8 +8,8 @@ namespace QuestPDF.Infrastructure
     {
         internal int Id { get; set; }
         
-        internal string? Color { get; set; }
-        internal string? BackgroundColor { get; set; }
+        internal Color? Color { get; set; }
+        internal Color? BackgroundColor { get; set; }
         internal string? FontFamily { get; set; }
         internal string? FontFamilyFallback { get; set; }
         internal float? Size { get; set; }
@@ -60,9 +60,9 @@ namespace QuestPDF.Infrastructure
                 IsItalic = IsItalic ?? false,
                 FontFamily = FontFamily,
                 FontFamilyFallback = FontFamilyFallback,
-                ForegroundColor = Color?.ColorToCode() ?? 0,
-                BackgroundColor = BackgroundColor?.ColorToCode() ?? 0,
-                DecorationColor = Color?.ColorToCode() ?? 0,
+                ForegroundColor = Color ?? Colors.Black,
+                BackgroundColor = BackgroundColor ?? Colors.Transparent,
+                DecorationColor = Color ?? Colors.Black,
                 DecorationType = CreateDecoration(),
                 
                 // TODO: create public API to support these properties

@@ -2,6 +2,7 @@ using System.Net;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Examples
@@ -43,7 +44,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(25)
                         .Column(column =>
                         {

@@ -14,17 +14,15 @@ namespace QuestPDF.Fluent
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontColor"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static TextStyle FontColor(this TextStyle style, string color)
+        public static TextStyle FontColor(this TextStyle style, Color color)
         {
-            ColorValidator.Validate(color);
             return style.Mutate(TextStyleProperty.Color, color);
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.backgroundColor"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static TextStyle BackgroundColor(this TextStyle style, string color)
+        public static TextStyle BackgroundColor(this TextStyle style, Color color)
         {
-            ColorValidator.Validate(color);
             return style.Mutate(TextStyleProperty.BackgroundColor, color);
         }
         

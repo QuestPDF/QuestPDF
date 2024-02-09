@@ -10,8 +10,8 @@ namespace QuestPDF.Elements;
 internal class LayoutOverflowVisualization : ContainerElement, IContentDirectionAware
 {
     private const float BorderThickness = 1.5f;
-    private const string LineColor = Colors.Red.Medium;
-    private const string AvailableAreaColor = Colors.Green.Medium;
+    private readonly Color LineColor = Colors.Red.Medium;
+    private readonly Color AvailableAreaColor = Colors.Green.Medium;
     private const byte AreaOpacity = 64;
 
     public ContentDirection ContentDirection { get; set; }
@@ -67,7 +67,7 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
 
     private void DrawOverflowArea(Size availableSpace, Size contentSize)
     {
-        var availableSpaceColor = SkColor.Parse(AvailableAreaColor).ColorWithAlpha(AreaOpacity).ColorToString();
+        var availableSpaceColor = AvailableAreaColor.WithAlpha(AreaOpacity);
         Canvas.DrawFilledRectangle(Position.Zero, availableSpace, availableSpaceColor);
 
         Canvas.Save();

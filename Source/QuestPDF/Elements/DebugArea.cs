@@ -10,10 +10,10 @@ namespace QuestPDF.Elements
         public IElement? Child { get; set; }
         
         public string Text { get; set; }
-        public string Color { get; set; } = Colors.Red.Medium;
+        public Color Color { get; set; } = Colors.Red.Medium;
         public void Compose(IContainer container)
         {
-            var backgroundColor = SkColor.Parse(Color).ColorWithAlpha(50).ColorToString();
+            var backgroundColor = Color.WithAlpha(64);
             
             container
                 .Border(1)

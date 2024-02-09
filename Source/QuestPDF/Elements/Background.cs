@@ -5,7 +5,7 @@ namespace QuestPDF.Elements
 {
     internal sealed class Background : ContainerElement
     {
-        public string Color { get; set; } = Colors.Black;
+        public Color Color { get; set; } = Colors.Black;
         
         internal override void Draw(Size availableSpace)
         {

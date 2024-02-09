@@ -294,7 +294,7 @@ namespace QuestPDF.Helpers
 
         #region Visual
 
-        private static readonly string[] BackgroundColors =
+        private static readonly Color[] BackgroundColors =
         {
             Colors.Red.Lighten3,
             Colors.Pink.Lighten3,
@@ -325,7 +325,7 @@ namespace QuestPDF.Helpers
         /// #bcaaa4 <br />
         /// #ffab91
         /// </example>
-        public static string BackgroundColor()
+        public static Color BackgroundColor()
         {
             var index = Random.Next(0, BackgroundColors.Length);
             return BackgroundColors[index];
@@ -339,7 +339,7 @@ namespace QuestPDF.Helpers
         /// #f44336 <br />
         /// #9c27b0
         /// </example>
-        public static string Color()
+        public static Color Color()
         {
             var colors = new[]
             {
@@ -394,7 +394,6 @@ namespace QuestPDF.Helpers
             var colors = BackgroundColors
                 .OrderBy(_ => Random.Next())
                 .Take(2)
-                .Select(SkColor.Parse)
                 .ToArray();
             
             using var placeholderImage = SkImage.GeneratePlaceholder(size.Width, size.Height, colors[0], colors[1]);
