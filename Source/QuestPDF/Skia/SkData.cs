@@ -70,7 +70,7 @@ internal sealed class SkData : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern IntPtr data_create_from_file(string path);
+        public static extern IntPtr data_create_from_file([MarshalAs(UnmanagedType.LPUTF8Str)] string path);
     
         [DllImport(SkiaAPI.LibraryName)]
         public static extern unsafe IntPtr data_create_from_binary(byte* arrayPointer, int arrayLength);

@@ -10,8 +10,8 @@ internal struct TextStyleConfiguration
     public FontWeights FontWeight;
     public bool IsItalic;
 
-    public string FontFamily;
-    public string? FontFamilyFallback;
+    [MarshalAs(UnmanagedType.LPUTF8Str)] public string FontFamily;
+    [MarshalAs(UnmanagedType.LPUTF8Str)] public string? FontFamilyFallback;
     
     public uint ForegroundColor;
     public uint BackgroundColor;
