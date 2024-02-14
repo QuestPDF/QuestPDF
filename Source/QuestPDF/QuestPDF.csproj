@@ -33,9 +33,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="Resources\PackageReadme.md" Pack="true" PackagePath="\" />
-        <None Include="Resources\PackageLicense.md" Pack="true" PackagePath="\" />
-
         <EmbeddedResource Include="Resources\**\*.*">
             <Pack>true</Pack>
             <PackagePath>%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
