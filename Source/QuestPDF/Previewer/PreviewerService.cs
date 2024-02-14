@@ -169,11 +169,14 @@ namespace QuestPDF.Previewer
             {
                 while (true)
                 {
-                    var sw = new Stopwatch();
-                    sw.Start();
-                    await RenderRequestedPageSnapshots();
-                    sw.Stop();
-                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+                    try
+                    {
+                        await RenderRequestedPageSnapshots();
+                    }
+                    finally
+                    {
+                        await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+                    }
                 }
             });
         }
@@ -182,6 +185,8 @@ namespace QuestPDF.Previewer
         {
             // get requests
             var getRequestedSnapshots = await HttpClient.GetAsync("/preview/getRenderingRequests");
+            getRequestedSnapshots.EnsureSuccessStatusCode();
+            
             var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
             
             if (!requestedSnapshots.Any())
