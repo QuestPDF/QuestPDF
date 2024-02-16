@@ -29,14 +29,21 @@ namespace QuestPDF.Drawing
 
         private static SkPdfDocumentMetadata MapMetadata(DocumentMetadata metadata, DocumentSettings documentSettings)
         {
+            using var title = new SkText(metadata.Title);
+            using var author = new SkText(metadata.Author);
+            using var subject = new SkText(metadata.Subject);
+            using var keywords = new SkText(metadata.Keywords);
+            using var creator = new SkText(metadata.Creator);
+            using var producer = new SkText(metadata.Producer);
+            
             return new SkPdfDocumentMetadata
             {
-                Title = metadata.Title,
-                Author = metadata.Author,
-                Subject = metadata.Subject,
-                Keywords = metadata.Keywords,
-                Creator = metadata.Creator,
-                Producer = metadata.Producer,
+                Title = title,
+                Author = author,
+                Subject = subject,
+                Keywords = keywords,
+                Creator = creator,
+                Producer = producer,
                 
                 CreationDate = new SkDateTime(metadata.CreationDate),
                 ModificationDate = new SkDateTime(metadata.ModifiedDate),

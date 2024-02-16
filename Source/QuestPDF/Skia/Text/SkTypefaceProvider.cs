@@ -43,7 +43,7 @@ internal sealed class SkTypefaceProvider : IDisposable
         public static extern void typeface_font_provider_add_typeface(IntPtr typefaceProvider, IntPtr data);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void typeface_font_provider_add_typeface_with_custom_alias(IntPtr typefaceProvider, IntPtr data, [MarshalAs(UnmanagedType.LPUTF8Str)] string alias);
+        public static extern void typeface_font_provider_add_typeface_with_custom_alias(IntPtr typefaceProvider, IntPtr data, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string alias);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void typeface_font_provider_delete(IntPtr typefaceProvider);

@@ -44,7 +44,7 @@ namespace QuestPDF.Drawing
         {
             Canvas.Save();
             using var imageData = EncodeBitmap();
-            var imageBytes = imageData.ToSpan().ToArray();
+            var imageBytes = imageData.ToBytes();
             Images.Add(imageBytes);
             
             Bitmap.Dispose();

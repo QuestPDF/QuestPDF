@@ -6,12 +6,12 @@ namespace QuestPDF.Skia;
 [StructLayout(LayoutKind.Sequential)]
 internal struct SkPdfDocumentMetadata
 {
-    [MarshalAs(UnmanagedType.LPUTF8Str)] public string Title;
-    [MarshalAs(UnmanagedType.LPUTF8Str)] public string Author;
-    [MarshalAs(UnmanagedType.LPUTF8Str)] public string Subject;
-    [MarshalAs(UnmanagedType.LPUTF8Str)] public string Keywords;
-    [MarshalAs(UnmanagedType.LPUTF8Str)] public string Creator;
-    [MarshalAs(UnmanagedType.LPUTF8Str)] public string Producer;
+    public IntPtr Title; // string
+    public IntPtr Author; // string
+    public IntPtr Subject; // string
+    public IntPtr Keywords; // string
+    public IntPtr Creator; // string
+    public IntPtr Producer; // string
 
     public SkDateTime CreationDate;
     public SkDateTime ModificationDate;

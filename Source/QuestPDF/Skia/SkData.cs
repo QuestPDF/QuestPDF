@@ -45,10 +45,13 @@ internal sealed class SkData : IDisposable
         }
     }
     
-    public unsafe ReadOnlySpan<byte> ToSpan()
+    public byte[] ToBytes()
     {
         var content = API.data_get_bytes(Instance);
-        return new ReadOnlySpan<byte> (content.bytes.ToPointer(), content.length);
+        var result = new byte[content.length];
+        Marshal.Copy(content.bytes, result, 0, content.length);
+
+        return result;
     }
 
     ~SkData()
@@ -70,7 +73,7 @@ internal sealed class SkData : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern IntPtr data_create_from_file([MarshalAs(UnmanagedType.LPUTF8Str)] string path);
+        public static extern IntPtr data_create_from_file([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string path);
     
         [DllImport(SkiaAPI.LibraryName)]
         public static extern unsafe IntPtr data_create_from_binary(byte* arrayPointer, int arrayLength);

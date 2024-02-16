@@ -398,7 +398,7 @@ namespace QuestPDF.Helpers
             
             using var placeholderImage = SkImage.GeneratePlaceholder(size.Width, size.Height, colors[0], colors[1]);
             using var imageData = placeholderImage.GetEncodedData();
-            return imageData.ToSpan().ToArray();
+            return imageData.ToBytes();
 
             static ImageSize LimitSize(ImageSize size, int maxSize = 64)
             {

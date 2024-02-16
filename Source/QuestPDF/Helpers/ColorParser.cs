@@ -39,7 +39,7 @@ static class ColorParser
                 return null;
     
             // clean up string
-            var hexSpan = hexString.AsSpan().Trim().TrimStart('#');
+            var hexSpan = hexString.Trim().TrimStart('#');
     
             var len = hexSpan.Length;
     
@@ -50,7 +50,7 @@ static class ColorParser
                 // parse [A]
                 if (len == 4)
                 {
-                    if (!byte.TryParse(hexSpan.Slice(0, 1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out a))
+                    if (!byte.TryParse(hexSpan.Substring(0, 1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out a))
                         return null;
     
                     a = (byte)((a << 4) | a);
@@ -61,9 +61,9 @@ static class ColorParser
                 }
     
                 // parse RGB
-                if (!byte.TryParse(hexSpan.Slice(len - 3, 1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var r) ||
-                    !byte.TryParse(hexSpan.Slice(len - 2, 1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var g) ||
-                    !byte.TryParse(hexSpan.Slice(len - 1, 1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var b))
+                if (!byte.TryParse(hexSpan.Substring(len - 3, 1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var r) ||
+                    !byte.TryParse(hexSpan.Substring(len - 2, 1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var g) ||
+                    !byte.TryParse(hexSpan.Substring(len - 1, 1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var b))
                 {
                     return null;
                 }

@@ -188,7 +188,7 @@ internal sealed class SkCanvas : IDisposable
         public static extern void canvas_draw_paragraph(IntPtr canvas, IntPtr paragraph);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void canvas_draw_svg_path(IntPtr canvas, [MarshalAs(UnmanagedType.LPUTF8Str)] string svg, uint color);
+        public static extern void canvas_draw_svg_path(IntPtr canvas, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string svg, uint color);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void canvas_draw_svg(IntPtr canvas, IntPtr svg, float width, float height);
@@ -203,13 +203,13 @@ internal sealed class SkCanvas : IDisposable
         public static extern void canvas_clip_rectangle(IntPtr canvas, SkRect clipArea);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void canvas_annotate_url(IntPtr canvas, float width, float height, [MarshalAs(UnmanagedType.LPUTF8Str)] string url);
+        public static extern void canvas_annotate_url(IntPtr canvas, float width, float height, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string url);
 
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void canvas_annotate_destination(IntPtr canvas, [MarshalAs(UnmanagedType.LPUTF8Str)] string destinationName);
+        public static extern void canvas_annotate_destination(IntPtr canvas, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string destinationName);
 
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void canvas_annotate_destination_link(IntPtr canvas, float width, float height, [MarshalAs(UnmanagedType.LPUTF8Str)] string destinationName);
+        public static extern void canvas_annotate_destination_link(IntPtr canvas, float width, float height, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string destinationName);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void canvas_flush(IntPtr canvas);

@@ -19,7 +19,7 @@ namespace QuestPDF.Fluent
             DocumentGenerator.GeneratePdf(stream, document);
             
             using var data = stream.DetachData();
-            return data.ToSpan().ToArray();
+            return data.ToBytes();
         }
         
         /// <summary>
@@ -71,7 +71,7 @@ namespace QuestPDF.Fluent
             DocumentGenerator.GenerateXps(stream, document);
             
             using var data = stream.DetachData();
-            return data.ToSpan().ToArray();
+            return data.ToBytes();
         }
         
         /// <summary>

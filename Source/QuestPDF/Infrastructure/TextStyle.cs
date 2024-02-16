@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using QuestPDF.Helpers;
+using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Infrastructure
@@ -52,14 +53,17 @@ namespace QuestPDF.Infrastructure
             if (SkTextStyleCache != null)
                 return SkTextStyleCache;
             
+            using var fontFamily = new SkText(FontFamily);
+            using var fontFamilyFallback = new SkText(FontFamilyFallback);
+            
             SkTextStyleCache = new SkTextStyle(new TextStyleConfiguration
             {
                 FontSize = CalculateTargetFontSize(),
                 FontWeight = (TextStyleConfiguration.FontWeights?)FontWeight ?? TextStyleConfiguration.FontWeights.Normal,
                 
                 IsItalic = IsItalic ?? false,
-                FontFamily = FontFamily,
-                FontFamilyFallback = FontFamilyFallback,
+                FontFamily = fontFamily,
+                FontFamilyFallback = fontFamilyFallback,
                 ForegroundColor = Color ?? Colors.Black,
                 BackgroundColor = BackgroundColor ?? Colors.Transparent,
                 DecorationColor = Color ?? Colors.Black,

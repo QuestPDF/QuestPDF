@@ -132,7 +132,7 @@ internal sealed class SkParagraphBuilder : IDisposable
         public static extern IntPtr paragraph_builder_create(ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr fontCollection);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void paragraph_builder_add_text(IntPtr paragraphBuilder, [MarshalAs(UnmanagedType.LPUTF8Str)] string text, IntPtr textStyle);
+        public static extern void paragraph_builder_add_text(IntPtr paragraphBuilder, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string text, IntPtr textStyle);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void paragraph_builder_add_placeholder(IntPtr paragraphBuilder, SkPlaceholderStyle placeholderStyle);
