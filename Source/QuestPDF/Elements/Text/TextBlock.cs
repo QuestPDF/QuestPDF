@@ -16,6 +16,7 @@ namespace QuestPDF.Elements.Text
         public ContentDirection ContentDirection { get; set; }
         
         public TextHorizontalAlignment? Alignment { get; set; }
+        public int? LineClamp { get; set; }
         public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
 
         private bool RebuildParagraphForEveryPage { get; set; }
@@ -229,10 +230,7 @@ namespace QuestPDF.Elements.Text
             {
                 Alignment = MapAlignment(Alignment ?? TextHorizontalAlignment.Start),
                 Direction = MapDirection(ContentDirection),
-                
-                // TODO: add API to support specifying the maximum number of lines to render
-                // if the text is longer than maximum number of lines, the ellipsis will be rendered 
-                MaxLinesVisible = 1_000_000
+                MaxLinesVisible = LineClamp ?? 1_000_000
             };
             
             using var paragraphBuilder = SkParagraphBuilder.Create(paragraphStyle, FontManager.FontCollection);

@@ -61,9 +61,8 @@ namespace QuestPDF.Fluent
     
     public class TextDescriptor
     {
-        private TextBlock TextBlock { get; } = new();
+        internal TextBlock TextBlock { get; } = new();
         private TextStyle? DefaultStyle { get; set; }
-        internal TextHorizontalAlignment? Alignment { get; set; }
 
         /// <summary>
         /// Applies a consistent text style for the whole content within this <see cref="TextExtensions.Text">Text</see> element.
@@ -88,7 +87,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignLeft()
         {
-            Alignment = TextHorizontalAlignment.Left;
+            TextBlock.Alignment = TextHorizontalAlignment.Left;
         }
         
         /// <summary>
@@ -96,7 +95,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignCenter()
         {
-            Alignment = TextHorizontalAlignment.Center;
+            TextBlock.Alignment = TextHorizontalAlignment.Center;
         }
         
         /// <summary>
@@ -104,7 +103,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignRight()
         {
-            Alignment = TextHorizontalAlignment.Right;
+            TextBlock.Alignment = TextHorizontalAlignment.Right;
         }
         
         /// <summary>
@@ -120,7 +119,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void Justify()
         {
-            Alignment = TextHorizontalAlignment.Justify;
+            TextBlock.Alignment = TextHorizontalAlignment.Justify;
         }
         
         /// <summary>
@@ -129,7 +128,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignStart()
         {
-            Alignment = TextHorizontalAlignment.Start;
+            TextBlock.Alignment = TextHorizontalAlignment.Start;
         }
         
         /// <summary>
@@ -138,7 +137,15 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignEnd()
         {
-            Alignment = TextHorizontalAlignment.End;
+            TextBlock.Alignment = TextHorizontalAlignment.End;
+        }
+
+        /// <summary>
+        /// Sets the maximum number of lines to display. 
+        /// </summary>
+        public void LineClamp(int maxLines)
+        {
+            TextBlock.LineClamp = maxLines;
         }
         
         [Obsolete("This method is not supported since the 2024.3 version. Please split your text into separate paragraphs, combine using the Column element that also provides the Spacing capability.")]
@@ -361,8 +368,6 @@ namespace QuestPDF.Fluent
         
         internal void Compose(IContainer container)
         {
-            TextBlock.Alignment ??= Alignment;
-            
             if (DefaultStyle != null)
                 container = container.DefaultTextStyle(DefaultStyle);
 
@@ -381,7 +386,7 @@ namespace QuestPDF.Fluent
             var descriptor = new TextDescriptor();
             
             if (element is Alignment alignment)
-                descriptor.Alignment = MapAlignment(alignment.Horizontal);
+                descriptor.TextBlock.Alignment = MapAlignment(alignment.Horizontal);
             
             content?.Invoke(descriptor);
             descriptor.Compose(element);
@@ -411,7 +416,7 @@ namespace QuestPDF.Fluent
             var textDescriptor = new TextDescriptor();
             
             if (element is Alignment alignment)
-                textDescriptor.Alignment = MapAlignment(alignment.Horizontal);
+                textDescriptor.TextBlock.Alignment = MapAlignment(alignment.Horizontal);
             
             var span = textDescriptor.Span(text);
             textDescriptor.Compose(element);
