@@ -92,6 +92,12 @@ namespace QuestPDF.Fluent
             return style.Mutate(TextStyleProperty.HasUnderline, value);
         }
         
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.overline"]/*' />
+        public static TextStyle Overline(this TextStyle style, bool value = true)
+        {
+            return style.Mutate(TextStyleProperty.HasOverline, value);
+        }
+        
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
         [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
         public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)

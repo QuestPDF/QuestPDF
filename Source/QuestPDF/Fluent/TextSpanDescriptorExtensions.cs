@@ -106,6 +106,13 @@ namespace QuestPDF.Fluent
             descriptor.MutateTextStyle(TextStyleExtensions.Underline, value);
             return descriptor;
         }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.overline"]/*' />
+        public static T Overline<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.Overline, value);
+            return descriptor;
+        }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
         [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]

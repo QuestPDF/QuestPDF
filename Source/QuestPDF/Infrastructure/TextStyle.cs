@@ -21,6 +21,7 @@ namespace QuestPDF.Infrastructure
         internal bool? IsItalic { get; set; }
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
+        internal bool? HasOverline { get; set; }
         internal TextDirection? Direction { get; set; }
 
         public static TextStyle Default { get; } = new()
@@ -43,6 +44,7 @@ namespace QuestPDF.Infrastructure
             IsItalic = false,
             HasStrikethrough = false,
             HasUnderline = false,
+            HasOverline = false,
             Direction = TextDirection.Auto
         };
 
@@ -90,6 +92,9 @@ namespace QuestPDF.Infrastructure
                 
                 if (HasStrikethrough == true)
                     result |= TextStyleConfiguration.TextDecoration.LineThrough;
+                
+                if (HasOverline == true)
+                    result |= TextStyleConfiguration.TextDecoration.Overline;
                 
                 return result;
             }

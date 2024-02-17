@@ -231,6 +231,12 @@
             Draws a simple solid line under the text.
         </summary>
     </doc>
+
+    <doc for="text.overline">
+        <summary>
+            Draws a simple solid line over the text.
+        </summary>
+    </doc>
     
     <!-- TEXT WEIGHT -->
     

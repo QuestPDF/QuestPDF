@@ -22,6 +22,7 @@ namespace QuestPDF.Infrastructure
         IsItalic,
         HasStrikethrough,
         HasUnderline,
+        HasOverline,        
         Direction
     }
     
@@ -32,8 +33,6 @@ namespace QuestPDF.Infrastructure
             TextStyle.Default,
             TextStyle.LibraryDefault
         };
-
-        private static readonly List<SkTextStyle> SkTextStyles = new();
 
         private static readonly ConcurrentDictionary<(int originId, TextStyleProperty property, object value), TextStyle> TextStyleMutateCache = new();
         private static readonly ConcurrentDictionary<(int originId, int parentId), TextStyle> TextStyleApplyInheritedCache = new();
