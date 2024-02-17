@@ -159,7 +159,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public TextSpanDescriptor Span(string? text)
         {
-            if (text == null)
+            if (IsNullOrEmpty(text))
                 return new TextSpanDescriptor(new TextBlockSpan());
 
             var textSpan = new TextBlockSpan() { Text = text };
@@ -405,6 +405,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public static TextSpanDescriptor Text(this IContainer element, string? text)
         {
+            if (IsNullOrEmpty(text))
+                return new TextSpanDescriptor(new TextBlockSpan());
+            
             var textDescriptor = new TextDescriptor();
             
             if (element is Alignment alignment)

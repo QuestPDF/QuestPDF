@@ -49,17 +49,8 @@ namespace QuestPDF.Elements.Text
             Initialize();
             CalculateParagraphMetrics(availableSpace);
 
-            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > Size.Epsilon)
-            {
-                WidthForLineMetricsCalculation = availableSpace.Width;
-                
-                Paragraph.PlanLayout(availableSpace.Width + 1);
-                CheckUnresolvedGlyphs();
-                
-                LineMetrics = Paragraph.GetLineMetrics();
-                PlaceholderPositions = Paragraph.GetPlaceholderPositions();
-                MaximumWidth = LineMetrics.Max(x => x.Width);
-            }
+            if (MaximumWidth == 0)
+                return SpacePlan.FullRender(Size.Zero);
             
             if (CurrentLineIndex > LineMetrics.Length)
                 return SpacePlan.FullRender(Size.Zero);
@@ -98,6 +89,9 @@ namespace QuestPDF.Elements.Text
                 return;
             
             CalculateParagraphMetrics(availableSpace);
+
+            if (MaximumWidth == 0)
+                return;
             
             var (linesToDraw, takenHeight) = DetermineLinesToDraw();
             DrawParagraph();
@@ -321,7 +315,7 @@ namespace QuestPDF.Elements.Text
                 
             LineMetrics = Paragraph.GetLineMetrics();
             PlaceholderPositions = Paragraph.GetPlaceholderPositions();
-            MaximumWidth = LineMetrics.Max(x => x.Width);
+            MaximumWidth = LineMetrics.Any() ? LineMetrics.Max(x => x.Width) : 0;
         }
         
         private void CheckUnresolvedGlyphs()
