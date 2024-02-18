@@ -211,6 +211,18 @@
             <para>A value of 0 maintains the original spacing. When the value is positive, the text is more spread out. When it is negative, the text is more condensed.</para>
         </param>
     </doc>
+
+    <doc for="text.wordSpacing">
+        <summary>
+            Adjusts the horizontal spacing between words in the text.
+            The adjustment is proportional to the text size.
+        </summary>
+
+        <param name="factor">
+            <para>Sets the proportion by which the horizontal space between words is changed.</para>
+            <para>A value of 0 maintains the original spacing. When the value is positive, the text is more spread out. When it is negative, the text is more condensed.</para>
+        </param>
+    </doc>
     
     <!-- TEXT EFFECTS -->
 

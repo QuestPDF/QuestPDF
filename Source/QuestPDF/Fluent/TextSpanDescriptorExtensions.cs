@@ -86,6 +86,13 @@ namespace QuestPDF.Fluent
             return descriptor;
         }
         
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wordSpacing"]/*' />
+        public static T WordSpacing<T>(this T descriptor, float factor = 0) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.WordSpacing, factor);
+            return descriptor;
+        }
+        
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.italic"]/*' />
         public static T Italic<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {

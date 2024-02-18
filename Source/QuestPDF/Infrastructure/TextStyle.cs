@@ -17,6 +17,7 @@ namespace QuestPDF.Infrastructure
         internal float? Size { get; set; }
         internal float? LineHeight { get; set; }
         internal float? LetterSpacing { get; set; }
+        internal float? WordSpacing { get; set; }
         internal FontWeight? FontWeight { get; set; }
         internal FontPosition? FontPosition { get; set; }
         internal bool? IsItalic { get; set; }
@@ -43,6 +44,7 @@ namespace QuestPDF.Infrastructure
             Size = 12,
             LineHeight = 1.2f,
             LetterSpacing = 0,
+            WordSpacing = 0f,
             FontWeight = Infrastructure.FontWeight.Normal,
             FontPosition = Infrastructure.FontPosition.Normal,
             IsItalic = false,
@@ -83,6 +85,7 @@ namespace QuestPDF.Infrastructure
                 
                 LineHeight = LineHeight ?? 1,
                 LetterSpacing = (LetterSpacing ?? 0) * (Size ?? 1),
+                WordSpacing = (WordSpacing ?? 0) * (Size ?? 1),
                 BaselineOffset = CalculateBaselineOffset(),
             });
             

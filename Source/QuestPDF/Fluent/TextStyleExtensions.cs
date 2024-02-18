@@ -1,6 +1,7 @@
 ﻿using System;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Fluent
 {
@@ -72,6 +73,12 @@ namespace QuestPDF.Fluent
         public static TextStyle LetterSpacing(this TextStyle style, float factor = 0)
         {
             return style.Mutate(TextStyleProperty.LetterSpacing, factor);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wordSpacing"]/*' />
+        public static TextStyle WordSpacing(this TextStyle style, float factor = 0)
+        {
+            return style.Mutate(TextStyleProperty.WordSpacing, factor);
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.italic"]/*' />

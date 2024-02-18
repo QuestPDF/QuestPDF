@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Infrastructure
 {
@@ -18,6 +17,7 @@ namespace QuestPDF.Infrastructure
         Size,
         LineHeight,
         LetterSpacing,
+        WordSpacing,
         FontWeight,
         FontPosition,
         IsItalic,
