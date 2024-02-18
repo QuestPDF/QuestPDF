@@ -114,11 +114,6 @@ internal sealed class SkCanvas : IDisposable
         API.canvas_annotate_destination_link(Instance, width, height, destinationName);
     }
     
-    public void Flush()
-    {
-        API.canvas_flush(Instance);
-    }
-    
     public CanvasMatrix GetCurrentTotalMatrix()
     {
         return API.canvas_get_matrix(Instance);
@@ -210,9 +205,6 @@ internal sealed class SkCanvas : IDisposable
 
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void canvas_annotate_destination_link(IntPtr canvas, float width, float height, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string destinationName);
-        
-        [DllImport(SkiaAPI.LibraryName)]
-        public static extern void canvas_flush(IntPtr canvas);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern CanvasMatrix canvas_get_matrix(IntPtr canvas);
