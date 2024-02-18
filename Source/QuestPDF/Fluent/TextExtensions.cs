@@ -335,14 +335,16 @@ namespace QuestPDF.Fluent
         /// <remarks>
         /// The container must fit within one line and can not span multiple pages.
         /// </remarks>
+        /// <param name="alignment">Defines the position of the injected element in relation to text typography features (baseline, top/bottom edge).</param>
         /// <returns>A container for the embedded content. Populate using the Fluent API.</returns>
-        public IContainer Element()
+        public IContainer Element(TextInjectedElementAlignment alignment = TextInjectedElementAlignment.AboveBaseline)
         {
             var container = new Container();
                 
             TextBlock.Items.Add(new TextBlockElement
             {
-                Element = container
+                Element = container,
+                Alignment = alignment
             });
             
             return container.AlignBottom().MinimalBox();
@@ -354,16 +356,11 @@ namespace QuestPDF.Fluent
         /// <remarks>
         /// The container must fit within one line and can not span multiple pages.
         /// </remarks>
+        /// <param name="alignment">Defines the position of the injected element in relation to text typography features (baseline, top/bottom edge).</param>
         /// <param name="handler">Delegate to populate the embedded container with custom content.</param>
-        public void Element(Action<IContainer> handler)
+        public void Element(Action<IContainer> handler, TextInjectedElementAlignment alignment = TextInjectedElementAlignment.AboveBaseline)
         {
-            var container = new Container();
-            handler(container.AlignBottom().MinimalBox());
-                
-            TextBlock.Items.Add(new TextBlockElement
-            {
-                Element = container
-            });
+            handler(Element(alignment));
         }
         
         internal void Compose(IContainer container)

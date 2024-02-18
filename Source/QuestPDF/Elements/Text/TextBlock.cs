@@ -262,9 +262,7 @@ namespace QuestPDF.Elements.Text
                     {
                         Width = textBlockElement.ElementSize.Width,
                         Height = textBlockElement.ElementSize.Height,
-                        
-                        // TODO: add API support for exact positioning of text-injected elements
-                        Alignment = SkPlaceholderStyle.PlaceholderAlignment.AboveBaseline,
+                        Alignment = MapInjectedTextAlignment(textBlockElement.Alignment),
                         Baseline = SkPlaceholderStyle.PlaceholderBaseline.Alphabetic,
                         BaselineOffset = 0
                     });
@@ -293,6 +291,19 @@ namespace QuestPDF.Elements.Text
                 {
                     ContentDirection.LeftToRight => ParagraphStyleConfiguration.TextDirection.Ltr,
                     ContentDirection.RightToLeft => ParagraphStyleConfiguration.TextDirection.Rtl,
+                    _ => throw new Exception()
+                };
+            }
+            
+            static SkPlaceholderStyle.PlaceholderAlignment MapInjectedTextAlignment(TextInjectedElementAlignment alignment)
+            {
+                return alignment switch
+                {
+                    TextInjectedElementAlignment.AboveBaseline => SkPlaceholderStyle.PlaceholderAlignment.AboveBaseline,
+                    TextInjectedElementAlignment.BelowBaseline => SkPlaceholderStyle.PlaceholderAlignment.BelowBaseline,
+                    TextInjectedElementAlignment.Top => SkPlaceholderStyle.PlaceholderAlignment.Top,
+                    TextInjectedElementAlignment.Bottom => SkPlaceholderStyle.PlaceholderAlignment.Bottom,
+                    TextInjectedElementAlignment.Middle => SkPlaceholderStyle.PlaceholderAlignment.Middle,
                     _ => throw new Exception()
                 };
             }

@@ -373,10 +373,10 @@ namespace QuestPDF.Examples
                         .Padding(10)
                         .Text(text =>
                         {
-                            text.DefaultTextStyle(TextStyle.Default.FontSize(20));
-                            text.Span("This is a random image aligned to the baseline: ");
+                            text.DefaultTextStyle(TextStyle.Default.FontSize(25));
+                            text.Span("This is a random image aligned to the middle of the baseline: ");
                             
-                            text.Element()
+                            text.Element(TextInjectedElementAlignment.Middle)
                                 .Height(24)
                                 .Width(48)
                                 .Image(Placeholders.Image);
