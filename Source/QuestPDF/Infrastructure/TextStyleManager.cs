@@ -12,6 +12,7 @@ namespace QuestPDF.Infrastructure
     {
         Color,
         BackgroundColor,
+        DecorationColor,
         FontFamily,
         FontFamilyFallback,
         Size,
@@ -23,6 +24,8 @@ namespace QuestPDF.Infrastructure
         HasStrikethrough,
         HasUnderline,
         HasOverline,        
+        DecorationStyle,   
+        DecorationThickness,
         Direction
     }
     

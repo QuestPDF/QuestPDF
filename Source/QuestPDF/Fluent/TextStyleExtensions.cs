@@ -80,24 +80,6 @@ namespace QuestPDF.Fluent
             return style.Mutate(TextStyleProperty.IsItalic, value);
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.strikethrough"]/*' />
-        public static TextStyle Strikethrough(this TextStyle style, bool value = true)
-        {
-            return style.Mutate(TextStyleProperty.HasStrikethrough, value);
-        }
-        
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.underline"]/*' />
-        public static TextStyle Underline(this TextStyle style, bool value = true)
-        {
-            return style.Mutate(TextStyleProperty.HasUnderline, value);
-        }
-        
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.overline"]/*' />
-        public static TextStyle Overline(this TextStyle style, bool value = true)
-        {
-            return style.Mutate(TextStyleProperty.HasOverline, value);
-        }
-        
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
         [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
         public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)
@@ -105,6 +87,80 @@ namespace QuestPDF.Fluent
             return style;
         }
 
+        #region Text Effects
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.strikethrough"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.remarks"]/*' />
+        public static TextStyle Strikethrough(this TextStyle style, bool value = true)
+        {
+            return style.Mutate(TextStyleProperty.HasStrikethrough, value);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.underline"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.remarks"]/*' />
+        public static TextStyle Underline(this TextStyle style, bool value = true)
+        {
+            return style.Mutate(TextStyleProperty.HasUnderline, value);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.overline"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.remarks"]/*' />
+        public static TextStyle Overline(this TextStyle style, bool value = true)
+        {
+            return style.Mutate(TextStyleProperty.HasOverline, value);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.color"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationColor(this TextStyle style, Color color)
+        {
+            return style.Mutate(TextStyleProperty.DecorationColor, color);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.thickness"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationThickness(this TextStyle style, float factor)
+        {
+            return style.Mutate(TextStyleProperty.DecorationThickness, factor);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.solid"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationSolid(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Solid);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.double"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationDouble(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Double);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.wavy"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationWavy(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Wavy);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.dotted"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationDotted(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Dotted);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.dashed"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationDashed(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Dashed);
+        }
+        
+        #endregion
+        
         #region Weight
         
         public static TextStyle Weight(this TextStyle style, FontWeight weight)

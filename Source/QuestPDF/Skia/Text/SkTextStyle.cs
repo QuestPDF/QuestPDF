@@ -17,6 +17,7 @@ internal struct TextStyleConfiguration
     public uint BackgroundColor;
     
     public uint DecorationColor;
+    public float DecorationThickness;
     public TextDecoration DecorationType;
     public TextDecorationMode DecorationMode;
     public TextDecorationStyle DecorationStyle;

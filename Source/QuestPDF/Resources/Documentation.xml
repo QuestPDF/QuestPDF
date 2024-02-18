@@ -220,21 +220,76 @@
         </summary>
     </doc>
 
-    <doc for="text.strikethrough">
+    <doc for="text.decoration.strikethrough">
         <summary>
-            Draws a simple solid line through the middle of the text.
+            Draws a line through the middle of the text. 
         </summary>
     </doc>
 
-    <doc for="text.underline">
+    <doc for="text.decoration.underline">
         <summary>
-            Draws a simple solid line under the text.
+            Draws a line under the text.
         </summary>
     </doc>
 
-    <doc for="text.overline">
+    <doc for="text.decoration.overline">
         <summary>
-            Draws a simple solid line over the text.
+            Draws a line above the text.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.remarks">
+        <remarks>
+            You can control the decoration visuals by setting color and style (solid, double, wavy, dotted, dashed) of the line.
+        </remarks>
+    </doc>
+
+    <doc for="text.decoration.applicability">
+        <remarks>
+            Applies for the following text decorations: striketrough, underline, overline.
+        </remarks>
+    </doc>
+
+    <doc for="text.decoration.color">
+        <summary>
+            Sets the color of the text decoration.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.thickness">
+        <summary>
+            Changess thickness of decoration line proportionally to the provided argument. 
+            Value equal to 1 is the default thickness. 
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.solid">
+        <summary>
+            Sets the decoration line to a solid straight line.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.double">
+        <summary>
+            Sets the decoration line to a solid double line.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.wavy">
+        <summary>
+            Sets the decoration line to wave.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.dotted">
+        <summary>
+            Sets the decoration line to dots.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.dashed">
+        <summary>
+            Sets the decoration line to dashes.
         </summary>
     </doc>
     

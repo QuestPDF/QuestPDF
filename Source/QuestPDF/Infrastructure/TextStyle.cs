@@ -11,6 +11,7 @@ namespace QuestPDF.Infrastructure
         
         internal Color? Color { get; set; }
         internal Color? BackgroundColor { get; set; }
+        internal Color? DecorationColor { get; set; }
         internal string? FontFamily { get; set; }
         internal string? FontFamilyFallback { get; set; }
         internal float? Size { get; set; }
@@ -22,6 +23,8 @@ namespace QuestPDF.Infrastructure
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
         internal bool? HasOverline { get; set; }
+        internal TextStyleConfiguration.TextDecorationStyle? DecorationStyle { get; set; }
+        internal float? DecorationThickness { get; set; }
         internal TextDirection? Direction { get; set; }
 
         public static TextStyle Default { get; } = new()
@@ -34,6 +37,7 @@ namespace QuestPDF.Infrastructure
             Id = 1,
             Color = Colors.Black,
             BackgroundColor = Colors.Transparent,
+            DecorationColor = Colors.Black,
             FontFamily = Fonts.Lato,
             FontFamilyFallback = null,
             Size = 12,
@@ -45,6 +49,8 @@ namespace QuestPDF.Infrastructure
             HasStrikethrough = false,
             HasUnderline = false,
             HasOverline = false,
+            DecorationStyle = TextStyleConfiguration.TextDecorationStyle.Solid,
+            DecorationThickness = 2f,
             Direction = TextDirection.Auto
         };
 
@@ -68,13 +74,12 @@ namespace QuestPDF.Infrastructure
                 FontFamilyFallback = fontFamilyFallback,
                 ForegroundColor = Color ?? Colors.Black,
                 BackgroundColor = BackgroundColor ?? Colors.Transparent,
-                DecorationColor = Color ?? Colors.Black,
+                DecorationColor = DecorationColor ?? Colors.Black,
                 DecorationType = CreateDecoration(),
                 
-                // TODO: create public API to support these properties
-                DecorationMode = TextStyleConfiguration.TextDecorationMode.Through,
-                DecorationStyle = TextStyleConfiguration.TextDecorationStyle.Solid,
-                WordSpacing = 0,
+                DecorationMode = DecorationMode(),
+                DecorationStyle = DecorationStyle ?? TextStyleConfiguration.TextDecorationStyle.Solid,
+                DecorationThickness = DecorationThickness ?? 1,
                 
                 LineHeight = LineHeight ?? 1,
                 LetterSpacing = (LetterSpacing ?? 0) * (Size ?? 1),
@@ -83,6 +88,14 @@ namespace QuestPDF.Infrastructure
             
             return SkTextStyleCache;
 
+            TextStyleConfiguration.TextDecorationMode DecorationMode()
+            {
+                if (DecorationStyle == TextStyleConfiguration.TextDecorationStyle.Solid)
+                    return TextStyleConfiguration.TextDecorationMode.Gaps;
+                
+                return TextStyleConfiguration.TextDecorationMode.Through;
+            }
+            
             TextStyleConfiguration.TextDecoration CreateDecoration()
             {
                 var result = TextStyleConfiguration.TextDecoration.NoDecoration;

@@ -92,27 +92,6 @@ namespace QuestPDF.Fluent
             descriptor.MutateTextStyle(TextStyleExtensions.Italic, value);
             return descriptor;
         }
-        
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.strikethrough"]/*' />
-        public static T Strikethrough<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
-        {
-            descriptor.MutateTextStyle(TextStyleExtensions.Strikethrough, value);
-            return descriptor;
-        }
-        
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.underline"]/*' />
-        public static T Underline<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
-        {
-            descriptor.MutateTextStyle(TextStyleExtensions.Underline, value);
-            return descriptor;
-        }
-        
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.overline"]/*' />
-        public static T Overline<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
-        {
-            descriptor.MutateTextStyle(TextStyleExtensions.Overline, value);
-            return descriptor;
-        }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
         [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
@@ -120,6 +99,90 @@ namespace QuestPDF.Fluent
         {
             return descriptor;
         }
+        
+        #region Text Effects
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.strikethrough"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.remarks"]/*' />
+        public static T Strikethrough<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.Strikethrough, value);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.underline"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.remarks"]/*' />
+        public static T Underline<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.Underline, value);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.overline"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.remarks"]/*' />
+        public static T Overline<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.Overline, value);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.color"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static T DecorationColor<T>(this T descriptor, Color color) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.DecorationColor, color);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.thickness"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static T DecorationThickness<T>(this T descriptor, float factor) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.DecorationThickness, factor);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.solid"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static T DecorationSolid<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.DecorationSolid);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.double"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static T DecorationDouble<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.DecorationDouble);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.wavy"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static T DecorationWavy<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.DecorationWavy);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.dotted"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static T DecorationDotted<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.DecorationDotted);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.dashed"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static T DecorationDashed<T>(this T descriptor) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.DecorationDashed);
+            return descriptor;
+        }
+        
+        #endregion
 
         #region Weight
         
