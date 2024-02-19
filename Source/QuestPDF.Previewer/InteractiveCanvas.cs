@@ -60,9 +60,17 @@ class InteractiveCanvas : ICustomDrawOperation
 
     public void SetNewDocumentStructure(DocumentStructure document)
     {
-        foreach (var renderedSnapshot in PageSnapshotCache)
-            renderedSnapshot.Image.Dispose();
-        
+        var imagesToDispose = PageSnapshotCache.Select(x => x.Image).ToList();
+
+        // minimize the risk of a race condition, when Avalonia is still using the images and code disposes them
+        Task.Run(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            
+            foreach (var image in imagesToDispose)
+                image.Dispose();
+        });
+
         PageSnapshotCache.Clear();
         PageSizes = document.Pages.ToList();
     }
