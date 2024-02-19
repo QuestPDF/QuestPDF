@@ -73,30 +73,15 @@ namespace QuestPDF.Drawing
         
         private static void RegisterLibraryDefaultFonts()
         {
-            var fontFileNames = new[]
-            {
-                "Lato-Black.ttf",
-                "Lato-BlackItalic.ttf",
-                
-                "Lato-Bold.ttf",
-                "Lato-BoldItalic.ttf",
-                
-                "Lato-Regular.ttf",
-                "Lato-Italic.ttf",
-                
-                "Lato-Light.ttf",
-                "Lato-LightItalic.ttf",
-                
-                "Lato-Thin.ttf",
-                "Lato-ThinItalic.ttf"
-            };
+            var executionPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+            var fontDirectory = Path.Combine(executionPath, "LatoFont");
+            var fontFilePaths = Directory.GetFiles(fontDirectory, "*.ttf");
             
-            foreach (var fileName in fontFileNames)
+            foreach (var fileName in fontFilePaths)
             {
-                var filePath = $"QuestPDF.Resources.DefaultFont.{fileName}";
-                
-                using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(filePath);
-                RegisterFont(stream);
+                using var fontFileStream = File.OpenRead(fileName);
+                RegisterFont(fontFileStream);
             }
         }
     }

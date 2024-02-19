@@ -33,10 +33,16 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Resources\**\*.*">
+        <None Include="Resources\**\*.*">
+            <Pack>true</Pack>
+            <PackagePath>%(RecursiveDir)\%(Filename)%(Extension)</PackagePath>
+        </None>
+        
+        <None Include="LatoFont\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Pack>true</Pack>
             <PackagePath>%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
-        </EmbeddedResource>
+        </None>
 
         <None Include="runtimes\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
