@@ -143,7 +143,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Sets the maximum number of lines to display. 
         /// </summary>
-        public void LineClamp(int maxLines)
+        public void ClampLines(int maxLines)
         {
             TextBlock.LineClamp = maxLines;
         }
