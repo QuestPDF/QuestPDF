@@ -8,6 +8,7 @@
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
         <LangVersion>10</LangVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <EnablePackageValidation>true</EnablePackageValidation>
         <PackageIcon>Logo.png</PackageIcon>
         <PackageIconUrl>https://www.questpdf.com/images/package-logo.png</PackageIconUrl>
         <PackageProjectUrl>https://www.questpdf.com/</PackageProjectUrl>
@@ -43,8 +44,8 @@
             <Pack>true</Pack>
             <PackagePath>%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
-
-        <None Include="runtimes\**\*.*">
+        
+        <None Include="Runtimes\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Pack>true</Pack>
             <PackagePath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
