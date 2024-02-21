@@ -29,3 +29,7 @@ Version 2023.12.5
 - Improvement: redesigned the automated layout issue detection algorithm
 - Improvement: when drawing content with the Canvas element, the library now clips drawn content to the element's boundaries. This prevents potential overflow when integrating with other libraries
 - Improvement: enhanced layout stability
+
+Version 2023.12.6
+- Updated NuGet package tags
+- Removed the netcoreapp3.0 target from the library, as it is already covered by netstandard2.0
