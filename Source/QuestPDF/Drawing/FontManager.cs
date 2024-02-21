@@ -74,9 +74,7 @@ namespace QuestPDF.Drawing
         private static void RegisterLibraryDefaultFonts()
         {
             var executionPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-            var fontDirectory = Path.Combine(executionPath, "LatoFont");
-            var fontFilePaths = Directory.GetFiles(fontDirectory, "*.ttf");
+            var fontFilePaths = Directory.GetFiles(executionPath, "*.ttf", SearchOption.AllDirectories);
             
             foreach (var fileName in fontFilePaths)
             {
