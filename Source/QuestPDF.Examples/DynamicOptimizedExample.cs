@@ -136,8 +136,9 @@ namespace QuestPDF.Examples
                 });
 
                 var elementHeight = element.Size.Height;
-                    
-                if (totalHeight + elementHeight > context.AvailableSize.Height)
+
+                // it is important to use the Size.Epsilon constant to avoid floating point comparison issues
+                if (totalHeight + elementHeight > context.AvailableSize.Height + Size.Epsilon)
                     break;
                     
                 totalHeight += elementHeight;
