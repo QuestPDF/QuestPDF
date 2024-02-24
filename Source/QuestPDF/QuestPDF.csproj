@@ -48,6 +48,7 @@
         
         <None Include="Runtimes\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
             <Pack>true</Pack>
             <PackagePath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>

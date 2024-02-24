@@ -14,10 +14,12 @@ internal sealed class SkTypefaceProvider : IDisposable
     
     public void AddTypefaceFromData(SkData data, string? alias = null)
     {
+        var typeface = SkFontManager.Global.CreateTypeface(data);
+        
         if (alias == null)
-            API.typeface_font_provider_add_typeface(Instance, data.Instance);
+            API.typeface_font_provider_add_typeface(Instance, typeface.Instance);
         else
-            API.typeface_font_provider_add_typeface_with_custom_alias(Instance, data.Instance, alias);
+            API.typeface_font_provider_add_typeface_with_custom_alias(Instance, typeface.Instance, alias);
     }
     
     ~SkTypefaceProvider()
@@ -40,10 +42,10 @@ internal sealed class SkTypefaceProvider : IDisposable
         public static extern IntPtr typeface_font_provider_create();
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void typeface_font_provider_add_typeface(IntPtr typefaceProvider, IntPtr data);
+        public static extern void typeface_font_provider_add_typeface(IntPtr typefaceProvider, IntPtr typeface);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void typeface_font_provider_add_typeface_with_custom_alias(IntPtr typefaceProvider, IntPtr data, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string alias);
+        public static extern void typeface_font_provider_add_typeface_with_custom_alias(IntPtr typefaceProvider, IntPtr typeface, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string alias);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void typeface_font_provider_delete(IntPtr typefaceProvider);

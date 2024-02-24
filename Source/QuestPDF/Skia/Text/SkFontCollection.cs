@@ -15,6 +15,7 @@ internal sealed class SkFontCollection : IDisposable
     [StructLayout(LayoutKind.Sequential)]
     private struct CreateCommand
     {
+        public IntPtr FontManager;
         public IntPtr TypefaceProvider;
         [MarshalAs(UnmanagedType.I1)] public bool UseGlobalFonts;
         [MarshalAs(UnmanagedType.I1)] public bool EnableFontFallback;
@@ -23,9 +24,14 @@ internal sealed class SkFontCollection : IDisposable
     public static SkFontCollection Create(SkTypefaceProvider? typefaceProvider = null, bool useGlobalFonts = false, bool enableFontFallback = false)
     {
         typefaceProvider ??= new SkTypefaceProvider();
+
+        var fontManager = useGlobalFonts
+            ? SkFontManager.Global
+            : SkFontManager.Empty;
         
         var command = new CreateCommand
         {
+            FontManager = fontManager.Instance,
             TypefaceProvider = typefaceProvider.Instance,
             UseGlobalFonts = useGlobalFonts,
             EnableFontFallback = enableFontFallback

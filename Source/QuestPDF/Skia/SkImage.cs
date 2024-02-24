@@ -9,7 +9,6 @@ internal sealed class SkImage : IDisposable
 
     public readonly int Width;
     public readonly int Height;
-    
     public readonly int EncodedDataSize;
     
     public SkImage(IntPtr instance)
@@ -21,7 +20,6 @@ internal sealed class SkImage : IDisposable
         
         Width = details.Width;
         Height = details.Height;
-        
         EncodedDataSize = details.EncodedDataSize;
     }
 
@@ -80,8 +78,7 @@ internal sealed class SkImage : IDisposable
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void image_delete(IntPtr image);
-
- 
+        
         [DllImport(SkiaAPI.LibraryName)]
         public static extern IntPtr image_resize_and_compress(IntPtr image, int targetImageWidth, int targetImageHeight, int compressionQuality);
 
@@ -90,14 +87,12 @@ internal sealed class SkImage : IDisposable
         {
             public int Width;
             public int Height;
-        
-            [MarshalAs(UnmanagedType.I1)] public bool IsOpaque;
             public int EncodedDataSize;
         }
-    
-        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Winapi)]
+
+        [DllImport(SkiaAPI.LibraryName)]
         public static extern SkImageDetails image_get_details(IntPtr image);
-    
+
         [DllImport(SkiaAPI.LibraryName)]
         public static extern IntPtr image_get_encoded_data(IntPtr image);
  
