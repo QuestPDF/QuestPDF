@@ -3,7 +3,7 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2024.3.0-internal91</Version>
+        <Version>2024.3.0-betaint16</Version>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API. Easily generate PDF reports, invoices, exports, etc.</PackageDescription>
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
         <LangVersion>10</LangVersion>
@@ -53,9 +53,11 @@
             <PackagePath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
 
-        <None Include="QuestPDF.targets">
-            <PackagePath>build\</PackagePath>
+        <None Include="Build\**\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
             <Pack>true</Pack>
+            <PackagePath>build\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
     </ItemGroup>
 </Project>

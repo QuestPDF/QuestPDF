@@ -24,7 +24,7 @@ internal static class SkNativeDependencyProvider
     {
         try
         {
-            EnsureNativeFileAvailability();
+            GetRuntimePlatform();
             return true;
         }
         catch
@@ -60,7 +60,7 @@ internal static class SkNativeDependencyProvider
                 return "osx-arm64";
         }
 
-        throw new InitializationException("Your runtime is currently not supported by QuestPDF");
+        throw new InitializationException("Your runtime is currently not supported by QuestPDF.");
     }
         
     static string GetNativeFileRuntimePath(string fileName)
