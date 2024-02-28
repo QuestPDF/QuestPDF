@@ -66,11 +66,6 @@ namespace QuestPDF.Infrastructure
         #endregion
 
         #region public constructors
-        
-        internal static Image FromSkImage(SkImage image)
-        {
-            return new Image(image);
-        }
 
         /// <summary>
         /// Loads the image from binary data.
