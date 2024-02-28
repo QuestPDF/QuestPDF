@@ -125,7 +125,11 @@ namespace QuestPDF.Previewer
                 await Task.Delay(TimeSpan.FromMilliseconds(250));
 
                 if (cancellationToken.IsCancellationRequested)
-                    throw new Exception($"Cannot connect to the QuestPDF Previewer tool. Please make sure that your Operating System does not block HTTP connections on port {Port}.");
+                {
+                    throw new Exception($"Cannot connect to the QuestPDF Previewer tool. Please ensure that: " +
+                                        $"1) the dotnet 8 runtime is installed on your environment, " +
+                                        $"2) your operating system does not block HTTP connections on port {Port}.");
+                }
 
                 var isConnected = await IsPreviewerAvailable();
 
@@ -173,10 +177,12 @@ namespace QuestPDF.Previewer
                     {
                         await RenderRequestedPageSnapshots();
                     }
-                    finally
+                    catch
                     {
-                        await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+                        
                     }
+                    
+                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
                 }
             });
         }
@@ -190,6 +196,9 @@ namespace QuestPDF.Previewer
             var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
             
             if (!requestedSnapshots.Any())
+                return;
+            
+            if (CurrentDocumentSnapshot == null)
                 return;
       
             // render snapshots

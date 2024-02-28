@@ -20,7 +20,7 @@
         <PackageTags>previewer pdf report file export generate generation tool create creation render portable document format quest html library converter open source free standard core</PackageTags>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <OutputType>exe</OutputType>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
