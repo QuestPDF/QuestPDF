@@ -53,7 +53,6 @@ namespace QuestPDF.ReportSample.Layouts
                     row.RelativeItem()
                         .PaddingHorizontal(2)
                         .AlignBottom()
-                        .TranslateY(-3)
                         .Height(3)
                         .SkiaSharpRasterized((canvas, size) =>
                         {

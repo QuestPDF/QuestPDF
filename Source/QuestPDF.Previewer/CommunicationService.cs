@@ -74,13 +74,21 @@ class CommunicationService
     
     private async Task HandleProvidedSnapshotImages(HttpRequest request)
     {
-        var renderedPages = JsonSerializer.Deserialize<ICollection<RenderedPageSnapshot>>(request.Form["metadata"], JsonSerializerOptions);
+        var renderedPageIndexes = JsonSerializer.Deserialize<ICollection<PageSnapshotIndex>>(request.Form["metadata"], JsonSerializerOptions);
+        var renderedPages = new List<RenderedPageSnapshot>();
 
-        foreach (var renderedPage in renderedPages)
+        foreach (var index in renderedPageIndexes)
         {
             using var memoryStream = new MemoryStream();
-            await request.Form.Files.GetFile(renderedPage.ToString()).CopyToAsync(memoryStream);
-            renderedPage.Image = SKImage.FromEncodedData(memoryStream.ToArray()).ToRasterImage(true);
+            await request.Form.Files.GetFile(index.ToString()).CopyToAsync(memoryStream);
+            var image = SKImage.FromEncodedData(memoryStream.ToArray()).ToRasterImage(true);
+
+            var renderedPage = new RenderedPageSnapshot
+            {
+                ZoomLevel = index.ZoomLevel, PageIndex = index.PageIndex, Image = image
+            };
+            
+            renderedPages.Add(renderedPage);
         }
 
         Task.Run(() => OnPageSnapshotsProvided(renderedPages));
