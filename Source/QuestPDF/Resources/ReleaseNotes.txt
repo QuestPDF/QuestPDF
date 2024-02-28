@@ -11,3 +11,21 @@ This change was necessary to provide much higher flexibility and enable several 
 We would like to thank the SkiaSharp project, its maintainers and contributors, for creating a fantastic graphics library. It was a fantastic foundation for QuestPDF for over 3 years. 
 
 This release requires at least .NET Standard 2.1. The beta release will reintroduce support for the .NET Standard 2.0.
+
+
+
+Version 2024.3.0-beta
+- Updated the codebase to Skia m122 and resolved all backward-incompatible changes,
+- Added support for the .NET Standard 2.0,
+- Improved P/Invoke and marshaling compatibility with the legacy .NET Framework,
+- Fixed a bug in the Text element that could cause an exception under certain conditions,
+- Updated the Lato font to the latest version (2.015),
+- Improved the loading method for native dependencies,
+- Added the Text.ClampLines functionality,
+- Added support for adjusting the thickness and style of text decorations (overline, strikeout, underline),
+- Added support for word spacing,
+- Reduced the risk of race conditions in Avalonia in the QuestPDF Previewer,
+- Enhanced exception message when the QuestPDF Previewer fails to load due to missing required dotnet 8 runtime,
+- Improved native memory management and fixed memory leaks,
+- Include licenses of the third party dependencies in the NuGet package,
+- Performed code cleanup and made minor adjustments.
