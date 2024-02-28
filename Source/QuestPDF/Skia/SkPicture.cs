@@ -34,14 +34,14 @@ internal sealed class SkPicture : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.picture_delete(Instance);
+        API.picture_unref(Instance);
         Instance = IntPtr.Zero;
     }
     
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void picture_delete(IntPtr picture);
+        public static extern void picture_unref(IntPtr picture);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern IntPtr picture_serialize(IntPtr picture);

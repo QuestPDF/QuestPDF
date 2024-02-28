@@ -38,9 +38,9 @@ internal sealed class SkWriteStream : IDisposable
         public static extern IntPtr write_stream_create();
     
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void write_stream_delete(IntPtr typeface);
+        public static extern void write_stream_delete(IntPtr stream);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern IntPtr write_stream_detach_data(IntPtr typeface);    
+        public static extern IntPtr write_stream_detach_data(IntPtr stream);    
     }
 }

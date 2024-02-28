@@ -30,7 +30,6 @@ internal sealed class SkImage : IDisposable
         if (instance == IntPtr.Zero)
             throw new Exception("Cannot decode the provided image.");
         
-        data.SetAsOwnedByAnotherObject();
         return new SkImage(instance);
     }
     
@@ -54,7 +53,7 @@ internal sealed class SkImage : IDisposable
     public SkData GetEncodedData()
     {
         var dataInstance = API.image_get_encoded_data(Instance);
-        return new SkData(dataInstance, false);
+        return new SkData(dataInstance);
     }
     
     ~SkImage()
@@ -67,7 +66,7 @@ internal sealed class SkImage : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.image_delete(Instance);
+        API.image_unref(Instance);
         Instance = IntPtr.Zero;
     }
     
@@ -77,7 +76,7 @@ internal sealed class SkImage : IDisposable
         public static extern IntPtr image_create_from_data(IntPtr data);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void image_delete(IntPtr image);
+        public static extern void image_unref(IntPtr image);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern IntPtr image_resize_and_compress(IntPtr image, int targetImageWidth, int targetImageHeight, int compressionQuality);

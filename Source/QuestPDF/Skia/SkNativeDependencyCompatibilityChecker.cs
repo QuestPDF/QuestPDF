@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using QuestPDF.Drawing.Exceptions;
 
 namespace QuestPDF.Skia;
 
@@ -10,15 +9,9 @@ public static class SkNativeDependencyCompatibilityChecker
         
     public static void Test()
     {
-        const string exceptionBaseMessage = "The QuestPDF library has encountered an issue while loading one of its dependencies.";
-        var newLine = Environment.NewLine;
-        var paragraph = newLine + newLine;
-        
         if (IsCompatibilityChecked)
             return;
             
-        // test with dotnet-based mechanism where native files are provided
-        // in the "runtimes/{rid}/native" folder on Core, or by the targets file on .NET Framework
         var innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
 
         if (innerException == null)
@@ -27,31 +20,11 @@ public static class SkNativeDependencyCompatibilityChecker
             return;
         }
 
-        if (!SkNativeDependencyProvider.IsCurrentPlatformSupported())
-        {
-            var message = 
-                $"{exceptionBaseMessage}{paragraph}" +
-                "Your runtime is currently not supported by QuestPDF. " +
-                "Currently supported runtimes are: win-x64, linux-x64, osx-x64, osx-arm64.";
-            
-            if (RuntimeInformation.ProcessArchitecture == Architecture.X64)
-                message += $"{paragraph}Please consider setting the 'Platform target' property to 'x64' in your project settings.";
-            
-            throw new InitializationException(message, innerException);
-        }
+        // TODO: improve error message
+        var initializationExceptionMessage =
+            $"The QuestPDF library has encountered an issue while loading one of its dependencies.";
         
-        // detect platform, copy appropriate native files and test compatibility again
-        SkNativeDependencyProvider.EnsureNativeFileAvailability();
-        
-        innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
-
-        if (innerException == null)
-        {
-            IsCompatibilityChecked = true;
-            return;
-        }
-
-        throw new Exception(exceptionBaseMessage, innerException);
+        throw new Exception(initializationExceptionMessage, innerException);
     }
     
     private static Exception? CheckIfExceptionIsThrownWhenLoadingNativeDependencies()

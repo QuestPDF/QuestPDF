@@ -51,7 +51,7 @@ internal sealed class SkFontCollection : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.font_collection_delete(Instance);
+        API.font_collection_unref(Instance);
         Instance = IntPtr.Zero;
     }
     
@@ -61,6 +61,6 @@ internal sealed class SkFontCollection : IDisposable
         public static extern IntPtr font_collection_create(CreateCommand command);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void font_collection_delete(IntPtr fontCollection);
+        public static extern void font_collection_unref(IntPtr fontCollection);
     }
 }

@@ -32,7 +32,7 @@ internal sealed class SkTypefaceProvider : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.typeface_font_provider_delete(Instance);
+        API.typeface_font_provider_unref(Instance);
         Instance = IntPtr.Zero;
     }
     
@@ -48,6 +48,6 @@ internal sealed class SkTypefaceProvider : IDisposable
         public static extern void typeface_font_provider_add_typeface_with_custom_alias(IntPtr typefaceProvider, IntPtr typeface, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string alias);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void typeface_font_provider_delete(IntPtr typefaceProvider);
+        public static extern void typeface_font_provider_unref(IntPtr typefaceProvider);
     }
 }

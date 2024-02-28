@@ -18,7 +18,7 @@ internal sealed class SkFontManager
     public SkTypeface CreateTypeface(SkData data)
     {
         var instance = API.font_manager_create_typeface(Instance, data.Instance);
-        return new SkTypeface(instance, disposeNativeObject: false);
+        return new SkTypeface(instance);
     }
     
     private static class API

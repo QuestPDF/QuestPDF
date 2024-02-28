@@ -11,8 +11,7 @@ internal sealed class SkSvgImage : IDisposable
     public SkSvgImage(string svgString)
     {
         using var data = SkData.FromBinary(System.Text.Encoding.UTF8.GetBytes(svgString));
-        data.SetAsOwnedByAnotherObject();
-        
+
         Instance = API.svg_create(data.Instance);
         
         if (Instance == IntPtr.Zero)
@@ -31,7 +30,7 @@ internal sealed class SkSvgImage : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.svg_delete(Instance);
+        API.svg_unref(Instance);
         Instance = IntPtr.Zero;
     }
     
@@ -41,7 +40,7 @@ internal sealed class SkSvgImage : IDisposable
         public static extern IntPtr svg_create(IntPtr data);
         
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void svg_delete(IntPtr svg);
+        public static extern void svg_unref(IntPtr svg);
         
         [DllImport(SkiaAPI.LibraryName)]
         public static extern void svg_get_viewbox(IntPtr svg, out SkRect viewbox);

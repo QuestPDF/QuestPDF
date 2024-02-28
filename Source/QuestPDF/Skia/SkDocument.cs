@@ -15,7 +15,7 @@ internal sealed class SkDocument : IDisposable
     public SkCanvas BeginPage(float width, float height)
     {
         var instance = API.document_begin_page(Instance, width, height);
-        return new SkCanvas(instance, false);
+        return new SkCanvas(instance, disposeNativeObject: false);
     }
     
     public void EndPage()
@@ -38,7 +38,7 @@ internal sealed class SkDocument : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.document_delete(Instance);
+        API.document_unref(Instance);
         Instance = IntPtr.Zero;
     }
     
@@ -54,6 +54,6 @@ internal sealed class SkDocument : IDisposable
         public static extern void document_close(IntPtr document);
     
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void document_delete(IntPtr document);
+        public static extern void document_unref(IntPtr document);
     }
 }

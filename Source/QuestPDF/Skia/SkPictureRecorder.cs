@@ -15,7 +15,7 @@ internal sealed class SkPictureRecorder : IDisposable
     public SkCanvas BeginRecording(float width, float height)
     {
         var canvasInstance = API.picture_recorder_begin_recording(Instance, width, height);
-        return new SkCanvas(canvasInstance, false);
+        return new SkCanvas(canvasInstance, disposeNativeObject: false);
     }
     
     public SkPicture EndRecording()

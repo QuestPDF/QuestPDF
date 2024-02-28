@@ -7,17 +7,10 @@ namespace QuestPDF.Skia;
 internal sealed class SkData : IDisposable
 {
     public IntPtr Instance { get; private set; }
-    private bool DisposeNativeObject = true;
-    
-    public SkData(IntPtr instance, bool disposeNativeObject = true)
+
+    public SkData(IntPtr instance)
     {
         Instance = instance;
-        DisposeNativeObject = disposeNativeObject;
-    }
-
-    public void SetAsOwnedByAnotherObject()
-    {
-        DisposeNativeObject = false;
     }
     
     public static SkData FromFile(string filePath)
@@ -48,12 +41,12 @@ internal sealed class SkData : IDisposable
     public byte[] ToBytes()
     {
         var content = API.data_get_bytes(Instance);
-        var result = new byte[content.length];
+        byte[] result = new byte[content.length];
         Marshal.Copy(content.bytes, result, 0, content.length);
 
         return result;
     }
-
+    
     ~SkData()
     {
         Dispose();
@@ -64,9 +57,7 @@ internal sealed class SkData : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        if (DisposeNativeObject)
-            API.data_delete(Instance);
-        
+        API.data_unref(Instance);
         Instance = IntPtr.Zero;
     }
     
@@ -89,6 +80,6 @@ internal sealed class SkData : IDisposable
         public static extern GetBytesFromDataResult data_get_bytes(IntPtr data);
     
         [DllImport(SkiaAPI.LibraryName)]
-        public static extern void data_delete(IntPtr data);
+        public static extern void data_unref(IntPtr data);
     }
 }

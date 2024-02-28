@@ -7,7 +7,7 @@ namespace QuestPDF.Skia;
 internal sealed class SkCanvas : IDisposable
 {
     public IntPtr Instance { get; private set; }
-    private bool DisposeNativeObject = true;
+    private bool DisposeNativeObject { get; }
 
     public SkCanvas(IntPtr instance, bool disposeNativeObject = true)
     {
