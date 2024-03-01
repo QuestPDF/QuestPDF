@@ -269,6 +269,7 @@ namespace QuestPDF.Elements.Text
                 }
             }
 
+            Paragraph?.Dispose();
             Paragraph = paragraphBuilder.CreateParagraph();
             
             static ParagraphStyleConfiguration.TextAlign MapAlignment(TextHorizontalAlignment alignment)
