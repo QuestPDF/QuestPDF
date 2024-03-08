@@ -12,8 +12,7 @@ namespace QuestPDF.Infrastructure
         Color,
         BackgroundColor,
         DecorationColor,
-        FontFamily,
-        FontFamilyFallback,
+        FontFamilies,
         Size,
         LineHeight,
         LetterSpacing,
@@ -52,6 +51,9 @@ namespace QuestPDF.Infrastructure
 
         private static TextStyle MutateStyle(this TextStyle origin, TextStyleProperty targetProperty, object? newValue, bool overrideValue)
         {
+            if (targetProperty == TextStyleProperty.FontFamilies)
+                return MutateFontFamily(origin, newValue as string[], overrideValue);
+            
             lock (MutationLock)
             {
                 if (overrideValue && newValue is null)
@@ -72,6 +74,32 @@ namespace QuestPDF.Infrastructure
                 var newTextStyle = origin with { Id = newIndex };
                 newTextStyle.Id = newIndex;
                 property.SetValue(newTextStyle, newValue);
+
+                TextStyles.Add(newTextStyle);
+                return newTextStyle;
+            }
+        }
+        
+        private static TextStyle MutateFontFamily(this TextStyle origin, string[]? newValue, bool overrideValue)
+        {
+            lock (MutationLock)
+            {
+                if (overrideValue && newValue is null)
+                    return origin;
+                
+                var newIndex = TextStyles.Count;
+                var newTextStyle = origin with { Id = newIndex };
+                newTextStyle.Id = newIndex;
+                
+                newValue ??= Array.Empty<string>();
+                var oldValue = origin.FontFamilies ?? Array.Empty<string>();
+                
+                if (origin.FontFamilies?.SequenceEqual(newValue) == true)
+                    return origin;
+                
+                newTextStyle.FontFamilies = overrideValue 
+                    ? newValue 
+                    : newValue.Concat(oldValue).Distinct().ToArray();
 
                 TextStyles.Add(newTextStyle);
                 return newTextStyle;

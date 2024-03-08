@@ -40,7 +40,7 @@ namespace QuestPDF.UnitTests
             {
                 Id = targetStyle.Id, // expect to break when adding new TextStyle properties, so use the real one
                 Size = 20, 
-                FontFamily = "Times New Roman",
+                FontFamilies = new[] { "Times New Roman" },
                 FontWeight = FontWeight.Bold,
                 BackgroundColor = Colors.Red.Lighten2,
                 HasStrikethrough = true

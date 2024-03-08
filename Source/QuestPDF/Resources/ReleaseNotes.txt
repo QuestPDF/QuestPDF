@@ -29,3 +29,9 @@ Version 2024.3.0-beta
 - Improved native memory management and fixed memory leaks,
 - Include licenses of the third party dependencies in the NuGet package,
 - Performed code cleanup and made minor adjustments.
+
+
+
+Version 2024.3.0-beta1
+- Fixed: font fallback does not work when the Settings.UseEnvironmentFonts setting is set to false,
+- Ability to provide multiple font fallbacks.

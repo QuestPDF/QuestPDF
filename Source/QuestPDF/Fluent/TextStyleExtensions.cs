@@ -34,15 +34,9 @@ namespace QuestPDF.Fluent
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFamily"]/*' />
-        public static TextStyle FontFamily(this TextStyle style, string value)
+        public static TextStyle FontFamily(this TextStyle style, params string[] values)
         {
-            return style.Mutate(TextStyleProperty.FontFamily, value);
-        }
-        
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
-        public static TextStyle FontFamilyFallback(this TextStyle style, string value)
-        {
-            return style.Mutate(TextStyleProperty.FontFamilyFallback, value);
+            return style.Mutate(TextStyleProperty.FontFamilies, values);
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontSize method.")]

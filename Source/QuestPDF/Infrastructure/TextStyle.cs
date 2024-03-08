@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Helpers;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -12,8 +14,7 @@ namespace QuestPDF.Infrastructure
         internal Color? Color { get; set; }
         internal Color? BackgroundColor { get; set; }
         internal Color? DecorationColor { get; set; }
-        internal string? FontFamily { get; set; }
-        internal string? FontFamilyFallback { get; set; }
+        internal string[]? FontFamilies { get; set; }
         internal float? Size { get; set; }
         internal float? LineHeight { get; set; }
         internal float? LetterSpacing { get; set; }
@@ -39,8 +40,7 @@ namespace QuestPDF.Infrastructure
             Color = Colors.Black,
             BackgroundColor = Colors.Transparent,
             DecorationColor = Colors.Black,
-            FontFamily = Fonts.Lato,
-            FontFamilyFallback = null,
+            FontFamilies = new[] { Fonts.Lato },
             Size = 12,
             LineHeight = 1.2f,
             LetterSpacing = 0,
@@ -63,17 +63,15 @@ namespace QuestPDF.Infrastructure
             if (SkTextStyleCache != null)
                 return SkTextStyleCache;
             
-            using var fontFamily = new SkText(FontFamily);
-            using var fontFamilyFallback = new SkText(FontFamilyFallback);
-            
+            var fontFamilyTexts = FontFamilies.Select(x => new SkText(x)).ToList();
+
             SkTextStyleCache = new SkTextStyle(new TextStyleConfiguration
             {
                 FontSize = CalculateTargetFontSize(),
                 FontWeight = (TextStyleConfiguration.FontWeights?)FontWeight ?? TextStyleConfiguration.FontWeights.Normal,
                 
                 IsItalic = IsItalic ?? false,
-                FontFamily = fontFamily,
-                FontFamilyFallback = fontFamilyFallback,
+                FontFamilies = GetFontFamilyPointers(fontFamilyTexts),
                 ForegroundColor = Color ?? Colors.Black,
                 BackgroundColor = BackgroundColor ?? Colors.Transparent,
                 DecorationColor = DecorationColor ?? Colors.Black,
@@ -89,8 +87,19 @@ namespace QuestPDF.Infrastructure
                 BaselineOffset = CalculateBaselineOffset(),
             });
             
+            fontFamilyTexts.ForEach(x => x.Dispose());
             return SkTextStyleCache;
 
+            IntPtr[] GetFontFamilyPointers(IList<SkText> texts)
+            {
+                var result = new IntPtr[TextStyleConfiguration.FONT_FAMILIES_LENGTH];
+                
+                for (var i = 0; i < Math.Min(result.Length, texts.Count); i++)
+                    result[i] = texts[i].Instance;
+                
+                return result;
+            }
+            
             TextStyleConfiguration.TextDecorationMode DecorationMode()
             {
                 if (DecorationStyle == TextStyleConfiguration.TextDecorationStyle.Solid)

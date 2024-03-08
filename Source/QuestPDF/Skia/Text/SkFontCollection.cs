@@ -17,22 +17,14 @@ internal sealed class SkFontCollection : IDisposable
     {
         public IntPtr FontManager;
         public IntPtr TypefaceProvider;
-        [MarshalAs(UnmanagedType.I1)] public bool EnableFontFallback;
     }
 
-    public static SkFontCollection Create(SkTypefaceProvider? typefaceProvider = null, bool useGlobalFonts = false, bool enableFontFallback = false)
+    public static SkFontCollection Create(SkTypefaceProvider typefaceProvider, SkFontManager fontManager)
     {
-        typefaceProvider ??= new SkTypefaceProvider();
-
-        var fontManager = useGlobalFonts
-            ? SkFontManager.Global
-            : SkFontManager.Empty;
-        
         var command = new CreateCommand
         {
             FontManager = fontManager.Instance,
-            TypefaceProvider = typefaceProvider.Instance,
-            EnableFontFallback = enableFontFallback
+            TypefaceProvider = typefaceProvider.Instance
         };
         
         var instance = API.font_collection_create(command);

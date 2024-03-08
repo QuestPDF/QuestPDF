@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -17,8 +18,8 @@ namespace QuestPDF.Drawing
     {
         internal static SkTypefaceProvider TypefaceProvider { get; } = new();
         
-        private static SkFontCollection LocalFontCollection { get; } = SkFontCollection.Create(FontManager.TypefaceProvider, false, true);
-        private static SkFontCollection GlobalFontCollection { get; } = SkFontCollection.Create(FontManager.TypefaceProvider, true, true);
+        private static SkFontCollection LocalFontCollection { get; } = SkFontCollection.Create(TypefaceProvider, SkFontManager.Empty);
+        private static SkFontCollection GlobalFontCollection { get; } = SkFontCollection.Create(TypefaceProvider, SkFontManager.Global);
         
         internal static SkFontCollection FontCollection => Settings.UseEnvironmentFonts ? GlobalFontCollection : LocalFontCollection;
         
@@ -73,13 +74,24 @@ namespace QuestPDF.Drawing
         
         private static void RegisterLibraryDefaultFonts()
         {
+            var supportedFontExtensions = new[] { ".ttf", ".otf", ".ttc", ".pfb", ".woff", ".woff2" };
+            
             var executionPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var fontFilePaths = Directory.GetFiles(executionPath, "*.ttf", SearchOption.AllDirectories);
+            
+            var fontFilePaths = supportedFontExtensions
+                .SelectMany(extension => Directory.GetFiles(executionPath, extension, SearchOption.AllDirectories));
             
             foreach (var fileName in fontFilePaths)
             {
-                using var fontFileStream = File.OpenRead(fileName);
-                RegisterFont(fontFileStream);
+                try
+                {
+                    using var fontFileStream = File.OpenRead(fileName);
+                    RegisterFont(fontFileStream);
+                }
+                catch
+                {
+                    
+                }
             }
         }
     }

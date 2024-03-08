@@ -46,16 +46,9 @@ namespace QuestPDF.Fluent
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFamily"]/*' />
-        public static T FontFamily<T>(this T descriptor, string value) where T : TextSpanDescriptor
+        public static T FontFamily<T>(this T descriptor, params string[] values) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(TextStyleExtensions.FontFamily, value);
-            return descriptor;
-        }
-        
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
-        public static T FontFamilyFallback<T>(this T descriptor, string value) where T : TextSpanDescriptor
-        {
-            descriptor.MutateTextStyle(TextStyleExtensions.FontFamilyFallback, value);
+            descriptor.MutateTextStyle(TextStyleExtensions.FontFamily, values);
             return descriptor;
         }
         

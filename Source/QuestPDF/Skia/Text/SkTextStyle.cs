@@ -10,8 +10,8 @@ internal struct TextStyleConfiguration
     public FontWeights FontWeight;
     public bool IsItalic;
 
-    public IntPtr FontFamily;
-    public IntPtr FontFamilyFallback;
+    public const int FONT_FAMILIES_LENGTH = 16;
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = FONT_FAMILIES_LENGTH)] public IntPtr[] FontFamilies;
     
     public uint ForegroundColor;
     public uint BackgroundColor;

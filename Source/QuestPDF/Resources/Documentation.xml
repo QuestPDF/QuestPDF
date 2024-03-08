@@ -441,14 +441,7 @@
             This API reduces the garbage collector pressure and offers the best performance.
         </remarks>
     </doc>
-
-    <doc for="text.fontFallback">
-        <summary>
-            Specifies an alternative font family to be used when the primary font family does not support certain character glyphs.
-            <a href="https://www.questpdf.com/api-reference/text.html#font-fallback">Learn more</a>
-        </summary>
-    </doc>
-
+    
     <!-- PREVIEWER -->
 
     <doc for="previewer.support">
