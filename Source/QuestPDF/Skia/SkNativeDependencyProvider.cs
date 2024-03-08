@@ -7,6 +7,8 @@ namespace QuestPDF.Skia;
 
 internal static class SkNativeDependencyProvider
 {
+    private static string _baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
     public static void EnsureNativeFileAvailability()
     {
         var nativeFiles = Directory.GetFiles(GetNativeFileSourcePath());
@@ -35,9 +37,22 @@ internal static class SkNativeDependencyProvider
     
     static string GetNativeFileSourcePath()
     {
-        var applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
         var platform = GetRuntimePlatform();
-        return Path.Combine(applicationDirectory, "runtimes", platform, "native");
+        var nativeFileSourcePath = Path.Combine(_baseDirectory, "runtimes", platform, "native");
+
+        if (Directory.Exists(nativeFileSourcePath))
+            return nativeFileSourcePath;
+
+        var applicationDirectory = AppDomain.CurrentDomain.RelativeSearchPath;
+
+        if (!string.IsNullOrEmpty(applicationDirectory))
+            nativeFileSourcePath = Path.Combine(applicationDirectory, "runtimes", platform, "native");
+
+        if (!Directory.Exists(nativeFileSourcePath))
+            throw new DirectoryNotFoundException($"Native files not found in {nativeFileSourcePath}");
+
+        _baseDirectory = applicationDirectory!;
+        return nativeFileSourcePath;
     }
         
     static string GetRuntimePlatform()
@@ -65,8 +80,7 @@ internal static class SkNativeDependencyProvider
         
     static string GetNativeFileRuntimePath(string fileName)
     {
-        var applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        return Path.Combine(applicationDirectory, fileName);
+        return Path.Combine(_baseDirectory, fileName);
     }
 
     static void CopyFileIfNewer(string sourcePath, string targetPath)
