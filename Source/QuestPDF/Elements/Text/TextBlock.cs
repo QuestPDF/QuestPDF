@@ -17,17 +17,20 @@ namespace QuestPDF.Elements.Text
         
         public TextHorizontalAlignment? Alignment { get; set; }
         public int? LineClamp { get; set; }
-        public List<ITextBlockItem> Items { get; set; } = new List<ITextBlockItem>();
+        public List<ITextBlockItem> Items { get; set; } = new();
 
-        private bool RebuildParagraphForEveryPage { get; set; }
-        
         private SkParagraph Paragraph { get; set; }
+        
+        private bool RebuildParagraphForEveryPage { get; set; }
+        private bool AreParagraphMetricsValid { get; set; }
+        
         private SkSize[] LineMetrics { get; set; }
         private float WidthForLineMetricsCalculation { get; set; }
-        private int CurrentLineIndex { get; set; } = 0;
-        private float CurrentTopOffset { get; set; } = 0f;
         private SkRect[] PlaceholderPositions { get; set; }
         private float MaximumWidth { get; set; }
+        
+        private int CurrentLineIndex { get; set; }
+        private float CurrentTopOffset { get; set; }
         
         public string Text => string.Join(" ", Items.OfType<TextBlockSpan>().Select(x => x.Text));
 
@@ -222,6 +225,8 @@ namespace QuestPDF.Elements.Text
             
             RebuildParagraphForEveryPage = Items.Any(x => x is TextBlockPageNumber);
             BuildParagraph();
+            
+            AreParagraphMetricsValid = false;
         }
 
         private void BuildParagraph()
@@ -315,7 +320,10 @@ namespace QuestPDF.Elements.Text
             // SkParagraph seems to require a bigger space buffer to calculate metrics correctly
             const float epsilon = 1f;
             
-            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) < epsilon) 
+            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > epsilon)
+                AreParagraphMetricsValid = false;
+            
+            if (AreParagraphMetricsValid) 
                 return;
             
             WidthForLineMetricsCalculation = availableSpace.Width;
@@ -326,6 +334,8 @@ namespace QuestPDF.Elements.Text
             LineMetrics = Paragraph.GetLineMetrics();
             PlaceholderPositions = Paragraph.GetPlaceholderPositions();
             MaximumWidth = LineMetrics.Any() ? LineMetrics.Max(x => x.Width) : 0;
+            
+            AreParagraphMetricsValid = true;
         }
         
         private void CheckUnresolvedGlyphs()
