@@ -34,14 +34,13 @@ namespace QuestPDF.Elements
             var actualSize = new Size(
                 Max(MinWidth, measurement.Width),
                 Max(MinHeight, measurement.Height));
-            
-            if (measurement.Type == SpacePlanType.FullRender)
-                return SpacePlan.FullRender(actualSize);
-            
-            if (measurement.Type == SpacePlanType.PartialRender)
-                return SpacePlan.PartialRender(actualSize);
-            
-            throw new NotSupportedException();
+
+            return measurement.Type switch
+            {
+                SpacePlanType.FullRender => SpacePlan.FullRender(actualSize),
+                SpacePlanType.PartialRender => SpacePlan.PartialRender(actualSize),
+                _ => throw new NotSupportedException(),
+            };
         }
         
         internal override void Draw(Size availableSpace)

@@ -23,22 +23,22 @@ namespace QuestPDF.ReportSample
             {
                 return new List<ReportHeaderField>
                 {
-                    new ReportHeaderField()
+                    new ReportHeaderField
                     {
                         Label = "Scope",
                         Value = "Internal activities"
                     },
-                    new ReportHeaderField()
+                    new ReportHeaderField
                     {
                         Label = "Author",
                         Value = "Marcin Ziąbek"
                     },
-                    new ReportHeaderField()
+                    new ReportHeaderField
                     {
                         Label = "Date",
                         Value = DateTime.Now.ToString("g")
                     },
-                    new ReportHeaderField()
+                    new ReportHeaderField
                     {
                         Label = "Status",
                         Value = "Completed, found 2 issues"
@@ -62,14 +62,12 @@ namespace QuestPDF.ReportSample
             ReportSectionElement GetRandomElement()
             {
                 var random = Helpers.Random.NextDouble();
-
-                if (random < 0.9f)
-                    return GetTextElement();
-                
-                if (random < 0.95f)
-                    return GetMapElement();
-                
-                return GetPhotosElement();
+                return random switch
+                {
+                    < 0.9f => GetTextElement(),
+                    < 0.95f => GetMapElement(),
+                    _ => GetPhotosElement(),
+                };
             }
             
             ReportSectionText GetTextElement()

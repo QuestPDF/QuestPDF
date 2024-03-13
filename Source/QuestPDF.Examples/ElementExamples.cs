@@ -689,12 +689,22 @@ namespace QuestPDF.Examples
                                     .Padding(10)
                                     .Element(element =>
                                     {
-                                        if (turns == 1 || turns == 2)
-                                            element = element.FlipHorizontal();
+                                        switch (turns)
+                                        {
+                                            case 1:
+                                            case 2:
+                                                element = element.FlipHorizontal();
+                                                break;
+                                        }
 
-                                        if (turns == 2 || turns == 3)
-                                            element = element.FlipVertical();
-                                        
+                                        switch (turns)
+                                        {
+                                            case 2:
+                                            case 3:
+                                                element = element.FlipVertical();
+                                                break;
+                                        }
+
                                         return element;
                                     })
                                     .MinimalBox()

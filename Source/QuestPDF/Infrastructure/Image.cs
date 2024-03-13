@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
@@ -13,7 +11,7 @@ namespace QuestPDF.Infrastructure
         internal ImageSize Resolution { get; set; }
         internal ImageCompressionQuality CompressionQuality { get; set; }
     }
-    
+
     /// <summary>
     /// <para>Caches the image in local memory for efficient reuse.</para>
     /// <para>Optimizes the generation process, especially:</para>
@@ -29,26 +27,26 @@ namespace QuestPDF.Infrastructure
         {
             NativeDependencyCompatibilityChecker.Test();
         }
-        
+
         internal SKImage SkImage { get; }
         internal ImageSize Size { get; }
 
         internal LinkedList<(GetImageVersionRequest request, SKImage image)> ScaledImageCache { get; } = new();
- 
+
         internal Image(SKImage image)
         {
             SkImage = image;
             Size = new ImageSize(image.Width, image.Height);
         }
-        
+
         ~Image()
         {
             SkImage.Dispose();
-            
+
             foreach (var cacheKey in ScaledImageCache)
                 cacheKey.image.Dispose();
         }
-        
+
         #region Scaling Image
 
         internal SKImage GetVersionOfSize(GetImageVersionRequest request)
@@ -69,7 +67,7 @@ namespace QuestPDF.Infrastructure
         #region public constructors
 
         private const string CannotDecodeExceptionMessage = "Cannot decode the provided image.";
-        
+
         internal static Image FromSkImage(SKImage image)
         {
             return new Image(image);
@@ -83,10 +81,10 @@ namespace QuestPDF.Infrastructure
         public static Image FromBinaryData(byte[] imageData)
         {
             var image = SKImage.FromEncodedData(imageData);
-            
+
             if (image == null)
                 throw new DocumentComposeException(CannotDecodeExceptionMessage);
-            
+
             return new Image(image);
         }
 
@@ -100,12 +98,10 @@ namespace QuestPDF.Infrastructure
             var image = SKImage.FromEncodedData(filePath);
 
             if (image == null)
-            {
-                throw File.Exists(filePath) 
+                throw File.Exists(filePath)
                     ? new DocumentComposeException(CannotDecodeExceptionMessage)
                     : new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
-            }
-            
+
             return new Image(image);
         }
 
@@ -117,10 +113,10 @@ namespace QuestPDF.Infrastructure
         public static Image FromStream(Stream fileStream)
         {
             var image = SKImage.FromEncodedData(fileStream);
-            
+
             if (image == null)
                 throw new DocumentComposeException(CannotDecodeExceptionMessage);
-            
+
             return new Image(image);
         }
 

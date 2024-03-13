@@ -12,10 +12,11 @@ namespace QuestPDF.Elements
         {
             var measurement = base.Measure(availableSpace);
 
-            if (measurement.Type == SpacePlanType.PartialRender && availableSpace.Height < MinHeight)
-                return SpacePlan.Wrap();
-
-            return measurement;
+            return measurement.Type switch
+            {
+                SpacePlanType.PartialRender when availableSpace.Height < MinHeight => SpacePlan.Wrap(),
+                _ => measurement,
+            };
         }
     }
 }

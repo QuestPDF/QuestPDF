@@ -24,13 +24,12 @@ namespace QuestPDF.Elements
                 Math.Abs(measure.Width * ScaleX), 
                 Math.Abs(measure.Height * ScaleY));
 
-            if (measure.Type == SpacePlanType.PartialRender)
-                return SpacePlan.PartialRender(targetSize);
-            
-            if (measure.Type == SpacePlanType.FullRender)
-                return SpacePlan.FullRender(targetSize);
-            
-            throw new ArgumentException();
+            return measure.Type switch
+            {
+                SpacePlanType.PartialRender => SpacePlan.PartialRender(targetSize),
+                SpacePlanType.FullRender => SpacePlan.FullRender(targetSize),
+                _ => throw new ArgumentException(),
+            };
         }
         
         internal override void Draw(Size availableSpace)

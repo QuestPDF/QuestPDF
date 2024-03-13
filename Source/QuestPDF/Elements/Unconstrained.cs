@@ -10,14 +10,13 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             var childSize = base.Measure(Size.Max);
-            
-            if (childSize.Type == SpacePlanType.PartialRender)
-                return SpacePlan.PartialRender(0, 0);
-            
-            if (childSize.Type == SpacePlanType.FullRender)
-                return SpacePlan.FullRender(0, 0);
-            
-            return childSize;
+
+            return childSize.Type switch
+            {
+                SpacePlanType.PartialRender => SpacePlan.PartialRender(0, 0),
+                SpacePlanType.FullRender => SpacePlan.FullRender(0, 0),
+                _ => childSize,
+            };
         }
 
         internal override void Draw(Size availableSpace)
