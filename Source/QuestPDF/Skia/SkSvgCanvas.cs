@@ -9,7 +9,7 @@ internal sealed class SkSvgCanvas
     {
         var bounds = new SkRect(0, 0, width, height);
         var instance = API.svg_create_canvas(bounds, writeStream.Instance);
-        return new SkCanvas(instance, disposeNativeObject: false);
+        return new SkCanvas(instance);
     }
     
     private static class API
