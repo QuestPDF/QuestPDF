@@ -9,14 +9,21 @@ internal static class SkNativeDependencyProvider
 {
     public static void EnsureNativeFileAvailability()
     {
-        var nativeFiles = Directory.GetFiles(GetNativeFileSourcePath());
+        var nativeFilesPath = GetNativeFileSourcePath();
+        
+        if (nativeFilesPath == null)
+            return;
 
-        foreach (var nativeFileSourcePath in nativeFiles)
+        foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
         {
-            var nativeFileName = Path.GetFileName(nativeFileSourcePath);
-            var runtimePath = GetNativeFileRuntimePath(nativeFileName);
-
-            CopyFileIfNewer(nativeFileSourcePath, runtimePath);
+            var targetPath = new FileInfo(nativeFilePath)
+                .Directory
+                .Parent // native
+                .Parent // platform
+                .Parent // runtimes
+                .FullName;
+            
+            CopyFileIfNewer(nativeFilePath, targetPath);
         }
     }
     
@@ -33,11 +40,29 @@ internal static class SkNativeDependencyProvider
         }
     }
     
-    static string GetNativeFileSourcePath()
+    static string? GetNativeFileSourcePath()
     {
-        var applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
         var platform = GetRuntimePlatform();
-        return Path.Combine(applicationDirectory, "runtimes", platform, "native");
+
+        var availableLocations = new[]
+        {
+            AppDomain.CurrentDomain.RelativeSearchPath, 
+            AppDomain.CurrentDomain.BaseDirectory,
+            new FileInfo(typeof(SkNativeDependencyProvider).Assembly.Location).Directory?.FullName
+        };
+        
+        foreach (var location in availableLocations)
+        {
+            if (string.IsNullOrEmpty(location))
+                continue;
+
+            var nativeFileSourcePath = Path.Combine(location, "runtimes", platform, "native");
+
+            if (Directory.Exists(nativeFileSourcePath))
+                return nativeFileSourcePath;
+        }
+
+        return null;
     }
         
     static string GetRuntimePlatform()
@@ -61,12 +86,6 @@ internal static class SkNativeDependencyProvider
         }
 
         throw new InitializationException("Your runtime is currently not supported by QuestPDF.");
-    }
-        
-    static string GetNativeFileRuntimePath(string fileName)
-    {
-        var applicationDirectory = AppDomain.CurrentDomain.BaseDirectory;
-        return Path.Combine(applicationDirectory, fileName);
     }
 
     static void CopyFileIfNewer(string sourcePath, string targetPath)
