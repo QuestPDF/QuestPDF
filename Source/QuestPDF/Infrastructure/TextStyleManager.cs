@@ -99,7 +99,7 @@ namespace QuestPDF.Infrastructure
                 
                 newTextStyle.FontFamilies = overrideValue 
                     ? newValue 
-                    : newValue.Concat(oldValue).Distinct().ToArray();
+                    : oldValue.Concat(newValue).Distinct().ToArray();
 
                 TextStyles.Add(newTextStyle);
                 return newTextStyle;

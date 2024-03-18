@@ -17,17 +17,12 @@ namespace QuestPDF.UnitTests
             var defaultTextStyle = TextStyle
                 .Default
                 .FontSize(20)
-                .FontFamily("Arial")
-                .BackgroundColor(Colors.Green.Lighten2)
-                .Fallback(y => y
-                    .FontFamily("Microsoft YaHei")
-                    .Underline()
-                    .NormalWeight()
-                    .BackgroundColor(Colors.Blue.Lighten2));
+                .FontFamily("Arial", "Microsoft YaHei")
+                .BackgroundColor(Colors.Green.Lighten2);
 
             var spanTextStyle = TextStyle
                 .Default
-                .FontFamily("Times New Roman")
+                .FontFamily("Times New Roman", "Arial", "Calibri")
                 .Bold()
                 .Strikethrough()
                 .BackgroundColor(Colors.Red.Lighten2);
@@ -40,7 +35,7 @@ namespace QuestPDF.UnitTests
             {
                 Id = targetStyle.Id, // expect to break when adding new TextStyle properties, so use the real one
                 Size = 20, 
-                FontFamilies = new[] { "Times New Roman" },
+                FontFamilies = new[] { "Times New Roman", "Arial", "Calibri", "Microsoft YaHei", "Lato" },
                 FontWeight = FontWeight.Bold,
                 BackgroundColor = Colors.Red.Lighten2,
                 HasStrikethrough = true
