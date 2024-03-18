@@ -16,13 +16,14 @@ internal static class SkNativeDependencyProvider
 
         foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
         {
-            var targetPath = new FileInfo(nativeFilePath)
+            var targetDirectory = new FileInfo(nativeFilePath)
                 .Directory
                 .Parent // native
                 .Parent // platform
                 .Parent // runtimes
                 .FullName;
             
+            var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
             CopyFileIfNewer(nativeFilePath, targetPath);
         }
     }
