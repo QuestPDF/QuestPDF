@@ -77,7 +77,7 @@ namespace QuestPDF.Infrastructure
                 DecorationColor = DecorationColor ?? Colors.Black,
                 DecorationType = CreateDecoration(),
                 
-                DecorationMode = DecorationMode(),
+                DecorationMode = TextStyleConfiguration.TextDecorationMode.Through,
                 DecorationStyle = DecorationStyle ?? TextStyleConfiguration.TextDecorationStyle.Solid,
                 DecorationThickness = DecorationThickness ?? 1,
                 
@@ -99,15 +99,7 @@ namespace QuestPDF.Infrastructure
                 
                 return result;
             }
-            
-            TextStyleConfiguration.TextDecorationMode DecorationMode()
-            {
-                if (DecorationStyle == TextStyleConfiguration.TextDecorationStyle.Solid)
-                    return TextStyleConfiguration.TextDecorationMode.Gaps;
-                
-                return TextStyleConfiguration.TextDecorationMode.Through;
-            }
-            
+
             TextStyleConfiguration.TextDecoration CreateDecoration()
             {
                 var result = TextStyleConfiguration.TextDecoration.NoDecoration;
