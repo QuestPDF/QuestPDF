@@ -17,26 +17,16 @@ namespace QuestPDF.Drawing
 
         private static SkDocument CreatePdf(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
         {
-            try
-            {
-                return SkPdfDocument.Create(stream, MapMetadata(documentMetadata, documentSettings));
-            }
-            catch (TypeInitializationException exception)
-            {
-                throw new InitializationException("PDF", exception);
-            }
-        }
-
-        private static SkPdfDocumentMetadata MapMetadata(DocumentMetadata metadata, DocumentSettings documentSettings)
-        {
-            using var title = new SkText(metadata.Title);
-            using var author = new SkText(metadata.Author);
-            using var subject = new SkText(metadata.Subject);
-            using var keywords = new SkText(metadata.Keywords);
-            using var creator = new SkText(metadata.Creator);
-            using var producer = new SkText(metadata.Producer);
+            // do not extract to another method, as it will cause the SkText objects
+            // to be disposed before the SkPdfDocument is created
+            using var title = new SkText(documentMetadata.Title);
+            using var author = new SkText(documentMetadata.Author);
+            using var subject = new SkText(documentMetadata.Subject);
+            using var keywords = new SkText(documentMetadata.Keywords);
+            using var creator = new SkText(documentMetadata.Creator);
+            using var producer = new SkText(documentMetadata.Producer);
             
-            return new SkPdfDocumentMetadata
+            var internalMetadata = new SkPdfDocumentMetadata
             {
                 Title = title,
                 Author = author,
@@ -45,8 +35,8 @@ namespace QuestPDF.Drawing
                 Creator = creator,
                 Producer = producer,
                 
-                CreationDate = new SkDateTime(metadata.CreationDate),
-                ModificationDate = new SkDateTime(metadata.ModifiedDate),
+                CreationDate = new SkDateTime(documentMetadata.CreationDate),
+                ModificationDate = new SkDateTime(documentMetadata.ModifiedDate),
                 
                 RasterDPI = documentSettings.ImageRasterDpi,
                 ImageEncodingQuality = documentSettings.ImageCompressionQuality.ToQualityValue(),
@@ -54,6 +44,15 @@ namespace QuestPDF.Drawing
                 SupportPDFA = documentSettings.PdfA,
                 CompressDocument = documentSettings.CompressDocument
             };
+            
+            try
+            {
+                return SkPdfDocument.Create(stream, internalMetadata);
+            }
+            catch (TypeInitializationException exception)
+            {
+                throw new InitializationException("PDF", exception);
+            }
         }
     }
 }
