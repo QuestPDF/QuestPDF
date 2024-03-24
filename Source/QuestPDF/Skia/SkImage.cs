@@ -14,6 +14,7 @@ internal sealed class SkImage : IDisposable
     public SkImage(IntPtr instance)
     {
         Instance = instance;
+        SkiaAPI.EnsureNotNull(Instance);
         
         // load image details
         var details = API.image_get_details(Instance);

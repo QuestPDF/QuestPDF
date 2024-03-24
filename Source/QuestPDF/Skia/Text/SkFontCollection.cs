@@ -10,6 +10,7 @@ internal sealed class SkFontCollection : IDisposable
     public SkFontCollection(IntPtr instance)
     {
         Instance = instance;
+        SkiaAPI.EnsureNotNull(Instance);
     }
 
     [StructLayout(LayoutKind.Sequential)]

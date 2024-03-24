@@ -10,6 +10,7 @@ internal sealed class SkTypefaceProvider : IDisposable
     public SkTypefaceProvider()
     {
         Instance = API.typeface_font_provider_create();
+        SkiaAPI.EnsureNotNull(Instance);
     }
     
     public void AddTypefaceFromData(SkData data, string? alias = null)

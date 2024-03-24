@@ -6,15 +6,11 @@ namespace QuestPDF.Skia;
 internal sealed class SkBitmap : IDisposable
 {
     public IntPtr Instance { get; private set; }
-    
-    public SkBitmap(IntPtr instance)
-    {
-        Instance = instance;
-    }
-    
+
     public SkBitmap(int width, int height)
     {
         Instance = API.bitmap_create(width, height);
+        SkiaAPI.EnsureNotNull(Instance);
     }
     
     public SkData EncodeAsJpeg(int quality)

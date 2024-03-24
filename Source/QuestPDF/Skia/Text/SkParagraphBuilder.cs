@@ -88,6 +88,7 @@ internal sealed class SkParagraphBuilder : IDisposable
     public SkParagraphBuilder(IntPtr instance)
     {
         Instance = instance;
+        SkiaAPI.EnsureNotNull(Instance);
     }
     
     public static SkParagraphBuilder Create(ParagraphStyleConfiguration paragraphStyleConfiguration, SkFontCollection fontCollection)

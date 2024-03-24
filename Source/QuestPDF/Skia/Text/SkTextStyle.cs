@@ -71,14 +71,10 @@ internal sealed class SkTextStyle : IDisposable
 {
     public IntPtr Instance { get; private set; }
     
-    public SkTextStyle(IntPtr instance)
-    {
-        Instance = instance;
-    }
-    
     public SkTextStyle(TextStyleConfiguration textStyleConfiguration)
     {
         Instance = API.text_style_create(textStyleConfiguration);
+        SkiaAPI.EnsureNotNull(Instance);
     }
     
     ~SkTextStyle()

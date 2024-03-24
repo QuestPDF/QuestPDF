@@ -10,6 +10,7 @@ internal sealed class SkPictureRecorder : IDisposable
     public SkPictureRecorder()
     {
         Instance = API.picture_recorder_create();
+        SkiaAPI.EnsureNotNull(Instance);
     }
 
     public SkCanvas BeginRecording(float width, float height)

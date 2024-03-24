@@ -10,6 +10,7 @@ internal sealed class SkPicture : IDisposable
     public SkPicture(IntPtr instance)
     {
         Instance = instance;
+        SkiaAPI.EnsureNotNull(Instance);
     }
     
     public static SkPicture Deserialize(SkData data)

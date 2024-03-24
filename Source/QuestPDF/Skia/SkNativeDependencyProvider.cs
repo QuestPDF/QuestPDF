@@ -1,12 +1,21 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
-using QuestPDF.Drawing.Exceptions;
 
 namespace QuestPDF.Skia;
 
 internal static class SkNativeDependencyProvider
 {
+    public static readonly string[] SupportedPlatforms =
+    {
+        "win-x64",
+        "linux-x64",
+        "linux-arm64",
+        "osx-x64",
+        "osx-arm64"
+    };
+    
     public static void EnsureNativeFileAvailability()
     {
         var nativeFilesPath = GetNativeFileSourcePath();
@@ -68,25 +77,36 @@ internal static class SkNativeDependencyProvider
         
     static string GetRuntimePlatform()
     {
-        if (RuntimeInformation.ProcessArchitecture == Architecture.X64)
+        var identifier = $"{GetSystemIdentifier()}-{GetProcessArchitecture()}";
+        
+        if (SupportedPlatforms.Contains(identifier))
+            return identifier;
+
+        throw new Exception("Your runtime is currently not supported by QuestPDF.");
+
+        static string GetSystemIdentifier()
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                return "win-x64";
+                return "win";
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return "linux-x64";
+                return "linux";
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                return "osx-x64";
-        }
+                return "osx";
             
-        if (RuntimeInformation.ProcessArchitecture == Architecture.Arm64)
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                return "osx-arm64";
+            throw new Exception("Your runtime is currently not supported by QuestPDF.");
         }
 
-        throw new InitializationException("Your runtime is currently not supported by QuestPDF.");
+        static string GetProcessArchitecture()
+        {
+            return RuntimeInformation.ProcessArchitecture switch
+            {
+                Architecture.X64 => "x64",
+                Architecture.Arm64 => "arm64",
+                _ => throw new Exception("Your runtime is currently not supported by QuestPDF.")
+            };
+        }
     }
 
     static void CopyFileIfNewer(string sourcePath, string targetPath)

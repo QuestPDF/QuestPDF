@@ -10,6 +10,7 @@ internal sealed class SkParagraph : IDisposable
     public SkParagraph(IntPtr instance)
     {
         Instance = instance;
+        SkiaAPI.EnsureNotNull(Instance);
     }
 
     public void PlanLayout(float availableWidth)
