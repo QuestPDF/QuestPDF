@@ -40,3 +40,19 @@ Version 2024.3.0-beta1
 - Fixed an issue where the text element does not render its content in certain scenarios when it contains page numbers,
 - Fixed an issue where SkSvgCanvas may produce incomplete results, resulting in invalid SVG content,
 - Improved memory management for SkParagraph in certain scenarios.
+
+
+
+Version 2024.3.0-rc
+- Updated Skia to version m124,
+- Linux support: Removed dependency on the FontConfig library,
+- Linux support: added support for older Linux distributions, equivalent to Ubuntu 18,
+- Linux support: Introduced support for arm64 architecture,
+- Resolved an issue causing an "Invalid UTF8" error message showing in the console,
+- Addressed a problem with the text underline effect not functioning as expected due to Skia's DecorationMode.Gaps not handling all fonts correctly,
+- Optimized the algorithm for loading fonts provided in the application folder, including default fonts, for better performance.
+- Included a list of contributors in the nuget package, to acknowledge the valuable input from our community in improving QuestPDF,
+- Implemented safeguards in the native code wrapper to throw an exception when a native object pointer is null,
+- Refined the native artifacts build system through code refactoring and the integration of execution tests, improving build reliability and efficiency,
+- Planned: in the next major release, the WASM support will be investigated and potentially reintroduced,
+- Known Issue: During stress testing, an issue was identified that native memory usage is higher than expected when generating long documents rich in short text elements. This issue is currently under investigation and will be addressed in the next major release.
