@@ -34,8 +34,11 @@ internal static class SkNativeDependencyCompatibilityChecker
                 "Your runtime is currently not supported by QuestPDF. " +
                 $"Currently supported runtimes are: {string.Join(", ", SkNativeDependencyProvider.SupportedPlatforms)}.";
             
-            if (RuntimeInformation.ProcessArchitecture == Architecture.X64)
+            if (RuntimeInformation.ProcessArchitecture is Architecture.X86)
                 message += $"{paragraph}Please consider setting the 'Platform target' property to 'x64' in your project settings.";
+            
+            if (RuntimeInformation.ProcessArchitecture is Architecture.Arm)
+                message += $"{paragraph}Please consider setting the 'Platform target' property to 'Arm64' in your project settings.";
             
             throw new InitializationException(message, innerException);
         }
