@@ -53,6 +53,7 @@ Version 2024.3.0-rc
 - Optimized the algorithm for loading fonts provided in the application folder, including default fonts, for better performance.
 - Included a list of contributors in the nuget package, to acknowledge the valuable input from our community in improving QuestPDF,
 - Implemented safeguards in the native code wrapper to throw an exception when a native object pointer is null,
+- Optimized runtime (Avalonia) and development dependencies,
 - Refined the native artifacts build system through code refactoring and the integration of execution tests, improving build reliability and efficiency,
 - Planned: in the next major release, the WASM support will be investigated and potentially reintroduced,
 - Known Issue: During stress testing, an issue was identified that native memory usage is higher than expected when generating long documents rich in short text elements. This issue is currently under investigation and will be addressed in the next major release.
