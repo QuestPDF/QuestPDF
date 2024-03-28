@@ -24,8 +24,8 @@ internal sealed class SkData : IDisposable
     {
         using var memoryStream = new MemoryStream();
         stream.CopyTo(memoryStream);
-        var binaryData = memoryStream.ToArray();
         
+        var binaryData = memoryStream.ToArray();
         return SkData.FromBinary(binaryData);
     }
     
@@ -42,9 +42,13 @@ internal sealed class SkData : IDisposable
     public byte[] ToBytes()
     {
         var content = API.data_get_bytes(Instance);
-        byte[] result = new byte[content.length];
+        
+        var result = new byte[content.length];
         Marshal.Copy(content.bytes, result, 0, content.length);
-
+        
+        // do not Marshal.FreeHGlobal(content.bytes)
+        // this array is managed by SkData
+        
         return result;
     }
     

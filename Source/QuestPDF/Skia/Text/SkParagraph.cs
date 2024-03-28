@@ -32,6 +32,7 @@ internal sealed class SkParagraph : IDisposable
             managedArray[i] = Marshal.PtrToStructure<SkSize>(ptr);
         }
 
+        Marshal.FreeHGlobal(array);
         return managedArray;
     }
     
@@ -41,6 +42,7 @@ internal sealed class SkParagraph : IDisposable
         
         var managedArray = new int[arrayLength];
         Marshal.Copy(array, managedArray,  0, arrayLength);
+        Marshal.FreeHGlobal(array);
 
         return managedArray;
     }
@@ -59,6 +61,7 @@ internal sealed class SkParagraph : IDisposable
             managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
         }
 
+        Marshal.FreeHGlobal(array);
         return managedArray;
     }
     
@@ -76,6 +79,7 @@ internal sealed class SkParagraph : IDisposable
             managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
         }
 
+        Marshal.FreeHGlobal(array);
         return managedArray;
     }
     
