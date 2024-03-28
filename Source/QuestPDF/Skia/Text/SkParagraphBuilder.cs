@@ -85,16 +85,18 @@ internal sealed class SkParagraphBuilder : IDisposable
 {
     public IntPtr Instance { get; private set; }
     
-    public SkParagraphBuilder(IntPtr instance)
-    {
-        Instance = instance;
-        SkiaAPI.EnsureNotNull(Instance);
-    }
-    
+    public ParagraphStyleConfiguration Configuration { get; private set; }
+
     public static SkParagraphBuilder Create(ParagraphStyleConfiguration paragraphStyleConfiguration, SkFontCollection fontCollection)
     {
         var instance = API.paragraph_builder_create(paragraphStyleConfiguration, fontCollection.Instance);
-        return new SkParagraphBuilder(instance);
+        SkiaAPI.EnsureNotNull(instance);
+        
+        return new SkParagraphBuilder
+        {
+            Instance = instance,
+            Configuration = paragraphStyleConfiguration
+        };
     }
     
     public void AddText(string text, SkTextStyle textStyle)

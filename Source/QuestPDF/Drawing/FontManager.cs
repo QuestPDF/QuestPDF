@@ -18,11 +18,9 @@ namespace QuestPDF.Drawing
     {
         internal static SkTypefaceProvider TypefaceProvider { get; } = new();
         
-        private static SkFontCollection LocalFontCollection { get; } = SkFontCollection.Create(TypefaceProvider, SkFontManager.Empty);
-        private static SkFontCollection GlobalFontCollection { get; } = SkFontCollection.Create(TypefaceProvider, SkFontManager.Global);
-        
-        internal static SkFontCollection FontCollection => Settings.UseEnvironmentFonts ? GlobalFontCollection : LocalFontCollection;
-        
+        internal static SkFontCollection LocalFontCollection { get; } = SkFontCollection.Create(TypefaceProvider, SkFontManager.Empty);
+        internal static SkFontCollection GlobalFontCollection { get; } = SkFontCollection.Create(TypefaceProvider, SkFontManager.Global);
+
         static FontManager()
         {
             NativeDependencyCompatibilityChecker.Test();

@@ -238,45 +238,17 @@ namespace QuestPDF.Elements.Text
                 MaxLinesVisible = LineClamp ?? 1_000_000
             };
             
-            using var paragraphBuilder = SkParagraphBuilder.Create(paragraphStyle, FontManager.FontCollection);
-            var currentTextIndex = 0;
-            
-            foreach (var textBlockItem in Items)
+            var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
+
+            try
             {
-                if (textBlockItem is TextBlockSpan textBlockSpan)
-                {
-                    if (textBlockItem is TextBlockSectionLink textBlockSectionLink)
-                        textBlockSectionLink.ParagraphBeginIndex = currentTextIndex;
-
-                    else if (textBlockItem is TextBlockHyperlink textBlockHyperlink)
-                        textBlockHyperlink.ParagraphBeginIndex = currentTextIndex;
-
-                    else if (textBlockItem is TextBlockPageNumber textBlockPageNumber)
-                        textBlockPageNumber.UpdatePageNumberText(PageContext);
-                
-                    var textStyle = textBlockSpan.Style.GetSkTextStyle();
-                    paragraphBuilder.AddText(textBlockSpan.Text, textStyle);
-                    currentTextIndex += textBlockSpan.Text.Length;
-                }
-                else if (textBlockItem is TextBlockElement textBlockElement)
-                {
-                    textBlockElement.ConfigureElement(PageContext, Canvas);
-                    textBlockElement.UpdateElementSize();
-                    
-                    paragraphBuilder.AddPlaceholder(new SkPlaceholderStyle
-                    {
-                        Width = textBlockElement.ElementSize.Width,
-                        Height = textBlockElement.ElementSize.Height,
-                        Alignment = MapInjectedTextAlignment(textBlockElement.Alignment),
-                        Baseline = SkPlaceholderStyle.PlaceholderBaseline.Alphabetic,
-                        BaselineOffset = 0
-                    });
-                }
+                Paragraph = CreateParagraph(builder);
+            }
+            finally
+            {
+                SkParagraphBuilderPoolManager.Return(builder);
             }
 
-            Paragraph?.Dispose();
-            Paragraph = paragraphBuilder.CreateParagraph();
-            
             static ParagraphStyleConfiguration.TextAlign MapAlignment(TextHorizontalAlignment alignment)
             {
                 return alignment switch
@@ -312,6 +284,46 @@ namespace QuestPDF.Elements.Text
                     TextInjectedElementAlignment.Middle => SkPlaceholderStyle.PlaceholderAlignment.Middle,
                     _ => throw new Exception()
                 };
+            }
+
+            SkParagraph CreateParagraph(SkParagraphBuilder builder)
+            {
+                var currentTextIndex = 0;
+            
+                foreach (var textBlockItem in Items)
+                {
+                    if (textBlockItem is TextBlockSpan textBlockSpan)
+                    {
+                        if (textBlockItem is TextBlockSectionLink textBlockSectionLink)
+                            textBlockSectionLink.ParagraphBeginIndex = currentTextIndex;
+            
+                        else if (textBlockItem is TextBlockHyperlink textBlockHyperlink)
+                            textBlockHyperlink.ParagraphBeginIndex = currentTextIndex;
+            
+                        else if (textBlockItem is TextBlockPageNumber textBlockPageNumber)
+                            textBlockPageNumber.UpdatePageNumberText(PageContext);
+                
+                        var textStyle = textBlockSpan.Style.GetSkTextStyle();
+                        builder.AddText(textBlockSpan.Text, textStyle);
+                        currentTextIndex += textBlockSpan.Text.Length;
+                    }
+                    else if (textBlockItem is TextBlockElement textBlockElement)
+                    {
+                        textBlockElement.ConfigureElement(PageContext, Canvas);
+                        textBlockElement.UpdateElementSize();
+                    
+                        builder.AddPlaceholder(new SkPlaceholderStyle
+                        {
+                            Width = textBlockElement.ElementSize.Width,
+                            Height = textBlockElement.ElementSize.Height,
+                            Alignment = MapInjectedTextAlignment(textBlockElement.Alignment),
+                            Baseline = SkPlaceholderStyle.PlaceholderBaseline.Alphabetic,
+                            BaselineOffset = 0
+                        });
+                    }
+                }
+
+                return builder.CreateParagraph();
             }
         }
         
