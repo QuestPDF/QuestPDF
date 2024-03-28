@@ -11,8 +11,8 @@ namespace QuestPDF.Infrastructure
         public string? Creator { get; set; }
         public string? Producer { get; set; }
 
-        public DateTime CreationDate { get; set; } = DateTime.Now;
-        public DateTime ModifiedDate { get; set; } = DateTime.Now;
+        public DateTimeOffset CreationDate { get; set; } = DateTimeOffset.Now;
+        public DateTimeOffset ModifiedDate { get; set; } = DateTimeOffset.Now;
 
         public static DocumentMetadata Default => new DocumentMetadata();
         
