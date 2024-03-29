@@ -27,6 +27,44 @@ namespace QuestPDF.Infrastructure
         DecorationThickness,
         Direction
     }
+
+    // C# does not have proper equality members for arrays
+    // this struct is a wrapper that allows to use an array as part of dictionary key
+    internal struct FontFamiliesValue
+    {
+        public string[] Items { get; }
+
+        public FontFamiliesValue(string[]? array)
+        {
+            Items = array ?? Array.Empty<string>();
+        }
+        
+        public bool Equals(FontFamiliesValue other)
+        {
+            return Items.SequenceEqual(other.Items);
+        }
+        
+        public override bool Equals(object obj)
+        {
+            return obj is FontFamiliesValue other && Equals(other);
+        }
+        
+        public override int GetHashCode()
+        {
+            if (Items.Length == 1)
+                return Items[0].GetHashCode();
+            
+            unchecked
+            {
+                var hash = 19;
+                
+                foreach (var item in Items)
+                    hash = hash * 31 + item.GetHashCode();
+                
+                return hash;
+            }
+        }
+    }
     
     internal static class TextStyleManager
     {
@@ -45,6 +83,9 @@ namespace QuestPDF.Infrastructure
 
         public static TextStyle Mutate(this TextStyle origin, TextStyleProperty property, object value)
         {
+            if (property == TextStyleProperty.FontFamilies)
+                value = new FontFamiliesValue((string[]?)value);
+            
             var cacheKey = (origin.Id, property, value);
             return TextStyleMutateCache.GetOrAdd(cacheKey, x => MutateStyle(TextStyles[x.originId], x.property, x.value, overrideValue: true));
         }
@@ -52,7 +93,7 @@ namespace QuestPDF.Infrastructure
         private static TextStyle MutateStyle(this TextStyle origin, TextStyleProperty targetProperty, object? newValue, bool overrideValue)
         {
             if (targetProperty == TextStyleProperty.FontFamilies)
-                return MutateFontFamily(origin, newValue as string[], overrideValue);
+                return MutateFontFamily(origin, (FontFamiliesValue?)newValue, overrideValue);
             
             lock (MutationLock)
             {
@@ -80,18 +121,18 @@ namespace QuestPDF.Infrastructure
             }
         }
         
-        private static TextStyle MutateFontFamily(this TextStyle origin, string[]? newValue, bool overrideValue)
+        private static TextStyle MutateFontFamily(this TextStyle origin, FontFamiliesValue? newValueContainer, bool overrideValue)
         {
             lock (MutationLock)
             {
-                if (overrideValue && newValue is null)
+                if (overrideValue && newValueContainer is null)
                     return origin;
                 
                 var newIndex = TextStyles.Count;
                 var newTextStyle = origin with { Id = newIndex };
                 newTextStyle.Id = newIndex;
                 
-                newValue ??= Array.Empty<string>();
+                var newValue = newValueContainer?.Items ?? Array.Empty<string>();
                 var oldValue = origin.FontFamilies ?? Array.Empty<string>();
                 
                 if (origin.FontFamilies?.SequenceEqual(newValue) == true)
@@ -99,7 +140,7 @@ namespace QuestPDF.Infrastructure
                 
                 newTextStyle.FontFamilies = overrideValue 
                     ? newValue 
-                    : oldValue.Concat(newValue).Distinct().ToArray();
+                    : oldValue.Concat(newValue).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToArray();
 
                 TextStyles.Add(newTextStyle);
                 return newTextStyle;
