@@ -31,7 +31,7 @@ internal static class SkParagraphBuilderPoolManager
         specificPool.Add(builder);
     }
 
-    static ConcurrentBag<SkParagraphBuilder> GetPool(ParagraphStyleConfiguration configuration)
+    private static ConcurrentBag<SkParagraphBuilder> GetPool(ParagraphStyleConfiguration configuration)
     {
         var key = (configuration, Settings.UseEnvironmentFonts);
         return ObjectPool.GetOrAdd(key, _ => new ConcurrentBag<SkParagraphBuilder>());

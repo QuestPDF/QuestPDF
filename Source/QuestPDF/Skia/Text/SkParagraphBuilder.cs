@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace QuestPDF.Skia.Text;
 
 [StructLayout(LayoutKind.Sequential)]
-internal struct ParagraphStyleConfiguration
+internal record struct ParagraphStyleConfiguration
 {
     public TextAlign Alignment;
     public TextDirection Direction;
