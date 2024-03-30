@@ -87,13 +87,22 @@ namespace QuestPDF.Infrastructure
                 value = new FontFamiliesValue((string[]?)value);
             
             var cacheKey = (origin.Id, property, value);
-            return TextStyleMutateCache.GetOrAdd(cacheKey, x => MutateStyle(TextStyles[x.originId], x.property, x.value, overrideValue: true));
+            
+            return TextStyleMutateCache.GetOrAdd(cacheKey, x =>
+            {
+                var newValue = x.value;
+                
+                if (x.value is FontFamiliesValue fontFamiliesValue)
+                    newValue = fontFamiliesValue.Items;
+   
+                return MutateStyle(TextStyles[x.originId], x.property, newValue, overrideValue: true);
+            });
         }
 
         private static TextStyle MutateStyle(this TextStyle origin, TextStyleProperty targetProperty, object? newValue, bool overrideValue)
         {
             if (targetProperty == TextStyleProperty.FontFamilies)
-                return MutateFontFamily(origin, (FontFamiliesValue?)newValue, overrideValue);
+                return MutateFontFamily(origin, newValue as string[], overrideValue);
             
             lock (MutationLock)
             {
@@ -121,18 +130,18 @@ namespace QuestPDF.Infrastructure
             }
         }
         
-        private static TextStyle MutateFontFamily(this TextStyle origin, FontFamiliesValue? newValueContainer, bool overrideValue)
+        private static TextStyle MutateFontFamily(this TextStyle origin, string[]? newValue, bool overrideValue)
         {
             lock (MutationLock)
             {
-                if (overrideValue && newValueContainer is null)
+                if (overrideValue && newValue is null)
                     return origin;
                 
                 var newIndex = TextStyles.Count;
                 var newTextStyle = origin with { Id = newIndex };
                 newTextStyle.Id = newIndex;
                 
-                var newValue = newValueContainer?.Items ?? Array.Empty<string>();
+                newValue ??= Array.Empty<string>();
                 var oldValue = origin.FontFamilies ?? Array.Empty<string>();
                 
                 if (origin.FontFamilies?.SequenceEqual(newValue) == true)

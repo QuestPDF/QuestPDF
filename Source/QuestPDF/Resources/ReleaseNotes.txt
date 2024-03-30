@@ -65,3 +65,8 @@ Version 2024.3.0-rc1
 - Fixed memory leaks in the native code,
 - Fixed: the DocumentMetadata.CreationDate and DocumentMetadata.ModificationDate properties are not properly populated in generated PDF,
 - Fixed: when changing the TextStyle.FontFamilies property, the cache does not work correctly leading to higher memory usage.
+
+
+
+Version 2024.3.0-rc2
+- Fixed critical issue: the library fails during PDF generation
