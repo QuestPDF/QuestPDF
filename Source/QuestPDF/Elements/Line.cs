@@ -12,7 +12,7 @@ namespace QuestPDF.Elements
     internal enum LineType
     {
         Vertical,
-        Horizontal
+        Horizontal,
     }
 
     internal sealed class Line : Element, ILine, ICacheable
@@ -36,13 +36,14 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            if (Type == LineType.Vertical)
+            switch (Type)
             {
-                Canvas.DrawRectangle(new Position(-Size/2, 0), new Size(Size, availableSpace.Height), Color);
-            }
-            else if (Type == LineType.Horizontal)
-            {
-                Canvas.DrawRectangle(new Position(0, -Size/2), new Size(availableSpace.Width, Size), Color);
+                case LineType.Vertical:
+                    Canvas.DrawRectangle(new Position(-Size / 2, 0), new Size(Size, availableSpace.Height), Color);
+                    break;
+                case LineType.Horizontal:
+                    Canvas.DrawRectangle(new Position(0, -Size / 2), new Size(availableSpace.Width, Size), Color);
+                    break;
             }
         }
     }

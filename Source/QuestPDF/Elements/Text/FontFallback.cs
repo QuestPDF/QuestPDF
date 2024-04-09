@@ -4,7 +4,6 @@ using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements.Text.Items;
-using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using SkiaSharp;
 
@@ -126,38 +125,43 @@ namespace QuestPDF.Elements.Text
         {
             foreach (var textBlockItem in textBlockItems)
             {
-                if (textBlockItem is TextBlockPageNumber or TextBlockElement)
+                switch (textBlockItem)
                 {
-                    yield return textBlockItem;
-                }
-                else if (textBlockItem is TextBlockSpan textBlockSpan)
-                {
-                    if (!Settings.CheckIfAllTextGlyphsAreAvailable && textBlockSpan.Style.Fallback == null)
-                    {
-                        yield return textBlockSpan;
-                        continue;
-                    }
-                    
-                    var textRuns = textBlockSpan.Text.SplitWithFontFallback(textBlockSpan.Style);
-                    
-                    foreach (var textRun in textRuns)
-                    {
-                        var newElement = textBlockSpan switch
+                    case TextBlockPageNumber or TextBlockElement:
                         {
-                            TextBlockHyperlink hyperlink => new TextBlockHyperlink { Url = hyperlink.Url },
-                            TextBlockSectionLink sectionLink => new TextBlockSectionLink { SectionName = sectionLink.SectionName },
-                            TextBlockSpan => new TextBlockSpan()
-                        };
+                            yield return textBlockItem;
+                            break;
+                        }
+                    case TextBlockSpan textBlockSpan:
+                        {
+                            if (!Settings.CheckIfAllTextGlyphsAreAvailable && textBlockSpan.Style.Fallback == null)
+                            {
+                                yield return textBlockSpan;
+                                continue;
+                            }
 
-                        newElement.Text = textRun.Content;
-                        newElement.Style = textRun.Style;
+                            var textRuns = textBlockSpan.Text.SplitWithFontFallback(textBlockSpan.Style);
 
-                        yield return newElement;
-                    }
-                }
-                else
-                {
-                    throw new NotSupportedException();
+                            foreach (var textRun in textRuns)
+                            {
+                                var newElement = textBlockSpan switch
+                                {
+                                    TextBlockHyperlink hyperlink => new TextBlockHyperlink { Url = hyperlink.Url },
+                                    TextBlockSectionLink sectionLink => new TextBlockSectionLink { SectionName = sectionLink.SectionName },
+                                    TextBlockSpan => new TextBlockSpan()
+                                };
+
+                                newElement.Text = textRun.Content;
+                                newElement.Style = textRun.Style;
+
+                                yield return newElement;
+                            }
+
+                            break;
+                        }
+
+                    default:
+                        throw new NotSupportedException();
                 }
             }
         }

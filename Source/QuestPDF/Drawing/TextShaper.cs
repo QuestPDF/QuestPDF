@@ -81,17 +81,20 @@ namespace QuestPDF.Drawing
         {
             var encoding = Paint.TextEncoding;
 
-            if (encoding == SKTextEncoding.Utf8)
-                buffer.AddUtf8(text);
-                
-            else if (encoding == SKTextEncoding.Utf16)
-                buffer.AddUtf16(text);
-
-            else if (encoding == SKTextEncoding.Utf32)
-                buffer.AddUtf32(text);
-
-            else
-                throw new NotSupportedException("TextEncoding of type GlyphId is not supported.");
+            switch (encoding)
+            {
+                case SKTextEncoding.Utf8:
+                    buffer.AddUtf8(text);
+                    break;
+                case SKTextEncoding.Utf16:
+                    buffer.AddUtf16(text);
+                    break;
+                case SKTextEncoding.Utf32:
+                    buffer.AddUtf32(text);
+                    break;
+                default:
+                    throw new NotSupportedException("TextEncoding of type GlyphId is not supported.");
+            }
         }
     }
     

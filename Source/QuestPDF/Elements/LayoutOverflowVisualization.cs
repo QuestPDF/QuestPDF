@@ -23,11 +23,12 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
     internal override SpacePlan Measure(Size availableSpace)
     {
         var childSize = base.Measure(availableSpace);
-        
-        if (childSize.Type == SpacePlanType.FullRender)
-            return childSize;
-        
-        return SpacePlan.FullRender(availableSpace);
+
+        return childSize.Type switch
+        {
+            SpacePlanType.FullRender => childSize,
+            _ => SpacePlan.FullRender(availableSpace),
+        };
     }
         
     internal override void Draw(Size availableSpace)
