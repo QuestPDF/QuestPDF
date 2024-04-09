@@ -361,20 +361,15 @@ namespace QuestPDF.Fluent
 
         #region Canvas [Obsolete]
 
+        private const string CanvasDeprecatedMessage = "The Canvas API has been deprecated since version 2024.3.0. Please use the .Svg(stringContent) API to provide custom content, and consult documentation webpage regarding integrating SkiaSharp with QuestPDF.";
+        
+        [Obsolete(CanvasDeprecatedMessage)]
         public delegate void DrawOnCanvas(object canvas, Size availableSpace);
         
-        /// <summary>
-        /// Provides direct access to the low-level SkiaSharp API.
-        /// <a href="https://www.questpdf.com/api-reference/canvas.html">Learn more</a>
-        /// </summary>
-        /// <example>
-        /// <para>Use this element when needing to render advanced shapes not directly available in the QuestPDF API.</para>
-        /// <para>It's also ideal for integrating with other SkiaSharp-based libraries, such as charting tools, to produce pixel-perfect vector graphics.</para>
-        /// </example>
-        [Obsolete("This element has been deprecated since version 2024.2. Please the SVG functionality to provide custom content.")]
+        [Obsolete(CanvasDeprecatedMessage)]
         public static void Canvas(this IContainer element, DrawOnCanvas handler)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException(CanvasDeprecatedMessage);
         }
 
         #endregion
