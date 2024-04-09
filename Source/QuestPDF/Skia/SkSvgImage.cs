@@ -13,7 +13,6 @@ internal sealed class SkSvgImage : IDisposable
         using var data = SkData.FromBinary(System.Text.Encoding.UTF8.GetBytes(svgString));
 
         Instance = API.svg_create(data.Instance);
-        SkiaAPI.EnsureNotNull(Instance);
         
         if (Instance == IntPtr.Zero)
             throw new Exception("Cannot decode the provided SVG image.");
