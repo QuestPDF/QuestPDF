@@ -1,11 +1,14 @@
+using System;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using Microcharts;
+using ScottPlot;
 using SkiaSharp;
+using Colors = QuestPDF.Helpers.Colors;
+using Orientation = Microcharts.Orientation;
 
 namespace QuestPDF.Examples
 {    
@@ -81,6 +84,35 @@ namespace QuestPDF.Examples
                                     
                                     chart.DrawContent(canvas, (int)size.Width, (int)size.Height);
                                 });
+                        });
+                });
+        }
+        
+        [Test]
+        public void ScottPlotChart()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(400, 300)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Background(Colors.White)
+                        .Padding(25)
+                        .Canvas((canvas, availableSpace) =>
+                        {
+                            var points = Enumerable
+                                .Range(0, 100)
+                                .Select(x => new Coordinates(x, Math.Sin(x / 10f)))
+                                .ToArray();
+                            
+                            using var plot = new Plot();
+                            plot.Add.Scatter(points, Color.FromHex(Colors.Teal.Medium));
+                            
+                            canvas.ClipRect(new SKRect(0, 0, availableSpace.Width, availableSpace.Height));
+                            plot.Render(canvas, (int)availableSpace.Width, (int)availableSpace.Height);
                         });
                 });
         }

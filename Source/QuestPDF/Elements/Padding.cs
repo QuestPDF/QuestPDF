@@ -18,7 +18,7 @@ namespace QuestPDF.Elements
             
             var internalSpace = InternalSpace(availableSpace);
 
-            if (internalSpace.Width < 0 || internalSpace.Height < 0)
+            if (internalSpace.Width < -Size.Epsilon || internalSpace.Height < -Size.Epsilon)
                 return SpacePlan.Wrap();
             
             var measure = base.Measure(internalSpace);
