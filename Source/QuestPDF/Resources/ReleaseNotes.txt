@@ -1,72 +1,25 @@
-Version 2024.3.0-alpha
-The primary theme of this release is the removal of the SkiaSharp dependency and the introduction of custom native layer built on top of Skia M121.
+Version 2024.3.0
+
+The primary theme of this release is the removal of the SkiaSharp dependency and the introduction of a custom native layer built on top of Skia M124.
+
+
 This change was necessary to provide much higher flexibility and enable several new long-awaited features:
-- Font subsetting - this feature includes only necessary font glyphs in the output document, reducing the file size. The size difference can be enormous when complex fonts are used of various styles,
-- Improved text-related capabilities, including text justification, bi-directionality, enhanced line breaking algorithms, and more,
-- Introduced additional document compression to reduce file size,
+- Font subsetting - this feature includes only necessary font glyphs in the output document, greatly reducing the file size, especially when using glyph-rich fonts supporting multiple languages,
+- Improved text-related capabilities, including but not limited to text justification, bi-directionality, enhanced line breaking algorithms, more styles for text decoration, word spacing, and more,
+- Introduced additional document compression to further reduce file size,
 - Integrated native SVG support,
-- Improved performance by 25% on average,
-- In the future release: enhanced accessibility by support for PDF tags.
-
-We would like to thank the SkiaSharp project, its maintainers and contributors, for creating a fantastic graphics library. It was a fantastic foundation for QuestPDF for over 3 years. 
-
-This release requires at least .NET Standard 2.1. The beta release will reintroduce support for the .NET Standard 2.0.
+- In future releases: enhanced accessibility through support for PDF tags.
 
 
-
-Version 2024.3.0-beta
-- Updated the codebase to Skia m122 and resolved all backward-incompatible changes,
-- Added support for the .NET Standard 2.0,
-- Improved P/Invoke and marshaling compatibility with the legacy .NET Framework,
-- Fixed a bug in the Text element that could cause an exception under certain conditions,
+Other changes:
+- Removed the SkiaSharp dependency, thereby making QuestPDF a standalone library,
 - Updated the Lato font to the latest version (2.015),
-- Improved the loading method for native dependencies,
-- Added the Text.ClampLines functionality,
-- Added support for adjusting the thickness and style of text decorations (overline, strikeout, underline),
-- Added support for word spacing,
-- Reduced the risk of race conditions in Avalonia in the QuestPDF Previewer,
-- Enhanced exception message when the QuestPDF Previewer fails to load due to missing required dotnet 8 runtime,
-- Improved native memory management and fixed memory leaks,
-- Include licenses of the third party dependencies in the NuGet package,
-- Performed code cleanup and made minor adjustments.
+- Included licenses of the third-party dependencies in the NuGet package,
+- Included a list of Contributors in the NuGet package to acknowledge the valuable input from our Community in improving QuestPDF.
 
 
+Unfortunately, this release also introduces breaking changes:
+- Removed support for injecting SkiaSharp content directly into the document. It is still possible to integrate SkiaSharp through vector and raster graphics; please consult the documentation for more details,
+- Removed support for platforms: Android, iOS, UWP, WASM, and Linux-Alpine. We are currently investigating reintroducing support for WASM and Linux-Alpine in future releases.
 
-Version 2024.3.0-beta1
-- Greatly reduced the size of the native binaries by switching from ICU to libgrapheme,
-- Improved the logic for finding and loading native dependencies,
-- Fixed an issue where the font fallback does not work when the Settings.UseEnvironmentFonts setting is set to false,
-- Added the ability to provide multiple font families or fallbacks,
-- Fixed an issue where the text element does not render its content in certain scenarios when it contains page numbers,
-- Fixed an issue where SkSvgCanvas may produce incomplete results, resulting in invalid SVG content,
-- Improved memory management for SkParagraph in certain scenarios.
-
-
-
-Version 2024.3.0-rc
-- Updated Skia to version m124,
-- Linux support: Removed dependency on the FontConfig library,
-- Linux support: added support for older Linux distributions, equivalent to Ubuntu 18,
-- Linux support: Introduced support for arm64 architecture,
-- Resolved an issue causing an "Invalid UTF8" error message showing in the console,
-- Addressed a problem with the text underline effect not functioning as expected due to Skia's DecorationMode.Gaps not handling all fonts correctly,
-- Optimized the algorithm for loading fonts provided in the application folder, including default fonts, for better performance.
-- Included a list of contributors in the nuget package, to acknowledge the valuable input from our community in improving QuestPDF,
-- Implemented safeguards in the native code wrapper to throw an exception when a native object pointer is null,
-- Optimized runtime (Avalonia) and development dependencies,
-- Refined the native artifacts build system through code refactoring and the integration of execution tests, improving build reliability and efficiency,
-- Planned: in the next major release, the WASM support will be investigated and potentially reintroduced,
-- Known Issue: During stress testing, an issue was identified that native memory usage is higher than expected when generating long documents rich in short text elements. This issue is currently under investigation and will be addressed in the next major release.
-
-
-
-Version 2024.3.0-rc1
-- Greatly reduced memory usage by reusing SkParagraphBuilder instances,
-- Fixed memory leaks in the native code,
-- Fixed: the DocumentMetadata.CreationDate and DocumentMetadata.ModificationDate properties are not properly populated in generated PDF,
-- Fixed: when changing the TextStyle.FontFamilies property, the cache does not work correctly leading to higher memory usage.
-
-
-
-Version 2024.3.0-rc2
-- Fixed critical issue: the library fails during PDF generation
+We would like to thank the SkiaSharp project, its maintainers, and contributors, for creating a fantastic graphics library. It was a fantastic foundation for QuestPDF for over 3 years.
