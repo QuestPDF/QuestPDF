@@ -23,8 +23,8 @@ internal class DynamicSvgImage : Element
      
         if (svg == null)
             return;
-        
-        using var svgImage = new SkSvgImage(svg);
+
+        using var svgImage = new SkSvgImage(svg, FontManager.CurrentFontManager);
         Canvas.DrawSvg(svgImage, availableSpace);
     }
 }

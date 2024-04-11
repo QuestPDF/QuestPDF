@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Skia;
 
@@ -17,7 +18,7 @@ public class SvgImage
     
     private SvgImage(string content)
     {
-        SkSvgImage = new SkSvgImage(content);    
+        SkSvgImage = new SkSvgImage(content, FontManager.CurrentFontManager);    
     }
 
     ~SvgImage()

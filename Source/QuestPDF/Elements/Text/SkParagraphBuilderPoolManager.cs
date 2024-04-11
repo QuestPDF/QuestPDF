@@ -7,7 +7,7 @@ namespace QuestPDF.Elements.Text;
 
 internal static class SkParagraphBuilderPoolManager
 {
-    private static ConcurrentDictionary<(ParagraphStyleConfiguration, bool useEnvironmentFonts), ConcurrentBag<SkParagraphBuilder>> ObjectPool { get; } = new();
+    private static ConcurrentDictionary<ParagraphStyleConfiguration, ConcurrentBag<SkParagraphBuilder>> ObjectPool { get; } = new();
 
     public static SkParagraphBuilder Get(ParagraphStyleConfiguration configuration)
     {
@@ -15,12 +15,8 @@ internal static class SkParagraphBuilderPoolManager
         
         if (specificPool.TryTake(out var builder))
             return builder;
-
-        var fontCollection = Settings.UseEnvironmentFonts
-            ? FontManager.GlobalFontCollection
-            : FontManager.LocalFontCollection;
         
-        return SkParagraphBuilder.Create(configuration, fontCollection);
+        return SkParagraphBuilder.Create(configuration, FontManager.CurrentFontCollection);
     }
 
     public static void Return(SkParagraphBuilder builder)
@@ -33,7 +29,6 @@ internal static class SkParagraphBuilderPoolManager
 
     private static ConcurrentBag<SkParagraphBuilder> GetPool(ParagraphStyleConfiguration configuration)
     {
-        var key = (configuration, Settings.UseEnvironmentFonts);
-        return ObjectPool.GetOrAdd(key, _ => new ConcurrentBag<SkParagraphBuilder>());
+        return ObjectPool.GetOrAdd(configuration, _ => new ConcurrentBag<SkParagraphBuilder>());
     }
 }
