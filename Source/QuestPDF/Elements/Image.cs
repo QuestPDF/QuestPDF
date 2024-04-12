@@ -1,7 +1,7 @@
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
@@ -26,10 +26,10 @@ namespace QuestPDF.Elements
                 return;
 
             var image = GetImageToDraw(availableSpace);
-            Canvas.DrawImage(image, Position.Zero, availableSpace);
+            Canvas.DrawImage(image, availableSpace);
         }
 
-        private SKImage GetImageToDraw(Size availableSpace)
+        private SkImage GetImageToDraw(Size availableSpace)
         {
             var originalImage = DocumentImage.SkImage;
             

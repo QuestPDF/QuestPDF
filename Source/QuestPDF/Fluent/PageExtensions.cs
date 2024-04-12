@@ -186,14 +186,13 @@ namespace QuestPDF.Fluent
         /// When working with file formats that support the alpha channel, it is possible to set the color to <see cref="Colors.Transparent" /> if necessary.
         /// </remarks>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public void PageColor(string color)
+        public void PageColor(Color color)
         {
-            ColorValidator.Validate(color);
             Page.BackgroundColor = color;
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the PageColor method.")]
-        public void Background(string color)
+        public void Background(Color color)
         {
             PageColor(color);
         }

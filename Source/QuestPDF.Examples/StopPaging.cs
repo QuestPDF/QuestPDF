@@ -27,7 +27,7 @@ namespace QuestPDF.Examples
                                 .Before()
                                 .Text(text =>
                                 {
-                                    text.DefaultTextStyle(TextStyle.Default.SemiBold().Color(Colors.Blue.Medium));
+                                    text.DefaultTextStyle(TextStyle.Default.SemiBold().FontColor(Colors.Blue.Medium));
                                     
                                     text.Span("Page ");
                                     text.CurrentPageNumber();

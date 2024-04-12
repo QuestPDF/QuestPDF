@@ -11,6 +11,7 @@ using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using Color = QuestPDF.Infrastructure.Color;
 using IContainer = QuestPDF.Infrastructure.IContainer;
 
 namespace QuestPDF.Examples
@@ -398,7 +399,7 @@ namespace QuestPDF.Examples
                         .Border(1)
                         .Table(table =>
                         {
-                            IContainer DefaultCellStyle(IContainer container, string backgroundColor)
+                            IContainer DefaultCellStyle(IContainer container, Color backgroundColor)
                             {
                                 return container
                                     .Border(1)

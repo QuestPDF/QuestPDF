@@ -1,12 +1,13 @@
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
+using QuestPDF.Skia;
+using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing
 {
     internal abstract class SkiaCanvasBase : ICanvas, IRenderingCanvas
     {
-        internal SKCanvas Canvas { get; set; }
+        internal SkCanvas Canvas { get; set; }
 
         #region IRenderingCanvas
         
@@ -39,67 +40,110 @@ namespace QuestPDF.Drawing
         private void DrawLayoutIssuesIndicatorOnCurrentPage()
         {
             // visual configuration
-            const string lineColor = Colors.Red.Medium;
+            var lineColor = Colors.Red.Medium;
             const byte lineOpacity = 64;
-            const float borderThickness = 24f;
         
             // implementation
-            using var indicatorPaint = new SKPaint
-            {
-                StrokeWidth = borderThickness * 2, // half of the width will be outside of the page area
-                Color = SKColor.Parse(lineColor).WithAlpha(lineOpacity),
-                IsStroke = true
-            };
-        
-            Canvas.DrawRect(0, 0, CurrentPageSize.Width, CurrentPageSize.Height, indicatorPaint);
+            var indicatorColor = lineColor.WithAlpha(lineOpacity);
+            var position = new SkRect(0, 0, CurrentPageSize.Width, CurrentPageSize.Height);
+            Canvas.DrawFilledRectangle(position, indicatorColor);
         }
         
         #endregion
         
         #region ICanvas
         
+        public void Save()
+        {
+            Canvas.Save();
+        }
+
+        public void Restore()
+        {
+            Canvas.Restore();
+        }
+        
         public void Translate(Position vector)
         {
             Canvas.Translate(vector.X, vector.Y);
         }
 
-        public void DrawRectangle(Position vector, Size size, string color)
+        public void DrawFilledRectangle(Position vector, Size size, Color color)
         {
             if (size.Width < Size.Epsilon || size.Height < Size.Epsilon)
                 return;
 
-            var paint = color.ColorToPaint();
-            Canvas.DrawRect(vector.X, vector.Y, size.Width, size.Height, paint);
+            var position = new SkRect(vector.X, vector.Y, vector.X + size.Width, vector.Y + size.Height);
+            Canvas.DrawFilledRectangle(position, color);
         }
-
-        public void DrawText(SKTextBlob skTextBlob, Position position, TextStyle style)
+        
+        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color)
         {
-            Canvas.DrawText(skTextBlob, position.X, position.Y, style.ToPaint());
+            if (size.Width < Size.Epsilon || size.Height < Size.Epsilon)
+                return;
+
+            var position = new SkRect(vector.X, vector.Y, vector.X + size.Width, vector.Y + size.Height);
+            Canvas.DrawStrokeRectangle(position, strokeWidth, color);
         }
 
-        public void DrawImage(SKImage image, Position vector, Size size)
+        public void DrawParagraph(SkParagraph paragraph)
         {
-            Canvas.DrawImage(image, new SKRect(vector.X, vector.Y, size.Width, size.Height));
+            Canvas.DrawParagraph(paragraph);
         }
 
+        public void DrawImage(SkImage image, Size size)
+        {
+            Canvas.DrawImage(image, size.Width, size.Height);
+        }
+
+        public void DrawPicture(SkPicture picture)
+        {
+            Canvas.DrawPicture(picture);
+        }
+
+        public void DrawSvgPath(string path, Color color)
+        {
+            Canvas.DrawSvgPath(path, color);
+        }
+
+        public void DrawSvg(SkSvgImage svgImage, Size size)
+        {
+            Canvas.DrawSvg(svgImage, size.Width, size.Height);
+        }
+        
+        public void DrawOverflowArea(SkRect area)
+        {
+            Canvas.DrawOverflowArea(area);
+        }
+    
+        public void ClipOverflowArea(SkRect availableSpace, SkRect requiredSpace)
+        {
+            Canvas.ClipOverflowArea(availableSpace, requiredSpace);
+        }
+    
+        public void ClipRectangle(SkRect clipArea)
+        {
+            Canvas.ClipRectangle(clipArea);
+        }
+        
         public void DrawHyperlink(string url, Size size)
         {
-            Canvas.DrawUrlAnnotation(new SKRect(0, 0, size.Width, size.Height), url);
+            Canvas.AnnotateUrl(size.Width, size.Height, url);
         }
         
         public void DrawSectionLink(string sectionName, Size size)
         {
-            Canvas.DrawLinkDestinationAnnotation(new SKRect(0, 0, size.Width, size.Height), sectionName);
+            Canvas.AnnotateDestinationLink(size.Width, size.Height, sectionName);
         }
 
         public void DrawSection(string sectionName)
         {
-            Canvas.DrawNamedDestinationAnnotation(new SKPoint(0, 0), sectionName);
+            Canvas.AnnotateDestination(sectionName);
         }
 
         public void Rotate(float angle)
         {
-            Canvas.RotateDegrees(angle);
+            Canvas.Rotate(angle);
         }
 
         public void Scale(float scaleX, float scaleY)

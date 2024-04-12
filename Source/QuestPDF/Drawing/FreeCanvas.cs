@@ -1,5 +1,6 @@
 ﻿using QuestPDF.Infrastructure;
-using SkiaSharp;
+using QuestPDF.Skia;
+using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing
 {
@@ -38,26 +39,71 @@ namespace QuestPDF.Drawing
 
         #region ICanvas
 
+        public void Save()
+        {
+            
+        }
+
+        public void Restore()
+        {
+            
+        }
+        
         public void Translate(Position vector)
         {
             
         }
 
-        public void DrawRectangle(Position vector, Size size, string color)
+        public void DrawFilledRectangle(Position vector, Size size, Color color)
         {
             
         }
 
-        public void DrawText(SKTextBlob skTextBlob, Position position, TextStyle style)
+        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color)
+        {
+            
+        }
+        
+        public void DrawParagraph(SkParagraph paragraph)
         {
             
         }
 
-        public void DrawImage(SKImage image, Position position, Size size)
+        public void DrawImage(SkImage image, Size size)
         {
             
         }
 
+        public void DrawPicture(SkPicture picture)
+        {
+            
+        }
+
+        public void DrawSvgPath(string path, Color color)
+        {
+            
+        }
+
+        public void DrawSvg(SkSvgImage svgImage, Size size)
+        {
+            
+        }
+
+        public void DrawOverflowArea(SkRect area)
+        {
+            
+        }
+
+        public void ClipOverflowArea(SkRect availableSpace, SkRect requiredSpace)
+        {
+            
+        }
+
+        public void ClipRectangle(SkRect clipArea)
+        {
+            
+        }
+        
         public void DrawHyperlink(string url, Size size)
         {
            

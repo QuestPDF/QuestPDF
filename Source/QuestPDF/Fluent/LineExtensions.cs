@@ -1,5 +1,4 @@
-﻿using System;
-using QuestPDF.Elements;
+﻿using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -49,9 +48,8 @@ namespace QuestPDF.Fluent
         /// Specifies the color for the line.
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static void LineColor(this ILine descriptor, string color)
+        public static void LineColor(this ILine descriptor, Color color)
         {
-            ColorValidator.Validate(color);
             (descriptor as Line).Color = color;
         }
     }

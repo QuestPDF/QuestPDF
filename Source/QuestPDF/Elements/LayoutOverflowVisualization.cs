@@ -1,21 +1,17 @@
 using System;
-using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
 internal class LayoutOverflowVisualization : ContainerElement, IContentDirectionAware
 {
     private const float BorderThickness = 1.5f;
-    private const float StripeThickness = 1.5f;
-    private const float StripeScale = 6f;
-    private const string LineColor = Colors.Red.Medium;
-    private const string AvailableAreaColor = Colors.Green.Medium;
-    private const string OverflowAreaColor = Colors.Red.Medium;
+    private readonly Color LineColor = Colors.Red.Medium;
+    private readonly Color AvailableAreaColor = Colors.Green.Medium;
     private const byte AreaOpacity = 64;
 
     public ContentDirection ContentDirection { get; set; }
@@ -75,79 +71,14 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
 
     private void DrawOverflowArea(Size availableSpace, Size contentSize)
     {
-        if (Canvas is not SkiaCanvasBase canvasBase)
-            return;
-        
-        var skiaCanvas = canvasBase.Canvas;
+        var availableSpaceColor = AvailableAreaColor.WithAlpha(AreaOpacity);
+        Canvas.DrawFilledRectangle(Position.Zero, availableSpace, availableSpaceColor);
 
-        DrawAvailableSpaceBackground();
+        Canvas.Save();
+        Canvas.ClipOverflowArea(new SkRect(0, 0, availableSpace.Width, availableSpace.Height), new SkRect(0, 0, contentSize.Width, contentSize.Height));
+        Canvas.DrawOverflowArea(new SkRect(0, 0, contentSize.Width, contentSize.Height));
+        Canvas.Restore();
 
-        skiaCanvas.Save();
-        ClipOverflowAreaVisibility();
-        DrawOverflowArea();
-        DrawCheckerboardPattern();
-        skiaCanvas.Restore();
-
-        DrawContentAreaBorder();
-
-        void DrawAvailableSpaceBackground()
-        {
-            using var paint = new SKPaint
-            {
-                Color = SKColor.Parse(AvailableAreaColor).WithAlpha(AreaOpacity)
-            };
-        
-            skiaCanvas.DrawRect(0, 0, availableSpace.Width, availableSpace.Height, paint);
-        }
-        
-        void DrawContentAreaBorder()
-        {
-            using var borderPaint = new SKPaint
-            {
-                Color = SKColor.Parse(LineColor),
-                IsStroke = true,
-                StrokeWidth = BorderThickness
-            };
-
-            skiaCanvas.DrawRect(0, 0, contentSize.Width, contentSize.Height, borderPaint);
-        }
-        
-        void DrawOverflowArea()
-        {
-            using var areaPaint = new SKPaint
-            {
-                Color = SKColor.Parse(OverflowAreaColor).WithAlpha(AreaOpacity)
-            };
-
-            skiaCanvas.DrawRect(0, 0, contentSize.Width, contentSize.Height, areaPaint);
-        }
-        
-        void DrawCheckerboardPattern()
-        {
-            var matrix = SKMatrix.CreateScale(StripeScale, StripeScale).PostConcat(SKMatrix.CreateRotation((float)(Math.PI / 4)));
-
-            using var paint = new SKPaint
-            {
-                Color = SKColor.Parse(LineColor),
-                PathEffect = SKPathEffect.Create2DLine(StripeThickness, matrix),
-                IsAntialias = true
-            };
-            
-            var targetArea = new SKRect(0,0,contentSize.Width, contentSize.Height);
-            targetArea.Inflate(StripeScale * 2, StripeScale * 2);
-            
-            skiaCanvas.DrawRect(targetArea, paint);
-        }
-
-        void ClipOverflowAreaVisibility()
-        {
-            var path = new SKPath();
-
-            path.AddRect(new SKRect(0, 0, contentSize.Width, contentSize.Height), SKPathDirection.Clockwise);
-            path.AddRect(new SKRect(0, 0, Math.Min(availableSpace.Width, contentSize.Width), Math.Min(availableSpace.Height, contentSize.Height)), SKPathDirection.CounterClockwise);
-
-            skiaCanvas.Save();
-            skiaCanvas.ClipPath(path);
-        }
+        Canvas.DrawStrokeRectangle(Position.Zero, contentSize, BorderThickness, LineColor);
     }
 }

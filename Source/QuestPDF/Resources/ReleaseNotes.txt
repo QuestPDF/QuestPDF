@@ -1,35 +1,25 @@
-Version 2023.12.0
-- Feature: added a Shrink element that enables relaxation of layout constraints from the parent element, applicable to both vertical and horizontal axes independently
-- Feature: developed the ShowIf API, allowing conditional visibility of elements based on rendering context (initially supports PageNumber only)
-- Feature: added functionality to specify unit types for the Spacing property in the Row element, improving Fluent API consistency
-- Optimization: reduced memory usage and decreased Garbage Collector pressure in the FluentAPI, enhancing performance
-- Improvement: integrated CancellationToken support in the ShowInPreviewer method
-- Improvement: simplified DynamicComponent usage by introducing a state-less component model
-- Testing: introduced a new internal layout-testing engine (prototype)
+Version 2024.3.0
 
-Version 2023.12.1
-- Fixed: table layout renders incorrectly if one of its cells spans at least three pages
+The primary theme of this release is the removal of the SkiaSharp dependency and the introduction of a custom native layer built on top of Skia M124.
 
-Version 2023.12.2
-- Fixed: The hyperlink element was annotating the incorrect location, in specific layout scenarios when used with right-to-left content direction
-- Enhancement: Improved layout stability for dynamic components utilizing the TotalPages property to generate content
-- Maintenance: The QuestPDF Previewer application has been updated to utilize the latest version of the Avalonia library
 
-Version 2023.12.3
-- Improvement: enhanced the automated layout issue detection algorithm to cover a broader range of cases
-- Update: upgraded the SkiaSharp dependency to version 2.88.7. This update addresses issues with JPEG images being incorrectly encoded/decoded on ARM devices
-- Maintenance: added .NET 8 as an official build target for the library
+This change was necessary to provide much higher flexibility and enable several new long-awaited features:
+- Font subsetting - this feature includes only necessary font glyphs in the output document, greatly reducing the file size, especially when using glyph-rich fonts supporting multiple languages,
+- Improved text-related capabilities, including but not limited to text justification, bi-directionality, enhanced line breaking algorithms, more styles for text decoration, word spacing, and more,
+- Introduced additional document compression to further reduce file size,
+- Integrated native SVG support,
+- In future releases: enhanced accessibility through support for PDF tags.
 
-Version 2023.12.4
-- Fixed: the TextStyle.LetterSpacing property was not documented correctly, and the FluentAPI code prevented its correct use
 
-Version 2023.12.5
-- Fix: resolved an issue where the Column element applies double spacing when its child does not occupy any space
-- Fix: the Text.SectionLink element does not work correctly
-- Improvement: redesigned the automated layout issue detection algorithm
-- Improvement: when drawing content with the Canvas element, the library now clips drawn content to the element's boundaries. This prevents potential overflow when integrating with other libraries
-- Improvement: enhanced layout stability
+Other changes:
+- Removed the SkiaSharp dependency, thereby making QuestPDF a standalone library,
+- Updated the Lato font to the latest version (2.015),
+- Included licenses of the third-party dependencies in the NuGet package,
+- Included a list of Contributors in the NuGet package to acknowledge the valuable input from our Community in improving QuestPDF.
 
-Version 2023.12.6
-- Updated NuGet package tags
-- Removed the netcoreapp3.0 target from the library, as it is already covered by netstandard2.0
+
+Unfortunately, this release also introduces breaking changes:
+- Removed support for injecting SkiaSharp content directly into the document. It is still possible to integrate SkiaSharp through vector and raster graphics; please consult the documentation for more details,
+- Removed support for platforms: Android, iOS, UWP, WASM, and Linux-Alpine. We are currently investigating reintroducing support for WASM and Linux-Alpine in future releases.
+
+We would like to thank the SkiaSharp project, its maintainers, and contributors, for creating a fantastic graphics library. It was a fantastic foundation for QuestPDF for over 3 years.

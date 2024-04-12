@@ -1,18 +1,30 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
     internal class PreviewerPageSnapshot
     {
-        public SKPicture Picture { get; set; }
+        public SkPicture Picture { get; set; }
         public Size Size { get; set; }
 
-        public PreviewerPageSnapshot(SKPicture picture, Size size)
+        public PreviewerPageSnapshot(SkPicture picture, Size size)
         {
             Picture = picture;
             Size = size;
+        }
+        
+        public byte[] RenderImage(int zoomLevel)
+        {
+            var scale = (float)Math.Pow(2, zoomLevel);
+            
+            using var bitmap = new SkBitmap((int)(Size.Width * scale), (int)(Size.Height * scale));
+            using var canvas = SkCanvas.CreateFromBitmap(bitmap);
+            canvas.Scale(scale, scale);
+            canvas.DrawPicture(Picture);
+            return bitmap.EncodeAsJpeg(90).ToBytes();
         }
     }
     
@@ -24,7 +36,7 @@ namespace QuestPDF.Drawing
     
     internal class PreviewerCanvas : SkiaCanvasBase
     {
-        private SKPictureRecorder? PictureRecorder { get; set; }
+        private SkPictureRecorder? PictureRecorder { get; set; }
         private Size? CurrentPageSize { get; set; }
 
         private ICollection<PreviewerPageSnapshot> PageSnapshots { get; } = new List<PreviewerPageSnapshot>();
@@ -37,9 +49,9 @@ namespace QuestPDF.Drawing
         public override void BeginPage(Size size)
         {
             CurrentPageSize = size;
-            PictureRecorder = new SKPictureRecorder();
+            PictureRecorder = new SkPictureRecorder();
 
-            Canvas = PictureRecorder.BeginRecording(new SKRect(0, 0, size.Width, size.Height));
+            Canvas = PictureRecorder.BeginRecording(size.Width, size.Height);
         }
 
         public override void EndPage()

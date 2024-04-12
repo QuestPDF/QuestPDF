@@ -1,5 +1,4 @@
-﻿using System;
-using QuestPDF.Elements;
+﻿using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -94,10 +93,8 @@ namespace QuestPDF.Fluent
         /// <a href="https://www.questpdf.com/api-reference/border.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static IContainer BorderColor(this IContainer element, string color)
+        public static IContainer BorderColor(this IContainer element, Color color)
         {
-            ColorValidator.Validate(color);
-            
             var border = element as Border ?? new Border();
             border.Color = color;
             return element.Element(border);

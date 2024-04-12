@@ -263,32 +263,38 @@ namespace QuestPDF.Examples
                     column.Spacing(10);
 
                     column.Item().Text("Default alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(null));
+                    column.Item().Element(ContentWithAlignment(x => { }));
                     
                     column.Item().Text("Left alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(InlinedAlignment.Left));
+                    column.Item().Element(ContentWithAlignment(x => x.AlignLeft()));
                     
                     column.Item().Text("Center alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(InlinedAlignment.Center));
+                    column.Item().Element(ContentWithAlignment(x => x.AlignCenter()));
                     
                     column.Item().Text("Right alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(InlinedAlignment.Right));
+                    column.Item().Element(ContentWithAlignment(x => x.AlignRight()));
+                    
+                    column.Item().Text("Justify alignment").FontSize(14).SemiBold();
+                    column.Item().Element(ContentWithAlignment(x => x.AlignJustify()));
+                    
+                    column.Item().Text("Space around alignment").FontSize(14).SemiBold();
+                    column.Item().Element(ContentWithAlignment(x => x.AlignSpaceAround()));
                 });
                 
-                static Action<IContainer> ContentWithAlignment(InlinedAlignment? alignment)
+                static Action<IContainer> ContentWithAlignment(Action<InlinedDescriptor> configure)
                 {
                     return container =>
                     {
                         container.Inlined(inlined =>
                         {
                             inlined.Spacing(5);
-                            
-                            inlined.Alignment(alignment);
+
+                            configure(inlined);
                     
-                            inlined.Item().Height(50).Width(50).Background(Colors.Red.Lighten1);
-                            inlined.Item().Height(50).Width(75).Background(Colors.Green.Lighten1);
-                            inlined.Item().Height(50).Width(100).Background(Colors.Blue.Lighten1);
-                            inlined.Item().Height(50).Width(125).Background(Colors.Orange.Lighten1);
+                            inlined.Item().Height(40).Width(50).Background(Colors.Red.Lighten1);
+                            inlined.Item().Height(40).Width(75).Background(Colors.Green.Lighten1);
+                            inlined.Item().Height(40).Width(100).Background(Colors.Blue.Lighten1);
+                            inlined.Item().Height(40).Width(125).Background(Colors.Orange.Lighten1);
                         });
                     };
                 }
@@ -313,29 +319,37 @@ namespace QuestPDF.Examples
                     column.Spacing(10);
 
                     column.Item().Text("Default alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(null));
+                    column.Item().Element(ContentWithAlignment(x => { }));
                     
                     column.Item().Text("Left alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(HorizontalAlignment.Left));
+                    column.Item().Element(ContentWithAlignment(x => x.AlignLeft()));
                     
                     column.Item().Text("Center alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(HorizontalAlignment.Center));
+                    column.Item().Element(ContentWithAlignment(x => x.AlignCenter()));
                     
                     column.Item().Text("Right alignment").FontSize(14).SemiBold();
-                    column.Item().Element(ContentWithAlignment(HorizontalAlignment.Right));
+                    column.Item().Element(ContentWithAlignment(x => x.AlignRight()));
+                    
+                    column.Item().Text("Justify alignment").FontSize(14).SemiBold();
+                    column.Item().Element(ContentWithAlignment(x => x.Justify()));
+                    
+                    column.Item().Text("Start alignment").FontSize(14).SemiBold();
+                    column.Item().Element(ContentWithAlignment(x => x.AlignStart()));
+                    
+                    column.Item().Text("End alignment").FontSize(14).SemiBold();
+                    column.Item().Element(ContentWithAlignment(x => x.AlignEnd()));
                 });
 
-                static Action<IContainer> ContentWithAlignment(HorizontalAlignment? alignment)
+                static Action<IContainer> ContentWithAlignment(Action<TextDescriptor> configure)
                 {
                     return container =>
                     {
                         container.Text(text =>
                         {
-                            text.Alignment = alignment; // internal API
-                    
-                            text.Span("Lorem ipsum").Bold().FontColor(Colors.Red.Medium);
-                            text.Element().Width(5);
-                            text.Span(Placeholders.LoremIpsum());
+                            configure(text);
+
+                            text.Span("Dotnet").Bold().FontColor(Colors.Red.Medium);
+                            text.Span(" is an open-source platform for building desktop, web, and mobile applications that can run natively on any operating system.");
                         });
                     };
                 }

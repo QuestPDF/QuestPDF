@@ -3,48 +3,56 @@ using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
     internal sealed class PdfCanvas : SkiaDocumentCanvasBase
     {
-        public PdfCanvas(Stream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings) 
+        public PdfCanvas(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings) 
             : base(CreatePdf(stream, documentMetadata, documentSettings))
         {
             
         }
 
-        private static SKDocument CreatePdf(Stream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
+        private static SkDocument CreatePdf(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
         {
+            // do not extract to another method, as it will cause the SkText objects
+            // to be disposed before the SkPdfDocument is created
+            using var title = new SkText(documentMetadata.Title);
+            using var author = new SkText(documentMetadata.Author);
+            using var subject = new SkText(documentMetadata.Subject);
+            using var keywords = new SkText(documentMetadata.Keywords);
+            using var creator = new SkText(documentMetadata.Creator);
+            using var producer = new SkText(documentMetadata.Producer);
+            
+            var internalMetadata = new SkPdfDocumentMetadata
+            {
+                Title = title,
+                Author = author,
+                Subject = subject,
+                Keywords = keywords,
+                Creator = creator,
+                Producer = producer,
+                
+                CreationDate = new SkDateTime(documentMetadata.CreationDate),
+                ModificationDate = new SkDateTime(documentMetadata.ModifiedDate),
+                
+                RasterDPI = documentSettings.ImageRasterDpi,
+                ImageEncodingQuality = documentSettings.ImageCompressionQuality.ToQualityValue(),
+                
+                SupportPDFA = documentSettings.PdfA,
+                CompressDocument = documentSettings.CompressDocument
+            };
+            
             try
             {
-                return SKDocument.CreatePdf(stream, MapMetadata(documentMetadata, documentSettings));
+                return SkPdfDocument.Create(stream, internalMetadata);
             }
             catch (TypeInitializationException exception)
             {
                 throw new InitializationException("PDF", exception);
             }
-        }
-
-        private static SKDocumentPdfMetadata MapMetadata(DocumentMetadata metadata, DocumentSettings documentSettings)
-        {
-            return new SKDocumentPdfMetadata
-            {
-                Title = metadata.Title,
-                Author = metadata.Author,
-                Subject = metadata.Subject,
-                Keywords = metadata.Keywords,
-                Creator = metadata.Creator,
-                Producer = metadata.Producer,
-                
-                Creation = metadata.CreationDate,
-                Modified = metadata.ModifiedDate,
-                
-                RasterDpi = documentSettings.ImageRasterDpi,
-                EncodingQuality = documentSettings.ImageCompressionQuality.ToQualityValue(),
-                PdfA = documentSettings.PdfA
-            };
         }
     }
 }

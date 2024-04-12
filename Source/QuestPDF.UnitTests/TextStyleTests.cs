@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -16,17 +17,12 @@ namespace QuestPDF.UnitTests
             var defaultTextStyle = TextStyle
                 .Default
                 .FontSize(20)
-                .FontFamily("Arial")
-                .BackgroundColor(Colors.Green.Lighten2)
-                .Fallback(y => y
-                    .FontFamily("Microsoft YaHei")
-                    .Underline()
-                    .NormalWeight()
-                    .BackgroundColor(Colors.Blue.Lighten2));
+                .FontFamily("Arial", "Microsoft YaHei")
+                .BackgroundColor(Colors.Green.Lighten2);
 
             var spanTextStyle = TextStyle
                 .Default
-                .FontFamily("Times New Roman")
+                .FontFamily("Times New Roman", "Arial", "Calibri")
                 .Bold()
                 .Strikethrough()
                 .BackgroundColor(Colors.Red.Lighten2);
@@ -37,22 +33,15 @@ namespace QuestPDF.UnitTests
             // assert
             var expectedStyle = TextStyle.LibraryDefault with
             {
+                Id = targetStyle.Id, // expect to break when adding new TextStyle properties, so use the real one
                 Size = 20, 
-                FontFamily = "Times New Roman",
+                FontFamilies = new[] { "Times New Roman", "Arial", "Calibri", "Microsoft YaHei", "Lato" },
                 FontWeight = FontWeight.Bold,
                 BackgroundColor = Colors.Red.Lighten2,
-                HasStrikethrough = true,
-                Fallback = TextStyle.LibraryDefault with
-                {
-                    Size = 20,
-                    FontFamily = "Microsoft YaHei",
-                    FontWeight = FontWeight.Bold,
-                    BackgroundColor = Colors.Red.Lighten2,
-                    HasUnderline = true,
-                    HasStrikethrough = true
-                }
+                HasStrikethrough = true
             };
 
+            spanTextStyle.Id.Should().BeGreaterThan(1);
             targetStyle.Should().BeEquivalentTo(expectedStyle);
         }
     }

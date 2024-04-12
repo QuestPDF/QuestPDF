@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Helpers
 {
@@ -294,7 +294,7 @@ namespace QuestPDF.Helpers
 
         #region Visual
 
-        private static readonly string[] BackgroundColors =
+        private static readonly Color[] BackgroundColors =
         {
             Colors.Red.Lighten3,
             Colors.Pink.Lighten3,
@@ -325,7 +325,7 @@ namespace QuestPDF.Helpers
         /// #bcaaa4 <br />
         /// #ffab91
         /// </example>
-        public static string BackgroundColor()
+        public static Color BackgroundColor()
         {
             var index = Random.Next(0, BackgroundColors.Length);
             return BackgroundColors[index];
@@ -339,7 +339,7 @@ namespace QuestPDF.Helpers
         /// #f44336 <br />
         /// #9c27b0
         /// </example>
-        public static string Color()
+        public static Color Color()
         {
             var colors = new[]
             {
@@ -381,69 +381,34 @@ namespace QuestPDF.Helpers
         }
         
         /// <summary>
-        /// Generates a random image with a soft color gradient of the given <paramref name="size" />.
+        /// Generates a random image with a soft color gradient.
         /// </summary>
         /// <remarks>
-        /// Caution: using this method may significantly reduce document generation performance. Please do not use it when performing benchmarks.
+        /// For performance reasons, this method may reduce the <paramref name="size" /> argument to at most 64 pixels, while preserving its aspect ratio.
         /// </remarks>
         /// <returns>Random image encoded in the JPEG format.</returns>
         public static byte[] Image(ImageSize size)
         {
-            // shuffle corner positions
-            var targetPositions = new[]
-            {
-                new SKPoint(0, 0),
-                new SKPoint(size.Width, 0),
-                new SKPoint(0, size.Height),
-                new SKPoint(size.Width, size.Height)
-            };
+            size = LimitSize(size);
             
-            var positions = targetPositions
-                .OrderBy(x => Random.Next())
-                .ToList();
-            
-            // rand and shuffle colors
             var colors = BackgroundColors
-                .OrderBy(x => Random.Next())
-                .Take(4)
-                .Select(SKColor.Parse)
+                .OrderBy(_ => Random.Next())
+                .Take(2)
                 .ToArray();
             
-            // create image with white background
-            var imageInfo = new SKImageInfo(size.Width, size.Height);
-            using var surface = SKSurface.Create(imageInfo);
-   
-            using var backgroundPaint = new SKPaint
-            {
-                Color = SKColors.White
-            };
-            
-            surface.Canvas.DrawRect(0, 0, size.Width, size.Height, backgroundPaint);
+            using var placeholderImage = SkImage.GeneratePlaceholder(size.Width, size.Height, colors[0], colors[1]);
+            using var imageData = placeholderImage.GetEncodedData();
+            return imageData.ToBytes();
 
-            // draw gradient
-            SKShader GetForegroundShader(int index)
+            static ImageSize LimitSize(ImageSize size, int maxSize = 64)
             {
-                var radius = Math.Max(size.Width, size.Height);
-                var color = colors[index];
-                
-                return SKShader.CreateRadialGradient(
-                    positions[index], radius,
-                    new[] {color, color.WithAlpha(0)}, new[] {0, 1f},
-                    SKShaderTileMode.Decal);
+                if (size.Width < maxSize && size.Height < maxSize)
+                    return size;
+
+                return size.Width > size.Height
+                    ? new ImageSize(maxSize, maxSize * size.Height / size.Width)
+                    : new ImageSize(maxSize * size.Width / size.Height, maxSize);
             }
-            
-            using var shaderPaint = new SKPaint
-            {
-                Shader = SKShader.CreateCompose(
-                    SKShader.CreateCompose(GetForegroundShader(0), GetForegroundShader(1)),
-                    SKShader.CreateCompose(GetForegroundShader(2), GetForegroundShader(3)))
-            };
-            
-            surface.Canvas.DrawRect(0, 0, size.Width, size.Height, shaderPaint);
-            
-            // return result as an image
-            surface.Canvas.Save();
-            return surface.Snapshot().Encode(SKEncodedImageFormat.Jpeg, 90).ToArray();
         }
         
         #endregion

@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
-using SkiaSharp;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Infrastructure
 {
@@ -30,12 +29,12 @@ namespace QuestPDF.Infrastructure
             NativeDependencyCompatibilityChecker.Test();
         }
         
-        internal SKImage SkImage { get; }
+        internal SkImage SkImage { get; }
         internal ImageSize Size { get; }
 
-        internal LinkedList<(GetImageVersionRequest request, SKImage image)> ScaledImageCache { get; } = new();
+        internal LinkedList<(GetImageVersionRequest request, SkImage image)> ScaledImageCache { get; } = new();
  
-        internal Image(SKImage image)
+        internal Image(SkImage image)
         {
             SkImage = image;
             Size = new ImageSize(image.Width, image.Height);
@@ -51,7 +50,7 @@ namespace QuestPDF.Infrastructure
         
         #region Scaling Image
 
-        internal SKImage GetVersionOfSize(GetImageVersionRequest request)
+        internal SkImage GetVersionOfSize(GetImageVersionRequest request)
         {
             foreach (var cacheKey in ScaledImageCache)
             {
@@ -68,26 +67,15 @@ namespace QuestPDF.Infrastructure
 
         #region public constructors
 
-        private const string CannotDecodeExceptionMessage = "Cannot decode the provided image.";
-        
-        internal static Image FromSkImage(SKImage image)
-        {
-            return new Image(image);
-        }
-
         /// <summary>
         /// Loads the image from binary data.
         /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
-        public static Image FromBinaryData(byte[] imageData)
+        public static Image FromBinaryData(byte[] imageBytes)
         {
-            var image = SKImage.FromEncodedData(imageData);
-            
-            if (image == null)
-                throw new DocumentComposeException(CannotDecodeExceptionMessage);
-            
-            return new Image(image);
+            using var imageData = SkData.FromBinary(imageBytes);
+            return DecodeImage(imageData);
         }
 
         /// <summary>
@@ -97,16 +85,11 @@ namespace QuestPDF.Infrastructure
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         public static Image FromFile(string filePath)
         {
-            var image = SKImage.FromEncodedData(filePath);
-
-            if (image == null)
-            {
-                throw File.Exists(filePath) 
-                    ? new DocumentComposeException(CannotDecodeExceptionMessage)
-                    : new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
-            }
+            if (!File.Exists(filePath))
+                throw new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
             
-            return new Image(image);
+            using var imageData = SkData.FromFile(filePath);
+            return DecodeImage(imageData);
         }
 
         /// <summary>
@@ -114,14 +97,23 @@ namespace QuestPDF.Infrastructure
         /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
-        public static Image FromStream(Stream fileStream)
+        public static Image FromStream(Stream stream)
         {
-            var image = SKImage.FromEncodedData(fileStream);
-            
-            if (image == null)
-                throw new DocumentComposeException(CannotDecodeExceptionMessage);
-            
-            return new Image(image);
+            using var imageData = SkData.FromStream(stream);
+            return DecodeImage(imageData);
+        }
+        
+        private static Image DecodeImage(SkData imageData)
+        {
+            try
+            {
+                var image = SkImage.FromData(imageData);
+                return new Image(image);
+            }
+            catch
+            {
+                throw new DocumentComposeException("Cannot decode the provided image.");
+            }
         }
 
         #endregion

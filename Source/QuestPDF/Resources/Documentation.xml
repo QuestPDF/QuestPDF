@@ -86,6 +86,21 @@
         <returns>Descriptor allowing adjustments to image attributes, such as scaling behavior, compression quality, and target DPI.</returns>
     </doc>
 
+    <!-- SVG -->
+
+    <doc for="svg.remarks">
+        <remarks>
+            Multiple strategies exist for the Image element to determine its final size.
+            By default, the image fills all the available width.
+            This behavior can be customized using options within the <see cref="Fluent.SvgImageDescriptor">descriptor</see> class.
+        </remarks>
+    </doc>
+
+    <doc for="svg.descriptor">
+        <returns>Descriptor allowing adjustments to the SVG image scaling behavior.</returns>
+    </doc>
+
+
     <!-- CONTENT DIRECTION -->
     
     <doc for="contentDirection.ltr.remarks">
@@ -196,6 +211,18 @@
             <para>A value of 0 maintains the original spacing. When the value is positive, the text is more spread out. When it is negative, the text is more condensed.</para>
         </param>
     </doc>
+
+    <doc for="text.wordSpacing">
+        <summary>
+            Adjusts the horizontal spacing between words in the text.
+            The adjustment is proportional to the text size.
+        </summary>
+
+        <param name="factor">
+            <para>Sets the proportion by which the horizontal space between words is changed.</para>
+            <para>A value of 0 maintains the original spacing. When the value is positive, the text is more spread out. When it is negative, the text is more condensed.</para>
+        </param>
+    </doc>
     
     <!-- TEXT EFFECTS -->
 
@@ -205,15 +232,76 @@
         </summary>
     </doc>
 
-    <doc for="text.strikethrough">
+    <doc for="text.decoration.strikethrough">
         <summary>
-            Draws a simple solid line through the middle of the text.
+            Draws a line through the middle of the text. 
         </summary>
     </doc>
 
-    <doc for="text.underline">
+    <doc for="text.decoration.underline">
         <summary>
-            Draws a simple solid line under the text.
+            Draws a line under the text.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.overline">
+        <summary>
+            Draws a line above the text.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.remarks">
+        <remarks>
+            You can control the decoration visuals by setting color and style (solid, double, wavy, dotted, dashed) of the line.
+        </remarks>
+    </doc>
+
+    <doc for="text.decoration.applicability">
+        <remarks>
+            Applies for the following text decorations: striketrough, underline, overline.
+        </remarks>
+    </doc>
+
+    <doc for="text.decoration.color">
+        <summary>
+            Sets the color of the text decoration.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.thickness">
+        <summary>
+            Changess thickness of decoration line proportionally to the provided argument. 
+            Value equal to 1 is the default thickness. 
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.solid">
+        <summary>
+            Sets the decoration line to a solid straight line.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.double">
+        <summary>
+            Sets the decoration line to a solid double line.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.wavy">
+        <summary>
+            Sets the decoration line to wave.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.dotted">
+        <summary>
+            Sets the decoration line to dots.
+        </summary>
+    </doc>
+
+    <doc for="text.decoration.dashed">
+        <summary>
+            Sets the decoration line to dashes.
         </summary>
     </doc>
     
@@ -353,19 +441,7 @@
             This API reduces the garbage collector pressure and offers the best performance.
         </remarks>
     </doc>
-
-    <doc for="text.fontFallback">
-        <summary>
-            Specifies an alternative text style to be used when the primary font family does not support certain character glyphs.
-            <a href="https://www.questpdf.com/api-reference/text.html#font-fallback">Learn more</a>
-        </summary>
-        
-        <remarks>
-            The library supports nested font fallbacks, ensuring a series of alternative fonts. 
-            Individual properties can be adjusted for each level of fallback.
-        </remarks>
-    </doc>
-
+    
     <!-- PREVIEWER -->
 
     <doc for="previewer.support">

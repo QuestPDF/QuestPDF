@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Text;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -48,17 +50,21 @@ namespace QuestPDF.ReportSample.Layouts
                     row.ConstantItem(20).Text($"{number}.");
                     row.AutoItem().Text(locationName);
                     
-                    row.RelativeItem().PaddingHorizontal(2).AlignBottom().TranslateY(-3).Height(1).Canvas((canvas, space) =>
-                    {
-                        // best to statically cache
-                        using var paint = new SKPaint
+                    row.RelativeItem()
+                        .PaddingHorizontal(2)
+                        .AlignBottom()
+                        .Height(3)
+                        .SkiaSharpRasterized((canvas, size) =>
                         {
-                            StrokeWidth = space.Height,
-                            PathEffect = SKPathEffect.CreateDash(new float[] { 1, 3 }, 0)
-                        };
+                            using var paint = new SKPaint
+                            {
+                                StrokeWidth = 1,
+                                PathEffect = SKPathEffect.CreateDash(new float[] { 1, 3 }, 0),
+                            };
                         
-                        canvas.DrawLine(0, 0, space.Width, 0, paint);
-                    });
+                            canvas.Translate(0, 1);
+                            canvas.DrawLine(0, 0, size.Width, 0, paint);
+                        });
                     
                     row.AutoItem().Text(text =>
                     {

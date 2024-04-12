@@ -7,7 +7,7 @@ internal static class AnnotateInvalidAreaHelper
 {
     private const float StripeThickness = 1f;
     private const float StripeScale = 3f;
-    private const string LineColor = Colors.Red.Medium;
+    private static readonly Color LineColor = Colors.Red.Medium;
     
     public static void Annotate(SKCanvas canvas, SKPath area)
     {
@@ -24,7 +24,7 @@ internal static class AnnotateInvalidAreaHelper
 
             using var paint = new SKPaint
             {
-                Color = SKColor.Parse(LineColor),
+                Color = new SKColor(LineColor),
                 PathEffect = SKPathEffect.Create2DLine(StripeThickness, matrix),
                 IsAntialias = true
             };

@@ -2,19 +2,11 @@
 using System.Diagnostics;
 using Avalonia.Threading;
 using ReactiveUI;
-using Unit = System.Reactive.Unit;
 
 namespace QuestPDF.Previewer
 {
     internal sealed class PreviewerWindowViewModel : ReactiveObject
     {
-        private ObservableCollection<DocumentSnapshot.PageSnapshot> _pages = new();
-        public ObservableCollection<DocumentSnapshot.PageSnapshot> Pages
-        {
-            get => _pages;
-            set => this.RaiseAndSetIfChanged(ref _pages, value);
-        }
-        
         private bool _documentContentHasLayoutOverflowIssues;
         public bool DocumentContentHasLayoutOverflowIssues
         {
@@ -47,25 +39,9 @@ namespace QuestPDF.Previewer
             private set => Dispatcher.UIThread.Post(() => this.RaiseAndSetIfChanged(ref _verticalScrollbarVisible, value));
         }
 
-        public ReactiveCommand<Unit, Unit> ShowPdfCommand { get; }
-        public ReactiveCommand<Unit, Unit> ShowDocumentationCommand { get; }
-        public ReactiveCommand<Unit, Unit> SponsorProjectCommand { get; }
-
         public PreviewerWindowViewModel()
         {
-            CommunicationService.Instance.OnDocumentRefreshed += HandleUpdatePreview;
-            
-            ShowPdfCommand = ReactiveCommand.Create(ShowPdf);
-            ShowDocumentationCommand = ReactiveCommand.Create(() => OpenLink("https://www.questpdf.com/api-reference/index.html"));
-            SponsorProjectCommand = ReactiveCommand.Create(() => OpenLink("https://github.com/sponsors/QuestPDF"));
-        }
-
-        private void ShowPdf()
-        {
-            var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.pdf");
-            Helpers.GeneratePdfFromDocumentSnapshots(filePath, Pages);
-
-            OpenLink(filePath);
+            CommunicationService.Instance.OnDocumentUpdated += x => DocumentContentHasLayoutOverflowIssues = x.DocumentContentHasLayoutOverflowIssues;
         }
         
         private static void OpenLink(string path)
@@ -80,18 +56,6 @@ namespace QuestPDF.Previewer
             };
 
             openBrowserProcess.Start();
-        }
-        
-        private void HandleUpdatePreview(DocumentSnapshot documentSnapshot)
-        {
-            var oldPages = Pages;
-            
-            Pages.Clear();
-            Pages = new ObservableCollection<DocumentSnapshot.PageSnapshot>(documentSnapshot.Pages);
-            DocumentContentHasLayoutOverflowIssues = documentSnapshot.DocumentContentHasLayoutOverflowIssues;
-            
-            foreach (var page in oldPages)
-                page.Picture.Dispose();
         }
     }
 }

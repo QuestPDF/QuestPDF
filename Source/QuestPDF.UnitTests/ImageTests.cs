@@ -51,7 +51,7 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Fluent_RecognizesImageProportions()
         {
-            var image = GenerateDocumentImage(600, 200);
+            var image = GenerateDocumentImage(60, 20);
             
             TestPlan
                 .For(x =>
@@ -61,7 +61,7 @@ namespace QuestPDF.UnitTests
                     return container;
                 })
                 .MeasureElement(new Size(300, 200))
-                .CheckMeasureResult(SpacePlan.FullRender(300, 100));;
+                .CheckMeasureResult(SpacePlan.FullRender(300, 100));
         }
         
         [Test]

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
@@ -12,46 +11,21 @@ namespace QuestPDF.Fluent
 {
     public class TextSpanDescriptor
     {
-        // optimization: only of fields below has value, where TextBlockSpan is more frequent
-        private TextBlockSpan? TextBlockSpan;
-        private ICollection<TextBlockSpan>? TextBlockSpans;
+        private TextBlockSpan TextBlockSpan;
 
         internal TextSpanDescriptor(TextBlockSpan textBlockSpan)
         {
             TextBlockSpan = textBlockSpan;
         }
-        
-        internal TextSpanDescriptor(ICollection<TextBlockSpan> textBlockSpans)
-        {
-            TextBlockSpans = textBlockSpans;
-        }
 
         internal void MutateTextStyle<T>(Func<TextStyle, T, TextStyle> handler, T argument)
         {
-            if (TextBlockSpan != null)
-            {
-                TextBlockSpan.Style = handler(TextBlockSpan.Style, argument);
-                return;
-            }
-            
-            foreach (var textBlockSpan in TextBlockSpans)
-            {
-                textBlockSpan.Style = handler(textBlockSpan.Style, argument);
-            }
+            TextBlockSpan.Style = handler(TextBlockSpan.Style, argument);
         }
         
         internal void MutateTextStyle(Func<TextStyle, TextStyle> handler)
         {
-            if (TextBlockSpan != null)
-            {
-                TextBlockSpan.Style = handler(TextBlockSpan.Style);
-                return;
-            }
-            
-            foreach (var textBlockSpan in TextBlockSpans)
-            {
-                textBlockSpan.Style = handler(textBlockSpan.Style);
-            }
+            TextBlockSpan.Style = handler(TextBlockSpan.Style);
         }
     }
 
@@ -87,10 +61,8 @@ namespace QuestPDF.Fluent
     
     public class TextDescriptor
     {
-        private ICollection<TextBlock> TextBlocks { get; } = new List<TextBlock>();
+        internal TextBlock TextBlock { get; } = new();
         private TextStyle? DefaultStyle { get; set; }
-        internal HorizontalAlignment? Alignment { get; set; }
-        private float Spacing { get; set; } = 0f;
 
         /// <summary>
         /// Applies a consistent text style for the whole content within this <see cref="TextExtensions.Text">Text</see> element.
@@ -115,7 +87,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignLeft()
         {
-            Alignment = HorizontalAlignment.Left;
+            TextBlock.Alignment = TextHorizontalAlignment.Left;
         }
         
         /// <summary>
@@ -123,7 +95,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignCenter()
         {
-            Alignment = HorizontalAlignment.Center;
+            TextBlock.Alignment = TextHorizontalAlignment.Center;
         }
         
         /// <summary>
@@ -131,37 +103,57 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void AlignRight()
         {
-            Alignment = HorizontalAlignment.Right;
+            TextBlock.Alignment = TextHorizontalAlignment.Right;
+        }
+        
+        /// <summary>
+        /// <para>
+        /// Justifies the text within its container.
+        /// </para>
+        ///
+        /// <para>
+        /// This method sets the horizontal alignment of the text to be justified, meaning it aligns along both the left and right margins.
+        /// This is achieved by adjusting the spacing between words and characters as necessary so that each line of text stretches from one end of the text column to the other.
+        /// This creates a clean, block-like appearance for the text.
+        /// </para>
+        /// </summary>
+        public void Justify()
+        {
+            TextBlock.Alignment = TextHorizontalAlignment.Justify;
+        }
+        
+        /// <summary>
+        /// Aligns the text horizontally to the start of the container. 
+        /// This method sets the horizontal alignment of the text to the start (left for left-to-right languages, right for right-to-left languages).
+        /// </summary>
+        public void AlignStart()
+        {
+            TextBlock.Alignment = TextHorizontalAlignment.Start;
+        }
+        
+        /// <summary>
+        /// Aligns the text horizontally to the end of the container. 
+        /// This method sets the horizontal alignment of the text to the end (right for left-to-right languages, start for right-to-left languages).
+        /// </summary>
+        public void AlignEnd()
+        {
+            TextBlock.Alignment = TextHorizontalAlignment.End;
         }
 
         /// <summary>
-        /// Adjusts the gap between successive paragraphs (separated by line breaks).
+        /// Sets the maximum number of lines to display. 
         /// </summary>
-        public void ParagraphSpacing(float value, Unit unit = Unit.Point)
+        public void ClampLines(int maxLines)
         {
-            Spacing = value.ToPoints(unit);
-        }
-
-        private void AddItemToLastTextBlock(ITextBlockItem item)
-        {
-            if (!TextBlocks.Any())
-                TextBlocks.Add(new TextBlock());
-            
-            var lastTextBlock = TextBlocks.Last();
-
-            // TextBlock with only one Span with empty text is a special case.
-            // It represents an empty line with a given text style (e.g. text height).
-            // When more content is put to text block, the first items should be ignored (removed in this case).
-            // This change fixes inconsistent line height problem.
-            if (lastTextBlock.Items.Count == 1 && lastTextBlock.Items[0] is TextBlockSpan { Text: "" })
-            {
-                lastTextBlock.Items[0] = item;
-                return;
-            }
-            
-            lastTextBlock.Items.Add(item);
+            TextBlock.LineClamp = maxLines;
         }
         
+        [Obsolete("This method is not supported since the 2024.3 version. Please split your text into separate paragraphs, combine using the Column element that also provides the Spacing capability.")]
+        public void ParagraphSpacing(float value, Unit unit = Unit.Point)
+        {
+            
+        }
+
         [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
         public void Span(string? text, TextStyle style)
         {
@@ -174,38 +166,12 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public TextSpanDescriptor Span(string? text)
         {
-            if (text == null)
-                return new TextSpanDescriptor(Array.Empty<TextBlockSpan>());
+            if (IsNullOrEmpty(text))
+                return new TextSpanDescriptor(new TextBlockSpan());
 
-            if (text.Contains('\r'))
-                text = text.Replace("\r", string.Empty);
-            
-            if (!text.Contains('\n'))
-            {
-                var textBlockSpan = new TextBlockSpan { Text = text };
-                AddItemToLastTextBlock(textBlockSpan);
-                return new TextSpanDescriptor(textBlockSpan);
-            }
-            
-            var items = text
-                .Split(new[] { '\n' }, StringSplitOptions.None)
-                .Select(x => new TextBlockSpan
-                {
-                    Text = x
-                })
-                .ToArray();
-
-            AddItemToLastTextBlock(items.First());
-            
-            foreach (var textBlockSpan in items.Skip(1))
-            {
-                TextBlocks.Add(new TextBlock
-                {   
-                    Items = new List<ITextBlockItem> { textBlockSpan }
-                });
-            }
-
-            return new TextSpanDescriptor(items);
+            var textSpan = new TextBlockSpan() { Text = text };
+            TextBlock.Items.Add(textSpan);
+            return new TextSpanDescriptor(textSpan);
         }
 
         /// <summary>
@@ -230,7 +196,7 @@ namespace QuestPDF.Fluent
         private TextPageNumberDescriptor PageNumber(Func<IPageContext, int?> pageNumber)
         {
             var textBlockItem = new TextBlockPageNumber();
-            AddItemToLastTextBlock(textBlockItem);
+            TextBlock.Items.Add(textBlockItem);
             
             return new TextPageNumberDescriptor(textBlockItem, x => textBlockItem.Source = context => x(pageNumber(context)));
         }
@@ -316,7 +282,7 @@ namespace QuestPDF.Fluent
                 throw new ArgumentException("Section name cannot be null or empty", nameof(sectionName));
 
             if (IsNullOrEmpty(text))
-                return new TextSpanDescriptor(Array.Empty<TextBlockSpan>());
+                return new TextSpanDescriptor(new TextBlockSpan());
 
             var textBlockItem = new TextBlockSectionLink
             {
@@ -324,7 +290,7 @@ namespace QuestPDF.Fluent
                 SectionName = sectionName
             };
 
-            AddItemToLastTextBlock(textBlockItem);
+            TextBlock.Items.Add(textBlockItem);
             return new TextSpanDescriptor(textBlockItem);
         }
         
@@ -345,7 +311,7 @@ namespace QuestPDF.Fluent
                 throw new ArgumentException("Url cannot be null or empty", nameof(url));
 
             if (IsNullOrEmpty(text))
-                return new TextSpanDescriptor(Array.Empty<TextBlockSpan>());
+                return new TextSpanDescriptor(new TextBlockSpan());
             
             var textBlockItem = new TextBlockHyperlink
             {
@@ -353,7 +319,7 @@ namespace QuestPDF.Fluent
                 Url = url
             };
 
-            AddItemToLastTextBlock(textBlockItem);
+            TextBlock.Items.Add(textBlockItem);
             return new TextSpanDescriptor(textBlockItem);
         }
         
@@ -369,14 +335,16 @@ namespace QuestPDF.Fluent
         /// <remarks>
         /// The container must fit within one line and can not span multiple pages.
         /// </remarks>
+        /// <param name="alignment">Defines the position of the injected element in relation to text typography features (baseline, top/bottom edge).</param>
         /// <returns>A container for the embedded content. Populate using the Fluent API.</returns>
-        public IContainer Element()
+        public IContainer Element(TextInjectedElementAlignment alignment = TextInjectedElementAlignment.AboveBaseline)
         {
             var container = new Container();
                 
-            AddItemToLastTextBlock(new TextBlockElement
+            TextBlock.Items.Add(new TextBlockElement
             {
-                Element = container
+                Element = container,
+                Alignment = alignment
             });
             
             return container.AlignBottom().MinimalBox();
@@ -388,38 +356,19 @@ namespace QuestPDF.Fluent
         /// <remarks>
         /// The container must fit within one line and can not span multiple pages.
         /// </remarks>
+        /// <param name="alignment">Defines the position of the injected element in relation to text typography features (baseline, top/bottom edge).</param>
         /// <param name="handler">Delegate to populate the embedded container with custom content.</param>
-        public void Element(Action<IContainer> handler)
+        public void Element(Action<IContainer> handler, TextInjectedElementAlignment alignment = TextInjectedElementAlignment.AboveBaseline)
         {
-            var container = new Container();
-            handler(container.AlignBottom().MinimalBox());
-                
-            AddItemToLastTextBlock(new TextBlockElement
-            {
-                Element = container
-            });
+            handler(Element(alignment));
         }
         
         internal void Compose(IContainer container)
         {
-            TextBlocks.ToList().ForEach(x => x.Alignment ??= Alignment);
-            
             if (DefaultStyle != null)
                 container = container.DefaultTextStyle(DefaultStyle);
 
-            if (TextBlocks.Count == 1)
-            {
-                container.Element(TextBlocks.First());
-                return;
-            }
-            
-            container.Column(column =>
-            {
-                column.Spacing(Spacing);
-
-                foreach (var textBlock in TextBlocks)
-                    column.Item().Element(textBlock);
-            }); 
+            container.Element(TextBlock);
         }
     }
     
@@ -434,7 +383,7 @@ namespace QuestPDF.Fluent
             var descriptor = new TextDescriptor();
             
             if (element is Alignment alignment)
-                descriptor.Alignment = alignment.Horizontal;
+                descriptor.TextBlock.Alignment = MapAlignment(alignment.Horizontal);
             
             content?.Invoke(descriptor);
             descriptor.Compose(element);
@@ -458,15 +407,29 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public static TextSpanDescriptor Text(this IContainer element, string? text)
         {
+            if (IsNullOrEmpty(text))
+                return new TextSpanDescriptor(new TextBlockSpan());
+            
             var textDescriptor = new TextDescriptor();
             
             if (element is Alignment alignment)
-                textDescriptor.Alignment = alignment.Horizontal;
+                textDescriptor.TextBlock.Alignment = MapAlignment(alignment.Horizontal);
             
             var span = textDescriptor.Span(text);
             textDescriptor.Compose(element);
 
             return span;
+        }
+        
+        private static TextHorizontalAlignment? MapAlignment(HorizontalAlignment? alignment)
+        {
+            return alignment switch
+            {
+                HorizontalAlignment.Left => TextHorizontalAlignment.Left,
+                HorizontalAlignment.Center => TextHorizontalAlignment.Center,
+                HorizontalAlignment.Right => TextHorizontalAlignment.Right,
+                _ => null
+            };
         }
     }
 }

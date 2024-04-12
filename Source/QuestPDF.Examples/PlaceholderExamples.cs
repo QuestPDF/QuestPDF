@@ -106,13 +106,13 @@ public class PlaceholderExamples
     [Test]
     public void BackgroundColor()
     {
-        PrintRandomValues(Placeholders.BackgroundColor);
+        PrintRandomValues(() => Placeholders.BackgroundColor());
     }
     
     [Test]
     public void Color()
     {
-        PrintRandomValues(Placeholders.Color);
+        PrintRandomValues(() => Placeholders.Color());
     }
 }
     

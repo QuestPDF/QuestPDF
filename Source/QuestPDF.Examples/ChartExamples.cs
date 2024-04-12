@@ -70,7 +70,7 @@ namespace QuestPDF.Examples
                                 .Border(1)
                                 .ExtendHorizontal()
                                 .Height(300)
-                                .Canvas((canvas, size) =>
+                                .SkiaSharpCanvas((canvas, size) =>
                                 {
                                     var chart = new BarChart
                                     {
@@ -79,7 +79,7 @@ namespace QuestPDF.Examples
                                         LabelOrientation = Orientation.Horizontal,
                                         ValueLabelOrientation = Orientation.Horizontal,
                                         
-                                        IsAnimated = false,
+                                        IsAnimated = false
                                     };
                                     
                                     chart.DrawContent(canvas, (int)size.Width, (int)size.Height);
@@ -101,7 +101,7 @@ namespace QuestPDF.Examples
                     container
                         .Background(Colors.White)
                         .Padding(25)
-                        .Canvas((canvas, availableSpace) =>
+                        .SkiaSharpCanvas((canvas, availableSpace) =>
                         {
                             var points = Enumerable
                                 .Range(0, 100)
@@ -109,7 +109,7 @@ namespace QuestPDF.Examples
                                 .ToArray();
                             
                             using var plot = new Plot();
-                            plot.Add.Scatter(points, Color.FromHex(Colors.Teal.Medium));
+                            plot.Add.Scatter(points, ScottPlot.Color.FromHex(Colors.Teal.Medium));
                             
                             canvas.ClipRect(new SKRect(0, 0, availableSpace.Width, availableSpace.Height));
                             plot.Render(canvas, (int)availableSpace.Width, (int)availableSpace.Height);

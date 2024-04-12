@@ -1,4 +1,6 @@
-﻿#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+﻿using QuestPDF.Infrastructure;
+
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 
 namespace QuestPDF.Helpers
 {
@@ -20,392 +22,392 @@ namespace QuestPDF.Helpers
     /// </example>
     public static class Colors
     {
-        public const string Black = "#000000";
-        public const string White = "#ffffff";
-        public const string Transparent = "#00000000";
+        public static readonly Color Black = new(0xFF000000);
+        public static readonly Color White = new(0xFFFFFF);
+        public static readonly Color Transparent = new(0x00000000);
 
         public static class Red
         {
-            public const string Lighten5 = "#ffebee";
-            public const string Lighten4 = "#ffcdd2";
-            public const string Lighten3 = "#ef9a9a";
-            public const string Lighten2 = "#e57373";
-            public const string Lighten1 = "#ef5350";
+            public static readonly Color Lighten5 = new(0xFFEBEE);
+            public static readonly Color Lighten4 = new(0xFFCDD2);
+            public static readonly Color Lighten3 = new(0xEF9A9A);
+            public static readonly Color Lighten2 = new(0xE57373);
+            public static readonly Color Lighten1 = new(0xEF5350);
             
-            public const string Medium = "#f44336";
+            public static readonly Color Medium = new(0xF44336);
             
-            public const string Darken1 = "#e53935";
-            public const string Darken2 = "#d32f2f";
-            public const string Darken3 = "#c62828";
-            public const string Darken4 = "#b71c1c";
+            public static readonly Color Darken1 = new(0xE53935);
+            public static readonly Color Darken2 = new(0xD32F2F);
+            public static readonly Color Darken3 = new(0xC62828);
+            public static readonly Color Darken4 = new(0xB71C1C);
             
-            public const string Accent1 = "#ff8a80";
-            public const string Accent2 = "#ff5252";
-            public const string Accent3 = "#ff1744";
-            public const string Accent4 = "#d50000";
+            public static readonly Color Accent1 = new(0xFF8A80);
+            public static readonly Color Accent2 = new(0xFF5252);
+            public static readonly Color Accent3 = new(0xFF1744);
+            public static readonly Color Accent4 = new(0xD50000);
         }
 
         public static class Pink
         {
-            public const string Lighten5 = "#fce4ec";
-            public const string Lighten4 = "#f8bbd0";
-            public const string Lighten3 = "#f48fb1";
-            public const string Lighten2 = "#f06292";
-            public const string Lighten1 = "#ec407a";
+            public static readonly Color Lighten5 = new(0xFCE4EC);
+            public static readonly Color Lighten4 = new(0xF8BBD0);
+            public static readonly Color Lighten3 = new(0xF48FB1);
+            public static readonly Color Lighten2 = new(0xF06292);
+            public static readonly Color Lighten1 = new(0xEC407A);
             
-            public const string Medium = "#e91e63";
+            public static readonly Color Medium = new(0xE91E63);
             
-            public const string Darken1 = "#d81b60";
-            public const string Darken2 = "#c2185b";
-            public const string Darken3 = "#ad1457";
-            public const string Darken4 = "#880e4f";
+            public static readonly Color Darken1 = new(0xD81B60);
+            public static readonly Color Darken2 = new(0xC2185B);
+            public static readonly Color Darken3 = new(0xAD1457);
+            public static readonly Color Darken4 = new(0x880E4F);
             
-            public const string Accent1 = "#ff80ab";
-            public const string Accent2 = "#ff4081";
-            public const string Accent3 = "#f50057";
-            public const string Accent4 = "#c51162";
+            public static readonly Color Accent1 = new(0xFF80AB);
+            public static readonly Color Accent2 = new(0xFF4081);
+            public static readonly Color Accent3 = new(0xF50057);
+            public static readonly Color Accent4 = new(0xC51162);
         }
 
         public static class Purple
         {
-            public const string Lighten5 = "#f3e5f5";
-            public const string Lighten4 = "#e1bee7";
-            public const string Lighten3 = "#ce93d8";
-            public const string Lighten2 = "#ba68c8";
-            public const string Lighten1 = "#ab47bc";
+            public static readonly Color Lighten5 = new(0xF3E5F5);
+            public static readonly Color Lighten4 = new(0xE1BEE7);
+            public static readonly Color Lighten3 = new(0xCE93D8);
+            public static readonly Color Lighten2 = new(0xBA68C8);
+            public static readonly Color Lighten1 = new(0xAB47BC);
             
-            public const string Medium = "#9c27b0";
+            public static readonly Color Medium = new(0x9C27B0);
             
-            public const string Darken1 = "#8e24aa";
-            public const string Darken2 = "#7b1fa2";
-            public const string Darken3 = "#6a1b9a";
-            public const string Darken4 = "#4a148c";
+            public static readonly Color Darken1 = new(0x8E24AA);
+            public static readonly Color Darken2 = new(0x7B1FA2);
+            public static readonly Color Darken3 = new(0x6A1B9A);
+            public static readonly Color Darken4 = new(0x4A148C);
             
-            public const string Accent1 = "#ea80fc";
-            public const string Accent2 = "#e040fb";
-            public const string Accent3 = "#d500f9";
-            public const string Accent4 = "#aa00ff";
+            public static readonly Color Accent1 = new(0xEA80FC);
+            public static readonly Color Accent2 = new(0xE040FB);
+            public static readonly Color Accent3 = new(0xD500F9);
+            public static readonly Color Accent4 = new(0xAA00FF);
         }
 
         public static class DeepPurple
         {
-            public const string Lighten5 = "#ede7f6";
-            public const string Lighten4 = "#d1c4e9";
-            public const string Lighten3 = "#b39ddb";
-            public const string Lighten2 = "#9575cd";
-            public const string Lighten1 = "#7e57c2";
+            public static readonly Color Lighten5 = new(0xEDE7F6);
+            public static readonly Color Lighten4 = new(0xD1C4E9);
+            public static readonly Color Lighten3 = new(0xB39DDB);
+            public static readonly Color Lighten2 = new(0x9575CD);
+            public static readonly Color Lighten1 = new(0x7E57C2);
             
-            public const string Medium = "#673ab7";
+            public static readonly Color Medium = new(0x673AB7);
             
-            public const string Darken1 = "#5e35b1";
-            public const string Darken2 = "#512da8";
-            public const string Darken3 = "#4527a0";
-            public const string Darken4 = "#311b92";
+            public static readonly Color Darken1 = new(0x5E35B1);
+            public static readonly Color Darken2 = new(0x512DA8);
+            public static readonly Color Darken3 = new(0x4527A0);
+            public static readonly Color Darken4 = new(0x311B92);
             
-            public const string Accent1 = "#b388ff";
-            public const string Accent2 = "#7c4dff";
-            public const string Accent3 = "#651fff";
-            public const string Accent4 = "#6200ea";
+            public static readonly Color Accent1 = new(0xB388FF);
+            public static readonly Color Accent2 = new(0x7C4DFF);
+            public static readonly Color Accent3 = new(0x651FFF);
+            public static readonly Color Accent4 = new(0x6200EA);
         }
 
         public static class Indigo
         {
-            public const string Lighten5 = "#e8eaf6";
-            public const string Lighten4 = "#c5cae9";
-            public const string Lighten3 = "#9fa8da";
-            public const string Lighten2 = "#7986cb";
-            public const string Lighten1 = "#5c6bc0";
+            public static readonly Color Lighten5 = new(0xE8EAF6);
+            public static readonly Color Lighten4 = new(0xC5CAE9);
+            public static readonly Color Lighten3 = new(0x9FA8DA);
+            public static readonly Color Lighten2 = new(0x7986CB);
+            public static readonly Color Lighten1 = new(0x5C6BC0);
             
-            public const string Medium = "#3f51b5";
+            public static readonly Color Medium = new(0x3F51B5);
             
-            public const string Darken1 = "#3949ab";
-            public const string Darken2 = "#303f9f";
-            public const string Darken3 = "#283593";
-            public const string Darken4 = "#1a237e";
+            public static readonly Color Darken1 = new(0x3949AB);
+            public static readonly Color Darken2 = new(0x303F9F);
+            public static readonly Color Darken3 = new(0x283593);
+            public static readonly Color Darken4 = new(0x1A237E);
             
-            public const string Accent1 = "#8c9eff";
-            public const string Accent2 = "#536dfe";
-            public const string Accent3 = "#3d5afe";
-            public const string Accent4 = "#304ffe";
+            public static readonly Color Accent1 = new(0x8C9EFF);
+            public static readonly Color Accent2 = new(0x536DFE);
+            public static readonly Color Accent3 = new(0x3D5AFE);
+            public static readonly Color Accent4 = new(0x304FFE);
         }
 
         public static class Blue
         {
-            public const string Lighten5 = "#e3f2fd";
-            public const string Lighten4 = "#bbdefb";
-            public const string Lighten3 = "#90caf9";
-            public const string Lighten2 = "#64b5f6";
-            public const string Lighten1 = "#42a5f5";
+            public static readonly Color Lighten5 = new(0xE3F2FD);
+            public static readonly Color Lighten4 = new(0xBBDEFB);
+            public static readonly Color Lighten3 = new(0x90CAF9);
+            public static readonly Color Lighten2 = new(0x64B5F6);
+            public static readonly Color Lighten1 = new(0x42A5F5);
             
-            public const string Medium = "#2196f3";
+            public static readonly Color Medium = new(0x2196F3);
             
-            public const string Darken1 = "#1e88e5";
-            public const string Darken2 = "#1976d2";
-            public const string Darken3 = "#1565c0";
-            public const string Darken4 = "#0d47a1";
+            public static readonly Color Darken1 = new(0x1E88E5);
+            public static readonly Color Darken2 = new(0x1976D2);
+            public static readonly Color Darken3 = new(0x1565C0);
+            public static readonly Color Darken4 = new(0x0D47A1);
             
-            public const string Accent1 = "#82b1ff";
-            public const string Accent2 = "#448aff";
-            public const string Accent3 = "#2979ff";
-            public const string Accent4 = "#2962ff";
+            public static readonly Color Accent1 = new(0x82B1FF);
+            public static readonly Color Accent2 = new(0x448AFF);
+            public static readonly Color Accent3 = new(0x2979FF);
+            public static readonly Color Accent4 = new(0x2962FF);
         }
 
         public static class LightBlue
         {
-            public const string Lighten5 = "#e1f5fe";
-            public const string Lighten4 = "#b3e5fc";
-            public const string Lighten3 = "#81d4fa";
-            public const string Lighten2 = "#4fc3f7";
-            public const string Lighten1 = "#29b6f6";
+            public static readonly Color Lighten5 = new(0xE1F5FE);
+            public static readonly Color Lighten4 = new(0xB3E5FC);
+            public static readonly Color Lighten3 = new(0x81D4FA);
+            public static readonly Color Lighten2 = new(0x4FC3F7);
+            public static readonly Color Lighten1 = new(0x29B6F6);
             
-            public const string Medium = "#03a9f4";
+            public static readonly Color Medium = new(0x03A9F4);
             
-            public const string Darken1 = "#039be5";
-            public const string Darken2 = "#0288d1";
-            public const string Darken3 = "#0277bd";
-            public const string Darken4 = "#01579b";
+            public static readonly Color Darken1 = new(0x039BE5);
+            public static readonly Color Darken2 = new(0x0288D1);
+            public static readonly Color Darken3 = new(0x0277BD);
+            public static readonly Color Darken4 = new(0x01579B);
             
-            public const string Accent1 = "#80d8ff";
-            public const string Accent2 = "#40c4ff";
-            public const string Accent3 = "#00b0ff";
-            public const string Accent4 = "#0091ea";
+            public static readonly Color Accent1 = new(0x80D8FF);
+            public static readonly Color Accent2 = new(0x40C4FF);
+            public static readonly Color Accent3 = new(0x00B0FF);
+            public static readonly Color Accent4 = new(0x0091EA);
         }
 
         public static class Cyan
         {
-            public const string Lighten5 = "#e0f7fa";
-            public const string Lighten4 = "#b2ebf2";
-            public const string Lighten3 = "#80deea";
-            public const string Lighten2 = "#4dd0e1";
-            public const string Lighten1 = "#26c6da";
+            public static readonly Color Lighten5 = new(0xE0F7FA);
+            public static readonly Color Lighten4 = new(0xB2EBF2);
+            public static readonly Color Lighten3 = new(0x80DEEA);
+            public static readonly Color Lighten2 = new(0x4DD0E1);
+            public static readonly Color Lighten1 = new(0x26C6DA);
             
-            public const string Medium = "#00bcd4";
+            public static readonly Color Medium = new(0x00BCD4);
             
-            public const string Darken1 = "#00acc1";
-            public const string Darken2 = "#0097a7";
-            public const string Darken3 = "#00838f";
-            public const string Darken4 = "#006064";
+            public static readonly Color Darken1 = new(0x00ACC1);
+            public static readonly Color Darken2 = new(0x0097A7);
+            public static readonly Color Darken3 = new(0x00838F);
+            public static readonly Color Darken4 = new(0x006064);
             
-            public const string Accent1 = "#84ffff";
-            public const string Accent2 = "#18ffff";
-            public const string Accent3 = "#00e5ff";
-            public const string Accent4 = "#00b8d4";
+            public static readonly Color Accent1 = new(0x84FFFF);
+            public static readonly Color Accent2 = new(0x18FFFF);
+            public static readonly Color Accent3 = new(0x00E5FF);
+            public static readonly Color Accent4 = new(0x00B8D4);
         }
 
         public static class Teal
         {
-            public const string Lighten5 = "#e0f2f1";
-            public const string Lighten4 = "#b2dfdb";
-            public const string Lighten3 = "#80cbc4";
-            public const string Lighten2 = "#4db6ac";
-            public const string Lighten1 = "#26a69a";
+            public static readonly Color Lighten5 = new(0xE0F2F1);
+            public static readonly Color Lighten4 = new(0xB2DFDB);
+            public static readonly Color Lighten3 = new(0x80CBC4);
+            public static readonly Color Lighten2 = new(0x4DB6AC);
+            public static readonly Color Lighten1 = new(0x26A69A);
             
-            public const string Medium = "#009688";
+            public static readonly Color Medium = new(0x009688);
             
-            public const string Darken1 = "#00897b";
-            public const string Darken2 = "#00796b";
-            public const string Darken3 = "#00695c";
-            public const string Darken4 = "#004d40";
+            public static readonly Color Darken1 = new(0x00897B);
+            public static readonly Color Darken2 = new(0x00796B);
+            public static readonly Color Darken3 = new(0x00695C);
+            public static readonly Color Darken4 = new(0x004D40);
             
-            public const string Accent1 = "#a7ffeb";
-            public const string Accent2 = "#64ffda";
-            public const string Accent3 = "#1de9b6";
-            public const string Accent4 = "#00bfa5";
+            public static readonly Color Accent1 = new(0xA7FFEB);
+            public static readonly Color Accent2 = new(0x64FFDA);
+            public static readonly Color Accent3 = new(0x1DE9B6);
+            public static readonly Color Accent4 = new(0x00BFA5);
         }
 
         public static class Green
         {
-            public const string Lighten5 = "#e8f5e9";
-            public const string Lighten4 = "#c8e6c9";
-            public const string Lighten3 = "#a5d6a7";
-            public const string Lighten2 = "#81c784";
-            public const string Lighten1 = "#66bb6a";
+            public static readonly Color Lighten5 = new(0xE8F5E9);
+            public static readonly Color Lighten4 = new(0xC8E6C9);
+            public static readonly Color Lighten3 = new(0xA5D6A7);
+            public static readonly Color Lighten2 = new(0x81C784);
+            public static readonly Color Lighten1 = new(0x66BB6A);
             
-            public const string Medium = "#4caf50";
+            public static readonly Color Medium = new(0x4CAF50);
             
-            public const string Darken1 = "#43a047";
-            public const string Darken2 = "#388e3c";
-            public const string Darken3 = "#2e7d32";
-            public const string Darken4 = "#1b5e20";
+            public static readonly Color Darken1 = new(0x43A047);
+            public static readonly Color Darken2 = new(0x388E3C);
+            public static readonly Color Darken3 = new(0x2E7D32);
+            public static readonly Color Darken4 = new(0x1B5E20);
             
-            public const string Accent1 = "#b9f6ca";
-            public const string Accent2 = "#69f0ae";
-            public const string Accent3 = "#00e676";
-            public const string Accent4 = "#00c853";
+            public static readonly Color Accent1 = new(0xB9F6CA);
+            public static readonly Color Accent2 = new(0x69F0AE);
+            public static readonly Color Accent3 = new(0x00E676);
+            public static readonly Color Accent4 = new(0x00C853);
         }
 
         public static class LightGreen
         {
-            public const string Lighten5 = "#f1f8e9";
-            public const string Lighten4 = "#dcedc8";
-            public const string Lighten3 = "#c5e1a5";
-            public const string Lighten2 = "#aed581";
-            public const string Lighten1 = "#9ccc65";
+            public static readonly Color Lighten5 = new(0xF1F8E9);
+            public static readonly Color Lighten4 = new(0xDCEDC8);
+            public static readonly Color Lighten3 = new(0xC5E1A5);
+            public static readonly Color Lighten2 = new(0xAED581);
+            public static readonly Color Lighten1 = new(0x9CCC65);
             
-            public const string Medium = "#8bc34a";
+            public static readonly Color Medium = new(0x8BC34A);
             
-            public const string Darken1 = "#7cb342";
-            public const string Darken2 = "#689f38";
-            public const string Darken3 = "#558b2f";
-            public const string Darken4 = "#33691e";
+            public static readonly Color Darken1 = new(0x7CB342);
+            public static readonly Color Darken2 = new(0x689F38);
+            public static readonly Color Darken3 = new(0x558B2F);
+            public static readonly Color Darken4 = new(0x33691E);
             
-            public const string Accent1 = "#ccff90";
-            public const string Accent2 = "#b2ff59";
-            public const string Accent3 = "#76ff03";
-            public const string Accent4 = "#64dd17";
+            public static readonly Color Accent1 = new(0xCCFF90);
+            public static readonly Color Accent2 = new(0xB2FF59);
+            public static readonly Color Accent3 = new(0x76FF03);
+            public static readonly Color Accent4 = new(0x64DD17);
         }
 
         public static class Lime
         {
-            public const string Lighten5 = "#f9fbe7";
-            public const string Lighten4 = "#f0f4c3";
-            public const string Lighten3 = "#e6ee9c";
-            public const string Lighten2 = "#dce775";
-            public const string Lighten1 = "#d4e157";
+            public static readonly Color Lighten5 = new(0xF9FBE7);
+            public static readonly Color Lighten4 = new(0xF0F4C3);
+            public static readonly Color Lighten3 = new(0xE6EE9C);
+            public static readonly Color Lighten2 = new(0xDCE775);
+            public static readonly Color Lighten1 = new(0xD4E157);
             
-            public const string Medium = "#cddc39";
+            public static readonly Color Medium = new(0xCDDC39);
             
-            public const string Darken1 = "#c0ca33";
-            public const string Darken2 = "#afb42b";
-            public const string Darken3 = "#9e9d24";
-            public const string Darken4 = "#827717";
+            public static readonly Color Darken1 = new(0xC0CA33);
+            public static readonly Color Darken2 = new(0xAFB42B);
+            public static readonly Color Darken3 = new(0x9E9D24);
+            public static readonly Color Darken4 = new(0x827717);
             
-            public const string Accent1 = "#f4ff81";
-            public const string Accent2 = "#eeff41";
-            public const string Accent3 = "#c6ff00";
-            public const string Accent4 = "#aeea00";
+            public static readonly Color Accent1 = new(0xF4FF81);
+            public static readonly Color Accent2 = new(0xEEFF41);
+            public static readonly Color Accent3 = new(0xC6FF00);
+            public static readonly Color Accent4 = new(0xAEEA00);
         }
 
         public static class Yellow
         {
-            public const string Lighten5 = "#fffde7";
-            public const string Lighten4 = "#fff9c4";
-            public const string Lighten3 = "#fff59d";
-            public const string Lighten2 = "#fff176";
-            public const string Lighten1 = "#ffee58";
+            public static readonly Color Lighten5 = new(0xFFFDE7);
+            public static readonly Color Lighten4 = new(0xFFF9C4);
+            public static readonly Color Lighten3 = new(0xFFF59D);
+            public static readonly Color Lighten2 = new(0xFFF176);
+            public static readonly Color Lighten1 = new(0xFFEE58);
             
-            public const string Medium = "#ffeb3b";
+            public static readonly Color Medium = new(0xFFEB3B);
             
-            public const string Darken1 = "#fdd835";
-            public const string Darken2 = "#fbc02d";
-            public const string Darken3 = "#f9a825";
-            public const string Darken4 = "#f57f17";
+            public static readonly Color Darken1 = new(0xFDD835);
+            public static readonly Color Darken2 = new(0xFBC02D);
+            public static readonly Color Darken3 = new(0xF9A825);
+            public static readonly Color Darken4 = new(0xF57F17);
             
-            public const string Accent1 = "#ffff8d";
-            public const string Accent2 = "#ffff00";
-            public const string Accent3 = "#ffea00";
-            public const string Accent4 = "#ffd600";
+            public static readonly Color Accent1 = new(0xFFFF8D);
+            public static readonly Color Accent2 = new(0xFFFF00);
+            public static readonly Color Accent3 = new(0xFFEA00);
+            public static readonly Color Accent4 = new(0xFFD600);
         }
 
         public static class Amber
         {
-            public const string Lighten5 = "#fff8e1";
-            public const string Lighten4 = "#ffecb3";
-            public const string Lighten3 = "#ffe082";
-            public const string Lighten2 = "#ffd54f";
-            public const string Lighten1 = "#ffca28";
+            public static readonly Color Lighten5 = new(0xFFF8E1);
+            public static readonly Color Lighten4 = new(0xFFECB3);
+            public static readonly Color Lighten3 = new(0xFFE082);
+            public static readonly Color Lighten2 = new(0xFFD54F);
+            public static readonly Color Lighten1 = new(0xFFCA28);
             
-            public const string Medium = "#ffc107";
+            public static readonly Color Medium = new(0xFFC107);
             
-            public const string Darken1 = "#ffb300";
-            public const string Darken2 = "#ffa000";
-            public const string Darken3 = "#ff8f00";
-            public const string Darken4 = "#ff6f00";
+            public static readonly Color Darken1 = new(0xFFB300);
+            public static readonly Color Darken2 = new(0xFFA000);
+            public static readonly Color Darken3 = new(0xFF8F00);
+            public static readonly Color Darken4 = new(0xFF6F00);
             
-            public const string Accent1 = "#ffe57f";
-            public const string Accent2 = "#ffd740";
-            public const string Accent3 = "#ffc400";
-            public const string Accent4 = "#ffab00";
+            public static readonly Color Accent1 = new(0xFFE57F);
+            public static readonly Color Accent2 = new(0xFFD740);
+            public static readonly Color Accent3 = new(0xFFC400);
+            public static readonly Color Accent4 = new(0xFFAB00);
         }
 
         public static class Orange
         {
-            public const string Lighten5 = "#fff3e0";
-            public const string Lighten4 = "#ffe0b2";
-            public const string Lighten3 = "#ffcc80";
-            public const string Lighten2 = "#ffb74d";
-            public const string Lighten1 = "#ffa726";
+            public static readonly Color Lighten5 = new(0xFFF3E0);
+            public static readonly Color Lighten4 = new(0xFFE0B2);
+            public static readonly Color Lighten3 = new(0xFFCC80);
+            public static readonly Color Lighten2 = new(0xFFB74D);
+            public static readonly Color Lighten1 = new(0xFFA726);
             
-            public const string Medium = "#ff9800";
+            public static readonly Color Medium = new(0xFF9800);
             
-            public const string Darken1 = "#fb8c00";
-            public const string Darken2 = "#f57c00";
-            public const string Darken3 = "#ef6c00";
-            public const string Darken4 = "#e65100";
+            public static readonly Color Darken1 = new(0xFB8C00);
+            public static readonly Color Darken2 = new(0xF57C00);
+            public static readonly Color Darken3 = new(0xEF6C00);
+            public static readonly Color Darken4 = new(0xE65100);
             
-            public const string Accent1 = "#ffd180";
-            public const string Accent2 = "#ffab40";
-            public const string Accent3 = "#ff9100";
-            public const string Accent4 = "#ff6d00";
+            public static readonly Color Accent1 = new(0xFFD180);
+            public static readonly Color Accent2 = new(0xFFAB40);
+            public static readonly Color Accent3 = new(0xFF9100);
+            public static readonly Color Accent4 = new(0xFF6D00);
         }
 
         public static class DeepOrange
         {
-            public const string Lighten5 = "#fbe9e7";
-            public const string Lighten4 = "#ffccbc";
-            public const string Lighten3 = "#ffab91";
-            public const string Lighten2 = "#ff8a65";
-            public const string Lighten1 = "#ff7043";
+            public static readonly Color Lighten5 = new(0xFBE9E7);
+            public static readonly Color Lighten4 = new(0xFFCCBC);
+            public static readonly Color Lighten3 = new(0xFFAB91);
+            public static readonly Color Lighten2 = new(0xFF8A65);
+            public static readonly Color Lighten1 = new(0xFF7043);
             
-            public const string Medium = "#ff5722";
+            public static readonly Color Medium = new(0xFF5722);
             
-            public const string Darken1 = "#f4511e";
-            public const string Darken2 = "#e64a19";
-            public const string Darken3 = "#d84315";
-            public const string Darken4 = "#bf360c";
+            public static readonly Color Darken1 = new(0xF4511E);
+            public static readonly Color Darken2 = new(0xE64A19);
+            public static readonly Color Darken3 = new(0xD84315);
+            public static readonly Color Darken4 = new(0xBF360C);
             
-            public const string Accent1 = "#ff9e80";
-            public const string Accent2 = "#ff6e40";
-            public const string Accent3 = "#ff3d00";
-            public const string Accent4 = "#dd2c00";
+            public static readonly Color Accent1 = new(0xFF9E80);
+            public static readonly Color Accent2 = new(0xFF6E40);
+            public static readonly Color Accent3 = new(0xFF3D00);
+            public static readonly Color Accent4 = new(0xDD2C00);
         }
 
         public static class Brown
         {
-            public const string Lighten5 = "#efebe9";
-            public const string Lighten4 = "#d7ccc8";
-            public const string Lighten3 = "#bcaaa4";
-            public const string Lighten2 = "#a1887f";
-            public const string Lighten1 = "#8d6e63";
+            public static readonly Color Lighten5 = new(0xEFEBE9);
+            public static readonly Color Lighten4 = new(0xD7CCC8);
+            public static readonly Color Lighten3 = new(0xBCAAA4);
+            public static readonly Color Lighten2 = new(0xA1887F);
+            public static readonly Color Lighten1 = new(0x8D6E63);
             
-            public const string Medium = "#795548";
+            public static readonly Color Medium = new(0x795548);
             
-            public const string Darken1 = "#6d4c41";
-            public const string Darken2 = "#5d4037";
-            public const string Darken3 = "#4e342e";
-            public const string Darken4 = "#3e2723";
+            public static readonly Color Darken1 = new(0x6D4C41);
+            public static readonly Color Darken2 = new(0x5D4037);
+            public static readonly Color Darken3 = new(0x4E342E);
+            public static readonly Color Darken4 = new(0x3E2723);
         }
 
         public static class Grey
         {
-            public const string Lighten5 = "#fafafa";
-            public const string Lighten4 = "#f5f5f5";
-            public const string Lighten3 = "#eeeeee";
-            public const string Lighten2 = "#e0e0e0";
-            public const string Lighten1 = "#bdbdbd";
+            public static readonly Color Lighten5 = new(0xFAFAFA);
+            public static readonly Color Lighten4 = new(0xF5F5F5);
+            public static readonly Color Lighten3 = new(0xEEEEEE);
+            public static readonly Color Lighten2 = new(0xE0E0E0);
+            public static readonly Color Lighten1 = new(0xBDBDBD);
             
-            public const string Medium = "#9e9e9e";
+            public static readonly Color Medium = new(0x9E9E9E);
             
-            public const string Darken1 = "#757575";
-            public const string Darken2 = "#616161";
-            public const string Darken3 = "#424242";
-            public const string Darken4 = "#212121";
+            public static readonly Color Darken1 = new(0x757575);
+            public static readonly Color Darken2 = new(0x616161);
+            public static readonly Color Darken3 = new(0x424242);
+            public static readonly Color Darken4 = new(0x212121);
         }
 
         public static class BlueGrey
         {
-            public const string Lighten5 = "#eceff1";
-            public const string Lighten4 = "#cfd8dc";
-            public const string Lighten3 = "#b0bec5";
-            public const string Lighten2 = "#90a4ae";
-            public const string Lighten1 = "#78909c";
+            public static readonly Color Lighten5 = new(0xECEFF1);
+            public static readonly Color Lighten4 = new(0xCFD8DC);
+            public static readonly Color Lighten3 = new(0xB0BEC5);
+            public static readonly Color Lighten2 = new(0x90A4AE);
+            public static readonly Color Lighten1 = new(0x78909C);
             
-            public const string Medium = "#607d8b";
+            public static readonly Color Medium = new(0x607D8B);
             
-            public const string Darken1 = "#546e7a";
-            public const string Darken2 = "#455a64";
-            public const string Darken3 = "#37474f";
-            public const string Darken4 = "#263238";
+            public static readonly Color Darken1 = new(0x546E7A);
+            public static readonly Color Darken2 = new(0x455A64);
+            public static readonly Color Darken3 = new(0x37474F);
+            public static readonly Color Darken4 = new(0x263238);
         }
     }
 }

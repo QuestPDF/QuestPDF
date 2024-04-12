@@ -49,18 +49,18 @@ internal class ElementMock : Element
         
         HeightOffset += height;
         
-        Canvas.DrawRectangle(Position.Zero, size, Colors.Grey.Medium);
+        Canvas.DrawFilledRectangle(Position.Zero, size, Colors.Grey.Medium);
         
         if (Canvas is not SkiaCanvasBase canvasBase)
             return;
 
-        var matrix = canvasBase.Canvas.TotalMatrix;
+        var matrix = canvasBase.Canvas.GetCurrentTotalMatrix();
         
         DrawingCommands.Add(new MockDrawingCommand
         {
             MockId = MockId,
             PageNumber = PageContext.CurrentPage,
-            Position = new Position(matrix.TransX / matrix.ScaleX, matrix.TransY / matrix.ScaleY),
+            Position = new Position(matrix.TranslateX / matrix.ScaleX, matrix.TranslateY / matrix.ScaleY),
             Size = availableSpace
         });
 

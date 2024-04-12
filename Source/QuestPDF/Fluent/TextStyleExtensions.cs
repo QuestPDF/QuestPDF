@@ -1,7 +1,7 @@
 ﻿using System;
-using System.ComponentModel;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Fluent
 {
@@ -15,17 +15,15 @@ namespace QuestPDF.Fluent
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontColor"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static TextStyle FontColor(this TextStyle style, string color)
+        public static TextStyle FontColor(this TextStyle style, Color color)
         {
-            ColorValidator.Validate(color);
             return style.Mutate(TextStyleProperty.Color, color);
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.backgroundColor"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static TextStyle BackgroundColor(this TextStyle style, string color)
+        public static TextStyle BackgroundColor(this TextStyle style, Color color)
         {
-            ColorValidator.Validate(color);
             return style.Mutate(TextStyleProperty.BackgroundColor, color);
         }
         
@@ -36,9 +34,9 @@ namespace QuestPDF.Fluent
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFamily"]/*' />
-        public static TextStyle FontFamily(this TextStyle style, string value)
+        public static TextStyle FontFamily(this TextStyle style, params string[] values)
         {
-            return style.Mutate(TextStyleProperty.FontFamily, value);
+            return style.Mutate(TextStyleProperty.FontFamilies, values);
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontSize method.")]
@@ -70,6 +68,12 @@ namespace QuestPDF.Fluent
         {
             return style.Mutate(TextStyleProperty.LetterSpacing, factor);
         }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wordSpacing"]/*' />
+        public static TextStyle WordSpacing(this TextStyle style, float factor = 0)
+        {
+            return style.Mutate(TextStyleProperty.WordSpacing, factor);
+        }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.italic"]/*' />
         public static TextStyle Italic(this TextStyle style, bool value = true)
@@ -77,24 +81,87 @@ namespace QuestPDF.Fluent
             return style.Mutate(TextStyleProperty.IsItalic, value);
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.strikethrough"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
+        [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
+        public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)
+        {
+            return style;
+        }
+
+        #region Text Effects
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.strikethrough"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.remarks"]/*' />
         public static TextStyle Strikethrough(this TextStyle style, bool value = true)
         {
             return style.Mutate(TextStyleProperty.HasStrikethrough, value);
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.underline"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.underline"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.remarks"]/*' />
         public static TextStyle Underline(this TextStyle style, bool value = true)
         {
             return style.Mutate(TextStyleProperty.HasUnderline, value);
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
-        public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.overline"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.remarks"]/*' />
+        public static TextStyle Overline(this TextStyle style, bool value = true)
         {
-            return style.Mutate(TextStyleProperty.WrapAnywhere, value);
+            return style.Mutate(TextStyleProperty.HasOverline, value);
         }
-
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.color"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationColor(this TextStyle style, Color color)
+        {
+            return style.Mutate(TextStyleProperty.DecorationColor, color);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.thickness"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationThickness(this TextStyle style, float factor)
+        {
+            return style.Mutate(TextStyleProperty.DecorationThickness, factor);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.solid"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationSolid(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Solid);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.double"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationDouble(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Double);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.wavy"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationWavy(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Wavy);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.dotted"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationDotted(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Dotted);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.dashed"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.decoration.applicability"]/*' />
+        public static TextStyle DecorationDashed(this TextStyle style)
+        {
+            return style.Mutate(TextStyleProperty.DecorationStyle, TextStyleConfiguration.TextDecorationStyle.Dashed);
+        }
+        
+        #endregion
+        
         #region Weight
         
         public static TextStyle Weight(this TextStyle style, FontWeight weight)
@@ -203,13 +270,13 @@ namespace QuestPDF.Fluent
 
         #region Fallback
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
+        [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
         public static TextStyle Fallback(this TextStyle style, TextStyle? value = null)
         {
-            return style.Mutate(TextStyleProperty.Fallback, value);
+            return style;
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFallback"]/*' />
+        [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
         public static TextStyle Fallback(this TextStyle style, Func<TextStyle, TextStyle> handler)
         {
             return style.Fallback(handler(TextStyle.Default));

@@ -2,23 +2,22 @@
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
     internal sealed class XpsCanvas : SkiaDocumentCanvasBase
     {
-        public XpsCanvas(Stream stream, DocumentSettings documentSettings) 
-            : base(CreateXps(stream, documentSettings))
+        public XpsCanvas(SkWriteStream stream, DocumentSettings documentSettings) : base(CreateXps(stream, documentSettings))
         {
             
         }
         
-        private static SKDocument CreateXps(Stream stream, DocumentSettings documentSettings)
+        private static SkDocument CreateXps(SkWriteStream stream, DocumentSettings documentSettings)
         {
             try
             {
-                return SKDocument.CreateXps(stream, documentSettings.ImageRasterDpi);
+                return SkXpsDocument.Create(stream, documentSettings.ImageRasterDpi);
             }
             catch (TypeInitializationException exception)
             {

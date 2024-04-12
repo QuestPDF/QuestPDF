@@ -34,7 +34,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(25)
                         .Column(column =>
                         {

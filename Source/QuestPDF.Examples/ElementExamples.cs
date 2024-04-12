@@ -20,7 +20,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(25)
                         .Placeholder();
                 });
@@ -35,7 +35,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(25)
                         .Decoration(decoration =>
                         {
@@ -45,7 +45,7 @@ namespace QuestPDF.Examples
                                 .Padding(10)
                                 .Text("Notes")
                                 .FontSize(16)
-                                .FontColor("#FFF");
+                                .FontColor(Colors.White);
                     
                             decoration
                                 .Content()
@@ -63,10 +63,11 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .PageSize(740, 200)
+                .ShowResults()
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(20)
                         .Column(column =>
                         {
@@ -106,7 +107,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(20)
                         .Row(row =>
                         {
@@ -127,7 +128,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(15)
                         .Column(column =>
                         {
@@ -177,7 +178,7 @@ namespace QuestPDF.Examples
                         .Element(x =>
                         {
                             if (string.IsNullOrWhiteSpace(text))
-                                x.Height(10).Width(50).Background("#DDD");
+                                x.Height(10).Width(50).Background(Colors.Grey.Medium);
                             else
                                 x.Text(text);
                         });
@@ -227,9 +228,9 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(25)
-                        .Canvas((canvas, size) =>
+                        .SkiaSharpCanvas((canvas, size) =>
                         {
                             using var paint = new SKPaint
                             {
@@ -438,7 +439,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(25)
                         .Layers(layers =>
                         {
@@ -450,7 +451,7 @@ namespace QuestPDF.Examples
                                 column.Item().PaddingTop(40).Text("Text 2");
                             });
                     
-                            layers.Layer().Canvas((canvas, size) =>
+                            layers.Layer().SkiaSharpCanvas((canvas, size) =>
                             {
                                 using var paint = new SKPaint
                                 {
@@ -462,7 +463,7 @@ namespace QuestPDF.Examples
                                 canvas.DrawCircle(0, 0, 50, paint);
                             });
                     
-                            layers.Layer().Background("#8F00").Extend();
+                            layers.Layer().Background(Colors.Red.Medium.WithAlpha(128)).Extend();
                             layers.Layer().PaddingTop(40).Text("It works!").FontSize(24);
                         });
                 });
@@ -477,7 +478,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .Padding(15)
                         .Border(4)
                         .BorderColor(Colors.Blue.Medium)
@@ -503,8 +504,8 @@ namespace QuestPDF.Examples
                         {
                             var headerFontStyle = TextStyle
                                 .Default
-                                .Size(20)
-                                .Color(Colors.Blue.Darken2)
+                                .FontSize(20)
+                                .FontColor(Colors.Blue.Darken2)
                                 .SemiBold();
     
                             decoration
@@ -550,7 +551,7 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Background("#FFF")
+                        .Background(Colors.White)
                         .MinimalBox()
                         
                         .Padding(25)

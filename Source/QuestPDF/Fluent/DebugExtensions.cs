@@ -15,17 +15,15 @@ namespace QuestPDF.Fluent
         /// </summary>
         /// <param name="text">Optional label displayed within the box.</param>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static IContainer DebugArea(this IContainer parent, string? text = null, string color = Colors.Red.Medium)
+        public static IContainer DebugArea(this IContainer parent, string? text = null, Color? color = null)
         {
-            ColorValidator.Validate(color);
-            
             var container = new Container();
 
             parent.Component(new DebugArea
             {
                 Child = container,
                 Text = text ?? string.Empty,
-                Color = color
+                Color = color ?? Colors.Red.Medium
             });
 
             return container;

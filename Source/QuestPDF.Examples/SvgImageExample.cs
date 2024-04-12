@@ -23,24 +23,8 @@ namespace QuestPDF.Examples
                 .ShowResults()
                 .Render(container =>
                 {
-                    container
-                        .Padding(25)
-                        .Svg(svg);
+                    container.Svg(SvgImage.FromFile("pdf-icon.svg")).FitArea();
                 });
-        }
-    }
-    
-    public static class SvgExtensions
-    {
-        public static void Svg(this IContainer container, SKSvg svg)
-        {
-            container
-                .AlignCenter()
-                .AlignMiddle()
-                .ScaleToFit()
-                .Width(svg.Picture.CullRect.Width)
-                .Height(svg.Picture.CullRect.Height)
-                .Canvas((canvas, space) => canvas.DrawPicture(svg.Picture));
         }
     }
 }

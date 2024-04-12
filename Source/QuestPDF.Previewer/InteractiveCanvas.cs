@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System.Collections.Concurrent;
+using Avalonia;
 using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Rendering.SceneGraph;
@@ -10,7 +11,10 @@ namespace QuestPDF.Previewer;
 class InteractiveCanvas : ICustomDrawOperation
 {
     public Rect Bounds { get; set; }
-    public ICollection<DocumentSnapshot.PageSnapshot> Pages { get; set; }
+    public float RenderingScale { get; set; }
+
+    private List<DocumentStructure.PageSize> PageSizes { get; set; } = new();
+    private ConcurrentBag<RenderedPageSnapshot> PageSnapshotCache { get; set; } = new();
 
     private float Width => (float)Bounds.Width;
     private float Height => (float)Bounds.Height;
@@ -19,15 +23,15 @@ class InteractiveCanvas : ICustomDrawOperation
     public float TranslateX { get; set; }
     public float TranslateY { get; set; }
 
-    private const float MinScale = 0.1f;
-    private const float MaxScale = 10f;
+    private const float MinScale = 1 / 8f;
+    private const float MaxScale = 8f;
 
     private const float PageSpacing = 25f;
     private const float SafeZone = 25f;
 
-    public float TotalPagesHeight => Pages.Sum(x => x.Height) + (Pages.Count - 1) * PageSpacing;
+    public float TotalPagesHeight => PageSizes.Sum(x => x.Height) + (PageSizes.Count - 1) * PageSpacing;
     public float TotalHeight => TotalPagesHeight + SafeZone * 2 / Scale;
-    public float MaxWidth => Pages.Any() ? Pages.Max(x => x.Width) : 0;
+    public float MaxWidth => PageSizes.Any() ? PageSizes.Max(x => x.Width) : 0;
     
     public float MaxTranslateY => TotalHeight - Height / Scale;
 
@@ -52,6 +56,49 @@ class InteractiveCanvas : ICustomDrawOperation
         }
     }
 
+    #region interaction
+
+    public void SetNewDocumentStructure(DocumentStructure document)
+    {
+        var imagesToDispose = PageSnapshotCache.Select(x => x.Image).ToList();
+
+        // minimize the risk of a race condition, when Avalonia is still using the images and code disposes them
+        Task.Run(async () =>
+        {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            
+            foreach (var image in imagesToDispose)
+                image.Dispose();
+        });
+
+        PageSnapshotCache.Clear();
+        PageSizes = document.Pages.ToList();
+    }
+    
+    public ICollection<PageSnapshotIndex> GetMissingSnapshots()
+    {
+        var requiredKeys = GetVisiblePages(padding: 500).Select(x => (x.pageIndex, PreferredZoomLevel)).ToList();
+        var availableKeys = PageSnapshotCache.Select(x => (x.PageIndex, x.ZoomLevel)).ToList();
+
+        var missingKeys = requiredKeys.Except(availableKeys).ToArray();
+
+        return missingKeys
+            .Select(x => new PageSnapshotIndex
+            {
+                PageIndex = x.Item1,
+                ZoomLevel = x.Item2
+            })
+            .ToList();
+    }
+
+    public void AddSnapshots(ICollection<RenderedPageSnapshot> snapshots)
+    {
+        foreach (var snapshot in snapshots)
+            PageSnapshotCache.Add(snapshot);
+    }
+    
+    #endregion
+    
     #region transformations
     
     private void LimitScale()
@@ -109,6 +156,31 @@ class InteractiveCanvas : ICustomDrawOperation
     #endregion
     
     #region rendering
+
+    private int PreferredZoomLevel => (int)Math.Min(3, Math.Ceiling(Math.Log2(Scale * RenderingScale)));
+    
+    private IEnumerable<(int pageIndex, float verticalOffset)> GetVisiblePages(float padding = 100)
+    {
+        padding /= Scale;
+        
+        var visibleOffsetFrom = TranslateY - padding;
+        var visibleOffsetTo = TranslateY + Height / Scale + padding;
+        
+        var topOffset = 0f;
+
+        foreach (var pageIndex in Enumerable.Range(0, PageSizes.Count))
+        {
+            var page = PageSizes.ElementAt(pageIndex);
+            
+            if (topOffset + page.Height > visibleOffsetFrom)
+                yield return (pageIndex, topOffset);
+            
+            topOffset += page.Height + PageSpacing;
+            
+            if (topOffset > visibleOffsetTo)
+                yield break;
+        }
+    }
     
     public void Render(ImmediateDrawingContext context)
     {
@@ -122,14 +194,11 @@ class InteractiveCanvas : ICustomDrawOperation
             return;
         
         // draw document
-        if (Pages.Count <= 0)
+        if (PageSizes.Count <= 0)
             return;
-
+  
         LimitScale();
         LimitTranslate();
-    
-        if (canvas == null)
-            throw new InvalidOperationException($"Context needs to be ISkiaDrawingContextImpl but got {nameof(context)}");
 
         var originalMatrix = canvas.TotalMatrix;
 
@@ -137,24 +206,46 @@ class InteractiveCanvas : ICustomDrawOperation
         
         canvas.Scale(Scale);
         canvas.Translate(TranslateX, -TranslateY + SafeZone / Scale);
-        
-        foreach (var page in Pages)
+
+        foreach (var (pageIndex, offset) in GetVisiblePages())
         {
-            canvas.Translate(-page.Width / 2f, 0);
-            DrawBlankPage(canvas, page.Width, page.Height);
-            DrawPageSnapshot(canvas, page);
-            canvas.Translate(page.Width / 2f, page.Height + PageSpacing);
+            var pageSize = PageSizes.ElementAt(pageIndex);
+            
+            canvas.Save();
+            canvas.Translate(-pageSize.Width / 2f, offset);
+            DrawBlankPage(canvas, pageSize.Width, pageSize.Height);
+            DrawPageSnapshot(canvas, pageIndex);
+            canvas.Restore();
         }
 
         canvas.SetMatrix(originalMatrix);
         DrawInnerGradient(canvas);
     }
     
-    private static void DrawPageSnapshot(SKCanvas canvas, DocumentSnapshot.PageSnapshot pageSnapshot)
+    private void DrawPageSnapshot(SKCanvas canvas, int pageIndex)
     {
+        var page = PageSizes.ElementAt(pageIndex);
+
+        var renderedSnapshot = PageSnapshotCache
+            .Where(x => x.PageIndex == pageIndex)
+            .OrderBy(x => Math.Abs(PreferredZoomLevel - x.ZoomLevel))
+            .ThenByDescending(x => x.ZoomLevel)
+            .FirstOrDefault();
+        
+        if (renderedSnapshot == null)
+            return;
+        
+        using var drawImagePaint = new SKPaint
+        {
+            FilterQuality = SKFilterQuality.Medium // optimal for down-scaling
+        };
+
+        var renderingScale = (float)Math.Pow(2, renderedSnapshot.ZoomLevel);
+        
         canvas.Save();
-        canvas.ClipRect(new SKRect(0, 0, pageSnapshot.Width, pageSnapshot.Height));
-        canvas.DrawPicture(pageSnapshot.Picture);
+        canvas.ClipRect(new SKRect(0, 0, page.Width, page.Height));
+        canvas.Scale(1 / renderingScale);
+        canvas.DrawImage(renderedSnapshot.Image, SKPoint.Empty, drawImagePaint);
         canvas.Restore();
     }
     

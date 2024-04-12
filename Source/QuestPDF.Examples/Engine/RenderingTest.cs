@@ -103,9 +103,7 @@ namespace QuestPDF.Examples.Engine
 
         public void RenderDocument(Action<IDocumentContainer> content)
         {
-            MaxPagesThreshold ??= ResultType == RenderingTestResult.Pdf ? 1000 : 10;
-            var document = new SimpleDocument(content, MaxPagesThreshold.Value, ApplyCaching, ApplyDebugging);
-
+            var document = new SimpleDocument(content, ApplyCaching, ApplyDebugging);
             Render(document);
         }
         
@@ -121,7 +119,7 @@ namespace QuestPDF.Examples.Engine
                 if (ShowResult && ShowingResultsEnabled)
                 {
                     var firstImagePath = fileNameSchema(0);
-                    Helpers.Helpers.OpenFileUsingDefaultProgram(firstImagePath);
+                    OpenFileUsingDefaultProgram(firstImagePath);
                 }
             }
 
@@ -129,6 +127,20 @@ namespace QuestPDF.Examples.Engine
             {
                 document.GeneratePdfAndShow();
             }
+        }
+        
+        static void OpenFileUsingDefaultProgram(string filePath)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(filePath)
+                {
+                    UseShellExecute = true
+                }
+            };
+
+            process.Start();
+            process.WaitForExit();
         }
     }
 }

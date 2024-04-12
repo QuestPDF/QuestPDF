@@ -1,5 +1,4 @@
 ﻿using System;
-using QuestPDF.Elements.Text.Calculation;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Text.Items
@@ -8,23 +7,10 @@ namespace QuestPDF.Elements.Text.Items
     {
         public const string PageNumberPlaceholder = "123";
         public Func<IPageContext, string> Source { get; set; } = _ => PageNumberPlaceholder;
-        protected override bool EnableTextCache => false;
-        
-        public override TextMeasurementResult? Measure(TextMeasurementRequest request)
-        {
-            UpdatePageNumberText(request.PageContext);
-            return MeasureWithoutCache(request);
-        }
 
-        public override void Draw(TextDrawingRequest request)
+        public void UpdatePageNumberText(IPageContext context)
         {
-            UpdatePageNumberText(request.PageContext);
-            base.Draw(request);
-        }
-
-        private void UpdatePageNumberText(IPageContext context)
-        {
-            Text = Source(context) ?? string.Empty;
+            Text = Source(context) ?? PageNumberPlaceholder;
         }
     }
 }

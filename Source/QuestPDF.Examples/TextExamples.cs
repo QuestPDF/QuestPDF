@@ -373,11 +373,10 @@ namespace QuestPDF.Examples
                         .Padding(10)
                         .Text(text =>
                         {
-                            text.DefaultTextStyle(TextStyle.Default.FontSize(20));
-                            text.Span("This is a random image aligned to the baseline: ");
+                            text.DefaultTextStyle(TextStyle.Default.FontSize(25));
+                            text.Span("This is a random image aligned to the middle of the baseline: ");
                             
-                            text.Element()
-                                .PaddingBottom(-6)
+                            text.Element(TextInjectedElementAlignment.Middle)
                                 .Height(24)
                                 .Width(48)
                                 .Image(Placeholders.Image);
@@ -751,7 +750,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .ProduceImages()
+                .ProducePdf()
                 .ShowResults()
                 .RenderDocument(container =>
                 {
@@ -914,68 +913,6 @@ namespace QuestPDF.Examples
         }
         
         [Test]
-        public void DetectSpanPositionExample()
-        {
-            RenderingTest
-                .Create()
-                .PageSize(new PageSize(650, 800))
-                .ProduceImages()
-                .ShowResults()
-                .Render(container =>
-                {
-                    var fontSize = 20;
-                    
-                    var paint = new SKPaint
-                    {
-                        Color = SKColors.Red,
-                        TextSize = fontSize
-                    };
-                    
-                    var fontMetrics = paint.FontMetrics;
-
-                    var start = 0f;
-                    var end = 0f;
-                    
-                    // corner case: what if text is paged? clamp start and end?
-
-                    container
-                        .Padding(25)
-                        .DefaultTextStyle(x => x.FontSize(fontSize).FontFamily("Calibri"))
-                        .Layers(layers =>
-                        {
-                            layers.PrimaryLayer().Text(text =>
-                            {
-                                text.Span(Placeholders.Paragraph());
-                                text.Span(" - ");
-                                
-                                // record start
-                                text.Element().Width(1).Height(1)
-                                    .Canvas((canvas, size) => start = canvas.TotalMatrix.TransY / canvas.TotalMatrix.ScaleY);
-                                
-                                text.Span(Placeholders.LoremIpsum()).BackgroundColor(Colors.Red.Lighten4);
-                                
-                                // record end
-                                text.Element().Width(1).Height(1)
-                                    .Canvas((canvas, size) => end = canvas.TotalMatrix.TransY / canvas.TotalMatrix.ScaleY);
-                            
-                                text.Span(" - ");
-                                text.Span(Placeholders.Paragraph());
-                            });
-                            
-                            layers.Layer().Canvas((canvas, size) =>
-                            {
-                                canvas.Save();
-      
-                                canvas.Translate(-canvas.TotalMatrix.TransX / canvas.TotalMatrix.ScaleX, -canvas.TotalMatrix.TransY / canvas.TotalMatrix.ScaleY);
-                                canvas.DrawRect(10, start + fontMetrics.Ascent, 5, end - start + (fontMetrics.Bottom - fontMetrics.Ascent), paint);
-                                
-                                canvas.Restore();
-                            });
-                        });
-                });
-        }
-        
-        [Test]
         public void InconsistentLineHeightWhenUsingNewLineTest()
         {
             RenderingTest
@@ -1023,11 +960,7 @@ namespace QuestPDF.Examples
                         page.DefaultTextStyle(x => x
                             .FontSize(24)
                             .Bold()
-                            .FontFamily("Times New Roman")
-                            .Fallback(y => y
-                                .FontFamily("Microsoft YaHei")
-                                .Underline()
-                                .BackgroundColor(Colors.Red.Lighten2)));
+                            .FontFamily("Times New Roman"));
 
                         page.Content().Text(text =>
                         {
@@ -1060,6 +993,95 @@ namespace QuestPDF.Examples
                          column.Item().Background(Colors.Grey.Lighten3).AlignCenter().Text(text);
                          column.Item().Background(Colors.Grey.Lighten3).AlignRight().Text(text);
                      });
+                 });
+         }
+         
+         [Test]
+         public void LongPageableText()
+         {
+             var longText = string.Join("\n", Enumerable.Range(0, 100).Select(_ => Placeholders.Paragraph()));
+             
+             RenderingTest
+                 .Create()
+                 .ProducePdf()
+                 .ShowResults()
+                 .PageSize(PageSizes.A4)
+                 .Render(container =>
+                 {
+                     container.Padding(25).Background(Colors.Grey.Lighten3).AlignLeft().Text(longText);
+                 });
+         }
+         
+         [Test]
+         public void TextAlignment()
+         {
+             RenderingTest
+                 .Create()
+                 .ProducePdf()
+                 .ShowResults()
+                 .PageSize(PageSizes.A4)
+                 .Render(container =>
+                 {
+                     container.Padding(25).Column(column =>
+                     {
+                         column.Spacing(25);
+
+                         foreach (var contentDirection in Enum.GetValues<ContentDirection>())
+                         {
+                             column.Item().Text(contentDirection.ToString()).FontSize(20).Bold();
+                             
+                             foreach (var horizontalAlignment in Enum.GetValues<HorizontalAlignment>())
+                                 foreach (var textHorizontalAlignment in Enum.GetValues<TextHorizontalAlignment>())
+                                     column.Item().Element(GenerateTextCase(contentDirection, horizontalAlignment, textHorizontalAlignment));
+                         }
+                     });
+
+                     Action<IContainer> GenerateTextCase(ContentDirection contentDirection, HorizontalAlignment horizontalAlignment, TextHorizontalAlignment textAlignment)
+                     {
+                         return container =>
+                         {
+                             container
+                                 .Element(element =>
+                                 {
+                                     return contentDirection switch
+                                     {
+                                         ContentDirection.LeftToRight => element.ContentFromLeftToRight(),
+                                         ContentDirection.RightToLeft => element.ContentFromRightToLeft(),
+                                         _ => throw new Exception()
+                                     };
+                                 })
+                                 .Element(element =>
+                                 {
+                                     return horizontalAlignment switch
+                                     {
+                                         HorizontalAlignment.Left => element.AlignLeft(),
+                                         HorizontalAlignment.Center => element.AlignCenter(),
+                                         HorizontalAlignment.Right => element.AlignRight(),
+                                         _ => throw new Exception()
+                                     };
+                                 })
+                                 .Background(Colors.Grey.Lighten3)
+                                 .Width(200)
+                                 .Padding(10)
+                                 .Text(text =>
+                                 {
+                                     if (textAlignment == TextHorizontalAlignment.Left)
+                                         text.AlignLeft();
+                                     else if (textAlignment == TextHorizontalAlignment.Center)
+                                         text.AlignCenter();
+                                     else if (textAlignment == TextHorizontalAlignment.Right)
+                                         text.AlignRight();
+                                     else if (textAlignment == TextHorizontalAlignment.Justify)
+                                         text.Justify();
+                                     else if (textAlignment == TextHorizontalAlignment.Start)
+                                         text.AlignStart();
+                                     else if (textAlignment == TextHorizontalAlignment.End)
+                                         text.AlignEnd();
+                                     
+                                     text.Span($"{horizontalAlignment.ToString()} - {textAlignment.ToString()}");
+                                 });
+                         };
+                     }
                  });
          }
     }
