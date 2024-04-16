@@ -11,7 +11,7 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Elements.Text
 {
-    internal sealed class TextBlock : Element, IContent, IStateResettable, IContentDirectionAware
+    internal sealed class TextBlock : Element, IStateful, IContentDirectionAware
     {
         public bool IsRendered { get; set; }
         public ContentDirection ContentDirection { get; set; }
@@ -39,14 +39,7 @@ namespace QuestPDF.Elements.Text
         {
             Paragraph?.Dispose();
         }
-        
-        public void ResetState()
-        {
-            IsRendered = false;
-            CurrentLineIndex = 0;
-            CurrentTopOffset = 0;
-        }
-        
+
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (availableSpace.IsNegative())
@@ -387,5 +380,42 @@ namespace QuestPDF.Elements.Text
                 $"You can disable this check by setting the 'Settings.CheckIfAllTextGlyphsAreAvailable' option to 'false'. \n" +
                 $"However, this may result with text glyphs being incorrectly rendered without any warning.");
         }
+        
+        #region IStateful
+    
+        struct TextState
+        {
+            public bool IsRendered;
+            public int CurrentLineIndex;
+            public float CurrentTopOffset;
+        }
+        
+        object IStateful.CloneState()
+        {
+            return new TextState
+            {
+                IsRendered = IsRendered,
+                CurrentLineIndex = CurrentLineIndex,
+                CurrentTopOffset = CurrentTopOffset
+            };
+        }
+
+        void IStateful.SetState(object state)
+        {
+            var textState = (TextState) state;
+            
+            IsRendered = textState.IsRendered;
+            CurrentLineIndex = textState.CurrentLineIndex;
+            CurrentTopOffset = textState.CurrentTopOffset;
+        }
+
+        void IStateful.ResetState(bool hardReset)
+        {
+            IsRendered = false;
+            CurrentLineIndex = 0;
+            CurrentTopOffset = 0;
+        }
+    
+        #endregion
     }
 }

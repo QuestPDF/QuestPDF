@@ -5,7 +5,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Image : Element, IContent, IStateResettable, ICacheable
+    internal sealed class Image : Element, IStateful, ICacheable
     {
         public bool IsRendered { get; set; }
         public Infrastructure.Image? DocumentImage { get; set; }
@@ -13,11 +13,6 @@ namespace QuestPDF.Elements
         internal bool UseOriginalImage { get; set; }
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
-        
-        public void ResetState()
-        {
-            IsRendered = false;
-        }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
@@ -76,5 +71,24 @@ namespace QuestPDF.Elements
 
             return targetResolution;
         }
+        
+        #region IStateful
+    
+        object IStateful.CloneState()
+        {
+            return IsRendered;
+        }
+
+        void IStateful.SetState(object state)
+        {
+            IsRendered = (bool) state;
+        }
+
+        void IStateful.ResetState(bool hardReset)
+        {
+            IsRendered = false;
+        }
+    
+        #endregion
     }
 }

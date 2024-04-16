@@ -20,7 +20,7 @@ namespace QuestPDF.Elements
     /// <returns>An image in PNG, JPEG, or WEBP image format returned as byte array.</returns>
     public delegate byte[]? GenerateDynamicImageDelegate(GenerateDynamicImageDelegatePayload payload);
     
-    internal sealed class DynamicImage : Element, IContent
+    internal sealed class DynamicImage : Element, IStateful
     {
         public bool IsRendered { get; set; }
         
@@ -85,5 +85,24 @@ namespace QuestPDF.Elements
                 (int)(availableSize.Height * scalingFactor)
             );
         }
+        
+        #region IStateful
+    
+        object IStateful.CloneState()
+        {
+            return IsRendered;
+        }
+
+        void IStateful.SetState(object state)
+        {
+            IsRendered = (bool) state;
+        }
+
+        void IStateful.ResetState(bool hardReset)
+        {
+            IsRendered = false;
+        }
+    
+        #endregion
     }
 }

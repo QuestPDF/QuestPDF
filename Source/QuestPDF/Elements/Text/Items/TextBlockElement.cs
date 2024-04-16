@@ -12,7 +12,7 @@ namespace QuestPDF.Elements.Text.Items
 
         public void ConfigureElement(IPageContext pageContext, ICanvas canvas)
         {
-            Element.VisitChildren(x => (x as IStateResettable)?.ResetState());
+            Element.VisitChildren(x => (x as IStateful)?.ResetState(false));
             Element.InjectDependencies(pageContext, canvas);
         }
         

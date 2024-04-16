@@ -15,18 +15,13 @@ namespace QuestPDF.Elements
         Horizontal
     }
 
-    internal sealed class Line : Element, ILine, IContent, IStateResettable, ICacheable
+    internal sealed class Line : Element, ILine, IStateful, ICacheable
     {
         public bool IsRendered { get; set; }
         
         public LineType Type { get; set; } = LineType.Vertical;
         public Color Color { get; set; } = Colors.Black;
         public float Size { get; set; } = 1;
-        
-        public void ResetState()
-        {
-            IsRendered = false;
-        }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
@@ -57,5 +52,24 @@ namespace QuestPDF.Elements
             
             IsRendered = true;
         }
+        
+        #region IStateful
+    
+        object IStateful.CloneState()
+        {
+            return IsRendered;
+        }
+
+        void IStateful.SetState(object state)
+        {
+            IsRendered = (bool) state;
+        }
+
+        void IStateful.ResetState(bool hardReset)
+        {
+            IsRendered = false;
+        }
+    
+        #endregion
     }
 }

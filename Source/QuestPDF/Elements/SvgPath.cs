@@ -4,17 +4,12 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal class SvgPath : Element, IContent, IStateResettable
+internal class SvgPath : Element, IStateful
 {
     public bool IsRendered { get; set; }
     
     public string Path { get; set; } = string.Empty;
     public Color FillColor { get; set; } = Colors.Black;
-    
-    public void ResetState()
-    {
-        IsRendered = false;
-    }
     
     internal override SpacePlan Measure(Size availableSpace)
     {
@@ -32,4 +27,23 @@ internal class SvgPath : Element, IContent, IStateResettable
         Canvas.DrawSvgPath(Path, FillColor);
         IsRendered = true;
     }
+
+    #region IStateful
+    
+    object IStateful.CloneState()
+    {
+        return IsRendered;
+    }
+
+    void IStateful.SetState(object state)
+    {
+        IsRendered = (bool) state;
+    }
+
+    void IStateful.ResetState(bool hardReset)
+    {
+        IsRendered = false;
+    }
+    
+    #endregion
 }

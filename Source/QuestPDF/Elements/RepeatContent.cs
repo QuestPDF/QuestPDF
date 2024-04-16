@@ -13,13 +13,7 @@ namespace QuestPDF.Elements
             
             if (childMeasurement?.Type == SpacePlanType.FullRender)
             {
-                Child.VisitChildren(x => (x as IStateResettable)?.ResetState());
-                
-                Child.VisitChildren(x =>
-                {
-                    if (x is IContent content)
-                        content.IsRendered = false;
-                });
+                Child.VisitChildren(x => (x as IStateful)?.ResetState(false));
             }
         }
     }

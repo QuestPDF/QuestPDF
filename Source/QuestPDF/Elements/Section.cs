@@ -2,16 +2,11 @@
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Section : ContainerElement, IStateResettable
+    internal sealed class Section : ContainerElement, IStateful
     {
         public string SectionName { get; set; }
         private bool IsRendered { get; set; }
-        
-        public void ResetState()
-        {
-            IsRendered = false;
-        }
-        
+
         internal override void Draw(Size availableSpace)
         {
             if (!IsRendered)
@@ -24,5 +19,24 @@ namespace QuestPDF.Elements
             PageContext.SetSectionPage(SectionName);
             base.Draw(availableSpace);
         }
+        
+        #region IStateful
+    
+        object IStateful.CloneState()
+        {
+            return IsRendered;
+        }
+
+        void IStateful.SetState(object state)
+        {
+            IsRendered = (bool) state;
+        }
+
+        void IStateful.ResetState(bool hardReset)
+        {
+            IsRendered = false;
+        }
+    
+        #endregion
     }
 }

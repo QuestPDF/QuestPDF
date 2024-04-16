@@ -6,7 +6,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal class DynamicSvgImage : Element, IContent
+internal class DynamicSvgImage : Element, IStateful
 {
     public bool IsRendered { get; set; }
     public GenerateDynamicSvgDelegate SvgSource { get; set; }
@@ -34,4 +34,23 @@ internal class DynamicSvgImage : Element, IContent
         
         IsRendered = true;
     }
+    
+    #region IStateful
+    
+    object IStateful.CloneState()
+    {
+        return IsRendered;
+    }
+
+    void IStateful.SetState(object state)
+    {
+        IsRendered = (bool) state;
+    }
+
+    void IStateful.ResetState(bool hardReset)
+    {
+        IsRendered = false;
+    }
+    
+    #endregion
 }

@@ -14,18 +14,13 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
 
-    internal sealed class Column : Element, ICacheable, IStateResettable
+    internal sealed class Column : Element, IStateful, ICacheable
     {
         internal List<Element> Items { get; } = new();
         internal float Spacing { get; set; }
         
         private int CurrentRenderingIndex { get; set; }
 
-        public void ResetState()
-        {
-            CurrentRenderingIndex = 0;
-        }
-        
         internal override IEnumerable<Element?> GetChildren()
         {
             return Items;
@@ -80,10 +75,8 @@ namespace QuestPDF.Elements
                 Canvas.Translate(command.Offset.Reverse());
             }
             
-            CurrentRenderingIndex += renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
-            
-            if (CurrentRenderingIndex == Items.Count)
-                ResetState();
+            var fullyRenderedItems = renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
+            CurrentRenderingIndex += fullyRenderedItems;
         }
 
         private ICollection<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
@@ -131,5 +124,24 @@ namespace QuestPDF.Elements
 
             return commands;
         }
+        
+        #region IStateful
+
+        object IStateful.CloneState()
+        {
+            return CurrentRenderingIndex;
+        }
+
+        void IStateful.SetState(object state)
+        {
+            CurrentRenderingIndex = (int) state;
+        }
+
+        void IStateful.ResetState(bool hardReset)
+        {
+            CurrentRenderingIndex = 0;
+        }
+    
+        #endregion
     }
 }

@@ -4,15 +4,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class PageBreak : Element, IContent, IStateResettable
+    internal sealed class PageBreak : Element, IStateful
     {
         public bool IsRendered { get; set; }
         
-        public void ResetState()
-        {
-            IsRendered = false;
-        }
-
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (availableSpace.IsNegative())
@@ -28,5 +23,24 @@ namespace QuestPDF.Elements
         {
             IsRendered = true;
         }
+        
+        #region IStateful
+    
+        object IStateful.CloneState()
+        {
+            return IsRendered;
+        }
+
+        void IStateful.SetState(object state)
+        {
+            IsRendered = (bool) state;
+        }
+
+        void IStateful.ResetState(bool hardReset)
+        {
+            IsRendered = false;
+        }
+    
+        #endregion
     }
 }

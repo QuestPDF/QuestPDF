@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class DynamicHost : Element, IContent, IStateResettable, IContentDirectionAware
+    internal sealed class DynamicHost : Element, IStateful, IContentDirectionAware
     {
         public bool IsRendered { get; set; }
         
@@ -26,12 +26,6 @@ namespace QuestPDF.Elements
             InitialComponentState = Child.GetState();
         }
 
-        public void ResetState()
-        {
-            Child.SetState(InitialComponentState);
-            IsRendered = false;
-        }
-        
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (availableSpace.IsNegative())
@@ -91,6 +85,38 @@ namespace QuestPDF.Elements
 
             return result;
         }
+        
+        #region IStateful
+    
+        struct DynamicState
+        {
+            public bool IsRendered;
+            public object ComponentState;
+        }
+        
+        object IStateful.CloneState()
+        {
+            return new DynamicState
+            {
+                IsRendered = IsRendered,
+                ComponentState = Child.GetState()
+            };
+        }
+
+        void IStateful.SetState(object state)
+        {
+            var dynamicState = (DynamicState) state;
+            IsRendered = dynamicState.IsRendered;
+            Child.SetState(dynamicState.ComponentState);
+        }
+
+        void IStateful.ResetState(bool hardReset)
+        {
+            IsRendered = false;
+            Child.SetState(InitialComponentState);
+        }
+    
+        #endregion
     }
 
     /// <summary>
@@ -145,7 +171,7 @@ namespace QuestPDF.Elements
             container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality, UseOriginalImage);
             
             container.InjectDependencies(PageContext, Canvas);
-            container.VisitChildren(x => (x as IStateResettable)?.ResetState());
+            container.VisitChildren(x => (x as IStateful)?.ResetState(false));
 
             container.Size = container.Measure(Size.Max);
             

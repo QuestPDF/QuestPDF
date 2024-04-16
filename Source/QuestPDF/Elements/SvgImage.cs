@@ -4,15 +4,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal class SvgImage : Element, IContent, IStateResettable
+internal class SvgImage : Element, IStateful
 {
     public bool IsRendered { get; set; }
     public Infrastructure.SvgImage Image { get; set; }
-    
-    public void ResetState()
-    {
-        IsRendered = false;
-    }
     
     internal override SpacePlan Measure(Size availableSpace)
     {
@@ -30,4 +25,23 @@ internal class SvgImage : Element, IContent, IStateResettable
         Canvas.DrawSvg(Image.SkSvgImage, availableSpace);
         IsRendered = true;
     }
+    
+    #region IStateful
+    
+    object IStateful.CloneState()
+    {
+        return IsRendered;
+    }
+
+    void IStateful.SetState(object state)
+    {
+        IsRendered = (bool) state;
+    }
+
+    void IStateful.ResetState(bool hardReset)
+    {
+        IsRendered = false;
+    }
+    
+    #endregion
 }
