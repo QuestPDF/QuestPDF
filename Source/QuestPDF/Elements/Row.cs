@@ -50,7 +50,7 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!Items.Any())
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             UpdateItemsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
@@ -81,7 +81,7 @@ namespace QuestPDF.Elements
 
             foreach (var command in renderingCommands)
             {
-                if (command.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
+                if (command.Measurement.Type is SpacePlanType.NoContent or SpacePlanType.FullRender)
                     command.RowItem.IsRendered = true;
                 
                 if (command.Measurement.Type == SpacePlanType.Wrap)

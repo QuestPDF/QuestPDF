@@ -27,7 +27,7 @@ namespace QuestPDF.Infrastructure
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            return Child?.Measure(availableSpace) ?? SpacePlan.Empty();
+            return Child?.Measure(availableSpace) ?? SpacePlan.None();
         }
         
         internal override void Draw(Size availableSpace)

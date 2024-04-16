@@ -17,7 +17,7 @@ internal class DynamicSvgImage : Element, IStateful
             return SpacePlan.Wrap();
         
         if (IsRendered)
-            return SpacePlan.Empty();
+            return SpacePlan.None();
         
         return SpacePlan.FullRender(Size.Zero);
     }

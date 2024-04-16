@@ -2,7 +2,7 @@
 {
     internal enum SpacePlanType
     {
-        Empty,
+        NoContent,
         Wrap,
         PartialRender,
         FullRender

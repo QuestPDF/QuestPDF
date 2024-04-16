@@ -49,10 +49,10 @@ namespace QuestPDF.Elements
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();
 
-            if (renderingCommands.All(x => x.Measurement.Type == SpacePlanType.Empty))
-                return SpacePlan.Empty();
+            if (renderingCommands.All(x => x.Measurement.Type == SpacePlanType.NoContent))
+                return SpacePlan.None();
             
-            var willBeFullyRendered = renderingCommands.All(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
+            var willBeFullyRendered = renderingCommands.All(x => x.Measurement.Type is SpacePlanType.NoContent or SpacePlanType.FullRender);
 
             return willBeFullyRendered
                 ? SpacePlan.FullRender(size)

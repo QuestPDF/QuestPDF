@@ -18,7 +18,7 @@ internal class ShowIf : ContainerElement, IPageContextAware
     internal override SpacePlan Measure(Size availableSpace)
     {
         if (!CheckVisibility())
-            return SpacePlan.Empty();
+            return SpacePlan.None();
 
         return base.Measure(availableSpace);
     }

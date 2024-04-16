@@ -85,7 +85,7 @@ internal static class Helpers
             // strategy
             // element does not contain any wrapping elements, no obvious root causes,
             // if it renders fully with extended space, it is a layout root cause
-            if (element.Children.All(x => x.Value.SpacePlanType is not SpacePlanType.Wrap) && MeasureElementWithExtendedSpace() is SpacePlanType.Empty or SpacePlanType.FullRender)
+            if (element.Children.All(x => x.Value.SpacePlanType is not SpacePlanType.Wrap) && MeasureElementWithExtendedSpace() is SpacePlanType.NoContent or SpacePlanType.FullRender)
             {
                 // so apply the layout overflow proxy
                 element.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });

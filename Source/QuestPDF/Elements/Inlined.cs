@@ -48,7 +48,7 @@ namespace QuestPDF.Elements
             SetDefaultAlignment();   
             
             if (CurrentRenderingIndex == Elements.Count)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             var lines = Compose(availableSpace);
 

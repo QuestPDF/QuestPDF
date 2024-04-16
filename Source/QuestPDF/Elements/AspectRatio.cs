@@ -17,13 +17,13 @@ namespace QuestPDF.Elements
                 return SpacePlan.FullRender(Size.Zero);
             
             if (Child == null)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             var targetSize = GetTargetSize(availableSpace);
             var childSize = base.Measure(targetSize);
             
-            if (childSize.Type == SpacePlanType.Empty)
-                return SpacePlan.Empty();
+            if (childSize.Type == SpacePlanType.NoContent)
+                return SpacePlan.None();
             
             if (targetSize.Height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();

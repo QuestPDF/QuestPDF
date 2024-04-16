@@ -9,12 +9,12 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (Child == null)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
 
             var childMeasurementWithAvailableSpace = Child.Measure(availableSpace);
             
-            if (childMeasurementWithAvailableSpace.Type == SpacePlanType.Empty)
-                return SpacePlan.Empty();
+            if (childMeasurementWithAvailableSpace.Type == SpacePlanType.NoContent)
+                return SpacePlan.None();
             
             var perfectScale = FindPerfectScale(Child, availableSpace);
 

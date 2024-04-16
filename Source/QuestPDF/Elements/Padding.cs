@@ -15,7 +15,7 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (Child == null)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             var internalSpace = InternalSpace(availableSpace);
 
@@ -24,7 +24,7 @@ namespace QuestPDF.Elements
             
             var measure = base.Measure(internalSpace);
 
-            if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+            if (measure.Type is SpacePlanType.NoContent or SpacePlanType.Wrap)
                 return measure;
 
             var newSize = new Size(

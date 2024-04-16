@@ -10,7 +10,7 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!IsFirstPageWasSkipped)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
 
             return Child.Measure(availableSpace);
         }

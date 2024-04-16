@@ -34,7 +34,7 @@ namespace QuestPDF.Elements
                 return SpacePlan.Wrap();
             
             if (IsRendered)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             var result = GetContent(availableSpace, acceptNewState: false);
             var content = result.Content as Element ?? Empty.Instance;

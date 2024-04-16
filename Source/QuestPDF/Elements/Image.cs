@@ -20,7 +20,7 @@ namespace QuestPDF.Elements
                 return SpacePlan.Wrap();
             
             if (IsRendered)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             return SpacePlan.FullRender(Size.Zero);
         }

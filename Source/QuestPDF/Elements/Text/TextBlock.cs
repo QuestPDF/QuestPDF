@@ -48,19 +48,19 @@ namespace QuestPDF.Elements.Text
                 return SpacePlan.Wrap();
             
             if (IsRendered)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             if (Items.Count == 0)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             Initialize();
             CalculateParagraphMetrics(availableSpace);
 
             if (MaximumWidth == 0)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             if (CurrentLineIndex > LineMetrics.Length)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             var totalHeight = 0f;
             var totalLines = 0;

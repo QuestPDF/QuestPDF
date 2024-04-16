@@ -18,8 +18,8 @@ namespace QuestPDF.Elements
         {
             var measurementWithAllSpace = base.Measure(availableSpace);
             
-            if (measurementWithAllSpace.Type is SpacePlanType.Empty)
-                return SpacePlan.Empty();
+            if (measurementWithAllSpace.Type is SpacePlanType.NoContent)
+                return SpacePlan.None();
             
             if (MinWidth > availableSpace.Width + Size.Epsilon)
                 return SpacePlan.Wrap();
@@ -33,7 +33,7 @@ namespace QuestPDF.Elements
 
             var measurement = base.Measure(available);
 
-            if (measurement.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+            if (measurement.Type is SpacePlanType.NoContent or SpacePlanType.Wrap)
                 return measurement;
             
             var actualSize = new Size(

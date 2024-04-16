@@ -15,7 +15,7 @@ namespace QuestPDF.Drawing
             Height = height;
         }
         
-        internal static SpacePlan Empty() => new SpacePlan(SpacePlanType.Empty, 0, 0);
+        internal static SpacePlan None() => new SpacePlan(SpacePlanType.NoContent, 0, 0);
 
         internal static SpacePlan Wrap() => new SpacePlan(SpacePlanType.Wrap, 0, 0);
         

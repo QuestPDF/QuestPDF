@@ -10,7 +10,7 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (IsRendered)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             return base.Measure(availableSpace);
         }

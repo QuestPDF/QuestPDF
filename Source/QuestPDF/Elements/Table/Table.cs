@@ -81,10 +81,10 @@ namespace QuestPDF.Elements.Table
                 return SpacePlan.Wrap();
 
             if (IsRendered)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
 
             if (!Cells.Any())
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);

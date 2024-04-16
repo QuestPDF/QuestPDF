@@ -34,10 +34,10 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!Items.Any())
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             if (CurrentRenderingIndex == Items.Count)
-                return SpacePlan.Empty();
+                return SpacePlan.None();
             
             var renderingCommands = PlanLayout(availableSpace);
 
@@ -51,10 +51,10 @@ namespace QuestPDF.Elements
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();
             
-            if (renderingCommands.All(x => x.Measurement.Type == SpacePlanType.Empty))
-                return SpacePlan.Empty();
+            if (renderingCommands.All(x => x.Measurement.Type == SpacePlanType.NoContent))
+                return SpacePlan.None();
             
-            var totalRenderedItems = CurrentRenderingIndex + renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
+            var totalRenderedItems = CurrentRenderingIndex + renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.NoContent or SpacePlanType.FullRender);
             var willBeFullyRendered = totalRenderedItems == Items.Count;
 
             return willBeFullyRendered
@@ -75,7 +75,7 @@ namespace QuestPDF.Elements
                 Canvas.Translate(command.Offset.Reverse());
             }
             
-            var fullyRenderedItems = renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
+            var fullyRenderedItems = renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.NoContent or SpacePlanType.FullRender);
             CurrentRenderingIndex += fullyRenderedItems;
         }
 
@@ -99,7 +99,7 @@ namespace QuestPDF.Elements
                     break;
 
                 // when the item does not take any space, do not add spacing
-                if (measurement.Type == SpacePlanType.Empty)
+                if (measurement.Type == SpacePlanType.NoContent)
                     topOffset -= Spacing;
                 
                 commands.Add(new ColumnItemRenderingCommand
