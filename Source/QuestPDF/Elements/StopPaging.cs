@@ -9,12 +9,13 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (Child == null)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
 
             var measurement = Child.Measure(availableSpace);
 
             return measurement.Type switch
             {
+                SpacePlanType.Empty => SpacePlan.Empty(),
                 SpacePlanType.Wrap => SpacePlan.FullRender(Size.Zero),
                 SpacePlanType.PartialRender => SpacePlan.FullRender(measurement),
                 SpacePlanType.FullRender => measurement,

@@ -6,8 +6,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class DynamicHost : Element, IStateResettable, IContentDirectionAware
+    internal sealed class DynamicHost : Element, IContent, IStateResettable, IContentDirectionAware
     {
+        public bool IsRendered { get; set; }
+        
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
 
@@ -21,17 +23,23 @@ namespace QuestPDF.Elements
         public DynamicHost(DynamicComponentProxy child)
         {
             Child = child;
-            
             InitialComponentState = Child.GetState();
         }
 
         public void ResetState()
         {
             Child.SetState(InitialComponentState);
+            IsRendered = false;
         }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap();
+            
+            if (IsRendered)
+                return SpacePlan.Empty();
+            
             var result = GetContent(availableSpace, acceptNewState: false);
             var content = result.Content as Element ?? Empty.Instance;
             var measurement = content.Measure(availableSpace);
@@ -48,6 +56,11 @@ namespace QuestPDF.Elements
         {
             var content = GetContent(availableSpace, acceptNewState: true).Content as Element; 
             content?.Draw(availableSpace);
+            
+            var measurement = content?.Measure(availableSpace);
+            
+            if (measurement?.Type == SpacePlanType.FullRender)
+                IsRendered = true;
         }
 
         private DynamicComponentComposeResult GetContent(Size availableSize, bool acceptNewState)

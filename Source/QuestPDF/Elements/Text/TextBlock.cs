@@ -11,8 +11,9 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Elements.Text
 {
-    internal sealed class TextBlock : Element, IStateResettable, IContentDirectionAware
+    internal sealed class TextBlock : Element, IContent, IStateResettable, IContentDirectionAware
     {
+        public bool IsRendered { get; set; }
         public ContentDirection ContentDirection { get; set; }
         
         public TextHorizontalAlignment? Alignment { get; set; }
@@ -41,23 +42,30 @@ namespace QuestPDF.Elements.Text
         
         public void ResetState()
         {
+            IsRendered = false;
             CurrentLineIndex = 0;
             CurrentTopOffset = 0;
         }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap();
+            
+            if (IsRendered)
+                return SpacePlan.Empty();
+            
             if (Items.Count == 0)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             Initialize();
             CalculateParagraphMetrics(availableSpace);
 
             if (MaximumWidth == 0)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             if (CurrentLineIndex > LineMetrics.Length)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             var totalHeight = 0f;
             var totalLines = 0;
@@ -104,7 +112,7 @@ namespace QuestPDF.Elements.Text
             CurrentTopOffset += takenHeight;
 
             if (CurrentLineIndex == LineMetrics.Length)
-                ResetState();
+                IsRendered = true;
             
             return;
 

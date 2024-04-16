@@ -11,6 +11,9 @@ namespace QuestPDF.Elements
         {
             var targetSize = base.Measure(availableSpace);
 
+            if (targetSize.Type == SpacePlanType.Empty)
+                return;
+            
             if (targetSize.Type == SpacePlanType.Wrap)
                 return;
 

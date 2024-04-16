@@ -53,7 +53,7 @@ namespace QuestPDF.Elements
             SetDefaultAlignment();   
             
             if (!ChildrenQueue.Any())
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             var lines = Compose(availableSpace);
 

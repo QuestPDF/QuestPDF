@@ -18,7 +18,7 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
             Decoration.Before = container;
-            return container;
+            return container.Repeat();
         }
         
         /// <summary>
@@ -66,7 +66,7 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
             Decoration.After = container;
-            return container;
+            return container.Repeat();
         }
         
         /// <summary>

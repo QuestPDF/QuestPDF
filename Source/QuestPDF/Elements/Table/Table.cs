@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
 {
-    internal sealed class Table : Element, IStateResettable, IContentDirectionAware
+    internal sealed class Table : Element, IContent, IStateResettable, IContentDirectionAware
     {
+        public bool IsRendered { get; set; }
         public ContentDirection ContentDirection { get; set; }
         
         public List<TableColumnDefinition> Columns { get; set; } = new();
@@ -39,6 +41,7 @@ namespace QuestPDF.Elements.Table
                 x.IsRendered = false;
             
             CurrentRow = 1;
+            IsRendered = false;
         }
         
         private void Initialize()
@@ -83,8 +86,14 @@ namespace QuestPDF.Elements.Table
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap();
+
+            if (IsRendered)
+                return SpacePlan.Empty();
+
             if (!Cells.Any())
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
@@ -130,7 +139,7 @@ namespace QuestPDF.Elements.Table
             var isFullyRendered = CurrentRow > StartingRowsCount;
             
             if (isFullyRendered)
-                ResetState();
+                IsRendered = true;
         }
 
         private int CalculateCurrentRow(ICollection<TableCellRenderingCommand> commands)

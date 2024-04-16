@@ -1,5 +1,6 @@
 using System;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -14,17 +15,17 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (Child == null)
-                return SpacePlan.FullRender(0, 0);
+                return SpacePlan.Empty();
             
             var internalSpace = InternalSpace(availableSpace);
 
-            if (internalSpace.Width < -Size.Epsilon || internalSpace.Height < -Size.Epsilon)
+            if (internalSpace.IsNegative())
                 return SpacePlan.Wrap();
             
             var measure = base.Measure(internalSpace);
 
-            if (measure.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+            if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+                return measure;
 
             var newSize = new Size(
                 measure.Width + Left + Right,

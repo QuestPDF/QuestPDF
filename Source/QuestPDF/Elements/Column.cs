@@ -6,14 +6,9 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class ColumnItem : Container
-    {
-        public bool IsRendered { get; set; }
-    }
-
     internal sealed class ColumnItemRenderingCommand
     {
-        public ColumnItem ColumnItem { get; set; }
+        public Element Element { get; set; }
         public SpacePlan Measurement { get; set; }
         public Size Size { get; set; }
         public Position Offset { get; set; }
@@ -21,12 +16,14 @@ namespace QuestPDF.Elements
 
     internal sealed class Column : Element, ICacheable, IStateResettable
     {
-        internal List<ColumnItem> Items { get; } = new();
+        internal List<Element> Items { get; } = new();
         internal float Spacing { get; set; }
+        
+        private int CurrentRenderingIndex { get; set; }
 
         public void ResetState()
         {
-            Items.ForEach(x => x.IsRendered = false);
+            CurrentRenderingIndex = 0;
         }
         
         internal override IEnumerable<Element?> GetChildren()
@@ -36,13 +33,16 @@ namespace QuestPDF.Elements
         
         internal override void CreateProxy(Func<Element?, Element?> create)
         {
-            Items.ForEach(x => x.Child = create(x.Child));
+            Items.ForEach(x => x = create(x));
         }
 
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!Items.Any())
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
+            
+            if (CurrentRenderingIndex == Items.Count)
+                return SpacePlan.Empty();
             
             var renderingCommands = PlanLayout(availableSpace);
 
@@ -56,7 +56,10 @@ namespace QuestPDF.Elements
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();
             
-            var totalRenderedItems = Items.Count(x => x.IsRendered) + renderingCommands.Count(x => x.Measurement.Type == SpacePlanType.FullRender);
+            if (renderingCommands.All(x => x.Measurement.Type == SpacePlanType.Empty))
+                return SpacePlan.Empty();
+            
+            var totalRenderedItems = CurrentRenderingIndex + renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
             var willBeFullyRendered = totalRenderedItems == Items.Count;
 
             return willBeFullyRendered
@@ -70,17 +73,16 @@ namespace QuestPDF.Elements
 
             foreach (var command in renderingCommands)
             {
-                if (command.Measurement.Type == SpacePlanType.FullRender)
-                    command.ColumnItem.IsRendered = true;
-
                 var targetSize = new Size(availableSpace.Width, command.Size.Height);
 
                 Canvas.Translate(command.Offset);
-                command.ColumnItem.Draw(targetSize);
+                command.Element.Draw(targetSize);
                 Canvas.Translate(command.Offset.Reverse());
             }
             
-            if (Items.All(x => x.IsRendered))
+            CurrentRenderingIndex += renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
+            
+            if (CurrentRenderingIndex == Items.Count)
                 ResetState();
         }
 
@@ -89,12 +91,9 @@ namespace QuestPDF.Elements
             var topOffset = 0f;
             var targetWidth = 0f;
             var commands = new List<ColumnItemRenderingCommand>();
-
-            foreach (var item in Items)
+            
+            foreach (var item in Items.Skip(CurrentRenderingIndex))
             {
-                if (item.IsRendered)
-                    continue;
-
                 var availableHeight = availableSpace.Height - topOffset;
                 
                 if (availableHeight < -Size.Epsilon)
@@ -107,12 +106,12 @@ namespace QuestPDF.Elements
                     break;
 
                 // when the item does not take any space, do not add spacing
-                if (measurement.Width < Size.Epsilon && measurement.Height < Size.Epsilon)
+                if (measurement.Type == SpacePlanType.Empty)
                     topOffset -= Spacing;
                 
                 commands.Add(new ColumnItemRenderingCommand
                 {
-                    ColumnItem = item,
+                    Element = item,
                     Size = measurement,
                     Measurement = measurement,
                     Offset = new Position(0, topOffset)

@@ -14,21 +14,23 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (Ratio == 0)
-                return SpacePlan.FullRender(0, 0);
+                return SpacePlan.FullRender(Size.Zero);
             
             if (Child == null)
-                return SpacePlan.FullRender(0, 0);
+                return SpacePlan.Empty();
             
             var targetSize = GetTargetSize(availableSpace);
+            var childSize = base.Measure(targetSize);
+            
+            if (childSize.Type == SpacePlanType.Empty)
+                return SpacePlan.Empty();
             
             if (targetSize.Height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();
             
             if (targetSize.Width > availableSpace.Width + Size.Epsilon)
                 return SpacePlan.Wrap();
-
-            var childSize = base.Measure(targetSize);
-
+            
             if (childSize.Type == SpacePlanType.Wrap)
                 return SpacePlan.Wrap();
 

@@ -358,6 +358,12 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new ScaleToFit());
         }
+        
+        // TODO: documentation
+        public static IContainer Repeat(this IContainer element)
+        {
+            return element.Element(new RepeatContent());
+        }
 
         #region Canvas [Obsolete]
 

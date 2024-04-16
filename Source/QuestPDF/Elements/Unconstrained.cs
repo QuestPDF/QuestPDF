@@ -24,7 +24,7 @@ namespace QuestPDF.Elements
         {
             var measurement = base.Measure(Size.Max);
             
-            if (measurement.Type == SpacePlanType.Wrap)
+            if (measurement.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return;
 
             var translate = ContentDirection == ContentDirection.RightToLeft

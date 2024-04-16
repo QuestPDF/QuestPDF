@@ -48,8 +48,11 @@ namespace QuestPDF.Elements
             
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();
+
+            if (renderingCommands.All(x => x.Measurement.Type == SpacePlanType.Empty))
+                return SpacePlan.Empty();
             
-            var willBeFullyRendered = renderingCommands.All(x => x.Measurement.Type == SpacePlanType.FullRender);
+            var willBeFullyRendered = renderingCommands.All(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
 
             return willBeFullyRendered
                 ? SpacePlan.FullRender(size)
@@ -81,9 +84,9 @@ namespace QuestPDF.Elements
             {
                 var measurement = element.Measure(availableSpace);
                 
-                return measurement.Type == SpacePlanType.FullRender 
-                    ? measurement 
-                    : SpacePlan.Wrap();
+                return measurement.Type == SpacePlanType.Wrap 
+                    ? SpacePlan.Wrap() 
+                    : measurement;
             }
             
             var beforeMeasurement = GetDecorationMeasurement(Before);
