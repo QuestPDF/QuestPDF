@@ -358,6 +358,14 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new ScaleToFit());
         }
+
+        /// <summary>
+        /// Creates a multi-column layout within the current container element.
+        /// </summary>
+        public static IContainer MultiColumn(this IContainer element)
+        {
+            return element.Element(new MultiColumn());
+        }
         
         // TODO: documentation
         public static IContainer Repeat(this IContainer element)
