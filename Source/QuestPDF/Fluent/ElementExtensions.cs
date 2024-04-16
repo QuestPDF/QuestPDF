@@ -362,9 +362,13 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Creates a multi-column layout within the current container element.
         /// </summary>
-        public static IContainer MultiColumn(this IContainer element)
+        public static IContainer MultiColumn(this IContainer element, int columnCount = 2, float spacing = 0)
         {
-            return element.Element(new MultiColumn());
+            return element.Element(new MultiColumn()
+            {
+                ColumnCount = columnCount,
+                Spacing = spacing
+            });
         }
         
         // TODO: documentation
