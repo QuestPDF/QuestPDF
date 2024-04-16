@@ -3,8 +3,9 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class SectionLink : ContainerElement
+    internal sealed class SectionLink : ContainerElement, IPageContextAware
     {
+        public IPageContext PageContext { get; set; }
         public string SectionName { get; set; }
         
         internal override void Draw(Size availableSpace)

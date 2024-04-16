@@ -10,8 +10,9 @@ public class ShowIfContext
     public int TotalPages { get; internal set; }
 }
 
-internal class ShowIf : ContainerElement
+internal class ShowIf : ContainerElement, IPageContextAware
 {
+    public IPageContext PageContext { get; set; }
     public Predicate<ShowIfContext> VisibilityPredicate { get; set; }
     
     internal override SpacePlan Measure(Size availableSpace)

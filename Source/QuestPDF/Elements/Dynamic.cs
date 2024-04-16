@@ -6,8 +6,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class DynamicHost : Element, IStateful, IContentDirectionAware
+    internal sealed class DynamicHost : Element, IStateful, IPageContextAware, IContentDirectionAware
     {
+        public IPageContext PageContext { get; set; }
+        
         public bool IsRendered { get; set; }
         
         private DynamicComponentProxy Child { get; }
@@ -170,7 +172,8 @@ namespace QuestPDF.Elements
             container.ApplyContentDirection(ContentDirection);
             container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality, UseOriginalImage);
             
-            container.InjectDependencies(PageContext, Canvas);
+            container.InjectCanvas(Canvas);
+            container.InjectPageContext(PageContext);
             container.VisitChildren(x => (x as IStateful)?.ResetState(false));
 
             container.Size = container.Measure(Size.Max);

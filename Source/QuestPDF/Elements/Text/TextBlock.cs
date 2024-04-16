@@ -11,8 +11,10 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Elements.Text
 {
-    internal sealed class TextBlock : Element, IStateful, IContentDirectionAware
+    internal sealed class TextBlock : Element, IStateful, IPageContextAware, IContentDirectionAware
     {
+        public IPageContext PageContext { get; set; }
+        
         public bool IsRendered { get; set; }
         public ContentDirection ContentDirection { get; set; }
         
