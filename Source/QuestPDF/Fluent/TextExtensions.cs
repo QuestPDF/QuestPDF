@@ -181,7 +181,7 @@ namespace QuestPDF.Fluent
         public TextSpanDescriptor Line(string? text)
         {
             text ??= string.Empty;
-            return Span(text + Environment.NewLine);
+            return Span(text + "\n");
         }
 
         /// <summary>
@@ -190,7 +190,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public TextSpanDescriptor EmptyLine()
         {
-            return Span(Environment.NewLine);
+            return Span("\n");
         }
         
         private TextPageNumberDescriptor PageNumber(Func<IPageContext, int?> pageNumber)

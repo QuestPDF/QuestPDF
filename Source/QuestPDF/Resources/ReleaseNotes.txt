@@ -23,3 +23,7 @@ Unfortunately, this release also introduces breaking changes:
 - Removed support for platforms: Android, iOS, UWP, WASM, and Linux-Alpine. We are currently investigating reintroducing support for WASM and Linux-Alpine in future releases.
 
 We would like to thank the SkiaSharp project, its maintainers, and contributors, for creating a fantastic graphics library. It was a fantastic foundation for QuestPDF for over 3 years.
+
+
+Version 2024.3.1
+- Fix: on the Windows platform, the "Could not find an appropriate font fallback for the following glyphs: $U-000D" exception is thrown when the "QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable" is set true, and the "TextDescriptor.Line" method is used (that inserts the '\r' character).
