@@ -103,8 +103,8 @@ namespace QuestPDF.Previewer
             if (version.Major == RequiredPreviewerVersionMajor && version.Minor == RequiredPreviewerVersionMinor)
                 return;
 
-            var newLine = Environment.NewLine;
-            var newParagraph = newLine + newLine;
+            const string newLine = "\n";
+            const string newParagraph = newLine + newLine;
             
             throw new Exception($"The QuestPDF Previewer application is not compatible. Possible solutions: {newParagraph}" +
                                 $"1) Change the QuestPDF library to the {version.Major}.{version.Minor}.X version to match the Previewer application version. {newParagraph}" +

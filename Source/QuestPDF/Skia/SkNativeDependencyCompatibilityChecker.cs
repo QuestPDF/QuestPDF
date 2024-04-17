@@ -11,8 +11,7 @@ internal static class SkNativeDependencyCompatibilityChecker
     public static void Test()
     {
         const string exceptionBaseMessage = "The QuestPDF library has encountered an issue while loading one of its dependencies.";
-        var newLine = Environment.NewLine;
-        var paragraph = newLine + newLine;
+        const string paragraph = "\n\n";
         
         if (IsCompatibilityChecked)
             return;

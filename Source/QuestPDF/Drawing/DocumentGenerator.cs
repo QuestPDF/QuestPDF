@@ -57,7 +57,7 @@ namespace QuestPDF.Drawing
             if (Settings.License.HasValue)
                 return;
             
-            var newParagraph = Environment.NewLine + Environment.NewLine;
+            const string newParagraph = "\n\n";
 
             var exceptionMessage = 
                 $"QuestPDF is a modern open-source library. " +
@@ -233,7 +233,7 @@ namespace QuestPDF.Drawing
             
             void ThrowLayoutException()
             {
-                var newLine = Environment.NewLine;
+                var newLine = "\n";
                 var newParagraph = newLine + newLine;
                     
                 var message =

@@ -92,7 +92,7 @@ namespace QuestPDF.Examples
                 var lineTo = chapterPointers[index + 1] - 1;
 
                 var lines = book.Skip(lineFrom + 1).Take(lineTo - lineFrom).Where(x => !string.IsNullOrWhiteSpace(x));
-                var content = string.Join(Environment.NewLine, lines);
+                var content = string.Join("\n", lines);
 
                 yield return new BookChapter
                 {
