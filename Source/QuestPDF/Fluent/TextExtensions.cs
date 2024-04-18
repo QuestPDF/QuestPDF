@@ -11,7 +11,7 @@ namespace QuestPDF.Fluent
 {
     public class TextSpanDescriptor
     {
-        private TextBlockSpan TextBlockSpan;
+        internal readonly TextBlockSpan TextBlockSpan;
 
         internal TextSpanDescriptor(TextBlockSpan textBlockSpan)
         {
@@ -55,6 +55,89 @@ namespace QuestPDF.Fluent
         public TextPageNumberDescriptor Format(PageNumberFormatter formatter)
         {
             AssignFormatFunction(formatter);
+            return this;
+        }
+    }
+    
+    public class TextBlockDescriptor : TextSpanDescriptor
+    {
+        private TextBlock TextBlock;
+
+        internal TextBlockDescriptor(TextBlock textBlock, TextBlockSpan textBlockSpan) : base(textBlockSpan)
+        {
+            TextBlock = textBlock;
+        }
+
+        /// <summary>
+        /// Aligns text horizontally to the left side.
+        /// </summary>
+        public TextBlockDescriptor AlignLeft()
+        {
+            TextBlock.Alignment = TextHorizontalAlignment.Left;
+            return this;
+        }
+        
+        /// <summary>
+        /// Aligns text horizontally to the center, ensuring equal space on both left and right sides.
+        /// </summary>
+        public TextBlockDescriptor AlignCenter()
+        {
+            TextBlock.Alignment = TextHorizontalAlignment.Center;
+            return this;
+        }
+        
+        /// <summary>
+        /// Aligns content horizontally to the right side.
+        /// </summary>
+        public TextBlockDescriptor AlignRight()
+        {
+            TextBlock.Alignment = TextHorizontalAlignment.Right;
+            return this;
+        }
+        
+        /// <summary>
+        /// <para>
+        /// Justifies the text within its container.
+        /// </para>
+        ///
+        /// <para>
+        /// This method sets the horizontal alignment of the text to be justified, meaning it aligns along both the left and right margins.
+        /// This is achieved by adjusting the spacing between words and characters as necessary so that each line of text stretches from one end of the text column to the other.
+        /// This creates a clean, block-like appearance for the text.
+        /// </para>
+        /// </summary>
+        public TextBlockDescriptor Justify()
+        {
+            TextBlock.Alignment = TextHorizontalAlignment.Justify;
+            return this;
+        }
+        
+        /// <summary>
+        /// Aligns the text horizontally to the start of the container. 
+        /// This method sets the horizontal alignment of the text to the start (left for left-to-right languages, right for right-to-left languages).
+        /// </summary>
+        public TextBlockDescriptor AlignStart()
+        {
+            TextBlock.Alignment = TextHorizontalAlignment.Start;
+            return this;
+        }
+        
+        /// <summary>
+        /// Aligns the text horizontally to the end of the container. 
+        /// This method sets the horizontal alignment of the text to the end (right for left-to-right languages, start for right-to-left languages).
+        /// </summary>
+        public TextBlockDescriptor AlignEnd()
+        {
+            TextBlock.Alignment = TextHorizontalAlignment.End;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the maximum number of lines to display. 
+        /// </summary>
+        public TextBlockDescriptor ClampLines(int maxLines)
+        {
+            TextBlock.LineClamp = maxLines;
             return this;
         }
     }
@@ -405,20 +488,21 @@ namespace QuestPDF.Fluent
         /// Draws the provided text on the page
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
-        public static TextSpanDescriptor Text(this IContainer element, string? text)
+        public static TextBlockDescriptor Text(this IContainer container, string? text)
         {
             if (IsNullOrEmpty(text))
-                return new TextSpanDescriptor(new TextBlockSpan());
+                return new TextBlockDescriptor(new TextBlock(), new TextBlockSpan());
             
-            var textDescriptor = new TextDescriptor();
+            var textBlock = new TextBlock();
+            container.Element(textBlock);
             
-            if (element is Alignment alignment)
-                textDescriptor.TextBlock.Alignment = MapAlignment(alignment.Horizontal);
+            if (container is Alignment alignment)
+                textBlock.Alignment = MapAlignment(alignment.Horizontal);
             
-            var span = textDescriptor.Span(text);
-            textDescriptor.Compose(element);
-
-            return span;
+            var textSpan = new TextBlockSpan { Text = text };
+            textBlock.Items.Add(textSpan);
+            
+            return new TextBlockDescriptor(textBlock, textSpan);
         }
         
         private static TextHorizontalAlignment? MapAlignment(HorizontalAlignment? alignment)
