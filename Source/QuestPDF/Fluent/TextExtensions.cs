@@ -68,73 +68,49 @@ namespace QuestPDF.Fluent
             TextBlock = textBlock;
         }
 
-        /// <summary>
-        /// Aligns text horizontally to the left side.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.left"]/*' />
         public TextBlockDescriptor AlignLeft()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Left;
             return this;
         }
         
-        /// <summary>
-        /// Aligns text horizontally to the center, ensuring equal space on both left and right sides.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.center"]/*' />
         public TextBlockDescriptor AlignCenter()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Center;
             return this;
         }
         
-        /// <summary>
-        /// Aligns content horizontally to the right side.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.right"]/*' />
         public TextBlockDescriptor AlignRight()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Right;
             return this;
         }
         
-        /// <summary>
-        /// <para>
-        /// Justifies the text within its container.
-        /// </para>
-        ///
-        /// <para>
-        /// This method sets the horizontal alignment of the text to be justified, meaning it aligns along both the left and right margins.
-        /// This is achieved by adjusting the spacing between words and characters as necessary so that each line of text stretches from one end of the text column to the other.
-        /// This creates a clean, block-like appearance for the text.
-        /// </para>
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.justify"]/*' />
         public TextBlockDescriptor Justify()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Justify;
             return this;
         }
         
-        /// <summary>
-        /// Aligns the text horizontally to the start of the container. 
-        /// This method sets the horizontal alignment of the text to the start (left for left-to-right languages, right for right-to-left languages).
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.start"]/*' />
         public TextBlockDescriptor AlignStart()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Start;
             return this;
         }
         
-        /// <summary>
-        /// Aligns the text horizontally to the end of the container. 
-        /// This method sets the horizontal alignment of the text to the end (right for left-to-right languages, start for right-to-left languages).
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.end"]/*' />
         public TextBlockDescriptor AlignEnd()
         {
             TextBlock.Alignment = TextHorizontalAlignment.End;
             return this;
         }
 
-        /// <summary>
-        /// Sets the maximum number of lines to display. 
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.clampLines"]/*' />
         public TextBlockDescriptor ClampLines(int maxLines)
         {
             TextBlock.LineClamp = maxLines;
@@ -165,67 +141,43 @@ namespace QuestPDF.Fluent
             DefaultStyle = style(TextStyle.Default);
         }
   
-        /// <summary>
-        /// Aligns text horizontally to the left side.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.left"]/*' />
         public void AlignLeft()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Left;
         }
         
-        /// <summary>
-        /// Aligns text horizontally to the center, ensuring equal space on both left and right sides.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.center"]/*' />
         public void AlignCenter()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Center;
         }
         
-        /// <summary>
-        /// Aligns content horizontally to the right side.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.right"]/*' />
         public void AlignRight()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Right;
         }
         
-        /// <summary>
-        /// <para>
-        /// Justifies the text within its container.
-        /// </para>
-        ///
-        /// <para>
-        /// This method sets the horizontal alignment of the text to be justified, meaning it aligns along both the left and right margins.
-        /// This is achieved by adjusting the spacing between words and characters as necessary so that each line of text stretches from one end of the text column to the other.
-        /// This creates a clean, block-like appearance for the text.
-        /// </para>
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.justify"]/*' />
         public void Justify()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Justify;
         }
         
-        /// <summary>
-        /// Aligns the text horizontally to the start of the container. 
-        /// This method sets the horizontal alignment of the text to the start (left for left-to-right languages, right for right-to-left languages).
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.start"]/*' />
         public void AlignStart()
         {
             TextBlock.Alignment = TextHorizontalAlignment.Start;
         }
         
-        /// <summary>
-        /// Aligns the text horizontally to the end of the container. 
-        /// This method sets the horizontal alignment of the text to the end (right for left-to-right languages, start for right-to-left languages).
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.end"]/*' />
         public void AlignEnd()
         {
             TextBlock.Alignment = TextHorizontalAlignment.End;
         }
 
-        /// <summary>
-        /// Sets the maximum number of lines to display. 
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.clampLines"]/*' />
         public void ClampLines(int maxLines)
         {
             TextBlock.LineClamp = maxLines;

@@ -139,6 +139,60 @@
             <para>Additionally, it provides formatting options, like displaying the page number in custom text format (e.g. Roman numerals).</para>
         </returns>
     </doc>
+
+    <doc for="text.clampLines">
+        <summary>
+            Sets the maximum number of lines to display.
+        </summary>
+    </doc>
+
+    <!-- TEXT ELEMENT -->
+
+    <doc for="text.alignment.left">
+        <summary>
+        Aligns text horizontally to the left side.
+        </summary>
+    </doc>
+
+    <doc for="text.alignment.center">
+        <summary>
+            Aligns text horizontally to the center, ensuring equal space on both left and right sides.
+        </summary>
+    </doc>
+
+    <doc for="text.alignment.right">
+        <summary>
+            Aligns content horizontally to the right side.
+        </summary>
+    </doc>
+
+    <doc for="text.alignment.start">
+        <summary>
+            Aligns the text horizontally to the start of the container.
+            This method sets the horizontal alignment of the text to the start (left for left-to-right languages, right for right-to-left languages).
+        </summary>
+    </doc>
+
+    <doc for="text.alignment.end">
+        <summary>
+            Aligns the text horizontally to the end of the container.
+            This method sets the horizontal alignment of the text to the end (right for left-to-right languages, start for right-to-left languages).
+        </summary>
+    </doc>
+
+    <doc for="text.alignment.justify">
+        <summary>
+            <para>
+            Justifies the text within its container.
+            </para>
+            
+            <para>
+            This method sets the horizontal alignment of the text to be justified, meaning it aligns along both the left and right margins.
+            This is achieved by adjusting the spacing between words and characters as necessary so that each line of text stretches from one end of the text column to the other.
+            This creates a clean, block-like appearance for the text.
+            </para>
+        </summary>
+    </doc>
     
     <!-- TEXT ATTRIBUTES -->
 
