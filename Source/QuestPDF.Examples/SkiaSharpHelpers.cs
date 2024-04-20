@@ -22,4 +22,21 @@ public static class SkiaSharpHelpers
             return Encoding.UTF8.GetString(svgData);
         });
     }
+    
+    public static void SkiaSharpRasterized(this IContainer container, Action<SKCanvas, Size> drawOnCanvas)
+    {
+        container.Image(payload =>
+        {
+            using var bitmap = new SKBitmap(payload.ImageSize.Width, payload.ImageSize.Height);
+
+            using (var canvas = new SKCanvas(bitmap))
+            {
+                var scalingFactor = payload.Dpi / (float)DocumentSettings.DefaultRasterDpi;
+                canvas.Scale(scalingFactor);
+                drawOnCanvas(canvas, payload.AvailableSpace);
+            }
+        
+            return bitmap.Encode(SKEncodedImageFormat.Png, 100).ToArray();
+        });
+    }
 }
