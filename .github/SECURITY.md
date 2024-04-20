@@ -5,7 +5,7 @@
 | Version   | Supported          | Scope                                                                                                                      | License                                         |
 |-----------|--------------------|----------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
 | 2023.X.Y  | :white_check_mark: | full: feature, quality and bug-fix updates ([branch](https://github.com/QuestPDF/QuestPDF))                                | Hybrid: Community MIT, Professional, Enterprise |
-| 2022.12.X | :white_check_mark: | limited till Q1 2024 : quality and bug-fix updates ([branch](https://github.com/QuestPDF/QuestPDF/tree/2022.12.X-support)) | MIT                                             |
+| 2022.12.X | :white_check_mark: | limited till Q2 2024 : quality and bug-fix updates ([branch](https://github.com/QuestPDF/QuestPDF/tree/2022.12.X-support)) | MIT                                             |
 | Older     | :x:                | no support                                                                                                                 | MIT                                             |
 
 ## Reporting a Vulnerability
