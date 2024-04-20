@@ -28,3 +28,4 @@ We would like to thank the SkiaSharp project, its maintainers, and contributors,
 Version 2024.3.1
 - Enhanced discoverability of text alignment options (AlignLeft, AlignCenter, AlignRight, AlignStart, AlignEnd and Justify) when using the shorthand Text method (common use case).
 - Fix: on the Windows platform, the "Could not find an appropriate font fallback for the following glyphs: $U-000D" exception is thrown when the "QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable" is set true, and the "TextDescriptor.Line" method is used (that inserts the '\r' character).
+- Improvement: To enhance compatibility with existing codebases, we've removed the breaking change associated with the deprecation of the TextStyle.Fallback method. Although this method remains obsolete, we've reintroduced it with a compatibility layer to prevent disruptions.
