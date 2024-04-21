@@ -320,6 +320,8 @@ namespace QuestPDF.Elements.Text
                             Baseline = SkPlaceholderStyle.PlaceholderBaseline.Alphabetic,
                             BaselineOffset = 0
                         });
+
+                        currentTextIndex++;
                     }
                 }
 
