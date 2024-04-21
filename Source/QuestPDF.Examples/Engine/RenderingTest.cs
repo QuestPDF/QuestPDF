@@ -125,7 +125,11 @@ namespace QuestPDF.Examples.Engine
 
             if (ResultType == RenderingTestResult.Pdf)
             {
-                document.GeneratePdfAndShow();
+                if (ShowResult)
+                    document.GeneratePdfAndShow();
+
+                else
+                    document.GeneratePdf();
             }
         }
         
