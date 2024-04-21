@@ -9,6 +9,7 @@ namespace QuestPDF.Elements.Text.Items
         public Element Element { get; set; } = Empty.Instance;
         public Size ElementSize { get; set; } = Size.Zero;
         public TextInjectedElementAlignment Alignment { get; set; } = TextInjectedElementAlignment.AboveBaseline;
+        public int ParagraphBlockIndex { get; set; }
 
         public void ConfigureElement(IPageContext pageContext, ICanvas canvas)
         {

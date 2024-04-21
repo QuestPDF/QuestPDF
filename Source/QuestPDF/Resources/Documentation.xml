@@ -277,6 +277,18 @@
             <para>A value of 0 maintains the original spacing. When the value is positive, the text is more spread out. When it is negative, the text is more condensed.</para>
         </param>
     </doc>
+
+    <doc for="text.paragraph.spacing">
+        <summary>
+            Adjusts the gap between successive paragraphs (separated by line breaks).
+        </summary>
+    </doc>
+
+    <doc for="text.paragraph.firstLineIndentation">
+        <summary>
+            Adjusts the indentation of the first line in each paragraph.
+        </summary>
+    </doc>
     
     <!-- TEXT EFFECTS -->
 

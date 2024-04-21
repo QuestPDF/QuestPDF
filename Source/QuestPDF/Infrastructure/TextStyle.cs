@@ -55,6 +55,14 @@ namespace QuestPDF.Infrastructure
             DecorationThickness = 2f,
             Direction = TextDirection.Auto
         };
+        
+        internal static TextStyle ParagraphSpacing { get; } = LibraryDefault with
+        {
+            Id = 2,
+            Size = 0,
+            LineHeight = 1,
+            BackgroundColor = Colors.Green.Lighten2,
+        };
 
         private SkTextStyle? SkTextStyleCache;
         

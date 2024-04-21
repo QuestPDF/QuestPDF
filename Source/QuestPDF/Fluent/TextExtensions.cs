@@ -116,6 +116,26 @@ namespace QuestPDF.Fluent
             TextBlock.LineClamp = maxLines;
             return this;
         }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.paragraph.spacing"]/*' />
+        public TextBlockDescriptor ParagraphSpacing(float value, Unit unit = Unit.Point)
+        {
+            if (value < 0)
+                throw new ArgumentException("Paragraph spacing must be greater or equal to zero", nameof(value));
+            
+            TextBlock.ParagraphSpacing = value.ToPoints(unit);
+            return this;
+        }
+
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.paragraph.firstLineIndentation"]/*' />
+        public TextBlockDescriptor ParagraphFirstLineIndentation(float value, Unit unit = Unit.Point)
+        {
+            if (value < 0)
+                throw new ArgumentException("Paragraph indentation must be greater or equal to zero", nameof(value));
+            
+            TextBlock.ParagraphFirstLineIndentation = value.ToPoints(unit);
+            return this;
+        }
     }
     
     public class TextDescriptor
@@ -183,10 +203,22 @@ namespace QuestPDF.Fluent
             TextBlock.LineClamp = maxLines;
         }
         
-        [Obsolete("This method is not supported since the 2024.3 version. Please split your text into separate paragraphs, combine using the Column element that also provides the Spacing capability.")]
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.paragraph.spacing"]/*' />
         public void ParagraphSpacing(float value, Unit unit = Unit.Point)
         {
+            if (value < 0)
+                throw new ArgumentException("Paragraph spacing must be greater or equal to zero", nameof(value));
             
+            TextBlock.ParagraphSpacing = value.ToPoints(unit);
+        }
+
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.paragraph.firstLineIndentation"]/*' />
+        public void ParagraphFirstLineIndentation(float value, Unit unit = Unit.Point)
+        {
+            if (value < 0)
+                throw new ArgumentException("Paragraph indentation must be greater or equal to zero", nameof(value));
+            
+            TextBlock.ParagraphFirstLineIndentation = value.ToPoints(unit);
         }
 
         [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
