@@ -59,5 +59,12 @@
             <Pack>true</Pack>
             <PackagePath>build\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
+
+        <None Include="Build\**\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <Pack>true</Pack>
+            <PackagePath>buildTransitive\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+        </None>
     </ItemGroup>
 </Project>
