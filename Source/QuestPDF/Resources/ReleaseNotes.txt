@@ -31,3 +31,6 @@ Version 2024.3.1
 - Enhanced compatibility with dotnet standard projects.
 - Fix: on the Windows platform, the "Could not find an appropriate font fallback for the following glyphs: $U-000D" exception is thrown when the "QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable" is set true, and the "TextDescriptor.Line" method is used (that inserts the '\r' character).
 - Fix: resolved an issue where the positioning of hyperlinks was incorrect when text contained injected block items.
+
+Version 2024.3.2
+- Improved compatibility with texts that contain the carriage return character '\r'.

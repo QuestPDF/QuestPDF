@@ -224,9 +224,17 @@ namespace QuestPDF.Elements.Text
                 return;
             
             RebuildParagraphForEveryPage = Items.Any(x => x is TextBlockPageNumber);
+            
+            RemoveCarriageReturnCharacters();
             BuildParagraph();
             
             AreParagraphMetricsValid = false;
+        }
+
+        private void RemoveCarriageReturnCharacters()
+        {
+            foreach (var textBlockSpan in Items.OfType<TextBlockSpan>())
+                textBlockSpan.Text = textBlockSpan.Text.Replace("\r", "");
         }
 
         private void BuildParagraph()
