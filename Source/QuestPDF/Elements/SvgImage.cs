@@ -49,6 +49,8 @@ internal class SvgImage : Element
         {
             const float InchToCentimetre = 2.54f;
             const float InchToPoints = 72;
+            
+            // in CSS dpi is set to 96, but Skia uses more traditional 90
             const float PointToPixel = 90f / 72;
         
             var points =  unit switch
