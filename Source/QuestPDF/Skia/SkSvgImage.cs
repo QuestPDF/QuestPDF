@@ -52,8 +52,7 @@ internal sealed class SkSvgImage : IDisposable
             if (Size.WidthUnit is SkSvgImageSize.Unit.Percentage || Size.HeightUnit is SkSvgImageSize.Unit.Percentage)
                 return ViewBox.Width / ViewBox.Height;
         
-            else
-                return Size.Width / Size.Height;
+            return Size.Width / Size.Height;
         }
     }
     
