@@ -33,4 +33,5 @@ Version 2024.3.1
 - Fix: resolved an issue where the positioning of hyperlinks was incorrect when text contained injected block items.
 
 Version 2024.3.2
+- Fixed: the SVG image is not always scaled properly, especially when uses relative units internally (percentage, cm, "mm", etc.).
 - Improved compatibility with texts that contain the carriage return character '\r'.

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SvgImage = QuestPDF.Infrastructure.SvgImage;
 
@@ -23,7 +24,7 @@ public class SvgImageDescriptor
     {
         ImageElement = imageElement;
         AspectRatioElement = aspectRatioElement;
-        ImageAspectRatio = ImageElement.Image.SkSvgImage.ViewBox.Width /  ImageElement.Image.SkSvgImage.ViewBox.Height;
+        ImageAspectRatio = imageElement.Image.SkSvgImage.AspectRatio;
     }
     
     /// <summary>
