@@ -51,6 +51,16 @@ namespace QuestPDF.Drawing
 
             return canvas.Images;
         }
+        
+        internal static ICollection<string> GenerateSvg(IDocument document)
+        {
+            ValidateLicense();
+            
+            var canvas = new SvgCanvas();
+            RenderDocument(canvas, document, document.GetSettings());
+
+            return canvas.Images;
+        }
 
         private static void ValidateLicense()
         {
