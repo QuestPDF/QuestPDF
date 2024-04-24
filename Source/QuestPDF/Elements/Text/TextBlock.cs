@@ -233,7 +233,7 @@ namespace QuestPDF.Elements.Text
 
         private void RemoveCarriageReturnCharacters()
         {
-            foreach (var textBlockSpan in Items.OfType<TextBlockSpan>())
+            foreach (var textBlockSpan in Items.OfType<TextBlockSpan>().Where(x => x.Text != null))
                 textBlockSpan.Text = textBlockSpan.Text.Replace("\r", "");
         }
 
