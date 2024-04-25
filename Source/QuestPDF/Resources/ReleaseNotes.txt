@@ -36,9 +36,7 @@ Version 2024.3.1
 Version 2024.3.2
 - Fixed: the SVG image is not always scaled properly, especially when uses relative units internally (percentage, cm, "mm", etc.).
 - Improved compatibility with texts that contain the carriage return character '\r'.
-
-
-Version 2024.3.3
-- Fixed an issue where an SVG image is not always scaled properly, especially when uses relative units internally (percentage, cm, "mm", etc.).
 - Fixed a sporadic `AccessViolationException` that occurred when UseEnvironmentFonts was set to `false` and documents were generated in parallel.
 - Enhanced exception messages when the FontManager.RegisterFont method fails due to an invalid font file.
+- Adjusted how the Lato font is embedded in the NuGet package to prevent issues with the files not being provided on the platform-specific runtimes.
+
