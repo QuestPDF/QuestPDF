@@ -43,7 +43,7 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
             <Pack>true</Pack>
-            <PackagePath>runtimes\any\native\LatoFont\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+            <PackagePath>LatoFont</PackagePath>
         </None>
         
         <None Include="Runtimes\**\*.*">
@@ -57,14 +57,7 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
             <Pack>true</Pack>
-            <PackagePath>build\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
-        </None>
-
-        <None Include="Build\**\*.*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <Pack>true</Pack>
-            <PackagePath>buildTransitive\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+            <PackagePath>build\%(RecursiveDir)%(Filename)%(Extension);buildTransitive\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
     </ItemGroup>
 </Project>
