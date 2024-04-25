@@ -19,6 +19,10 @@ internal sealed class SkFontManager
     public SkTypeface CreateTypeface(SkData data)
     {
         var instance = API.font_manager_create_typeface(Instance, data.Instance);
+        
+        if (instance == IntPtr.Zero)
+            throw new Exception("Cannot decode the provided font file.");
+        
         return new SkTypeface(instance);
     }
     
