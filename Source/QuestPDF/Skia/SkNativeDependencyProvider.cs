@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,6 +13,7 @@ internal static class SkNativeDependencyProvider
         "win-x64",
         "linux-x64",
         "linux-arm64",
+        "linux-musl-x64",
         "osx-x64",
         "osx-arm64"
     };
@@ -90,7 +92,7 @@ internal static class SkNativeDependencyProvider
                 return "win";
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return "linux";
+                return IsLinuxMusl() ? "linux-musl" : "linux";
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 return "osx";
@@ -106,6 +108,43 @@ internal static class SkNativeDependencyProvider
                 Architecture.Arm64 => "arm64",
                 _ => throw new Exception("Your runtime is currently not supported by QuestPDF.")
             };
+        }
+        
+        static bool IsLinuxMusl()
+        {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                return false;
+            
+            try
+            { 
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = "ldd",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                
+                using var process = Process.Start(processStartInfo);
+                
+                if (process == null)
+                    return false;
+                
+                process.Start();
+                
+                var standardOutputText = process.StandardOutput.ReadToEnd();
+                var standardErrorText = process.StandardError.ReadToEnd();
+                
+                process.WaitForExit();
+                
+                var outputText = standardOutputText + standardErrorText;
+                return outputText.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 
