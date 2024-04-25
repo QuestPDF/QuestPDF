@@ -40,3 +40,4 @@ Version 2024.3.2
 - Enhanced exception messages when the FontManager.RegisterFont method fails due to an invalid font file.
 - Adjusted how the Lato font is embedded in the NuGet package to prevent issues with the files not being provided on the platform-specific runtimes.
 - Enhanced the Canvas element deprecation message by adding a link to the documentation.
+- Fixed an issue where dynamic SVG images were not utilizing the available space correctly. This resulted in images with a zero size.

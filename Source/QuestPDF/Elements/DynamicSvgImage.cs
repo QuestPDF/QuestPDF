@@ -14,7 +14,7 @@ internal class DynamicSvgImage : Element
     {
         return availableSpace.IsNegative() 
             ? SpacePlan.Wrap() 
-            : SpacePlan.FullRender(Size.Zero);
+            : SpacePlan.FullRender(availableSpace);
     }
 
     internal override void Draw(Size availableSpace)
