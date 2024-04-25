@@ -32,6 +32,12 @@ Version 2024.3.1
 - Fix: on the Windows platform, the "Could not find an appropriate font fallback for the following glyphs: $U-000D" exception is thrown when the "QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable" is set true, and the "TextDescriptor.Line" method is used (that inserts the '\r' character).
 - Fix: resolved an issue where the positioning of hyperlinks was incorrect when text contained injected block items.
 
+
 Version 2024.3.2
 - Fixed: the SVG image is not always scaled properly, especially when uses relative units internally (percentage, cm, "mm", etc.).
 - Improved compatibility with texts that contain the carriage return character '\r'.
+
+
+Version 2024.3.3
+- Fixed an issue where an SVG image is not always scaled properly, especially when uses relative units internally (percentage, cm, "mm", etc.).
+- Fixed a sporadic `AccessViolationException` that occurred when `UseEnvironmentFonts` was set to `false` and documents were generated in parallel.
