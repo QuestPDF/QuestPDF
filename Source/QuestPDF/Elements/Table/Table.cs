@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
@@ -154,6 +155,32 @@ namespace QuestPDF.Elements.Table
             foreach (var column in Columns)
             {
                 column.Width = column.ConstantSize + column.RelativeSize * widthPerRelativeUnit;
+            }
+
+            var cells = Cells.Where(c => c is { ColumnSpan: 1, RowSpan: 1 });
+
+            foreach (var column in Columns.Where(c => c.AllowShrink))
+            {
+                var cellsInColumn = cells.Where(c => c.Column == Columns.IndexOf(column) + 1);
+                if (cellsInColumn.Any())
+                {
+                    column.Width = Math.Min(column.Width, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
+                }
+            }
+
+            var remainingWidth = availableWidth - Columns.Sum(c => c.Width);
+            if (remainingWidth > 0)
+            {
+                foreach (var column in Columns.Where(c => c.AllowGrow))
+                {
+                    column.Width = Math.Min(column.Width + remainingWidth, cells.Where(c => c.Column == Columns.IndexOf(column) + 1).Max(c => c.Measure(Size.Max).Width));
+                    remainingWidth = availableWidth - Columns.Sum(c => c.Width);
+                }
+            }
+
+            if (remainingWidth > 0)
+            {
+                Columns.Last().Width += remainingWidth;
             }
         }
         

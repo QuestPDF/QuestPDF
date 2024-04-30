@@ -16,9 +16,9 @@ namespace QuestPDF.Fluent
         /// Defines a column of constant size that occupies the specified horizontal space.
         /// </summary>
         /// <returns>The container of the newly created column.</returns>
-        public void ConstantColumn(float width, Unit unit = Unit.Point)
+        public void ConstantColumn(float width, Unit unit = Unit.Point, bool allowShrink = false, bool allowGrow = false)
         {
-            ComplexColumn(constantWidth: width.ToPoints(unit));
+            ComplexColumn(allowShrink, allowGrow, constantWidth: width.ToPoints(unit));
         }
         
         /// <summary>
@@ -29,14 +29,14 @@ namespace QuestPDF.Fluent
         /// For a table 100 points wide with three columns: a relative size of 1, a relative size of 5, and a constant size of 10 points, they will span 15 points, 75 points, and 10 points respectively.
         /// </example>
         /// <returns>The container for the newly defined column.</returns>
-        public void RelativeColumn(float width = 1)
+        public void RelativeColumn(float width = 1, bool allowShrink = false, bool allowGrow = false)
         {
-            ComplexColumn(relativeWidth: width);
+            ComplexColumn(allowShrink, allowGrow, relativeWidth: width);
         }
-        
-        private void ComplexColumn(float constantWidth = 0, float relativeWidth = 0)
+
+        private void ComplexColumn(bool allowShrink, bool allowGrow, float constantWidth = 0, float relativeWidth = 0)
         {
-            var columnDefinition = new TableColumnDefinition(constantWidth, relativeWidth);
+            var columnDefinition = new TableColumnDefinition(constantWidth, relativeWidth, allowShrink, allowGrow);
             Columns.Add(columnDefinition);
         }
     }
