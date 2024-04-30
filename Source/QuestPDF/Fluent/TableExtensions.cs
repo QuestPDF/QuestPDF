@@ -135,6 +135,10 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
 
+            HeaderTable.AllCells = HeaderTable.Cells.Concat(ContentTable.Cells).Concat(FooterTable.Cells).ToList();
+            ContentTable.AllCells = HeaderTable.AllCells;
+            FooterTable.AllCells = HeaderTable.AllCells;
+
             ConfigureTable(HeaderTable);
             ConfigureTable(ContentTable);
             ConfigureTable(FooterTable);

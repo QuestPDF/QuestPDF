@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
@@ -13,6 +12,8 @@ namespace QuestPDF.Elements.Table
         
         public List<TableColumnDefinition> Columns { get; set; } = new();
         public List<TableCell> Cells { get; set; } = new();
+        public List<TableCell> AllCells { get; set; } = new();
+
         public bool ExtendLastCellsToTableBottom { get; set; }
         
         private bool CacheInitialized { get; set; }
@@ -157,7 +158,7 @@ namespace QuestPDF.Elements.Table
                 column.Width = column.ConstantSize + column.RelativeSize * widthPerRelativeUnit;
             }
 
-            var cells = Cells.Where(c => c is { ColumnSpan: 1, RowSpan: 1 });
+            var cells = AllCells.Where(c => c is { ColumnSpan: 1, RowSpan: 1 });
 
             foreach (var column in Columns.Where(c => c.AllowShrink))
             {
