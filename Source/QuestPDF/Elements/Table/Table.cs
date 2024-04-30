@@ -159,23 +159,48 @@ namespace QuestPDF.Elements.Table
             }
 
             var cells = AllCells.Where(c => c is { ColumnSpan: 1, RowSpan: 1 });
+            Dictionary<int, float> columnWidth = new();
 
             foreach (var column in Columns.Where(c => c.AllowShrink))
             {
-                var cellsInColumn = cells.Where(c => c.Column == Columns.IndexOf(column) + 1);
+                var index = Columns.IndexOf(column);
+                var cellsInColumn = cells.Where(c => c.Column == index + 1);
                 if (cellsInColumn.Any())
                 {
-                    column.Width = Math.Min(column.Width, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
+                    columnWidth.Add(index, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
+                    column.Width = Math.Min(column.Width, columnWidth[index]);
                 }
             }
 
             var remainingWidth = availableWidth - Columns.Sum(c => c.Width);
-            if (remainingWidth > 0)
+            while (remainingWidth > 0)
             {
-                foreach (var column in Columns.Where(c => c.AllowGrow))
+                var columnsThatGrow = Columns.Where(c => c.AllowGrow).ToList();
+                var growStep = remainingWidth / columnsThatGrow.Count;
+                var anyColumnHasGrown = false;
+                foreach (var column in columnsThatGrow)
                 {
-                    column.Width = Math.Min(column.Width + remainingWidth, cells.Where(c => c.Column == Columns.IndexOf(column) + 1).Max(c => c.Measure(Size.Max).Width));
+                    var index = Columns.IndexOf(column);
+                    var cellsInColumn = cells.Where(c => c.Column == index + 1);
+                    if (!columnWidth.ContainsKey(index))
+                    {
+                        columnWidth.Add(index, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
+                    }
+                    var newWidth = Math.Min(column.Width + growStep, columnWidth[index]);
+                    if (newWidth > column.Width)
+                    {
+                        anyColumnHasGrown = true;
+                    }
+                    column.Width = newWidth;
                     remainingWidth = availableWidth - Columns.Sum(c => c.Width);
+                    if (remainingWidth <= 0)
+                    {
+                        break;
+                    }
+                }
+                if (!anyColumnHasGrown)
+                {
+                    break;
                 }
             }
 
