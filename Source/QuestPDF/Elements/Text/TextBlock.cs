@@ -224,17 +224,8 @@ namespace QuestPDF.Elements.Text
                 return;
             
             RebuildParagraphForEveryPage = Items.Any(x => x is TextBlockPageNumber);
-            
-            RemoveCarriageReturnCharacters();
             BuildParagraph();
-            
             AreParagraphMetricsValid = false;
-        }
-
-        private void RemoveCarriageReturnCharacters()
-        {
-            foreach (var textBlockSpan in Items.OfType<TextBlockSpan>().Where(x => x.Text != null))
-                textBlockSpan.Text = textBlockSpan.Text.Replace("\r", "");
         }
 
         private void BuildParagraph()
@@ -312,8 +303,9 @@ namespace QuestPDF.Elements.Text
                             textBlockPageNumber.UpdatePageNumberText(PageContext);
                 
                         var textStyle = textBlockSpan.Style.GetSkTextStyle();
-                        builder.AddText(textBlockSpan.Text, textStyle);
-                        currentTextIndex += textBlockSpan.Text.Length;
+                        var text = textBlockSpan.Text?.Replace("\r", "") ?? "";
+                        builder.AddText(text, textStyle);
+                        currentTextIndex += text.Length;
                     }
                     else if (textBlockItem is TextBlockElement textBlockElement)
                     {
