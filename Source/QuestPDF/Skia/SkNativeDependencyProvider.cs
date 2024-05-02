@@ -133,6 +133,7 @@ internal static class SkNativeDependencyProvider
                 
                 process.Start();
                 
+                // these operations may deadlock if the output is longer than the pipe buffer size
                 var standardOutputText = process.StandardOutput.ReadToEnd();
                 var standardErrorText = process.StandardError.ReadToEnd();
                 
