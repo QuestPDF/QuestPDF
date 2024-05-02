@@ -42,10 +42,10 @@ namespace QuestPDF.Infrastructure
         
         ~Image()
         {
-            SkImage.Dispose();
+            SkImage?.Dispose();
             
             foreach (var cacheKey in ScaledImageCache)
-                cacheKey.image.Dispose();
+                cacheKey.image?.Dispose();
         }
         
         #region Scaling Image

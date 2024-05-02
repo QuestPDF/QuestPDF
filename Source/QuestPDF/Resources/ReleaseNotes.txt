@@ -45,8 +45,8 @@ Version 2024.3.2
 
 
 Version 2024.3.3
+- Improved the default scaling behavior of Image and SvgImage elements when they are direct descendants of the Constrained element (Width, Height, MinWidth, MinHeight, MaxWidth, MaxHeight).
+- Enhanced handling of texts containing the carriage return character '\r' within the custom page format setting.
 - Fixed: enhanced the handling of the TextStyle.LineHeight modifier for better consistency with industry-standard software, as well as adjusted the default value.
 - Fixed: when the UseEnvironmentFonts setting is enabled, the Lato font was not being properly registered. This issue could lead to runtime exceptions in specific minimal environments.
-- Enhanced handling of texts containing the carriage return character '\r' within the custom page format setting.
-- Improved the default scaling behavior of Image and SvgImage elements when they are direct descendants of the Constrained element (Width, Height, MinWidth, MinHeight, MaxWidth, MaxHeight).
-
+- Fixed: Addressed a potential null reference exception in the SvgImage object’s finalizer that could lead to application crashes when handling invalid SVG content.
