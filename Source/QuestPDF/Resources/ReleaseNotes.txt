@@ -42,3 +42,7 @@ Version 2024.3.2
 - Fixed: the SVG image is not always scaled properly, especially when uses relative units internally (percentage, cm, "mm", etc.).
 - Fixed a sporadic `AccessViolationException` that occurred when UseEnvironmentFonts was set to `false` and documents were generated in parallel.
 - Fixed an issue where dynamic SVG images were not utilizing the available space correctly. This resulted in images with a zero size.
+
+
+Version 2024.3.3
+- Fixed: When the UseEnvironmentFonts setting is enabled, the Lato font was not being properly registered. This issue could lead to runtime exceptions in specific minimal environments.

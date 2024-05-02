@@ -22,6 +22,7 @@ namespace QuestPDF.Drawing
         static FontManager()
         {
             NativeDependencyCompatibilityChecker.Test();
+            RegisterLibraryDefaultFonts();
         }
         
         [Obsolete("Since version 2022.8 this method has been renamed. Please use the RegisterFontWithCustomName method.")]
@@ -65,6 +66,29 @@ namespace QuestPDF.Drawing
                 throw new ArgumentException($"Cannot load font file from an embedded resource. Please make sure that the resource is available or the path is correct: {pathName}");
             
             RegisterFont(stream);
+        }
+        
+        private static void RegisterLibraryDefaultFonts()
+        {
+            var supportedFontExtensions = new[] { "*.ttf", "*.otf", "*.ttc", "*.pfb" };
+
+            var executionPath = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
+            
+            var fontFilePaths = supportedFontExtensions
+                .SelectMany(extension => Directory.GetFiles(executionPath, extension, SearchOption.AllDirectories));
+            
+            foreach (var fileName in fontFilePaths)
+            {
+                try
+                {
+                    using var fontFileStream = File.OpenRead(fileName);
+                    RegisterFont(fontFileStream);
+                }
+                catch
+                {
+                    
+                }
+            }
         }
     }
 }
