@@ -20,14 +20,14 @@ namespace QuestPDF.Drawing
             NativeDependencyCompatibilityChecker.Test();
         }
         
-        internal static void GeneratePdf(SkWriteStream stream, IDocument document)
+        internal static int GeneratePdf(SkWriteStream stream, IDocument document)
         {
             ValidateLicense();
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
             var canvas = new PdfCanvas(stream, metadata, settings);
-            RenderDocument(canvas, document, settings);
+            return RenderDocument(canvas, document, settings);
         }
         
         internal static void GenerateXps(SkWriteStream stream, IDocument document)
@@ -84,20 +84,22 @@ namespace QuestPDF.Drawing
             return canvas.GetContent();
         }
         
-        private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
+        private static int RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
         {
+            int totalPages;
             canvas.BeginDocument();
             
             if (document is MergedDocument mergedDocument)
-                RenderMergedDocument(canvas, mergedDocument, settings);
+                totalPages = RenderMergedDocument(canvas, mergedDocument, settings);
             
             else
-                RenderSingleDocument(canvas, document, settings);
+                totalPages = RenderSingleDocument(canvas, document, settings);
             
             canvas.EndDocument();
+            return totalPages;
         }
 
-        private static void RenderSingleDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings)
+        private static int RenderSingleDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             var useOriginalImages = canvas is ImageCanvas;
@@ -108,9 +110,11 @@ namespace QuestPDF.Drawing
             RenderPass(pageContext, new FreeCanvas(), content);
             pageContext.ProceedToNextRenderingPhase();
             RenderPass(pageContext, canvas, content);
+
+            return pageContext.DocumentLength;
         }
         
-        private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)
+        private static int RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)
             where TCanvas : ICanvas, IRenderingCanvas
         {
             var useOriginalImages = canvas is ImageCanvas;
@@ -141,19 +145,24 @@ namespace QuestPDF.Drawing
                     documentPageContext.SetDocumentId(documentPart.DocumentId);
                     RenderPass(documentPageContext, canvas, documentPart.Content);   
                 }
+
+                return documentPageContext.DocumentLength;
             }
-            else
+
+            int totalPages = 0;
+
+            foreach (var documentPart in documentParts)
             {
-                foreach (var documentPart in documentParts)
-                {
-                    var pageContext = new PageContext();
-                    pageContext.SetDocumentId(documentPart.DocumentId);
-                    
-                    RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
-                    pageContext.ProceedToNextRenderingPhase();
-                    RenderPass(pageContext, canvas, documentPart.Content);
-                }
+                var pageContext = new PageContext();
+                pageContext.SetDocumentId(documentPart.DocumentId);
+                
+                RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
+                pageContext.ProceedToNextRenderingPhase();
+                RenderPass(pageContext, canvas, documentPart.Content);
+                totalPages += pageContext.DocumentLength;
             }
+
+            return totalPages;
         }
 
         private static Container ConfigureContent(IDocument document, DocumentSettings settings, bool useOriginalImages)

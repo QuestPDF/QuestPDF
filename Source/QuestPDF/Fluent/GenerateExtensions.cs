@@ -9,19 +9,27 @@ namespace QuestPDF.Fluent
     public static class GenerateExtensions
     {
         #region PDF
-        
+
         /// <summary>
         /// Generates the document in PDF format and returns it as a byte array.
         /// </summary>
         public static byte[] GeneratePdf(this IDocument document)
         {
+            return document.GeneratePdf();
+        }
+
+        /// <summary>
+        /// Generates the document in PDF format and returns it as a byte array.
+        /// </summary>
+        public static byte[] GeneratePdf(this IDocument document, out int totalPages)
+        {
             using var stream = new SkWriteStream();
-            DocumentGenerator.GeneratePdf(stream, document);
-            
+            totalPages = DocumentGenerator.GeneratePdf(stream, document);
+
             using var data = stream.DetachData();
             return data.ToBytes();
         }
-        
+
         /// <summary>
         /// Generates the document in PDF format and saves it to the specified file path.
         /// </summary>
