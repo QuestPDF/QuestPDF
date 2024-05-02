@@ -57,7 +57,7 @@ public class SvgImageDescriptor
         return SetAspectRatio(AspectRatioOption.FitArea);
     }
 
-    private SvgImageDescriptor SetAspectRatio(AspectRatioOption option)
+    internal SvgImageDescriptor SetAspectRatio(AspectRatioOption option)
     {
         AspectRatioElement.Ratio = ImageAspectRatio;
         AspectRatioElement.Option = option;
@@ -112,7 +112,9 @@ public static class SvgExtensions
         };
             
         parent.Element(aspectRationElement);
-        return new SvgImageDescriptor(imageElement, aspectRationElement).FitWidth();
+        
+        var bestScalingOption = ImageExtensions.GetBestAspectRatioOptionFromParent(parent);
+        return new SvgImageDescriptor(imageElement, aspectRationElement).SetAspectRatio(bestScalingOption);
     }
     
     /// <summary>

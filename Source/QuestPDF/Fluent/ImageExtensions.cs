@@ -115,7 +115,7 @@ namespace QuestPDF.Fluent
             return this;
         }
         
-        private ImageDescriptor SetAspectRatio(AspectRatioOption option)
+        internal ImageDescriptor SetAspectRatio(AspectRatioOption option)
         {
             AspectRatioElement.Ratio = ImageAspectRatio;
             AspectRatioElement.Option = option;
@@ -185,7 +185,29 @@ namespace QuestPDF.Fluent
             };
             
             parent.Element(aspectRationElement);
-            return new ImageDescriptor(imageElement, aspectRationElement).FitWidth();
+
+            var bestScalingOption = GetBestAspectRatioOptionFromParent(parent);
+            return new ImageDescriptor(imageElement, aspectRationElement).SetAspectRatio(bestScalingOption);
+        }
+        
+        internal static AspectRatioOption GetBestAspectRatioOptionFromParent(IContainer container)
+        {
+            if (container is not Constrained constrained)
+                return AspectRatioOption.FitWidth;
+
+            var hasWidthConstraint = constrained.MinWidth is not null || constrained.MaxWidth is not null;
+            var hasHeightConstraint = constrained.MinHeight is not null || constrained.MaxHeight is not null;
+                
+            if (hasWidthConstraint && hasHeightConstraint)
+                return AspectRatioOption.FitArea;
+                
+            if (hasWidthConstraint)
+                return AspectRatioOption.FitWidth;
+                
+            if (hasHeightConstraint)
+                return AspectRatioOption.FitHeight;
+                
+            return AspectRatioOption.FitWidth;
         }
         
         /// <summary>
