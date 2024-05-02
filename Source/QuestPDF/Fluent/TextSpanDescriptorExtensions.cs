@@ -55,19 +55,13 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontSize"]/*' />
         public static T FontSize<T>(this T descriptor, float value) where T : TextSpanDescriptor
         {
-            if (value <= 0)
-                throw new ArgumentException("Font size must be greater than 0.");
-            
             descriptor.MutateTextStyle(TextStyleExtensions.FontSize, value);
             return descriptor;
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.lineHeight"]/*' />
-        public static T LineHeight<T>(this T descriptor, float factor) where T : TextSpanDescriptor
+        public static T LineHeight<T>(this T descriptor, float? factor) where T : TextSpanDescriptor
         {
-            if (factor <= 0)
-                throw new ArgumentException("Line height must be greater than 0.");
-            
             descriptor.MutateTextStyle(TextStyleExtensions.LineHeight, factor);
             return descriptor;
         }

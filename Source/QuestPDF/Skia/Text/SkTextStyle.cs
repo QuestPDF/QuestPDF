@@ -22,7 +22,7 @@ internal struct TextStyleConfiguration
     public TextDecorationMode DecorationMode;
     public TextDecorationStyle DecorationStyle;
     
-    public float LineHeight;
+    public float LineHeight; // when 0, the default font metrics are used 
     public float LetterSpacing;
     public float WordSpacing;
     public float BaselineOffset;
