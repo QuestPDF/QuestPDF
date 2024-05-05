@@ -53,9 +53,7 @@ public class MultiColumnExamples
                 container
                     .Padding(25)
                     .DefaultTextStyle(x => x.FontSize(8))
-                    .ShrinkVertical()
                     .MultiColumn(2, 25)
-                    .ShrinkVertical()
                     .Border(1)
                     .Table(table =>
                     {
@@ -75,7 +73,7 @@ public class MultiColumnExamples
                             IContainer Style(IContainer container) => container.Border(1).BorderColor(Colors.Grey.Medium).Background(Colors.Grey.Lighten2).Padding(2);
                         });
                         
-                        foreach (var i in Enumerable.Range(1, 85))
+                        foreach (var i in Enumerable.Range(1, 40_000))
                         {
                             table.Cell().Element(Style).ShowEntire().Text(i.ToString());
                             table.Cell().Element(Style).ShowEntire().Text(Placeholders.Label());

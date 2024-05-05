@@ -2,44 +2,67 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.Proxy;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
+
+internal class MultiColumnChildDrawingObserver : ContainerElement
+{
+    public bool HasBeenDrawn => ChildStateBeforeDrawingOperation != null;
+    public object ChildStateBeforeDrawingOperation { get; private set; }
+
+    internal override void Draw(Size availableSpace)
+    {
+        ChildStateBeforeDrawingOperation ??= (Child as IStateful).CloneState();
+        
+        Child.Draw(availableSpace);
+    }
+    
+    internal void ResetDrawingState()
+    {
+        ChildStateBeforeDrawingOperation = null;
+    }
+
+    internal void RestoreState()
+    {
+        (Child as IStateful).SetState(ChildStateBeforeDrawingOperation);
+    }
+}
 
 internal class MultiColumn : ContainerElement
 {
     public int ColumnCount { get; set; } = 2;
     public bool MinimizeHeight { get; set; } = true;
     public float Spacing { get; set; }
+
+    private ProxyCanvas ChildrenCanvas { get; } = new();
+    private TreeNode<MultiColumnChildDrawingObserver>[] State { get; set; }
     
+    private void BuildState()
+    {
+        if (State != null)
+            return;
+        
+        this.VisitChildren(child =>
+        {
+            child.CreateProxy(x => x is IStateful ? new MultiColumnChildDrawingObserver { Child = x } : x);
+        });
+        
+        State = this.ExtractElementsOfType<MultiColumnChildDrawingObserver>().ToArray();
+    }
+
     internal override SpacePlan Measure(Size availableSpace)
     {
-        Child.InjectCanvas(new FreeCanvas());
+        BuildState();
         
-        var originalState = GetState();
+        if (Child.Canvas != ChildrenCanvas)
+            Child.InjectCanvas(ChildrenCanvas);
+        
+        ChildrenCanvas.Target = new FreeCanvas();
+        
         return FindPerfectSpace();
-        
-        ICollection<(Element element, object state)> GetState()
-        {
-            var result = new List<(Element element, object state)>();
-            
-            Child.VisitChildren(x =>
-            {
-                if (x is IStateful stateful)
-                    result.Add((x, stateful.CloneState()));
-            });
-            
-            return result;
-        }
-
-        void SetState(ICollection<(Element element, object state)> state)
-        {
-            foreach (var (element, elementState) in state)
-            {
-                (element as IStateful).SetState(elementState);
-            }
-        }
 
         IEnumerable<SpacePlan> MeasureColumns(Size availableSpace)
         {
@@ -51,7 +74,7 @@ internal class MultiColumn : ContainerElement
                 Child.Draw(columnAvailableSpace);
             }
             
-            SetState(originalState);
+            ResetObserverState(restoreChildState: true);
         }
         
         SpacePlan FindPerfectSpace()
@@ -95,15 +118,16 @@ internal class MultiColumn : ContainerElement
     internal override void Draw(Size availableSpace)
     {
         var columnAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
-        Child.InjectCanvas(Canvas);
+        ChildrenCanvas.Target = Canvas;
         
         Canvas.Save();
         
         foreach (var i in Enumerable.Range(0, ColumnCount))
         {
             var columnMeasurement = Child.Measure(columnAvailableSpace);
+            var targetColumnSize = new Size(columnAvailableSpace.Width, columnMeasurement.Height);
             
-            Child.Draw(columnAvailableSpace);
+            Child.Draw(targetColumnSize);
             Canvas.Translate(new Position(columnAvailableSpace.Width + Spacing, 0));
             
             if (columnMeasurement.Type is SpacePlanType.NoContent or SpacePlanType.FullRender)
@@ -111,5 +135,29 @@ internal class MultiColumn : ContainerElement
         }
         
         Canvas.Restore();
+        
+        ResetObserverState(restoreChildState: false);
+    }
+    
+    void ResetObserverState(bool restoreChildState)
+    {
+        foreach (var node in State)
+            Traverse(node);
+            
+        void Traverse(TreeNode<MultiColumnChildDrawingObserver> node)
+        {
+            var observer = node.Value;
+
+            if (!observer.HasBeenDrawn)
+                return;
+
+            if (restoreChildState)
+                observer.RestoreState();
+            
+            observer.ResetDrawingState();
+                
+            foreach (var child in node.Children)
+                Traverse(child);
+        }
     }
 }
