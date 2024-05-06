@@ -50,3 +50,7 @@ Version 2024.3.3
 - Fixed: enhanced the handling of the TextStyle.LineHeight modifier for better consistency with industry-standard software, as well as adjusted the default value.
 - Fixed: when the UseEnvironmentFonts setting is enabled, the Lato font was not being properly registered. This issue could lead to runtime exceptions in specific minimal environments.
 - Fixed: Addressed a potential null reference exception in the SvgImage object’s finalizer that could lead to application crashes when handling invalid SVG content.
+
+Version 2024.3.4
+- Improved font rendering by setting half-leading when line-height is overridden.
+- Enhanced exception messages for unsupported x86 platforms.
