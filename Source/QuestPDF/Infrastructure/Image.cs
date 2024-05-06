@@ -12,7 +12,7 @@ namespace QuestPDF.Infrastructure
         internal ImageSize Resolution { get; set; }
         internal ImageCompressionQuality CompressionQuality { get; set; }
     }
-    
+
     /// <summary>
     /// <para>Caches the image in local memory for efficient reuse.</para>
     /// <para>Optimizes the generation process, especially:</para>
@@ -28,38 +28,37 @@ namespace QuestPDF.Infrastructure
         {
             NativeDependencyCompatibilityChecker.Test();
         }
-        
+
         internal SkImage SkImage { get; }
         internal ImageSize Size { get; }
 
-        internal LinkedList<(GetImageVersionRequest request, SkImage image)> ScaledImageCache { get; } = new();
- 
+        internal Dictionary<GetImageVersionRequest, SkImage> ScaledImageCache { get; } = new();
+
         internal Image(SkImage image)
         {
             SkImage = image;
             Size = new ImageSize(image.Width, image.Height);
         }
-        
+
         ~Image()
         {
             SkImage?.Dispose();
-            
+
             foreach (var cacheKey in ScaledImageCache)
-                cacheKey.image?.Dispose();
+                cacheKey.Value.Dispose();
         }
-        
+
         #region Scaling Image
 
         internal SkImage GetVersionOfSize(GetImageVersionRequest request)
         {
-            foreach (var cacheKey in ScaledImageCache)
+            if (ScaledImageCache.TryGetValue(request, out var cachedImage))
             {
-                if (cacheKey.request == request)
-                    return cacheKey.image;
+                return cachedImage;
             }
 
             var result = SkImage.ResizeAndCompressImage(request.Resolution, request.CompressionQuality);
-            ScaledImageCache.AddLast((request, result));
+            ScaledImageCache[request] = result;
             return result;
         }
 
@@ -87,7 +86,7 @@ namespace QuestPDF.Infrastructure
         {
             if (!File.Exists(filePath))
                 throw new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
-            
+
             using var imageData = SkData.FromFile(filePath);
             return DecodeImage(imageData);
         }
@@ -102,7 +101,7 @@ namespace QuestPDF.Infrastructure
             using var imageData = SkData.FromStream(stream);
             return DecodeImage(imageData);
         }
-        
+
         private static Image DecodeImage(SkData imageData)
         {
             try
