@@ -111,9 +111,10 @@ namespace QuestPDF.Fluent
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.clampLines"]/*' />
-        public TextBlockDescriptor ClampLines(int maxLines)
+        public TextBlockDescriptor ClampLines(int maxLines, string ellipsis = TextDescriptor.DefaultLineClampEllipsis)
         {
             TextBlock.LineClamp = maxLines;
+            TextBlock.LineClampEllipsis = ellipsis;
             return this;
         }
     }
@@ -123,6 +124,8 @@ namespace QuestPDF.Fluent
         internal TextBlock TextBlock { get; } = new();
         private TextStyle? DefaultStyle { get; set; }
 
+        internal const string DefaultLineClampEllipsis = "…";
+        
         /// <summary>
         /// Applies a consistent text style for the whole content within this <see cref="TextExtensions.Text">Text</see> element.
         /// </summary>
@@ -178,9 +181,10 @@ namespace QuestPDF.Fluent
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.clampLines"]/*' />
-        public void ClampLines(int maxLines)
+        public void ClampLines(int maxLines, string ellipsis = DefaultLineClampEllipsis)
         {
             TextBlock.LineClamp = maxLines;
+            TextBlock.LineClampEllipsis = ellipsis;
         }
         
         [Obsolete("This method is not supported since the 2024.3 version. Please split your text into separate paragraphs, combine using the Column element that also provides the Spacing capability.")]

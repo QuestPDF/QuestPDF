@@ -17,6 +17,7 @@ namespace QuestPDF.Elements.Text
         
         public TextHorizontalAlignment? Alignment { get; set; }
         public int? LineClamp { get; set; }
+        public string LineClampEllipsis { get; set; }
         public List<ITextBlockItem> Items { get; set; } = new();
 
         private SkParagraph Paragraph { get; set; }
@@ -230,11 +231,14 @@ namespace QuestPDF.Elements.Text
 
         private void BuildParagraph()
         {
+            using var clampLinesEllipsis = new SkText(LineClampEllipsis);
+            
             var paragraphStyle = new ParagraphStyleConfiguration
             {
                 Alignment = MapAlignment(Alignment ?? TextHorizontalAlignment.Start),
                 Direction = MapDirection(ContentDirection),
-                MaxLinesVisible = LineClamp ?? 1_000_000
+                MaxLinesVisible = LineClamp ?? 1_000_000,
+                LineClampEllipsis = clampLinesEllipsis.Instance
             };
             
             var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
