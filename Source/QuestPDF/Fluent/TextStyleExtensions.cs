@@ -18,7 +18,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
         public static TextStyle FontColor(this TextStyle style, Color color)
         {
-            return style.Mutate(TextStyleProperty.Color, color);
+            return style
+                .Mutate(TextStyleProperty.Color, color)
+                .Mutate(TextStyleProperty.DecorationColor, color);
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.backgroundColor"]/*' />
