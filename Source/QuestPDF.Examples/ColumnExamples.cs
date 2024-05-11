@@ -104,5 +104,39 @@ namespace QuestPDF.Examples
                         .Column(column => { });
                 });
         }
+        
+        [Test]
+        public void ColumnWithShowOnce()
+        {
+            RenderingTest
+                .Create()
+                .ProducePdf()
+                .MaxPages(100)
+                .ShowResults()
+                .RenderDocument(document =>
+                {
+                    document.Page(page =>
+                    {
+                        page.Size(PageSizes.A4);
+                        page.Margin(50);
+
+                        page.Content().PaddingVertical(25).Column(column =>
+                        {
+                            column.Spacing(25);
+                            
+                            foreach (var i in Enumerable.Range(0, 50))
+                                column.Item().Height(75).Width(100 + i * 5).Background(Colors.Grey.Lighten2);
+                        });
+
+                        page.Header().Background(Colors.Grey.Lighten4).Column(column =>
+                        {
+                            column.Spacing(10);
+                            column.Item().Background(Colors.Red.Lighten3).Text("First line");
+                            column.Item().Background(Colors.Green.Lighten3).ShowIf(x => x.PageNumber % 3 != 0).Text("Second line");
+                            column.Item().Background(Colors.Blue.Lighten3).ShowIf(x => x.PageNumber % 2 != 0).Text("Third line");
+                        });
+                    });
+                });
+        }
     }
 }
