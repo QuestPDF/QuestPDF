@@ -13,6 +13,8 @@ namespace QuestPDF.Elements.Table
         public List<TableColumnDefinition> Columns { get; set; } = new();
         public List<TableCell> Cells { get; set; } = new();
         public List<TableCell> AllCells { get; set; } = new();
+        public Dictionary<int, float> ColumnsWidth { get; set; } = new();
+        public Action<Dictionary<int, float>> AfterUpdateColumnsWidth { get; set; }
 
         public bool ExtendLastCellsToTableBottom { get; set; }
         
@@ -148,6 +150,15 @@ namespace QuestPDF.Elements.Table
         
         private void UpdateColumnsWidth(float availableWidth)
         {
+            if (ColumnsWidth.Any())
+            {
+                foreach (var column in Columns)
+                {
+                    column.Width = ColumnsWidth[Columns.IndexOf(column)];
+                }
+                return;
+            }
+
             var constantWidth = Columns.Sum(x => x.ConstantSize);
             var relativeWidth = Columns.Sum(x => x.RelativeSize);
 
@@ -159,7 +170,6 @@ namespace QuestPDF.Elements.Table
             }
 
             var cells = AllCells.Where(c => c is { ColumnSpan: 1, RowSpan: 1 });
-            Dictionary<int, float> columnWidth = new();
 
             foreach (var column in Columns.Where(c => c.AllowShrink))
             {
@@ -167,8 +177,8 @@ namespace QuestPDF.Elements.Table
                 var cellsInColumn = cells.Where(c => c.Column == index + 1);
                 if (cellsInColumn.Any())
                 {
-                    columnWidth.Add(index, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
-                    column.Width = Math.Min(column.Width, columnWidth[index]);
+                    ColumnsWidth.Add(index, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
+                    column.Width = Math.Min(column.Width, ColumnsWidth[index]);
                 }
             }
 
@@ -182,11 +192,11 @@ namespace QuestPDF.Elements.Table
                 {
                     var index = Columns.IndexOf(column);
                     var cellsInColumn = cells.Where(c => c.Column == index + 1);
-                    if (!columnWidth.ContainsKey(index))
+                    if (!ColumnsWidth.ContainsKey(index))
                     {
-                        columnWidth.Add(index, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
+                        ColumnsWidth.Add(index, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
                     }
-                    var newWidth = Math.Min(column.Width + growStep, columnWidth[index]);
+                    var newWidth = Math.Min(column.Width + growStep, ColumnsWidth[index]);
                     if (newWidth > column.Width)
                     {
                         anyColumnHasGrown = true;
@@ -208,6 +218,14 @@ namespace QuestPDF.Elements.Table
             {
                 Columns.Last().Width += remainingWidth;
             }
+
+            foreach (var column in Columns)
+            {
+                // Add missing columns, that don't auto size.
+                ColumnsWidth[Columns.IndexOf(column)] = column.Width;
+            }
+
+            AfterUpdateColumnsWidth?.Invoke(ColumnsWidth);
         }
         
         private ICollection<TableCellRenderingCommand> PlanLayout(Size availableSpace)
