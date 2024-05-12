@@ -27,6 +27,7 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        [Ignore("This test takes a lot of time to run")]
         public void Benchmark()
         {
             var chapters = GetBookChapters().ToList();

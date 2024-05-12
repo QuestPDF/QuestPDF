@@ -9,6 +9,7 @@ namespace QuestPDF.Examples
     public class TableBenchmark
     {
         [Test]
+        [Ignore("This test takes a lot of time to run")]
         public void Benchmark()
         {
             RenderingTest

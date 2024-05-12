@@ -23,6 +23,7 @@ namespace QuestPDF.Examples
         public const int TestSize = 4096;
         
         [Test]
+        [Ignore("This test takes a lot of time to run")]
         public void BenchmarkAsync()
         {
             RunTest(() => Enumerable
@@ -33,6 +34,7 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        [Ignore("This test takes a lot of time to run")]
         public void BenchmarkSync()
         {
             RunTest(() => Enumerable

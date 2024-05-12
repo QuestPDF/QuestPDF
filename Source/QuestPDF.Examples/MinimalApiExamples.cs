@@ -46,8 +46,6 @@ namespace QuestPDF.Examples
                     });
                 })
                 .GeneratePdf("hello.pdf");
-
-            Process.Start("explorer.exe", "hello.pdf");
         }
     }
 }
