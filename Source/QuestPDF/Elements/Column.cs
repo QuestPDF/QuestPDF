@@ -94,9 +94,18 @@ namespace QuestPDF.Elements
                 if (item.IsRendered)
                     continue;
 
-                var measurement = MeasureItem(item);
+                var availableHeight = availableSpace.Height - topOffset;
+
+                var itemSpace = availableHeight > 0
+                    ? new Size(availableSpace.Width, availableHeight)
+                    : Size.Zero;
+                
+                var measurement = item.Measure(itemSpace);
                 
                 if (measurement.Type == SpacePlanType.Wrap)
+                    break;
+                
+                if (Size.Equal(itemSpace, Size.Zero) && !Size.Equal(measurement, Size.Zero))
                     break;
 
                 // when the item does not take any space, do not add spacing
@@ -120,23 +129,6 @@ namespace QuestPDF.Elements
             }
 
             return commands;
-
-            SpacePlan MeasureItem(ColumnItem item)
-            {
-                var availableHeight = availableSpace.Height - topOffset;
-                
-                if (availableHeight < Size.Epsilon)
-                {
-                    var measurementWithZeroSpace = item.Measure(Size.Zero);
-      
-                    return measurementWithZeroSpace.Type == SpacePlanType.FullRender
-                        ? measurementWithZeroSpace
-                        : SpacePlan.Wrap();
-                }
-                
-                var itemSpace = new Size(availableSpace.Width, availableHeight);
-                return item.Measure(itemSpace);
-            }
         }
     }
 }
