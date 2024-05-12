@@ -54,3 +54,8 @@ Version 2024.3.3
 Version 2024.3.4
 - Improved font rendering by setting half-leading when line-height is overridden.
 - Enhanced exception messages for unsupported x86 platforms.
+
+Version 2024.3.5
+- Enhancement: text uses half-leading by default.
+- Fixed: default text decoration color should match font color.
+- Fixed: the Column element may not render successfully when it has non-zero spacing, contains a child with zero height, and is repeated.
