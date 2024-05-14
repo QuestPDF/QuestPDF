@@ -18,14 +18,6 @@ internal static class SkNativeDependencyProvider
         "osx-x64",
         "osx-arm64"
     };
-
-    static SkNativeDependencyProvider()
-    {
-        const string runtimesFolder = "Runtimes";
-        
-        if (Directory.Exists(runtimesFolder))
-            Directory.Move(runtimesFolder, runtimesFolder.ToLower());
-    }
     
     public static void EnsureNativeFileAvailability()
     {
