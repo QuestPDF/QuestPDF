@@ -3,49 +3,54 @@ name: Build And Create Nuget Package
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
-  schedule:
-    - cron: '3 0 * * 0'
 
 jobs:
   main:
     runs-on: ${{ matrix.environment }}
     strategy:
       matrix:
-        environment:
-          - macos-latest
-          - ubuntu-latest
-          - windows-latest
-    env:
-      DOTNET_NOLOGO: 1
-      DOTNET_CLI_TELEMETRY_OPTOUT: 1
-      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
-      UNIT_TEST_PROJECT: QuestPDF.UnitTests/QuestPDF.UnitTests.csproj
+        runtime: 
+        - name: win-x64
+          runs-on: windows-latest-large
+        - name: win-x86
+          runs-on: windows-latest-large
+        - name: linux-x64
+          runs-on: ubuntu-latest-large
+        - name: linux-arm64
+          runs-on: [self-hosted, linux, arm64]
+          container: ubuntu
+        - name: linux-musl-x64
+          runs-on: ubuntu-latest-large
+          container: alpine
+        - name: osx-x64
+          runs-on: macos-latest-large
+        - name: osx-arm64
+          runs-on: macos-latest-xlarge
 
     steps:
-      - name: 📝 Fetch Sources 📝
-        uses: actions/checkout@v3
+      - name: Checkout sources
+        uses: actions/checkout@v4
 
-      - name: ⚙ Setup .NET 8.0 SDK ⚙
-        uses: actions/setup-dotnet@v3
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-          
-      - name: 🔄 Restore Nuget Packages 🔄
-        shell: bash
-        run: dotnet restore
-        working-directory: ./Source
 
-      - name: 🛠 Build Solution 🛠
+      - name: Build solution
         shell: bash
-        run: dotnet build -c Release --no-restore
         working-directory: ./Source
+        env:
+          TEST_SHOW_RESULTS: false
+        run: |
+          dotnet build -c Release
+          dotnet test QuestPDF.UnitTests --runtime ${{ matrix.runtime.name }}
+          dotnet test QuestPDF.LayoutTests --runtime ${{ matrix.runtime.name }}
+          # dotnet test QuestPDF.Examples --runtime ${{ matrix.runtime.name }}
         
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        if: ${{ matrix.environment == 'windows-latest' }}
+        uses: actions/upload-artifact@v4
+        if: ${{ matrix.environment == 'win-x64' }}
         with:
           name: Build Package
           path: |
