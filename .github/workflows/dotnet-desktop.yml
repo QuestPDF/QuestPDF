@@ -7,8 +7,8 @@ on:
 
 jobs:
   main:
-    runs-on: ${{ matrix.environment }}
     strategy:
+      fail-fast: false
       matrix:
         runtime: 
         - name: win-x64
