@@ -29,7 +29,7 @@ namespace QuestPDF.Examples.Engine
         
         private RenderingTest()
         {
-            Console.WriteLine("Showing results: " + ShowingResultsEnabled);
+            
         }
 
         public static RenderingTest Create([CallerMemberName] string fileName = "test")
