@@ -25,11 +25,11 @@ namespace QuestPDF.Examples.Engine
         private bool ApplyDebugging { get; set; }
         private RenderingTestResult ResultType { get; set; } = RenderingTestResult.Images;
 
-        private bool ShowingResultsEnabled = true;
+        private static readonly bool ShowingResultsEnabled = (Environment.GetEnvironmentVariable("TEST_SHOW_RESULTS") ?? "true") == "true";
         
         private RenderingTest()
         {
-            
+            Console.WriteLine("Showing results: " + ShowingResultsEnabled);
         }
 
         public static RenderingTest Create([CallerMemberName] string fileName = "test")
