@@ -23,10 +23,10 @@ jobs:
           runs-on: ubuntu-latest-large
         - name: linux-arm64
           runs-on: [self-hosted, linux, arm64]
-          container: ubuntu
+          container: ubuntu:24.04
         - name: linux-musl-x64
           runs-on: ubuntu-latest-large
-          container: alpine
+          container: alpine:3.18
         - name: osx-x64
           runs-on: macos-latest-large
         - name: osx-arm64
@@ -40,13 +40,19 @@ jobs:
       - name: Install Build Tools (Linux)
         if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
         shell: sh
-        run: apt install bash wget
+        run: |
+          apt update
+          apt upgrade
+          apt install bash wget
 
 
       - name: Install Build Tools (Alpine)
         if: matrix.runtime.name == 'linux-musl-x64'
         shell: sh
-        run: apk add bash wget
+        run: |
+          apk update
+          apk upgrade
+          apk add bash wget
 
 
       - name: Setup dotnet
