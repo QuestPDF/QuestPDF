@@ -46,7 +46,7 @@ jobs:
           apt upgrade --yes
 
           # required by actions/setup-dotnet
-          apt install bash wget tree --yes
+          apt install bash wget --yes
 
 
       - name: Install Build Tools (Alpine)
@@ -57,7 +57,7 @@ jobs:
           apk upgrade
 
           # required by actions/setup-dotnet
-          apk add bash wget tree
+          apk add bash wget
 
           # required by dotnet build command
           apk add libstdc++ libgcc
@@ -77,7 +77,6 @@ jobs:
           DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
         run: |
           dotnet build --configuration Release --property WarningLevel=0
-          tree
           dotnet test QuestPDF.UnitTests --configuration Release --runtime ${{ matrix.runtime.name }}
           dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }}
           dotnet test QuestPDF.Examples --configuration Release --runtime ${{ matrix.runtime.name }}
