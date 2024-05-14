@@ -37,6 +37,18 @@ jobs:
         uses: actions/checkout@v4
 
 
+      - name: Install Build Tools (Linux)
+        if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
+        shell: sh
+        run: apt install bash wget
+
+
+      - name: Install Build Tools (Alpine)
+        if: matrix.runtime.name == 'linux-musl-x64'
+        shell: sh
+        run: apk add bash wget
+
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
@@ -49,10 +61,10 @@ jobs:
         env:
           TEST_SHOW_RESULTS: false
         run: |
-          dotnet build -c Release --property WarningLevel=0
-          dotnet test QuestPDF.UnitTests --runtime ${{ matrix.runtime.name }}
-          dotnet test QuestPDF.LayoutTests --runtime ${{ matrix.runtime.name }}
-          # dotnet test QuestPDF.Examples --runtime ${{ matrix.runtime.name }}
+          dotnet build --configuration Release --property WarningLevel=0
+          dotnet test QuestPDF.UnitTests --configuration Release --runtime ${{ matrix.runtime.name }}
+          dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }}
+          # dotnet test QuestPDF.Examples --configuration Release --runtime ${{ matrix.runtime.name }}
 
         
       - name: Upload build artifacts
