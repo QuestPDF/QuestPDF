@@ -21,6 +21,7 @@ jobs:
           runs-on: windows-latest-large
         - name: linux-x64
           runs-on: ubuntu-latest-large
+          container: ubuntu:24.04
         - name: linux-arm64
           runs-on: [self-hosted, linux, arm64]
           container: ubuntu:24.04
@@ -41,9 +42,11 @@ jobs:
         if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
         shell: sh
         run: |
-          apt update
-          apt upgrade
-          apt install bash wget
+          apt update --yes
+          apt upgrade --yes
+
+          # required by actions/setup-dotnet
+          apt install bash wget --yes
 
 
       - name: Install Build Tools (Alpine)
@@ -52,7 +55,12 @@ jobs:
         run: |
           apk update
           apk upgrade
+
+          # required by actions/setup-dotnet
           apk add bash wget
+
+          # required by dotnet build command
+          apk add libstdc++ libgcc
 
 
       - name: Setup dotnet
