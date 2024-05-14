@@ -30,19 +30,13 @@ internal class SvgImage : Element
         
         float CalculateSpaceScale(float availableSize, float imageSize, SkSvgImageSize.Unit unit)
         {
-            if (unit is Pixels)
-                return 1;
-            
             if (unit == Percentage)
                 return 100f / imageSize;
 
             if (unit is Centimeters or Millimeters or Inches or Points or Picas)
                 return availableSize / ConvertToPoints(imageSize, unit);
 
-            if (unit is Number)
-                return availableSize / imageSize;
-
-            throw new NotSupportedException();
+            return availableSize / imageSize;
         }
     
         float ConvertToPoints(float value, SkSvgImageSize.Unit unit)
