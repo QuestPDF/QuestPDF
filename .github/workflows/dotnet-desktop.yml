@@ -1,4 +1,4 @@
-name: Build And Create Nuget Package
+name: Build, Test And Create Nuget Package
 
 on:
   push:
@@ -7,6 +7,10 @@ on:
 
 jobs:
   main:
+    name: ${{ matrix.runtime.name }}
+    runs-on: ${{ matrix.runtime.runs-on }}
+    container: ${{ matrix.runtime.container }}
+  
     strategy:
       fail-fast: false
       matrix:
