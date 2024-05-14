@@ -84,7 +84,7 @@ jobs:
         
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
-        if: ${{ matrix.environment == 'win-x64' }}
+        if: ${{ matrix.runtime.name == 'win-x64' }}
         with:
           name: Build Package
           path: |
