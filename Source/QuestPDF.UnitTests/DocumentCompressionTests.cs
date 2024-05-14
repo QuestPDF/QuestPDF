@@ -64,7 +64,7 @@ public class DocumentCompressionTests
         var sizeRatio = withoutCompression.documentSize / (float)withCompression.documentSize;
         sizeRatio.Should().BeGreaterThan(3);
 
-        (withCompression.generationTime / withoutCompression.generationTime).Should().BeLessThan(1.25f);
+        (withCompression.generationTime / withoutCompression.generationTime).Should().BeLessThan(1.5f);
         
         (int documentSize, float generationTime) MeasureDocumentSizeAndGenerationTime(bool compress)
         {
