@@ -156,7 +156,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Generates the document as a series of SVG images and returns them as a collection of strings.
         /// </summary>
-        public static IEnumerable<string> GenerateSvg(this IDocument document)
+        public static ICollection<string> GenerateSvg(this IDocument document)
         {
             return DocumentGenerator.GenerateSvg(document);
         }

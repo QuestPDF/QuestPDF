@@ -14,6 +14,11 @@ namespace QuestPDF.Drawing
         internal SkWriteStream WriteStream { get; set; }
         internal ICollection<string> Images { get; } = new List<string>();
         
+        ~SvgCanvas()
+        {
+            WriteStream?.Dispose();
+        }
+        
         public override void BeginDocument()
         {
             
