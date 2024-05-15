@@ -17,14 +17,8 @@ namespace QuestPDF.UnitTests
             {
                 Items =
                 {
-                    new ColumnItem
-                    {
-                        Child = testPlan.CreateChild("first")
-                    },
-                    new ColumnItem
-                    {
-                        Child = testPlan.CreateChild("second")
-                    }
+                    testPlan.CreateChild("first"),
+                    testPlan.CreateChild("second")
                 }
             };
         }
@@ -32,7 +26,7 @@ namespace QuestPDF.UnitTests
         private Column CreateColumnWithTwoItemsWhereFirstIsFullyRendered(TestPlan testPlan)
         {
             var column = CreateColumnWithTwoItems(testPlan);
-            column.Items.First().IsRendered = true;
+            column.CurrentRenderingIndex = 1;
             return column;
         }
         
@@ -176,7 +170,7 @@ namespace QuestPDF.UnitTests
                 .ExpectCanvasTranslate(0, 0)
                 .ExpectChildDraw("second", new Size(400, 300))
                 .ExpectCanvasTranslate(0, 0)
-                .CheckState<Column>(x => x.Items.First().IsRendered)
+                .CheckState<Column>(x => x.CurrentRenderingIndex > 0)
                 .CheckDrawResult();
         }
         
@@ -191,7 +185,7 @@ namespace QuestPDF.UnitTests
                 .ExpectChildDraw("second", new Size(400, 300))
                 .ExpectCanvasTranslate(0, 0)
                 .CheckDrawResult()
-                .CheckState<Column>(x => !x.Items.First().IsRendered);
+                .CheckState<Column>(x => x.CurrentRenderingIndex == 0);
         }
         
         #endregion

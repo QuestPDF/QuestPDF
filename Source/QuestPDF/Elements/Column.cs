@@ -6,26 +6,23 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class ColumnItem : Container
-    {
-        public bool IsRendered { get; set; }
-    }
-
     internal sealed class ColumnItemRenderingCommand
     {
-        public ColumnItem ColumnItem { get; set; }
+        public Element Element { get; set; }
         public SpacePlan Measurement { get; set; }
         public Position Offset { get; set; }
     }
 
     internal sealed class Column : Element, ICacheable, IStateResettable
     {
-        internal List<ColumnItem> Items { get; } = new();
+        internal List<Element> Items { get; } = new();
         internal float Spacing { get; set; }
+        
+        internal int CurrentRenderingIndex { get; set; }
 
         public void ResetState()
         {
-            Items.ForEach(x => x.IsRendered = false);
+            CurrentRenderingIndex = 0;
         }
         
         internal override IEnumerable<Element?> GetChildren()
@@ -35,12 +32,16 @@ namespace QuestPDF.Elements
         
         internal override void CreateProxy(Func<Element?, Element?> create)
         {
-            Items.ForEach(x => x.Child = create(x.Child));
+            for (var i = 0; i < Items.Count; i++)
+                Items[i] = create(Items[i]);
         }
 
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!Items.Any())
+                return SpacePlan.FullRender(Size.Zero);
+            
+            if (CurrentRenderingIndex == Items.Count)
                 return SpacePlan.FullRender(Size.Zero);
             
             var renderingCommands = PlanLayout(availableSpace);
@@ -55,7 +56,7 @@ namespace QuestPDF.Elements
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();
             
-            var totalRenderedItems = Items.Count(x => x.IsRendered) + renderingCommands.Count(x => x.Measurement.Type == SpacePlanType.FullRender);
+            var totalRenderedItems = CurrentRenderingIndex + renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.FullRender);
             var willBeFullyRendered = totalRenderedItems == Items.Count;
 
             return willBeFullyRendered
@@ -69,31 +70,28 @@ namespace QuestPDF.Elements
 
             foreach (var command in renderingCommands)
             {
-                if (command.Measurement.Type == SpacePlanType.FullRender)
-                    command.ColumnItem.IsRendered = true;
-
                 var targetSize = new Size(availableSpace.Width, command.Measurement.Height);
 
                 Canvas.Translate(command.Offset);
-                command.ColumnItem.Draw(targetSize);
+                command.Element.Draw(targetSize);
                 Canvas.Translate(command.Offset.Reverse());
             }
             
-            if (Items.All(x => x.IsRendered))
+            var fullyRenderedItems = renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.FullRender);
+            CurrentRenderingIndex += fullyRenderedItems;
+            
+            if (CurrentRenderingIndex == Items.Count)
                 ResetState();
         }
 
-        private ICollection<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
+        private List<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
         {
             var topOffset = 0f;
             var targetWidth = 0f;
             var commands = new List<ColumnItemRenderingCommand>();
 
-            foreach (var item in Items)
+            foreach (var item in Items.Skip(CurrentRenderingIndex))
             {
-                if (item.IsRendered)
-                    continue;
-
                 var availableHeight = availableSpace.Height - topOffset;
 
                 var itemSpace = availableHeight > 0
@@ -114,7 +112,7 @@ namespace QuestPDF.Elements
                 
                 commands.Add(new ColumnItemRenderingCommand
                 {
-                    ColumnItem = item,
+                    Element = item,
                     Measurement = measurement,
                     Offset = new Position(0, topOffset)
                 });
