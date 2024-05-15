@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using SvgImage = QuestPDF.Infrastructure.SvgImage;
 
@@ -23,7 +24,7 @@ public class SvgImageDescriptor
     {
         ImageElement = imageElement;
         AspectRatioElement = aspectRatioElement;
-        ImageAspectRatio = ImageElement.Image.SkSvgImage.ViewBox.Width /  ImageElement.Image.SkSvgImage.ViewBox.Height;
+        ImageAspectRatio = imageElement.Image.SkSvgImage.AspectRatio;
     }
     
     /// <summary>
@@ -56,7 +57,7 @@ public class SvgImageDescriptor
         return SetAspectRatio(AspectRatioOption.FitArea);
     }
 
-    private SvgImageDescriptor SetAspectRatio(AspectRatioOption option)
+    internal SvgImageDescriptor SetAspectRatio(AspectRatioOption option)
     {
         AspectRatioElement.Ratio = ImageAspectRatio;
         AspectRatioElement.Option = option;
@@ -111,7 +112,9 @@ public static class SvgExtensions
         };
             
         parent.Element(aspectRationElement);
-        return new SvgImageDescriptor(imageElement, aspectRationElement).FitWidth();
+        
+        var bestScalingOption = ImageExtensions.GetBestAspectRatioOptionFromParent(parent);
+        return new SvgImageDescriptor(imageElement, aspectRationElement).SetAspectRatio(bestScalingOption);
     }
     
     /// <summary>

@@ -55,13 +55,16 @@ public class DocumentCompressionTests
             });
         });
 
+        // warmup cache
+        document.GeneratePdf();
+
         var withoutCompression = MeasureDocumentSizeAndGenerationTime(false);
         var withCompression = MeasureDocumentSizeAndGenerationTime(true);
         
         var sizeRatio = withoutCompression.documentSize / (float)withCompression.documentSize;
         sizeRatio.Should().BeGreaterThan(3);
 
-        Math.Abs(withCompression.generationTime - withoutCompression.generationTime).Should().BeLessThan(100);
+        (withCompression.generationTime / withoutCompression.generationTime).Should().BeLessThan(1.5f);
         
         (int documentSize, float generationTime) MeasureDocumentSizeAndGenerationTime(bool compress)
         {

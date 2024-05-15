@@ -9,6 +9,8 @@ namespace QuestPDF.Infrastructure
 {
     public record TextStyle
     {
+        internal const float NormalLineHeightCalculatedFromFontMetrics = 0;
+        
         internal int Id { get; set; }
         
         internal Color? Color { get; set; }
@@ -42,7 +44,7 @@ namespace QuestPDF.Infrastructure
             DecorationColor = Colors.Black,
             FontFamilies = new[] { Fonts.Lato },
             Size = 12,
-            LineHeight = 1.2f,
+            LineHeight = NormalLineHeightCalculatedFromFontMetrics,
             LetterSpacing = 0,
             WordSpacing = 0f,
             FontWeight = Infrastructure.FontWeight.Normal,
@@ -88,7 +90,7 @@ namespace QuestPDF.Infrastructure
                 DecorationStyle = DecorationStyle ?? TextStyleConfiguration.TextDecorationStyle.Solid,
                 DecorationThickness = DecorationThickness ?? 1,
                 
-                LineHeight = LineHeight ?? 1,
+                LineHeight = LineHeight ?? NormalLineHeightCalculatedFromFontMetrics,
                 LetterSpacing = (LetterSpacing ?? 0) * (Size ?? 1),
                 WordSpacing = (WordSpacing ?? 0) * (Size ?? 1),
                 BaselineOffset = CalculateBaselineOffset(),

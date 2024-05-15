@@ -23,7 +23,7 @@ public class SvgImage
 
     ~SvgImage()
     {
-        SkSvgImage.Dispose();
+        SkSvgImage?.Dispose();
     }
     
     /// <summary>

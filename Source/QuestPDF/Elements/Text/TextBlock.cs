@@ -16,9 +16,13 @@ namespace QuestPDF.Elements.Text
         public ContentDirection ContentDirection { get; set; }
         
         public TextHorizontalAlignment? Alignment { get; set; }
+        
         public int? LineClamp { get; set; }
+         public string LineClampEllipsis { get; set; }
+
         public float ParagraphSpacing { get; set; }
         public float ParagraphFirstLineIndentation { get; set; }
+
         public List<ITextBlockItem> Items { get; set; } = new();
 
         private SkParagraph Paragraph { get; set; }
@@ -231,17 +235,19 @@ namespace QuestPDF.Elements.Text
             
             RebuildParagraphForEveryPage = Items.Any(x => x is TextBlockPageNumber);
             BuildParagraph();
-            
             AreParagraphMetricsValid = false;
         }
 
         private void BuildParagraph()
         {
+            using var clampLinesEllipsis = new SkText(LineClampEllipsis);
+            
             var paragraphStyle = new ParagraphStyleConfiguration
             {
                 Alignment = MapAlignment(Alignment ?? TextHorizontalAlignment.Start),
                 Direction = MapDirection(ContentDirection),
-                MaxLinesVisible = LineClamp ?? 1_000_000
+                MaxLinesVisible = LineClamp ?? 1_000_000,
+                LineClampEllipsis = clampLinesEllipsis.Instance
             };
             
             var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
@@ -311,8 +317,9 @@ namespace QuestPDF.Elements.Text
                             textBlockPageNumber.UpdatePageNumberText(PageContext);
                 
                         var textStyle = textBlockSpan.Style.GetSkTextStyle();
-                        builder.AddText(textBlockSpan.Text, textStyle);
-                        currentTextIndex += textBlockSpan.Text.Length;
+                        var text = textBlockSpan.Text?.Replace("\r", "") ?? "";
+                        builder.AddText(text, textStyle);
+                        currentTextIndex += text.Length;
                     }
                     else if (textBlockItem is TextBlockElement textBlockElement)
                     {

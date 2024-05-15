@@ -1084,5 +1084,26 @@ namespace QuestPDF.Examples
                      }
                  });
          }
+         
+         [Test]
+         public void ClampLines()
+         {
+             RenderingTest
+                 .Create()
+                 .PageSize(300, 100)
+                
+                 .ProduceImages()
+                 .ShowResults()
+                 .Render(container =>
+                 {
+                     container
+                         .Padding(5)
+                         .MinimalBox()
+                         .Border(1)
+                         .Padding(10)
+                         .Text(Placeholders.Paragraph())
+                         .ClampLines(2, " [...]");
+                 });
+         }
     }
 }

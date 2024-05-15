@@ -16,17 +16,13 @@ namespace QuestPDF.Drawing
     /// </summary>
     public static class FontManager
     {
-        private static SkTypefaceProvider TypefaceProvider { get; } = new();
-        
-        private static SkFontCollection LocalFontCollection { get; } = SkFontCollection.Create(TypefaceProvider, SkFontManager.Local);
-        private static SkFontCollection GlobalFontCollection { get; } = SkFontCollection.Create(TypefaceProvider, SkFontManager.Global);
-        
-        internal static SkFontCollection CurrentFontCollection => Settings.UseEnvironmentFonts ? GlobalFontCollection : LocalFontCollection;
+        internal static SkTypefaceProvider TypefaceProvider { get; } = new();
         internal static SkFontManager CurrentFontManager => Settings.UseEnvironmentFonts ? SkFontManager.Global : SkFontManager.Local;
 
         static FontManager()
         {
             NativeDependencyCompatibilityChecker.Test();
+            RegisterLibraryDefaultFonts();
         }
         
         [Obsolete("Since version 2022.8 this method has been renamed. Please use the RegisterFontWithCustomName method.")]
@@ -70,6 +66,29 @@ namespace QuestPDF.Drawing
                 throw new ArgumentException($"Cannot load font file from an embedded resource. Please make sure that the resource is available or the path is correct: {pathName}");
             
             RegisterFont(stream);
+        }
+        
+        private static void RegisterLibraryDefaultFonts()
+        {
+            var supportedFontExtensions = new[] { "*.ttf", "*.otf", "*.ttc", "*.pfb" };
+
+            var executionPath = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
+            
+            var fontFilePaths = supportedFontExtensions
+                .SelectMany(extension => Directory.GetFiles(executionPath, extension, SearchOption.AllDirectories));
+            
+            foreach (var fileName in fontFilePaths)
+            {
+                try
+                {
+                    using var fontFileStream = File.OpenRead(fileName);
+                    RegisterFont(fontFileStream);
+                }
+                catch
+                {
+                    
+                }
+            }
         }
     }
 }

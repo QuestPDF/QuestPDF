@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -9,9 +10,11 @@ internal static class SkNativeDependencyProvider
 {
     public static readonly string[] SupportedPlatforms =
     {
+        "win-x86",
         "win-x64",
         "linux-x64",
         "linux-arm64",
+        "linux-musl-x64",
         "osx-x64",
         "osx-arm64"
     };
@@ -39,15 +42,8 @@ internal static class SkNativeDependencyProvider
     
     public static bool IsCurrentPlatformSupported()
     {
-        try
-        {
-            GetRuntimePlatform();
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
+        var currentRuntime = GetRuntimePlatform();
+        return SupportedPlatforms.Contains(currentRuntime);
     }
     
     static string? GetNativeFileSourcePath()
@@ -75,14 +71,14 @@ internal static class SkNativeDependencyProvider
         return null;
     }
         
-    static string GetRuntimePlatform()
+    public static string GetRuntimePlatform()
     {
-        var identifier = $"{GetSystemIdentifier()}-{GetProcessArchitecture()}";
+#if NET6_0_OR_GREATER
+        if (RuntimeInformation.ProcessArchitecture == Architecture.Wasm)
+            return "browser-wasm";
+#endif
         
-        if (SupportedPlatforms.Contains(identifier))
-            return identifier;
-
-        throw new Exception("Your runtime is currently not supported by QuestPDF.");
+        return $"{GetSystemIdentifier()}-{GetProcessArchitecture()}";
 
         static string GetSystemIdentifier()
         {
@@ -90,22 +86,54 @@ internal static class SkNativeDependencyProvider
                 return "win";
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return "linux";
+                return IsLinuxMusl() ? "linux-musl" : "linux";
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 return "osx";
-            
-            throw new Exception("Your runtime is currently not supported by QuestPDF.");
+
+            return "other";
         }
 
         static string GetProcessArchitecture()
         {
-            return RuntimeInformation.ProcessArchitecture switch
+            return RuntimeInformation.ProcessArchitecture.ToString().ToLower();
+        }
+        
+        static bool IsLinuxMusl()
+        {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                return false;
+            
+            try
+            { 
+                var processStartInfo = new ProcessStartInfo
+                {
+                    FileName = "ldd",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+                
+                using var process = Process.Start(processStartInfo);
+                
+                if (process == null)
+                    return false;
+                
+                process.Start();
+                
+                var standardOutputText = process.StandardOutput.ReadToEnd();
+                var standardErrorText = process.StandardError.ReadToEnd();
+                
+                process.WaitForExit();
+                
+                var outputText = standardOutputText + standardErrorText;
+                return outputText.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
+            }
+            catch
             {
-                Architecture.X64 => "x64",
-                Architecture.Arm64 => "arm64",
-                _ => throw new Exception("Your runtime is currently not supported by QuestPDF.")
-            };
+                return false;
+            }
         }
     }
 

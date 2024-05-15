@@ -17,6 +17,10 @@ internal sealed class SkData : IDisposable
     public static SkData FromFile(string filePath)
     {
         var instance = API.data_create_from_file(filePath);
+        
+        if (instance == IntPtr.Zero)
+            throw new Exception($"Cannot load a file under the provided path: {filePath}.");
+        
         return new SkData(instance);
     }
     

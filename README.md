@@ -56,7 +56,7 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 
 ⭐ Please give this repository a star. It takes seconds and help thousands of developers! ⭐
 
-<img src="https://github.com/QuestPDF/QuestPDF/assets/9263853/bd0f7846-cc30-432c-b6ab-1f7a3508464b" width="700" />
+<img src="https://github.com/QuestPDF/QuestPDF/assets/9263853/3eb438af-96cd-4cdb-b3da-6de938e64068" width="700" />
 
 
 ## Please share with the community

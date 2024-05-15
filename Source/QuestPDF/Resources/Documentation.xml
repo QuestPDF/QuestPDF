@@ -248,8 +248,10 @@
         </summary>
 
         <param name="factor">
-            <para>Sets the proportion of vertical spacing relative to the original.</para> 
-            <para>A value greater than 1 increases spacing, while a value less than 1 reduces it. Must be greater than 0.</para>
+            <para>Sets the proportion of vertical spacing relative to the font size.</para>
+            <para>A value greater than 1 increases the spacing, while a value less than 1 decreases it. The value must be greater than 0.</para>
+            <para>A value of <c>1</c> sets the line height equal to the font size. This setting may result in insufficient vertical spacing around the text.</para>
+            <para>A value of <c>default</c> indicates that the font metrics should be used to calculate the line spacing, which is the default behavior.</para>
         </param>
     </doc>
 

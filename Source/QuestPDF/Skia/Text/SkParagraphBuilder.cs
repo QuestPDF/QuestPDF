@@ -9,6 +9,7 @@ internal record struct ParagraphStyleConfiguration
     public TextAlign Alignment;
     public TextDirection Direction;
     public int MaxLinesVisible;
+    public IntPtr LineClampEllipsis; // SKText
 
     internal enum TextAlign
     {

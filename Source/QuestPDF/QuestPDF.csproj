@@ -3,7 +3,7 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2024.3.0</Version>
+        <Version>2024.3.6</Version>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API. Easily generate PDF reports, invoices, exports, etc.</PackageDescription>
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
         <LangVersion>10</LangVersion>
@@ -43,12 +43,13 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
             <Pack>true</Pack>
-            <PackagePath>runtimes\any\native\LatoFont\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+            <PackagePath>LatoFont</PackagePath>
         </None>
         
         <None Include="Runtimes\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+            <TargetPath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
             <Pack>true</Pack>
             <PackagePath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
@@ -57,7 +58,7 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
             <Pack>true</Pack>
-            <PackagePath>build\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+            <PackagePath>build\%(RecursiveDir)%(Filename)%(Extension);buildTransitive\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
     </ItemGroup>
 </Project>

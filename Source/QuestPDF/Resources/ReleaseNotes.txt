@@ -28,5 +28,42 @@ We would like to thank the SkiaSharp project, its maintainers, and contributors,
 Version 2024.3.1
 - Enhanced discoverability of text alignment options (AlignLeft, AlignCenter, AlignRight, AlignStart, AlignEnd and Justify) when using the shorthand Text method (common use case).
 - To enhance compatibility with existing codebases, we've removed the breaking change associated with the deprecation of the TextStyle.Fallback method. Although this method remains obsolete, we've reintroduced it with a compatibility layer to prevent disruptions.
+- Enhanced compatibility with dotnet standard projects.
 - Fix: on the Windows platform, the "Could not find an appropriate font fallback for the following glyphs: $U-000D" exception is thrown when the "QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable" is set true, and the "TextDescriptor.Line" method is used (that inserts the '\r' character).
 - Fix: resolved an issue where the positioning of hyperlinks was incorrect when text contained injected block items.
+
+
+Version 2024.3.2
+- Introduced support for the linux-musl-x64 platform.
+- Adjusted how the Lato font is embedded in the NuGet package to prevent issues with the files not being provided on the platform-specific runtimes.
+- Improved compatibility with texts that contain the carriage return character '\r'.
+- Enhanced exception messages when the FontManager.RegisterFont method fails due to an invalid font file.
+- Enhanced the Canvas element deprecation message by adding a link to the documentation.
+- Fixed: the SVG image is not always scaled properly, especially when uses relative units internally (percentage, cm, "mm", etc.).
+- Fixed a sporadic `AccessViolationException` that occurred when UseEnvironmentFonts was set to `false` and documents were generated in parallel.
+- Fixed an issue where dynamic SVG images were not utilizing the available space correctly. This resulted in images with a zero size.
+
+
+Version 2024.3.3
+- Improved the default scaling behavior of Image and SvgImage elements when they are direct descendants of the Constrained element (Width, Height, MinWidth, MinHeight, MaxWidth, MaxHeight).
+- Enhanced handling of texts containing the carriage return character '\r' within the custom page format setting.
+- Fixed: enhanced the handling of the TextStyle.LineHeight modifier for better consistency with industry-standard software, as well as adjusted the default value.
+- Fixed: when the UseEnvironmentFonts setting is enabled, the Lato font was not being properly registered. This issue could lead to runtime exceptions in specific minimal environments.
+- Fixed: Addressed a potential null reference exception in the SvgImage object’s finalizer that could lead to application crashes when handling invalid SVG content.
+
+
+Version 2024.3.4
+- Improved font rendering by setting half-leading when line-height is overridden.
+- Enhanced exception messages for unsupported x86 platforms.
+
+
+Version 2024.3.5
+- Enhancement: text uses half-leading by default.
+- Fixed: default text decoration color should match font color.
+- Fixed: the Column element may not render successfully when it has non-zero spacing, contains a child with zero height, and is repeated.
+
+
+Version 2024.3.6
+- Introduced support for the win-x86 platform.
+- Improved SVG image support for less common unit types.
+- Enhanced automated testing environment.

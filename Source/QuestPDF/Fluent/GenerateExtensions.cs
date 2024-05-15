@@ -150,5 +150,17 @@ namespace QuestPDF.Fluent
         }
 
         #endregion
+        
+        #region SVG
+
+        /// <summary>
+        /// Generates the document as a series of SVG images and returns them as a collection of strings.
+        /// </summary>
+        public static ICollection<string> GenerateSvg(this IDocument document)
+        {
+            return DocumentGenerator.GenerateSvg(document);
+        }
+
+        #endregion
     }
 }

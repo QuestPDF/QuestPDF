@@ -15,7 +15,6 @@ namespace QuestPDF.Elements
     {
         public ColumnItem ColumnItem { get; set; }
         public SpacePlan Measurement { get; set; }
-        public Size Size { get; set; }
         public Position Offset { get; set; }
     }
 
@@ -49,8 +48,8 @@ namespace QuestPDF.Elements
             if (!renderingCommands.Any())
                 return SpacePlan.Wrap();
 
-            var width = renderingCommands.Max(x => x.Size.Width);
-            var height = renderingCommands.Last().Offset.Y + renderingCommands.Last().Size.Height;
+            var width = renderingCommands.Max(x => x.Measurement.Width);
+            var height = renderingCommands.Last().Offset.Y + renderingCommands.Last().Measurement.Height;
             var size = new Size(width, height);
             
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
@@ -73,7 +72,7 @@ namespace QuestPDF.Elements
                 if (command.Measurement.Type == SpacePlanType.FullRender)
                     command.ColumnItem.IsRendered = true;
 
-                var targetSize = new Size(availableSpace.Width, command.Size.Height);
+                var targetSize = new Size(availableSpace.Width, command.Measurement.Height);
 
                 Canvas.Translate(command.Offset);
                 command.ColumnItem.Draw(targetSize);
@@ -96,14 +95,17 @@ namespace QuestPDF.Elements
                     continue;
 
                 var availableHeight = availableSpace.Height - topOffset;
-                
-                if (availableHeight < -Size.Epsilon)
-                    break;
 
-                var itemSpace = new Size(availableSpace.Width, availableHeight);
+                var itemSpace = availableHeight > 0
+                    ? new Size(availableSpace.Width, availableHeight)
+                    : Size.Zero;
+                
                 var measurement = item.Measure(itemSpace);
                 
                 if (measurement.Type == SpacePlanType.Wrap)
+                    break;
+                
+                if (Size.Equal(itemSpace, Size.Zero) && !Size.Equal(measurement, Size.Zero))
                     break;
 
                 // when the item does not take any space, do not add spacing
@@ -113,7 +115,6 @@ namespace QuestPDF.Elements
                 commands.Add(new ColumnItemRenderingCommand
                 {
                     ColumnItem = item,
-                    Size = measurement,
                     Measurement = measurement,
                     Offset = new Position(0, topOffset)
                 });
@@ -126,9 +127,6 @@ namespace QuestPDF.Elements
                 
                 topOffset += measurement.Height + Spacing;
             }
-
-            foreach (var command in commands)
-                command.Size = new Size(targetWidth, command.Size.Height);
 
             return commands;
         }
