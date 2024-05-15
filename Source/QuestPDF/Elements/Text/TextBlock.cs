@@ -411,7 +411,7 @@ namespace QuestPDF.Elements.Text
                 if (ParagraphSpacing <= Size.Epsilon)
                     return;
                 
-                result.Add(new TextBlockSpan() { Text = "\n ", Style = TextStyle.ParagraphSpacing });
+                result.Add(new TextBlockSpan() { Text = "\n ", Style = TextStyle.ParagraphSpacing }); // space ensures proper line spacing
                 result.Add(new TextBlockParagraphSpacing(0, ParagraphSpacing));
             }
             

@@ -60,8 +60,7 @@ namespace QuestPDF.Infrastructure
         {
             Id = 2,
             Size = 0,
-            LineHeight = 1,
-            BackgroundColor = Colors.Green.Lighten2,
+            LineHeight = 1
         };
 
         private SkTextStyle? SkTextStyleCache;
