@@ -5,11 +5,6 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class InlinedElement : Container
-    {
-
-    }
-
     internal enum InlinedAlignment
     {
         Left,
@@ -25,12 +20,12 @@ namespace QuestPDF.Elements
         public SpacePlan Size { get; set; }
     }
 
-    internal sealed class Inlined : Element, IStateResettable, IContentDirectionAware
+    internal sealed class Inlined : Element, IContentDirectionAware, IStateResettable
     {
         public ContentDirection ContentDirection { get; set; }
         
-        public List<InlinedElement> Elements { get; internal set; } = new List<InlinedElement>();
-        private Queue<InlinedElement> ChildrenQueue { get; set; }
+        public List<Element> Elements { get; internal set; } = new();
+        private int CurrentRenderingIndex { get; set; }
 
         internal float VerticalSpacing { get; set; }
         internal float HorizontalSpacing { get; set; }
@@ -40,7 +35,7 @@ namespace QuestPDF.Elements
         
         public void ResetState()
         {
-            ChildrenQueue = new Queue<InlinedElement>(Elements);
+            CurrentRenderingIndex = 0;
         }
         
         internal override IEnumerable<Element?> GetChildren()
@@ -52,7 +47,7 @@ namespace QuestPDF.Elements
         {
             SetDefaultAlignment();   
             
-            if (!ChildrenQueue.Any())
+            if (CurrentRenderingIndex == Elements.Count)
                 return SpacePlan.FullRender(Size.Zero);
             
             var lines = Compose(availableSpace);
@@ -74,12 +69,12 @@ namespace QuestPDF.Elements
             var height = lineSizes.Sum(x => x.Height) + (lines.Count - 1) * VerticalSpacing;
             var targetSize = new Size(width, height);
 
-            var isPartiallyRendered = lines.Sum(x => x.Count) != ChildrenQueue.Count;
+            var totalRenderedItems = CurrentRenderingIndex + lines.Sum(x => x.Count);
+            var willBeFullyRendered = totalRenderedItems == Elements.Count;
 
-            if (isPartiallyRendered)
-                return SpacePlan.PartialRender(targetSize);
-            
-            return SpacePlan.FullRender(targetSize);
+            return willBeFullyRendered
+                ? SpacePlan.FullRender(targetSize)
+                : SpacePlan.PartialRender(targetSize);
         }
 
         internal override void Draw(Size availableSpace)
@@ -100,10 +95,9 @@ namespace QuestPDF.Elements
             }
             
             Canvas.Translate(new Position(0, -topOffset));
-            lines.SelectMany(x => x).ToList().ForEach(x => ChildrenQueue.Dequeue());
             
-            if (!ChildrenQueue.Any())
-                ResetState();
+            var fullyRenderedItems = lines.Sum(x => x.Count);
+            CurrentRenderingIndex += fullyRenderedItems;
 
             void DrawLine(ICollection<InlinedMeasurement> lineMeasurements)
             {
@@ -196,7 +190,7 @@ namespace QuestPDF.Elements
         // list of lines, each line is a list of elements
         private ICollection<ICollection<InlinedMeasurement>> Compose(Size availableSize)
         {
-            var queue = new Queue<InlinedElement>(ChildrenQueue);
+            var localRenderingIndex = CurrentRenderingIndex;
             var result = new List<ICollection<InlinedMeasurement>>();
 
             var topOffset = 0f;
@@ -226,10 +220,10 @@ namespace QuestPDF.Elements
                 
                 while (true)
                 {
-                    if (!queue.Any())
+                    if (localRenderingIndex == Elements.Count)
                         break;
                     
-                    var element = queue.Peek();
+                    var element = Elements[localRenderingIndex];
                     var size = element.Measure(new Size(availableSize.Width, Size.Max.Height));
                     
                     if (size.Type == SpacePlanType.Wrap)
@@ -238,7 +232,7 @@ namespace QuestPDF.Elements
                     if (leftOffset + size.Width > availableSize.Width + Size.Epsilon)
                         break;
 
-                    queue.Dequeue();
+                    localRenderingIndex++;
                     leftOffset += size.Width + HorizontalSpacing;
                     
                     result.Add(new InlinedMeasurement
