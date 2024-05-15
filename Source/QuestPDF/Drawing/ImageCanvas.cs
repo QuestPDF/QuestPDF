@@ -20,6 +20,11 @@ namespace QuestPDF.Drawing
             Settings = settings;
         }
         
+        ~ImageCanvas()
+        {
+            Bitmap?.Dispose();
+        }
+        
         public override void BeginDocument()
         {
             
