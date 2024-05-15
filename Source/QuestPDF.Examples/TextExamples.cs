@@ -536,7 +536,7 @@ namespace QuestPDF.Examples
                             text.Span("This text is a normal text, ");
                             text.Span("this is a bold text, ").Bold();
                             text.Span("this is a red and underlined text, ").FontColor(Colors.Red.Medium).Underline();
-                            text.Span("and this is slightly bigger text.").FontSize(16);
+                            text.Span("and this is slightly bigger text.").FontSize(24);
                             
                             text.Span("The new text element also supports injecting custom content between words: ");
                             text.Element().PaddingBottom(-4).Height(16).Width(32).Image(Placeholders.Image);

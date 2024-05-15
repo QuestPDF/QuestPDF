@@ -375,6 +375,12 @@ namespace QuestPDF.Elements.Text
                     continue;
                 }
                 
+                if (textBlockItem is TextBlockPageNumber)
+                {
+                    result.Add(textBlockItem);
+                    continue;
+                }
+                
                 var textFragments = textBlockSpan.Text.Split('\n');
                     
                 foreach (var textFragment in textFragments)
