@@ -71,7 +71,8 @@ namespace QuestPDF.Infrastructure
         private static readonly List<TextStyle> TextStyles = new()
         {
             TextStyle.Default,
-            TextStyle.LibraryDefault
+            TextStyle.LibraryDefault,
+            TextStyle.ParagraphSpacing
         };
 
         private static readonly ConcurrentDictionary<(int originId, TextStyleProperty property, object value), TextStyle> TextStyleMutateCache = new();

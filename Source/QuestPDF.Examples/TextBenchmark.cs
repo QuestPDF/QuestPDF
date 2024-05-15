@@ -32,7 +32,7 @@ namespace QuestPDF.Examples
         {
             var chapters = GetBookChapters().ToList();
   
-            var results = PerformTest(128).ToList();
+            var results = PerformTest(32).ToList();
  
             Console.WriteLine($"Min: {results.Min():F}");
             Console.WriteLine($"Max: {results.Max():F}");
@@ -170,13 +170,7 @@ namespace QuestPDF.Examples
                 container.Column(column =>
                 {
                     SectionTitle(column, title);
-  
-                    column.Item().Text(text =>
-                    {
-                        text.ParagraphSpacing(5);
-                        text.Span(content).Style(normalStyle);
-                    });
-                    
+                    column.Item().Text(content).ParagraphFirstLineIndentation(16).ParagraphSpacing(8).Justify();
                     column.Item().PageBreak();
                 });
             }

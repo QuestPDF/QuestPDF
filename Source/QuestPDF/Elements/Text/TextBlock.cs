@@ -16,14 +16,20 @@ namespace QuestPDF.Elements.Text
         public ContentDirection ContentDirection { get; set; }
         
         public TextHorizontalAlignment? Alignment { get; set; }
+        
         public int? LineClamp { get; set; }
-        public string LineClampEllipsis { get; set; }
+         public string LineClampEllipsis { get; set; }
+
+        public float ParagraphSpacing { get; set; }
+        public float ParagraphFirstLineIndentation { get; set; }
+
         public List<ITextBlockItem> Items { get; set; } = new();
 
         private SkParagraph Paragraph { get; set; }
         
         private bool RebuildParagraphForEveryPage { get; set; }
         private bool AreParagraphMetricsValid { get; set; }
+        private bool AreParagraphItemsTransformedWithSpacingAndIndentation { get; set; }
         
         private SkSize[] LineMetrics { get; set; }
         private float WidthForLineMetricsCalculation { get; set; }
@@ -152,14 +158,11 @@ namespace QuestPDF.Elements.Text
 
             void DrawInjectedElements()
             {
-                var elementItems = Items.OfType<TextBlockElement>().ToArray();
-                
-                for (var placeholderIndex = 0; placeholderIndex < PlaceholderPositions.Length; placeholderIndex++)
+                foreach (var textBlockElement in Items.OfType<TextBlockElement>())
                 {
-                    var placeholder = PlaceholderPositions[placeholderIndex];
-                    var associatedElement = elementItems[placeholderIndex];
+                    var placeholder = PlaceholderPositions[textBlockElement.ParagraphBlockIndex];
                     
-                    associatedElement.ConfigureElement(PageContext, Canvas);
+                    textBlockElement.ConfigureElement(PageContext, Canvas);
 
                     var offset = new Position(placeholder.Left, placeholder.Top);
                     
@@ -167,7 +170,7 @@ namespace QuestPDF.Elements.Text
                         continue;
                     
                     Canvas.Translate(offset);
-                    associatedElement.Element.Draw(new Size(placeholder.Width, placeholder.Height));
+                    textBlockElement.Element.Draw(new Size(placeholder.Width, placeholder.Height));
                     Canvas.Translate(offset.Reverse());
                 }
             }
@@ -223,6 +226,12 @@ namespace QuestPDF.Elements.Text
         {
             if (Paragraph != null && !RebuildParagraphForEveryPage)
                 return;
+
+            if (!AreParagraphItemsTransformedWithSpacingAndIndentation)
+            {
+                Items = ApplyParagraphSpacingToTextBlockItems().ToList();
+                AreParagraphItemsTransformedWithSpacingAndIndentation = true;
+            }
             
             RebuildParagraphForEveryPage = Items.Any(x => x is TextBlockPageNumber);
             BuildParagraph();
@@ -292,6 +301,7 @@ namespace QuestPDF.Elements.Text
             SkParagraph CreateParagraph(SkParagraphBuilder builder)
             {
                 var currentTextIndex = 0;
+                var currentBlockIndex = 0;
             
                 foreach (var textBlockItem in Items)
                 {
@@ -315,6 +325,7 @@ namespace QuestPDF.Elements.Text
                     {
                         textBlockElement.ConfigureElement(PageContext, Canvas);
                         textBlockElement.UpdateElementSize();
+                        textBlockElement.ParagraphBlockIndex = currentBlockIndex;
                     
                         builder.AddPlaceholder(new SkPlaceholderStyle
                         {
@@ -326,13 +337,101 @@ namespace QuestPDF.Elements.Text
                         });
 
                         currentTextIndex++;
+                        currentBlockIndex++;
+                    }
+                    else if (textBlockItem is TextBlockParagraphSpacing spacing)
+                    {
+                        builder.AddPlaceholder(new SkPlaceholderStyle
+                        {
+                            Width = spacing.Width,
+                            Height = spacing.Height,
+                            Alignment = SkPlaceholderStyle.PlaceholderAlignment.Bottom,
+                            Baseline = SkPlaceholderStyle.PlaceholderBaseline.Alphabetic,
+                            BaselineOffset = 0
+                        });
+
+                        currentTextIndex++;
+                        currentBlockIndex++;
                     }
                 }
 
                 return builder.CreateParagraph();
             }
         }
-        
+
+        private IEnumerable<ITextBlockItem> ApplyParagraphSpacingToTextBlockItems()
+        {
+            if (ParagraphSpacing < Size.Epsilon && ParagraphFirstLineIndentation < Size.Epsilon)
+                return Items;
+            
+            var result = new List<ITextBlockItem>();
+            AddParagraphFirstLineIndentation();
+            
+            foreach (var textBlockItem in Items)
+            {
+                if (textBlockItem is not TextBlockSpan textBlockSpan)
+                {
+                    result.Add(textBlockItem);
+                    continue;
+                }
+                
+                var textFragments = textBlockSpan.Text.Split('\n');
+                    
+                foreach (var textFragment in textFragments)
+                {
+                    AddClonedTextBlockSpanWithTextFragment(textBlockSpan, textFragment);
+                        
+                    if (textFragment == textFragments.Last())
+                        continue;
+
+                    AddParagraphSpacing();
+                    AddParagraphFirstLineIndentation();
+                }
+            }
+
+            return result;
+
+            void AddClonedTextBlockSpanWithTextFragment(TextBlockSpan originalSpan, string textFragment)
+            {
+                TextBlockSpan newItem;
+                        
+                if (originalSpan is TextBlockSectionLink textBlockSectionLink)
+                    newItem = new TextBlockSectionLink { SectionName = textBlockSectionLink.SectionName };
+            
+                else if (originalSpan is TextBlockHyperlink textBlockHyperlink)
+                    newItem = new TextBlockHyperlink { Url = textBlockHyperlink.Url };
+            
+                else if (originalSpan is TextBlockPageNumber textBlockPageNumber)
+                    newItem = textBlockPageNumber;
+
+                else
+                    newItem = new TextBlockSpan();
+
+                newItem.Text = textFragment;
+                newItem.Style = originalSpan.Style;
+                
+                result.Add(newItem);
+            }
+            
+            void AddParagraphSpacing()
+            {
+                if (ParagraphSpacing <= Size.Epsilon)
+                    return;
+                
+                result.Add(new TextBlockSpan() { Text = "\n ", Style = TextStyle.ParagraphSpacing }); // space ensures proper line spacing
+                result.Add(new TextBlockParagraphSpacing(0, ParagraphSpacing));
+            }
+            
+            void AddParagraphFirstLineIndentation()
+            {
+                if (ParagraphFirstLineIndentation <= Size.Epsilon)
+                    return;
+                
+                result.Add(new TextBlockSpan() { Text = "\n", Style = TextStyle.ParagraphSpacing });
+                result.Add(new TextBlockParagraphSpacing(ParagraphFirstLineIndentation, 0));
+            }
+        }
+
         private void CalculateParagraphMetrics(Size availableSpace)
         {
             // SkParagraph seems to require a bigger space buffer to calculate metrics correctly
