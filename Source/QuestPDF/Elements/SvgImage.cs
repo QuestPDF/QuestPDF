@@ -7,15 +7,26 @@ using static QuestPDF.Skia.SkSvgImageSize.Unit;
 
 namespace QuestPDF.Elements;
 
-internal class SvgImage : Element
+internal class SvgImage : Element, IStateResettable
 {
+    private bool IsRendered { get; set; }
+    
     public Infrastructure.SvgImage Image { get; set; }
+    
+    public void ResetState(bool hardReset = false)
+    {
+        IsRendered = false;
+    }
     
     internal override SpacePlan Measure(Size availableSpace)
     {
-        return availableSpace.IsNegative() 
-            ? SpacePlan.Wrap() 
-            : SpacePlan.FullRender(Size.Zero);
+        if (IsRendered)
+            return SpacePlan.FullRender(Size.Zero);
+
+        if (availableSpace.IsNegative())
+            return SpacePlan.Wrap();
+        
+        return SpacePlan.FullRender(Size.Zero);
     }
 
     internal override void Draw(Size availableSpace)
@@ -27,6 +38,8 @@ internal class SvgImage : Element
         Canvas.Scale(widthScale,  heightScale);
         Canvas.DrawSvg(Image.SkSvgImage, availableSpace);
         Canvas.Restore();
+        
+        IsRendered = true;
         
         float CalculateSpaceScale(float availableSize, float imageSize, SkSvgImageSize.Unit unit)
         {

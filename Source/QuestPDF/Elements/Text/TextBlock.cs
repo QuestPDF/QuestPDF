@@ -18,7 +18,7 @@ namespace QuestPDF.Elements.Text
         public TextHorizontalAlignment? Alignment { get; set; }
         
         public int? LineClamp { get; set; }
-         public string LineClampEllipsis { get; set; }
+        public string LineClampEllipsis { get; set; }
 
         public float ParagraphSpacing { get; set; }
         public float ParagraphFirstLineIndentation { get; set; }
@@ -36,6 +36,7 @@ namespace QuestPDF.Elements.Text
         private SkRect[] PlaceholderPositions { get; set; }
         private float MaximumWidth { get; set; }
         
+        private bool IsRendered { get; set; }
         private int CurrentLineIndex { get; set; }
         private float CurrentTopOffset { get; set; }
         
@@ -46,8 +47,9 @@ namespace QuestPDF.Elements.Text
             Paragraph?.Dispose();
         }
         
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
+            IsRendered = false;
             CurrentLineIndex = 0;
             CurrentTopOffset = 0;
         }
@@ -57,13 +59,13 @@ namespace QuestPDF.Elements.Text
             if (Items.Count == 0)
                 return SpacePlan.FullRender(Size.Zero);
             
+            if (IsRendered)
+                return SpacePlan.FullRender(Size.Zero);
+            
             Initialize();
             CalculateParagraphMetrics(availableSpace);
 
             if (MaximumWidth == 0)
-                return SpacePlan.FullRender(Size.Zero);
-            
-            if (CurrentLineIndex > LineMetrics.Length)
                 return SpacePlan.FullRender(Size.Zero);
             
             var totalHeight = 0f;
@@ -111,7 +113,7 @@ namespace QuestPDF.Elements.Text
             CurrentTopOffset += takenHeight;
 
             if (CurrentLineIndex == LineMetrics.Length)
-                ResetState();
+                IsRendered = true;
             
             return;
 

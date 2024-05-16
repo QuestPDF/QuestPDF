@@ -31,7 +31,7 @@ namespace QuestPDF.Elements.Table
             return Cells;
         }
 
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
             Initialize();
             
@@ -86,6 +86,10 @@ namespace QuestPDF.Elements.Table
             if (!Cells.Any())
                 return SpacePlan.FullRender(Size.Zero);
             
+            // rows are indexed from 1
+            if (CurrentRow > StartingRowsCount)
+                return SpacePlan.FullRender(Size.Zero);
+            
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
@@ -127,10 +131,6 @@ namespace QuestPDF.Elements.Table
             }
 
             CurrentRow = CalculateCurrentRow(renderingCommands);
-            var isFullyRendered = CurrentRow > StartingRowsCount;
-            
-            if (isFullyRendered)
-                ResetState();
         }
 
         private int CalculateCurrentRow(ICollection<TableCellRenderingCommand> commands)

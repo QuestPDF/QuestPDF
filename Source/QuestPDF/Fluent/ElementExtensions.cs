@@ -359,6 +359,19 @@ namespace QuestPDF.Fluent
             return element.Element(new ScaleToFit());
         }
 
+        /// <summary>
+        /// Repeats its content across multiple pages.
+        /// </summary>
+        /// <remarks>
+        /// In certain layout structures, the content visibility may depend on other elements.
+        /// By default, most elements are rendered only once.
+        /// Use this element to repeat the content across multiple pages.
+        /// </remarks>
+        public static IContainer Repeat(this IContainer element)
+        {
+            return element.Element(new RepeatContent());
+        }
+
         #region Canvas [Obsolete]
 
         private const string CanvasDeprecatedMessage = "The Canvas API has been deprecated since version 2024.3.0. Please use the .Svg(stringContent) API to provide custom content, and consult documentation webpage regarding integrating SkiaSharp with QuestPDF: https://www.questpdf.com/concepts/skia-sharp-integration.html";

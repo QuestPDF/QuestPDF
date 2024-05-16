@@ -6,6 +6,7 @@ using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine.Operations;
@@ -231,18 +232,13 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public static Element CreateUniqueElement()
         {
-            return new Constrained
-            {
-                MinWidth = 90,
-                MinHeight = 60,
-                
-                Child = new DynamicImage
-                {
-                    CompressionQuality = ImageCompressionQuality.Medium,
-                    TargetDpi = DocumentSettings.DefaultRasterDpi,
-                    Source = paylaod => Placeholders.Image(paylaod.ImageSize)
-                }
-            };
+            var content = new Container();
+
+            content
+                .AspectRatio(4 / 3f)
+                .Image(Placeholders.Image);
+            
+            return content;
         }
 
         public static void CompareOperations(Element value, Element expected, Size? availableSpace = null)
@@ -253,7 +249,7 @@ namespace QuestPDF.UnitTests.TestEngine
         
         private static void CompareMeasureOperations(Element value, Element expected, Size? availableSpace = null)
         {
-            availableSpace ??= new Size(400, 300);
+            availableSpace ??= new Size(400, 900);
             
             var canvas = new FreeCanvas();
             value.InjectDependencies(null, canvas);
@@ -267,14 +263,16 @@ namespace QuestPDF.UnitTests.TestEngine
         
         private static void CompareDrawOperations(Element value, Element expected, Size? availableSpace = null)
         {
-            availableSpace ??= new Size(400, 300);
+            availableSpace ??= new Size(400, 1200);
             
             var valueCanvas = new OperationRecordingCanvas();
             value.InjectDependencies(null, valueCanvas);
+            value.ApplyDefaultImageConfiguration(144, ImageCompressionQuality.Medium, false);
             value.Draw(availableSpace.Value);
             
             var expectedCanvas = new OperationRecordingCanvas();
             expected.InjectDependencies(null, expectedCanvas);
+            expected.ApplyDefaultImageConfiguration(144, ImageCompressionQuality.Medium, false);
             expected.Draw(availableSpace.Value);
             
             valueCanvas.Operations.Should().BeEquivalentTo(expectedCanvas.Operations);

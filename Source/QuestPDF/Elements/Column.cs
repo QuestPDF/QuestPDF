@@ -20,7 +20,7 @@ namespace QuestPDF.Elements
         
         internal int CurrentRenderingIndex { get; set; }
 
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
             CurrentRenderingIndex = 0;
         }
@@ -79,9 +79,6 @@ namespace QuestPDF.Elements
             
             var fullyRenderedItems = renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.FullRender);
             CurrentRenderingIndex += fullyRenderedItems;
-            
-            if (CurrentRenderingIndex == Items.Count)
-                ResetState();
         }
 
         private List<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)

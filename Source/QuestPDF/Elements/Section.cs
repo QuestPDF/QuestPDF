@@ -7,7 +7,7 @@ namespace QuestPDF.Elements
         public string SectionName { get; set; }
         private bool IsRendered { get; set; }
         
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
             IsRendered = false;
         }

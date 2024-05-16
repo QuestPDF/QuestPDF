@@ -12,7 +12,7 @@ namespace QuestPDF.Elements
 
     internal sealed class Layers : Element, ICacheable
     {
-        public List<Layer> Children { get; set; } = new List<Layer>();
+        public List<Layer> Children { get; set; } = new();
         
         internal override IEnumerable<Element?> GetChildren()
         {

@@ -8,7 +8,7 @@ namespace QuestPDF.Elements
     {
         private bool IsRendered { get; set; }
         
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
             IsRendered = false;
         }

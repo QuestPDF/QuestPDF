@@ -7,9 +7,10 @@ namespace QuestPDF.Elements
     {
         private bool IsRendered { get; set; }
 
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
-            IsRendered = false;
+            if (hardReset)
+                IsRendered = false;
         }
 
         internal override SpacePlan Measure(Size availableSpace)

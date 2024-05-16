@@ -33,7 +33,7 @@ namespace QuestPDF.Elements
         internal InlinedAlignment? ElementsAlignment { get; set; }
         internal VerticalAlignment BaselineAlignment { get; set; }
         
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
             CurrentRenderingIndex = 0;
         }

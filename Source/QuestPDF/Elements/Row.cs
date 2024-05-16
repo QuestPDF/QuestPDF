@@ -37,7 +37,7 @@ namespace QuestPDF.Elements
         internal List<RowItem> Items { get; } = new();
         internal float Spacing { get; set; }
 
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
             Items.ForEach(x => x.IsRendered = false);
         }
@@ -102,9 +102,6 @@ namespace QuestPDF.Elements
                 command.RowItem.Draw(targetSize);
                 Canvas.Translate(offset.Reverse());
             }
-            
-            if (Items.All(x => x.IsRendered))
-                ResetState();
         }
 
         private void UpdateItemsWidth(float availableWidth)

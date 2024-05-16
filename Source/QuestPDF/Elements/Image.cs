@@ -5,19 +5,30 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Image : Element, ICacheable
+    internal sealed class Image : Element, ICacheable, IStateResettable
     {
+        private bool IsRendered { get; set; }
+        
         public Infrastructure.Image? DocumentImage { get; set; }
 
         internal bool UseOriginalImage { get; set; }
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
         
+        public void ResetState(bool hardReset = false)
+        {
+            IsRendered = false;
+        }
+        
         internal override SpacePlan Measure(Size availableSpace)
         {
-            return availableSpace.IsNegative() 
-                ? SpacePlan.Wrap() 
-                : SpacePlan.FullRender(Size.Zero);
+            if (IsRendered)
+                return SpacePlan.FullRender(Size.Zero);
+
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap();
+        
+            return SpacePlan.FullRender(Size.Zero);
         }
 
         internal override void Draw(Size availableSpace)
@@ -27,6 +38,8 @@ namespace QuestPDF.Elements
 
             var image = GetImageToDraw(availableSpace);
             Canvas.DrawImage(image, availableSpace);
+            
+            IsRendered = true;
         }
 
         private SkImage GetImageToDraw(Size availableSpace)

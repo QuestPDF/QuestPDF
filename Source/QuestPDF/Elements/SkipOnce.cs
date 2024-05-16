@@ -7,9 +7,10 @@ namespace QuestPDF.Elements
     {
         private bool FirstPageWasSkipped { get; set; }
 
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
-            FirstPageWasSkipped = false;
+            if (hardReset)
+                FirstPageWasSkipped = false;
         }
 
         internal override SpacePlan Measure(Size availableSpace)

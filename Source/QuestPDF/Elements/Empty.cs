@@ -6,7 +6,7 @@ namespace QuestPDF.Elements
 {
     internal sealed class Empty : Element
     {
-        internal static Empty Instance { get; } = new Empty();
+        internal static Empty Instance { get; } = new();
         
         internal override SpacePlan Measure(Size availableSpace)
         {

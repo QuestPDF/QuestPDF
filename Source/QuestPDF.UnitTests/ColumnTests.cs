@@ -175,7 +175,7 @@ namespace QuestPDF.UnitTests
         }
         
         [Test]
-        public void Draw_TogglesFirstRenderedFlag_WhenSecondFullyRenders()
+        public void Draw_DoesNotToggleFirstRenderedFlag_WhenSecondFullyRenders()
         {
             TestPlan
                 .For(CreateColumnWithTwoItemsWhereFirstIsFullyRendered)
@@ -185,7 +185,7 @@ namespace QuestPDF.UnitTests
                 .ExpectChildDraw("second", new Size(400, 300))
                 .ExpectCanvasTranslate(0, 0)
                 .CheckDrawResult()
-                .CheckState<Column>(x => x.CurrentRenderingIndex == 0);
+                .CheckState<Column>(x => x.CurrentRenderingIndex == 2);
         }
         
         #endregion

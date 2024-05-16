@@ -8,6 +8,8 @@ namespace QuestPDF.Elements
 {
     internal sealed class DynamicHost : Element, IStateResettable, IContentDirectionAware
     {
+        private bool IsRendered { get; set; }
+        
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
 
@@ -25,14 +27,18 @@ namespace QuestPDF.Elements
             InitialComponentState = Child.GetState();
         }
 
-        public void ResetState()
+        public void ResetState(bool hardReset)
         {
+            IsRendered = false;
             Child.SetState(InitialComponentState);
         }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            var result = GetContent(availableSpace, acceptNewState: false);
+            if (IsRendered)
+                return SpacePlan.FullRender(Size.Zero);
+            
+            var result = ComposeContent(availableSpace, acceptNewState: false);
             var content = result.Content as Element ?? Empty.Instance;
             var measurement = content.Measure(availableSpace);
 
@@ -46,11 +52,15 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            var content = GetContent(availableSpace, acceptNewState: true).Content as Element; 
+            var composeResult = ComposeContent(availableSpace, acceptNewState: true);
+            var content = composeResult.Content as Element; 
             content?.Draw(availableSpace);
+            
+            if (!composeResult.HasMoreContent)
+                IsRendered = true;
         }
 
-        private DynamicComponentComposeResult GetContent(Size availableSize, bool acceptNewState)
+        private DynamicComponentComposeResult ComposeContent(Size availableSize, bool acceptNewState)
         {
             var componentState = Child.GetState();
             

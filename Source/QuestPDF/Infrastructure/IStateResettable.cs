@@ -2,6 +2,6 @@
 {
     internal interface IStateResettable
     {
-        void ResetState();
+        void ResetState(bool hardReset = true);
     }
 }
