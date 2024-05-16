@@ -54,6 +54,9 @@ internal static class SkNativeDependencyProvider
         {
             AppDomain.CurrentDomain.RelativeSearchPath, 
             AppDomain.CurrentDomain.BaseDirectory,
+            Environment.CurrentDirectory,
+            AppContext.BaseDirectory,
+            Directory.GetCurrentDirectory(),
             new FileInfo(typeof(SkNativeDependencyProvider).Assembly.Location).Directory?.FullName
         };
         
