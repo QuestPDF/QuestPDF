@@ -38,6 +38,7 @@ namespace QuestPDF.Elements
                     layers
                         .Layer()
                         .DebugPointer("Page background layer")
+                        .Repeat()
                         .Element(Background);
                     
                     layers
@@ -76,6 +77,7 @@ namespace QuestPDF.Elements
                     layers
                         .Layer()
                         .DebugPointer("Page foreground layer")
+                        .Repeat()
                         .Element(Foreground);
                 });
 
