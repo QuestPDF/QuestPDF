@@ -318,6 +318,40 @@ namespace QuestPDF.Examples
         }
         
         [Test]
+        public void TableContinued()
+        {
+            RenderingTest
+                .Create()
+                .ProducePdf()
+                .PageSize(PageSizes.A5)
+                .ShowResults()
+                .Render(container =>
+                {
+                    var content = new[]
+                    {
+                        ("Label 1", "Value 234"),
+                        ("Label 12", "Value 34"),
+                        ("Label 123", "Value 4")
+                    };
+                    
+                    container
+                        .Padding(20)
+                        .AlignRight()
+                        .Column(column =>
+                        {
+                            foreach (var value in content)
+                            {
+                                column.Item().AlignRight().Row(row =>
+                                {
+                                    row.AutoItem().Text($"{value.Item1}:").Bold();
+                                    row.ConstantItem(75).AlignRight().Text(value.Item2);
+                                });
+                            }
+                        });
+                });
+        }
+        
+        [Test]
         public void Bug_RowSpanWorksIncorrectly()
         {
             // https://github.com/QuestPDF/QuestPDF/issues/552
