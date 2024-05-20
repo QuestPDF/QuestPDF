@@ -137,22 +137,22 @@ internal sealed class SkParagraphBuilder : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr paragraph_builder_create(ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr fontCollection);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_builder_add_text(IntPtr paragraphBuilder, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string text, IntPtr textStyle);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_builder_add_placeholder(IntPtr paragraphBuilder, SkPlaceholderStyle placeholderStyle);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr paragraph_builder_create_paragraph(IntPtr paragraphBuilder);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_builder_reset(IntPtr paragraphBuilder);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_builder_delete(IntPtr paragraphBuilder);
     }
 }

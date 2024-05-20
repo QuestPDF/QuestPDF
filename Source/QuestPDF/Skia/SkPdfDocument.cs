@@ -33,7 +33,7 @@ internal static class SkPdfDocument
 
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr pdf_document_create(IntPtr stream, SkPdfDocumentMetadata metadata);
     }
 }

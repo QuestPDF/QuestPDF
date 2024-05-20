@@ -84,7 +84,7 @@ internal static class SkNativeDependencyCompatibilityChecker
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int check_compatibility_by_calculating_sum(int a, int b);
     }
 }

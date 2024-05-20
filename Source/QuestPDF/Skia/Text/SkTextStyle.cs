@@ -93,10 +93,10 @@ internal sealed class SkTextStyle : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr text_style_create(TextStyleConfiguration textStyleConfiguration);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void text_style_delete(IntPtr textStyle);
     }
 }
