@@ -72,13 +72,13 @@ internal sealed class SkSvgImage : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr svg_create(IntPtr data, IntPtr fontManager);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void svg_unref(IntPtr svg);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void svg_get_size(IntPtr svg, out SkSvgImageSize size, out SkRect viewBox);
     }
 }

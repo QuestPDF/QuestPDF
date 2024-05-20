@@ -45,16 +45,16 @@ internal sealed class SkDocument : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr document_begin_page(IntPtr document, float width, float height);
     
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void document_end_page(IntPtr document);
     
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void document_close(IntPtr document);
     
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void document_unref(IntPtr document);
     }
 }

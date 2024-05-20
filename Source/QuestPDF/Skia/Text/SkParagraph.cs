@@ -99,22 +99,22 @@ internal sealed class SkParagraph : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_plan_layout(IntPtr paragraph, float availableWidth);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_get_line_metrics(IntPtr paragraph, out IntPtr array, out int arrayLength);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_get_unresolved_codepoints(IntPtr paragraph, out IntPtr array, out int arrayLength);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_get_placeholder_positions(IntPtr paragraph, out IntPtr array, out int arrayLength);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_get_text_range_positions(IntPtr paragraph, int rangeStart, int rangeEnd, out IntPtr array, out int arrayLength);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_delete(IntPtr paragraph);
     }
 }

@@ -47,19 +47,19 @@ internal sealed class SkBitmap : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr bitmap_create(int width, int height);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void bitmap_delete(IntPtr image);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr bitmap_encode_as_jpg(IntPtr image, int quality);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr bitmap_encode_as_png(IntPtr image);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr bitmap_encode_as_webp(IntPtr image, int quality);
     }
 }

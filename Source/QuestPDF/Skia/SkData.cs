@@ -72,10 +72,10 @@ internal sealed class SkData : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr data_create_from_file([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string path);
     
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe IntPtr data_create_from_binary(byte* arrayPointer, int arrayLength);
     
         [StructLayout(LayoutKind.Sequential)]
@@ -85,10 +85,10 @@ internal sealed class SkData : IDisposable
             public IntPtr bytes;
         }
     
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern GetBytesFromDataResult data_get_bytes(IntPtr data);
     
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void data_unref(IntPtr data);
     }
 }

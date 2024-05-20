@@ -29,7 +29,7 @@ public sealed class SkTypeface : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void typeface_unref(IntPtr typeface);
     }
 }
