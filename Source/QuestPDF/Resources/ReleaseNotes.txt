@@ -67,3 +67,6 @@ Version 2024.3.6
 - Introduced support for the win-x86 platform.
 - Improved SVG image support for less common unit types.
 - Enhanced automated testing environment.
+
+Version 2024.3.7
+- Introduced an explicit CallingConvention.Cdecl to address and fix the issue of stack imbalance on Windows platforms.
