@@ -189,7 +189,7 @@ namespace QuestPDF.Examples
                             .FontSize(192)
                             .FontColor(Colors.Blue.Medium)
                             .Bold();
-                        
+
                         var image = LoadImageWithTransparency("photo.jpg", 0.75f);
                         page.Foreground().Image(image);
                     });
@@ -200,18 +200,48 @@ namespace QuestPDF.Examples
                 using var originalImage = SKImage.FromEncodedData(fileName);
 
                 using var surface = SKSurface.Create(originalImage.Width, originalImage.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using var canvas = surface.Canvas;                
+                using var canvas = surface.Canvas;
 
                 using var transparencyPaint = new SKPaint
                 {
                     ColorFilter = SKColorFilter.CreateBlendMode(SKColors.White.WithAlpha((byte)(transparency * 255)), SKBlendMode.DstIn)
                 };
-                
+
                 canvas.DrawImage(originalImage, new SKPoint(0, 0), transparencyPaint);
 
                 var encodedImage = surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).ToArray();
                 return Image.FromBinaryData(encodedImage);
             }
+        }
+
+        [Test]
+        public void ImageFilesShouldBeDisposableImmediatelyAfterDocumentGeneration()
+        {
+            var files = Enumerable.Range(0, 100).Select(x => $"temp_{x}.jpg").ToList();
+
+            foreach (var file in files)
+                File.Copy("photo.jpg", file);
+
+            var document = Document.Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.Margin(24);
+
+                    page.Content().Column(column =>
+                    {
+                        column.Spacing(24);
+
+                        foreach (var file in files)
+                            column.Item().Image(file).UseOriginalImage();
+                    });
+                });
+            });
+
+            document.GeneratePdfAndShow();
+
+            foreach (var file in files)
+                File.Delete(file);
         }
     }
 }

@@ -29,17 +29,43 @@ namespace QuestPDF.Previewer
         
         public PreviewerControl()
         {
+            var requestedRenderings = new HashSet<(int pageIndex, int zoomLevel)>();
+            
             CommunicationService.Instance.OnDocumentUpdated += document =>
             {
+                requestedRenderings.Clear();
+                
                 InteractiveCanvas.SetNewDocumentStructure(document);
                 Dispatcher.UIThread.InvokeAsync(InvalidateVisual).GetTask();
             };
             
-            CommunicationService.Instance.OnPageSnapshotsRequested += InteractiveCanvas.GetMissingSnapshots;
-            
-            CommunicationService.Instance.OnPageSnapshotsProvided += snapshots =>
+            Task.Run(async () =>
             {
-                InteractiveCanvas.AddSnapshots(snapshots);
+                while (true)
+                {
+                    var missingSnapshots = InteractiveCanvas.GetMissingSnapshots().Select(x => (x.PageIndex, x.ZoomLevel)).ToList();
+                    
+                    if (!missingSnapshots.Any())
+                    {
+                        await Task.Delay(10);
+                        continue;
+                    }
+                    
+                    foreach (var pageSnapshotIndex in missingSnapshots.Except(requestedRenderings).ToList())
+                    {
+                        requestedRenderings.Add(pageSnapshotIndex);
+                        CommunicationService.Instance.RequestNewPage(new PageSnapshotIndex
+                        {
+                            PageIndex = pageSnapshotIndex.Item1,
+                            ZoomLevel = pageSnapshotIndex.Item2
+                        });
+                    }
+                }
+            });
+            
+            CommunicationService.Instance.OnPageSnapshotsProvided += snapshot =>
+            {
+                InteractiveCanvas.AddSnapshots(snapshot);
                 Dispatcher.UIThread.InvokeAsync(InvalidateVisual).GetTask();
             };
 

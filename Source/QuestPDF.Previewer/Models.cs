@@ -22,6 +22,13 @@ class PageSnapshotIndex
     public override string ToString() => $"{ZoomLevel}/{PageIndex}";
 }
 
+class PageSnapshotCommunicationData
+{
+    public int PageIndex { get; set; }
+    public int ZoomLevel { get; set; }
+    public byte[] ImageData { get; set; }
+}
+
 class RenderedPageSnapshot : PageSnapshotIndex
 {
     public SKImage Image { get; set; }

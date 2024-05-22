@@ -1,9 +1,4 @@
 ﻿using System.Text.Json;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using SkiaSharp;
 
 namespace QuestPDF.Previewer;
@@ -13,10 +8,9 @@ class CommunicationService
     public static CommunicationService Instance { get; } = new ();
     
     public event Action<DocumentStructure>? OnDocumentUpdated;
-    public Func<ICollection<PageSnapshotIndex>>? OnPageSnapshotsRequested { get; set; }
-    public Action<ICollection<RenderedPageSnapshot>> OnPageSnapshotsProvided  { get; set; }
+    public Action<RenderedPageSnapshot> OnPageSnapshotsProvided  { get; set; }
 
-    private WebApplication? Application { get; set; }
+    private SocketServer? Server { get; set; }
 
     private readonly JsonSerializerOptions JsonSerializerOptions = new()
     {
@@ -28,69 +22,73 @@ class CommunicationService
         
     }
     
-    public Task Start(int port)
+    public void Start(int port)
     {
-        var builder = WebApplication.CreateBuilder();
-        builder.Services.AddLogging(x => x.ClearProviders());
-        builder.WebHost.UseKestrel(options => options.Limits.MaxRequestBodySize = null);
-        Application = builder.Build();
-
-        Application.MapGet("ping", HandlePing);
-        Application.MapGet("version", HandleVersion);
-        Application.MapPost("preview/update", HandlePreviewRefresh);
-        Application.MapGet("preview/getRenderingRequests", HandleGetRequests);
-        Application.MapPost("preview/provideRenderedImages", HandleProvidedSnapshotImages);
-            
-        return Application.RunAsync($"http://localhost:{port}/");
-    }
-
-    public async Task Stop()
-    {
-        await Application.StopAsync();
-        await Application.DisposeAsync();
-    }
-
-    private async Task<IResult> HandlePing()
-    {
-        return OnDocumentUpdated == null 
-            ? Results.StatusCode(StatusCodes.Status503ServiceUnavailable) 
-            : Results.Ok();
-    }
-    
-    private async Task<IResult> HandleVersion()
-    {
-        return Results.Json(GetType().Assembly.GetName().Version);
-    }
-    
-    private async Task HandlePreviewRefresh(DocumentStructure documentStructure)
-    {
-        Task.Run(() => OnDocumentUpdated(documentStructure));
-    }
-
-    private async Task<ICollection<PageSnapshotIndex>> HandleGetRequests()
-    {
-        return OnPageSnapshotsRequested();
-    }
-    
-    private async Task HandleProvidedSnapshotImages(HttpRequest request)
-    {
-        var renderedPageIndexes = JsonSerializer.Deserialize<ICollection<PageSnapshotIndex>>(request.Form["metadata"], JsonSerializerOptions);
-        var renderedPages = new List<RenderedPageSnapshot>();
-
-        foreach (var index in renderedPageIndexes)
+        Server = new SocketServer("127.0.0.1", port);
+        
+        Server.OnMessageReceived += async message =>
         {
-            using var memoryStream = new MemoryStream();
-            await request.Form.Files.GetFile(index.ToString()).CopyToAsync(memoryStream);
-            var image = SKImage.FromEncodedData(memoryStream.ToArray()).ToRasterImage(true);
-
-            var renderedPage = new RenderedPageSnapshot
+            var content = JsonDocument.Parse(message).RootElement;
+            var channel = content.GetProperty("Channel").GetString();
+            
+            if (channel == "ping/check")
             {
-                ZoomLevel = index.ZoomLevel, PageIndex = index.PageIndex, Image = image
+                if (OnDocumentUpdated == null)
+                    return;
+                
+                var response = new SocketMessage<string>
+                {
+                    Channel = "ping/ok",
+                    Payload = GetType().Assembly.GetName().Version.ToString()
+                };
+                
+                Server.SendMessage(JsonSerializer.Serialize(response));
+            }
+            else if (channel == "version/check")
+            {
+                var response = new SocketMessage<string>
+                {
+                    Channel = "version/provide",
+                    Payload = GetType().Assembly.GetName().Version.ToString()
+                };
+                
+                Server.SendMessage(JsonSerializer.Serialize(response));
+            }
+            else if (channel == "preview/update")
+            {
+                var documentStructure = content.GetProperty("Payload").Deserialize<DocumentStructure>();
+                Task.Run(() => OnDocumentUpdated(documentStructure));
+            }
+            else if (channel == "preview/updatePage")
+            {
+                var previewData = content.GetProperty("Payload").Deserialize<PageSnapshotCommunicationData>();
+                var image = SKImage.FromEncodedData(previewData.ImageData).ToRasterImage(true);
+
+                var renderedPage = new RenderedPageSnapshot
+                {
+                    ZoomLevel = previewData.ZoomLevel, 
+                    PageIndex = previewData.PageIndex, 
+                    Image = image
+                };
+            
+                Task.Run(() => OnPageSnapshotsProvided(renderedPage));
+            }
+        };
+        
+        Server.Start();
+    }
+
+    public void RequestNewPage(PageSnapshotIndex index)
+    {
+        Task.Run(() =>
+        {
+            var message = new SocketMessage<PageSnapshotIndex>
+            {
+                Channel = "preview/requestPage",
+                Payload = index
             };
             
-            renderedPages.Add(renderedPage);
-        }
-
-        Task.Run(() => OnPageSnapshotsProvided(renderedPages));
+            Server.SendMessage(JsonSerializer.Serialize(message));
+        });
     }
 }

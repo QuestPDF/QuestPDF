@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
@@ -15,7 +16,7 @@ namespace QuestPDF.Previewer
     internal class PreviewerService
     {
         private int Port { get; }
-        private HttpClient HttpClient { get; }
+        private SocketClient SocketClient { get; }
         
         public event Action? OnPreviewerStopped;
 
@@ -26,12 +27,11 @@ namespace QuestPDF.Previewer
         
         public PreviewerService(int port)
         {
-            Port = port;
-            HttpClient = new()
-            {
-                BaseAddress = new Uri($"http://localhost:{port}/"), 
-                Timeout = TimeSpan.FromSeconds(1)
-            };
+            SocketClient = new SocketClient("127.0.0.1", port);
+            
+            
+            
+            SocketClient.StartCommunication();
         }
 
         public async Task Connect()
@@ -50,21 +50,58 @@ namespace QuestPDF.Previewer
 
         private async Task<bool> IsPreviewerAvailable()
         {
-            try
+            var isPreviewerAvailable = false;
+
+            SocketClient.OnMessageReceived += async message =>
             {
-                using var result = await HttpClient.GetAsync("/ping");
-                return result.IsSuccessStatusCode;
-            }
-            catch
+                var content = JsonDocument.Parse(message).RootElement;
+                var channel = content.GetProperty("Channel").GetString();
+
+                if (channel == "ping/ok")
+                    isPreviewerAvailable = true;
+            };
+            
+            var request = new SocketMessage<PageSnapshotCommunicationData>
             {
-                return false;
+                Channel = "ping/check"
+            };
+            
+            SocketClient.SendMessage(JsonSerializer.Serialize(request));
+            
+            while (!isPreviewerAvailable)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
+
+            return true;
         }
         
         private async Task<Version> GetPreviewerVersion()
         {
-            using var result = await HttpClient.GetAsync("/version");
-            return await result.Content.ReadFromJsonAsync<Version>();
+            Version previewerVersion = default;
+            
+            SocketClient.OnMessageReceived += async message =>
+            {
+                var content = JsonDocument.Parse(message).RootElement;
+                var channel = content.GetProperty("Channel").GetString();
+
+                if (channel == "version/provide")
+                    previewerVersion = content.GetProperty("Payload").Deserialize<Version>();
+            };
+            
+            var request = new SocketMessage<PageSnapshotCommunicationData>
+            {
+                Channel = "version/check"
+            };
+            
+            SocketClient.SendMessage(JsonSerializer.Serialize(request));
+
+            while (previewerVersion == default)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
+            }
+
+            return previewerVersion;
         }
         
         private void StartPreviewer()
@@ -164,67 +201,48 @@ namespace QuestPDF.Previewer
                     .ToArray()
             };
             
-            await HttpClient.PostAsync("/preview/update", JsonContent.Create(documentStructure));
+            var response = new SocketMessage<DocumentStructure>
+            {
+                Channel = "preview/update",
+                Payload = documentStructure
+            };
+                
+            SocketClient.SendMessage(JsonSerializer.Serialize(response));
         }
         
         public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
         {
-            Task.Run(async () =>
-            {
-                while (true)
-                {
-                    try
-                    {
-                        await RenderRequestedPageSnapshots();
-                    }
-                    catch
-                    {
-                        
-                    }
-                    
-                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
-                }
-            });
+            RenderRequestedPageSnapshots();
         }
         
         private async Task RenderRequestedPageSnapshots()
         {
-            // get requests
-            var getRequestedSnapshots = await HttpClient.GetAsync("/preview/getRenderingRequests");
-            getRequestedSnapshots.EnsureSuccessStatusCode();
-            
-            var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
-            
-            if (!requestedSnapshots.Any())
-                return;
-            
-            if (CurrentDocumentSnapshot == null)
-                return;
-      
-            // render snapshots
-            using var multipartContent = new MultipartFormDataContent();
+            SocketClient.OnMessageReceived += async message =>
+            {
+                var content = JsonDocument.Parse(message).RootElement;
+                var channel = content.GetProperty("Channel").GetString();
 
-            var renderingTasks = requestedSnapshots
-                .Select(async index =>
+                if (channel != "preview/requestPage")
+                    return;
+
+                var page = content.GetProperty("Payload").Deserialize<PageSnapshotIndex>();
+
+                var image = CurrentDocumentSnapshot
+                    .Pictures
+                    .ElementAt(page.PageIndex)
+                    .RenderImage(page.ZoomLevel);
+
+                var response = new SocketMessage<PageSnapshotCommunicationData>
                 {
-                    var image = CurrentDocumentSnapshot
-                        .Pictures
-                        .ElementAt(index.PageIndex)
-                        .RenderImage(index.ZoomLevel);
-
-                    return (index, image);
-                })
-                .ToList();
-
-            var renderedSnapshots = await Task.WhenAll(renderingTasks);
-            
-            // prepare response and send
-            foreach (var (index, image) in renderedSnapshots)
-                multipartContent.Add(new ByteArrayContent(image), index.ToString(), index.ToString());
-
-            multipartContent.Add(JsonContent.Create(requestedSnapshots), "metadata");
-
-            await HttpClient.PostAsync("/preview/provideRenderedImages", multipartContent);
+                    Channel = "preview/updatePage",
+                    Payload = new PageSnapshotCommunicationData
+                    {
+                        PageIndex = page.PageIndex, ZoomLevel = page.ZoomLevel, ImageData = image
+                    }
+                };
+                
+                SocketClient.SendMessage(JsonSerializer.Serialize(response));
+            };
         }
     }
 }

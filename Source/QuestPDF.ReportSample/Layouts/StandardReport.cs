@@ -56,7 +56,7 @@ namespace QuestPDF.ReportSample.Layouts
                 {
                     row.Spacing(50);
                     
-                    row.RelativeItem().PaddingTop(-10).Text(Model.Title).Style(Typography.Title);
+                    row.RelativeItem().PaddingTop(-10).Text("Test dovedností mladých hasičů").Style(Typography.Title);
                     row.ConstantItem(90).Hyperlink("https://www.questpdf.com").MaxHeight(30).Component<ImagePlaceholder>();
                 });
 

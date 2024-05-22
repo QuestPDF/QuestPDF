@@ -91,10 +91,9 @@ class InteractiveCanvas : ICustomDrawOperation
             .ToList();
     }
 
-    public void AddSnapshots(ICollection<RenderedPageSnapshot> snapshots)
+    public void AddSnapshots(RenderedPageSnapshot snapshot)
     {
-        foreach (var snapshot in snapshots)
-            PageSnapshotCache.Add(snapshot);
+        PageSnapshotCache.Add(snapshot);
     }
     
     #endregion

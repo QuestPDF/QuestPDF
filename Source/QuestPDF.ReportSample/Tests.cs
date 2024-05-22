@@ -6,6 +6,7 @@ using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
 using QuestPDF.ReportSample.Layouts;
 
 namespace QuestPDF.ReportSample
@@ -28,7 +29,7 @@ namespace QuestPDF.ReportSample
         [Test] 
         public void GeneratePdfAndShow()
         {
-            Report.GeneratePdfAndShow();
+            Report.ShowInPreviewer();
         }
         
         [Test] 
