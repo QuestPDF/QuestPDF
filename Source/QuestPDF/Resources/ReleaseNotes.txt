@@ -73,6 +73,5 @@ Version 2024.3.7
 - Introduced an explicit CallingConvention.Cdecl to address and fix the issue of stack imbalance on Windows platforms.
 
 
-Version 2024.3.8
-- Enhanced: Improved the visual quality of the underline text decoration (gaps).
+Version 2024.3.9
 - Fixed: the thickness of text decorations was significantly higher than defined by the font settings.
