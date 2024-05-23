@@ -79,7 +79,7 @@ namespace QuestPDF.Infrastructure
                 DecorationColor = DecorationColor ?? Colors.Black,
                 DecorationType = CreateDecoration(),
                 
-                DecorationMode = TextStyleConfiguration.TextDecorationMode.Through,
+                DecorationMode = GetDecorationMode(),
                 DecorationStyle = DecorationStyle ?? TextStyleConfiguration.TextDecorationStyle.Solid,
                 DecorationThickness = DecorationThickness ?? 1,
                 
@@ -100,6 +100,14 @@ namespace QuestPDF.Infrastructure
                     result[i] = texts[i].Instance;
                 
                 return result;
+            }
+            
+            TextStyleConfiguration.TextDecorationMode GetDecorationMode()
+            {
+                if (HasUnderline == true)
+                    return TextStyleConfiguration.TextDecorationMode.Gaps;
+                
+                return TextStyleConfiguration.TextDecorationMode.Through;
             }
 
             TextStyleConfiguration.TextDecoration CreateDecoration()
