@@ -54,7 +54,7 @@ namespace QuestPDF.Infrastructure
             HasUnderline = false,
             HasOverline = false,
             DecorationStyle = TextStyleConfiguration.TextDecorationStyle.Solid,
-            DecorationThickness = 2f,
+            DecorationThickness = 1f,
             Direction = TextDirection.Auto
         };
         
