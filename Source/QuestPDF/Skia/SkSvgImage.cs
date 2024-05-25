@@ -33,11 +33,11 @@ internal sealed class SkSvgImage : IDisposable
     public SkSvgImageSize Size;
     public SkRect ViewBox;
     
-    public SkSvgImage(string svgString, SkFontManager fontManager)
+    public SkSvgImage(string svgString, SkResourceProvider resourceProvider, SkFontManager fontManager)
     {
         using var data = SkData.FromBinary(System.Text.Encoding.UTF8.GetBytes(svgString));
 
-        Instance = API.svg_create(data.Instance, fontManager.Instance);
+        Instance = API.svg_create(data.Instance, resourceProvider.Instance, fontManager.Instance);
         
         if (Instance == IntPtr.Zero)
             throw new Exception("Cannot decode the provided SVG image.");
@@ -73,7 +73,7 @@ internal sealed class SkSvgImage : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr svg_create(IntPtr data, IntPtr fontManager);
+        public static extern IntPtr svg_create(IntPtr data, IntPtr resourceProvider, IntPtr fontManager);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void svg_unref(IntPtr svg);
