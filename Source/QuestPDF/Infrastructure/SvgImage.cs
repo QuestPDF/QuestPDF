@@ -18,7 +18,7 @@ public class SvgImage
     
     private SvgImage(string content)
     {
-        SkSvgImage = new SkSvgImage(content, FontManager.CurrentFontManager);    
+        SkSvgImage = new SkSvgImage(content, SkResourceProvider.CurrentResourceProvider, FontManager.CurrentFontManager);    
     }
 
     ~SvgImage()
