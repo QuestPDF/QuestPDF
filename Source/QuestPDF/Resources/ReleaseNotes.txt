@@ -75,3 +75,9 @@ Version 2024.3.7
 
 Version 2024.3.9
 - Fixed: the thickness of text decorations was significantly higher than defined by the font settings.
+
+
+Version 2024.3.10
+- Updated Skia to M126 release,
+- Enhancement: SVG content supports embedded PNG/JPEG images,
+- Enhancement: SVG content supports loading external images from application local directory.
