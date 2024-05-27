@@ -15,9 +15,7 @@ internal sealed class SkResourceProvider
 
     private SkResourceProvider(SkFontManager fontManager)
     {
-        var resourcesPath = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
-        
-        Instance = API.resource_provider_create(resourcesPath, fontManager.Instance);
+        Instance = API.resource_provider_create(Helpers.Helpers.ApplicationFilesPath, fontManager.Instance);
         SkiaAPI.EnsureNotNull(Instance);
     }
     

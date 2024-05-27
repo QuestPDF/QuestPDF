@@ -86,7 +86,14 @@ namespace QuestPDF.Infrastructure
         public static Image FromFile(string filePath)
         {
             if (!File.Exists(filePath))
-                throw new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
+            {
+                var fallbackPath = Path.Combine(Helpers.Helpers.ApplicationFilesPath, filePath);
+                
+                if (!File.Exists(fallbackPath))
+                    throw new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
+                
+                filePath = fallbackPath;
+            }
             
             using var imageData = SkData.FromFile(filePath);
             return DecodeImage(imageData);

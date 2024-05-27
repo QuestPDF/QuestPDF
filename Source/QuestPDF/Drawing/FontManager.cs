@@ -71,11 +71,9 @@ namespace QuestPDF.Drawing
         private static void RegisterLibraryDefaultFonts()
         {
             var supportedFontExtensions = new[] { "*.ttf", "*.otf", "*.ttc", "*.pfb" };
-
-            var executionPath = AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
             
             var fontFilePaths = supportedFontExtensions
-                .SelectMany(extension => Directory.GetFiles(executionPath, extension, SearchOption.AllDirectories));
+                .SelectMany(extension => Directory.GetFiles(Helpers.Helpers.ApplicationFilesPath, extension, SearchOption.AllDirectories));
             
             foreach (var fileName in fontFilePaths)
             {

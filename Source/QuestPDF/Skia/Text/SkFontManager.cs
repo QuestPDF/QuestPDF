@@ -7,7 +7,7 @@ internal sealed class SkFontManager
 {
     public IntPtr Instance { get; }
     
-    public static SkFontManager Local { get; } = new(API.font_manager_create_local(AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory));
+    public static SkFontManager Local { get; } = new(API.font_manager_create_local(Helpers.Helpers.ApplicationFilesPath));
     public static SkFontManager Global { get; } = new(API.font_manager_create_global());
 
     private SkFontManager(IntPtr instance)
