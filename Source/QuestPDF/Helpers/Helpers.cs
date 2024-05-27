@@ -110,5 +110,7 @@ namespace QuestPDF.Helpers
             process.Start();
             process.WaitForExit();
         }
+        
+        internal static string ApplicationFilesPath => AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
     }
 }
