@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
@@ -49,8 +50,16 @@ internal static class SkNativeDependencyCompatibilityChecker
             var message = 
                 $"{exceptionBaseMessage}{paragraph}" +
                 "Your runtime is currently not supported by QuestPDF. " +
-                $"Currently supported runtimes are: {supportedRuntimes}. " +
-                $"Your current runtime is detected as '{currentRuntime}'.{paragraph}";
+                $"Currently supported runtimes are: {supportedRuntimes}. ";
+
+            if (SkNativeDependencyProvider.SupportedPlatforms.Contains(currentRuntime))
+            {
+                message += $"{paragraph}It appears that your current operating system distribution may be outdated. For optimal compatibility, please consider updating it to a more recent version.";
+            }
+            else
+            {
+                message += $"{paragraph}Your current runtime is detected as '{currentRuntime}'.";
+            }
             
             if (RuntimeInformation.ProcessArchitecture is Architecture.Arm)
                 message += $"{paragraph}Please consider setting the 'Platform target' property to 'Arm64' in your project settings.";
