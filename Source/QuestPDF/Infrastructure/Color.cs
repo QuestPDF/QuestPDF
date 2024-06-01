@@ -54,6 +54,11 @@ public readonly struct Color
     {
         return color.Hex;
     }
+    
+    public static implicit operator Color(uint hex)
+    {
+        return new Color(hex);
+    }
 
     public override string ToString()
     {
