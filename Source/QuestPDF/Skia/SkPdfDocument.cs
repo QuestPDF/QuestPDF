@@ -18,9 +18,7 @@ internal struct SkPdfDocumentMetadata
 
     [MarshalAs(UnmanagedType.I1)] public bool SupportPDFA;
     [MarshalAs(UnmanagedType.I1)] public bool CompressDocument;
-    
-    public float RasterDPI;
-    public int ImageEncodingQuality;
+    public float RasterDPI;    
 }
 
 internal static class SkPdfDocument
