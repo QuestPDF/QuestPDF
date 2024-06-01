@@ -80,14 +80,28 @@ namespace QuestPDF.Helpers
             };
         }
         
+        internal static bool ToDownsamplingStrategy(this ImageCompressionQuality quality)
+        {
+            return quality switch
+            {
+                ImageCompressionQuality.Best => false,
+                ImageCompressionQuality.VeryHigh => false,
+                ImageCompressionQuality.High => true,
+                ImageCompressionQuality.Medium => true,
+                ImageCompressionQuality.Low => true,
+                ImageCompressionQuality.VeryLow => true,
+                _ => throw new ArgumentOutOfRangeException(nameof(quality), quality, null)
+            };
+        }
+        
         internal static SkImage CompressImage(this SkImage image, ImageCompressionQuality compressionQuality)
         {
-            return image.ResizeAndCompress(image.Width, image.Height, compressionQuality.ToQualityValue());
+            return image.ResizeAndCompress(image.Width, image.Height, compressionQuality.ToQualityValue(), compressionQuality.ToDownsamplingStrategy());
         }
 
         internal static SkImage ResizeAndCompressImage(this SkImage image, ImageSize targetResolution, ImageCompressionQuality compressionQuality)
         {
-            return image.ResizeAndCompress(targetResolution.Width, targetResolution.Height, compressionQuality.ToQualityValue());
+            return image.ResizeAndCompress(targetResolution.Width, targetResolution.Height, compressionQuality.ToQualityValue(), compressionQuality.ToDownsamplingStrategy());
         }
 
         internal static SkImage GetImageWithSmallerSize(SkImage one, SkImage second)

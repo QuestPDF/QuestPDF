@@ -39,9 +39,9 @@ internal sealed class SkImage : IDisposable
     /// When image is opaque, uses the JPEG compression algorithm, otherwise uses the PNG algorithm.
     /// Only the JPEG compression algorithm uses the compressionQuality parameter.
     /// </summary>
-    public SkImage ResizeAndCompress(int targetWidth, int targetHeight, int compressionQuality)
+    public SkImage ResizeAndCompress(int targetWidth, int targetHeight, int compressionQuality, bool downsample)
     {
-        var instance = API.image_resize_and_compress(Instance, targetWidth, targetHeight, compressionQuality);
+        var instance = API.image_resize_and_compress(Instance, targetWidth, targetHeight, compressionQuality, downsample);
         return new SkImage(instance);
     }
     
@@ -80,7 +80,7 @@ internal sealed class SkImage : IDisposable
         public static extern void image_unref(IntPtr image);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr image_resize_and_compress(IntPtr image, int targetImageWidth, int targetImageHeight, int compressionQuality);
+        public static extern IntPtr image_resize_and_compress(IntPtr image, int targetImageWidth, int targetImageHeight, int compressionQuality, bool downsample);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SkImageDetails
