@@ -347,7 +347,7 @@ namespace QuestPDF.Elements.Text
                         {
                             Width = spacing.Width,
                             Height = spacing.Height,
-                            Alignment = SkPlaceholderStyle.PlaceholderAlignment.Bottom,
+                            Alignment = SkPlaceholderStyle.PlaceholderAlignment.Middle,
                             Baseline = SkPlaceholderStyle.PlaceholderBaseline.Alphabetic,
                             BaselineOffset = 0
                         });
@@ -426,8 +426,10 @@ namespace QuestPDF.Elements.Text
                 if (ParagraphSpacing <= Size.Epsilon)
                     return;
                 
-                result.Add(new TextBlockSpan() { Text = "\n ", Style = TextStyle.ParagraphSpacing }); // space ensures proper line spacing
+                // space ensure proper line spacing
+                result.Add(new TextBlockSpan() { Text = "\n ", Style = TextStyle.ParagraphSpacing }); 
                 result.Add(new TextBlockParagraphSpacing(0, ParagraphSpacing));
+                result.Add(new TextBlockSpan() { Text = " \n", Style = TextStyle.ParagraphSpacing });
             }
             
             void AddParagraphFirstLineIndentation()
