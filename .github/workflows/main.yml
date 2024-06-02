@@ -16,17 +16,17 @@ jobs:
       matrix:
         runtime: 
         - name: win-x64
-          runs-on: windows-latest-large
+          runs-on: windows-latest-xlarge
         - name: win-x86
-          runs-on: windows-latest-large
+          runs-on: windows-latest-xlarge
         - name: linux-x64
-          runs-on: ubuntu-latest-large
+          runs-on: ubuntu-latest-xlarge
           container: ubuntu:24.04
         - name: linux-arm64
           runs-on: [self-hosted, linux, arm64]
           container: ubuntu:24.04
         - name: linux-musl-x64
-          runs-on: ubuntu-latest-large
+          runs-on: ubuntu-latest-xlarge
           container: alpine:3.18
         - name: osx-x64
           runs-on: macos-latest-large
