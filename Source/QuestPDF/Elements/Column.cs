@@ -91,7 +91,7 @@ namespace QuestPDF.Elements
             {
                 var availableHeight = availableSpace.Height - topOffset;
 
-                var itemSpace = availableHeight > 0
+                var itemSpace = availableHeight >= 0
                     ? new Size(availableSpace.Width, availableHeight)
                     : Size.Zero;
                 
@@ -104,7 +104,7 @@ namespace QuestPDF.Elements
                     break;
 
                 // when the item does not take any space, do not add spacing
-                if (measurement.Width < Size.Epsilon && measurement.Height < Size.Epsilon)
+                if (topOffset > 0 && measurement.Width < Size.Epsilon && measurement.Height < Size.Epsilon)
                     topOffset -= Spacing;
                 
                 commands.Add(new ColumnItemRenderingCommand
