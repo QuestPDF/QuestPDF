@@ -47,4 +47,37 @@ internal static class TreeTraversal
             foreach (var innerChild in Flatten(child))
                 yield return innerChild;
     }
+    
+    public static ICollection<TreeNode<T>> ExtractAncestors<T>(this TreeNode<T> element)
+    {
+        var parent = element;
+        var result = new List<TreeNode<T>>();
+        
+        while (parent is not null)
+        {
+            result.Add(parent);
+            parent = parent.Parent;
+        }
+
+        return result;
+    }
+    
+    public static TreeNode<OverflowDebuggingProxy>? FindElementOfType<TChild>(this TreeNode<OverflowDebuggingProxy> element)
+    {
+        TreeNode<OverflowDebuggingProxy> result = null;
+        Traverse(element);
+        return result;
+        
+        void Traverse(TreeNode<OverflowDebuggingProxy> currentElement)
+        {
+            if (currentElement.Value.Child is TChild)
+            {
+                result = currentElement;
+                return;
+            }
+
+            foreach (var child in currentElement.Children)
+                Traverse(child);
+        }
+    }
 }

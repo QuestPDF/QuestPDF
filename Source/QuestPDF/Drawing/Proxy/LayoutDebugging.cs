@@ -9,7 +9,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal static class Helpers
+internal static class LayoutDebugging
 {
     internal static SpacePlan TryMeasureWithOverflow(this Element element, Size availableSpace)
     {
@@ -145,45 +145,12 @@ internal static class Helpers
         });
     }
 
-    public static void CaptureOriginalValues(this TreeNode<OverflowDebuggingProxy> parent)
+    public static void CaptureOriginalMeasurementValues(this TreeNode<OverflowDebuggingProxy> parent)
     {
         parent.Value.CaptureOriginalValues();
             
         foreach (var child in parent.Children)
-            CaptureOriginalValues(child);
-    }
-
-    public static TreeNode<OverflowDebuggingProxy>? FindLayoutOverflowVisualization(this TreeNode<OverflowDebuggingProxy> element)
-    {
-        TreeNode<OverflowDebuggingProxy> result = null;
-        Traverse(element);
-        return result;
-        
-        void Traverse(TreeNode<OverflowDebuggingProxy> currentElement)
-        {
-            if (currentElement.Value.Child is LayoutOverflowVisualization)
-            {
-                result = currentElement;
-                return;
-            }
-
-            foreach (var child in currentElement.Children)
-                Traverse(child);
-        }
-    }
-    
-    public static ICollection<TreeNode<OverflowDebuggingProxy>> ExtractAncestors(this TreeNode<OverflowDebuggingProxy> element)
-    {
-        var parent = element;
-        var result = new List<TreeNode<OverflowDebuggingProxy>>();
-        
-        while (parent is not null)
-        {
-            result.Add(parent);
-            parent = parent.Parent;
-        }
-
-        return result;
+            CaptureOriginalMeasurementValues(child);
     }
     
     public static string FormatAncestors(this IEnumerable<OverflowDebuggingProxy> ancestors)
@@ -244,7 +211,7 @@ internal static class Helpers
             var indent = indentationCache[indentationLevel];
             
             foreach (var content in Format(proxy))
-                result.AppendLine($"{indent} {content}");
+                result.AppendLine($"{indent}{content}");
             
             result.AppendLine();
             result.AppendLine();
@@ -278,6 +245,8 @@ internal static class Helpers
             
             string SpacePlanDot()
             {
+                var issueIndicator = "🚨"; 
+                
                 return proxy.OriginalSpacePlan.Value.Type switch
                 {
                     SpacePlanType.Wrap => "🔴",
@@ -316,7 +285,6 @@ internal static class Helpers
                     return text;
 
                 return text.Substring(0, maxLength) + "...";
-                //return text.AsSpan(0, maxLength).ToString() + "...";
             }
         }
     }

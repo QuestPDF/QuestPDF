@@ -232,7 +232,7 @@ namespace QuestPDF.Drawing
                 content.ApplyLayoutOverflowDetection();
                 content.Measure(Size.Max);
 
-                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().FirstOrDefault();
+                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
                 overflowState.ApplyLayoutOverflowVisualization();
                 
                 content.ApplyContentDirection();
@@ -247,11 +247,11 @@ namespace QuestPDF.Drawing
                 content.ApplyLayoutOverflowDetection();
                 content.Measure(Size.Max);
                 
-                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().FirstOrDefault();
-                overflowState.CaptureOriginalValues();
+                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
+                overflowState.CaptureOriginalMeasurementValues();
                 overflowState.ApplyLayoutOverflowVisualization();
 
-                var rootCause = overflowState.FindLayoutOverflowVisualization();
+                var rootCause = overflowState.FindElementOfType<LayoutOverflowVisualization>();
                 
                 var stack = rootCause
                     .ExtractAncestors()
@@ -274,7 +274,9 @@ namespace QuestPDF.Drawing
                     $"For example, some elements may require more space than is available. {newParagraph}" +
                     $"To quickly determine the place where the problem is likely occurring, please generate the document with the attached debugger. " +
                     $"The library will generate a PDF document with visually annotated places where layout constraints are invalid. {newParagraph}" +
-                    $"Alternatively, if you don’t want to or cannot attach the debugger, you can set the {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDebugging)} flag to true.";
+                    $"Alternatively, if you don’t want to or cannot attach the debugger, you can set the {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDebugging)} flag to true. {newParagraph}" +
+                    $"The layout issue is likely present in the following part of the document: {newParagraph}{stack}{newParagraph}" +
+                    $"Please analyse the document measurement to learn more: {newParagraph}{inside}";
                 
                 throw new DocumentLayoutException(message);
             }
