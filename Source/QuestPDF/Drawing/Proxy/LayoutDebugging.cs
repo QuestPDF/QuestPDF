@@ -153,6 +153,22 @@ internal static class LayoutDebugging
             CaptureOriginalMeasurementValues(child);
     }
     
+    public static IEnumerable<TreeNode<OverflowDebuggingProxy>> FindLayoutOverflowVisualizationNodes(this TreeNode<OverflowDebuggingProxy> rootNode)
+    {
+        var result = new List<TreeNode<OverflowDebuggingProxy>>();
+        Traverse(rootNode);
+        return result;
+        
+        void Traverse(TreeNode<OverflowDebuggingProxy> node)
+        {
+            if (node.Value.Child is LayoutOverflowVisualization)
+                result.Add(node);
+
+            foreach (var child in node.Children)
+                Traverse(child);
+        }
+    }
+    
     public static string FormatAncestors(this IEnumerable<OverflowDebuggingProxy> ancestors)
     {
         var result = new StringBuilder();
@@ -230,30 +246,36 @@ internal static class LayoutDebugging
             
             if (child is LayoutOverflowVisualization layoutOverflowVisualization)
                 child = layoutOverflowVisualization.Child;
+
+            var title = GetTitle();
+            yield return title;
             
-            yield return $"{SpacePlanDot()} {child.GetType().Name}";
-            
-            yield return new string('=', child.GetType().Name.Length + 4);
+            yield return new string('=', title.Length + 1);
             
             yield return $"Available Space: {proxy.OriginalMeasurementSize}";
             yield return $"Space Plan: {proxy.OriginalSpacePlan}";
             
-            yield return new string('-', child.GetType().Name.Length + 4);
+            yield return new string('-', title.Length + 1);
             
             foreach (var configuration in GetElementConfiguration(child))
                 yield return $"{configuration}";
             
-            string SpacePlanDot()
+            string GetTitle()
             {
-                var issueIndicator = "🚨"; 
+                var elementName = child.GetType().Name;
                 
-                return proxy.OriginalSpacePlan.Value.Type switch
+                if (proxy.Child is LayoutOverflowVisualization)
+                    return $"🚨 {elementName} 🚨";
+                
+                var indicator = proxy.OriginalSpacePlan.Value.Type switch
                 {
                     SpacePlanType.Wrap => "🔴",
                     SpacePlanType.PartialRender => "🟡",
                     SpacePlanType.FullRender => "🟢",
                     _ => "-"
                 };
+                
+                return $"{indicator} {elementName}";
             }
         }
         
@@ -288,4 +310,11 @@ internal static class LayoutDebugging
             }
         }
     }
+    
+    public const string LayoutVisualizationLegend =
+        "Legend: \n" +
+        "🚨 - Element that is likely the root cause of the layout issue based on library heuristics and prediction. \n" +
+        "🔴 - Element that cannot be drawn due to the provided layout constraints. This element likely causes the layout issue, or one of its descendant children is responsible for the problem. \n" +
+        "🟡 - Element that can be partially drawn on the page and will also be rendered on the consecutive page. In more complex layouts, this element may also cause issues or contain a child that is the actual root cause.\n" +
+        "🟢 - Element that is successfully and completely drawn on the page.\n";
 }

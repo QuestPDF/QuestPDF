@@ -251,7 +251,7 @@ namespace QuestPDF.Drawing
                 overflowState.CaptureOriginalMeasurementValues();
                 overflowState.ApplyLayoutOverflowVisualization();
 
-                var rootCause = overflowState.FindElementOfType<LayoutOverflowVisualization>();
+                var rootCause = overflowState.FindLayoutOverflowVisualizationNodes().First();
                 
                 var stack = rootCause
                     .ExtractAncestors()
@@ -276,7 +276,8 @@ namespace QuestPDF.Drawing
                     $"The library will generate a PDF document with visually annotated places where layout constraints are invalid. {newParagraph}" +
                     $"Alternatively, if you don’t want to or cannot attach the debugger, you can set the {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDebugging)} flag to true. {newParagraph}" +
                     $"The layout issue is likely present in the following part of the document: {newParagraph}{stack}{newParagraph}" +
-                    $"Please analyse the document measurement to learn more: {newParagraph}{inside}";
+                    $"Please analyse the document measurement to learn more: {newParagraph}{inside}" +
+                    $"{LayoutDebugging.LayoutVisualizationLegend}";
                 
                 throw new DocumentLayoutException(message);
             }
