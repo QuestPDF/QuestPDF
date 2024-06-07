@@ -243,6 +243,29 @@ namespace QuestPDF.Drawing
             
             void ThrowLayoutException()
             {
+                content.RemoveExistingProxies();
+                content.ApplyLayoutOverflowDetection();
+                content.Measure(Size.Max);
+                
+                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().FirstOrDefault();
+                overflowState.CaptureOriginalValues();
+                overflowState.ApplyLayoutOverflowVisualization();
+
+                var rootCause = overflowState.FindLayoutOverflowVisualization();
+                
+                var stack = rootCause
+                    .ExtractAncestors()
+                    .Select(x => x.Value)
+                    .Reverse()
+                    .FormatAncestors();
+
+                var inside = rootCause
+                    .ExtractAncestors()
+                    .First(x => x.Value.Child is SourceCodePointer)
+                    .Children
+                    .First()
+                    .FormatLayoutSubtree();
+                
                 var newLine = "\n";
                 var newParagraph = newLine + newLine;
                     

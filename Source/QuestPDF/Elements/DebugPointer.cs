@@ -1,8 +1,15 @@
 ﻿namespace QuestPDF.Elements
 {
+    internal enum DebugPointerType
+    {
+        LayoutStructure,
+        Component,
+        UserDefined
+    }
+    
     internal sealed class DebugPointer : Container
     {
-        public string Target { get; set; }
-        public bool Highlight { get; set; }
+        public DebugPointerType Type { get; set; }
+        public string Label { get; set; }
     }
 }

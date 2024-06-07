@@ -7,6 +7,7 @@ namespace QuestPDF.Drawing.Proxy;
 internal class TreeNode<T>
 {
     public T Value { get; }
+    public TreeNode<T>? Parent { get; set; }
     public ICollection<TreeNode<T>> Children { get; } = new List<TreeNode<T>>();
     
     public TreeNode(T Value)
@@ -22,9 +23,12 @@ internal static class TreeTraversal
         if (element is T proxy)
         {
             var result = new TreeNode<T>(proxy);
-                
+
             foreach (var treeNode in proxy.GetChildren().SelectMany(ExtractElementsOfType<T>))
+            {
                 result.Children.Add(treeNode);
+                treeNode.Parent = result;
+            }
                 
             yield return result;
         }

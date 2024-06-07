@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- https://learn.microsoft.com/en-us/dotnet/fundamentals/package-validation/diagnostic-ids -->
+<Suppressions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:QuestPDF.Fluent.ElementExtensions.Element(QuestPDF.Infrastructure.IContainer,System.Action{QuestPDF.Infrastructure.IContainer},System.String,System.String,System.Int32)</Target>
+    <Left>lib/netstandard2.0/QuestPDF.dll</Left>
+    <Right>lib/net6.0/QuestPDF.dll</Right>
+  </Suppression>
+  <Suppression>
+    <DiagnosticId>CP0002</DiagnosticId>
+    <Target>M:QuestPDF.Fluent.ElementExtensions.Element(QuestPDF.Infrastructure.IContainer,System.Func{QuestPDF.Infrastructure.IContainer,QuestPDF.Infrastructure.IContainer},System.String,System.String,System.Int32)</Target>
+    <Left>lib/netstandard2.0/QuestPDF.dll</Left>
+    <Right>lib/net6.0/QuestPDF.dll</Right>
+  </Suppression>
+</Suppressions>
