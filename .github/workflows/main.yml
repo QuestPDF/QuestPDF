@@ -23,7 +23,7 @@ jobs:
           runs-on: ubuntu-latest-xlarge
           container: ubuntu:24.04
         - name: linux-arm64
-          runs-on: [self-hosted, linux, arm64]
+          runs-on: ubuntu-latest-xlarge-arm64
           container: ubuntu:24.04
         - name: linux-musl-x64
           runs-on: ubuntu-latest-xlarge
