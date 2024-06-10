@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Net.Mime;
+using System.Runtime.CompilerServices;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
@@ -46,9 +48,31 @@ namespace QuestPDF.Fluent
         /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
         /// </remarks>
         /// <param name="handler">A delegate that takes the current container and populates it with content.</param>
-        public static void Element(this IContainer parent, Action<IContainer> handler)
+        public static void Element(
+            this IContainer parent, 
+            Action<IContainer> handler, 
+#if NETCOREAPP3_0_OR_GREATER
+            [CallerArgumentExpression("handler")] string handlerName = null,
+#endif
+            [CallerMemberName] string parentName = "",
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
         {
-            handler(parent.Container());
+#if !NETCOREAPP3_0_OR_GREATER
+            const string handlerName = "Unknown function";
+#endif
+            
+            var handlerContainer = parent
+                .Container()
+                .Element(new SourceCodePointer
+                {
+                    HandlerName = handlerName,
+                    ParentName = parentName,
+                    SourceFilePath = sourceFilePath,
+                    SourceLineNumber = sourceLineNumber
+                });
+            
+            handler(handlerContainer);
         }
         
         /// <summary>
@@ -61,9 +85,35 @@ namespace QuestPDF.Fluent
         /// </remarks>
         /// <param name="handler">A method that accepts the current container, optionally populates it with content, and returns a subsequent container to continue the Fluent API chain.</param>
         /// <returns>The container returned by the <paramref name="handler"/> method.</returns>
-        public static IContainer Element(this IContainer parent, Func<IContainer, IContainer> handler)
+        public static IContainer Element(
+            this IContainer parent, 
+            Func<IContainer, IContainer> handler,
+#if NETCOREAPP3_0_OR_GREATER
+            [CallerArgumentExpression("handler")] string handlerName = null,
+#endif
+            [CallerMemberName] string parentName = "",
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
         {
-            return handler(parent.Container()).Container();
+#if !NETCOREAPP3_0_OR_GREATER
+            const string handlerName = "Unknown function";
+#endif
+            
+            var handlerContainer = parent
+                .Element(new SourceCodePointer
+                {
+                    HandlerName = handlerName,
+                    ParentName = parentName,
+                    SourceFilePath = sourceFilePath,
+                    SourceLineNumber = sourceLineNumber
+                });
+            
+            return handler(handlerContainer);
+        }
+        
+        internal static IContainer NonTrackingElement(this IContainer parent, Func<IContainer, IContainer> handler)
+        {
+            return handler(parent.Container());
         }
         
         /// <summary>

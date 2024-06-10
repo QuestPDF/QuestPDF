@@ -37,7 +37,7 @@ namespace QuestPDF.Elements
                 {
                     layers
                         .Layer()
-                        .DebugPointer("Page background layer")
+                        .DebugPointer(DebugPointerType.LayoutStructure, "Page background layer")
                         .Repeat()
                         .Element(Background);
                     
@@ -58,25 +58,25 @@ namespace QuestPDF.Elements
                         {
                             decoration
                                 .Before()
-                                .DebugPointer("Page header")
+                                .DebugPointer(DebugPointerType.LayoutStructure, "Page header")
                                 .Element(Header);
 
                             decoration
                                 .Content()
-                                .Element(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
-                                .Element(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
-                                .DebugPointer("Page content")
+                                .NonTrackingElement(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
+                                .NonTrackingElement(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
+                                .DebugPointer(DebugPointerType.LayoutStructure, "Page content")
                                 .Element(Content);
 
                             decoration
                                 .After()
-                                .DebugPointer("Page footer")
+                                .DebugPointer(DebugPointerType.LayoutStructure, "Page footer")
                                 .Element(Footer);
                         });
                     
                     layers
                         .Layer()
-                        .DebugPointer("Page foreground layer")
+                        .DebugPointer(DebugPointerType.LayoutStructure, "Page foreground layer")
                         .Repeat()
                         .Element(Foreground);
                 });

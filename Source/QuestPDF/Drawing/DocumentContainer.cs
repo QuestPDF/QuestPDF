@@ -21,6 +21,8 @@ namespace QuestPDF.Drawing
             {
                 if (Pages.Count == 0)
                     return;
+
+                container = container.DebugPointer(DebugPointerType.LayoutStructure, "Document");
                 
                 if (Pages.Count == 1)
                 {
