@@ -356,7 +356,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Applies a default text style to all nested <see cref="MediaTypeNames.Text">Text</see> elements.
+        /// Applies a default text style to all nested <see cref="TextExtensions.Text">Text</see> elements.
         /// <a href="https://www.questpdf.com/api-reference/default-text-style.html">Learn more</a>
         /// </summary>
         /// <remarks>
@@ -372,7 +372,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Applies a default text style to all nested <see cref="MediaTypeNames.Text">Text</see> elements.
+        /// Applies a default text style to all nested <see cref="TextExtensions.Text">Text</see> elements.
         /// <a href="https://www.questpdf.com/api-reference/default-text-style.html">Learn more</a>
         /// </summary>
         /// <remarks>
