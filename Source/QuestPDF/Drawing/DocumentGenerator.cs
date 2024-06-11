@@ -261,7 +261,7 @@ namespace QuestPDF.Drawing
 
                 var inside = rootCause
                     .ExtractAncestors()
-                    .First(x => x.Value.Child is SourceCodePointer)
+                    .First(x => x.Value.Child is SourceCodePointer or DebugPointer)
                     .Children
                     .First()
                     .FormatLayoutSubtree();
