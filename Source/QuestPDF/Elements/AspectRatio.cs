@@ -1,5 +1,6 @@
 using System;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -16,7 +17,7 @@ namespace QuestPDF.Elements
             if (Ratio == 0)
                 return SpacePlan.FullRender(0, 0);
  
-            if (Child.Measure(Size.Zero).Type == SpacePlanType.Empty)
+            if (Child.IsEmpty())
                 return SpacePlan.Empty();
             
             var targetSize = GetTargetSize(availableSpace);

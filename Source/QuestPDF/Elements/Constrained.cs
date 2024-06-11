@@ -1,5 +1,6 @@
 using System;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -18,7 +19,7 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (!EnforceSizeWhenEmpty && Child.Measure(Size.Zero).Type == SpacePlanType.Empty)
+            if (!EnforceSizeWhenEmpty && Child.IsEmpty())
                 return SpacePlan.Empty();
             
             if (MinWidth > availableSpace.Width + Size.Epsilon)

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
@@ -64,6 +65,11 @@ namespace QuestPDF.Helpers
         internal static bool IsNegative(this Size size)
         {
             return size.Width < -Size.Epsilon || size.Height < -Size.Epsilon;
+        }
+
+        internal static bool IsEmpty(this Element element)
+        {
+            return element.Measure(Size.Zero).Type == SpacePlanType.Empty;
         }
         
         internal static int ToQualityValue(this ImageCompressionQuality quality)

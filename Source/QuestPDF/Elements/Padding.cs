@@ -1,5 +1,6 @@
 using System;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -16,10 +17,7 @@ namespace QuestPDF.Elements
             var internalSpace = InternalSpace(availableSpace);
 
             if (internalSpace.Width < -Size.Epsilon || internalSpace.Height < -Size.Epsilon)
-            {
-                var isEmpty = Child.Measure(Size.Zero).Type == SpacePlanType.Empty;
-                return isEmpty ? SpacePlan.Empty() : SpacePlan.Wrap();
-            }
+                return Child.IsEmpty() ? SpacePlan.Empty() : SpacePlan.Wrap();
             
             var measure = base.Measure(internalSpace);
 
