@@ -39,10 +39,10 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!Items.Any())
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             if (CurrentRenderingIndex == Items.Count)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             var renderingCommands = PlanLayout(availableSpace);
 
@@ -56,7 +56,7 @@ namespace QuestPDF.Elements
             if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap();
             
-            var totalRenderedItems = CurrentRenderingIndex + renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.FullRender);
+            var totalRenderedItems = CurrentRenderingIndex + renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
             var willBeFullyRendered = totalRenderedItems == Items.Count;
 
             return willBeFullyRendered
@@ -77,7 +77,7 @@ namespace QuestPDF.Elements
                 Canvas.Translate(command.Offset.Reverse());
             }
             
-            var fullyRenderedItems = renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.FullRender);
+            var fullyRenderedItems = renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
             CurrentRenderingIndex += fullyRenderedItems;
         }
 

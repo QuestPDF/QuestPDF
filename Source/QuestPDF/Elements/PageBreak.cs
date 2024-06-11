@@ -17,9 +17,9 @@ namespace QuestPDF.Elements
         {
             if (availableSpace.IsNegative())
                 return SpacePlan.Wrap();
-            
+
             if (IsRendered)
-                return SpacePlan.FullRender(0, 0);
+                return SpacePlan.Empty();
 
             return SpacePlan.PartialRender(Size.Zero);
         }

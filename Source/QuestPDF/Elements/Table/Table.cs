@@ -15,6 +15,7 @@ namespace QuestPDF.Elements.Table
         public bool ExtendLastCellsToTableBottom { get; set; }
         
         private bool CacheInitialized { get; set; }
+        private bool IsRendered => CurrentRow > StartingRowsCount;
         private int StartingRowsCount { get; set; }
         private int RowsCount { get; set; }
         private int CurrentRow { get; set; }
@@ -84,11 +85,10 @@ namespace QuestPDF.Elements.Table
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!Cells.Any())
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
-            // rows are indexed from 1
-            if (CurrentRow > StartingRowsCount)
-                return SpacePlan.FullRender(Size.Zero);
+            if (IsRendered)
+                return SpacePlan.Empty();
             
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
@@ -110,12 +110,15 @@ namespace QuestPDF.Elements.Table
 
         internal override void Draw(Size availableSpace)
         {
+            if (IsRendered)
+                return;
+            
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
             foreach (var command in renderingCommands.OrderBy(x => x.Cell.ZIndex))
             {
-                if (command.Measurement.Type == SpacePlanType.FullRender)
+                if (command.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                     command.Cell.IsRendered = true;
 
                 if (command.Measurement.Type == SpacePlanType.Wrap)
@@ -137,7 +140,7 @@ namespace QuestPDF.Elements.Table
         {
             var lastFullyRenderedRow = commands
                 .GroupBy(x => x.Cell.Row)
-                .Where(x => x.All(y => y.Cell.IsRendered || y.Measurement.Type == SpacePlanType.FullRender))
+                .Where(x => x.All(y => y.Cell.IsRendered || y.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender))
                 .Select(x => x.Key)
                 .ToArray();
             

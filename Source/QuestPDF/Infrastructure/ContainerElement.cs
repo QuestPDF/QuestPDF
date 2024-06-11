@@ -7,27 +7,27 @@ namespace QuestPDF.Infrastructure
 {
     internal abstract class ContainerElement : Element, IContainer
     {
-        internal Element? Child { get; set; } = Empty.Instance;
+        internal Element Child { get; set; } = Empty.Instance;
 
-        IElement? IContainer.Child
+        IElement IContainer.Child
         {
             get => Child;
             set => Child = value as Element;
         }
 
-        internal override IEnumerable<Element?> GetChildren()
+        internal override IEnumerable<Element> GetChildren()
         {
             yield return Child;
         }
 
-        internal override void CreateProxy(Func<Element?, Element?> create)
+        internal override void CreateProxy(Func<Element, Element> create)
         {
             Child = create(Child);
         }
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            return Child?.Measure(availableSpace) ?? SpacePlan.FullRender(0, 0);
+            return Child.Measure(availableSpace);
         }
         
         internal override void Draw(Size availableSpace)

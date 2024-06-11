@@ -240,42 +240,5 @@ namespace QuestPDF.UnitTests.TestEngine
             
             return content;
         }
-
-        public static void CompareOperations(Element value, Element expected, Size? availableSpace = null)
-        {
-            CompareMeasureOperations(value, expected, availableSpace);
-            CompareDrawOperations(value, expected, availableSpace);
-        }
-        
-        private static void CompareMeasureOperations(Element value, Element expected, Size? availableSpace = null)
-        {
-            availableSpace ??= new Size(400, 900);
-            
-            var canvas = new FreeCanvas();
-            value.InjectDependencies(null, canvas);
-            var valueMeasure = value.Measure(availableSpace.Value);
-            
-            expected.InjectDependencies(null, canvas);
-            var expectedMeasure = expected.Measure(availableSpace.Value);
-            
-            valueMeasure.Should().BeEquivalentTo(expectedMeasure);
-        }
-        
-        private static void CompareDrawOperations(Element value, Element expected, Size? availableSpace = null)
-        {
-            availableSpace ??= new Size(400, 1200);
-            
-            var valueCanvas = new OperationRecordingCanvas();
-            value.InjectDependencies(null, valueCanvas);
-            value.ApplyDefaultImageConfiguration(144, ImageCompressionQuality.Medium, false);
-            value.Draw(availableSpace.Value);
-            
-            var expectedCanvas = new OperationRecordingCanvas();
-            expected.InjectDependencies(null, expectedCanvas);
-            expected.ApplyDefaultImageConfiguration(144, ImageCompressionQuality.Medium, false);
-            expected.Draw(availableSpace.Value);
-            
-            valueCanvas.Operations.Should().BeEquivalentTo(expectedCanvas.Operations);
-        }
     }
 }

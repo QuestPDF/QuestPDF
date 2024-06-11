@@ -31,7 +31,7 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (IsRendered)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             if (availableSpace.IsNegative())
                 return SpacePlan.Wrap();
@@ -46,6 +46,9 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            if (IsRendered)
+                return;
+            
             if (Type == LineType.Vertical)
             {
                 Canvas.DrawFilledRectangle(new Position(-Thickness/2, 0), new Size(Thickness, availableSpace.Height), Color);

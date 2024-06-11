@@ -20,7 +20,7 @@ internal class SvgPath : Element, IStateResettable
     internal override SpacePlan Measure(Size availableSpace)
     {
         if (IsRendered)
-            return SpacePlan.FullRender(Size.Zero);
+            return SpacePlan.Empty();
 
         if (availableSpace.IsNegative())
             return SpacePlan.Wrap();
@@ -30,6 +30,9 @@ internal class SvgPath : Element, IStateResettable
 
     internal override void Draw(Size availableSpace)
     {
+        if (IsRendered)
+            return;
+        
         Canvas.DrawSvgPath(Path, FillColor);
         IsRendered = true;
     }

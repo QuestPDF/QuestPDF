@@ -21,7 +21,7 @@ internal class SvgImage : Element, IStateResettable
     internal override SpacePlan Measure(Size availableSpace)
     {
         if (IsRendered)
-            return SpacePlan.FullRender(Size.Zero);
+            return SpacePlan.Empty();
 
         if (availableSpace.IsNegative())
             return SpacePlan.Wrap();
@@ -31,6 +31,9 @@ internal class SvgImage : Element, IStateResettable
 
     internal override void Draw(Size availableSpace)
     {
+        if (IsRendered)
+            return;
+        
         var widthScale = CalculateSpaceScale(availableSpace.Width, Image.SkSvgImage.Size.Width, Image.SkSvgImage.Size.WidthUnit);
         var heightScale = CalculateSpaceScale(availableSpace.Height, Image.SkSvgImage.Size.Height, Image.SkSvgImage.Size.HeightUnit);
         

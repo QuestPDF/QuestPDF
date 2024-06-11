@@ -57,12 +57,16 @@ namespace QuestPDF.Elements.Text
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (Items.Count == 0)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             if (IsRendered)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             Initialize();
+            
+            if (Size.Equal(availableSpace, Size.Zero))
+                return SpacePlan.PartialRender(Size.Zero);
+            
             CalculateParagraphMetrics(availableSpace);
 
             if (MaximumWidth == 0)
@@ -99,6 +103,9 @@ namespace QuestPDF.Elements.Text
         internal override void Draw(Size availableSpace)
         {
             if (Items.Count == 0)
+                return;
+
+            if (IsRendered)
                 return;
             
             CalculateParagraphMetrics(availableSpace);

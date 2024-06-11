@@ -104,5 +104,11 @@ namespace QuestPDF.Fluent
         }
         
         #endregion
+        
+        internal static IContainer EnforceSizeWhenEmpty(this IContainer element)
+        {
+            (element as Constrained).EnforceSizeWhenEmpty = true;
+            return element;
+        }
     }
 }
