@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia.Text;
 
-public sealed class SkTypeface : IDisposable
+internal sealed class SkTypeface : IDisposable
 {
     public IntPtr Instance { get; private set; }
 
