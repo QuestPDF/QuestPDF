@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Extend : ContainerElement, ICacheable
+    internal sealed class Extend : ContainerElement
     {
         public bool ExtendVertical { get; set; }
         public bool ExtendHorizontal { get; set; }

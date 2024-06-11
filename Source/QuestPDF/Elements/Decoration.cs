@@ -13,7 +13,7 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
 
-    internal sealed class Decoration : Element, ICacheable, IContentDirectionAware
+    internal sealed class Decoration : Element, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

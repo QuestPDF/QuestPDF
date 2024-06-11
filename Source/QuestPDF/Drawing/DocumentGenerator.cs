@@ -176,9 +176,6 @@ namespace QuestPDF.Drawing
             content.ApplyInheritedAndGlobalTexStyle(TextStyle.Default);
             content.ApplyContentDirection(settings.ContentDirection);
             content.ApplyDefaultImageConfiguration(settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
-                    
-            if (Settings.EnableCaching)
-                content.ApplyCaching();
             
             return content;
         }
@@ -292,15 +289,6 @@ namespace QuestPDF.Drawing
                 
                 x.PageContext = pageContext;
                 x.Canvas = canvas;
-            });
-        }
-
-        private static void ApplyCaching(this Container content)
-        {
-            content.VisitChildren(x =>
-            {
-                if (x is ICacheable)
-                    x.CreateProxy(y => new CacheProxy(y));
             });
         }
 

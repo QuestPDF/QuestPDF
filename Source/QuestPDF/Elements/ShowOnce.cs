@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class ShowOnce : ContainerElement, IStateResettable, ICacheable
+    internal sealed class ShowOnce : ContainerElement, IStateResettable
     {
         private bool IsRendered { get; set; }
 

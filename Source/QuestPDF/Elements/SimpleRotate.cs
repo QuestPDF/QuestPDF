@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class SimpleRotate : ContainerElement, ICacheable
+    internal sealed class SimpleRotate : ContainerElement
     {
         public int TurnCount { get; set; }
         public int NormalizedTurnCount => (TurnCount % 4 + 4) % 4;

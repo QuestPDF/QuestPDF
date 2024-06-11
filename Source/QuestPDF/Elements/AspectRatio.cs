@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class AspectRatio : ContainerElement, ICacheable, IContentDirectionAware
+    internal sealed class AspectRatio : ContainerElement, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

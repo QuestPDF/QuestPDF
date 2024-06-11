@@ -10,7 +10,7 @@ namespace QuestPDF.Elements
         public bool IsPrimary { get; set; }
     }
 
-    internal sealed class Layers : Element, ICacheable
+    internal sealed class Layers : Element
     {
         public List<Layer> Children { get; set; } = new();
         

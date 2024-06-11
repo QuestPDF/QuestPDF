@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Unconstrained : ContainerElement, IContentDirectionAware, ICacheable
+    internal sealed class Unconstrained : ContainerElement, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

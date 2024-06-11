@@ -15,7 +15,7 @@ namespace QuestPDF.Elements
         Horizontal
     }
 
-    internal sealed class Line : Element, ILine, ICacheable, IStateResettable
+    internal sealed class Line : Element, ILine, IStateResettable
     {
         private bool IsRendered { get; set; }
         

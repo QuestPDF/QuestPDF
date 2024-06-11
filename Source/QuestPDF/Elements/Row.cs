@@ -30,7 +30,7 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
 
-    internal sealed class Row : Element, ICacheable, IStateResettable, IContentDirectionAware
+    internal sealed class Row : Element, IStateResettable, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         

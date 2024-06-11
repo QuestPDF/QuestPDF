@@ -5,7 +5,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Image : Element, ICacheable, IStateResettable
+    internal sealed class Image : Element, IStateResettable
     {
         private bool IsRendered { get; set; }
         
