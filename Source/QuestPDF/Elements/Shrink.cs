@@ -1,3 +1,4 @@
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -13,6 +14,9 @@ namespace QuestPDF.Elements
         {
             var childSize = base.Measure(availableSpace);
 
+            if (childSize.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+                return;
+            
             var targetSize = new Size(
                 Horizontal ? childSize.Width : availableSpace.Width,
                 Vertical ? childSize.Height : availableSpace.Height);

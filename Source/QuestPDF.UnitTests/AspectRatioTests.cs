@@ -20,6 +20,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 201))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
                 .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
@@ -35,6 +36,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 201))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 200), SpacePlan.PartialRender(100, 50))
                 .CheckMeasureResult(SpacePlan.PartialRender(400, 200));
         }
@@ -50,6 +52,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 201))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 200), SpacePlan.Wrap())
                 .CheckMeasureResult(SpacePlan.Wrap());
         }
@@ -65,6 +68,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 201))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
                 .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
@@ -80,6 +84,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 199))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .CheckMeasureResult(SpacePlan.Wrap());
         }
         
@@ -94,6 +99,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(401, 200))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
                 .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
@@ -109,6 +115,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(399, 200))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .CheckMeasureResult(SpacePlan.Wrap());
         }
         
@@ -123,6 +130,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(400, 300))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
                 .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }
@@ -138,6 +146,7 @@ namespace QuestPDF.UnitTests
                     Ratio = 2f
                 })
                 .MeasureElement(new Size(500, 200))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(100, 50))
                 .CheckMeasureResult(SpacePlan.FullRender(400, 200));
         }

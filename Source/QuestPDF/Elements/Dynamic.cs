@@ -36,13 +36,13 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (IsRendered)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             var result = ComposeContent(availableSpace, acceptNewState: false);
             var content = result.Content as Element ?? Empty.Instance;
             var measurement = content.Measure(availableSpace);
-
-            if (measurement.Type != SpacePlanType.FullRender)
+            
+            if (measurement.Type is SpacePlanType.PartialRender or SpacePlanType.Wrap)
                 throw new DocumentLayoutException("Dynamic component generated content that does not fit on a single page.");
             
             return result.HasMoreContent 

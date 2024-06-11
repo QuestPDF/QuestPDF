@@ -38,6 +38,7 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(GetPadding)
                 .MeasureElement(new Size(50, 300))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .CheckMeasureResult(SpacePlan.Wrap());
         }
         
@@ -47,6 +48,7 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(GetPadding)
                 .MeasureElement(new Size(20, 300))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .CheckMeasureResult(SpacePlan.Wrap());
         }
         

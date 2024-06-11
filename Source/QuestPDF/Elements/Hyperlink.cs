@@ -12,7 +12,7 @@ namespace QuestPDF.Elements
         {
             var targetSize = base.Measure(availableSpace);
 
-            if (targetSize.Type == SpacePlanType.Wrap)
+            if (targetSize.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return;
             
             var horizontalOffset = ContentDirection == ContentDirection.LeftToRight

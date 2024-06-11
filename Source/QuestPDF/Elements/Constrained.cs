@@ -14,8 +14,13 @@ namespace QuestPDF.Elements
         public float? MinHeight { get; set; }
         public float? MaxHeight { get; set; }
 
+        public bool EnforceSizeWhenEmpty { get; set; }
+        
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (!EnforceSizeWhenEmpty && Child.Measure(Size.Zero).Type == SpacePlanType.Empty)
+                return SpacePlan.Empty();
+            
             if (MinWidth > availableSpace.Width + Size.Epsilon)
                 return SpacePlan.Wrap();
             
@@ -34,6 +39,9 @@ namespace QuestPDF.Elements
             var actualSize = new Size(
                 Max(MinWidth, measurement.Width),
                 Max(MinHeight, measurement.Height));
+            
+            if (measurement.Type == SpacePlanType.Empty)
+                return EnforceSizeWhenEmpty ? SpacePlan.FullRender(actualSize) : SpacePlan.Empty();
             
             if (measurement.Type == SpacePlanType.FullRender)
                 return SpacePlan.FullRender(actualSize);

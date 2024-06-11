@@ -48,7 +48,7 @@ namespace QuestPDF.Elements
             SetDefaultAlignment();   
             
             if (CurrentRenderingIndex == Elements.Count)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
             
             var lines = Compose(availableSpace);
 
@@ -79,6 +79,8 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            // TODO: empty elements should not introduce spacing?
+            
             SetDefaultAlignment();
             
             var lines = Compose(availableSpace);

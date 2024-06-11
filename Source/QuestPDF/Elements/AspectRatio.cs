@@ -15,9 +15,9 @@ namespace QuestPDF.Elements
         {
             if (Ratio == 0)
                 return SpacePlan.FullRender(0, 0);
-            
-            if (Child == null)
-                return SpacePlan.FullRender(0, 0);
+ 
+            if (Child.Measure(Size.Zero).Type == SpacePlanType.Empty)
+                return SpacePlan.Empty();
             
             var targetSize = GetTargetSize(availableSpace);
             
@@ -43,9 +43,6 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            if (Child == null)
-                return;
-            
             var size = GetTargetSize(availableSpace);
             
             var offset = ContentDirection == ContentDirection.LeftToRight

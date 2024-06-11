@@ -13,18 +13,18 @@ namespace QuestPDF.Elements
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (Child == null)
-                return SpacePlan.FullRender(0, 0);
-            
             var internalSpace = InternalSpace(availableSpace);
 
             if (internalSpace.Width < -Size.Epsilon || internalSpace.Height < -Size.Epsilon)
-                return SpacePlan.Wrap();
+            {
+                var isEmpty = Child.Measure(Size.Zero).Type == SpacePlanType.Empty;
+                return isEmpty ? SpacePlan.Empty() : SpacePlan.Wrap();
+            }
             
             var measure = base.Measure(internalSpace);
 
-            if (measure.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+            if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+                return measure;
 
             var newSize = new Size(
                 measure.Width + Left + Right,
@@ -41,9 +41,6 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            if (Child == null)
-                return;
-
             var internalSpace = InternalSpace(availableSpace);
             
             Canvas.Translate(new Position(Left, Top));

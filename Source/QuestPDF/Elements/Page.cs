@@ -43,12 +43,13 @@ namespace QuestPDF.Elements
                     
                     layers
                         .PrimaryLayer()
+                        
                         .MinWidth(MinSize.Width)
                         .MinHeight(MinSize.Height)
-                
                         .MaxWidth(MaxSize.Width)
                         .MaxHeight(MaxSize.Height)
-
+                        .EnforceSizeWhenEmpty()
+                        
                         .PaddingLeft(MarginLeft)
                         .PaddingRight(MarginRight)
                         .PaddingTop(MarginTop)

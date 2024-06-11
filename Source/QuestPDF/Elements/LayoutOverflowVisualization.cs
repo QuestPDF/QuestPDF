@@ -31,7 +31,7 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
         // measure content area
         var childSize = base.Measure(availableSpace);
         
-        if (childSize.Type == SpacePlanType.FullRender)
+        if (childSize.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
         {
             Child?.Draw(availableSpace);
             return;

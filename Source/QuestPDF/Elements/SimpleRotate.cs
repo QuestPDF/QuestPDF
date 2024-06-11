@@ -17,8 +17,8 @@ namespace QuestPDF.Elements
             availableSpace = new Size(availableSpace.Height, availableSpace.Width);
             var childSpace = base.Measure(availableSpace);
 
-            if (childSpace.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+            if (childSpace.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+                return childSpace;
 
             var targetSpace = new Size(childSpace.Height, childSpace.Width);
 
