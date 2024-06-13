@@ -20,3 +20,7 @@ Bug Fixes:
 - Column Element: Resolved instability issues in nested layouts with spacing and zero-sized elements.
 - JPEG Quality: Disabled JPEG image downsampling/downscaling to maintain the highest quality levels.
 - Image Compression: Disabled additional image compression performed by Skia.
+
+
+Version 2024.6.1
+- Text element: improved the default sizing behavior for the Text element. Now, when the text is empty, it works more consistently by taking up zero width while still reserving vertical space based on the font size.

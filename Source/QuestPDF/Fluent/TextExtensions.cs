@@ -237,7 +237,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public TextSpanDescriptor Span(string? text)
         {
-            if (IsNullOrEmpty(text))
+            if (text == null)
                 return new TextSpanDescriptor(new TextBlockSpan());
 
             var textSpan = new TextBlockSpan() { Text = text };
@@ -352,7 +352,7 @@ namespace QuestPDF.Fluent
             if (IsNullOrEmpty(sectionName))
                 throw new ArgumentException("Section name cannot be null or empty", nameof(sectionName));
 
-            if (IsNullOrEmpty(text))
+            if (text == null)
                 return new TextSpanDescriptor(new TextBlockSpan());
 
             var textBlockItem = new TextBlockSectionLink
@@ -381,7 +381,7 @@ namespace QuestPDF.Fluent
             if (IsNullOrEmpty(url))
                 throw new ArgumentException("Url cannot be null or empty", nameof(url));
 
-            if (IsNullOrEmpty(text))
+            if (text == null)
                 return new TextSpanDescriptor(new TextBlockSpan());
             
             var textBlockItem = new TextBlockHyperlink
@@ -478,7 +478,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public static TextBlockDescriptor Text(this IContainer container, string? text)
         {
-            if (IsNullOrEmpty(text))
+            if (text == null)
                 return new TextBlockDescriptor(new TextBlock(), new TextBlockSpan());
             
             var textBlock = new TextBlock();

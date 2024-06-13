@@ -4,7 +4,6 @@ using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements.Text.Items;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -37,6 +36,7 @@ namespace QuestPDF.Elements.Text
         private float MaximumWidth { get; set; }
         
         private bool IsRendered { get; set; }
+        private bool? ContainsOnlyWhiteSpace { get; set; }
         private int CurrentLineIndex { get; set; }
         private float CurrentTopOffset { get; set; }
         
@@ -61,6 +61,13 @@ namespace QuestPDF.Elements.Text
             
             if (IsRendered)
                 return SpacePlan.Empty();
+
+            // if the text block does not contain any items, or all items are null, return SpacePlan.Empty
+            // but if the text block contains only whitespace, return SpacePlan.FullRender with zero width and font-based height
+            ContainsOnlyWhiteSpace ??= Items.All(x => x is TextBlockSpan textBlockSpan && string.IsNullOrWhiteSpace(textBlockSpan.Text));
+            
+            if (ContainsOnlyWhiteSpace == true)
+                return SpacePlan.FullRender(0, MeasureHeightOfParagraphContainingOnlyWhiteSpace());
             
             Initialize();
             
@@ -106,6 +113,9 @@ namespace QuestPDF.Elements.Text
                 return;
 
             if (IsRendered)
+                return;
+            
+            if (ContainsOnlyWhiteSpace == true)
                 return;
             
             CalculateParagraphMetrics(availableSpace);
@@ -500,6 +510,31 @@ namespace QuestPDF.Elements.Text
                 $"3) Register additional application specific fonts using the 'FontManager.RegisterFont' method. \n\n" +
                 $"You can disable this check by setting the 'Settings.CheckIfAllTextGlyphsAreAvailable' option to 'false'. \n" +
                 $"However, this may result with text glyphs being incorrectly rendered without any warning.");
+        }
+
+        private float MeasureHeightOfParagraphContainingOnlyWhiteSpace()
+        {
+            var paragraphStyle = new ParagraphStyleConfiguration
+            {
+                Alignment = ParagraphStyleConfiguration.TextAlign.Start,
+                Direction = ParagraphStyleConfiguration.TextDirection.Ltr
+            };
+            
+            var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
+
+            try
+            {
+                foreach (var textBlockSpan in Items.OfType<TextBlockSpan>())
+                    builder.AddText("\u00A0", textBlockSpan.Style.GetSkTextStyle()); // non-breaking space
+
+                var paragraph = builder.CreateParagraph();
+                paragraph.PlanLayout(1000);
+                return paragraph.GetLineMetrics().First().Height;
+            }
+            finally
+            {
+                SkParagraphBuilderPoolManager.Return(builder);
+            }
         }
     }
 }
