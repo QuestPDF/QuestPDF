@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
@@ -50,18 +49,12 @@ namespace QuestPDF.Fluent
         /// <param name="handler">A delegate that takes the current container and populates it with content.</param>
         public static void Element(
             this IContainer parent, 
-            Action<IContainer> handler, 
-#if NETCOREAPP3_0_OR_GREATER
+            Action<IContainer> handler,
             [CallerArgumentExpression("handler")] string handlerName = null,
-#endif
             [CallerMemberName] string parentName = "",
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
         {
-#if !NETCOREAPP3_0_OR_GREATER
-            const string handlerName = "Unknown function";
-#endif
-            
             var handlerContainer = parent
                 .Container()
                 .Element(new SourceCodePointer
@@ -88,17 +81,11 @@ namespace QuestPDF.Fluent
         public static IContainer Element(
             this IContainer parent, 
             Func<IContainer, IContainer> handler,
-#if NETCOREAPP3_0_OR_GREATER
             [CallerArgumentExpression("handler")] string handlerName = null,
-#endif
             [CallerMemberName] string parentName = "",
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
         {
-#if !NETCOREAPP3_0_OR_GREATER
-            const string handlerName = "Unknown function";
-#endif
-            
             var handlerContainer = parent
                 .Element(new SourceCodePointer
                 {
