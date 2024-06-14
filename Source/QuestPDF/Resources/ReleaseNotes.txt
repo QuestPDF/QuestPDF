@@ -23,6 +23,7 @@ Bug Fixes:
 
 
 Version 2024.6.1
+- Layout debugging: significantly improved calculation performance and accuracy of issue detection.
 - Text element: improved the default sizing behavior for the Text element. Now, when the text is empty, it works more consistently by taking up zero width while still reserving vertical space based on the font size.
 - Fixed compatibility with .NET Standard 2.0.
 - Fixed an issue causing invisibility of Table elements containing only Header/Footer elements without content.

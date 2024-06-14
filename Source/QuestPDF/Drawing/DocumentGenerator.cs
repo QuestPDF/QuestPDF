@@ -230,6 +230,7 @@ namespace QuestPDF.Drawing
                 content.Measure(Size.Max);
 
                 var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
+                overflowState.StopMeasuring();
                 overflowState.ApplyLayoutOverflowVisualization();
                 
                 content.ApplyContentDirection();
@@ -245,7 +246,7 @@ namespace QuestPDF.Drawing
                 content.Measure(Size.Max);
                 
                 var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
-                overflowState.CaptureOriginalMeasurementValues();
+                overflowState.StopMeasuring();
                 overflowState.ApplyLayoutOverflowVisualization();
 
                 var rootCause = overflowState.FindLayoutOverflowVisualizationNodes().First();
