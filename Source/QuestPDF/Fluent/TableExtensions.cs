@@ -143,7 +143,7 @@ namespace QuestPDF.Fluent
                 .Decoration(decoration =>
                 {
                     decoration.Before().Element(HeaderTable);
-                    decoration.Content().Element(ContentTable);
+                    decoration.Content().ShowIf(ContentTable.Cells.Any()).Element(ContentTable);
                     decoration.After().Element(FooterTable);
                 });
 
