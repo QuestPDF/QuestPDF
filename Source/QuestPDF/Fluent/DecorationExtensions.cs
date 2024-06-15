@@ -1,4 +1,5 @@
 ﻿using System;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
@@ -16,6 +17,9 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Before()
         {
+            if (Decoration.Before != Empty.Instance)
+                throw new DocumentComposeException("The 'Decoration.Before' layer has already been defined. Please call this method only once.");
+
             var container = new RepeatContent();
             Decoration.Before = container;
             return container;
@@ -40,6 +44,9 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Content()
         {
+            if (Decoration.Content != Empty.Instance)
+                throw new DocumentComposeException("The 'Decoration.Content' layer has already been defined. Please call this method only once.");
+            
             var container = new Container();
             Decoration.Content = container;
             return container;
@@ -64,6 +71,9 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer After()
         {
+            if (Decoration.After != Empty.Instance)
+                throw new DocumentComposeException("The 'Decoration.After' layer has already been defined. Please call this method only once.");
+            
             var container = new RepeatContent();
             Decoration.After = container;
             return container;

@@ -1,5 +1,6 @@
 ﻿using System;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -209,6 +210,9 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Background()
         {
+            if (Page.Background != Empty.Instance)
+                throw new DocumentComposeException("The 'Page.Background' layer has already been defined. Please call this method only once.");
+            
             var container = new Container();
             Page.Background = container;
             return container;
@@ -222,6 +226,9 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Foreground()
         {
+            if (Page.Foreground != Empty.Instance)
+                throw new DocumentComposeException("The 'Page.Foreground' layer has already been defined. Please call this method only once.");
+            
             var container = new Container();
             Page.Foreground = container;
             return container;
@@ -235,6 +242,9 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Header()
         {
+            if (Page.Header != Empty.Instance)
+                throw new DocumentComposeException("The 'Page.Header' layer has already been defined. Please call this method only once.");
+            
             var container = new Container();
             Page.Header = container;
             return container;
@@ -248,6 +258,9 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Content()
         {
+            if (Page.Content != Empty.Instance)
+                throw new DocumentComposeException("The 'Page.Content' layer has already been defined. Please call this method only once.");
+            
             var container = new Container();
             Page.Content = container;
             return container;
@@ -261,6 +274,9 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Footer()
         {
+            if (Page.Footer != Empty.Instance)
+                throw new DocumentComposeException("The 'Page.Footer' layer has already been defined. Please call this method only once.");
+            
             var container = new Container();
             Page.Footer = container;
             return container;
