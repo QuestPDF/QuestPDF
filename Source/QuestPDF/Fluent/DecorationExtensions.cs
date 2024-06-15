@@ -17,7 +17,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Before()
         {
-            if (Decoration.Before != Empty.Instance)
+            if (Decoration.Before is not Empty)
                 throw new DocumentComposeException("The 'Decoration.Before' layer has already been defined. Please call this method only once.");
 
             var container = new RepeatContent();
@@ -44,7 +44,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Content()
         {
-            if (Decoration.Content != Empty.Instance)
+            if (Decoration.Content is not Empty)
                 throw new DocumentComposeException("The 'Decoration.Content' layer has already been defined. Please call this method only once.");
             
             var container = new Container();
@@ -71,7 +71,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer After()
         {
-            if (Decoration.After != Empty.Instance)
+            if (Decoration.After is not Empty)
                 throw new DocumentComposeException("The 'Decoration.After' layer has already been defined. Please call this method only once.");
             
             var container = new RepeatContent();

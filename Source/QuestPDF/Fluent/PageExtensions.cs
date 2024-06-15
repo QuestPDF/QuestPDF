@@ -210,7 +210,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Background()
         {
-            if (Page.Background != Empty.Instance)
+            if (Page.Background is not Empty)
                 throw new DocumentComposeException("The 'Page.Background' layer has already been defined. Please call this method only once.");
             
             var container = new Container();
@@ -226,7 +226,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Foreground()
         {
-            if (Page.Foreground != Empty.Instance)
+            if (Page.Foreground is not Empty)
                 throw new DocumentComposeException("The 'Page.Foreground' layer has already been defined. Please call this method only once.");
             
             var container = new Container();
@@ -242,7 +242,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Header()
         {
-            if (Page.Header != Empty.Instance)
+            if (Page.Header is not Empty)
                 throw new DocumentComposeException("The 'Page.Header' layer has already been defined. Please call this method only once.");
             
             var container = new Container();
@@ -258,7 +258,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Content()
         {
-            if (Page.Content != Empty.Instance)
+            if (Page.Content is not Empty)
                 throw new DocumentComposeException("The 'Page.Content' layer has already been defined. Please call this method only once.");
             
             var container = new Container();
@@ -274,7 +274,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public IContainer Footer()
         {
-            if (Page.Footer != Empty.Instance)
+            if (Page.Footer is not Empty)
                 throw new DocumentComposeException("The 'Page.Footer' layer has already been defined. Please call this method only once.");
             
             var container = new Container();
