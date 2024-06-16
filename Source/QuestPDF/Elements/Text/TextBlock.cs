@@ -64,7 +64,7 @@ namespace QuestPDF.Elements.Text
 
             // if the text block does not contain any items, or all items are null, return SpacePlan.Empty
             // but if the text block contains only whitespace, return SpacePlan.FullRender with zero width and font-based height
-            ContainsOnlyWhiteSpace ??= Items.All(x => x is TextBlockSpan textBlockSpan && string.IsNullOrWhiteSpace(textBlockSpan.Text));
+            ContainsOnlyWhiteSpace ??= CheckIfContainsOnlyWhiteSpace();
             
             if (ContainsOnlyWhiteSpace == true)
                 return SpacePlan.FullRender(0, MeasureHeightOfParagraphContainingOnlyWhiteSpace());
@@ -512,6 +512,20 @@ namespace QuestPDF.Elements.Text
                 $"However, this may result with text glyphs being incorrectly rendered without any warning.");
         }
 
+        private bool CheckIfContainsOnlyWhiteSpace()
+        {
+            foreach (var textBlockItem in Items)
+            {
+                if (textBlockItem is TextBlockPageNumber)
+                    return false;
+                
+                if (textBlockItem is TextBlockSpan textBlockSpan && !string.IsNullOrWhiteSpace(textBlockSpan.Text))
+                    return false;
+            }
+            
+            return true;
+        }
+        
         private float MeasureHeightOfParagraphContainingOnlyWhiteSpace()
         {
             var paragraphStyle = new ParagraphStyleConfiguration
