@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
@@ -36,7 +37,7 @@ namespace QuestPDF.Elements
         ~DynamicImage()
         {
             foreach (var cacheItem in Cache)
-                cacheItem.Image.Dispose();
+                cacheItem.Image?.Dispose();
         }
         
         public void ResetState(bool hardReset = false)
@@ -64,7 +65,7 @@ namespace QuestPDF.Elements
                 targetImage = GetImage(availableSpace);
                 Cache.Add((availableSpace, targetImage));
             }
-        
+       
             if (targetImage != null)
                 Canvas.DrawImage(targetImage, availableSpace);
             

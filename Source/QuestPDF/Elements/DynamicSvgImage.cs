@@ -19,7 +19,7 @@ internal class DynamicSvgImage : Element, IStateResettable
     ~DynamicSvgImage()
     {
         foreach (var cacheItem in Cache)
-            cacheItem.Image.Dispose();
+            cacheItem.Image?.Dispose();
     }
     
     public void ResetState(bool hardReset = false)
