@@ -130,7 +130,11 @@ namespace QuestPDF.Elements.Text
             CurrentTopOffset += takenHeight;
 
             if (CurrentLineIndex == LineMetrics.Length)
+            {
                 IsRendered = true;
+                Paragraph?.Dispose();
+                Paragraph = null;
+            }
             
             return;
 
