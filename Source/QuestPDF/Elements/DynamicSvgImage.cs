@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -12,6 +14,14 @@ internal class DynamicSvgImage : Element, IStateResettable
     
     public GenerateDynamicSvgDelegate SvgSource { get; set; }
 
+    private List<(Size Size, SkSvgImage? Image)> Cache { get; } = new(1);
+    
+    ~DynamicSvgImage()
+    {
+        foreach (var cacheItem in Cache)
+            cacheItem.Image.Dispose();
+    }
+    
     public void ResetState(bool hardReset = false)
     {
         IsRendered = false;
@@ -30,14 +40,27 @@ internal class DynamicSvgImage : Element, IStateResettable
 
     internal override void Draw(Size availableSpace)
     {
+        var targetImage = Cache.FirstOrDefault(x => Size.Equal(x.Size, availableSpace)).Image;
+            
+        if (targetImage == null)
+        {
+            targetImage = GetImage(availableSpace);
+            Cache.Add((availableSpace, targetImage));
+        }
+        
+        if (targetImage != null)
+            Canvas.DrawSvg(targetImage, availableSpace);
+            
+        IsRendered = true;
+    }
+    
+    private SkSvgImage? GetImage(Size availableSpace)
+    {
         var svg = SvgSource?.Invoke(availableSpace);
      
         if (svg == null)
-            return;
+            return null;
 
-        using var svgImage = new SkSvgImage(svg, SkResourceProvider.CurrentResourceProvider, FontManager.CurrentFontManager);
-        Canvas.DrawSvg(svgImage, availableSpace);
-        
-        IsRendered = true;
+        return new SkSvgImage(svg, SkResourceProvider.CurrentResourceProvider, FontManager.CurrentFontManager);
     }
 }
