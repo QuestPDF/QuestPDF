@@ -461,10 +461,7 @@ namespace QuestPDF.Elements.Text
 
         private void CalculateParagraphMetrics(Size availableSpace)
         {
-            // SkParagraph seems to require a bigger space buffer to calculate metrics correctly
-            const float epsilon = 1f;
-            
-            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > epsilon)
+            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > Size.Epsilon)
                 AreParagraphMetricsValid = false;
             
             if (AreParagraphMetricsValid) 
@@ -472,7 +469,7 @@ namespace QuestPDF.Elements.Text
             
             WidthForLineMetricsCalculation = availableSpace.Width;
                 
-            Paragraph.PlanLayout(availableSpace.Width + epsilon);
+            Paragraph.PlanLayout(availableSpace.Width);
             CheckUnresolvedGlyphs();
                 
             LineMetrics = Paragraph.GetLineMetrics();
