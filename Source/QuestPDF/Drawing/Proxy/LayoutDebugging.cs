@@ -219,6 +219,9 @@ internal static class LayoutDebugging
             result.AppendLine();
             result.AppendLine();
             
+            if (!proxy.SpacePlan.HasValue)
+                return;
+            
             indentationLevel++;
             
             foreach (var child in parent.Children)
@@ -259,7 +262,8 @@ internal static class LayoutDebugging
                     SpacePlanType.Wrap => "🔴",
                     SpacePlanType.PartialRender => "🟡",
                     SpacePlanType.FullRender => "🟢",
-                    _ => "-"
+                    SpacePlanType.Empty => "🟢",
+                    _ => "⚪️"
                 };
                 
                 return $"{indicator} {elementName}";
@@ -297,11 +301,12 @@ internal static class LayoutDebugging
             }
         }
     }
-    
+
     public const string LayoutVisualizationLegend =
         "Legend: \n" +
         "🚨 - Element that is likely the root cause of the layout issue based on library heuristics and prediction. \n" +
         "🔴 - Element that cannot be drawn due to the provided layout constraints. This element likely causes the layout issue, or one of its descendant children is responsible for the problem. \n" +
         "🟡 - Element that can be partially drawn on the page and will also be rendered on the consecutive page. In more complex layouts, this element may also cause issues or contain a child that is the actual root cause.\n" +
-        "🟢 - Element that is successfully and completely drawn on the page.\n";
+        "🟢 - Element that is successfully and completely drawn on the page.\n" +
+        "⚪️ - Element that has not been drawn on the faulty page. Its children are omitted.\n";
 }
