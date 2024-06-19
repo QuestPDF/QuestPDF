@@ -176,6 +176,9 @@ namespace QuestPDF.Drawing
             content.ApplyInheritedAndGlobalTexStyle(TextStyle.Default);
             content.ApplyContentDirection(settings.ContentDirection);
             content.ApplyDefaultImageConfiguration(settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
+
+            if (Settings.EnableCaching)
+                content.ApplyCaching();
             
             return content;
         }
@@ -305,6 +308,79 @@ namespace QuestPDF.Drawing
                 x.PageContext = pageContext;
                 x.Canvas = canvas;
             });
+        }
+        
+        internal static void ApplyCaching(this Element? content)
+        {
+            Traverse(content);
+
+            // returns true if can apply caching
+            bool Traverse(Element? content)
+            {
+                if (content is TextBlock textBlock)
+                {
+                    foreach (var textBlockItem in textBlock.Items)
+                    {
+                        if (textBlockItem is TextBlockPageNumber)
+                            return false;
+                        
+                        if (textBlockItem is TextBlockElement textBlockElement)
+                            return Traverse(textBlockElement.Element);
+                    }
+
+                    return true;
+                }
+
+                if (content is DynamicHost)
+                    return false;
+                
+                if (content is ContainerElement containerElement)
+                    return Traverse(containerElement.Child);
+
+                var canApplyCachingPerChild = content.GetChildren().Select(Traverse).ToArray();
+                
+                if (canApplyCachingPerChild.All(x => x))
+                    return true;
+
+                if (content is Row row && row.Items.Any(x => x.Type == RowItemType.Auto))
+                    return false;
+
+                var childIndex = 0;
+                
+                content.CreateProxy(x =>
+                {
+                    var canApplyCaching = canApplyCachingPerChild[childIndex];
+                    childIndex++;
+
+                    return canApplyCaching ? new SnapshotRecorder(x) : x;
+                });
+                
+                return false;
+            }
+        }
+        
+        internal static bool ApplyCaching2(this Element? content)
+        {
+            const int threshold = 10_000;
+
+            var counter = 0;
+            Traverse(content);
+            return counter > threshold;
+            
+            void Traverse(Element? content)
+            {
+                if (counter > threshold)
+                    return;
+                
+                if (content is TextBlock)
+                    counter++;
+                
+                if (content is ContainerElement containerElement)
+                    Traverse(containerElement.Child);
+
+                foreach (var element in content.GetChildren())
+                    Traverse(element);
+            }
         }
 
         internal static void ApplyContentDirection(this Element? content, ContentDirection? direction = null)
