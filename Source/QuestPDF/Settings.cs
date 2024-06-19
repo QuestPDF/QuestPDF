@@ -19,12 +19,12 @@ namespace QuestPDF
         /// This flag generates additional document elements to cache layout calculation results.
         /// In the vast majority of cases, this significantly improves performance, while slightly increasing memory consumption.
         /// </summary>
-        /// <remarks>By default, this flag is enabled only when the debugger is NOT attached.</remarks>
-        public static bool EnableCaching { get; set; } = !System.Diagnostics.Debugger.IsAttached;
+        /// <remarks>Enabled by default.</remarks>
+        public static bool EnableCaching { get; set; } = true;
         
         /// <summary>
         /// This flag generates additional document elements to improve layout debugging experience.
-        /// When the provided content contains size constraints impossible to meet, the library generates special visual annotations to help determining the root cause.
+        /// When the provided content contains size constraints impossible to meet, the library generates an enhanced exception message with additional location and layout measurement details.
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>  
         public static bool EnableDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
