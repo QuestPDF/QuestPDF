@@ -312,7 +312,10 @@ namespace QuestPDF.Drawing
         
         internal static void ApplyCaching(this Element? content)
         {
-            Traverse(content);
+            var canApplyCaching = Traverse(content);
+            
+            if (canApplyCaching)
+                content?.CreateProxy(x => new SnapshotRecorder(x));
 
             // returns true if can apply caching
             bool Traverse(Element? content)
@@ -359,30 +362,6 @@ namespace QuestPDF.Drawing
             }
         }
         
-        internal static bool ApplyCaching2(this Element? content)
-        {
-            const int threshold = 10_000;
-
-            var counter = 0;
-            Traverse(content);
-            return counter > threshold;
-            
-            void Traverse(Element? content)
-            {
-                if (counter > threshold)
-                    return;
-                
-                if (content is TextBlock)
-                    counter++;
-                
-                if (content is ContainerElement containerElement)
-                    Traverse(containerElement.Child);
-
-                foreach (var element in content.GetChildren())
-                    Traverse(element);
-            }
-        }
-
         internal static void ApplyContentDirection(this Element? content, ContentDirection? direction = null)
         {
             if (content == null)
