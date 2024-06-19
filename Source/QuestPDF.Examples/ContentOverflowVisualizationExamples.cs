@@ -37,7 +37,7 @@ public class ContentOverflowVisualizationExamples
                         column.Item().Row(row =>
                         {
                             row.RelativeItem().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Text("Will it work?").FontSize(20);
-                            row.RelativeItem().Border(1).Background(Colors.Grey.Lighten3).Padding(5).Height(100).ShowEntire().Text(Placeholders.LoremIpsum()).FontSize(20);
+                            row.RelativeItem().Border(1).Background(Colors.Grey.Lighten3).Padding(5).LayoutOverflowVisualization().Height(100).ShowEntire().Text(Placeholders.LoremIpsum()).FontSize(20);
                         });
                         
                         foreach (var size in Enumerable.Range(20, 20))
@@ -81,7 +81,7 @@ public class ContentOverflowVisualizationExamples
                         .Background(Colors.Grey.Lighten3)
 
                         // draw image that fits height (and therefore will overflow)
-                        //.ContentOverflowDebugArea()
+                        .LayoutOverflowVisualization()
                         .Image(image)
                         .FitHeight();
                     
@@ -113,7 +113,7 @@ public class ContentOverflowVisualizationExamples
                     .Background(Colors.Grey.Lighten3)
 
                     // draw image that fits height (and therefore will overflow)
-                    //.ContentOverflowDebugArea()
+                    .LayoutOverflowVisualization()
                     .Image(image)
                     .FitHeight();
             });
@@ -179,6 +179,7 @@ public class ContentOverflowVisualizationExamples
 
                                 .Width(100)
                                 .Height(100)
+                                .LayoutOverflowVisualization()
                                 .Background(Colors.Grey.Lighten1);
                         }
                     });

@@ -51,5 +51,10 @@ namespace QuestPDF.Fluent
                 Label = label
             });
         }
+        
+        internal static IContainer LayoutOverflowVisualization(this IContainer parent)
+        {
+            return parent.Element(new LayoutOverflowVisualization());
+        }
     }
 }
