@@ -1,4 +1,6 @@
-﻿using QuestPDF.Drawing;
+﻿using System.Collections.Generic;
+using System.Linq;
+using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
@@ -29,6 +31,14 @@ namespace QuestPDF.Elements
         internal bool UseOriginalImage { get; set; }
         public GenerateDynamicImageDelegate? Source { get; set; }
         
+        private List<(Size Size, SkImage? Image)> Cache { get; } = new(1);
+
+        ~DynamicImage()
+        {
+            foreach (var cacheItem in Cache)
+                cacheItem.Image.Dispose();
+        }
+        
         public void ResetState(bool hardReset = false)
         {
             IsRendered = false;
@@ -47,6 +57,22 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            var targetImage = Cache.FirstOrDefault(x => Size.Equal(x.Size, availableSpace)).Image;
+            
+            if (targetImage == null)
+            {
+                targetImage = GetImage(availableSpace);
+                Cache.Add((availableSpace, targetImage));
+            }
+        
+            if (targetImage != null)
+                Canvas.DrawImage(targetImage, availableSpace);
+            
+            IsRendered = true;
+        }
+
+        private SkImage? GetImage(Size availableSpace)
+        {
             var dpi = TargetDpi ?? DocumentSettings.DefaultRasterDpi;
             
             var sourcePayload = new GenerateDynamicImageDelegatePayload
@@ -59,23 +85,26 @@ namespace QuestPDF.Elements
             var imageBytes = Source?.Invoke(sourcePayload);
             
             if (imageBytes == null)
-                return;
+                return null;
 
             using var imageData = SkData.FromBinary(imageBytes);
-            using var originalImage = SkImage.FromData(imageData);
-            
-            if (UseOriginalImage)
-            { 
-                Canvas.DrawImage(originalImage, availableSpace);
-                return;
-            }
-            
-            using var compressedImage = originalImage.CompressImage(CompressionQuality.Value);
+            var originalImage = SkImage.FromData(imageData);
 
-            var targetImage = Helpers.Helpers.GetImageWithSmallerSize(originalImage, compressedImage);
-            Canvas.DrawImage(targetImage, availableSpace);
+            if (UseOriginalImage)
+                return originalImage;
             
-            IsRendered = true;
+            var compressedImage = originalImage.CompressImage(CompressionQuality.Value);
+
+            if (originalImage.EncodedDataSize > compressedImage.EncodedDataSize)
+            {
+                originalImage.Dispose();
+                return compressedImage;
+            }
+            else
+            {
+                compressedImage.Dispose();
+                return originalImage;
+            }
         }
 
         private static ImageSize GetTargetResolution(Size availableSize, int targetDpi)
