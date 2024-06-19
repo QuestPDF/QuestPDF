@@ -194,13 +194,6 @@ namespace QuestPDF.Drawing
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
                     pageContext.DecrementPageNumber();
-                    
-                    if (Settings.EnableDebugging)
-                    {
-                        ApplyLayoutDebugging();
-                        continue;
-                    }
-                    
                     canvas.EndDocument();
                     ThrowLayoutException();
                 }
@@ -222,6 +215,9 @@ namespace QuestPDF.Drawing
                     break;
             }
 
+            // TODO: visual layout issues debugging
+            // visual debugging is temporally disabled, as it is inferior to the new layout debugging feature
+            // re-enable as part of the QuestPDF Companion effort
             void ApplyLayoutDebugging()
             {
                 content.RemoveExistingProxies();
@@ -240,6 +236,37 @@ namespace QuestPDF.Drawing
             }
             
             void ThrowLayoutException()
+            {
+                var newLine = "\n";
+                var newParagraph = newLine + newLine;
+                
+                const string debuggingSettingsName = $"{nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDebugging)}";
+
+                var message =
+                    $"The provided document content contains conflicting size constraints. " +
+                    $"For example, some elements may require more space than is available. {newParagraph}";
+                
+                if (Settings.EnableDebugging)
+                {
+                    var (stack, inside) = GenerateLayoutExceptionDebuggingInfo();
+
+                    message +=
+                        $"The layout issue is likely present in the following part of the document: {newParagraph}{stack}{newParagraph}" +
+                        $"To learn more, please analyse the document measurement of the problematic location: {newParagraph}{inside}" +
+                        $"{LayoutDebugging.LayoutVisualizationLegend}{newParagraph}" +
+                        $"This detailed information is generated because you run the application with a debugger attached or with the {debuggingSettingsName} flag set to true. ";
+                }
+                else
+                {
+                    message +=
+                        $"To further investigate the location of the root cause, please run the application with a debugger attached or set the {debuggingSettingsName} flag to true. " +
+                        $"The library will generate additional debugging information such as probable code problem location and detailed layout measurement overview.";
+                }
+                
+                throw new DocumentLayoutException(message);
+            }
+            
+            (string stack, string inside) GenerateLayoutExceptionDebuggingInfo()
             {
                 content.RemoveExistingProxies();
                 content.ApplyLayoutOverflowDetection();
@@ -263,21 +290,8 @@ namespace QuestPDF.Drawing
                     .Children
                     .First()
                     .FormatLayoutSubtree();
-                
-                var newLine = "\n";
-                var newParagraph = newLine + newLine;
-                    
-                var message =
-                    $"The provided document content contains conflicting size constraints. " +
-                    $"For example, some elements may require more space than is available. {newParagraph}" +
-                    $"To quickly determine the place where the problem is likely occurring, please generate the document with the attached debugger. " +
-                    $"The library will generate a PDF document with visually annotated places where layout constraints are invalid. {newParagraph}" +
-                    $"Alternatively, if you don’t want to or cannot attach the debugger, you can set the {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDebugging)} flag to true. {newParagraph}" +
-                    $"The layout issue is likely present in the following part of the document: {newParagraph}{stack}{newParagraph}" +
-                    $"Please analyse the document measurement to learn more: {newParagraph}{inside}" +
-                    $"{LayoutDebugging.LayoutVisualizationLegend}";
-                
-                throw new DocumentLayoutException(message);
+
+                return (stack, inside);
             }
         }
 
