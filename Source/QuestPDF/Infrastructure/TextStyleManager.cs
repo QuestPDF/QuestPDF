@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
+using TextStyleFontFeature = (string Name, bool Enabled);
+
 namespace QuestPDF.Infrastructure
 {
     internal enum TextStyleProperty
@@ -13,6 +15,7 @@ namespace QuestPDF.Infrastructure
         BackgroundColor,
         DecorationColor,
         FontFamilies,
+        FontFeatures,
         Size,
         LineHeight,
         LetterSpacing,
@@ -30,23 +33,23 @@ namespace QuestPDF.Infrastructure
 
     // C# does not have proper equality members for arrays
     // this struct is a wrapper that allows to use an array as part of dictionary key
-    internal struct FontFamiliesValue
+    internal struct ArrayContainer<T>
     {
-        public string[] Items { get; }
+        public T[] Items { get; }
 
-        public FontFamiliesValue(string[]? array)
+        public ArrayContainer(object array)
         {
-            Items = array ?? Array.Empty<string>();
+            Items = (array as T[]) ?? Array.Empty<T>();
         }
         
-        public bool Equals(FontFamiliesValue other)
+        public bool Equals(ArrayContainer<T> other)
         {
             return Items.SequenceEqual(other.Items);
         }
         
         public override bool Equals(object obj)
         {
-            return obj is FontFamiliesValue other && Equals(other);
+            return obj is ArrayContainer<T> other && Equals(other);
         }
         
         public override int GetHashCode()
@@ -84,8 +87,11 @@ namespace QuestPDF.Infrastructure
 
         public static TextStyle Mutate(this TextStyle origin, TextStyleProperty property, object value)
         {
-            if (property == TextStyleProperty.FontFamilies)
-                value = new FontFamiliesValue((string[]?)value);
+            if (property is TextStyleProperty.FontFamilies)
+                value = new ArrayContainer<string>(value);
+            
+            if (property is TextStyleProperty.FontFamilies or TextStyleProperty.FontFeatures)
+                value = new ArrayContainer<TextStyleFontFeature>(value);
             
             var cacheKey = (origin.Id, property, value);
             
@@ -93,8 +99,11 @@ namespace QuestPDF.Infrastructure
             {
                 var newValue = x.value;
                 
-                if (x.value is FontFamiliesValue fontFamiliesValue)
-                    newValue = fontFamiliesValue.Items;
+                if (x.value is ArrayContainer<string> fontFamilies)
+                    newValue = fontFamilies.Items;
+                
+                if (x.value is ArrayContainer<TextStyleFontFeature> fontFeatures)
+                    newValue = fontFeatures.Items;
    
                 return MutateStyle(TextStyles[x.originId], x.property, newValue, overrideValue: true);
             });
@@ -105,6 +114,9 @@ namespace QuestPDF.Infrastructure
             if (targetProperty == TextStyleProperty.FontFamilies)
                 return MutateFontFamily(origin, newValue as string[], overrideValue);
             
+            if (targetProperty == TextStyleProperty.FontFeatures)
+                return MutateFontFeatures(origin, newValue as TextStyleFontFeature[], overrideValue);
+ 
             lock (MutationLock)
             {
                 if (overrideValue && newValue is null)
@@ -151,6 +163,32 @@ namespace QuestPDF.Infrastructure
                 newTextStyle.FontFamilies = overrideValue 
                     ? newValue 
                     : oldValue.Concat(newValue).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToArray();
+
+                TextStyles.Add(newTextStyle);
+                return newTextStyle;
+            }
+        }
+        
+        private static TextStyle MutateFontFeatures(this TextStyle origin, TextStyleFontFeature[]? newValue, bool overrideValue)
+        {
+            lock (MutationLock)
+            {
+                if (overrideValue && newValue is null)
+                    return origin;
+                
+                var newIndex = TextStyles.Count;
+                var newTextStyle = origin with { Id = newIndex };
+                newTextStyle.Id = newIndex;
+                
+                newValue ??= [];
+                var oldValue = origin.FontFeatures ?? [];
+                
+                if (origin.FontFeatures?.SequenceEqual(newValue) == true)
+                    return origin;
+                
+                newTextStyle.FontFeatures = overrideValue 
+                    ? newValue 
+                    : oldValue.Concat(newValue).GroupBy(x => x.Name).Select(x => x.First()).ToArray();
 
                 TextStyles.Add(newTextStyle);
                 return newTextStyle;

@@ -221,6 +221,30 @@
         
         <param name="value">Actual font family (e.g. "Times New Roman", "Calibri", "Lato") or custom identifier used when invoking the <see cref="Drawing.FontManager.RegisterFontWithCustomName">FontManager</see> method.</param>
     </doc>
+
+    <doc for="text.fontFeatures">
+        <summary>
+            <para>Enables or disables font features defined by the OpenType standard, e.g. kernig, ligatures.</para>
+            
+            <para>
+                Font features are always encoded as 4-character long strings. For example, the ligatures feature is encode as <c>liga</c>, while the kernig feature as <c>kern</c>
+                For a list of available features, refer to the <see cref="Helpers.FontFeatures">FontFeatures</see> class.
+            </para>
+        </summary>
+
+        <remarks>
+            <para>To better understand what font features are, please consider example definitions. Please note that there are many more various font features. Most fonts support only a handful of them, having some of them enabled by default:</para>
+            <para>Ligatures in typography are specific character combinations that are designed to improve the aesthetics and readability of certain letter pairs. For example, in some fonts, when you type certain combinations of letters like 'fi' or 'fl', they will be replaced with a single, joined glyph.</para>
+            <para>Kerning in typography refers to the adjustment of space between characters in a proportional font. It's used to achieve a visually pleasing result by adjusting the spacing of specific character pairs. For example, in many fonts, the pair 'AV' is kerned so that the 'A' and 'V' are closer together than they would be by default.</para>
+        </remarks>
+
+        <example>
+            <para>TextStyle.Default.EnableFontFeature(FontFeatures.StandardLigatures);</para>
+            <para>TextStyle.Default.DisableFontFeature(FontFeatures.Kerning);</para>
+        </example>
+        
+        <param name="value">Provide font feature name or use the <see cref="Helpers.FontFeatures">FontFeatures</see> class.</param>
+    </doc>
     
     <doc for="text.fontSize">
         <summary>

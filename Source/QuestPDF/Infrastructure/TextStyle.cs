@@ -5,6 +5,8 @@ using QuestPDF.Helpers;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
 
+using TextStyleFontFeature = (string Name, bool Enabled);
+
 namespace QuestPDF.Infrastructure
 {
     public record TextStyle
@@ -17,6 +19,7 @@ namespace QuestPDF.Infrastructure
         internal Color? BackgroundColor { get; set; }
         internal Color? DecorationColor { get; set; }
         internal string[]? FontFamilies { get; set; }
+        internal TextStyleFontFeature[]? FontFeatures { get; set; }
         internal float? Size { get; set; }
         internal float? LineHeight { get; set; }
         internal float? LetterSpacing { get; set; }
@@ -43,6 +46,7 @@ namespace QuestPDF.Infrastructure
             BackgroundColor = Colors.Transparent,
             DecorationColor = Colors.Black,
             FontFamilies = new[] { Fonts.Lato },
+            FontFeatures = {},
             Size = 12,
             LineHeight = NormalLineHeightCalculatedFromFontMetrics,
             LetterSpacing = 0,
@@ -78,9 +82,11 @@ namespace QuestPDF.Infrastructure
             {
                 FontSize = CalculateTargetFontSize(),
                 FontWeight = (TextStyleConfiguration.FontWeights?)FontWeight ?? TextStyleConfiguration.FontWeights.Normal,
-                
                 IsItalic = IsItalic ?? false,
+                
                 FontFamilies = GetFontFamilyPointers(fontFamilyTexts),
+                FontFeatures = GetFontFeatures(),
+                
                 ForegroundColor = Color ?? Colors.Black,
                 BackgroundColor = BackgroundColor ?? Colors.Transparent,
                 DecorationColor = DecorationColor ?? Colors.Black,
@@ -105,6 +111,19 @@ namespace QuestPDF.Infrastructure
                 
                 for (var i = 0; i < Math.Min(result.Length, texts.Count); i++)
                     result[i] = texts[i].Instance;
+                
+                return result;
+            }
+            
+            TextStyleConfiguration.FontFeature[] GetFontFeatures(params (string name, int value)[] features)
+            {
+                var result = new TextStyleConfiguration.FontFeature[TextStyleConfiguration.FONT_FEATURES_LENGTH];
+
+                foreach (var (feature, index) in FontFeatures.Take(TextStyleConfiguration.FONT_FEATURES_LENGTH).Select((x, i) => (x, i)))
+                {
+                    result[index].Name = feature.Name;
+                    result[index].Value = feature.Enabled ? 1 : 0;
+                }
                 
                 return result;
             }
