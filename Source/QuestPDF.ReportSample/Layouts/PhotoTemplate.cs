@@ -49,7 +49,7 @@ namespace QuestPDF.ReportSample.Layouts
             {
                 grid.Columns(6);
 
-                grid.Item().LabelCell().Height(5).Text("Date");
+                grid.Item().LabelCell().Text("Date");
                 grid.Item(2).ValueCell().Text(Model.Date?.ToString("g") ?? string.Empty);
                 grid.Item().LabelCell().Text("Location");
                 grid.Item(2).ValueCell().Text(Model.Location.Format());
