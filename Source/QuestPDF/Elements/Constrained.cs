@@ -23,10 +23,10 @@ namespace QuestPDF.Elements
                 return SpacePlan.Empty();
             
             if (MinWidth > availableSpace.Width + Size.Epsilon)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The available horizontal space is less than the minimum width.");
             
             if (MinHeight > availableSpace.Height + Size.Epsilon)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The available vertical space is less than the minimum height.");
             
             var available = new Size(
                 Min(MaxWidth, availableSpace.Width),
@@ -35,7 +35,7 @@ namespace QuestPDF.Elements
             var measurement = base.Measure(available);
 
             if (measurement.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+                return measurement.Forward();
             
             var actualSize = new Size(
                 Max(MinWidth, measurement.Width),

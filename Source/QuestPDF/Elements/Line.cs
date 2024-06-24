@@ -1,4 +1,5 @@
-﻿using QuestPDF.Drawing;
+﻿using System;
+using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -34,14 +35,25 @@ namespace QuestPDF.Elements
                 return SpacePlan.Empty();
             
             if (availableSpace.IsNegative())
-                return SpacePlan.Wrap();
-            
-            return Type switch
+                return SpacePlan.Wrap("The available space is negative.");
+
+            if (Type == LineType.Vertical)
             {
-                LineType.Vertical when availableSpace.Width + Infrastructure.Size.Epsilon >= Thickness => SpacePlan.FullRender(Thickness, 0),
-                LineType.Horizontal when availableSpace.Height + Infrastructure.Size.Epsilon >= Thickness => SpacePlan.FullRender(0, Thickness),
-                _ => SpacePlan.Wrap()
-            };
+                if (availableSpace.Width + Size.Epsilon < Thickness)
+                    return SpacePlan.Wrap("The line thickness is greater than the available horizontal space.");
+
+                return SpacePlan.FullRender(Thickness, 0);
+            }
+            
+            if (Type == LineType.Horizontal)
+            {
+                if (availableSpace.Height + Size.Epsilon < Thickness)
+                    return SpacePlan.Wrap("The line thickness is greater than the available vertical space.");
+
+                return SpacePlan.FullRender(0, Thickness);
+            }
+
+            throw new NotSupportedException();
         }
 
         internal override void Draw(Size availableSpace)

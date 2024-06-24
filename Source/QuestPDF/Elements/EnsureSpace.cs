@@ -13,9 +13,9 @@ namespace QuestPDF.Elements
             var measurement = base.Measure(availableSpace);
 
             if (measurement.Type == SpacePlanType.PartialRender && availableSpace.Height < MinHeight)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The available vertical space is smaller than requested in the constraint.");
 
-            return measurement;
+            return measurement.Forward();
         }
     }
 }

@@ -16,7 +16,7 @@ internal static class LayoutDebugging
         return TryVerticalOverflow()
                ?? TryHorizontalOverflow() 
                ?? TryUnconstrainedOverflow()
-               ?? SpacePlan.Wrap();
+               ?? SpacePlan.Wrap("Extending the available space does not allow the child to fit on the page.");
 
         SpacePlan? TryOverflow(Size targetSpace)
         {
@@ -244,6 +244,9 @@ internal static class LayoutDebugging
             
             yield return $"Available Space: {proxy.MeasurementSize}";
             yield return $"Space Plan: {proxy.SpacePlan}";
+
+            if (proxy.SpacePlan?.Type == SpacePlanType.Wrap)
+                yield return "Wrap Reason: " + (proxy.SpacePlan?.WrapReason ?? "Unknown");
             
             yield return new string('-', title.Length + 1);
             

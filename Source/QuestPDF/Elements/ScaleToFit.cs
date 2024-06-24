@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
             var perfectScale = FindPerfectScale(Child, availableSpace);
 
             if (perfectScale == null)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("Cannot find the perfect scale to fit the child element in the available space.");
 
             var scaledSpace = ScaleSize(availableSpace, 1 / perfectScale.Value);
             var childSizeInScale = Child.Measure(scaledSpace);

@@ -64,14 +64,17 @@ namespace QuestPDF.Elements
             var renderingCommands = PlanLayout(availableSpace);
 
             if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.Wrap))
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("One of the items does not fit (even partially) in the available space.");
 
             var width = renderingCommands.Last().Offset.X + renderingCommands.Last().Size.Width;
             var height = renderingCommands.Max(x => x.Size.Height);
             var size = new Size(width, height);
 
-            if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
-                return SpacePlan.Wrap();
+            if (width > availableSpace.Width + Size.Epsilon)
+                return SpacePlan.Wrap("The content requires more horizontal space than available.");
+            
+            if (height > availableSpace.Height + Size.Epsilon)
+                return SpacePlan.Wrap("The content requires more vertical space than available.");
             
             if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.PartialRender))
                 return SpacePlan.PartialRender(size);

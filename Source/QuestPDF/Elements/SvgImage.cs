@@ -24,7 +24,7 @@ internal class SvgImage : Element, IStateResettable
             return SpacePlan.Empty();
 
         if (availableSpace.IsNegative())
-            return SpacePlan.Wrap();
+            return SpacePlan.Wrap("The available space is negative.");
         
         return SpacePlan.FullRender(Size.Zero);
     }

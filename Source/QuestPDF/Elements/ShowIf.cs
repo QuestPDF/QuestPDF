@@ -19,7 +19,7 @@ internal class ShowIf : ContainerElement
         if (!CheckVisibility())
             return SpacePlan.Empty();
 
-        return base.Measure(availableSpace);
+        return base.Measure(availableSpace).Forward();
     }
     
     internal override void Draw(Size availableSpace)
