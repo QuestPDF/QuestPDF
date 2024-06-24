@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
@@ -512,15 +513,22 @@ namespace QuestPDF.Elements.Text
                 $"You can disable this check by setting the 'Settings.CheckIfAllTextGlyphsAreAvailable' option to 'false'. \n" +
                 $"However, this may result with text glyphs being incorrectly rendered without any warning.");
         }
-
+        
+        #region Handling Of Text Blocks With Only With Space
+        
+        private ConcurrentDictionary<int, float> ParagraphContainingOnlyWhiteSpaceHeightCache { get; } = new(); // key: TextStyle.Id
+        
         private bool CheckIfContainsOnlyWhiteSpace()
         {
             foreach (var textBlockItem in Items)
             {
-                if (textBlockItem is TextBlockPageNumber)
+                if (textBlockItem is TextBlockSpan textBlockSpan && !string.IsNullOrWhiteSpace(textBlockSpan.Text))
                     return false;
                 
-                if (textBlockItem is TextBlockSpan textBlockSpan && !string.IsNullOrWhiteSpace(textBlockSpan.Text))
+                if (textBlockItem is TextBlockPageNumber)
+                    return false;
+
+                if (textBlockItem is TextBlockElement)
                     return false;
             }
             
@@ -529,27 +537,38 @@ namespace QuestPDF.Elements.Text
         
         private float MeasureHeightOfParagraphContainingOnlyWhiteSpace()
         {
-            var paragraphStyle = new ParagraphStyleConfiguration
-            {
-                Alignment = ParagraphStyleConfiguration.TextAlign.Start,
-                Direction = ParagraphStyleConfiguration.TextDirection.Ltr
-            };
+            return Items
+                .OfType<TextBlockSpan>()
+                .Select(x => ParagraphContainingOnlyWhiteSpaceHeightCache.GetOrAdd(x.Style.Id, Measure))
+                .DefaultIfEmpty(0)
+                .Max();
             
-            var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
-
-            try
+            static float Measure(int textStyleId)
             {
-                foreach (var textBlockSpan in Items.OfType<TextBlockSpan>())
-                    builder.AddText("\u00A0", textBlockSpan.Style.GetSkTextStyle()); // non-breaking space
+                var paragraphStyle = new ParagraphStyleConfiguration
+                {
+                    Alignment = ParagraphStyleConfiguration.TextAlign.Start,
+                    Direction = ParagraphStyleConfiguration.TextDirection.Ltr
+                };
+            
+                var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
 
-                var paragraph = builder.CreateParagraph();
-                paragraph.PlanLayout(1000);
-                return paragraph.GetLineMetrics().First().Height;
-            }
-            finally
-            {
-                SkParagraphBuilderPoolManager.Return(builder);
+                try
+                {
+                    var textStyle = TextStyleManager.GetTextStyle(textStyleId).GetSkTextStyle();
+                    builder.AddText("\u00A0", textStyle); // non-breaking space
+
+                    var paragraph = builder.CreateParagraph();
+                    paragraph.PlanLayout(1000);
+                    return paragraph.GetLineMetrics().First().Height;
+                }
+                finally
+                {
+                    SkParagraphBuilderPoolManager.Return(builder);
+                }
             }
         }
+        
+        #endregion
     }
 }

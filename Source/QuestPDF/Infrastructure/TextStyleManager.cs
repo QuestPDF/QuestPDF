@@ -190,5 +190,10 @@ namespace QuestPDF.Infrastructure
                     return mutableStyle.MutateStyle(nextProperty, newValue, overrideStyle);
                 });
         }
+        
+        internal static TextStyle GetTextStyle(int id)
+        {
+            return TextStyles[id];
+        }
     }
 }
