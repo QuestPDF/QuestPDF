@@ -17,7 +17,7 @@ namespace QuestPDF.Elements
             if (childSize.Type == SpacePlanType.FullRender)
                 return SpacePlan.FullRender(0, 0);
             
-            return childSize.Forward();
+            return childSize;
         }
 
         internal override void Draw(Size availableSpace)

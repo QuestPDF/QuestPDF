@@ -8,7 +8,7 @@ namespace QuestPDF.Elements
     {
         internal override SpacePlan Measure(Size availableSpace)
         {
-            var measurement = Child.Measure(availableSpace);
+            var measurement = base.Measure(availableSpace);
 
             return measurement.Type switch
             {

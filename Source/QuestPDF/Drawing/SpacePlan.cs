@@ -19,7 +19,7 @@ namespace QuestPDF.Drawing
 
         internal static SpacePlan Empty() => new(SpacePlanType.Empty, 0, 0);
         
-        internal static SpacePlan Wrap(string reason = null) => new(SpacePlanType.Wrap, 0, 0, reason);
+        internal static SpacePlan Wrap(string reason) => new(SpacePlanType.Wrap, 0, 0, reason);
         
         internal static SpacePlan PartialRender(float width, float height) => new(SpacePlanType.PartialRender, width, height);
 
@@ -28,14 +28,6 @@ namespace QuestPDF.Drawing
         internal static SpacePlan FullRender(float width, float height) => new(SpacePlanType.FullRender, width, height);
 
         internal static SpacePlan FullRender(Size size) => FullRender(size.Width, size.Height);
-
-        internal SpacePlan Forward()
-        {
-            if (Type == SpacePlanType.Wrap)
-                return Wrap("Forwarded from child");
-            
-            return new SpacePlan(Type, Width, Height);
-        }
         
         public override string ToString()
         {

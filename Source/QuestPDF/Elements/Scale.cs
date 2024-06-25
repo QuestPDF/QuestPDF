@@ -18,7 +18,7 @@ namespace QuestPDF.Elements
             var measure = base.Measure(targetSpace);
 
             if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
-                return measure.Forward();
+                return measure;
 
             var targetSize = new Size(
                 Math.Abs(measure.Width * ScaleX), 

@@ -35,7 +35,7 @@ namespace QuestPDF.Elements
             var measurement = base.Measure(available);
 
             if (measurement.Type == SpacePlanType.Wrap)
-                return measurement.Forward();
+                return measurement;
             
             var actualSize = new Size(
                 Max(MinWidth, measurement.Width),

@@ -18,7 +18,7 @@ namespace QuestPDF.Elements
             if (!FirstPageWasSkipped)
                 return SpacePlan.Empty();
 
-            return Child.Measure(availableSpace).Forward();
+            return base.Measure(availableSpace);
         }
 
         internal override void Draw(Size availableSpace)

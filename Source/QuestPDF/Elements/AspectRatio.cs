@@ -31,7 +31,7 @@ namespace QuestPDF.Elements
             var childSize = base.Measure(targetSize);
 
             if (childSize.Type == SpacePlanType.Wrap)
-                return childSize.Forward();
+                return childSize;
 
             if (childSize.Type == SpacePlanType.PartialRender)
                 return SpacePlan.PartialRender(targetSize);

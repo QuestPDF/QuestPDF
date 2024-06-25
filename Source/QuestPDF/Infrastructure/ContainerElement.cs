@@ -27,7 +27,12 @@ namespace QuestPDF.Infrastructure
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            return Child.Measure(availableSpace).Forward();
+            var measurement = Child.Measure(availableSpace);
+            
+            if (measurement.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap("Forwarded from child");
+
+            return measurement;
         }
         
         internal override void Draw(Size availableSpace)

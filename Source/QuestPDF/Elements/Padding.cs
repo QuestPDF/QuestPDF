@@ -22,7 +22,7 @@ namespace QuestPDF.Elements
             var measure = base.Measure(internalSpace);
 
             if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
-                return measure.Forward();
+                return measure;
 
             var newSize = new Size(
                 measure.Width + Left + Right,
