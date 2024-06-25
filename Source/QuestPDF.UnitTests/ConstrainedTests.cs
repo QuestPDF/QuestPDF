@@ -20,7 +20,7 @@ namespace QuestPDF.UnitTests
                     MinHeight = 100
                 })
                 .MeasureElement(new Size(400, 50))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("The available vertical space is less than the minimum height."));
         }
         
         [Test]
@@ -91,8 +91,8 @@ namespace QuestPDF.UnitTests
                 })
                 .MeasureElement(new Size(400, 200))
                 .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
-                .ExpectChildMeasure(new Size(400, 100), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(new Size(400, 100), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         #endregion
@@ -108,7 +108,7 @@ namespace QuestPDF.UnitTests
                     MinWidth = 100
                 })
                 .MeasureElement(new Size(50, 400))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("The available horizontal space is less than the minimum width."));
         }
         
         [Test]
@@ -179,8 +179,8 @@ namespace QuestPDF.UnitTests
                 })
                 .MeasureElement(new Size(200, 400))
                 .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
-                .ExpectChildMeasure(new Size(100, 400), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(new Size(100, 400), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         #endregion

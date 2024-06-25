@@ -38,8 +38,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(CreateColumnWithTwoItems)
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("The available space is not sufficient for even partially rendering a single item."));
         }
         
         [Test]
@@ -59,7 +59,7 @@ namespace QuestPDF.UnitTests
                 .For(CreateColumnWithTwoItems)
                 .MeasureElement(new Size(400, 300))
                 .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap())
+                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap("Mock"))
                 .CheckMeasureResult(SpacePlan.PartialRender(200, 100));
         }
         
@@ -95,7 +95,7 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(CreateColumnWithTwoItems)
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap())
+                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap("Mock"))
                 .CheckDrawResult();
         }
         
@@ -119,7 +119,7 @@ namespace QuestPDF.UnitTests
                 .For(CreateColumnWithTwoItems)
                 .DrawElement(new Size(400, 300))
                 .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap())
+                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap("Mock"))
                 .ExpectCanvasTranslate(0, 0)
                 .ExpectChildDraw("first", new Size(400, 100))
                 .ExpectCanvasTranslate(0, 0)

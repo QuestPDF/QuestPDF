@@ -206,6 +206,7 @@ namespace QuestPDF.UnitTests.TestEngine
             ClassicAssert.AreEqual(expected.Width, actual.Width, "Measure: width");
             ClassicAssert.AreEqual(expected.Height, actual.Height, "Measure: height");
             ClassicAssert.AreEqual(expected.Type, actual.Type, "Measure: height");
+            ClassicAssert.AreEqual(expected.WrapReason, actual.WrapReason, "Measure: wrap");
             
             return this;
         }

@@ -22,8 +22,8 @@ namespace QuestPDF.UnitTests
                     ScaleY = 2
                 })
                 .MeasureElement(new Size(900, 800))
-                .ExpectChildMeasure(new Size(300, 400), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(new Size(300, 400), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         [Test]

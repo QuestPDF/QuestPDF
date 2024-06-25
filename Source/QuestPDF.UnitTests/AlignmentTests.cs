@@ -11,6 +11,7 @@ namespace QuestPDF.UnitTests
     {
         [Test]
         public void Measure() => SimpleContainerTests.Measure<Alignment>();
+        
         [Test]
         public void Draw_HorizontalCenter_VerticalCenter()
         {

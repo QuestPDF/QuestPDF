@@ -18,8 +18,8 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(400, 300), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(new Size(400, 300), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Child element does not fit (even partially) on the page."));
         }
         
         [Test]
@@ -32,7 +32,7 @@ namespace QuestPDF.UnitTests
                 })
                 .MeasureElement(new Size(400, 300))
                 .ExpectChildMeasure(new Size(400, 300), SpacePlan.PartialRender(300, 200))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("Child element fits only partially on the page."));
         }
         
         [Test]

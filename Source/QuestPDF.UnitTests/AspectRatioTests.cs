@@ -53,8 +53,8 @@ namespace QuestPDF.UnitTests
                 })
                 .MeasureElement(new Size(400, 201))
                 .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
-                .ExpectChildMeasure(new Size(400, 200), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(new Size(400, 200), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         [Test]
@@ -85,7 +85,7 @@ namespace QuestPDF.UnitTests
                 })
                 .MeasureElement(new Size(400, 199))
                 .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("To preserve the target aspect ratio, the content requires more vertical space than available."));
         }
         
         [Test]
@@ -116,7 +116,7 @@ namespace QuestPDF.UnitTests
                 })
                 .MeasureElement(new Size(399, 200))
                 .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("To preserve the target aspect ratio, the content requires more horizontal space than available."));
         }
         
         [Test]
