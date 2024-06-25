@@ -106,7 +106,7 @@ namespace QuestPDF.Elements.Text
             }
 
             if (totalLines == 0)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The available space is not sufficient to render even a single line of text.");
 
             var requiredArea = new Size(
                 Math.Min(MaximumWidth, availableSpace.Width),

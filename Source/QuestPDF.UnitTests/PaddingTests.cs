@@ -39,7 +39,7 @@ namespace QuestPDF.UnitTests
                 .For(GetPadding)
                 .MeasureElement(new Size(50, 300))
                 .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("The available space is negative."));
         }
         
         [Test]
@@ -49,7 +49,7 @@ namespace QuestPDF.UnitTests
                 .For(GetPadding)
                 .MeasureElement(new Size(20, 300))
                 .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("The available space is negative."));
         }
         
         [Test]
@@ -68,8 +68,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(GetPadding)
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(340, 260), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(new Size(340, 260), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         [Test]

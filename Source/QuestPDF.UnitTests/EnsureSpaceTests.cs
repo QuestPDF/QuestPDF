@@ -19,8 +19,8 @@ namespace QuestPDF.UnitTests
                     MinHeight = 200
                 })
                 .MeasureElement(new Size(400, 100))
-                .ExpectChildMeasure(new Size(400, 100), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(new Size(400, 100), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         [Test]
@@ -34,7 +34,7 @@ namespace QuestPDF.UnitTests
                 })
                 .MeasureElement(new Size(400, 100))
                 .ExpectChildMeasure(new Size(400, 100), SpacePlan.PartialRender(300, 50))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("The available vertical space is smaller than requested in the constraint."));
         }
         
         [Test]

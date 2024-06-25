@@ -19,7 +19,7 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
     internal override SpacePlan Measure(Size availableSpace)
     {
         if (Size.Equal(availableSpace, Size.Zero))
-            return SpacePlan.Wrap();
+            return SpacePlan.Wrap("There is no available space.");
         
         var childSize = base.Measure(availableSpace);
         

@@ -27,10 +27,10 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(CreateDecoration)
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("before", new Size(400, 300), SpacePlan.Wrap())
+                .ExpectChildMeasure("before", new Size(400, 300), SpacePlan.Wrap("Mock"))
                 .ExpectChildMeasure("after", new Size(400, 300), SpacePlan.FullRender(100, 50))
                 .ExpectChildMeasure("content", new Size(400, 250), SpacePlan.FullRender(100, 100))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("Decoration slot (before or after) does not fit fully on the page."));
         }
         
         [Test]
@@ -41,8 +41,8 @@ namespace QuestPDF.UnitTests
                 .MeasureElement(new Size(400, 300))
                 .ExpectChildMeasure("before", new Size(400, 300), SpacePlan.FullRender(100, 50))
                 .ExpectChildMeasure("after", new Size(400, 300), SpacePlan.FullRender(100, 50))
-                .ExpectChildMeasure("content", new Size(400, 200), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure("content", new Size(400, 200), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("The primary content does not fit on the page."));
         }
         
         [Test]
@@ -52,9 +52,9 @@ namespace QuestPDF.UnitTests
                 .For(CreateDecoration)
                 .MeasureElement(new Size(400, 300))
                 .ExpectChildMeasure("before", new Size(400, 300), SpacePlan.FullRender(100, 50))
-                .ExpectChildMeasure("after", new Size(400, 300), SpacePlan.Wrap())
+                .ExpectChildMeasure("after", new Size(400, 300), SpacePlan.Wrap("Mock"))
                 .ExpectChildMeasure("content", new Size(400, 250), SpacePlan.FullRender(100, 100))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("Decoration slot (before or after) does not fit fully on the page."));
         }
         
         [Test]
@@ -66,7 +66,7 @@ namespace QuestPDF.UnitTests
                 .ExpectChildMeasure("before", new Size(400, 300), SpacePlan.PartialRender(100, 50))
                 .ExpectChildMeasure("after", new Size(400, 300), SpacePlan.FullRender(100, 50))
                 .ExpectChildMeasure("content", new Size(400, 250), SpacePlan.FullRender(100, 100))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("Decoration slot (before or after) does not fit fully on the page."));
         }
         
         [Test]
@@ -78,7 +78,7 @@ namespace QuestPDF.UnitTests
                 .ExpectChildMeasure("before", new Size(400, 300), SpacePlan.FullRender(100, 50))
                 .ExpectChildMeasure("after", new Size(400, 300), SpacePlan.PartialRender(100, 50))
                 .ExpectChildMeasure("content", new Size(400, 250), SpacePlan.FullRender(100, 100))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("Decoration slot (before or after) does not fit fully on the page."));
         }
         
         [Test]

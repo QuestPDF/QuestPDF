@@ -23,15 +23,15 @@ namespace QuestPDF.Elements
             var targetSize = GetTargetSize(availableSpace);
             
             if (targetSize.Height > availableSpace.Height + Size.Epsilon)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("To preserve the target aspect ratio, the content requires more vertical space than available.");
             
             if (targetSize.Width > availableSpace.Width + Size.Epsilon)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("To preserve the target aspect ratio, the content requires more horizontal space than available.");
 
             var childSize = base.Measure(targetSize);
 
             if (childSize.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+                return childSize;
 
             if (childSize.Type == SpacePlanType.PartialRender)
                 return SpacePlan.PartialRender(targetSize);

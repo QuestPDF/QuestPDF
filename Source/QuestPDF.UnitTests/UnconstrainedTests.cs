@@ -20,8 +20,8 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(900, 800))
-                .ExpectChildMeasure(Size.Max, SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(Size.Max, SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         [Test]
@@ -63,7 +63,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .DrawElement(new Size(900, 800))
-                .ExpectChildMeasure(Size.Max, SpacePlan.Wrap())
+                .ExpectChildMeasure(Size.Max, SpacePlan.Wrap("Mock"))
                 .CheckDrawResult();
         }
         

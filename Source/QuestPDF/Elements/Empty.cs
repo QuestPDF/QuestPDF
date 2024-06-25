@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             return availableSpace.IsNegative() 
-                ? SpacePlan.Wrap() 
+                ? SpacePlan.Wrap("The available space is negative.") 
                 : SpacePlan.FullRender(0, 0);
         }
 

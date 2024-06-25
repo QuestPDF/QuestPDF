@@ -26,10 +26,10 @@ internal class ElementMock : Element
     internal override SpacePlan Measure(Size availableSpace)
     {
         if (TotalWidth > availableSpace.Width)
-            return SpacePlan.Wrap();
-        
+            return SpacePlan.Wrap("The content requires more horizontal space than available.");
+
         if (availableSpace.Height < Size.Epsilon)
-            return SpacePlan.Wrap();
+            return SpacePlan.Wrap("The content requires more vertical space than available.");
 
         var remainingHeight = TotalHeight - HeightOffset;
 

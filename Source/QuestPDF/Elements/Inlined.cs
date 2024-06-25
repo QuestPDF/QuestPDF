@@ -53,7 +53,7 @@ namespace QuestPDF.Elements
             var lines = Compose(availableSpace);
 
             if (!lines.Any())
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The available space is not sufficient to fully render even a single item.");
 
             var lineSizes = lines
                 .Select(line =>

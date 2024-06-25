@@ -94,14 +94,14 @@ namespace QuestPDF.Elements.Table
             var renderingCommands = PlanLayout(availableSpace);
 
             if (!renderingCommands.Any())
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("Insufficient space to render (even partially) a single row.");
             
             var width = Columns.Sum(x => x.Width);
             var height = renderingCommands.Max(x => x.Offset.Y + x.Size.Height);
             var tableSize = new Size(width, height);
 
             if (tableSize.Width > availableSpace.Width + Size.Epsilon)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The content requires more horizontal space than available.");
 
             return CalculateCurrentRow(renderingCommands) > StartingRowsCount 
                 ? SpacePlan.FullRender(tableSize) 

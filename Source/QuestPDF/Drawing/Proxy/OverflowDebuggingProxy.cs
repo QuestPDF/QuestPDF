@@ -16,7 +16,7 @@ internal class OverflowDebuggingProxy : ElementProxy
 
     internal override SpacePlan Measure(Size availableSpace)
     {
-        var spacePlan = Child.Measure(availableSpace);
+        var spacePlan = base.Measure(availableSpace);
 
         if (IsMeasuring)
         {
