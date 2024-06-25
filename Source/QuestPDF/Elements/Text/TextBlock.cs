@@ -5,6 +5,7 @@ using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements.Text.Items;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -62,13 +63,22 @@ namespace QuestPDF.Elements.Text
             
             if (IsRendered)
                 return SpacePlan.Empty();
+            
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap();
 
             // if the text block does not contain any items, or all items are null, return SpacePlan.Empty
             // but if the text block contains only whitespace, return SpacePlan.FullRender with zero width and font-based height
             ContainsOnlyWhiteSpace ??= CheckIfContainsOnlyWhiteSpace();
-            
+
             if (ContainsOnlyWhiteSpace == true)
-                return SpacePlan.FullRender(0, MeasureHeightOfParagraphContainingOnlyWhiteSpace());
+            {
+                var requiredHeight = MeasureHeightOfParagraphContainingOnlyWhiteSpace();
+                
+                return requiredHeight < availableSpace.Height + Size.Epsilon 
+                    ? SpacePlan.FullRender(0, requiredHeight) 
+                    : SpacePlan.Wrap();
+            }
             
             Initialize();
             
