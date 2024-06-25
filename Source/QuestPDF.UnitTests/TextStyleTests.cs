@@ -18,14 +18,17 @@ namespace QuestPDF.UnitTests
                 .Default
                 .FontSize(20)
                 .FontFamily("Arial", "Microsoft YaHei")
-                .BackgroundColor(Colors.Green.Lighten2);
+                .BackgroundColor(Colors.Green.Lighten2)
+                .EnableFontFeature(FontFeatures.StandardLigatures);
 
             var spanTextStyle = TextStyle
                 .Default
                 .FontFamily("Times New Roman", "Arial", "Calibri")
                 .Bold()
                 .Strikethrough()
-                .BackgroundColor(Colors.Red.Lighten2);
+                .BackgroundColor(Colors.Red.Lighten2)
+                .DisableFontFeature(FontFeatures.StandardLigatures)
+                .EnableFontFeature(FontFeatures.Kerning);
             
             // act
             var targetStyle = spanTextStyle.ApplyInheritedStyle(defaultTextStyle).ApplyGlobalStyle();
@@ -38,6 +41,11 @@ namespace QuestPDF.UnitTests
                 FontFamilies = new[] { "Times New Roman", "Arial", "Calibri", "Microsoft YaHei", "Lato" },
                 FontWeight = FontWeight.Bold,
                 BackgroundColor = Colors.Red.Lighten2,
+                FontFeatures = new[]
+                {
+                    (FontFeatures.Kerning, true),
+                    (FontFeatures.StandardLigatures, false)
+                },
                 HasStrikethrough = true
             };
 

@@ -90,7 +90,7 @@ namespace QuestPDF.Infrastructure
             if (property is TextStyleProperty.FontFamilies)
                 value = new ArrayContainer<string>(value);
             
-            if (property is TextStyleProperty.FontFamilies or TextStyleProperty.FontFeatures)
+            if (property is TextStyleProperty.FontFeatures)
                 value = new ArrayContainer<TextStyleFontFeature>(value);
             
             var cacheKey = (origin.Id, property, value);
@@ -185,10 +185,15 @@ namespace QuestPDF.Infrastructure
                 
                 if (origin.FontFeatures?.SequenceEqual(newValue) == true)
                     return origin;
+
+                var extendedSet = overrideValue
+                    ? newValue.Concat(oldValue)
+                    : oldValue.Concat(newValue);
                 
-                newTextStyle.FontFeatures = overrideValue 
-                    ? newValue 
-                    : oldValue.Concat(newValue).GroupBy(x => x.Name).Select(x => x.First()).ToArray();
+                newTextStyle.FontFeatures = extendedSet
+                    .GroupBy(x => x.Name)
+                    .Select(x => x.First())
+                    .ToArray();
 
                 TextStyles.Add(newTextStyle);
                 return newTextStyle;

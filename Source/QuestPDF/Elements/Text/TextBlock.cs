@@ -65,7 +65,7 @@ namespace QuestPDF.Elements.Text
                 return SpacePlan.Empty();
             
             if (availableSpace.IsNegative())
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The available space is negative.");
 
             // if the text block does not contain any items, or all items are null, return SpacePlan.Empty
             // but if the text block contains only whitespace, return SpacePlan.FullRender with zero width and font-based height
@@ -77,7 +77,7 @@ namespace QuestPDF.Elements.Text
                 
                 return requiredHeight < availableSpace.Height + Size.Epsilon 
                     ? SpacePlan.FullRender(0, requiredHeight) 
-                    : SpacePlan.Wrap();
+                    : SpacePlan.Wrap("The available vertical space is not sufficient to render even a single line of text.");
             }
             
             Initialize();
