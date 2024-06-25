@@ -39,3 +39,7 @@ Version 2024.6.2
 - Enhanced the accuracy and conciseness of layout-issue debugging messages.
 - Fixed an issue where text width calculation was unnecessarily rounded, which caused text overflow.
 - Resolved an issue where the Text element was not visible when it contained only the page number.
+
+
+Version 2024.6.3
+- Improved performance of Text elements containing null, empty, or whitespace content only.
