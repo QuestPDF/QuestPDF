@@ -311,5 +311,23 @@ namespace QuestPDF.Fluent
         }
 
         #endregion
+        
+        #region Font Features
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFeatures"]/*' />
+        public static T EnableFontFeature<T>(this T descriptor, string featureName) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.EnableFontFeature, featureName);
+            return descriptor;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFeatures"]/*' />
+        public static T DisableFontFeature<T>(this T descriptor, string featureName) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.DisableFontFeature, featureName);
+            return descriptor;
+        }
+        
+        #endregion
     }
 }

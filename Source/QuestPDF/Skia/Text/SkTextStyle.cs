@@ -13,6 +13,9 @@ internal struct TextStyleConfiguration
     public const int FONT_FAMILIES_LENGTH = 16;
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = FONT_FAMILIES_LENGTH)] public IntPtr[] FontFamilies;
     
+    public const int FONT_FEATURES_LENGTH = 16;
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = FONT_FEATURES_LENGTH)] public FontFeature[] FontFeatures;
+    
     public uint ForegroundColor;
     public uint BackgroundColor;
     
@@ -26,6 +29,13 @@ internal struct TextStyleConfiguration
     public float LetterSpacing;
     public float WordSpacing;
     public float BaselineOffset;
+    
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FontFeature
+    {
+        [MarshalAs(UnmanagedType.LPStr)] public string Name;
+        public int Value;
+    }
     
     public enum FontWeights
     {

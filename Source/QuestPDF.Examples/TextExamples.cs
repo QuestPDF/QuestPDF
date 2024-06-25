@@ -1169,5 +1169,34 @@ namespace QuestPDF.Examples
                          .ClampLines(3, " [...]");
                  });
          }
+         
+         [Test]
+         public void FontFeaturesTest()
+         {
+             RenderingTest
+                 .Create()
+                 .PageSize(500, 150)
+                 .ProducePdf()
+                 .ShowResults()
+                 .Render(container =>
+                 {
+                     container.Padding(25).Row(row =>
+                     {
+                         row.Spacing(25);
+                         
+                         row.RelativeItem().Column(column =>
+                         {
+                             column.Item().Text("Without ligatures").FontSize(16);
+                             column.Item().Text("fly and fight").FontSize(32).DisableFontFeature(FontFeatures.StandardLigatures);
+                         });
+                         
+                         row.RelativeItem().Column(column =>
+                         {
+                             column.Item().Text("With ligatures").FontSize(16);
+                             column.Item().Text("fly and fight").FontSize(32).EnableFontFeature(FontFeatures.StandardLigatures);
+                         });
+                     });
+                 });
+         }
     }
 }
