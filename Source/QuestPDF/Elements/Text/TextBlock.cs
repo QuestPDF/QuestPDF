@@ -522,10 +522,12 @@ namespace QuestPDF.Elements.Text
         {
             foreach (var textBlockItem in Items)
             {
-                if (textBlockItem is TextBlockSpan textBlockSpan && !string.IsNullOrWhiteSpace(textBlockSpan.Text))
+                // TextBlockPageNumber needs to be checked first, as it derives from TextBlockSpan,
+                // and before the generation starts, its Text property is empty 
+                if (textBlockItem is TextBlockPageNumber)
                     return false;
                 
-                if (textBlockItem is TextBlockPageNumber)
+                if (textBlockItem is TextBlockSpan textBlockSpan && !string.IsNullOrWhiteSpace(textBlockSpan.Text))
                     return false;
 
                 if (textBlockItem is TextBlockElement)
