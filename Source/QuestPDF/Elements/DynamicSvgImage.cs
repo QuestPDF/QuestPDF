@@ -8,10 +8,8 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal class DynamicSvgImage : Element, IStateResettable
+internal class DynamicSvgImage : Element, IStateful
 {
-    private bool IsRendered { get; set; }
-    
     public GenerateDynamicSvgDelegate SvgSource { get; set; }
 
     private List<(Size Size, SkSvgImage? Image)> Cache { get; } = new(1);
@@ -20,11 +18,6 @@ internal class DynamicSvgImage : Element, IStateResettable
     {
         foreach (var cacheItem in Cache)
             cacheItem.Image?.Dispose();
-    }
-    
-    public void ResetState(bool hardReset = false)
-    {
-        IsRendered = false;
     }
     
     internal override SpacePlan Measure(Size availableSpace)
@@ -63,4 +56,14 @@ internal class DynamicSvgImage : Element, IStateResettable
 
         return new SkSvgImage(svg, SkResourceProvider.CurrentResourceProvider, FontManager.CurrentFontManager);
     }
+    
+    #region IStateful
+    
+    private bool IsRendered { get; set; }
+    
+    public void ResetState(bool hardReset = false) => IsRendered = false;
+    public object GetState() => IsRendered;
+    public void SetState(object state) => IsRendered = (bool) state;
+    
+    #endregion
 }

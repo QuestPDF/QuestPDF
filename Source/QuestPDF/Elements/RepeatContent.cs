@@ -13,7 +13,7 @@ internal sealed class RepeatContent : ContainerElement
 
         if (childMeasurement?.Type == SpacePlanType.FullRender)
         {
-            Child.VisitChildren(x => (x as IStateResettable)?.ResetState(false));
+            Child.VisitChildren(x => (x as IStateful)?.ResetState(false));
         }
     }
 }

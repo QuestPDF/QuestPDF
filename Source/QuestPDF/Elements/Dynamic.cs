@@ -6,10 +6,8 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class DynamicHost : Element, IStateResettable, IContentDirectionAware
+    internal sealed class DynamicHost : Element, IStateful, IContentDirectionAware
     {
-        private bool IsRendered { get; set; }
-        
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
 
@@ -26,13 +24,7 @@ namespace QuestPDF.Elements
             
             InitialComponentState = Child.GetState();
         }
-
-        public void ResetState(bool hardReset)
-        {
-            IsRendered = false;
-            Child.SetState(InitialComponentState);
-        }
-        
+ 
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (IsRendered)
@@ -88,6 +80,21 @@ namespace QuestPDF.Elements
 
             return result;
         }
+        
+        #region IStateful
+        
+        private bool IsRendered { get; set; }
+    
+        public void ResetState(bool hardReset = false)
+        {
+            IsRendered = false;
+            Child.SetState(InitialComponentState);
+        }
+
+        public object GetState() => IsRendered;
+        public void SetState(object state) => IsRendered = (bool) state;
+    
+        #endregion
     }
 
     /// <summary>
@@ -142,7 +149,7 @@ namespace QuestPDF.Elements
             container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality, UseOriginalImage);
             
             container.InjectDependencies(PageContext, Canvas);
-            container.VisitChildren(x => (x as IStateResettable)?.ResetState());
+            container.VisitChildren(x => (x as IStateful)?.ResetState());
 
             container.Size = container.Measure(Size.Max);
             

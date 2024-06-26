@@ -13,17 +13,10 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
 
-    internal sealed class Column : Element, IStateResettable
+    internal sealed class Column : Element, IStateful
     {
         internal List<Element> Items { get; } = new();
         internal float Spacing { get; set; }
-        
-        internal int CurrentRenderingIndex { get; set; }
-
-        public void ResetState(bool hardReset)
-        {
-            CurrentRenderingIndex = 0;
-        }
         
         internal override IEnumerable<Element?> GetChildren()
         {
@@ -128,5 +121,15 @@ namespace QuestPDF.Elements
 
             return commands;
         }
+        
+        #region IStateful
+        
+        internal int CurrentRenderingIndex { get; set; }
+    
+        public void ResetState(bool hardReset = false) => CurrentRenderingIndex = 0;
+        public object GetState() => CurrentRenderingIndex;
+        public void SetState(object state) => CurrentRenderingIndex = (int) state;
+        
+        #endregion
     }
 }

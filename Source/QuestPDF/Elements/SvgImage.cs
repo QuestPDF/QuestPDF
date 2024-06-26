@@ -7,16 +7,9 @@ using static QuestPDF.Skia.SkSvgImageSize.Unit;
 
 namespace QuestPDF.Elements;
 
-internal class SvgImage : Element, IStateResettable
+internal class SvgImage : Element, IStateful
 {
-    private bool IsRendered { get; set; }
-    
     public Infrastructure.SvgImage Image { get; set; }
-    
-    public void ResetState(bool hardReset = false)
-    {
-        IsRendered = false;
-    }
     
     internal override SpacePlan Measure(Size availableSpace)
     {
@@ -77,4 +70,14 @@ internal class SvgImage : Element, IStateResettable
             return points * PointToPixel;
         }
     }
+    
+    #region IStateful
+    
+    private bool IsRendered { get; set; }
+    
+    public void ResetState(bool hardReset = false) => IsRendered = false;
+    public object GetState() => IsRendered;
+    public void SetState(object state) => IsRendered = (bool) state;
+    
+    #endregion
 }

@@ -3,16 +3,8 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class ShowOnce : ContainerElement, IStateResettable
+    internal sealed class ShowOnce : ContainerElement, IStateful
     {
-        private bool IsRendered { get; set; }
-
-        public void ResetState(bool hardReset)
-        {
-            if (hardReset)
-                IsRendered = false;
-        }
-
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (IsRendered)
@@ -31,5 +23,15 @@ namespace QuestPDF.Elements
             
             base.Draw(availableSpace);
         }
+        
+        #region IStateful
+        
+        private bool IsRendered { get; set; }
+    
+        public void ResetState(bool hardReset = false) => IsRendered = false;
+        public object GetState() => IsRendered;
+        public void SetState(object state) => IsRendered = (bool) state;
+    
+        #endregion
     }
 }

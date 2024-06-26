@@ -12,50 +12,42 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Elements.Text
 {
-    internal sealed class TextBlock : Element, IStateResettable, IContentDirectionAware
+    internal sealed class TextBlock : Element, IStateful, IContentDirectionAware
     {
-        public ContentDirection ContentDirection { get; set; }
+        // content
+        public List<ITextBlockItem> Items { get; set; } = new();
         
+        // configuration
         public TextHorizontalAlignment? Alignment { get; set; }
+        public ContentDirection ContentDirection { get; set; }
         
         public int? LineClamp { get; set; }
         public string LineClampEllipsis { get; set; }
 
         public float ParagraphSpacing { get; set; }
         public float ParagraphFirstLineIndentation { get; set; }
-
-        public List<ITextBlockItem> Items { get; set; } = new();
-
-        private SkParagraph Paragraph { get; set; }
         
+        // cache
         private bool RebuildParagraphForEveryPage { get; set; }
         private bool AreParagraphMetricsValid { get; set; }
         private bool AreParagraphItemsTransformedWithSpacingAndIndentation { get; set; }
         
         private SkSize[] LineMetrics { get; set; }
         private float WidthForLineMetricsCalculation { get; set; }
-        private SkRect[] PlaceholderPositions { get; set; }
         private float MaximumWidth { get; set; }
-        
-        private bool IsRendered { get; set; }
+        private SkRect[] PlaceholderPositions { get; set; }
         private bool? ContainsOnlyWhiteSpace { get; set; }
-        private int CurrentLineIndex { get; set; }
-        private float CurrentTopOffset { get; set; }
         
+        // native objects
+        private SkParagraph Paragraph { get; set; }
+
         public string Text => string.Join(" ", Items.OfType<TextBlockSpan>().Select(x => x.Text));
 
         ~TextBlock()
         {
             Paragraph?.Dispose();
         }
-        
-        public void ResetState(bool hardReset)
-        {
-            IsRendered = false;
-            CurrentLineIndex = 0;
-            CurrentTopOffset = 0;
-        }
-        
+
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (Items.Count == 0)
@@ -581,6 +573,47 @@ namespace QuestPDF.Elements.Text
             }
         }
         
+        #endregion
+        
+        #region IStateful
+        
+        private bool IsRendered { get; set; }
+        private int CurrentLineIndex { get; set; }
+        private float CurrentTopOffset { get; set; }
+    
+        public struct TextBlockState
+        {
+            public bool IsRendered;
+            public int CurrentLineIndex;
+            public float CurrentTopOffset;
+        }
+        
+        public void ResetState(bool hardReset = false)
+        {
+            IsRendered = false;
+            CurrentLineIndex = 0;
+            CurrentTopOffset = 0;
+        }
+
+        public object GetState()
+        {
+            return new TextBlockState
+            {
+                IsRendered = IsRendered,
+                CurrentLineIndex = CurrentLineIndex,
+                CurrentTopOffset = CurrentTopOffset
+            };
+        }
+
+        public void SetState(object state)
+        {
+            var textBlockState = (TextBlockState) state;
+            
+            IsRendered = textBlockState.IsRendered;
+            CurrentLineIndex = textBlockState.CurrentLineIndex;
+            CurrentTopOffset = textBlockState.CurrentTopOffset;
+        }
+    
         #endregion
     }
 }

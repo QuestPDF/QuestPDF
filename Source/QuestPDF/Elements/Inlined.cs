@@ -20,23 +20,17 @@ namespace QuestPDF.Elements
         public SpacePlan Size { get; set; }
     }
 
-    internal sealed class Inlined : Element, IContentDirectionAware, IStateResettable
+    internal sealed class Inlined : Element, IContentDirectionAware, IStateful
     {
+        public List<Element> Elements { get; internal set; } = new();
+
         public ContentDirection ContentDirection { get; set; }
         
-        public List<Element> Elements { get; internal set; } = new();
-        private int CurrentRenderingIndex { get; set; }
-
         internal float VerticalSpacing { get; set; }
         internal float HorizontalSpacing { get; set; }
         
         internal InlinedAlignment? ElementsAlignment { get; set; }
         internal VerticalAlignment BaselineAlignment { get; set; }
-        
-        public void ResetState(bool hardReset)
-        {
-            CurrentRenderingIndex = 0;
-        }
         
         internal override IEnumerable<Element?> GetChildren()
         {
@@ -258,5 +252,15 @@ namespace QuestPDF.Elements
                 };
             }
         }
+        
+        #region IStateful
+        
+        private int CurrentRenderingIndex { get; set; }
+    
+        public void ResetState(bool hardReset = false) => CurrentRenderingIndex = 0;
+        public object GetState() => CurrentRenderingIndex;
+        public void SetState(object state) => CurrentRenderingIndex = (int) state;
+        
+        #endregion
     }
 }

@@ -34,7 +34,7 @@ internal static class LayoutTestExecutor
             container.ApplyDefaultImageConfiguration(DocumentSettings.Default.ImageRasterDpi, DocumentSettings.Default.ImageCompressionQuality, true);
         
             // render
-            container.VisitChildren(x => (x as IStateResettable)?.ResetState());
+            container.VisitChildren(x => (x as IStateful)?.ResetState());
         
             canvas.BeginDocument();
             

@@ -3,16 +3,8 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class SkipOnce : ContainerElement, IStateResettable
+    internal sealed class SkipOnce : ContainerElement, IStateful
     {
-        private bool FirstPageWasSkipped { get; set; }
-
-        public void ResetState(bool hardReset)
-        {
-            if (hardReset)
-                FirstPageWasSkipped = false;
-        }
-
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!FirstPageWasSkipped)
@@ -28,5 +20,20 @@ namespace QuestPDF.Elements
 
             FirstPageWasSkipped = true;
         }
+        
+        #region IStateful
+        
+        private bool FirstPageWasSkipped { get; set; }
+    
+        public void ResetState(bool hardReset = false)
+        {
+            if (hardReset)
+                FirstPageWasSkipped = false;
+        }
+
+        public object GetState() => FirstPageWasSkipped;
+        public void SetState(object state) => FirstPageWasSkipped = (bool) state;
+        
+        #endregion
     }
 }

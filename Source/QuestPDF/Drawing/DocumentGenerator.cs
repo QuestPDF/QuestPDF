@@ -187,7 +187,7 @@ namespace QuestPDF.Drawing
             where TCanvas : ICanvas, IRenderingCanvas
         {
             content.InjectDependencies(pageContext, canvas);
-            content.VisitChildren(x => (x as IStateResettable)?.ResetState(hardReset: true));
+            content.VisitChildren(x => (x as IStateful)?.ResetState(hardReset: true));
 
             while(true)
             {

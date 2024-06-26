@@ -23,10 +23,8 @@ namespace QuestPDF.Elements
     /// <returns>An image in PNG, JPEG, or WEBP image format returned as byte array.</returns>
     public delegate byte[]? GenerateDynamicImageDelegate(GenerateDynamicImageDelegatePayload payload);
     
-    internal sealed class DynamicImage : Element, IStateResettable
+    internal sealed class DynamicImage : Element, IStateful
     {
-        private bool IsRendered { get; set; }
-        
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
         internal bool UseOriginalImage { get; set; }
@@ -38,11 +36,6 @@ namespace QuestPDF.Elements
         {
             foreach (var cacheItem in Cache)
                 cacheItem.Image?.Dispose();
-        }
-        
-        public void ResetState(bool hardReset = false)
-        {
-            IsRendered = false;
         }
         
         internal override SpacePlan Measure(Size availableSpace)
@@ -117,5 +110,15 @@ namespace QuestPDF.Elements
                 (int)(availableSize.Height * scalingFactor)
             );
         }
+        
+        #region IStateful
+        
+        private bool IsRendered { get; set; }
+    
+        public void ResetState(bool hardReset = false) => IsRendered = false;
+        public object GetState() => IsRendered;
+        public void SetState(object state) => IsRendered = (bool) state;
+    
+        #endregion
     }
 }
