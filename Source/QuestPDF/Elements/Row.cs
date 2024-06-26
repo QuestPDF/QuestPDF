@@ -30,18 +30,13 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
 
-    internal sealed class Row : Element, IStateResettable, IContentDirectionAware
+    internal sealed class Row : Element, IStateful, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         
         internal List<RowItem> Items { get; } = new();
         internal float Spacing { get; set; }
 
-        public void ResetState(bool hardReset)
-        {
-            Items.ForEach(x => x.IsRendered = false);
-        }
-        
         internal override IEnumerable<Element?> GetChildren()
         {
             return Items;
@@ -169,5 +164,34 @@ namespace QuestPDF.Elements
             
             return renderingCommands;
         }
+        
+        #region IStateful
+        
+        // State is stored in the RowItem instances
+    
+        public void ResetState(bool hardReset = false)
+        {
+            Items.ForEach(x => x.IsRendered = false);
+        }
+
+        public object GetState()
+        {
+            var result = new bool[Items.Count];
+            
+            for (var i = 0; i < Items.Count; i++)
+                result[i] = Items[i].IsRendered;
+            
+            return result;
+        }
+
+        public void SetState(object state)
+        {
+            var states = (bool[]) state;
+            
+            for (var i = 0; i < Items.Count; i++)
+                Items[i].IsRendered = states[i];
+        }
+    
+        #endregion
     }
 }

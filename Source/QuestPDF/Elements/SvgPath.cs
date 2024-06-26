@@ -5,18 +5,11 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal class SvgPath : Element, IStateResettable
+internal class SvgPath : Element, IStateful
 {
-    private bool IsRendered { get; set; }
-    
     public string Path { get; set; } = string.Empty;
     public Color FillColor { get; set; } = Colors.Black;
-    
-    public void ResetState(bool hardReset = false)
-    {
-        IsRendered = false;
-    }
-    
+
     internal override SpacePlan Measure(Size availableSpace)
     {
         if (IsRendered)
@@ -36,4 +29,14 @@ internal class SvgPath : Element, IStateResettable
         Canvas.DrawSvgPath(Path, FillColor);
         IsRendered = true;
     }
+    
+    #region IStateful
+    
+    private bool IsRendered { get; set; }
+    
+    public void ResetState(bool hardReset = false) => IsRendered = false;
+    public object GetState() => IsRendered;
+    public void SetState(object state) => IsRendered = (bool) state;
+    
+    #endregion
 }
