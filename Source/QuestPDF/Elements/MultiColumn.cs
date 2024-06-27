@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,14 +32,30 @@ internal class MultiColumnChildDrawingObserver : ContainerElement
     }
 }
 
-internal class MultiColumn : ContainerElement
+// TODO: RTL support
+internal class MultiColumn : Element
 {
+    internal Element Content { get; set; } = Empty.Instance;
+    internal Element Decoration { get; set; } = Empty.Instance;
+    
     public int ColumnCount { get; set; } = 2;
-    public bool BalanceHeight { get; set; } = true;
+    public bool BalanceHeight { get; set; } = false;
     public float Spacing { get; set; }
 
     private ProxyCanvas ChildrenCanvas { get; } = new();
     private TreeNode<MultiColumnChildDrawingObserver>[] State { get; set; }
+
+    internal override void CreateProxy(Func<Element?, Element?> create)
+    {
+        Content = create(Content);
+        Decoration = create(Decoration);
+    }
+    
+    internal override IEnumerable<Element?> GetChildren()
+    {
+        yield return Content;
+        yield return Decoration;
+    }
     
     private void BuildState()
     {
@@ -57,8 +74,8 @@ internal class MultiColumn : ContainerElement
     {
         BuildState();
         
-        if (Child.Canvas != ChildrenCanvas)
-            Child.InjectDependencies(PageContext, ChildrenCanvas);
+        if (Content.Canvas != ChildrenCanvas)
+            Content.InjectDependencies(PageContext, ChildrenCanvas);
         
         ChildrenCanvas.Target = new FreeCanvas();
         
@@ -70,8 +87,8 @@ internal class MultiColumn : ContainerElement
             
             foreach (var _ in Enumerable.Range(0, ColumnCount))
             {
-                yield return Child.Measure(columnAvailableSpace);
-                Child.Draw(columnAvailableSpace);
+                yield return Content.Measure(columnAvailableSpace);
+                Content.Draw(columnAvailableSpace);
             }
             
             ResetObserverState(restoreChildState: true);
@@ -93,7 +110,7 @@ internal class MultiColumn : ContainerElement
             var minHeight = 0f;
             var maxHeight = availableSpace.Height;
             
-            foreach (var _ in Enumerable.Range(0, 4))
+            foreach (var _ in Enumerable.Range(0, 8))
             {
                 var middleHeight = (minHeight + maxHeight) / 2;
                 var middleMeasurement = MeasureColumns(new Size(availableSpace.Width, middleHeight));
@@ -117,21 +134,30 @@ internal class MultiColumn : ContainerElement
     
     internal override void Draw(Size availableSpace)
     {
-        var columnAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
+        var contentAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
+        var decorationAvailableSpace = new Size(Spacing, availableSpace.Height);
+        
         ChildrenCanvas.Target = Canvas;
         
         Canvas.Save();
         
-        foreach (var i in Enumerable.Range(0, ColumnCount))
+        foreach (var i in Enumerable.Range(1, ColumnCount))
         {
-            var columnMeasurement = Child.Measure(columnAvailableSpace);
-            var targetColumnSize = new Size(columnAvailableSpace.Width, columnMeasurement.Height);
+            var contentMeasurement = Content.Measure(contentAvailableSpace);
+            var targetColumnSize = new Size(contentAvailableSpace.Width, contentMeasurement.Height);
             
-            Child.Draw(targetColumnSize);
-            Canvas.Translate(new Position(columnAvailableSpace.Width + Spacing, 0));
+            Content.Draw(targetColumnSize);
+            Canvas.Translate(new Position(contentAvailableSpace.Width, 0));
             
-            if (columnMeasurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
+            if (contentMeasurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                 break;
+            
+            var decorationMeasurement = Decoration.Measure(decorationAvailableSpace);
+            
+            if (i != ColumnCount && decorationMeasurement.Type is not SpacePlanType.Wrap)
+                Decoration.Draw(decorationAvailableSpace);
+            
+            Canvas.Translate(new Position(Spacing, 0));
         }
         
         Canvas.Restore();
