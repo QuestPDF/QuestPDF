@@ -40,6 +40,7 @@ namespace QuestPDF.Elements.Text
         
         // native objects
         private SkParagraph Paragraph { get; set; }
+        internal bool ClearInternalCacheAfterFullRender { get; set; } = true;
 
         public string Text => string.Join(" ", Items.OfType<TextBlockSpan>().Select(x => x.Text));
 
@@ -133,8 +134,10 @@ namespace QuestPDF.Elements.Text
             CurrentTopOffset += takenHeight;
 
             if (CurrentLineIndex == LineMetrics.Length)
-            {
                 IsRendered = true;
+            
+            if (IsRendered && ClearInternalCacheAfterFullRender)
+            {
                 Paragraph?.Dispose();
                 Paragraph = null;
             }
