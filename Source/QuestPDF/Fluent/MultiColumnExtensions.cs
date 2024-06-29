@@ -34,13 +34,13 @@ public class MultiColumnDescriptor
         return container;
     }
     
-    public IContainer Decoration()
+    public IContainer Spacer()
     {
-        if (MultiColumn.Decoration is not Empty)
-            throw new DocumentComposeException("The 'MultiColumn.Decoration' layer has already been defined. Please call this method only once.");
+        if (MultiColumn.Spacer is not Empty)
+            throw new DocumentComposeException("The 'MultiColumn.Spacer' layer has already been defined. Please call this method only once.");
         
         var container = new RepeatContent();
-        MultiColumn.Decoration = container;
+        MultiColumn.Spacer = container;
         return container;
     }
 }

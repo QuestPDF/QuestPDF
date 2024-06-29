@@ -36,7 +36,7 @@ internal class MultiColumn : Element, IContentDirectionAware
 {
     // items
     internal Element Content { get; set; } = Empty.Instance;
-    internal Element Decoration { get; set; } = Empty.Instance;
+    internal Element Spacer { get; set; } = Empty.Instance;
     
     // configuration
     public int ColumnCount { get; set; } = 2;
@@ -52,13 +52,13 @@ internal class MultiColumn : Element, IContentDirectionAware
     internal override void CreateProxy(Func<Element?, Element?> create)
     {
         Content = create(Content);
-        Decoration = create(Decoration);
+        Spacer = create(Spacer);
     }
     
     internal override IEnumerable<Element?> GetChildren()
     {
         yield return Content;
-        yield return Decoration;
+        yield return Spacer;
     }
     
     private void BuildState()
@@ -141,7 +141,7 @@ internal class MultiColumn : Element, IContentDirectionAware
     internal override void Draw(Size availableSpace)
     {
         var contentAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
-        var decorationAvailableSpace = new Size(Spacing, availableSpace.Height);
+        var spacerAvailableSpace = new Size(Spacing, availableSpace.Height);
 
         var horizontalOffset = 0f;
         ChildrenCanvas.Target = Canvas;
@@ -162,16 +162,16 @@ internal class MultiColumn : Element, IContentDirectionAware
             if (contentMeasurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                 break;
             
-            var decorationMeasurement = Decoration.Measure(decorationAvailableSpace);
+            var spacerMeasurement = Spacer.Measure(spacerAvailableSpace);
 
-            if (i == ColumnCount || decorationMeasurement.Type is SpacePlanType.Wrap) 
+            if (i == ColumnCount || spacerMeasurement.Type is SpacePlanType.Wrap) 
                 continue;
             
-            var decorationOffset = GetTargetOffset(Spacing);
+            var spacerOffset = GetTargetOffset(Spacing);
             
-            Canvas.Translate(decorationOffset);
-            Decoration.Draw(decorationAvailableSpace);
-            Canvas.Translate(decorationOffset.Reverse());
+            Canvas.Translate(spacerOffset);
+            Spacer.Draw(spacerAvailableSpace);
+            Canvas.Translate(spacerOffset.Reverse());
                 
             horizontalOffset += Spacing;
         }

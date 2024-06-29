@@ -65,7 +65,7 @@ public class MultiColumnExamples
                         multiColumn.Spacing(25);
                         multiColumn.BalanceHeight();
                         
-                        multiColumn.Decoration().AlignCenter().LineVertical(2).LineColor(Colors.Grey.Medium);
+                        multiColumn.Spacer().AlignCenter().LineVertical(2).LineColor(Colors.Grey.Medium);
                         
                         multiColumn
                             .Content()
