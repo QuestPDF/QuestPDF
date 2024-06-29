@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Proxy;
+using QuestPDF.Elements.Text;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -77,6 +78,7 @@ internal class MultiColumn : Element, IContentDirectionAware
     internal override SpacePlan Measure(Size availableSpace)
     {
         BuildState();
+        OptimizeTextCacheBehavior();
         
         if (Content.Canvas != ChildrenCanvas)
             Content.InjectDependencies(PageContext, ChildrenCanvas);
@@ -207,4 +209,31 @@ internal class MultiColumn : Element, IContentDirectionAware
                 Traverse(child);
         }
     }
+    
+    #region Text Optimization
+
+    private bool IsTextOptimizationExecuted { get; set; } = false;
+    
+    /// <summary>
+    /// The TextBlock element uses SkParagraph cache to enhance rendering speed.
+    /// This cache uses a significant amount of memory and is cleared after FullRender.
+    /// However, the MultiColumn element uses a sophisticated measuring algorithm,
+    /// and may force the Text element to measure/render multiple times per page.
+    /// To avoid performance issues, the TextBlock element should keep its cache.
+    /// </summary>
+    private void OptimizeTextCacheBehavior()
+    {
+        if (IsTextOptimizationExecuted)
+            return;
+        
+        IsTextOptimizationExecuted = true;
+        
+        Content.VisitChildren(x =>
+        {
+            if (x is TextBlock text)
+                text.ClearInternalCacheAfterFullRender = false;
+        });
+    }
+    
+    #endregion
 }
