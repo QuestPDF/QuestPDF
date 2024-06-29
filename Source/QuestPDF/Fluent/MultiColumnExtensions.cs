@@ -53,8 +53,10 @@ public static class MultiColumnExtensions
     public static void MultiColumn(this IContainer element, Action<MultiColumnDescriptor> handler)
     {
         var descriptor = new MultiColumnDescriptor();
-        
-        element.Element(descriptor.MultiColumn);
         handler(descriptor);
+
+        element
+            .Element(x => descriptor.MultiColumn.BalanceHeight ? x.ShrinkVertical() : x)
+            .Element(descriptor.MultiColumn);
     }
 }
