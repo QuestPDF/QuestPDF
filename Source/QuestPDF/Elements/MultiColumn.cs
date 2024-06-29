@@ -32,18 +32,20 @@ internal class MultiColumnChildDrawingObserver : ContainerElement
     }
 }
 
-// TODO: RTL support
-internal class MultiColumn : Element
+internal class MultiColumn : Element, IContentDirectionAware
 {
+    // items
     internal Element Content { get; set; } = Empty.Instance;
     internal Element Decoration { get; set; } = Empty.Instance;
     
+    // configuration
     public int ColumnCount { get; set; } = 2;
     public bool BalanceHeight { get; set; } = false;
     public float Spacing { get; set; }
-
     
     public ContentDirection ContentDirection { get; set; }
+
+    // cache
     private ProxyCanvas ChildrenCanvas { get; } = new();
     private TreeNode<MultiColumnChildDrawingObserver>[] State { get; set; }
 
@@ -103,14 +105,16 @@ internal class MultiColumn : Element
             if (defaultMeasurement.First().Type is SpacePlanType.Wrap or SpacePlanType.Empty)
                 return defaultMeasurement.First();
             
+            var maxHeight = defaultMeasurement.Max(x => x.Height);
+            
             if (defaultMeasurement.Last().Type is SpacePlanType.PartialRender)
-                return SpacePlan.PartialRender(availableSpace);
+                return SpacePlan.PartialRender(availableSpace.Width, maxHeight);
             
             if (!BalanceHeight)
-                return SpacePlan.FullRender(availableSpace);
+                return SpacePlan.FullRender(availableSpace.Width, maxHeight);
 
             var minHeight = 0f;
-            var maxHeight = availableSpace.Height;
+            maxHeight = availableSpace.Height;
             
             foreach (var _ in Enumerable.Range(0, 8))
             {
