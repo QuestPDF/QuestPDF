@@ -98,6 +98,7 @@ public class MultiColumnExamples
                     .MultiColumn(multiColumn =>
                     {
                         multiColumn.Spacing(10);
+                        multiColumn.BalanceHeight(false);
                         
                         multiColumn
                             .Content()
@@ -120,7 +121,7 @@ public class MultiColumnExamples
                                     IContainer Style(IContainer container) => container.Border(1).BorderColor(Colors.Grey.Medium).Background(Colors.Grey.Lighten2).Padding(2);
                                 });
                         
-                                foreach (var i in Enumerable.Range(1, 10_000))
+                                foreach (var i in Enumerable.Range(1, 1_000))
                                 {
                                     table.Cell().Element(Style).ShowEntire().Text(i.ToString());
                                     table.Cell().Element(Style).ShowEntire().Text(Placeholders.Label());
@@ -134,7 +135,7 @@ public class MultiColumnExamples
     }
     
     [Test]
-    public void MinimizeHeight()
+    public void BalanceHeight()
     {
         RenderingTest
             .Create()
@@ -146,7 +147,6 @@ public class MultiColumnExamples
                 container
                     .Padding(25)
                     .DefaultTextStyle(x => x.FontSize(8))
-                    .ShrinkVertical()
                     .MultiColumn(multiColumn =>
                     {
                         multiColumn.Columns(4);
@@ -161,7 +161,43 @@ public class MultiColumnExamples
 
                                 foreach (var sectionId in Enumerable.Range(0, 20))
                                 {
-                                    column.Item().EnsureSpace(20).Text(Placeholders.Paragraph());
+                                    column.Item().Text(Placeholders.Paragraph());
+                                }
+                            });
+                    });
+            });
+    }
+    
+    [Test]
+    public void RightToLeft()
+    {
+        RenderingTest
+            .Create()
+            .PageSize(PageSizes.A4)
+            .ProducePdf()
+            .ShowResults()
+            .Render(container =>
+            {
+                container
+                    .Padding(25)
+                    .DefaultTextStyle(x => x.FontSize(8))
+                    .ShrinkVertical()
+                    .ContentFromRightToLeft()
+                    .MultiColumn(multiColumn =>
+                    {
+                        multiColumn.Columns(4);
+                        multiColumn.BalanceHeight(true);
+                        multiColumn.Spacing(10);
+                        
+                        multiColumn
+                            .Content()
+                            .Column(column =>
+                            {
+                                column.Spacing(10);
+
+                                foreach (var i in Enumerable.Range(0, 100))
+                                {
+                                    column.Item().Height(50).Background(Placeholders.BackgroundColor()).Text(i.ToString());
                                 }
                             });
                     });
