@@ -42,6 +42,8 @@ internal class MultiColumn : Element
     public bool BalanceHeight { get; set; } = false;
     public float Spacing { get; set; }
 
+    
+    public ContentDirection ContentDirection { get; set; }
     private ProxyCanvas ChildrenCanvas { get; } = new();
     private TreeNode<MultiColumnChildDrawingObserver>[] State { get; set; }
 
@@ -136,33 +138,48 @@ internal class MultiColumn : Element
     {
         var contentAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
         var decorationAvailableSpace = new Size(Spacing, availableSpace.Height);
-        
+
+        var horizontalOffset = 0f;
         ChildrenCanvas.Target = Canvas;
-        
-        Canvas.Save();
-        
+
         foreach (var i in Enumerable.Range(1, ColumnCount))
         {
             var contentMeasurement = Content.Measure(contentAvailableSpace);
             var targetColumnSize = new Size(contentAvailableSpace.Width, contentMeasurement.Height);
+
+            var contentOffset = GetTargetOffset(targetColumnSize.Width);
             
+            Canvas.Translate(contentOffset);
             Content.Draw(targetColumnSize);
-            Canvas.Translate(new Position(contentAvailableSpace.Width, 0));
+            Canvas.Translate(contentOffset.Reverse());
+            
+            horizontalOffset += contentAvailableSpace.Width;
             
             if (contentMeasurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                 break;
             
             var decorationMeasurement = Decoration.Measure(decorationAvailableSpace);
+
+            if (i == ColumnCount || decorationMeasurement.Type is SpacePlanType.Wrap) 
+                continue;
             
-            if (i != ColumnCount && decorationMeasurement.Type is not SpacePlanType.Wrap)
-                Decoration.Draw(decorationAvailableSpace);
+            var decorationOffset = GetTargetOffset(Spacing);
             
-            Canvas.Translate(new Position(Spacing, 0));
+            Canvas.Translate(decorationOffset);
+            Decoration.Draw(decorationAvailableSpace);
+            Canvas.Translate(decorationOffset.Reverse());
+                
+            horizontalOffset += Spacing;
         }
         
-        Canvas.Restore();
-        
         ResetObserverState(restoreChildState: false);
+
+        Position GetTargetOffset(float contentWidth)
+        {
+            return ContentDirection == ContentDirection.LeftToRight
+                ? new Position(horizontalOffset, 0)
+                : new Position(availableSpace.Width - horizontalOffset - contentWidth, 0);
+        }
     }
     
     void ResetObserverState(bool restoreChildState)
