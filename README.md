@@ -101,37 +101,20 @@ The library is available for free to the vast majority of users. However, please
 
 We are incredibly grateful to the YouTube Community for their positive reviews and recommendations of the QuestPDF library. Your support and feedback are invaluable and motivate us to keep improving and expanding this project. Thank you for helping us grow and reach more developers!
 
-<table>
-  <tr>
-    <td>
-      <h4>The Easiest Way to Create PDFs in .NET</h4>
-      Created by: Nick Chapsas <br><br>
-      <a href="https://www.youtube.com/watch?v=_M0IgtGWnvE">
-        <img src="https://img.youtube.com/vi/_M0IgtGWnvE/0.jpg" alt="Youtube Video Thumbnail: Nick Chapsas: The Easiest Way to Create PDFs in .NET" />
-      </a>
-    </td>
-    <td>
-      <h4>QuestPDF - The BEST PDF Generator for .NET?!</h4>
-      Created by: Claudio Bernasconi <br><br>
-      <a href="https://www.youtube.com/watch?v=T89A_7dz1P8">
-        <img src="https://img.youtube.com/vi/T89A_7dz1P8/0.jpg" alt="Youtube Video Thumbnail: Claudio Bernasconi: QuestPDF - The BEST PDF Generator for .NET?!" />
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <h4>OSS Power-Ups: QuestPDF</h4>
-      Created by: JetBrains <br><br>
-      <a href="https://www.youtube.com/watch?v=-iYvZvpLX0g">
-        <img src="https://img.youtube.com/vi/-iYvZvpLX0g/0.jpg" alt="Youtube Video Thumbnail: JetBrains: OSS Power-Ups: QuestPDF" />
-      </a>
-    </td>
-    <td>
-      <h4>Generating PDFs with C# - Very Easy (two examples)</h4>
-      Created by: Programming with Felipe Gavilan <br><br>
-      <a href="https://www.youtube.com/watch?v=bhR4Cmg16gs">
-        <img src="https://img.youtube.com/vi/bhR4Cmg16gs/0.jpg" alt="Youtube Video Thumbnail: Programming with Felipe Gavilan: Generating PDFs with C# - Very Easy (two examples)" />
-      </a>
-    </td>
-  </tr>
-</table>
+#### Nick Chapsas: The Easiest Way to Create PDFs in .NET
+
+[![Nick Chapsas The Easiest Way to Create PDFs in .NET](https://img.youtube.com/vi/_M0IgtGWnvE/0.jpg)](https://www.youtube.com/watch?v=_M0IgtGWnvE)
+
+#### Claudio Bernasconi: QuestPDF - The BEST PDF Generator for .NET?!
+
+[![Claudio Bernasconi QuestPDF - The BEST PDF Generator for .NET?!](https://img.youtube.com/vi/T89A_7dz1P8/0.jpg)](https://www.youtube.com/watch?v=T89A_7dz1P8)
+
+#### JetBrains: OSS Power-Ups: QuestPDF
+
+[![JetBrains OSS Power-Ups: QuestPDF](https://img.youtube.com/vi/-iYvZvpLX0g/0.jpg)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
+
+#### Programming with Felipe Gavilan: Generating PDFs with C# - Very Easy (two examples)
+
+[![Felipe Gavilan Generating PDFs with C# - Very Easy (two examples)](https://img.youtube.com/vi/bhR4Cmg16gs/0.jpg)](https://www.youtube.com/watch?v=bhR4Cmg16gs)
+
+
