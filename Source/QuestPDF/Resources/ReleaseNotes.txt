@@ -1,49 +1,17 @@
-Version 2024.6.0
+Version 2024.7.0
 
 New Features:
-- Paragraph Formatting: Added support for paragraph spacing and first-line indentation.
-- SVG Output: Introduced support for SVG output format.
-- Exception Messaging: Improved exception messages for layout issues, providing detailed information and suspected locations.
+- Implemented TextStyle support for OpenType font features such as ligatures, kerning, and more.
+- Introduced support for MultiColumn layouts, offering more flexible content arrangement.
 
+Layout Issue Debugging Experience:
+- Improved the layout debugging feature by providing more detailed information on the reasons behind the SpacePlan.Wrap operation.
+- Enhanced visualization for elements that were not drawn or measured on a faulty page.
+- For the Row element, added detailed layout debugging information, including type and size for each item.
 
-Enhancements:
-- Content Drawing: Enhanced default content drawing behavior, so content does not unexpectedly repeat in certain cases.
-- Library Dependencies: Disabled visibility of native dependencies and the Lato font for cleaner output.
-- Compatibility Messaging: Enhanced compatibility exception messages for supported but potentially outdated environments.
-- Image Loading: Added fallback path for image loading to enhance development experience on ASP.NET.
-- Color Conversion: Added implicit conversion from hex numbers to color.
-- Inline Element: Simplified implementation and improved performance.
-- Column Element: Simplified implementation and improved performance.
+Optimizations:
+- Improved paragraph cache utilization for TextBlock elements within repeating content, such as page footers/headers and decorations before/after content.
 
-
-Bug Fixes:
-- Column Element: Resolved instability issues in nested layouts with spacing and zero-sized elements.
-- JPEG Quality: Disabled JPEG image downsampling/downscaling to maintain the highest quality levels.
-- Image Compression: Disabled additional image compression performed by Skia.
-
-
-Version 2024.6.1
-- Layout debugging: significantly improved calculation performance and accuracy of issue detection.
-- Text element: improved the default sizing behavior for the Text element. Now, when the text is empty, it works more consistently by taking up zero width while still reserving vertical space based on the font size.
-- Fixed compatibility with .NET Standard 2.0.
-- Fixed an issue causing invisibility of Table elements containing only Header/Footer elements without content.
-- Improved the Document Composition Fluent API for Page, Table and Decoration elements. An exception is now thrown if any layer is configured more than once, preventing unexpected behavior.
-
-
-Version 2024.6.2
-- Reduced peak memory usage in documents with high number of text elements.
-- Implemented a new caching mechanism to reduce the number of layout-related calculations.
-- Introduced caching for DynamicSvgImage to enhance performance when the image is repeated across multiple pages.
-- Introduced caching for DynamicImage to enhance performance when the image is repeated across multiple pages.
-- Generating debugging information now respects the QuestPDF.Settings.EnableDebugging flag.
-- Enhanced the accuracy and conciseness of layout-issue debugging messages.
-- Fixed an issue where text width calculation was unnecessarily rounded, which caused text overflow.
-- Resolved an issue where the Text element was not visible when it contained only the page number.
-
-
-Version 2024.6.3
-- Improved performance of Text elements containing null, empty, or whitespace content only.
-
-
-Version 2024.6.4
-- Fixed a bug where Text elements, containing only null, empty, or whitespace content, could cause document layout issues.
+Fixes and Enhancements:
+- Updated predefined page sizes to use integer values for better consistency with other software.
+- Fixed an issue where the Dynamic SVG element might scale its content incorrectly when using certain size units.
