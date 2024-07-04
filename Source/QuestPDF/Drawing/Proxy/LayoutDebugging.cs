@@ -208,9 +208,6 @@ internal static class LayoutDebugging
                 return;
             }
             
-            if (proxy.MeasurementSize is null || proxy.SpacePlan is null)
-                return;
-            
             var indent = indentationCache[indentationLevel];
             
             foreach (var content in Format(proxy))
@@ -219,9 +216,9 @@ internal static class LayoutDebugging
             result.AppendLine();
             result.AppendLine();
             
-            if (!proxy.SpacePlan.HasValue)
+            if (proxy.MeasurementSize is null || proxy.SpacePlan is null)
                 return;
-            
+
             indentationLevel++;
             
             foreach (var child in parent.Children)
@@ -260,7 +257,7 @@ internal static class LayoutDebugging
                 if (proxy.Child is LayoutOverflowVisualization)
                     return $"🚨 {elementName} 🚨";
                 
-                var indicator = proxy.SpacePlan.Value.Type switch
+                var indicator = proxy.SpacePlan?.Type switch
                 {
                     SpacePlanType.Wrap => "🔴",
                     SpacePlanType.PartialRender => "🟡",
