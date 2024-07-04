@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
+using static QuestPDF.Skia.SkSvgImageSize.Unit;
 
 namespace QuestPDF.Helpers
 {
@@ -132,5 +133,46 @@ namespace QuestPDF.Helpers
         }
         
         internal static string ApplicationFilesPath => AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
+        
+        internal static (float widthScale, float heightScale) CalculateSpaceScale(this SkSvgImage image, Size availableSpace)
+        {
+            var widthScale = CalculateDimensionScale(availableSpace.Width, image.Size.Width, image.Size.WidthUnit);
+            var heightScale = CalculateDimensionScale(availableSpace.Height, image.Size.Height, image.Size.HeightUnit);
+
+            return (widthScale, heightScale);
+        
+            float CalculateDimensionScale(float availableSize, float imageSize, SkSvgImageSize.Unit unit)
+            {
+                if (unit == Percentage)
+                    return 100f / imageSize;
+
+                if (unit is Centimeters or Millimeters or Inches or Points or Picas)
+                    return availableSize / ConvertToPoints(imageSize, unit);   
+            
+                return availableSize / imageSize;
+            }
+        
+            float ConvertToPoints(float value, SkSvgImageSize.Unit unit)
+            {
+                const float InchToCentimetre = 2.54f;
+                const float InchToPoints = 72;
+            
+                // in CSS dpi is set to 96, but Skia uses more traditional 90
+                const float PointToPixel = 90f / 72;
+        
+                var points =  unit switch
+                {
+                    Centimeters => value / InchToCentimetre * InchToPoints,
+                    Millimeters => value / 10 / InchToCentimetre * InchToPoints,
+                    Inches => value * InchToPoints,
+                    Points => value,
+                    Picas => value * 12,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+        
+                // different naming schema: SVG pixel = PDF point
+                return points * PointToPixel;
+            }
+        }
     }
 }

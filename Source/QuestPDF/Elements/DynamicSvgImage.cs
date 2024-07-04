@@ -40,9 +40,16 @@ internal class DynamicSvgImage : Element, IStateful
             targetImage = GetImage(availableSpace);
             Cache.Add((availableSpace, targetImage));
         }
-        
+
         if (targetImage != null)
+        {
+            var (widthScale, heightScale) = targetImage.CalculateSpaceScale(availableSpace);
+            
+            Canvas.Save();
+            Canvas.Scale(widthScale,  heightScale);
             Canvas.DrawSvg(targetImage, availableSpace);
+            Canvas.Restore();
+        }
             
         IsRendered = true;
     }
