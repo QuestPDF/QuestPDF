@@ -30,7 +30,7 @@ namespace QuestPDF.Helpers
     }
 
     /// <summary>
-    /// Contains a collection of predefined, common and standard page sizes, such as A4 with dimensions of 595.4 inches in width and 842 inches in height.
+    /// Contains a collection of predefined, common and standard page sizes, such as A4 with dimensions of 595 points in width and 842 points in height.
     /// </summary>
     public static class PageSizes
     {
