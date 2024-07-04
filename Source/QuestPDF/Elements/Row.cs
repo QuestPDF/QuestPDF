@@ -37,6 +37,16 @@ namespace QuestPDF.Elements
         internal List<RowItem> Items { get; } = new();
         internal float Spacing { get; set; }
 
+        public string Layout => string.Join(", ", Items.Select(x =>
+        {
+            var result = x.Type.ToString();
+            
+            if (x.Type != RowItemType.Auto)
+                result += $"({x.Size})";
+
+            return result;
+        }));
+
         internal override IEnumerable<Element?> GetChildren()
         {
             return Items;
