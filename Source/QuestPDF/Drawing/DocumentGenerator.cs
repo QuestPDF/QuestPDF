@@ -340,6 +340,16 @@ namespace QuestPDF.Drawing
                 if (content is ContainerElement containerElement)
                     return Traverse(containerElement.Child);
 
+                if (content is MultiColumn multiColumn)
+                {
+                    var multiColumnSupportsCaching = Traverse(multiColumn.Content) && Traverse(multiColumn.Spacer);
+                    
+                    multiColumn.Content.RemoveExistingProxies();
+                    multiColumn.Spacer.RemoveExistingProxies();
+                    
+                    return multiColumnSupportsCaching;
+                }
+
                 var canApplyCachingPerChild = content.GetChildren().Select(Traverse).ToArray();
                 
                 if (canApplyCachingPerChild.All(x => x))
