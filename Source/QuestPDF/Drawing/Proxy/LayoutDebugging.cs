@@ -238,14 +238,17 @@ internal static class LayoutDebugging
             yield return title;
             
             yield return new string('=', title.Length + 1);
-            
-            yield return $"Available Space: {proxy.MeasurementSize}";
-            yield return $"Space Plan: {proxy.SpacePlan}";
 
-            if (proxy.SpacePlan?.Type == SpacePlanType.Wrap)
-                yield return "Wrap Reason: " + (proxy.SpacePlan?.WrapReason ?? "Unknown");
-            
-            yield return new string('-', title.Length + 1);
+            if (proxy is { MeasurementSize: not null, SpacePlan: not null })
+            {
+                yield return $"Available Space: {proxy.MeasurementSize}";
+                yield return $"Space Plan: {proxy.SpacePlan}";
+                
+                if (proxy.SpacePlan?.Type == SpacePlanType.Wrap)
+                    yield return "Wrap Reason: " + (proxy.SpacePlan?.WrapReason ?? "Unknown");
+                
+                yield return new string('-', title.Length + 1);
+            }
             
             foreach (var configuration in GetElementConfiguration(child))
                 yield return $"{configuration}";
