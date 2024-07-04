@@ -10,15 +10,14 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal class MultiColumnChildDrawingObserver : ContainerElement
+internal class MultiColumnChildDrawingObserver : ElementProxy
 {
     public bool HasBeenDrawn => ChildStateBeforeDrawingOperation != null;
     public object? ChildStateBeforeDrawingOperation { get; private set; }
 
     internal override void Draw(Size availableSpace)
     {
-        ChildStateBeforeDrawingOperation ??= (Child as IStateful).GetState();
-        
+        ChildStateBeforeDrawingOperation ??= (GetFirstElementChild() as IStateful).GetState();
         Child.Draw(availableSpace);
     }
     
@@ -29,7 +28,17 @@ internal class MultiColumnChildDrawingObserver : ContainerElement
 
     internal void RestoreState()
     {
-        (Child as IStateful)?.SetState(ChildStateBeforeDrawingOperation);
+        (GetFirstElementChild() as IStateful)?.SetState(ChildStateBeforeDrawingOperation);
+    }
+
+    private Element GetFirstElementChild()
+    {
+        var child = Child;
+        
+        while (child is ElementProxy proxy)
+            child = proxy.Child;
+
+        return child;
     }
 }
 
