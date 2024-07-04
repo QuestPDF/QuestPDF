@@ -102,7 +102,7 @@ internal class MultiColumn : Element, IContentDirectionAware
         
         SpacePlan FindPerfectSpace()
         {
-            var defaultMeasurement = MeasureColumns(availableSpace);
+            var defaultMeasurement = MeasureColumns(availableSpace).ToArray();
 
             if (defaultMeasurement.First().Type is SpacePlanType.Wrap or SpacePlanType.Empty)
                 return defaultMeasurement.First();
