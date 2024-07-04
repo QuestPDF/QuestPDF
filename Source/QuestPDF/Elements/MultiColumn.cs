@@ -113,12 +113,12 @@ internal class MultiColumn : Element, IContentDirectionAware
         {
             var defaultMeasurement = MeasureColumns(availableSpace).ToArray();
 
-            if (defaultMeasurement.First().Type is SpacePlanType.Wrap or SpacePlanType.Empty)
+            if (defaultMeasurement.First().Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return defaultMeasurement.First();
             
             var maxHeight = defaultMeasurement.Max(x => x.Height);
             
-            if (defaultMeasurement.Last().Type is SpacePlanType.PartialRender)
+            if (defaultMeasurement.Last().Type is SpacePlanType.PartialRender or SpacePlanType.Wrap)
                 return SpacePlan.PartialRender(availableSpace.Width, maxHeight);
             
             if (!BalanceHeight)
