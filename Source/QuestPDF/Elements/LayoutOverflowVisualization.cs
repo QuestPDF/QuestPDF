@@ -39,6 +39,8 @@ internal class LayoutOverflowVisualization : ContainerElement, IContentDirection
             Child?.Draw(availableSpace);
             return;
         }
+
+        Canvas = Child.Canvas;
         
         if (Canvas is SkiaCanvasBase skiaCanvasBase)
             skiaCanvasBase.MarkCurrentPageAsHavingLayoutIssues();
