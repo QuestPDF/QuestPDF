@@ -76,6 +76,61 @@ namespace QuestPDF.Helpers
         public static PageSize ARCH_E1 => new PageSize(2160.3f, 3024.9f);
         public static PageSize ARCH_E2 => new PageSize(1871.1f, 2735.8f);
         public static PageSize ARCH_E3 => new PageSize(1944.8f, 2809.5f);
+
+        public static bool TryParsePageSize(string size, out PageSize pageSize)
+        {
+            switch (size?.ToLower())
+            {
+                case "a0": pageSize = A0; break;
+                case "a1": pageSize = A1; break;
+                case "a2": pageSize = A2; break;
+                case "a3": pageSize = A3; break;
+                case "a4": pageSize = A4; break;
+                case "a5": pageSize = A5; break;
+                case "a6": pageSize = A6; break;
+                case "a7": pageSize = A7; break;
+                case "a8": pageSize = A8; break;
+                case "a9": pageSize = A9; break;
+                case "a10": pageSize = A10; break;
+                case "b0": pageSize = B0; break;
+                case "b1": pageSize = B1; break;
+                case "b2": pageSize = B2; break;
+                case "b3": pageSize = B3; break;
+                case "b4": pageSize = B4; break;
+                case "b5": pageSize = B5; break;
+                case "b6": pageSize = B6; break;
+                case "b7": pageSize = B7; break;
+                case "b8": pageSize = B8; break;
+                case "b9": pageSize = B9; break;
+                case "b10": pageSize = B10; break;
+                case "env10": pageSize = Env10; break;
+                case "envc4": pageSize = EnvC4; break;
+                case "envdl": pageSize = EnvDL; break;
+                case "executive": pageSize = Executive; break;
+                case "legal": pageSize = Legal; break;
+                case "letter": pageSize = Letter; break;
+                case "arch_a": pageSize = ARCH_A; break;
+                case "arch_b": pageSize = ARCH_B; break;
+                case "arch_c": pageSize = ARCH_C; break;
+                case "arch_d": pageSize = ARCH_D; break;
+                case "arch_e": pageSize = ARCH_E; break;
+                case "arch_e1": pageSize = ARCH_E1; break;
+                case "arch_e2": pageSize = ARCH_E2; break;
+                case "arch_e3": pageSize = ARCH_E3; break;
+                default:
+                    pageSize = null;
+                    return false;
+            }
+            return true;
+        }
+
+        public static PageSize ParsePageSize(string size)
+        {
+            if(!TryParsePageSize(size, out PageSize pageSize))
+                throw new ArgumentException("Invalid page size");
+
+            return pageSize;
+        }
     }
 
     public static class PageSizeExtensions
