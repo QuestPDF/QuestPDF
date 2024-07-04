@@ -56,6 +56,10 @@ namespace QuestPDF.Elements
                 return SpacePlan.Empty();
             
             UpdateItemsWidth(availableSpace.Width);
+            
+            if (Items.Any(x => x.Width < -Size.Epsilon))
+                return SpacePlan.Wrap("One of the items has a negative size, indicating insufficient horizontal space. Usually, constant items require more space than is available, potentially causing other content to overflow.");
+            
             var renderingCommands = PlanLayout(availableSpace);
 
             if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.Wrap))
@@ -99,6 +103,9 @@ namespace QuestPDF.Elements
 
                 var targetSize = new Size(command.Size.Width, availableSpace.Height);
                     
+                if (targetSize.Width < -Size.Epsilon)
+                    continue;
+                
                 Canvas.Translate(offset);
                 command.RowItem.Draw(targetSize);
                 Canvas.Translate(offset.Reverse());
