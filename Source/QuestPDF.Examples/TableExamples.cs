@@ -123,12 +123,12 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .ProduceImages()
-                .PageSize(320, 80)
+                .PageSize(440, 100)
                 .ShowResults()
                 .Render(container =>
                 {
                     container
-                        .Padding(10)
+                        .Padding(20)
                         .Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
@@ -139,7 +139,7 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn(3);
                             });
 
-                            table.Cell().ColumnSpan(4).LabelCell("Total width: 300px");
+                            table.Cell().ColumnSpan(4).LabelCell("Total width: 400px");
                             table.Cell().ValueCell("50px");
                             table.Cell().ValueCell("100px");
                             table.Cell().ValueCell("100px");
