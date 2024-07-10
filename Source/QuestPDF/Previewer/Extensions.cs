@@ -24,23 +24,7 @@ internal static class PreviewerModelExtensions
             {
                 ElementType = layout.Child.GetType().Name.PrettifyName(),
                 
-                Location = layout
-                    .Snapshots
-                    .Select(x => new PageLocation
-                    {
-                        PageNumber = x.PageNumber,
-                        Position = new PagePosition
-                        {
-                            Left = x.Position.X,
-                            Top = x.Position.Y
-                        },
-                        Size = new PageElementPosition
-                        {
-                            Width = x.Size.Width,
-                            Height = x.Size.Height
-                        }
-                    })
-                    .ToList(),
+                PageLocations = layout.Snapshots,
                 
                 IsSingleChildContainer = layout.Child is ContainerElement,
                 Properties = layout

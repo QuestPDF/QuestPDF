@@ -8,30 +8,19 @@ namespace QuestPDF.Previewer
     {
         public string ElementType { get; set; }
         public bool IsSingleChildContainer { get; set; }
-        public List<PageLocation> Location { get; set; } = new();
+        public List<PageLocation> PageLocations { get; set; } = new();
         public List<ElementProperty> Properties { get; set; } = new();
         public List<DocumentHierarchyElement> Children { get; set; } = new();
     }
 
     internal class PageLocation
     {
-        public int PageNumber { get; set; }
-        public PagePosition Position { get; set; }
-        public PageElementPosition Size { get; set; }
+        public int PageNumber { get; init; }
+        public float Left { get; init; }
+        public float Top { get; init; }
+        public float Right { get; init; }
+        public float Bottom { get; init; }
     }
-
-    internal class PagePosition
-    {
-        public float Left { get; set; }
-        public float Top { get; set; }
-    }
-
-    internal class PageElementPosition
-    {
-        public float Width { get; set; }
-        public float Height { get; set; }
-    }
-
     
     internal class ElementProperty
     {

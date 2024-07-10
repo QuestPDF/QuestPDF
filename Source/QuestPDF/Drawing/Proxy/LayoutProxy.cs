@@ -1,18 +1,12 @@
 using System.Collections.Generic;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal class LayoutDrawingSnapshot
-{
-    public int PageNumber { get; set; }
-    public Position Position { get; set; }
-    public Size Size { get; set; }
-}
-
 internal class LayoutProxy : ElementProxy
 {
-    public List<LayoutDrawingSnapshot> Snapshots { get; } = new();
+    public List<PageLocation> Snapshots { get; } = new();
     
     public LayoutProxy(Element child)
     {
@@ -30,11 +24,13 @@ internal class LayoutProxy : ElementProxy
         
         var position = canvas.Canvas.GetCurrentTotalMatrix();
 
-        Snapshots.Add(new LayoutDrawingSnapshot
+        Snapshots.Add(new PageLocation
         {
             PageNumber = PageContext.CurrentPage,
-            Position = new Position(position.TranslateX, position.TranslateY),
-            Size = availableSpace
+            Left = position.TranslateX,
+            Top = position.TranslateY,
+            Right = position.TranslateX + availableSpace.Width,
+            Bottom = position.TranslateY + availableSpace.Height
         });
     }
 }
