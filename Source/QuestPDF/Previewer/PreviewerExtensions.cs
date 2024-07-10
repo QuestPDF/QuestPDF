@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
 {
-    public static class Extensions
+    public static class PreviewerExtensions
     {
         #if NET6_0_OR_GREATER
         
@@ -19,6 +19,9 @@ namespace QuestPDF.Previewer
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="previewer.supported"]/*' />
         public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
+            // TODO: find better way to disable caching?
+            Settings.EnableCaching = false;
+            
             var previewerService = new PreviewerService(port);
             
             using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);

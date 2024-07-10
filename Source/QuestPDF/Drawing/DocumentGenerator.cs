@@ -9,6 +9,7 @@ using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Previewer;
 using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
@@ -113,11 +114,17 @@ namespace QuestPDF.Drawing
             var useOriginalImages = canvas is ImageCanvas;
 
             var content = ConfigureContent(document, settings, useOriginalImages);
-
+            
+            if (canvas is PreviewerCanvas)
+                content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
+            
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content);
             pageContext.ProceedToNextRenderingPhase();
             RenderPass(pageContext, canvas, content);
+            
+            if (canvas is PreviewerCanvas previewerCanvas)
+                previewerCanvas.Hierarchy = content.ExtractHierarchy();
         }
         
         private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)

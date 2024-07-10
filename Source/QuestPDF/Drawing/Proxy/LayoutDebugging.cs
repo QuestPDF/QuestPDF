@@ -250,8 +250,8 @@ internal static class LayoutDebugging
                 yield return new string('-', title.Length + 1);
             }
             
-            foreach (var configuration in GetElementConfiguration(child))
-                yield return $"{configuration}";
+            foreach (var configuration in child.GetElementConfiguration())
+                yield return $"{configuration.Property}: {configuration.Value}";
             
             string GetTitle()
             {
@@ -273,35 +273,36 @@ internal static class LayoutDebugging
             }
         }
         
-        static IEnumerable<string> GetElementConfiguration(IElement element)
-        {
-            if (element is DebugPointer)
-                return Enumerable.Empty<string>();
+    }
+    
+    public static IEnumerable<(string Property, string Value)> GetElementConfiguration(this IElement element)
+    {
+        if (element is DebugPointer)
+            return Enumerable.Empty<(string, string)>();
                 
-            return element
-                .GetType()
-                .GetProperties()
-                .Select(x => new
-                {
-                    Property = x.Name.PrettifyName(),
-                    Value = x.GetValue(element)
-                })
-                .Where(x => !(x.Value is IElement))
-                .Where(x => x.Value is string || !(x.Value is IEnumerable))
-                .Where(x => !(x.Value is TextStyle))
-                .Select(x => $"{x.Property}: {FormatValue(x.Value)}");
-
-            string FormatValue(object value)
+        return element
+            .GetType()
+            .GetProperties()
+            .Select(x => new
             {
-                const int maxLength = 100;
+                Property = x.Name.PrettifyName(),
+                Value = x.GetValue(element)
+            })
+            .Where(x => !(x.Value is IElement))
+            .Where(x => x.Value is string || !(x.Value is IEnumerable))
+            .Where(x => !(x.Value is TextStyle))
+            .Select(x => (x.Property, FormatValue(x.Value)));
+
+        string FormatValue(object value)
+        {
+            const int maxLength = 100;
                     
-                var text = value?.ToString() ?? "-";
+            var text = value?.ToString() ?? "-";
 
-                if (text.Length < maxLength)
-                    return text;
+            if (text.Length < maxLength)
+                return text;
 
-                return text.Substring(0, maxLength) + "...";
-            }
+            return text.Substring(0, maxLength) + "...";
         }
     }
 

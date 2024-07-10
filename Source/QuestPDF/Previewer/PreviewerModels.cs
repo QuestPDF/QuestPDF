@@ -9,6 +9,7 @@ class DocumentStructure
 {
     public bool DocumentContentHasLayoutOverflowIssues { get; set; }
     public ICollection<PageSize> Pages { get; set; }
+    public DocumentHierarchyElement Hierarchy { get; set; }
     
     public class PageSize
     {

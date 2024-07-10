@@ -6,6 +6,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
@@ -152,6 +154,7 @@ namespace QuestPDF.Previewer
             
             var documentStructure = new DocumentStructure
             {
+                Hierarchy = previewerDocumentSnapshot.Hierarchy,
                 DocumentContentHasLayoutOverflowIssues = previewerDocumentSnapshot.DocumentContentHasLayoutOverflowIssues,
                 
                 Pages = previewerDocumentSnapshot
@@ -163,8 +166,16 @@ namespace QuestPDF.Previewer
                     })
                     .ToArray()
             };
-            
-            await HttpClient.PostAsync("/preview/update", JsonContent.Create(documentStructure));
+
+            var serializerOptions = new JsonSerializerOptions()
+            {
+                MaxDepth = 256,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                Converters = { new JsonStringEnumConverter() }
+            };
+
+            var json = JsonContent.Create(documentStructure, options: serializerOptions);
+            await HttpClient.PostAsync("/preview/update", json);
         }
         
         public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
@@ -186,7 +197,7 @@ namespace QuestPDF.Previewer
                 }
             });
         }
-        
+
         private async Task RenderRequestedPageSnapshots()
         {
             // get requests
@@ -202,8 +213,6 @@ namespace QuestPDF.Previewer
                 return;
       
             // render snapshots
-            using var multipartContent = new MultipartFormDataContent();
-
             var renderingTasks = requestedSnapshots
                 .Select(async index =>
                 {
@@ -212,19 +221,20 @@ namespace QuestPDF.Previewer
                         .ElementAt(index.PageIndex)
                         .RenderImage(index.ZoomLevel);
 
-                    return (index, image);
+                    return new
+                    {
+                        PageIndex = index.PageIndex,
+                        ZoomLevel = index.ZoomLevel,
+                        ImageData = Convert.ToBase64String(image)
+                    };
                 })
                 .ToList();
 
-            var renderedSnapshots = await Task.WhenAll(renderingTasks);
+            if (!renderingTasks.Any())
+                return;
             
-            // prepare response and send
-            foreach (var (index, image) in renderedSnapshots)
-                multipartContent.Add(new ByteArrayContent(image), index.ToString(), index.ToString());
-
-            multipartContent.Add(JsonContent.Create(requestedSnapshots), "metadata");
-
-            await HttpClient.PostAsync("/preview/provideRenderedImages", multipartContent);
+            var renderedSnapshots = await Task.WhenAll(renderingTasks);
+            await HttpClient.PostAsJsonAsync("/preview/provideRenderedImages", renderedSnapshots);
         }
     }
 }
