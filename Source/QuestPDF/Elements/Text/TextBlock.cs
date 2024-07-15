@@ -27,6 +27,8 @@ namespace QuestPDF.Elements.Text
         public float ParagraphSpacing { get; set; }
         public float ParagraphFirstLineIndentation { get; set; }
         
+        public TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;
+        
         // cache
         private bool RebuildParagraphForEveryPage { get; set; }
         private bool AreParagraphMetricsValid { get; set; }
@@ -332,6 +334,9 @@ namespace QuestPDF.Elements.Text
                 var currentTextIndex = 0;
                 var currentBlockIndex = 0;
             
+                if (!Items.Any(x => x is TextBlockSpan))
+                    builder.AddText("\u200B", DefaultTextStyle.GetSkTextStyle());
+                
                 foreach (var textBlockItem in Items)
                 {
                     if (textBlockItem is TextBlockSpan textBlockSpan)

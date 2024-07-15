@@ -453,6 +453,8 @@ namespace QuestPDF.Drawing
             
             if (content is TextBlock textBlock)
             {
+                textBlock.DefaultTextStyle = textBlock.DefaultTextStyle.ApplyInheritedStyle(documentDefaultTextStyle).ApplyGlobalStyle();
+                
                 foreach (var textBlockItem in textBlock.Items)
                 {
                     if (textBlockItem is TextBlockSpan textSpan)

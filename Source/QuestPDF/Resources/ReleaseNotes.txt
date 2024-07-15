@@ -15,3 +15,4 @@ Optimizations:
 Fixes and Enhancements:
 - Updated predefined page sizes to use integer values for better consistency with other software.
 - Fixed an issue where the Dynamic SVG element might scale its content incorrectly when using certain size units.
+- Fixed incorrect spacing in TextBlock elements containing only injected layout elements and no text.
