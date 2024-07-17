@@ -84,8 +84,7 @@ jobs:
 
           TEST_EXECUTION_PATH='QuestPDF.ReportSample/bin/Release/net8.0/${{ matrix.runtime.name }}'
           mkdir -p testOutput/${{ matrix.runtime.name }} 
-          ls -lR $TEST_EXECUTION_PATH
-          cp -r $TEST_EXECUTION_PATH/Output/* testOutput/${{ matrix.runtime.name }} 
+          cp -r $TEST_EXECUTION_PATH/report.pdf testOutput/${{ matrix.runtime.name }} 
 
 
       - name: Upload test results
