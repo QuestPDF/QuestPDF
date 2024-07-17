@@ -34,6 +34,7 @@ namespace QuestPDF.Examples
     public class LoremPicsumExample
     {
         [Test]
+        [Ignore("Unstable test in the CI/CD environment, makes HTTP calls.")]
         public void LoremPicsum()
         {
             RenderingTest
