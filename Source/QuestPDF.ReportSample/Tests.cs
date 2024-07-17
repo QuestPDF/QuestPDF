@@ -25,16 +25,24 @@ namespace QuestPDF.ReportSample
             //ImagePlaceholder.Solid = true;
         }
         
-        [Test] 
+        [Test]
+        [Ignore("This test is for manual testing only.")]
         public void GeneratePdfAndShow()
         {
             Report.GeneratePdfAndShow();
         }
         
         [Test] 
+        [Ignore("This test is for manual testing only.")]
         public void GenerateXpsAndShow()
         {
             Report.GenerateXpsAndShow();
+        }
+        
+        [Test]
+        public void GeneratePdfForManualVerificationTesting()
+        {
+            Report.GeneratePdf("report.pdf");
         }
     }
 }
