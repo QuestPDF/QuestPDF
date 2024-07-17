@@ -91,7 +91,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: questpdf-test-results
-          path: testOutput
+          path: |
+            **/*.pdf
 
         
       - name: Upload nuget artifacts
