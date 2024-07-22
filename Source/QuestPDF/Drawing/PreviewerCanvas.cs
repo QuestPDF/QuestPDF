@@ -33,7 +33,7 @@ namespace QuestPDF.Drawing
     {
         public ICollection<PreviewerPageSnapshot> Pictures { get; set; }
         public bool DocumentContentHasLayoutOverflowIssues { get; set; }
-        public DocumentHierarchyElement Hierarchy { get; set; }
+        public PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
     }
     
     internal class PreviewerCanvas : SkiaCanvasBase
@@ -43,7 +43,7 @@ namespace QuestPDF.Drawing
 
         private ICollection<PreviewerPageSnapshot> PageSnapshots { get; } = new List<PreviewerPageSnapshot>();
         
-        internal DocumentHierarchyElement Hierarchy { get; set; }
+        internal PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
         
         public override void BeginDocument()
         {

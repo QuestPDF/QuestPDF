@@ -6,7 +6,7 @@ namespace QuestPDF.Drawing.Proxy;
 
 internal class LayoutProxy : ElementProxy
 {
-    public List<PageLocation> Snapshots { get; } = new();
+    public List<PreviewerCommands.UpdateDocumentStructure.PageLocation> Snapshots { get; } = new();
     
     public LayoutProxy(Element child)
     {
@@ -24,7 +24,7 @@ internal class LayoutProxy : ElementProxy
         
         var position = canvas.Canvas.GetCurrentTotalMatrix();
 
-        Snapshots.Add(new PageLocation
+        Snapshots.Add(new PreviewerCommands.UpdateDocumentStructure.PageLocation
         {
             PageNumber = PageContext.CurrentPage,
             Left = position.TranslateX,

@@ -159,14 +159,14 @@ namespace QuestPDF.Previewer
             // set new state
             CurrentDocumentSnapshot = previewerDocumentSnapshot;
             
-            var documentStructure = new DocumentStructure
+            var documentStructure = new PreviewerCommands.UpdateDocumentStructure
             {
                 Hierarchy = previewerDocumentSnapshot.Hierarchy,
                 DocumentContentHasLayoutOverflowIssues = previewerDocumentSnapshot.DocumentContentHasLayoutOverflowIssues,
                 
                 Pages = previewerDocumentSnapshot
                     .Pictures
-                    .Select(x => new DocumentStructure.PageSize()
+                    .Select(x => new PreviewerCommands.UpdateDocumentStructure.PageSize
                     {
                         Width = x.Size.Width,
                         Height = x.Size.Height
@@ -221,7 +221,7 @@ namespace QuestPDF.Previewer
                         .ElementAt(index.PageIndex)
                         .RenderImage(index.ZoomLevel);
 
-                    return new
+                    return new PreviewerCommands.ProvideRenderedDocumentPage.RenderedPage
                     {
                         PageIndex = index.PageIndex,
                         ZoomLevel = index.ZoomLevel,
@@ -232,9 +232,10 @@ namespace QuestPDF.Previewer
 
             if (!renderingTasks.Any())
                 return;
-            
-            var renderedSnapshots = await Task.WhenAll(renderingTasks);
-            await HttpClient.PostAsJsonAsync("/documentPreview/provideRenderedImages", renderedSnapshots);
+
+            var renderedPages = await Task.WhenAll(renderingTasks);
+            var command = new PreviewerCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
+            await HttpClient.PostAsJsonAsync("/documentPreview/provideRenderedImages", command);
         }
         
         internal async Task InformAboutGenericException(Exception exception)
