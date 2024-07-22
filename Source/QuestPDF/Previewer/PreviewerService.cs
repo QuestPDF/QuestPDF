@@ -26,6 +26,13 @@ namespace QuestPDF.Previewer
         
         private static PreviewerDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
         
+        JsonSerializerOptions JsonSerializerOptions = new()
+        {
+            MaxDepth = 256,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Converters = { new JsonStringEnumConverter() }
+        };
+        
         public PreviewerService(int port)
         {
             Port = port;
@@ -167,15 +174,8 @@ namespace QuestPDF.Previewer
                     .ToArray()
             };
 
-            var serializerOptions = new JsonSerializerOptions()
-            {
-                MaxDepth = 256,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Converters = { new JsonStringEnumConverter() }
-            };
-
-            var json = JsonContent.Create(documentStructure, options: serializerOptions);
-            await HttpClient.PostAsync("/preview/update", json);
+            var json = JsonContent.Create(documentStructure, options: JsonSerializerOptions);
+            await HttpClient.PostAsync("/documentPreview/update", json);
         }
         
         public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
@@ -201,7 +201,7 @@ namespace QuestPDF.Previewer
         private async Task RenderRequestedPageSnapshots()
         {
             // get requests
-            var getRequestedSnapshots = await HttpClient.GetAsync("/preview/getRenderingRequests");
+            var getRequestedSnapshots = await HttpClient.GetAsync("/documentPreview/getRenderingRequests");
             getRequestedSnapshots.EnsureSuccessStatusCode();
             
             var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
@@ -234,7 +234,30 @@ namespace QuestPDF.Previewer
                 return;
             
             var renderedSnapshots = await Task.WhenAll(renderingTasks);
-            await HttpClient.PostAsJsonAsync("/preview/provideRenderedImages", renderedSnapshots);
+            await HttpClient.PostAsJsonAsync("/documentPreview/provideRenderedImages", renderedSnapshots);
+        }
+        
+        internal async Task InformAboutGenericException(Exception exception)
+        {
+            var command = new PreviewerCommands.ShowGenericException
+            {
+                Exception = Map(exception)
+            };
+            
+            var json = JsonContent.Create(command, options: JsonSerializerOptions);
+            await HttpClient.PostAsync("/genericException/show", json);
+            return;
+
+            static PreviewerCommands.ShowGenericException.GenericExceptionDetails Map(Exception exception)
+            {
+                return new PreviewerCommands.ShowGenericException.GenericExceptionDetails
+                {
+                    Type = exception.GetType().FullName ?? "Unknown", 
+                    Message = exception.Message, 
+                    StackTrace = exception.StackTrace,
+                    InnerException = exception.InnerException == null ? null : Map(exception.InnerException)
+                };
+            }
         }
     }
 }

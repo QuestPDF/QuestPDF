@@ -27,4 +27,27 @@ namespace QuestPDF.Previewer
         public string Label { get; set; }
         public string Value { get; set; }
     }
+    
+    
+    
+    
+
+
+    static internal class PreviewerCommands
+    {
+        internal class ShowGenericException
+        {
+            public GenericExceptionDetails Exception { get; set; }
+            
+            internal class GenericExceptionDetails
+            {
+                public string Type { get; set; }
+                public string Message { get; set; }
+                public string? StackTrace { get; set; }
+                public GenericExceptionDetails? InnerException { get; set; }
+            }
+        }
+    }
+    
+    
 }

@@ -37,20 +37,14 @@ namespace QuestPDF.Previewer
             
             Task RefreshPreview()
             {
-                var pictures = GetPictures();
-                return previewerService.RefreshPreview(pictures);
-                
-                PreviewerDocumentSnapshot GetPictures()
+                try
                 {
-                    try
-                    {
-                        return DocumentGenerator.GeneratePreviewerContent(document);
-                    }
-                    catch (Exception exception)
-                    {
-                        var exceptionDocument = new ExceptionDocument(exception);
-                        return DocumentGenerator.GeneratePreviewerContent(exceptionDocument);
-                    }
+                    var pictures = DocumentGenerator.GeneratePreviewerContent(document);
+                    return previewerService.RefreshPreview(pictures);
+                }
+                catch (Exception exception)
+                {
+                    return previewerService.InformAboutGenericException(exception);
                 }
             }
 
