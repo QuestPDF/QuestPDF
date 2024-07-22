@@ -16,3 +16,7 @@ Fixes and Enhancements:
 - Updated predefined page sizes to use integer values for better consistency with other software.
 - Fixed an issue where the Dynamic SVG element might scale its content incorrectly when using certain size units.
 - Fixed incorrect spacing in TextBlock elements containing only injected layout elements and no text.
+
+
+Version 2024.7.1
+- Fixed: the ShowOnce element does not work as intended
