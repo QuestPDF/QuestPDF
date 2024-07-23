@@ -25,6 +25,7 @@ namespace QuestPDF.Previewer
         {
             // TODO: find better way to disable caching?
             Settings.EnableCaching = false;
+            Settings.EnableDebugging = true;
             
             var previewerService = new PreviewerService(port);
             

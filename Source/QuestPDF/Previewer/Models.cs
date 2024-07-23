@@ -79,14 +79,20 @@ namespace QuestPDF.Previewer
                 public string ElementType { get; set; }
                 public bool IsSingleChildContainer { get; set; }
                 
-                public Size? AvailableSpace { get; set; }
-                public Size? MeasurementSize { get; set; }
+                public ElementSize? AvailableSpace { get; set; }
+                public ElementSize? MeasurementSize { get; set; }
                 public SpacePlanType? SpacePlanType { get; set; }
                 public string? WrapReason { get; set; }
                 
                 public ICollection<ElementProperty> Properties { get; set; }
                 public ICollection<LayoutErrorElement> Children { get; set; }
             }
+        }
+        
+        internal class ElementSize
+        {
+            public float Width { get; set; }
+            public float Height { get; set; }
         }
         
         internal class ElementProperty

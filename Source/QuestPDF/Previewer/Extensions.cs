@@ -79,8 +79,8 @@ internal static class PreviewerModelExtensions
                 ? node.Children.Select(MapLayoutErrorHierarchy).ToList() 
                 : ArraySegment<PreviewerCommands.ShowLayoutError.LayoutErrorElement>.Empty,
                 
-            AvailableSpace = layoutMetrics.AvailableSpace,
-            MeasurementSize = layoutMetrics.SpacePlan,
+            AvailableSpace = layoutMetrics.AvailableSpace?.Map(),
+            MeasurementSize = ((Size?)layoutMetrics.SpacePlan)?.Map(),
             SpacePlanType = layoutMetrics.SpacePlan?.Type,
             WrapReason = layoutMetrics.SpacePlan?.WrapReason
         };
@@ -92,5 +92,14 @@ internal static class PreviewerModelExtensions
             .GetElementConfiguration()
             .Select(x => new PreviewerCommands.ElementProperty { Label = x.Property, Value = x.Value })
             .ToArray();
+    }
+
+    private static PreviewerCommands.ElementSize Map(this Size element)
+    {
+        return new PreviewerCommands.ElementSize
+        {
+            Width = element.Width,
+            Height = element.Height
+        };
     }
 }

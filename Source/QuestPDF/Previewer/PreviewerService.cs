@@ -30,7 +30,7 @@ namespace QuestPDF.Previewer
         {
             MaxDepth = 256,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = { new JsonStringEnumConverter() }
+            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
         
         public PreviewerService(int port)
