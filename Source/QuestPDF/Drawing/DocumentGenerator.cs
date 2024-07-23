@@ -258,25 +258,39 @@ namespace QuestPDF.Drawing
                 
                 if (Settings.EnableDebugging)
                 {
-                    var (stack, inside) = GenerateLayoutExceptionDebuggingInfo();
+                    var (ancestors, layout) = GenerateLayoutExceptionDebuggingInfo();
 
+                    var ancestorsText = ancestors.FormatAncestors();
+                    var layoutText = layout.FormatLayoutSubtree();
+
+                    var previewerCommand = new PreviewerCommands.ShowLayoutError
+                    {
+                        Ancestors = ancestors.MapLayoutErrorAncestors(),
+                        Hierarchy = layout.MapLayoutErrorHierarchy()
+                    };
+                    
                     message +=
-                        $"The layout issue is likely present in the following part of the document: {newParagraph}{stack}{newParagraph}" +
-                        $"To learn more, please analyse the document measurement of the problematic location: {newParagraph}{inside}" +
+                        $"The layout issue is likely present in the following part of the document: {newParagraph}{ancestorsText}{newParagraph}" +
+                        $"To learn more, please analyse the document measurement of the problematic location: {newParagraph}{layoutText}" +
                         $"{LayoutDebugging.LayoutVisualizationLegend}{newParagraph}" +
                         $"This detailed information is generated because you run the application with a debugger attached or with the {debuggingSettingsName} flag set to true. ";
+                    
+                    throw new DocumentLayoutException(message)
+                    {
+                        PreviewCommand = previewerCommand
+                    };
                 }
                 else
                 {
                     message +=
                         $"To further investigate the location of the root cause, please run the application with a debugger attached or set the {debuggingSettingsName} flag to true. " +
                         $"The library will generate additional debugging information such as probable code problem location and detailed layout measurement overview.";
+                    
+                    throw new DocumentLayoutException(message);
                 }
-                
-                throw new DocumentLayoutException(message);
             }
             
-            (string stack, string inside) GenerateLayoutExceptionDebuggingInfo()
+            (ICollection<Element> ancestors, TreeNode<OverflowDebuggingProxy> layout) GenerateLayoutExceptionDebuggingInfo()
             {
                 content.RemoveExistingProxies();
                 content.ApplyLayoutOverflowDetection();
@@ -288,20 +302,20 @@ namespace QuestPDF.Drawing
 
                 var rootCause = overflowState.FindLayoutOverflowVisualizationNodes().First();
                 
-                var stack = rootCause
+                var ancestors = rootCause
                     .ExtractAncestors()
-                    .Select(x => x.Value)
+                    .Select(x => x.Value.Child)
+                    .Where(x => x is DebugPointer or SourceCodePointer)
                     .Reverse()
-                    .FormatAncestors();
+                    .ToArray();
 
                 var inside = rootCause
                     .ExtractAncestors()
                     .First(x => x.Value.Child is SourceCodePointer or DebugPointer)
                     .Children
-                    .First()
-                    .FormatLayoutSubtree();
+                    .First();
 
-                return (stack, inside);
+                return (ancestors, inside);
             }
         }
 

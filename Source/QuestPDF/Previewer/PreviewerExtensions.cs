@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
@@ -44,6 +45,10 @@ namespace QuestPDF.Previewer
                 {
                     var pictures = DocumentGenerator.GeneratePreviewerContent(document);
                     return previewerService.RefreshPreview(pictures);
+                }
+                catch (DocumentLayoutException documentLayoutException)
+                {
+                    return previewerService.InformAboutLayoutError(documentLayoutException.PreviewCommand);
                 }
                 catch (Exception exception)
                 {

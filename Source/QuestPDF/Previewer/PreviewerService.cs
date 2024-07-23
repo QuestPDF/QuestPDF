@@ -186,7 +186,7 @@ namespace QuestPDF.Previewer
                 {
                     try
                     {
-                        await RenderRequestedPageSnapshots();
+                        RenderRequestedPageSnapshots();
                     }
                     catch
                     {
@@ -259,6 +259,12 @@ namespace QuestPDF.Previewer
                     InnerException = exception.InnerException == null ? null : Map(exception.InnerException)
                 };
             }
+        }
+        
+        internal async Task InformAboutLayoutError(PreviewerCommands.ShowLayoutError command)
+        {
+            var json = JsonContent.Create(command, options: JsonSerializerOptions);
+            await HttpClient.PostAsync("/layoutError/show", json);
         }
     }
 }

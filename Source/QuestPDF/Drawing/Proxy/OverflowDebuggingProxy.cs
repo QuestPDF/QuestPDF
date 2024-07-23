@@ -6,7 +6,7 @@ internal class OverflowDebuggingProxy : ElementProxy
 {
     public bool IsMeasuring { get; private set; } = true;
     
-    public Size? MeasurementSize { get; private set; }
+    public Size? AvailableSpace { get; private set; }
     public SpacePlan? SpacePlan { get; private set; }
 
     public OverflowDebuggingProxy(Element child)
@@ -20,7 +20,7 @@ internal class OverflowDebuggingProxy : ElementProxy
 
         if (IsMeasuring)
         {
-            MeasurementSize = availableSpace;
+            AvailableSpace = availableSpace;
             SpacePlan = spacePlan;
         }
         

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Previewer
@@ -35,12 +36,6 @@ namespace QuestPDF.Previewer
                 public float Right { get; init; }
                 public float Bottom { get; init; }
             }
-    
-            internal class ElementProperty
-            {
-                public string Label { get; set; }
-                public string Value { get; set; }
-            }
         }
         
         internal class ProvideRenderedDocumentPage
@@ -70,7 +65,34 @@ namespace QuestPDF.Previewer
 
         internal class ShowLayoutError
         {
+            public ICollection<Ancestor> Ancestors { get; set; }
+            public LayoutErrorElement Hierarchy { get; set; }
+
+            internal class Ancestor
+            {
+                public string ElementType { get; set; }
+                public ICollection<ElementProperty> Properties { get; set; }
+            }
             
+            internal class LayoutErrorElement
+            {
+                public string ElementType { get; set; }
+                public bool IsSingleChildContainer { get; set; }
+                
+                public Size? AvailableSpace { get; set; }
+                public Size? MeasurementSize { get; set; }
+                public SpacePlanType? SpacePlanType { get; set; }
+                public string? WrapReason { get; set; }
+                
+                public ICollection<ElementProperty> Properties { get; set; }
+                public ICollection<LayoutErrorElement> Children { get; set; }
+            }
+        }
+        
+        internal class ElementProperty
+        {
+            public string Label { get; set; }
+            public string Value { get; set; }
         }
     }
 

@@ -57,7 +57,7 @@ internal static class LayoutDebugging
         
         void Traverse(TreeNode<OverflowDebuggingProxy> element)
         {
-            if (element.Value.MeasurementSize is null)
+            if (element.Value.AvailableSpace is null)
                 return;
             
             // element was not part of the current layout measurement,
@@ -119,7 +119,7 @@ internal static class LayoutDebugging
 
             SpacePlanType MeasureElementWithExtendedSpace()
             {
-                return element.Value.TryMeasureWithOverflow(element.Value.MeasurementSize.Value).Type;
+                return element.Value.TryMeasureWithOverflow(element.Value.AvailableSpace.Value).Type;
             }
         }
     }
@@ -156,7 +156,7 @@ internal static class LayoutDebugging
         }
     }
     
-    public static string FormatAncestors(this IEnumerable<OverflowDebuggingProxy> ancestors)
+    public static string FormatAncestors(this IEnumerable<Element> ancestors)
     {
         var result = new StringBuilder();
         
@@ -165,22 +165,22 @@ internal static class LayoutDebugging
         
         return result.ToString();
 
-        void Format(OverflowDebuggingProxy node)
+        void Format(Element node)
         {
-            if (node.Child is DebugPointer debugPointer)
+            if (node is DebugPointer debugPointer)
             {
                 result.AppendLine($"-> {debugPointer.Label}");
             }
-            else if (node.Child is SourceCodePointer sourceCodePointer)
+            else if (node is SourceCodePointer sourceCodePointer)
             {
-                result.AppendLine($"-> In method:   {sourceCodePointer.HandlerName}");
-                result.AppendLine($"   Called from: {sourceCodePointer.ParentName}");
+                result.AppendLine($"-> In method:   {sourceCodePointer.MethodName}");
+                result.AppendLine($"   Called from: {sourceCodePointer.CalledFrom}");
                 result.AppendLine($"   Source path: {sourceCodePointer.SourceFilePath}");
                 result.AppendLine($"   Line number: {sourceCodePointer.SourceLineNumber}");
             }
             else
             {
-                return;
+                
             }
             
             result.AppendLine();
@@ -216,7 +216,7 @@ internal static class LayoutDebugging
             result.AppendLine();
             result.AppendLine();
             
-            if (proxy.MeasurementSize is null || proxy.SpacePlan is null)
+            if (proxy.AvailableSpace is null || proxy.SpacePlan is null)
                 return;
 
             indentationLevel++;
@@ -239,9 +239,9 @@ internal static class LayoutDebugging
             
             yield return new string('=', title.Length + 1);
 
-            if (proxy is { MeasurementSize: not null, SpacePlan: not null })
+            if (proxy is { AvailableSpace: not null, SpacePlan: not null })
             {
-                yield return $"Available Space: {proxy.MeasurementSize}";
+                yield return $"Available Space: {proxy.AvailableSpace}";
                 yield return $"Space Plan: {proxy.SpacePlan}";
                 
                 if (proxy.SpacePlan?.Type == SpacePlanType.Wrap)
@@ -277,9 +277,6 @@ internal static class LayoutDebugging
     
     public static IEnumerable<(string Property, string Value)> GetElementConfiguration(this IElement element)
     {
-        if (element is DebugPointer)
-            return Enumerable.Empty<(string, string)>();
-                
         return element
             .GetType()
             .GetProperties()

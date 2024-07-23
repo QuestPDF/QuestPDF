@@ -59,8 +59,8 @@ namespace QuestPDF.Fluent
                 .Container()
                 .Element(new SourceCodePointer
                 {
-                    HandlerName = handlerName,
-                    ParentName = parentName,
+                    MethodName = handlerName,
+                    CalledFrom = parentName,
                     SourceFilePath = sourceFilePath,
                     SourceLineNumber = sourceLineNumber
                 });
@@ -89,8 +89,8 @@ namespace QuestPDF.Fluent
             var handlerContainer = parent
                 .Element(new SourceCodePointer
                 {
-                    HandlerName = handlerName,
-                    ParentName = parentName,
+                    MethodName = handlerName,
+                    CalledFrom = parentName,
                     SourceFilePath = sourceFilePath,
                     SourceLineNumber = sourceLineNumber
                 });
