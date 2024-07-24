@@ -309,13 +309,13 @@ namespace QuestPDF.Drawing
                     .Reverse()
                     .ToArray();
 
-                var inside = rootCause
+                var layout = rootCause
                     .ExtractAncestors()
                     .First(x => x.Value.Child is SourceCodePointer or DebugPointer)
                     .Children
                     .First();
 
-                return (ancestors, inside);
+                return (ancestors, layout);
             }
         }
 

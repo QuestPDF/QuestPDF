@@ -64,9 +64,12 @@ internal static class PreviewerModelExtensions
         var layoutElement = node.Value.Child;
         var layoutMetrics = node.Value;
 
-        if (layoutMetrics.Child is Container or SnapshotRecorder or ElementProxy or LayoutOverflowVisualization)
+        if (layoutElement is Container)
             return MapLayoutErrorHierarchy(node.Children.Single());
 
+        if (layoutElement is SnapshotRecorder or ElementProxy or LayoutOverflowVisualization)
+            layoutElement = layoutElement.GetChildren().Single();
+                
         var isAssessed = layoutMetrics.SpacePlan is not null;
             
         return new PreviewerCommands.ShowLayoutError.LayoutErrorElement
