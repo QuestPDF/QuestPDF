@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
@@ -101,5 +102,29 @@ internal static class PreviewerModelExtensions
             Width = element.Width,
             Height = element.Height
         };
+    }
+    
+    internal static PreviewerCommands.ShowGenericException.StackFrame[] ParseStackTrace(this string stackTrace)
+    {
+        var lines = stackTrace.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
+        
+        var frames = new List<PreviewerCommands.ShowGenericException.StackFrame>();
+
+        foreach (string line in lines)
+        {
+            var match = Regex.Match(line, @"at\s+([\w\.]+).*?\s+in\s+(.*?):line\s+(\d+)");
+            
+            if (match.Success)
+            {
+                frames.Add(new PreviewerCommands.ShowGenericException.StackFrame
+                {
+                    MethodName = match.Groups[1].Value,
+                    FileName = match.Groups[2].Value,
+                    LineNumber = int.Parse(match.Groups[3].Value)
+                });
+            }
+        }
+
+        return frames.ToArray();
     }
 }

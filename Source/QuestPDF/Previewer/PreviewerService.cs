@@ -255,7 +255,7 @@ namespace QuestPDF.Previewer
                 {
                     Type = exception.GetType().FullName ?? "Unknown", 
                     Message = exception.Message, 
-                    StackTrace = exception.StackTrace,
+                    StackTrace = exception.StackTrace.ParseStackTrace(),
                     InnerException = exception.InnerException == null ? null : Map(exception.InnerException)
                 };
             }

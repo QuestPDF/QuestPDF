@@ -58,8 +58,15 @@ namespace QuestPDF.Previewer
             {
                 public string Type { get; set; }
                 public string Message { get; set; }
-                public string? StackTrace { get; set; }
+                public ICollection<StackFrame> StackTrace { get; set; }
                 public GenericExceptionDetails? InnerException { get; set; }
+            }
+            
+            internal class StackFrame
+            {
+                public string MethodName { get; set; }
+                public string FileName { get; set; }
+                public int LineNumber { get; set; }
             }
         }
 
