@@ -86,7 +86,8 @@ internal static class PreviewerModelExtensions
             AvailableSpace = layoutMetrics.AvailableSpace?.Map(),
             MeasurementSize = ((Size?)layoutMetrics.SpacePlan)?.Map(),
             SpacePlanType = layoutMetrics.SpacePlan?.Type,
-            WrapReason = layoutMetrics.SpacePlan?.WrapReason
+            WrapReason = layoutMetrics.SpacePlan?.WrapReason,
+            IsLayoutErrorRootCause = node.Value.Child is LayoutOverflowVisualization
         };
     }
     

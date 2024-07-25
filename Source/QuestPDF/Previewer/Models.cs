@@ -90,6 +90,7 @@ namespace QuestPDF.Previewer
                 public ElementSize? MeasurementSize { get; set; }
                 public SpacePlanType? SpacePlanType { get; set; }
                 public string? WrapReason { get; set; }
+                public bool IsLayoutErrorRootCause { get; set; }
                 
                 public ICollection<ElementProperty> Properties { get; set; }
                 public ICollection<LayoutErrorElement> Children { get; set; }
