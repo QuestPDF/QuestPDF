@@ -116,13 +116,16 @@ internal static class PreviewerModelExtensions
 
         foreach (string line in lines)
         {
-            var match = Regex.Match(line, @"at\s+([\w\.]+).*?\s+in\s+(.*?):line\s+(\d+)");
+            var match = Regex.Match(line, @"at\s+(.+)\sin\s(.+):line\s(\d+)");
             
             if (match.Success)
             {
+                var locationParts = match.Groups[1].Value.Split('.');
+                
                 frames.Add(new PreviewerCommands.ShowGenericException.StackFrame
                 {
-                    MethodName = match.Groups[1].Value,
+                    Namespace = string.Join(".", locationParts.SkipLast(2)),
+                    MethodName = string.Join(".", locationParts.TakeLast(2)),
                     FileName = match.Groups[2].Value,
                     LineNumber = int.Parse(match.Groups[3].Value)
                 });
