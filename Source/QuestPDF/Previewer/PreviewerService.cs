@@ -52,6 +52,8 @@ namespace QuestPDF.Previewer
                 StartPreviewer();
                 await WaitForConnection();
             }
+
+            StartNotifyPresenceTask();
             
             var previewerVersion = await GetPreviewerVersion();
             CheckVersionCompatibility(previewerVersion);
@@ -67,6 +69,21 @@ namespace QuestPDF.Previewer
             catch
             {
                 return false;
+            }
+        }
+        
+        internal async Task StartNotifyPresenceTask()
+        {
+            while (true)
+            {
+                try
+                {
+                    using var result = await HttpClient.GetAsync("/ping");
+                }
+                catch
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(250));
+                }
             }
         }
         
