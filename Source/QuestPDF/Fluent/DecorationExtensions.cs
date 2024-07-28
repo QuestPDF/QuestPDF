@@ -20,9 +20,9 @@ namespace QuestPDF.Fluent
             if (Decoration.Before is not Empty)
                 throw new DocumentComposeException("The 'Decoration.Before' layer has already been defined. Please call this method only once.");
 
-            var container = new RepeatContent();
+            var container = new Container();
             Decoration.Before = container;
-            return container;
+            return container.DebugPointer(DebugPointerType.LayoutStructure, "Before").Repeat();
         }
         
         /// <summary>
@@ -49,7 +49,7 @@ namespace QuestPDF.Fluent
             
             var container = new Container();
             Decoration.Content = container;
-            return container;
+            return container.DebugPointer(DebugPointerType.LayoutStructure, "Content");
         }
         
         /// <summary>
@@ -74,9 +74,9 @@ namespace QuestPDF.Fluent
             if (Decoration.After is not Empty)
                 throw new DocumentComposeException("The 'Decoration.After' layer has already been defined. Please call this method only once.");
             
-            var container = new RepeatContent();
+            var container = new Container();
             Decoration.After = container;
-            return container;
+            return container.DebugPointer(DebugPointerType.LayoutStructure, "After").Repeat();
         }
         
         /// <summary>
