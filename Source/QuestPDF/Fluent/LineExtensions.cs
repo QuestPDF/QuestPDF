@@ -26,9 +26,9 @@ namespace QuestPDF.Fluent
         /// The line is not just a visual element; it occupies actual space within the document.
         /// </remarks>
         /// <returns>A descriptor to modify line attributes.</returns>
-        public static ILine LineVertical(this IContainer element, float thickess, Unit unit = Unit.Point)
+        public static ILine LineVertical(this IContainer element, float thickness, Unit unit = Unit.Point)
         {
-            return element.Line(LineType.Vertical, thickess.ToPoints(unit));
+            return element.Line(LineType.Vertical, thickness.ToPoints(unit));
         }
         
         /// <summary>
