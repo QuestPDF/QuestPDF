@@ -7,6 +7,14 @@ namespace QuestPDF.Previewer
 {
     static internal class PreviewerCommands
     {
+        internal class Notify
+        {
+            private static readonly string CurrentClientId = Guid.NewGuid().ToString();
+            
+            public string ClientId => CurrentClientId;
+            public LicenseType License => Settings.License ?? LicenseType.Community;
+        }
+        
         internal class UpdateDocumentStructure
         {
             public bool DocumentContentHasLayoutOverflowIssues { get; set; }

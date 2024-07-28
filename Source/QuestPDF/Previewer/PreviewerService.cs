@@ -78,7 +78,7 @@ namespace QuestPDF.Previewer
             {
                 try
                 {
-                    using var result = await HttpClient.GetAsync("/ping");
+                    using var result = await HttpClient.PostAsJsonAsync("/notify", new PreviewerCommands.Notify(), JsonSerializerOptions);
                 }
                 catch
                 {
