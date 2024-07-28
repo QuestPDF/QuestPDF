@@ -284,10 +284,12 @@ namespace QuestPDF.Fluent
         /// <param name="sectionName">An internal text key representing the section. It should be unique and won't appear in the final document.</param>
         public static IContainer Section(this IContainer element, string sectionName)
         {
-            return element.Element(new Section
-            {
-                SectionName = sectionName
-            });
+            return element
+                .DebugPointer(DebugPointerType.Section, sectionName)
+                .Element(new Section
+                {
+                    SectionName = sectionName
+                });
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]

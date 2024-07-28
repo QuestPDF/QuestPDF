@@ -84,10 +84,22 @@ namespace QuestPDF.Previewer
             public ICollection<Ancestor> Ancestors { get; set; }
             public LayoutErrorElement Hierarchy { get; set; }
 
+            internal enum AncestorType
+            {
+                LayoutStructure,
+                Component,
+                Section,
+                Dynamic,
+                MethodInvocation,
+                UserDefined
+            }
+            
             internal class Ancestor
             {
-                public string ElementType { get; set; }
-                public ICollection<ElementProperty> Properties { get; set; }
+                public AncestorType Type { get; set; }
+                public string Title { get; set; }
+                public string? FileName { get; set; }
+                public int? LineNumber { get; set; }
             }
             
             internal class LayoutErrorElement

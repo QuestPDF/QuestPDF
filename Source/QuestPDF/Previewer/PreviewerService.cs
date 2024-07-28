@@ -191,8 +191,7 @@ namespace QuestPDF.Previewer
                     .ToArray()
             };
 
-            var json = JsonContent.Create(documentStructure, options: JsonSerializerOptions);
-            await HttpClient.PostAsync("/documentPreview/update", json);
+            await HttpClient.PostAsJsonAsync("/documentPreview/update", documentStructure, JsonSerializerOptions);
         }
         
         public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
@@ -262,8 +261,7 @@ namespace QuestPDF.Previewer
                 Exception = Map(exception)
             };
             
-            var json = JsonContent.Create(command, options: JsonSerializerOptions);
-            await HttpClient.PostAsync("/genericException/show", json);
+            await HttpClient.PostAsJsonAsync("/genericException/show", command, JsonSerializerOptions);
             return;
 
             static PreviewerCommands.ShowGenericException.GenericExceptionDetails Map(Exception exception)
@@ -280,8 +278,7 @@ namespace QuestPDF.Previewer
         
         internal async Task InformAboutLayoutError(PreviewerCommands.ShowLayoutError command)
         {
-            var json = JsonContent.Create(command, options: JsonSerializerOptions);
-            await HttpClient.PostAsync("/layoutError/show", json);
+            await HttpClient.PostAsJsonAsync("/layoutError/show", command, JsonSerializerOptions);
         }
     }
 }

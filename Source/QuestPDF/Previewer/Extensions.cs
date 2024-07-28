@@ -51,12 +51,46 @@ internal static class PreviewerModelExtensions
     internal static ICollection<PreviewerCommands.ShowLayoutError.Ancestor> MapLayoutErrorAncestors(this ICollection<Element> ancestors)
     {
         return ancestors
-            .Select(x => new PreviewerCommands.ShowLayoutError.Ancestor
-            {
-                ElementType = x.GetType().Name.PrettifyName(),
-                Properties = x.GetElementProperties(),
-            })
+            .Select(Map)
             .ToArray();
+        
+        PreviewerCommands.ShowLayoutError.Ancestor Map(Element element)
+        {
+            if (element is SourceCodePointer sourceCodePointer)
+            {
+                return new PreviewerCommands.ShowLayoutError.Ancestor()
+                {
+                    Type = PreviewerCommands.ShowLayoutError.AncestorType.MethodInvocation,
+                    Title = sourceCodePointer.MethodName,
+                    FileName = sourceCodePointer.SourceFilePath,
+                    LineNumber = sourceCodePointer.SourceLineNumber
+                };
+            }
+            
+            if (element is DebugPointer debugPointer)
+            {
+                return new PreviewerCommands.ShowLayoutError.Ancestor
+                {
+                    Type = MapDebugPointerType(debugPointer.Type),
+                    Title = debugPointer.Label
+                };
+            }
+
+            throw new Exception($"Unknown ancestor type: {element.GetType()}");
+            
+            PreviewerCommands.ShowLayoutError.AncestorType MapDebugPointerType(DebugPointerType type)
+            {
+                return type switch
+                {
+                    DebugPointerType.LayoutStructure => PreviewerCommands.ShowLayoutError.AncestorType.LayoutStructure,
+                    DebugPointerType.Component => PreviewerCommands.ShowLayoutError.AncestorType.Component,
+                    DebugPointerType.Section => PreviewerCommands.ShowLayoutError.AncestorType.Section,
+                    DebugPointerType.Dynamic => PreviewerCommands.ShowLayoutError.AncestorType.Dynamic,
+                    DebugPointerType.UserDefined => PreviewerCommands.ShowLayoutError.AncestorType.UserDefined,
+                    _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+                };
+            }
+        }
     }
         
     internal static PreviewerCommands.ShowLayoutError.LayoutErrorElement MapLayoutErrorHierarchy(this TreeNode<OverflowDebuggingProxy> node)

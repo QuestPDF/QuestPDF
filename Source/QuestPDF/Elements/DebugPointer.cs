@@ -4,6 +4,8 @@
     {
         LayoutStructure,
         Component,
+        Section,
+        Dynamic,
         UserDefined
     }
     
