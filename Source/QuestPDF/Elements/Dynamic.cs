@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
@@ -134,6 +135,14 @@ namespace QuestPDF.Elements
         /// </summary>
         public Size AvailableSize { get; internal set; }
 
+        /// <summary>
+        /// Returns all page locations of the captured element.
+        /// </summary>
+        public ICollection<PageElementLocation> GetElementCapturedLocations(string id)
+        {
+            return PageContext.GetContentPosition(id);
+        }
+        
         /// <summary>
         /// Enables the creation of unattached layout structures and provides their size measurements.
         /// </summary>

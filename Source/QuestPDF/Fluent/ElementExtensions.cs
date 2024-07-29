@@ -408,6 +408,19 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new RepeatContent());
         }
+        
+        /// <summary>
+        /// Captures the size and location of its content.
+        /// The captured data can be then used in the Dynamic component to build and position other elements.
+        /// </summary>
+        public static IContainer CaptureLocation(this IContainer element, string id)
+        {
+            return element.Element(new ElementLocationCapturer
+            {
+                Id = id
+            });
+        }
+
 
         #region Canvas [Obsolete]
 

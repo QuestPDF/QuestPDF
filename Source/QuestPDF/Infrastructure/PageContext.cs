@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace QuestPDF.Infrastructure
 {
@@ -63,6 +64,18 @@ namespace QuestPDF.Infrastructure
         public string GetDocumentLocationName(string locationName)
         {
             return $"{CurrentDocumentId} | {locationName}";
+        }
+        
+        private List<PageElementLocation> PageElementLocations { get; } = new();
+
+        public void CaptureContentPosition(PageElementLocation location)
+        {
+            PageElementLocations.Add(location);
+        }
+
+        public ICollection<PageElementLocation> GetContentPosition(string id)
+        {
+            return PageElementLocations.Where(x => x.Id == id).ToList();
         }
     }
 }
