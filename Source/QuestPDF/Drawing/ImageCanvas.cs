@@ -22,6 +22,7 @@ namespace QuestPDF.Drawing
         
         ~ImageCanvas()
         {
+            Canvas?.Dispose();
             Bitmap?.Dispose();
         }
         
@@ -48,6 +49,8 @@ namespace QuestPDF.Drawing
         public override void EndPage()
         {
             Canvas.Save();
+            Canvas.Dispose();
+            
             using var imageData = EncodeBitmap();
             var imageBytes = imageData.ToBytes();
             Images.Add(imageBytes);
