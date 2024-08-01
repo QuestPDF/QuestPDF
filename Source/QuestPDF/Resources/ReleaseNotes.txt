@@ -21,3 +21,7 @@ Fixes and Enhancements:
 Version 2024.7.1
 - Fixed: the ShowOnce element does not work as intended
 - Updated native assets.
+
+
+Version 2024.7.2
+- Fixed a memory leak issue when generating documents as images using the `GenerateImages` method.
