@@ -11,6 +11,10 @@ namespace QuestPDF.Elements.Table
         // configuration
         public List<TableColumnDefinition> Columns { get; set; } = new();
         public List<TableCell> Cells { get; set; } = new();
+        public List<TableCell> AllCells { get; set; } = new();
+        public Dictionary<int, float> ColumnsWidth { get; set; } = new();
+        public Action<Dictionary<int, float>> AfterUpdateColumnsWidth { get; set; }
+
         public bool ExtendLastCellsToTableBottom { get; set; }
         
         public ContentDirection ContentDirection { get; set; }
@@ -145,6 +149,15 @@ namespace QuestPDF.Elements.Table
         
         private void UpdateColumnsWidth(float availableWidth)
         {
+            if (ColumnsWidth.Any())
+            {
+                foreach (var column in Columns)
+                {
+                    column.Width = ColumnsWidth[Columns.IndexOf(column)];
+                }
+                return;
+            }
+
             var constantWidth = Columns.Sum(x => x.ConstantSize);
             var relativeWidth = Columns.Sum(x => x.RelativeSize);
 
@@ -154,6 +167,64 @@ namespace QuestPDF.Elements.Table
             {
                 column.Width = column.ConstantSize + column.RelativeSize * widthPerRelativeUnit;
             }
+
+            var cells = AllCells.Where(c => c is { ColumnSpan: 1, RowSpan: 1 });
+
+            foreach (var column in Columns.Where(c => c.AllowShrink))
+            {
+                var index = Columns.IndexOf(column);
+                var cellsInColumn = cells.Where(c => c.Column == index + 1);
+                if (cellsInColumn.Any())
+                {
+                    ColumnsWidth.Add(index, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
+                    column.Width = Math.Min(column.Width, ColumnsWidth[index]);
+                }
+            }
+
+            var remainingWidth = availableWidth - Columns.Sum(c => c.Width);
+            while (remainingWidth > 0)
+            {
+                var columnsThatGrow = Columns.Where(c => c.AllowGrow).ToList();
+                var growStep = remainingWidth / columnsThatGrow.Count;
+                var anyColumnHasGrown = false;
+                foreach (var column in columnsThatGrow)
+                {
+                    var index = Columns.IndexOf(column);
+                    var cellsInColumn = cells.Where(c => c.Column == index + 1);
+                    if (!ColumnsWidth.ContainsKey(index))
+                    {
+                        ColumnsWidth.Add(index, cellsInColumn.Max(c => c.Measure(Size.Max).Width));
+                    }
+                    var newWidth = Math.Min(column.Width + growStep, ColumnsWidth[index]);
+                    if (newWidth > column.Width)
+                    {
+                        anyColumnHasGrown = true;
+                    }
+                    column.Width = newWidth;
+                    remainingWidth = availableWidth - Columns.Sum(c => c.Width);
+                    if (remainingWidth <= 0)
+                    {
+                        break;
+                    }
+                }
+                if (!anyColumnHasGrown)
+                {
+                    break;
+                }
+            }
+
+            if (remainingWidth > 0)
+            {
+                Columns.Last().Width += remainingWidth;
+            }
+
+            foreach (var column in Columns)
+            {
+                // Add missing columns, that don't auto size.
+                ColumnsWidth[Columns.IndexOf(column)] = column.Width;
+            }
+
+            AfterUpdateColumnsWidth?.Invoke(ColumnsWidth);
         }
         
         private ICollection<TableCellRenderingCommand> PlanLayout(Size availableSpace)
