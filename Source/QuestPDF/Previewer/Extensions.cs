@@ -82,7 +82,8 @@ internal static class PreviewerModelExtensions
             {
                 return type switch
                 {
-                    DebugPointerType.LayoutStructure => PreviewerCommands.ShowLayoutError.AncestorType.LayoutStructure,
+                    DebugPointerType.DocumentStructure => PreviewerCommands.ShowLayoutError.AncestorType.DocumentStructure,
+                    DebugPointerType.ElementStructure => PreviewerCommands.ShowLayoutError.AncestorType.ElementStructure,
                     DebugPointerType.Component => PreviewerCommands.ShowLayoutError.AncestorType.Component,
                     DebugPointerType.Section => PreviewerCommands.ShowLayoutError.AncestorType.Section,
                     DebugPointerType.Dynamic => PreviewerCommands.ShowLayoutError.AncestorType.Dynamic,
@@ -167,5 +168,47 @@ internal static class PreviewerModelExtensions
         }
 
         return frames.ToArray();
+    }
+    
+    internal static PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement ImproveHierarchyStructure(this PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement root)
+    {
+        var debugPointerName = nameof(DebugPointer).PrettifyName();
+        
+        var pointers = new Dictionary<DocumentStructureTypes, PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement>();
+        FindDebugPointers(root);
+        
+        var document = pointers[DocumentStructureTypes.Document];
+        document.IsSingleChildContainer = false;
+        
+        document.Children = pointers
+            .Where(x => x.Key != DocumentStructureTypes.Document)
+            .Select(x => x.Value)
+            .ToList();
+        
+        return document;
+        
+        PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement? FindDebugPointers(PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement element)
+        {
+            if (element.ElementType == debugPointerName)
+            {
+                var type = element.Properties.Single(x => x.Label == "Type").Value;
+                
+                if (type == DebugPointerType.DocumentStructure.ToString())
+                {
+                    var structureType = element.Properties.Single(x => x.Label == "Label").Value;
+                    pointers[(DocumentStructureTypes)Enum.Parse(typeof(DocumentStructureTypes), structureType)] = element;
+                }
+            }
+
+            foreach (var child in element.Children)
+            {
+                var result = FindDebugPointers(child);
+                
+                if (result != null)
+                    return result;
+            }
+
+            return null;
+        }
     }
 }

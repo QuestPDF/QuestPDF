@@ -178,7 +178,7 @@ namespace QuestPDF.Previewer
             
             var documentStructure = new PreviewerCommands.UpdateDocumentStructure
             {
-                Hierarchy = previewerDocumentSnapshot.Hierarchy,
+                Hierarchy = previewerDocumentSnapshot.Hierarchy.ImproveHierarchyStructure(),
                 DocumentContentHasLayoutOverflowIssues = previewerDocumentSnapshot.DocumentContentHasLayoutOverflowIssues,
                 
                 Pages = previewerDocumentSnapshot

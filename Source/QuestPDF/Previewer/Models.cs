@@ -86,7 +86,8 @@ namespace QuestPDF.Previewer
 
             internal enum AncestorType
             {
-                LayoutStructure,
+                DocumentStructure,
+                ElementStructure,
                 Component,
                 Section,
                 Dynamic,

@@ -22,7 +22,7 @@ namespace QuestPDF.Fluent
 
             var container = new Container();
             Decoration.Before = container;
-            return container.DebugPointer(DebugPointerType.LayoutStructure, "Before").Repeat();
+            return container.DebugPointer(DebugPointerType.ElementStructure, "Before").Repeat();
         }
         
         /// <summary>
@@ -49,7 +49,7 @@ namespace QuestPDF.Fluent
             
             var container = new Container();
             Decoration.Content = container;
-            return container.DebugPointer(DebugPointerType.LayoutStructure, "Content");
+            return container.DebugPointer(DebugPointerType.ElementStructure, "Content");
         }
         
         /// <summary>
@@ -76,7 +76,7 @@ namespace QuestPDF.Fluent
             
             var container = new Container();
             Decoration.After = container;
-            return container.DebugPointer(DebugPointerType.LayoutStructure, "After").Repeat();
+            return container.DebugPointer(DebugPointerType.ElementStructure, "After").Repeat();
         }
         
         /// <summary>
