@@ -16,16 +16,44 @@ namespace QuestPDF.Examples
     {
         public DynamicComponentComposeResult Compose(DynamicContext context)
         {
+            var containerLocation = context
+                .GetElementCapturedLocations("container")
+                .FirstOrDefault(x => x.PageNumber == context.PageNumber);
+
+            if (containerLocation == null)
+            {
+                return new DynamicComponentComposeResult
+                {
+                    Content = context.CreateElement(container => { }),
+                    HasMoreContent = false
+                };
+            }
+            
             var positions = Enumerable
                 .Range(0, 20)
                 .SelectMany(x => context.GetElementCapturedLocations($"capture_{x}"))
                 .ToList();
-            
-            var visibleCount = positions.Count(x => x.PageNumber == context.PageNumber);
 
+            var onCurrentPage = positions.Where(x => x.PageNumber == context.PageNumber).ToList();
+            
+            var content = context.CreateElement(container => container.Layers(layers =>
+            {
+                foreach (var position in onCurrentPage)
+                {
+                    layers.Layer()
+                        .TranslateX(position.X - containerLocation.X)
+                        .TranslateY(position.Y - containerLocation.Y)
+                        .Width(position.Width)
+                        .Height(position.Height)
+                        .Background(Placeholders.BackgroundColor());
+                }
+
+                layers.PrimaryLayer().Text($"{onCurrentPage.Count}");
+            }));
+            
             return new DynamicComponentComposeResult
             {
-                Content = context.CreateElement(container => container.Text(visibleCount.ToString())),
+                Content = content,
                 HasMoreContent = positions.Any(x => x.PageNumber > context.PageNumber + 1)
             };
         }
@@ -50,7 +78,7 @@ namespace QuestPDF.Examples
                         {
                             row.Spacing(25);
                             
-                            row.RelativeItem().Border(1).Column(column =>
+                            row.RelativeItem().Border(1).CaptureLocation("container").Column(column =>
                             {
                                 column.Spacing(25);
                                 

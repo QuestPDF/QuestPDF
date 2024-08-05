@@ -67,6 +67,12 @@ namespace QuestPDF.Drawing
         {
             Canvas.Translate(vector.X, vector.Y);
         }
+        
+        public CanvasMatrix GetCurrentMatrix()
+        {
+            var matrix = Canvas.GetCurrentTotalMatrix();
+            return new CanvasMatrix(matrix.ScaleX, matrix.ScaleY, matrix.TranslateX, matrix.TranslateY, 0, 0); // TODO: capture skew value from native code
+        }
 
         public void DrawFilledRectangle(Position vector, Size size, Color color)
         {

@@ -97,4 +97,9 @@ internal class ProxyCanvas : ICanvas
     {
         Target.Scale(scaleX, scaleY);
     }
+    
+    public CanvasMatrix GetCurrentMatrix()
+    {
+        return Target.GetCurrentMatrix();
+    }
 }

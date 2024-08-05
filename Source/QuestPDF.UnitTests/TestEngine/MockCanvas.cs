@@ -16,6 +16,7 @@ namespace QuestPDF.UnitTests.TestEngine
 
         public void Save() => throw new NotImplementedException();
         public void Restore() => throw new NotImplementedException();
+        public CanvasMatrix GetCurrentMatrix() => throw new NotImplementedException();
         
         public void Translate(Position vector) => TranslateFunc(vector);
         public void Rotate(float angle) => RotateFunc(angle);

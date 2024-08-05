@@ -50,11 +50,8 @@ internal class ElementMock : Element
         HeightOffset += height;
         
         Canvas.DrawFilledRectangle(Position.Zero, size, Colors.Grey.Medium);
-        
-        if (Canvas is not SkiaCanvasBase canvasBase)
-            return;
 
-        var matrix = canvasBase.Canvas.GetCurrentTotalMatrix();
+        var matrix = Canvas.GetCurrentMatrix();
         
         DrawingCommands.Add(new MockDrawingCommand
         {

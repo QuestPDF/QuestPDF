@@ -7,6 +7,7 @@ namespace QuestPDF.Infrastructure
     {
         void Save();
         void Restore();
+        CanvasMatrix GetCurrentMatrix();
         
         void Translate(Position vector);
         

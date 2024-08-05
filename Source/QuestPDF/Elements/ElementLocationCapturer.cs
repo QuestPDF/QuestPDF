@@ -13,12 +13,10 @@ internal class ElementLocationCapturer : ContainerElement, IContentDirectionAwar
     {
         base.Draw(availableSpace);
         
-        var canvas = Canvas as SkiaCanvasBase;
-        
-        if (canvas == null)
+        if (!PageContext.IsInitialRenderingPhase)
             return;
-        
-        var matrix = canvas.Canvas.GetCurrentTotalMatrix();
+
+        var matrix = Canvas.GetCurrentMatrix();
         var size = Child?.Measure(availableSpace) ?? SpacePlan.Empty();
 
         var position = new PageElementLocation

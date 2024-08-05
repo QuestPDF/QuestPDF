@@ -13,6 +13,7 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public void Save() => throw new NotImplementedException();
         public void Restore() => throw new NotImplementedException();
+        public CanvasMatrix GetCurrentMatrix() => throw new NotImplementedException();
         
         public void Translate(Position vector) => Operations.Add(new CanvasTranslateOperation(vector));
         public void Rotate(float angle) => Operations.Add(new CanvasRotateOperation(angle));
