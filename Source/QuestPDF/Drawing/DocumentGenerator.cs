@@ -205,7 +205,7 @@ namespace QuestPDF.Drawing
                 {
                     pageContext.DecrementPageNumber();
                     canvas.EndDocument();
-                    ThrowLayoutException();
+                    ApplyLayoutDebugging();
                 }
 
                 try
@@ -230,7 +230,7 @@ namespace QuestPDF.Drawing
             // re-enable as part of the QuestPDF Companion effort
             void ApplyLayoutDebugging()
             {
-                content.RemoveExistingProxies();
+                content.RemoveExistingProxiesOfType<SnapshotRecorder>();
 
                 content.ApplyLayoutOverflowDetection();
                 content.Measure(Size.Max);
@@ -242,7 +242,8 @@ namespace QuestPDF.Drawing
                 content.ApplyContentDirection();
                 content.InjectDependencies(pageContext, canvas);
 
-                content.RemoveExistingProxies();
+                content.VisitChildren(x => (x as LayoutProxy)?.CaptureLayoutErrorMeasurement());
+                content.RemoveExistingProxiesOfType<OverflowDebuggingProxy>();
             }
             
             void ThrowLayoutException()

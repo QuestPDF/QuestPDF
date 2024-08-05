@@ -29,6 +29,7 @@ internal static class PreviewerModelExtensions
                 ElementType = layout.Child.GetType().Name.PrettifyName(),
                 
                 PageLocations = layout.Snapshots,
+                LayoutErrorMeasurements = layout.LayoutErrorMeasurements,
                 
                 IsSingleChildContainer = layout.Child is ContainerElement,
                 Properties = layout

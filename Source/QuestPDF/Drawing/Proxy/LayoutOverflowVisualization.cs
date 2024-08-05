@@ -1,13 +1,10 @@
-using System;
-using QuestPDF.Drawing;
-using QuestPDF.Drawing.Proxy;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
-namespace QuestPDF.Elements;
+namespace QuestPDF.Drawing.Proxy;
 
-internal class LayoutOverflowVisualization : ContainerElement, IContentDirectionAware
+internal class LayoutOverflowVisualization : ElementProxy, IContentDirectionAware
 {
     private const float BorderThickness = 1.5f;
     private readonly Color LineColor = Colors.Red.Medium;

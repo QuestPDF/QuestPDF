@@ -131,6 +131,14 @@ internal static class LayoutDebugging
             x.CreateProxy(y => y is ElementProxy proxy ? proxy.Child : y);
         });
     }
+    
+    public static void RemoveExistingProxiesOfType<TProxy>(this Element content) where TProxy : ElementProxy
+    {
+        content.VisitChildren(x =>
+        {
+            x.CreateProxy(y => y is TProxy proxy ? proxy.Child : y);
+        });
+    }
 
     public static void StopMeasuring(this TreeNode<OverflowDebuggingProxy> parent)
     {

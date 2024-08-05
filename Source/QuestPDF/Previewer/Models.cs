@@ -32,6 +32,7 @@ namespace QuestPDF.Previewer
                 public string ElementType { get; set; }
                 public bool IsSingleChildContainer { get; set; }
                 public List<PageLocation> PageLocations { get; set; } = new();
+                public List<LayoutErrorMeasurement> LayoutErrorMeasurements { get; set; } = new();
                 public List<ElementProperty> Properties { get; set; } = new();
                 public List<DocumentHierarchyElement> Children { get; set; } = new();
             }
@@ -43,6 +44,16 @@ namespace QuestPDF.Previewer
                 public float Top { get; init; }
                 public float Right { get; init; }
                 public float Bottom { get; init; }
+            }
+
+            internal class LayoutErrorMeasurement
+            {
+                public int PageNumber { get; set; }
+                public ElementSize? AvailableSpace { get; set; }
+                public ElementSize? MeasurementSize { get; set; }
+                public SpacePlanType? SpacePlanType { get; set; }
+                public string? WrapReason { get; set; }
+                public bool IsLayoutErrorRootCause { get; set; }
             }
         }
         
