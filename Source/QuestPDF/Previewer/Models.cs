@@ -90,46 +90,6 @@ namespace QuestPDF.Previewer
             }
         }
 
-        internal class ShowLayoutError
-        {
-            public ICollection<Ancestor> Ancestors { get; set; }
-            public LayoutErrorElement Hierarchy { get; set; }
-
-            internal enum AncestorType
-            {
-                DocumentStructure,
-                ElementStructure,
-                Component,
-                Section,
-                Dynamic,
-                MethodInvocation,
-                UserDefined
-            }
-            
-            internal class Ancestor
-            {
-                public AncestorType Type { get; set; }
-                public string Title { get; set; }
-                public string? FileName { get; set; }
-                public int? LineNumber { get; set; }
-            }
-            
-            internal class LayoutErrorElement
-            {
-                public string ElementType { get; set; }
-                public bool IsSingleChildContainer { get; set; }
-                
-                public ElementSize? AvailableSpace { get; set; }
-                public ElementSize? MeasurementSize { get; set; }
-                public SpacePlanType? SpacePlanType { get; set; }
-                public string? WrapReason { get; set; }
-                public bool IsLayoutErrorRootCause { get; set; }
-                
-                public ICollection<ElementProperty> Properties { get; set; }
-                public ICollection<LayoutErrorElement> Children { get; set; }
-            }
-        }
-        
         internal class ElementSize
         {
             public float Width { get; set; }

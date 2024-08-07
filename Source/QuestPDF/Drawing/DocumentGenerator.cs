@@ -264,22 +264,13 @@ namespace QuestPDF.Drawing
                     var ancestorsText = ancestors.FormatAncestors();
                     var layoutText = layout.FormatLayoutSubtree();
 
-                    var previewerCommand = new PreviewerCommands.ShowLayoutError
-                    {
-                        Ancestors = ancestors.MapLayoutErrorAncestors(),
-                        Hierarchy = layout.MapLayoutErrorHierarchy()
-                    };
-                    
                     message +=
                         $"The layout issue is likely present in the following part of the document: {newParagraph}{ancestorsText}{newParagraph}" +
                         $"To learn more, please analyse the document measurement of the problematic location: {newParagraph}{layoutText}" +
                         $"{LayoutDebugging.LayoutVisualizationLegend}{newParagraph}" +
                         $"This detailed information is generated because you run the application with a debugger attached or with the {debuggingSettingsName} flag set to true. ";
-                    
-                    throw new DocumentLayoutException(message)
-                    {
-                        PreviewCommand = previewerCommand
-                    };
+
+                    throw new DocumentLayoutException(message);
                 }
                 else
                 {

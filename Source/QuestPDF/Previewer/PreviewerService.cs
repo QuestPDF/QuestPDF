@@ -275,11 +275,6 @@ namespace QuestPDF.Previewer
                 };
             }
         }
-        
-        internal async Task InformAboutLayoutError(PreviewerCommands.ShowLayoutError command)
-        {
-            await HttpClient.PostAsJsonAsync("/layoutError/show", command, JsonSerializerOptions);
-        }
     }
 }
 

@@ -47,10 +47,6 @@ namespace QuestPDF.Previewer
                     var pictures = DocumentGenerator.GeneratePreviewerContent(document);
                     return previewerService.RefreshPreview(pictures);
                 }
-                catch (DocumentLayoutException documentLayoutException)
-                {
-                    return previewerService.InformAboutLayoutError(documentLayoutException.PreviewCommand);
-                }
                 catch (Exception exception)
                 {
                     return previewerService.InformAboutGenericException(exception);
