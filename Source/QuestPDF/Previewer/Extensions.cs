@@ -20,20 +20,23 @@ internal static class PreviewerModelExtensions
         PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement Traverse(TreeNode<LayoutProxy> node)
         {
             var layout = node.Value;
+            var child = layout.Child;
             
-            if (layout.Child is Container or SnapshotRecorder or ElementProxy)
+            if (child is Container)
                 return Traverse(node.Children.Single());
+            
+            while (child is SnapshotRecorder or ElementProxy)
+                child = child.GetChildren().Single();
             
             var element = new PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement
             {
-                ElementType = layout.Child.GetType().Name.PrettifyName(),
+                ElementType = child.GetType().Name.PrettifyName(),
                 
                 PageLocations = layout.Snapshots,
                 LayoutErrorMeasurements = layout.LayoutErrorMeasurements,
                 
-                IsSingleChildContainer = layout.Child is ContainerElement,
-                Properties = layout
-                    .Child
+                IsSingleChildContainer = child is ContainerElement,
+                Properties = child
                     .GetElementConfiguration()
                     .Select(x => new PreviewerCommands.ElementProperty
                     {
