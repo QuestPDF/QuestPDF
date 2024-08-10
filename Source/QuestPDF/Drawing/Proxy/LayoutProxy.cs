@@ -1,6 +1,10 @@
 using System.Collections.Generic;
+using QuestPDF.Elements;
+using QuestPDF.Elements.Text;
 using QuestPDF.Infrastructure;
 using QuestPDF.Previewer;
+using Image = QuestPDF.Elements.Image;
+using SvgImage = QuestPDF.Elements.SvgImage;
 
 namespace QuestPDF.Drawing.Proxy;
 
@@ -16,6 +20,8 @@ internal class LayoutProxy : ElementProxy
     
     internal override void Draw(Size availableSpace)
     {
+        var size = ProvideIntrinsicSize() ? Child.Measure(availableSpace) : availableSpace;
+        
         base.Draw(availableSpace);
         
         var canvas = Canvas as SkiaCanvasBase;
@@ -30,9 +36,14 @@ internal class LayoutProxy : ElementProxy
             PageNumber = PageContext.CurrentPage,
             Left = position.TranslateX,
             Top = position.TranslateY,
-            Right = position.TranslateX + availableSpace.Width,
-            Bottom = position.TranslateY + availableSpace.Height
+            Right = position.TranslateX + size.Width,
+            Bottom = position.TranslateY + size.Height
         });
+
+        bool ProvideIntrinsicSize()
+        {
+            return Child is TextBlock or Image or DynamicImage or SvgImage or DynamicSvgImage or Line;
+        }
     }
 
     internal void CaptureLayoutErrorMeasurement()
