@@ -40,13 +40,6 @@
             <PackagePath>%(RecursiveDir)\%(Filename)%(Extension)</PackagePath>
         </None>
         
-        <None Include="LatoFont\*.*">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <Pack>true</Pack>
-            <PackagePath>LatoFont</PackagePath>
-        </None>
-        
         <None Include="Runtimes\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
