@@ -87,6 +87,21 @@ namespace QuestPDF.Drawing
                     
                 }
             }
+
+            // Register Lato font if available
+            var latoFontPath = Path.Combine(Helpers.Helpers.ApplicationFilesPath, "LatoFont", "Lato-Regular.ttf");
+            if (File.Exists(latoFontPath))
+            {
+                try
+                {
+                    using var latoFontStream = File.OpenRead(latoFontPath);
+                    RegisterFont(latoFontStream);
+                }
+                catch
+                {
+                    // Ignore any exceptions while registering Lato font
+                }
+            }
         }
     }
 }
