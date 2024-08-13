@@ -25,6 +25,8 @@ namespace QuestPDF.Previewer
         private const int RequiredPreviewerVersionMinor = 7;
         
         private static PreviewerDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
+
+        public static bool IsPreviewerAttached { get; private set; } = true;
         
         JsonSerializerOptions JsonSerializerOptions = new()
         {
@@ -35,11 +37,13 @@ namespace QuestPDF.Previewer
         
         public PreviewerService(int port)
         {
+            IsPreviewerAttached = true;
+            
             Port = port;
             HttpClient = new()
             {
                 BaseAddress = new Uri($"http://localhost:{port}/"), 
-                Timeout = TimeSpan.FromSeconds(1)
+                Timeout = TimeSpan.FromSeconds(5)
             };
         }
 

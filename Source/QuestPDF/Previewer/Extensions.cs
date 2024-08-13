@@ -33,17 +33,11 @@ internal static class PreviewerModelExtensions
                 ElementType = child.GetType().Name.PrettifyName(),
                 
                 PageLocations = layout.Snapshots,
+                SourceCodeDeclarationPath = GetSourceCodePath(child.CodeLocation),
                 LayoutErrorMeasurements = layout.LayoutErrorMeasurements,
                 
                 IsSingleChildContainer = child is ContainerElement,
-                Properties = child
-                    .GetElementConfiguration()
-                    .Select(x => new PreviewerCommands.ElementProperty
-                    {
-                        Label = x.Property,
-                        Value = x.Value
-                    })
-                    .ToList(),
+                Properties = GetElementProperties(child),
                 
                 Children = node.Children.Select(Traverse).ToList()
             };
@@ -60,6 +54,19 @@ internal static class PreviewerModelExtensions
             .ToArray();
     }
 
+    private static PreviewerCommands.UpdateDocumentStructure.SourceCodePath? GetSourceCodePath(SourceCodePath? path)
+    {
+        if (path == null)
+            return null;
+        
+        return new PreviewerCommands.UpdateDocumentStructure.SourceCodePath
+        {
+            FilePath = path.Value.FilePath,
+            LineNumber = path.Value.LineNumber,
+            ColumnNumber = path.Value.ColumnNumber
+        };
+    }
+    
     private static PreviewerCommands.ElementSize Map(this Size element)
     {
         return new PreviewerCommands.ElementSize

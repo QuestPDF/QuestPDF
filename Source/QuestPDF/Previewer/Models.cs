@@ -31,10 +31,11 @@ namespace QuestPDF.Previewer
             {
                 public string ElementType { get; set; }
                 public bool IsSingleChildContainer { get; set; }
-                public List<PageLocation> PageLocations { get; set; } = new();
-                public List<LayoutErrorMeasurement> LayoutErrorMeasurements { get; set; } = new();
-                public List<ElementProperty> Properties { get; set; } = new();
-                public List<DocumentHierarchyElement> Children { get; set; } = new();
+                public ICollection<PageLocation> PageLocations { get; set; }
+                public ICollection<LayoutErrorMeasurement> LayoutErrorMeasurements { get; set; }
+                public ICollection<ElementProperty> Properties { get; set; }
+                public SourceCodePath? SourceCodeDeclarationPath { get; set; }
+                public ICollection<DocumentHierarchyElement> Children { get; set; }
             }
 
             internal class PageLocation
@@ -54,6 +55,13 @@ namespace QuestPDF.Previewer
                 public SpacePlanType? SpacePlanType { get; set; }
                 public string? WrapReason { get; set; }
                 public bool IsLayoutErrorRootCause { get; set; }
+            }
+            
+            internal class SourceCodePath
+            {
+                public string FilePath { get; set; }
+                public int LineNumber { get; set; }
+                public int ColumnNumber { get; set; }
             }
         }
         
@@ -87,6 +95,7 @@ namespace QuestPDF.Previewer
                 public string MethodName { get; set; }
                 public string FileName { get; set; }
                 public int LineNumber { get; set; }
+                public int ColumnNumber { get; set; }
             }
         }
 

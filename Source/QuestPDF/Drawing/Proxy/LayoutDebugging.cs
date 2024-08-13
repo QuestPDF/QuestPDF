@@ -296,19 +296,7 @@ internal static class LayoutDebugging
             .Where(x => !(x.Value is IElement))
             .Where(x => x.Value is string || !(x.Value is IEnumerable))
             .Where(x => !(x.Value is TextStyle))
-            .Select(x => (x.Property, FormatValue(x.Value)));
-
-        string FormatValue(object value)
-        {
-            const int maxLength = 100;
-                    
-            var text = value?.ToString() ?? "-";
-
-            if (text.Length < maxLength)
-                return text;
-
-            return text.Substring(0, maxLength) + "...";
-        }
+            .Select(x => (x.Property, x.Value?.ToString() ?? "-"));
     }
 
     public const string LayoutVisualizationLegend =
