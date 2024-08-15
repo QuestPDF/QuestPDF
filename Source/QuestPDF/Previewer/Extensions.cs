@@ -62,8 +62,7 @@ internal static class PreviewerModelExtensions
         return new PreviewerCommands.UpdateDocumentStructure.SourceCodePath
         {
             FilePath = path.Value.FilePath,
-            LineNumber = path.Value.LineNumber,
-            ColumnNumber = path.Value.ColumnNumber
+            LineNumber = path.Value.LineNumber
         };
     }
     

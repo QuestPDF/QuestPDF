@@ -61,7 +61,6 @@ namespace QuestPDF.Previewer
             {
                 public string FilePath { get; set; }
                 public int LineNumber { get; set; }
-                public int ColumnNumber { get; set; }
             }
         }
         
