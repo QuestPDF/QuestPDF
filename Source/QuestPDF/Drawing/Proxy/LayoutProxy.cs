@@ -42,7 +42,10 @@ internal class LayoutProxy : ElementProxy
 
         bool ProvideIntrinsicSize()
         {
-            return Child is TextBlock or Image or DynamicImage or SvgImage or DynamicSvgImage or Line;
+            // Image or DynamicImage or SvgImage or DynamicSvgImage should be excluded
+            // They rely on the AspectRation component to provide true intrinsic size
+            
+            return Child is TextBlock or AspectRatio or Line or Unconstrained;
         }
     }
 
