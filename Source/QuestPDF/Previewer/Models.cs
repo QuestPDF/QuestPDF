@@ -17,7 +17,7 @@ namespace QuestPDF.Previewer
         
         internal class UpdateDocumentStructure
         {
-            public bool DocumentContentHasLayoutOverflowIssues { get; set; }
+            public bool IsDocumentHotReloaded { get; set; }
             public ICollection<PageSize> Pages { get; set; }
             public DocumentHierarchyElement Hierarchy { get; set; }
     

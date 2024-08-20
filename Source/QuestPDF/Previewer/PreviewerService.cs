@@ -27,6 +27,7 @@ namespace QuestPDF.Previewer
         private static PreviewerDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
 
         public static bool IsPreviewerAttached { get; private set; } = true;
+        internal bool IsDocumentHotReloaded { get; set; } = false;
         
         JsonSerializerOptions JsonSerializerOptions = new()
         {
@@ -183,7 +184,7 @@ namespace QuestPDF.Previewer
             var documentStructure = new PreviewerCommands.UpdateDocumentStructure
             {
                 Hierarchy = previewerDocumentSnapshot.Hierarchy.ImproveHierarchyStructure(),
-                DocumentContentHasLayoutOverflowIssues = previewerDocumentSnapshot.DocumentContentHasLayoutOverflowIssues,
+                IsDocumentHotReloaded = IsDocumentHotReloaded,
                 
                 Pages = previewerDocumentSnapshot
                     .Pictures

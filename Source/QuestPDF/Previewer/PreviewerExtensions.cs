@@ -35,8 +35,12 @@ namespace QuestPDF.Previewer
             await previewerService.Connect();
             previewerService.StartRenderRequestedPageSnapshotsTask(cancellationToken);
             await RefreshPreview();
-            
-            HotReloadManager.UpdateApplicationRequested += (_, _) => RefreshPreview();
+
+            HotReloadManager.UpdateApplicationRequested += (_, _) =>
+            {
+                previewerService.IsDocumentHotReloaded = true;
+                RefreshPreview();
+            };
             
             await KeepApplicationAlive(cancellationTokenSource.Token);
             

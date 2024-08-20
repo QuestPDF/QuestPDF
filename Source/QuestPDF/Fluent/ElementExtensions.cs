@@ -64,8 +64,8 @@ namespace QuestPDF.Fluent
                 {
                     MethodName = handlerName,
                     CalledFrom = parentName,
-                    SourceFilePath = sourceFilePath,
-                    SourceLineNumber = sourceLineNumber
+                    FilePath = sourceFilePath,
+                    LineNumber = sourceLineNumber
                 });
             
             handler(handlerContainer);
@@ -94,8 +94,8 @@ namespace QuestPDF.Fluent
                 {
                     MethodName = handlerName,
                     CalledFrom = parentName,
-                    SourceFilePath = sourceFilePath,
-                    SourceLineNumber = sourceLineNumber
+                    FilePath = sourceFilePath,
+                    LineNumber = sourceLineNumber
                 });
             
             return handler(handlerContainer);

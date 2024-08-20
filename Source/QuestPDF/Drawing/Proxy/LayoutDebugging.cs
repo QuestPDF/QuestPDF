@@ -183,8 +183,8 @@ internal static class LayoutDebugging
             {
                 result.AppendLine($"-> In method:   {sourceCodePointer.MethodName}");
                 result.AppendLine($"   Called from: {sourceCodePointer.CalledFrom}");
-                result.AppendLine($"   Source path: {sourceCodePointer.SourceFilePath}");
-                result.AppendLine($"   Line number: {sourceCodePointer.SourceLineNumber}");
+                result.AppendLine($"   Source path: {sourceCodePointer.FilePath}");
+                result.AppendLine($"   Line number: {sourceCodePointer.LineNumber}");
             }
             else
             {
