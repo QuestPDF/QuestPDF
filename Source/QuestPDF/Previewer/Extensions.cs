@@ -22,11 +22,11 @@ internal static class PreviewerModelExtensions
             var layout = node.Value;
             var child = layout.Child;
             
-            if (child is Container)
+            while (child is SnapshotRecorder or ElementProxy)
                 return Traverse(node.Children.Single());
             
-            while (child is SnapshotRecorder or ElementProxy)
-                child = child.GetChildren().Single();
+            if (child is Container)
+                return Traverse(node.Children.Single());
             
             var element = new PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement
             {
