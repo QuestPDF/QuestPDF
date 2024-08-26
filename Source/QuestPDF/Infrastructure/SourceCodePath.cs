@@ -11,8 +11,12 @@ internal readonly struct SourceCodePath(StackFrame frame)
 
     internal static SourceCodePath? CreateFromCurrentStackTrace()
     {
+        #if NET6_0_OR_GREATER
+        
         if (!CompanionService.IsCompanionAttached)
             return null;
+
+        #endif
 
         var stackTrace = new StackTrace(true);
 

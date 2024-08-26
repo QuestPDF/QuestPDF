@@ -65,6 +65,8 @@ internal static class CompanionModelExtensions
         };
     }
     
+    #if NET6_0_OR_GREATER
+    
     internal static CompanionCommands.ShowGenericException.StackFrame[] ParseStackTrace(this string stackTrace)
     {
         var lines = stackTrace.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
@@ -91,6 +93,8 @@ internal static class CompanionModelExtensions
 
         return frames.ToArray();
     }
+
+    #endif
     
     internal static CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement ImproveHierarchyStructure(this CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement root)
     {

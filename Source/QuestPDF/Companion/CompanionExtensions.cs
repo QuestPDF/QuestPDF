@@ -68,7 +68,7 @@ namespace QuestPDF.Companion
         #else
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.notSupported"]/*' />
-        public static void ShowInCompanionAsync(this IDocument document, int port = 12500)
+        public static void ShowInCompanion(this IDocument document, int port = 12500)
         {
             throw new Exception("The hot-reload feature requires .NET 6 or later.");
         }
