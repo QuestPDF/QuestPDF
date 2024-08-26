@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -49,6 +50,18 @@ namespace QuestPDF
         /// <para>This property is useful when you want to control the fonts used by your application, especially in cases where the environment might not have the necessary fonts installed.</para>
         /// </remarks>
         public static bool UseEnvironmentFonts { get; set; } = true;
+        
+        /// <summary>
+        /// Specifies the collection of paths where the library will automatically search for font files to register.
+        /// </summary>
+        /// <remarks>
+        /// <para>By default, this collection contains the application files path.</para>
+        /// <para>You can add additional paths to this collection to include more directories for automatic font registration.</para>
+        /// </remarks>
+        public static ICollection<string> FontDiscoveryPaths { get; } = new List<string>()
+        {
+            Helpers.Helpers.ApplicationFilesPath
+        };
         
         static Settings()
         {
