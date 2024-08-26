@@ -12,21 +12,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
 
-namespace QuestPDF.Previewer
+namespace QuestPDF.Companion
 {
-    internal class PreviewerService
+    internal class CompanionService
     {
         private int Port { get; }
         private HttpClient HttpClient { get; }
         
-        public event Action? OnPreviewerStopped;
+        public event Action? OnCompanionStopped;
 
-        private const int RequiredPreviewerVersionMajor = 2024;
-        private const int RequiredPreviewerVersionMinor = 7;
+        private const int RequiredCompanionVersionMajor = 2024;
+        private const int RequiredCompanionVersionMinor = 7;
         
-        private static PreviewerDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
+        private static CompanionDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
 
-        public static bool IsPreviewerAttached { get; private set; } = true;
+        public static bool IsCompanionAttached { get; private set; } = true;
         internal bool IsDocumentHotReloaded { get; set; } = false;
         
         JsonSerializerOptions JsonSerializerOptions = new()
@@ -36,9 +36,9 @@ namespace QuestPDF.Previewer
             Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
         
-        public PreviewerService(int port)
+        public CompanionService(int port)
         {
-            IsPreviewerAttached = true;
+            IsCompanionAttached = true;
             
             Port = port;
             HttpClient = new()
@@ -50,21 +50,21 @@ namespace QuestPDF.Previewer
 
         public async Task Connect()
         {
-            var isAvailable = await IsPreviewerAvailable();
+            var isAvailable = await IsCompanionAvailable();
 
             if (!isAvailable)
             {
-                StartPreviewer();
+                StartCompanion();
                 await WaitForConnection();
             }
 
             StartNotifyPresenceTask();
             
-            var previewerVersion = await GetPreviewerVersion();
-            CheckVersionCompatibility(previewerVersion);
+            var companionVersion = await GetCompanionVersion();
+            CheckVersionCompatibility(companionVersion);
         }
 
-        private async Task<bool> IsPreviewerAvailable()
+        private async Task<bool> IsCompanionAvailable()
         {
             try
             {
@@ -83,7 +83,7 @@ namespace QuestPDF.Previewer
             {
                 try
                 {
-                    using var result = await HttpClient.PostAsJsonAsync("/notify", new PreviewerCommands.Notify(), JsonSerializerOptions);
+                    using var result = await HttpClient.PostAsJsonAsync("/notify", new CompanionCommands.Notify(), JsonSerializerOptions);
                 }
                 catch
                 {
@@ -92,13 +92,13 @@ namespace QuestPDF.Previewer
             }
         }
         
-        private async Task<Version> GetPreviewerVersion()
+        private async Task<Version> GetCompanionVersion()
         {
             using var result = await HttpClient.GetAsync("/version");
             return await result.Content.ReadFromJsonAsync<Version>();
         }
         
-        private void StartPreviewer()
+        private void StartCompanion()
         {
             try
             {
@@ -106,7 +106,7 @@ namespace QuestPDF.Previewer
                 {
                     StartInfo = new()
                     {
-                        FileName = "questpdf-previewer",
+                        FileName = "questpdf-companion",
                         Arguments = $"{Port}",
                         UseShellExecute = false,
                         CreateNoWindow = true
@@ -119,29 +119,29 @@ namespace QuestPDF.Previewer
                 {
                     await process.WaitForExitAsync();
                     process.Dispose();
-                    OnPreviewerStopped?.Invoke();
+                    OnCompanionStopped?.Invoke();
                 });
             }
             catch
             {
-                throw new Exception("Cannot start the QuestPDF Previewer tool. " +
-                                    "Please install it by executing in terminal the following command: 'dotnet tool install --global QuestPDF.Previewer'.");
+                throw new Exception("Cannot start the QuestPDF Companion tool. " +
+                                    "Please install it by executing in terminal the following command: 'dotnet tool install --global QuestPDF.Companion'.");
             }
         }
 
         private static void CheckVersionCompatibility(Version version)
         {
-            if (version.Major == RequiredPreviewerVersionMajor && version.Minor == RequiredPreviewerVersionMinor)
+            if (version.Major == RequiredCompanionVersionMajor && version.Minor == RequiredCompanionVersionMinor)
                 return;
 
             const string newLine = "\n";
             const string newParagraph = newLine + newLine;
             
-            throw new Exception($"The QuestPDF Previewer application is not compatible. Possible solutions: {newParagraph}" +
-                                $"1) Change the QuestPDF library to the {version.Major}.{version.Minor}.X version to match the Previewer application version. {newParagraph}" +
-                                $"2) Recommended: install the QuestPDF Previewer tool in a proper version using the following commands: {newParagraph}"+
-                                $"dotnet tool uninstall --global QuestPDF.Previewer {newLine}"+
-                                $"dotnet tool update --global QuestPDF.Previewer --version {RequiredPreviewerVersionMajor}.{RequiredPreviewerVersionMinor} {newParagraph}");
+            throw new Exception($"The QuestPDF Companion application is not compatible. Possible solutions: {newParagraph}" +
+                                $"1) Change the QuestPDF library to the {version.Major}.{version.Minor}.X version to match the Companion application version. {newParagraph}" +
+                                $"2) Recommended: install the QuestPDF Companion tool in a proper version using the following commands: {newParagraph}"+
+                                $"dotnet tool uninstall --global QuestPDF.Companion {newLine}"+
+                                $"dotnet tool update --global QuestPDF.Companion --version {RequiredCompanionVersionMajor}.{RequiredCompanionVersionMinor} {newParagraph}");
         }
         
         private async Task WaitForConnection()
@@ -157,38 +157,38 @@ namespace QuestPDF.Previewer
 
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    throw new Exception($"Cannot connect to the QuestPDF Previewer tool. Please ensure that: " +
+                    throw new Exception($"Cannot connect to the QuestPDF Companion tool. Please ensure that: " +
                                         $"1) the dotnet 8 runtime is installed on your environment, " +
                                         $"2) your operating system does not block HTTP connections on port {Port}.");
                 }
 
-                var isConnected = await IsPreviewerAvailable();
+                var isConnected = await IsCompanionAvailable();
 
                 if (isConnected)
                     break;
             }
         }
         
-        public async Task RefreshPreview(PreviewerDocumentSnapshot previewerDocumentSnapshot)
+        public async Task RefreshPreview(CompanionDocumentSnapshot companionDocumentSnapshot)
         {
             // clean old state
             if (CurrentDocumentSnapshot != null)
             {
-                foreach (var previewerPageSnapshot in CurrentDocumentSnapshot.Pictures)
-                    previewerPageSnapshot.Picture.Dispose();
+                foreach (var companionPageSnapshot in CurrentDocumentSnapshot.Pictures)
+                    companionPageSnapshot.Picture.Dispose();
             }
             
             // set new state
-            CurrentDocumentSnapshot = previewerDocumentSnapshot;
+            CurrentDocumentSnapshot = companionDocumentSnapshot;
             
-            var documentStructure = new PreviewerCommands.UpdateDocumentStructure
+            var documentStructure = new CompanionCommands.UpdateDocumentStructure
             {
-                Hierarchy = previewerDocumentSnapshot.Hierarchy.ImproveHierarchyStructure(),
+                Hierarchy = companionDocumentSnapshot.Hierarchy.ImproveHierarchyStructure(),
                 IsDocumentHotReloaded = IsDocumentHotReloaded,
                 
-                Pages = previewerDocumentSnapshot
+                Pages = companionDocumentSnapshot
                     .Pictures
-                    .Select(x => new PreviewerCommands.UpdateDocumentStructure.PageSize
+                    .Select(x => new CompanionCommands.UpdateDocumentStructure.PageSize
                     {
                         Width = x.Size.Width,
                         Height = x.Size.Height
@@ -242,7 +242,7 @@ namespace QuestPDF.Previewer
                         .ElementAt(index.PageIndex)
                         .RenderImage(index.ZoomLevel);
 
-                    return new PreviewerCommands.ProvideRenderedDocumentPage.RenderedPage
+                    return new CompanionCommands.ProvideRenderedDocumentPage.RenderedPage
                     {
                         PageIndex = index.PageIndex,
                         ZoomLevel = index.ZoomLevel,
@@ -255,13 +255,13 @@ namespace QuestPDF.Previewer
                 return;
 
             var renderedPages = await Task.WhenAll(renderingTasks);
-            var command = new PreviewerCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
+            var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
             await HttpClient.PostAsJsonAsync("/documentPreview/provideRenderedImages", command);
         }
         
         internal async Task InformAboutGenericException(Exception exception)
         {
-            var command = new PreviewerCommands.ShowGenericException
+            var command = new CompanionCommands.ShowGenericException
             {
                 Exception = Map(exception)
             };
@@ -269,9 +269,9 @@ namespace QuestPDF.Previewer
             await HttpClient.PostAsJsonAsync("/genericException/show", command, JsonSerializerOptions);
             return;
 
-            static PreviewerCommands.ShowGenericException.GenericExceptionDetails Map(Exception exception)
+            static CompanionCommands.ShowGenericException.GenericExceptionDetails Map(Exception exception)
             {
-                return new PreviewerCommands.ShowGenericException.GenericExceptionDetails
+                return new CompanionCommands.ShowGenericException.GenericExceptionDetails
                 {
                     Type = exception.GetType().FullName ?? "Unknown", 
                     Message = exception.Message, 

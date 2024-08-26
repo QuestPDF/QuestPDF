@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using QuestPDF.Companion;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
@@ -9,7 +10,6 @@ using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
@@ -88,9 +88,9 @@ namespace QuestPDF.Drawing
             };
         }
 
-        internal static PreviewerDocumentSnapshot GeneratePreviewerContent(IDocument document)
+        internal static CompanionDocumentSnapshot GenerateCompanionContent(IDocument document)
         {
-            var canvas = new PreviewerCanvas();
+            var canvas = new CompanionCanvas();
             RenderDocument(canvas, document, DocumentSettings.Default);
             return canvas.GetContent();
         }
@@ -115,7 +115,7 @@ namespace QuestPDF.Drawing
 
             var content = ConfigureContent(document, settings, useOriginalImages);
             
-            if (canvas is PreviewerCanvas)
+            if (canvas is CompanionCanvas)
                 content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
             
             var pageContext = new PageContext();
@@ -123,8 +123,8 @@ namespace QuestPDF.Drawing
             pageContext.ProceedToNextRenderingPhase();
             RenderPass(pageContext, canvas, content);
             
-            if (canvas is PreviewerCanvas previewerCanvas)
-                previewerCanvas.Hierarchy = content.ExtractHierarchy();
+            if (canvas is CompanionCanvas companionCanvas)
+                companionCanvas.Hierarchy = content.ExtractHierarchy();
         }
         
         private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)

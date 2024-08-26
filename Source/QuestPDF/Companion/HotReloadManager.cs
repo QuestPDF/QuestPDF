@@ -1,10 +1,11 @@
 ﻿#if NET6_0_OR_GREATER
 
 using System;
+using QuestPDF.Companion;
 
-[assembly: System.Reflection.Metadata.MetadataUpdateHandler(typeof(QuestPDF.Previewer.HotReloadManager))]
+[assembly: System.Reflection.Metadata.MetadataUpdateHandler(typeof(HotReloadManager))]
 
-namespace QuestPDF.Previewer
+namespace QuestPDF.Companion
 {
     /// <summary>
     /// Helper to subscribe to hot reload notifications.

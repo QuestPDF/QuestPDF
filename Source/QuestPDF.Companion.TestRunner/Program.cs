@@ -1,7 +1,7 @@
-﻿using QuestPDF.Fluent;
+﻿using QuestPDF.Companion;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 
 await Document
     .Create(container =>
@@ -36,4 +36,4 @@ await Document
                 });
         });
     })
-    .ShowInPreviewerAsync();
+    .ShowInCompanionAsync();

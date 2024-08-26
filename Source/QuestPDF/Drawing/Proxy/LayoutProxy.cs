@@ -1,8 +1,8 @@
 using System.Collections.Generic;
+using QuestPDF.Companion;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 using Image = QuestPDF.Elements.Image;
 using SvgImage = QuestPDF.Elements.SvgImage;
 
@@ -10,8 +10,8 @@ namespace QuestPDF.Drawing.Proxy;
 
 internal class LayoutProxy : ElementProxy
 {
-    public List<PreviewerCommands.UpdateDocumentStructure.PageLocation> Snapshots { get; } = new();
-    public List<PreviewerCommands.UpdateDocumentStructure.LayoutErrorMeasurement> LayoutErrorMeasurements { get; } = new();
+    public List<CompanionCommands.UpdateDocumentStructure.PageLocation> Snapshots { get; } = new();
+    public List<CompanionCommands.UpdateDocumentStructure.LayoutErrorMeasurement> LayoutErrorMeasurements { get; } = new();
 
     public LayoutProxy(Element child)
     {
@@ -31,7 +31,7 @@ internal class LayoutProxy : ElementProxy
         
         var position = canvas.Canvas.GetCurrentTotalMatrix();
 
-        Snapshots.Add(new PreviewerCommands.UpdateDocumentStructure.PageLocation
+        Snapshots.Add(new CompanionCommands.UpdateDocumentStructure.PageLocation
         {
             PageNumber = PageContext.CurrentPage,
             Left = position.TranslateX,
@@ -60,15 +60,15 @@ internal class LayoutProxy : ElementProxy
                 if (overflowDebuggingProxy.AvailableSpace == null || overflowDebuggingProxy.SpacePlan == null)
                     break;
                 
-                LayoutErrorMeasurements.Add(new PreviewerCommands.UpdateDocumentStructure.LayoutErrorMeasurement
+                LayoutErrorMeasurements.Add(new CompanionCommands.UpdateDocumentStructure.LayoutErrorMeasurement
                 {
                     PageNumber = PageContext.CurrentPage,
-                    AvailableSpace = new PreviewerCommands.ElementSize
+                    AvailableSpace = new CompanionCommands.ElementSize
                     {
                         Width = overflowDebuggingProxy.AvailableSpace.Value.Width,
                         Height = overflowDebuggingProxy.AvailableSpace.Value.Height
                     },
-                    MeasurementSize = new PreviewerCommands.ElementSize
+                    MeasurementSize = new CompanionCommands.ElementSize
                     {
                         Width = overflowDebuggingProxy.SpacePlan.Value.Width,
                         Height = overflowDebuggingProxy.SpacePlan.Value.Height

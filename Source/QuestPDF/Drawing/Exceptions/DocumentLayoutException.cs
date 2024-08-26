@@ -1,5 +1,4 @@
 ﻿using System;
-using QuestPDF.Previewer;
 
 namespace QuestPDF.Drawing.Exceptions
 {

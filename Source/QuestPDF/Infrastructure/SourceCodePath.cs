@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Linq;
-using QuestPDF.Previewer;
+using QuestPDF.Companion;
 
 namespace QuestPDF.Infrastructure;
 
@@ -11,7 +11,7 @@ internal readonly struct SourceCodePath(StackFrame frame)
 
     internal static SourceCodePath? CreateFromCurrentStackTrace()
     {
-        if (!PreviewerService.IsPreviewerAttached)
+        if (!CompanionService.IsCompanionAttached)
             return null;
 
         var stackTrace = new StackTrace(true);

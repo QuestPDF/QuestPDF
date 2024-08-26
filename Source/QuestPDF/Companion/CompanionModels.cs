@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
-namespace QuestPDF.Previewer
+namespace QuestPDF.Companion
 {
     class PageSnapshotIndex
     {
@@ -13,7 +13,7 @@ namespace QuestPDF.Previewer
         public override string ToString() => $"{ZoomLevel}/{PageIndex}";
     }
     
-    static internal class PreviewerCommands
+    static internal class CompanionCommands
     {
         internal class Notify
         {
@@ -116,14 +116,6 @@ namespace QuestPDF.Previewer
         {
             public string Label { get; set; }
             public string Value { get; set; }
-        }
-    }
-
-    static internal class PreviewerResponses
-    {
-        internal class GetApiVersion
-        {
-            public int Version { get; set; }
         }
     }
 }

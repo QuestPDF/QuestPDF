@@ -1,23 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace QuestPDF.Previewer;
+namespace QuestPDF.Companion;
 
-internal static class PreviewerModelExtensions
+internal static class CompanionModelExtensions
 {
-    internal static PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement ExtractHierarchy(this Element container)
+    internal static CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement ExtractHierarchy(this Element container)
     {
         var layoutTree = container.ExtractElementsOfType<LayoutProxy>().Single();
         return Traverse(layoutTree);
         
-        PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement Traverse(TreeNode<LayoutProxy> node)
+        CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Traverse(TreeNode<LayoutProxy> node)
         {
             var layout = node.Value;
             var child = layout.Child;
@@ -28,7 +27,7 @@ internal static class PreviewerModelExtensions
             if (child is Container)
                 return Traverse(node.Children.Single());
             
-            var element = new PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement
+            var element = new CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement
             {
                 ElementType = child.GetType().Name.PrettifyName(),
                 
@@ -46,31 +45,31 @@ internal static class PreviewerModelExtensions
         }
     }
  
-    private static ICollection<PreviewerCommands.ElementProperty> GetElementProperties(this Element element)
+    private static ICollection<CompanionCommands.ElementProperty> GetElementProperties(this Element element)
     {
         return element
             .GetElementConfiguration()
-            .Select(x => new PreviewerCommands.ElementProperty { Label = x.Property, Value = x.Value })
+            .Select(x => new CompanionCommands.ElementProperty { Label = x.Property, Value = x.Value })
             .ToArray();
     }
 
-    private static PreviewerCommands.UpdateDocumentStructure.SourceCodePath? GetSourceCodePath(SourceCodePath? path)
+    private static CompanionCommands.UpdateDocumentStructure.SourceCodePath? GetSourceCodePath(SourceCodePath? path)
     {
         if (path == null)
             return null;
         
-        return new PreviewerCommands.UpdateDocumentStructure.SourceCodePath
+        return new CompanionCommands.UpdateDocumentStructure.SourceCodePath
         {
             FilePath = path.Value.FilePath,
             LineNumber = path.Value.LineNumber
         };
     }
     
-    internal static PreviewerCommands.ShowGenericException.StackFrame[] ParseStackTrace(this string stackTrace)
+    internal static CompanionCommands.ShowGenericException.StackFrame[] ParseStackTrace(this string stackTrace)
     {
         var lines = stackTrace.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
         
-        var frames = new List<PreviewerCommands.ShowGenericException.StackFrame>();
+        var frames = new List<CompanionCommands.ShowGenericException.StackFrame>();
 
         foreach (string line in lines)
         {
@@ -80,7 +79,7 @@ internal static class PreviewerModelExtensions
             {
                 var locationParts = match.Groups[1].Value.Split('.');
                 
-                frames.Add(new PreviewerCommands.ShowGenericException.StackFrame
+                frames.Add(new CompanionCommands.ShowGenericException.StackFrame
                 {
                     Namespace = string.Join(".", locationParts.SkipLast(2)),
                     MethodName = string.Join(".", locationParts.TakeLast(2)),
@@ -93,11 +92,11 @@ internal static class PreviewerModelExtensions
         return frames.ToArray();
     }
     
-    internal static PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement ImproveHierarchyStructure(this PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement root)
+    internal static CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement ImproveHierarchyStructure(this CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement root)
     {
         var debugPointerName = nameof(DebugPointer).PrettifyName();
         
-        var pointers = new Dictionary<DocumentStructureTypes, PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement>();
+        var pointers = new Dictionary<DocumentStructureTypes, CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement>();
         FindDebugPointers(root);
         
         var document = pointers[DocumentStructureTypes.Document];
@@ -110,7 +109,7 @@ internal static class PreviewerModelExtensions
         
         return document;
         
-        PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement? FindDebugPointers(PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement element)
+        CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement? FindDebugPointers(CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement element)
         {
             if (element.ElementType == debugPointerName)
             {

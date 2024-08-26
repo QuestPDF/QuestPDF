@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using QuestPDF.Companion;
 using QuestPDF.Infrastructure;
-using QuestPDF.Previewer;
 using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
-    internal class PreviewerPageSnapshot
+    internal class CompanionPageSnapshot
     {
         public SkPicture Picture { get; set; }
         public Size Size { get; set; }
 
-        public PreviewerPageSnapshot(SkPicture picture, Size size)
+        public CompanionPageSnapshot(SkPicture picture, Size size)
         {
             Picture = picture;
             Size = size;
@@ -29,21 +29,21 @@ namespace QuestPDF.Drawing
         }
     }
     
-    internal class PreviewerDocumentSnapshot
+    internal class CompanionDocumentSnapshot
     {
-        public ICollection<PreviewerPageSnapshot> Pictures { get; set; }
+        public ICollection<CompanionPageSnapshot> Pictures { get; set; }
         public bool DocumentContentHasLayoutOverflowIssues { get; set; }
-        public PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
+        public CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
     }
     
-    internal class PreviewerCanvas : SkiaCanvasBase
+    internal class CompanionCanvas : SkiaCanvasBase
     {
         private SkPictureRecorder? PictureRecorder { get; set; }
         private Size? CurrentPageSize { get; set; }
 
-        private ICollection<PreviewerPageSnapshot> PageSnapshots { get; } = new List<PreviewerPageSnapshot>();
+        private ICollection<CompanionPageSnapshot> PageSnapshots { get; } = new List<CompanionPageSnapshot>();
         
-        internal PreviewerCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
+        internal CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
         
         public override void BeginDocument()
         {
@@ -63,7 +63,7 @@ namespace QuestPDF.Drawing
             var picture = PictureRecorder?.EndRecording();
             
             if (picture != null && CurrentPageSize.HasValue)
-                PageSnapshots.Add(new PreviewerPageSnapshot(picture, CurrentPageSize.Value));
+                PageSnapshots.Add(new CompanionPageSnapshot(picture, CurrentPageSize.Value));
 
             PictureRecorder?.Dispose();
             PictureRecorder = null;
@@ -71,9 +71,9 @@ namespace QuestPDF.Drawing
 
         public override void EndDocument() { }
 
-        public PreviewerDocumentSnapshot GetContent()
+        public CompanionDocumentSnapshot GetContent()
         {
-            return new PreviewerDocumentSnapshot
+            return new CompanionDocumentSnapshot
             {
                 Pictures = PageSnapshots,
                 DocumentContentHasLayoutOverflowIssues = DocumentContentHasLayoutOverflowIssues,
