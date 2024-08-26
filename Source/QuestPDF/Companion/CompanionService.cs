@@ -21,8 +21,7 @@ namespace QuestPDF.Companion
         
         public event Action? OnCompanionStopped;
 
-        private const int RequiredCompanionVersionMajor = 2024;
-        private const int RequiredCompanionVersionMinor = 7;
+        private const int RequiredCompanionApiVersion = 1;
         
         private static CompanionDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
 
@@ -50,30 +49,21 @@ namespace QuestPDF.Companion
 
         public async Task Connect()
         {
-            var isAvailable = await IsCompanionAvailable();
-
-            if (!isAvailable)
-            {
-                StartCompanion();
-                await WaitForConnection();
-            }
-
+            await CheckIfCompanionIsRunning();
+            await CheckCompanionVersionCompatibility();
             StartNotifyPresenceTask();
-            
-            var companionVersion = await GetCompanionVersion();
-            CheckVersionCompatibility(companionVersion);
         }
 
-        private async Task<bool> IsCompanionAvailable()
+        private async Task CheckIfCompanionIsRunning()
         {
             try
             {
                 using var result = await HttpClient.GetAsync("/ping");
-                return result.IsSuccessStatusCode;
+                result.EnsureSuccessStatusCode();
             }
             catch
             {
-                return false;
+                throw new Exception("Cannot connect to the QuestPDF Companion tool. Please ensure that the tool is running and the port is correct.");
             }
         }
         
@@ -83,7 +73,7 @@ namespace QuestPDF.Companion
             {
                 try
                 {
-                    using var result = await HttpClient.PostAsJsonAsync("/notify", new CompanionCommands.Notify(), JsonSerializerOptions);
+                    using var result = await HttpClient.PostAsJsonAsync("/v1/notify", new CompanionCommands.Notify(), JsonSerializerOptions);
                 }
                 catch
                 {
@@ -92,83 +82,17 @@ namespace QuestPDF.Companion
             }
         }
         
-        private async Task<Version> GetCompanionVersion()
+        private async Task CheckCompanionVersionCompatibility()
         {
             using var result = await HttpClient.GetAsync("/version");
-            return await result.Content.ReadFromJsonAsync<Version>();
-        }
-        
-        private void StartCompanion()
-        {
-            try
-            {
-                var process = new Process
-                {
-                    StartInfo = new()
-                    {
-                        FileName = "questpdf-companion",
-                        Arguments = $"{Port}",
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                
-                process.Start();
-
-                Task.Run(async () =>
-                {
-                    await process.WaitForExitAsync();
-                    process.Dispose();
-                    OnCompanionStopped?.Invoke();
-                });
-            }
-            catch
-            {
-                throw new Exception("Cannot start the QuestPDF Companion tool. " +
-                                    "Please install it by executing in terminal the following command: 'dotnet tool install --global QuestPDF.Companion'.");
-            }
-        }
-
-        private static void CheckVersionCompatibility(Version version)
-        {
-            if (version.Major == RequiredCompanionVersionMajor && version.Minor == RequiredCompanionVersionMinor)
+            var response = await result.Content.ReadFromJsonAsync<CompanionCommands.GetVersionCommandResponse>();
+            
+            if (response.SupportedVersions.Contains(RequiredCompanionApiVersion))
                 return;
-
-            const string newLine = "\n";
-            const string newParagraph = newLine + newLine;
             
-            throw new Exception($"The QuestPDF Companion application is not compatible. Possible solutions: {newParagraph}" +
-                                $"1) Change the QuestPDF library to the {version.Major}.{version.Minor}.X version to match the Companion application version. {newParagraph}" +
-                                $"2) Recommended: install the QuestPDF Companion tool in a proper version using the following commands: {newParagraph}"+
-                                $"dotnet tool uninstall --global QuestPDF.Companion {newLine}"+
-                                $"dotnet tool update --global QuestPDF.Companion --version {RequiredCompanionVersionMajor}.{RequiredCompanionVersionMinor} {newParagraph}");
+            throw new Exception($"The QuestPDF Companion application is not compatible. Please install the QuestPDF Companion tool in a proper version.");
         }
-        
-        private async Task WaitForConnection()
-        {
-            using var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
-            
-            var cancellationToken = cancellationTokenSource.Token; 
-            
-            while (true)
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(250));
 
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    throw new Exception($"Cannot connect to the QuestPDF Companion tool. Please ensure that: " +
-                                        $"1) the dotnet 8 runtime is installed on your environment, " +
-                                        $"2) your operating system does not block HTTP connections on port {Port}.");
-                }
-
-                var isConnected = await IsCompanionAvailable();
-
-                if (isConnected)
-                    break;
-            }
-        }
-        
         public async Task RefreshPreview(CompanionDocumentSnapshot companionDocumentSnapshot)
         {
             // clean old state
@@ -196,7 +120,7 @@ namespace QuestPDF.Companion
                     .ToArray()
             };
 
-            await HttpClient.PostAsJsonAsync("/documentPreview/update", documentStructure, JsonSerializerOptions);
+            await HttpClient.PostAsJsonAsync("/v1/documentPreview/update", documentStructure, JsonSerializerOptions);
         }
         
         public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
@@ -222,7 +146,7 @@ namespace QuestPDF.Companion
         private async Task RenderRequestedPageSnapshots()
         {
             // get requests
-            var getRequestedSnapshots = await HttpClient.GetAsync("/documentPreview/getRenderingRequests");
+            var getRequestedSnapshots = await HttpClient.GetAsync("/v1/documentPreview/getRenderingRequests");
             getRequestedSnapshots.EnsureSuccessStatusCode();
             
             var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
@@ -256,7 +180,7 @@ namespace QuestPDF.Companion
 
             var renderedPages = await Task.WhenAll(renderingTasks);
             var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
-            await HttpClient.PostAsJsonAsync("/documentPreview/provideRenderedImages", command);
+            await HttpClient.PostAsJsonAsync("/v1/documentPreview/provideRenderedImages", command);
         }
         
         internal async Task InformAboutGenericException(Exception exception)
@@ -266,7 +190,7 @@ namespace QuestPDF.Companion
                 Exception = Map(exception)
             };
             
-            await HttpClient.PostAsJsonAsync("/genericException/show", command, JsonSerializerOptions);
+            await HttpClient.PostAsJsonAsync("/v1/genericException/show", command, JsonSerializerOptions);
             return;
 
             static CompanionCommands.ShowGenericException.GenericExceptionDetails Map(Exception exception)

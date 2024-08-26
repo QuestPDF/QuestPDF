@@ -102,7 +102,6 @@ namespace QuestPDF.Companion
                 public string MethodName { get; set; }
                 public string FileName { get; set; }
                 public int LineNumber { get; set; }
-                public int ColumnNumber { get; set; }
             }
         }
 
@@ -116,6 +115,11 @@ namespace QuestPDF.Companion
         {
             public string Label { get; set; }
             public string Value { get; set; }
+        }
+
+        internal class GetVersionCommandResponse
+        {
+            public ICollection<int> SupportedVersions { get; set; }
         }
     }
 }
