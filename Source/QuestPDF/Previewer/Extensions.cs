@@ -22,7 +22,7 @@ internal static class PreviewerModelExtensions
             var layout = node.Value;
             var child = layout.Child;
             
-            while (child is SnapshotRecorder or ElementProxy)
+            if (child is SnapshotRecorder or ElementProxy)
                 return Traverse(node.Children.Single());
             
             if (child is Container)
@@ -63,15 +63,6 @@ internal static class PreviewerModelExtensions
         {
             FilePath = path.Value.FilePath,
             LineNumber = path.Value.LineNumber
-        };
-    }
-    
-    private static PreviewerCommands.ElementSize Map(this Size element)
-    {
-        return new PreviewerCommands.ElementSize
-        {
-            Width = element.Width,
-            Height = element.Height
         };
     }
     
