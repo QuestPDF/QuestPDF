@@ -36,11 +36,11 @@
     
     <ItemGroup>
         <FrameworkReference Include="Microsoft.AspNetCore.App" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.11" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.11" />
-        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.11" />
-        <PackageReference Include="Avalonia.Skia" Version="11.0.11" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.11" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.13" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.13" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.13" />
+        <PackageReference Include="Avalonia.Skia" Version="11.0.13" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.13" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.8" />
         <PackageReference Include="SkiaSharp.NativeAssets.Win32" Version="2.88.8" />
         <PackageReference Include="SkiaSharp.NativeAssets.macOS" Version="2.88.8" />
