@@ -273,9 +273,11 @@ namespace QuestPDF.Elements.Text
         {
             using var clampLinesEllipsis = new SkText(LineClampEllipsis);
             
+            Alignment ??= TextHorizontalAlignment.Start;
+            
             var paragraphStyle = new ParagraphStyleConfiguration
             {
-                Alignment = MapAlignment(Alignment ?? TextHorizontalAlignment.Start),
+                Alignment = MapAlignment(Alignment.Value),
                 Direction = MapDirection(ContentDirection),
                 MaxLinesVisible = LineClamp ?? 1_000_000,
                 LineClampEllipsis = clampLinesEllipsis.Instance
