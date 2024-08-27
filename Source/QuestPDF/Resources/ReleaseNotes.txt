@@ -30,3 +30,4 @@ Version 2024.7.2
 Version 2024.7.3
 - Introduced FontDiscoveryPaths setting for specifying directories for automatic font registration and improved font search performance.
 - Updated native dependencies: from skia m126 to m128.
+- Improved the exception message related to the "Any CPU" architecture incompatibility.
