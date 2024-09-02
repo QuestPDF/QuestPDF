@@ -16,6 +16,13 @@ internal readonly struct SourceCodePath(StackFrame frame)
         if (!CompanionService.IsCompanionAttached)
             return null;
 
+        // for dotnet 6, 7, 8:
+        // - after hot-reload, the stack trace does not contain correct source code path
+        // - the operation of collecting stack trace slows down generation process significantly
+        // TODO: revise for dotnet 9
+        if (CompanionService.IsDocumentHotReloaded)
+            return null;
+
         #endif
 
         var stackTrace = new StackTrace(true);

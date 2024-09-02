@@ -34,7 +34,7 @@ namespace QuestPDF.Companion
 
             HotReloadManager.UpdateApplicationRequested += (_, _) =>
             {
-                companionService.IsDocumentHotReloaded = true;
+                CompanionService.IsDocumentHotReloaded = true;
                 RefreshPreview();
             };
             
