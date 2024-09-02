@@ -63,7 +63,7 @@ namespace QuestPDF.Drawing
             return canvas.Images;
         }
 
-        private static void ValidateLicense()
+        internal static void ValidateLicense()
         {
             if (Settings.License.HasValue)
                 return;

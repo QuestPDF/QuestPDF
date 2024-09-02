@@ -8,6 +8,11 @@ namespace QuestPDF.Companion
 {
     public static class CompanionExtensions
     {
+        static CompanionExtensions()
+        {
+            DocumentGenerator.ValidateLicense();
+        }
+
         #if NET6_0_OR_GREATER
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.supported"]/*' />

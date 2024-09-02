@@ -1,9 +1,12 @@
-﻿using QuestPDF.Companion;
+﻿using QuestPDF;
+using QuestPDF.Companion;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.ReportSample;
 using QuestPDF.ReportSample.Layouts;
+
+Settings.License = LicenseType.Community;
 
 //await RunSimpleDocument();
 await RunReportDocument();
