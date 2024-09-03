@@ -25,7 +25,7 @@ namespace QuestPDF.Companion
         
         private static CompanionDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
 
-        public static bool IsCompanionAttached { get; private set; } = true;
+        public static bool IsCompanionAttached { get; private set; }
         public static bool IsDocumentHotReloaded { get; set; } = false;
         
         JsonSerializerOptions JsonSerializerOptions = new()

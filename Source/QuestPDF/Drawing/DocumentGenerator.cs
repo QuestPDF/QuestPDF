@@ -205,6 +205,14 @@ namespace QuestPDF.Drawing
                 {
                     pageContext.DecrementPageNumber();
                     canvas.EndDocument();
+
+                    #if NET6_0_OR_GREATER
+                    if (!isCompanionAttached)
+                        ThrowLayoutException();
+                    #else
+                    ThrowLayoutException();
+                    #endif
+                    
                     ApplyLayoutDebugging();
                 }
 
@@ -224,10 +232,7 @@ namespace QuestPDF.Drawing
                 if (spacePlan.Type == SpacePlanType.FullRender)
                     break;
             }
-
-            // TODO: visual layout issues debugging
-            // visual debugging is temporally disabled, as it is inferior to the new layout debugging feature
-            // re-enable as part of the QuestPDF Companion effort
+            
             void ApplyLayoutDebugging()
             {
                 content.RemoveExistingProxiesOfType<SnapshotRecorder>();
