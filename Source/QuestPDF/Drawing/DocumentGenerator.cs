@@ -207,7 +207,7 @@ namespace QuestPDF.Drawing
                     canvas.EndDocument();
 
                     #if NET6_0_OR_GREATER
-                    if (!isCompanionAttached)
+                    if (!CompanionService.IsCompanionAttached)
                         ThrowLayoutException();
                     #else
                     ThrowLayoutException();
