@@ -554,7 +554,8 @@
         <summary>
             The hot-reload feature and QuestPDF Companion integration are available only in the .NET 6 environment or later.
             Please consider updating your project.
-            <a href="https://www.questpdf.com/document-companion.html">Learn more</a>
+            <a href="https://www.questpdf.com/companion/usage.html">Installation and usage</a><br />
+            <a href="https://www.questpdf.com/companion/features.html">Features overview</a>
         </summary>
         
         <param name="port">This parameter is ignored.</param>

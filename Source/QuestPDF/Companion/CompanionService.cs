@@ -63,7 +63,7 @@ namespace QuestPDF.Companion
             }
             catch
             {
-                throw new Exception("Cannot connect to the QuestPDF Companion tool. Please ensure that the tool is running and the port is correct.");
+                throw new Exception("Cannot connect to the QuestPDF Companion tool. Please ensure that the tool is running and the port is correct. Learn more: https://www.questpdf.com/companion/usage.html");
             }
         }
         

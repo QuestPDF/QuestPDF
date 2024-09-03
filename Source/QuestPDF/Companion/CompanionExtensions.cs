@@ -24,7 +24,6 @@ namespace QuestPDF.Companion
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.supported"]/*' />
         public static async Task ShowInCompanionAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
-            // TODO: find better way to disable caching?
             Settings.EnableCaching = false;
             Settings.EnableDebugging = true;
             
