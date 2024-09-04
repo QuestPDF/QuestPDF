@@ -69,7 +69,7 @@ The QuestPDF Companion application is a tool designed to simplify and speed up y
   <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994">
 </picture>
 
-[![Companion App](https://img.shields.io/badge/%F0%9F%9A%80%20read-companion%20app-blue?style=for-the-badge)](http://localhost:5173/companion/features.html)
+[![Companion App](https://img.shields.io/badge/%F0%9F%9A%80%20read-companion%20app-blue?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
 
 
 ## Please share with the community
