@@ -1,33 +1,3 @@
-Version 2024.7.0
+Version 2024.10.0
 
-New Features:
-- Implemented TextStyle support for OpenType font features such as ligatures, kerning, and more.
-- Introduced support for MultiColumn layouts, offering more flexible content arrangement.
-
-Layout Issue Debugging Experience:
-- Improved the layout debugging feature by providing more detailed information on the reasons behind the SpacePlan.Wrap operation.
-- Enhanced visualization for elements that were not drawn or measured on a faulty page.
-- For the Row element, added detailed layout debugging information, including type and size for each item.
-
-Optimizations:
-- Improved paragraph cache utilization for TextBlock elements within repeating content, such as page footers/headers and decorations before/after content.
-
-Fixes and Enhancements:
-- Updated predefined page sizes to use integer values for better consistency with other software.
-- Fixed an issue where the Dynamic SVG element might scale its content incorrectly when using certain size units.
-- Fixed incorrect spacing in TextBlock elements containing only injected layout elements and no text.
-
-
-Version 2024.7.1
-- Fixed: the ShowOnce element does not work as intended
-- Updated native assets.
-
-
-Version 2024.7.2
-- Fixed a memory leak issue when generating documents as images using the `GenerateImages` method.
-
-
-Version 2024.7.3
-- Introduced FontDiscoveryPaths setting for specifying directories for automatic font registration and improved font search performance.
-- Updated native dependencies: from skia m126 to m128.
-- Improved the exception message related to the "Any CPU" architecture incompatibility.
+This version includes integration with the new QuestPDF Companion application.
