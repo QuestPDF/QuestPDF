@@ -32,7 +32,7 @@ public readonly struct Color
 
     public static Color FromRGB(byte red, byte green, byte blue)
     {
-        return new Color((uint) (red << 16 | green << 8 | blue));
+        return FromARGB(255, red, green, blue);
     }
     
     public static Color FromARGB(byte alpha, byte red, byte green, byte blue)
