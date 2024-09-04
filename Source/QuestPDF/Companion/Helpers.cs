@@ -20,10 +20,15 @@ internal static class CompanionModelExtensions
         {
             var layout = node.Value;
             var child = layout.Child;
-            
+
             while (child is ElementProxy elementProxy)
-                child = elementProxy.Child; 
-            
+            {
+                if (node.Children.Any())
+                    return Traverse(node.Children.Single());
+                
+                child = elementProxy.Child;
+            }
+
             if (child is Container)
                 return Traverse(node.Children.Single());
             
