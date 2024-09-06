@@ -80,18 +80,29 @@ internal static class CompanionModelExtensions
 
         foreach (string line in lines)
         {
-            var match = Regex.Match(line, @"at\s+(.+)\sin\s(.+):line\s(\d+)");
-            
-            if (match.Success)
+            var fullMatch = Regex.Match(line, @"at\s+(?<codeLocation>.+)\s+in\s(?<fileName>.+)\s*:line\s(?<lineNumber>\d+)");
+            var codeOnlyMatch = Regex.Match(line, @"at\s+(?<codeLocation>.+)");
+
+            if (fullMatch.Success)
             {
-                var locationParts = match.Groups[1].Value.Split('.');
-                
+                var locationParts = fullMatch.Groups["codeLocation"].Value.Split('.');
+
                 frames.Add(new CompanionCommands.ShowGenericException.StackFrame
                 {
                     Namespace = string.Join(".", locationParts.SkipLast(2)),
                     MethodName = string.Join(".", locationParts.TakeLast(2)),
-                    FileName = match.Groups[2].Value,
-                    LineNumber = int.Parse(match.Groups[3].Value)
+                    FileName = fullMatch.Groups["fileName"].Value,
+                    LineNumber = int.Parse(fullMatch.Groups["lineNumber"].Value)
+                });
+            }
+            else if (codeOnlyMatch.Success)
+            {
+                var locationParts = codeOnlyMatch.Groups["codeLocation"].Value.Split('.');
+
+                frames.Add(new CompanionCommands.ShowGenericException.StackFrame
+                {
+                    Namespace = string.Join(".", locationParts.SkipLast(2)),
+                    MethodName = string.Join(".", locationParts.TakeLast(2))
                 });
             }
         }
