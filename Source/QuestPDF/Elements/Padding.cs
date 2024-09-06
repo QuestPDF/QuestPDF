@@ -53,9 +53,15 @@ namespace QuestPDF.Elements
                 availableSpace.Height - Top - Bottom);
         }
         
-        public override string ToString()
+        internal override string? ToCompanionHint()
         {
-            return $"Padding: Top({Top}) Right({Right}) Bottom({Bottom}) Left({Left})";
+            if (Top == Bottom && Right == Left && Top == Right)
+                return $"A: {Top:F1}";
+            
+            if (Top == Bottom && Right == Left)
+                return $"V: {Top:F1}, H: {Left:F1}";
+            
+            return $"T: {Top:F1}, R: {Right:F1}, B: {Bottom:F1}, L: {Left:F1}";
         }
     }
 }

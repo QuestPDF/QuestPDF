@@ -1,3 +1,4 @@
+using System;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -13,6 +14,8 @@ namespace QuestPDF.Elements
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
  
+        private int DrawnImageSize { get; set; }
+        
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (IsRendered)
@@ -34,6 +37,8 @@ namespace QuestPDF.Elements
 
             var image = GetImageToDraw(availableSpace);
             Canvas.DrawImage(image, availableSpace);
+
+            DrawnImageSize = Math.Max(DrawnImageSize, image.EncodedDataSize);
             
             IsRendered = true;
         }
@@ -80,5 +85,11 @@ namespace QuestPDF.Elements
         public void SetState(object state) => IsRendered = (bool) state;
     
         #endregion
+
+        internal override string? ToCompanionHint()
+        {
+            var sizeKB = Math.Max(1, DrawnImageSize / 1024);
+            return $"{sizeKB}KB";
+        }
     }
 }

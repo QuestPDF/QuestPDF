@@ -12,5 +12,7 @@ namespace QuestPDF.Elements
             Child?.Draw(availableSpace);
             Canvas.Rotate(-Angle);
         }
+        
+        internal override string? ToCompanionHint() => $"{Angle} deg clockwise";
     }
 }

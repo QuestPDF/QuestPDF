@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
@@ -32,6 +33,9 @@ namespace QuestPDF.Elements
         
         private List<(Size Size, SkImage? Image)> Cache { get; } = new(1);
 
+        private float GenerationTime { get; set; }
+        private int DrawnImageSize { get; set; }
+        
         ~DynamicImage()
         {
             foreach (var cacheItem in Cache)
@@ -51,6 +55,8 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            var stopWatch = Stopwatch.StartNew();
+            
             var targetImage = Cache.FirstOrDefault(x => Size.Equal(x.Size, availableSpace)).Image;
             
             if (targetImage == null)
@@ -61,6 +67,9 @@ namespace QuestPDF.Elements
        
             if (targetImage != null)
                 Canvas.DrawImage(targetImage, availableSpace);
+            
+            GenerationTime += (float) stopWatch.Elapsed.TotalMilliseconds;
+            DrawnImageSize += targetImage?.EncodedDataSize ?? 0;
             
             IsRendered = true;
         }
@@ -120,5 +129,11 @@ namespace QuestPDF.Elements
         public void SetState(object state) => IsRendered = (bool) state;
     
         #endregion
+        
+        internal override string? ToCompanionHint()
+        {
+            var sizeKB = Math.Max(1, DrawnImageSize / 1024);
+            return $"{sizeKB}KB, generated in {GenerationTime:0.00}ms";
+        }
     }
 }

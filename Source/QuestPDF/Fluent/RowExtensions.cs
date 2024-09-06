@@ -19,14 +19,14 @@ namespace QuestPDF.Fluent
 
         private IContainer Item(RowItemType type, float size = 0)
         {
-            var element = new RowItem
+            var item = new RowItem
             {
                 Type = type,
                 Size = size
             };
             
-            Row.Items.Add(element);
-            return element;
+            Row.Items.Add(item);
+            return item.DebugPointer(DebugPointerType.DocumentStructure, $"{type.ToString()}({size})");
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the RelativeItem method.")]

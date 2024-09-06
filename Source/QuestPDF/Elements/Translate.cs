@@ -15,5 +15,7 @@ namespace QuestPDF.Elements
             base.Draw(availableSpace);
             Canvas.Translate(translate.Reverse());
         }
+        
+        internal override string? ToCompanionHint() => $"X: {TranslateX:F1}, Y: {TranslateY:F1}";
     }
 }

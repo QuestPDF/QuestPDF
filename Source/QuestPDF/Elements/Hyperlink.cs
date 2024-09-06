@@ -25,5 +25,7 @@ namespace QuestPDF.Elements
             
             base.Draw(availableSpace);
         }
+
+        internal override string? ToCompanionHint() => Url;
     }
 }

@@ -12,5 +12,7 @@ namespace QuestPDF.Elements
             Canvas.DrawFilledRectangle(Position.Zero, availableSpace, Color);
             base.Draw(availableSpace);
         }
+
+        internal override string? ToCompanionHint() => Color;
     }
 }

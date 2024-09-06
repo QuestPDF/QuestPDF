@@ -18,5 +18,7 @@ namespace QuestPDF.Elements
             Canvas.DrawSectionLink(targetName, targetSize);
             base.Draw(availableSpace);
         }
+
+        internal override string? ToCompanionHint() => SectionName;
     }
 }

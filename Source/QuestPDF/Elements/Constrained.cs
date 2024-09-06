@@ -77,5 +77,33 @@ namespace QuestPDF.Elements
         {
             return x.HasValue ? Math.Max(x.Value, y) : y;
         }
+        
+        internal override string? ToCompanionHint()
+        {
+            var width = FormatRange("Width", MinWidth, MaxWidth);
+            var height = FormatRange("Height", MinHeight, MaxHeight);
+            
+            if (width != null && height != null)
+                return string.Join(", ", width, height);
+            
+            if (width != null)
+                return width;
+            
+            if (height != null)
+                return height;
+            
+            return null;
+            
+            static string FormatRange(string prefix, float? min, float? max)
+            {
+                if (min == null && max == null)
+                    return null;
+                
+                if (min == max)
+                    return $"{prefix}: {min:F1}";
+                
+                return $"{prefix}: {min:F1} - {max:F1}";
+            }
+        }
     }
 }

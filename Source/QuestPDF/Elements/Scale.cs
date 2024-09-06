@@ -51,5 +51,13 @@ namespace QuestPDF.Elements
             Canvas.Scale(1/ScaleX, 1/ScaleY);
             Canvas.Translate(translate.Reverse());
         }
+        
+        internal override string? ToCompanionHint()
+        {
+            if (Math.Abs(ScaleX - ScaleY) < 0.001)
+                return $"{ScaleX:F1}x";
+            
+            return $"X: {ScaleX:F1}, Y: {ScaleY:F1}";
+        }
     }
 }

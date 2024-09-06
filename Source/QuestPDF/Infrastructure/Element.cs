@@ -24,5 +24,10 @@ namespace QuestPDF.Infrastructure
         
         internal abstract SpacePlan Measure(Size availableSpace);
         internal abstract void Draw(Size availableSpace);
+        
+        internal virtual string? ToCompanionHint()
+        {
+            return null;
+        }
     }
 }

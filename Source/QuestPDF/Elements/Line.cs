@@ -75,5 +75,10 @@ namespace QuestPDF.Elements
         public void SetState(object state) => IsRendered = (bool) state;
     
         #endregion
+        
+        internal override string? ToCompanionHint()
+        {
+            return $"{Type} {Thickness:F1} {Color.ToString()}";
+        }
     }
 }
