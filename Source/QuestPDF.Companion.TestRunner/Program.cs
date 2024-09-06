@@ -6,11 +6,35 @@ using QuestPDF.Infrastructure;
 using QuestPDF.ReportSample;
 using QuestPDF.ReportSample.Layouts;
 
-Settings.License = LicenseType.Community;
+Settings.License = LicenseType.Professional;
 
-//await RunSimpleDocument();
+await RunGenericException();
+await RunSimpleDocument();
 await RunReportDocument();
-    
+
+Task RunGenericException()
+{
+    return Document
+        .Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Content()
+                    .PaddingVertical(1, Unit.Centimetre)
+                    .Column(x =>
+                    {
+                        x.Spacing(20);
+                
+                        x.Item().Text(Placeholders.LoremIpsum());
+                        x.Item().Hyperlink("questpdf.com").Image(Placeholders.Image(200, 100));
+
+                        throw new Exception("Test exception");
+                    });
+            });
+        })
+        .ShowInCompanionAsync();
+}
+
 Task RunSimpleDocument()
 {
     return Document
@@ -34,7 +58,7 @@ Task RunSimpleDocument()
                         x.Spacing(20);
                 
                         x.Item().Text(Placeholders.LoremIpsum());
-                        x.Item().Hyperlink("facebook.com").Image(Placeholders.Image(200, 100));
+                        x.Item().Hyperlink("questpdf.com").Image(Placeholders.Image(200, 100));
                     });
         
                 page.Footer()
