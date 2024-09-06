@@ -20,7 +20,7 @@
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
         <PackageTags>PDF;C#;dotnet;csharp;.NET;PDF library;PDF document;PDF generation;PDF creation;PDF report;PDF invoice;PDF export;windows;linux;mac;azure;aws;open-source;open source;free;adobe;file;SVG;HTML;XPS</PackageTags>
         <Nullable>enable</Nullable>
-        <TargetFrameworks>net8.0;net6.0;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net45;net46;net462;net47;net48;net6.0;net8.0;netstandard2.0;netstandard2.1</TargetFrameworks>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -32,6 +32,25 @@
         <InternalsVisibleTo Include="QuestPDF.Examples" />
         <InternalsVisibleTo Include="QuestPDF.UnitTests" />
         <InternalsVisibleTo Include="QuestPDF.LayoutTests" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+        <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+        <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net46'">
+        <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+        <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+        <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
+        <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(TargetFramework)' == 'net47'">
+        <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
     </ItemGroup>
 
     <ItemGroup>

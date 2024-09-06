@@ -63,7 +63,7 @@ internal static class SkNativeDependencyCompatibilityChecker
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 message += $"{paragraph}Please always set the 'Platform target' to either 'X86' or 'X64' in your startup project settings. Please do not use the 'Any CPU' option.";
-            
+
             if (RuntimeInformation.ProcessArchitecture is Architecture.Arm)
                 message += $"{paragraph}Please consider setting the 'Platform target' property to 'Arm64' in your project settings.";
             

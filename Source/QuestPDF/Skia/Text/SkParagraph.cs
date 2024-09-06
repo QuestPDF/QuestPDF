@@ -23,13 +23,22 @@ internal sealed class SkParagraph : IDisposable
         API.paragraph_get_line_metrics(Instance, out var array, out var arrayLength);
         
         var managedArray = new SkSize[arrayLength];
-        
+
+#if NET45
+        var size = Marshal.SizeOf(typeof(SkSize));
+#else
         var size = Marshal.SizeOf<SkSize>();
+#endif
         
         for (var i = 0; i < arrayLength; i++)
         {
             var ptr = IntPtr.Add(array, i * size);
+
+#if NET45
+            managedArray[i] = (SkSize)Marshal.PtrToStructure(ptr, typeof(SkSize));
+#else
             managedArray[i] = Marshal.PtrToStructure<SkSize>(ptr);
+#endif
         }
 
         Marshal.FreeHGlobal(array);
@@ -52,13 +61,21 @@ internal sealed class SkParagraph : IDisposable
         API.paragraph_get_placeholder_positions(Instance, out var array, out var arrayLength);
         
         var managedArray = new SkRect[arrayLength];
-        
+
+#if NET45
+        var size = Marshal.SizeOf(typeof(SkRect));
+#else
         var size = Marshal.SizeOf<SkRect>();
+#endif
         
         for (var i = 0; i < arrayLength; i++)
         {
             var ptr = IntPtr.Add(array, i * size);
+#if NET45
+            managedArray[i] = (SkRect)Marshal.PtrToStructure(ptr, typeof(SkRect));
+#else
             managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
+#endif
         }
 
         Marshal.FreeHGlobal(array);
@@ -70,13 +87,22 @@ internal sealed class SkParagraph : IDisposable
         API.paragraph_get_text_range_positions(Instance, rangeStart, rangeEnd, out var array, out var arrayLength);
         
         var managedArray = new SkRect[arrayLength];
-        
+
+#if NET45
+        var size = Marshal.SizeOf(typeof(SkRect));
+#else
         var size = Marshal.SizeOf<SkRect>();
+#endif
         
         for (var i = 0; i < arrayLength; i++)
         {
             var ptr = IntPtr.Add(array, i * size);
+
+#if NET45
+            managedArray[i] = (SkRect)Marshal.PtrToStructure(ptr, typeof(SkRect));
+#else
             managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
+#endif
         }
 
         Marshal.FreeHGlobal(array);

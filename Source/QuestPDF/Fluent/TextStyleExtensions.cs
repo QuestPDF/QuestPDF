@@ -277,8 +277,8 @@ namespace QuestPDF.Fluent
         [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
         public static TextStyle Fallback(this TextStyle style, TextStyle? value = null)
         {
-            var currentFontFamilies = style.FontFamilies ?? Array.Empty<string>();
-            var fallbackFontFamilies = value?.FontFamilies ?? Array.Empty<string>();
+            var currentFontFamilies = style.FontFamilies ?? [];
+            var fallbackFontFamilies = value?.FontFamilies ?? [];
             
             var targetFontFamilies = currentFontFamilies
                 .Concat(fallbackFontFamilies)
