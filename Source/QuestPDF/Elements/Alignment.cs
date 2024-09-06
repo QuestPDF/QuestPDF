@@ -53,6 +53,6 @@ namespace QuestPDF.Elements
             };
         }
         
-        internal override string? ToCompanionHint() => $"{Vertical}, {Horizontal}";
+        internal override string? GetCompanionHint() => $"{Vertical} {Horizontal}";
     }
 }

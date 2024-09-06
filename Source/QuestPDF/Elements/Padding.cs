@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -53,15 +55,30 @@ namespace QuestPDF.Elements
                 availableSpace.Height - Top - Bottom);
         }
         
-        internal override string? ToCompanionHint()
+        internal override string? GetCompanionHint()
         {
-            if (Top == Bottom && Right == Left && Top == Right)
-                return $"A: {Top:F1}";
+            return string.Join("   ", GetOptions().Where(x => x.value != 0).Select(x => $"{x.Label}={x.value:F1}"));
             
-            if (Top == Bottom && Right == Left)
-                return $"V: {Top:F1}, H: {Left:F1}";
-            
-            return $"T: {Top:F1}, R: {Right:F1}, B: {Bottom:F1}, L: {Left:F1}";
+            IEnumerable<(string Label, float value)> GetOptions()
+            {
+                if (Top == Bottom && Right == Left && Top == Right)
+                {
+                    yield return ("A", Top);
+                    yield break;
+                }
+
+                if (Top == Bottom && Right == Left)
+                {
+                    yield return ("V", Top);
+                    yield return ("H", Left);
+                    yield break;
+                }
+                
+                yield return ("T", Top);
+                yield return ("R", Right);
+                yield return ("B", Bottom);
+                yield return ("L", Left);
+            }
         }
     }
 }

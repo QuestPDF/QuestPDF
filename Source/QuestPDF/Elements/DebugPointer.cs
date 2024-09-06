@@ -1,4 +1,5 @@
-﻿using QuestPDF.Infrastructure;
+﻿using System.Collections.Generic;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
@@ -27,5 +28,14 @@ namespace QuestPDF.Elements
     {
         public DebugPointerType Type { get; set; }
         public string Label { get; set; }
+        
+        internal override string? GetCompanionHint() => $"{Label}";
+        internal override string? GetCompanionSearchableContent() => Label;
+        
+        internal override IEnumerable<KeyValuePair<string, string>>? GetCompanionProperties()
+        {
+            yield return new("Type", Type.ToString());
+            yield return new("Label", Label);
+        }
     }
 }

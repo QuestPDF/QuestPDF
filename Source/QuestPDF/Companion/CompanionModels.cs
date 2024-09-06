@@ -37,7 +37,11 @@ namespace QuestPDF.Companion
             
             internal class DocumentHierarchyElement
             {
+                internal Element Element { get; set; }
+                
                 public string ElementType { get; set; }
+                public string? Hint { get; set; }
+                public string? SearchableContent { get; set; }
                 public bool IsSingleChildContainer { get; set; }
                 public ICollection<PageLocation> PageLocations { get; set; }
                 public ICollection<LayoutErrorMeasurement> LayoutErrorMeasurements { get; set; }

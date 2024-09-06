@@ -18,6 +18,6 @@ namespace QuestPDF.Elements
             return measurement;
         }
 
-        internal override string? ToCompanionHint() => $"at least {MinHeight}";
+        internal override string? GetCompanionHint() => $"at least {MinHeight}";
     }
 }

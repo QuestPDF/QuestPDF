@@ -34,28 +34,24 @@ internal static class CompanionModelExtensions
             
             var element = new CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement
             {
-                ElementType = child.GetType().Name.PrettifyName(),
+                Element = child,
+                
+                ElementType = child.GetType().Name,
+                Hint = child.GetCompanionHint(),
+                SearchableContent = child.GetCompanionSearchableContent(),
                 
                 PageLocations = layout.Snapshots,
                 SourceCodeDeclarationPath = GetSourceCodePath(child.CodeLocation),
                 LayoutErrorMeasurements = layout.LayoutErrorMeasurements,
                 
                 IsSingleChildContainer = child is ContainerElement,
-                Properties = GetElementProperties(child),
+                Properties = child.GetCompanionProperties()?.Select(x => new CompanionCommands.ElementProperty { Label = x.Key, Value = x.Value }).ToList() ?? [],
                 
                 Children = node.Children.Select(Traverse).ToList()
             };
 
             return element;
         }
-    }
- 
-    private static ICollection<CompanionCommands.ElementProperty> GetElementProperties(this Element element)
-    {
-        return element
-            .GetElementConfiguration()
-            .Select(x => new CompanionCommands.ElementProperty { Label = x.Property, Value = x.Value })
-            .ToArray();
     }
 
     private static CompanionCommands.UpdateDocumentStructure.SourceCodePath? GetSourceCodePath(SourceCodePath? path)
@@ -114,8 +110,6 @@ internal static class CompanionModelExtensions
     
     internal static CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement ImproveHierarchyStructure(this CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement root)
     {
-        var debugPointerName = nameof(DebugPointer).PrettifyName();
-        
         var pointers = new Dictionary<DocumentStructureTypes, CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement>();
         FindDebugPointers(root);
         
@@ -131,15 +125,9 @@ internal static class CompanionModelExtensions
         
         CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement? FindDebugPointers(CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement element)
         {
-            if (element.ElementType == debugPointerName)
+            if (element.Element is DebugPointer { Type: DebugPointerType.DocumentStructure } debugPointer)
             {
-                var type = element.Properties.Single(x => x.Label == "Type").Value;
-                
-                if (type == DebugPointerType.DocumentStructure.ToString())
-                {
-                    var structureType = element.Properties.Single(x => x.Label == "Label").Value;
-                    pointers[(DocumentStructureTypes)Enum.Parse(typeof(DocumentStructureTypes), structureType)] = element;
-                }
+                pointers[(DocumentStructureTypes)Enum.Parse(typeof(DocumentStructureTypes), debugPointer.Label)] = element;
             }
 
             foreach (var child in element.Children)

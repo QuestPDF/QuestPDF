@@ -51,6 +51,6 @@ namespace QuestPDF.Elements
             Canvas.Translate(translate.Reverse());
         }
         
-        internal override string? ToCompanionHint() => $"{NormalizedTurnCount * 90} deg clockwise";
+        internal override string? GetCompanionHint() => $"{NormalizedTurnCount * 90} deg clockwise";
     }
 }

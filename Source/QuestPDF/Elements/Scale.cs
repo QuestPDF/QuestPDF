@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
@@ -52,12 +54,21 @@ namespace QuestPDF.Elements
             Canvas.Translate(translate.Reverse());
         }
         
-        internal override string? ToCompanionHint()
+        internal override string? GetCompanionHint()
         {
-            if (Math.Abs(ScaleX - ScaleY) < 0.001)
-                return $"{ScaleX:F1}x";
+            return string.Join("   ", GetOptions().Where(x => x.value != 1).Select(x => $"{x.Label}={x.value}"));
             
-            return $"X: {ScaleX:F1}, Y: {ScaleY:F1}";
+            IEnumerable<(string Label, float value)> GetOptions()
+            {
+                if (ScaleX == ScaleY)
+                {
+                    yield return ("A", ScaleX);
+                    yield break;
+                }
+                
+                yield return ("X", ScaleX);
+                yield return ("Y", ScaleY);
+            }
         }
     }
 }

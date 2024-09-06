@@ -76,7 +76,7 @@ namespace QuestPDF.Elements
     
         #endregion
         
-        internal override string? ToCompanionHint()
+        internal override string? GetCompanionHint()
         {
             return $"{Type} {Thickness:F1} {Color.ToString()}";
         }

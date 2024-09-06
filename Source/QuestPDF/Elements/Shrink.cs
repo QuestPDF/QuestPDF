@@ -31,7 +31,7 @@ namespace QuestPDF.Elements
             Canvas.Translate(translate.Reverse());
         }
 
-        internal override string? ToCompanionHint()
+        internal override string? GetCompanionHint()
         {
             return (Vertical, Horizontal) switch
             {

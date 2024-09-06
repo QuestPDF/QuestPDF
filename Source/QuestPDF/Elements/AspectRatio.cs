@@ -74,6 +74,6 @@ namespace QuestPDF.Elements
             };
         }
 
-        internal override string? ToCompanionHint() => $"{Ratio:F1}, {Option.ToString()}";
+        internal override string? GetCompanionHint() => $"{Option.ToString()} with ratio {Ratio:F1}";
     }
 }

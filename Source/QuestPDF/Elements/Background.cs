@@ -13,6 +13,6 @@ namespace QuestPDF.Elements
             base.Draw(availableSpace);
         }
 
-        internal override string? ToCompanionHint() => Color;
+        internal override string? GetCompanionHint() => Color;
     }
 }

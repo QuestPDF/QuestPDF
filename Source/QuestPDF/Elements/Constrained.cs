@@ -78,13 +78,13 @@ namespace QuestPDF.Elements
             return x.HasValue ? Math.Max(x.Value, y) : y;
         }
         
-        internal override string? ToCompanionHint()
+        internal override string? GetCompanionHint()
         {
             var width = FormatRange("Width", MinWidth, MaxWidth);
             var height = FormatRange("Height", MinHeight, MaxHeight);
             
             if (width != null && height != null)
-                return string.Join(", ", width, height);
+                return string.Join("   ", width, height);
             
             if (width != null)
                 return width;
@@ -100,9 +100,9 @@ namespace QuestPDF.Elements
                     return null;
                 
                 if (min == max)
-                    return $"{prefix}: {min:F1}";
+                    return $"{prefix}={min:F1}";
                 
-                return $"{prefix}: {min:F1} - {max:F1}";
+                return $"{prefix}=({min:F1}-{max:F1})";
             }
         }
     }

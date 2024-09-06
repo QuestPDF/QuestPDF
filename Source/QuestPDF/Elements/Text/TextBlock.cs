@@ -625,5 +625,8 @@ namespace QuestPDF.Elements.Text
         }
     
         #endregion
+
+        internal override string? GetCompanionHint() => Text.Substring(0, Math.Min(Text.Length, 50));
+        internal override string? GetCompanionSearchableContent() => Text;
     }
 }

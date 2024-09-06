@@ -34,7 +34,7 @@ namespace QuestPDF.Elements
                 ExtendVertical ? availableSpace.Height : childSize.Height);
         }
         
-        internal override string? ToCompanionHint()
+        internal override string? GetCompanionHint()
         {
             return (ExtendVertical, ExtendHorizontal) switch
             {

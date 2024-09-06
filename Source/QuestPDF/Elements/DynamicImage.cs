@@ -130,7 +130,7 @@ namespace QuestPDF.Elements
     
         #endregion
         
-        internal override string? ToCompanionHint()
+        internal override string? GetCompanionHint()
         {
             var sizeKB = Math.Max(1, DrawnImageSize / 1024);
             return $"{sizeKB}KB, generated in {GenerationTime:0.00}ms";
