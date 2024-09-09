@@ -9,7 +9,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Companion;
 
-internal static class CompanionModelExtensions
+internal static class CompanionModelHelpers
 {
     internal static CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement ExtractHierarchy(this Element container)
     {
@@ -22,12 +22,7 @@ internal static class CompanionModelExtensions
             var child = layout.Child;
 
             while (child is ElementProxy elementProxy)
-            {
-                if (node.Children.Any())
-                    return Traverse(node.Children.Single());
-                
                 child = elementProxy.Child;
-            }
 
             if (child is Container)
                 return Traverse(node.Children.Single());

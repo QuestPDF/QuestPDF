@@ -99,10 +99,10 @@ namespace QuestPDF.Elements
                 }
 
                 if (min.HasValue)
-                    yield return $"{prefix}>={min:F1}";
+                    yield return $"{prefix}≥{min:F1}";
 
                 if (max.HasValue)
-                    yield return $"{prefix}<={max:F1}";
+                    yield return $"{prefix}≤{max:F1}";
             }
         }
     }
