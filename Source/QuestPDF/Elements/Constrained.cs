@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -83,26 +85,24 @@ namespace QuestPDF.Elements
             var width = FormatRange("Width", MinWidth, MaxWidth);
             var height = FormatRange("Height", MinHeight, MaxHeight);
             
-            if (width != null && height != null)
-                return string.Join("   ", width, height);
-            
-            if (width != null)
-                return width;
-            
-            if (height != null)
-                return height;
-            
-            return null;
-            
-            static string FormatRange(string prefix, float? min, float? max)
+            return string.Join("   ", width.Concat(height));
+
+            static IEnumerable<string> FormatRange(string prefix, float? min, float? max)
             {
-                if (min == null && max == null)
-                    return null;
+                if (!min.HasValue && !max.HasValue)
+                    yield break;
                 
                 if (min == max)
-                    return $"{prefix}={min:F1}";
-                
-                return $"{prefix}=({min:F1}-{max:F1})";
+                {
+                    yield return $"{prefix}={min:F1}";
+                    yield break;
+                }
+
+                if (min.HasValue)
+                    yield return $"{prefix}>={min:F1}";
+
+                if (max.HasValue)
+                    yield return $"{prefix}<={max:F1}";
             }
         }
     }
