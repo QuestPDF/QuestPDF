@@ -127,7 +127,8 @@ internal static class CompanionModelExtensions
         {
             if (element.Element is DebugPointer { Type: DebugPointerType.DocumentStructure } debugPointer)
             {
-                pointers[(DocumentStructureTypes)Enum.Parse(typeof(DocumentStructureTypes), debugPointer.Label)] = element;
+                if (Enum.TryParse<DocumentStructureTypes>(debugPointer.Label, out var type))
+                    pointers[type] = element;
             }
 
             foreach (var child in element.Children)
