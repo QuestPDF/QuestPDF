@@ -21,7 +21,7 @@ namespace QuestPDF.Companion
         
         public event Action? OnCompanionStopped;
 
-        private const int RequiredCompanionApiVersion = 1;
+        private const int RequiredCompanionApiVersion = 2;
         
         private static CompanionDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
 
@@ -73,7 +73,7 @@ namespace QuestPDF.Companion
             {
                 try
                 {
-                    using var result = await HttpClient.PostAsJsonAsync("/v1/notify", new CompanionCommands.Notify(), JsonSerializerOptions);
+                    using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), JsonSerializerOptions);
                 }
                 catch
                 {
@@ -120,7 +120,7 @@ namespace QuestPDF.Companion
                     .ToArray()
             };
 
-            await HttpClient.PostAsJsonAsync("/v1/documentPreview/update", documentStructure, JsonSerializerOptions);
+            await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, JsonSerializerOptions);
         }
         
         public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
@@ -146,7 +146,7 @@ namespace QuestPDF.Companion
         private async Task RenderRequestedPageSnapshots()
         {
             // get requests
-            var getRequestedSnapshots = await HttpClient.GetAsync("/v1/documentPreview/getRenderingRequests");
+            var getRequestedSnapshots = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests");
             getRequestedSnapshots.EnsureSuccessStatusCode();
             
             var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
@@ -180,7 +180,7 @@ namespace QuestPDF.Companion
 
             var renderedPages = await Task.WhenAll(renderingTasks);
             var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
-            await HttpClient.PostAsJsonAsync("/v1/documentPreview/provideRenderedImages", command);
+            await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command);
         }
         
         internal async Task InformAboutGenericException(Exception exception)
@@ -190,7 +190,7 @@ namespace QuestPDF.Companion
                 Exception = Map(exception)
             };
             
-            await HttpClient.PostAsJsonAsync("/v1/genericException/show", command, JsonSerializerOptions);
+            await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, JsonSerializerOptions);
             return;
 
             static CompanionCommands.ShowGenericException.GenericExceptionDetails Map(Exception exception)
