@@ -26,7 +26,7 @@ namespace QuestPDF.Fluent
             };
             
             Row.Items.Add(item);
-            return item.DebugPointer(DebugPointerType.ElementStructure, $"{type.ToString()}({size})");
+            return item.DebugPointer(DebugPointerType.ElementStructure, item.ToString());
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the RelativeItem method.")]

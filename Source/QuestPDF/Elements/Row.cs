@@ -20,6 +20,14 @@ namespace QuestPDF.Elements
         
         public RowItemType Type { get; set; }
         public float Size { get; set; }
+
+        public override string ToString()
+        {
+            if (Type == RowItemType.Auto)
+                return "Auto";
+            
+            return $"{Type}({Size})";
+        }
     }
 
     internal sealed class RowItemRenderingCommand
@@ -39,7 +47,7 @@ namespace QuestPDF.Elements
 
         internal override IEnumerable<Element?> GetChildren()
         {
-            return Items;
+            return Items.Select(x => x.Child);
         }
         
         internal override void CreateProxy(Func<Element?, Element?> create)
