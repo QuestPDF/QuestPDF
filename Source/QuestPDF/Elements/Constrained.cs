@@ -82,8 +82,8 @@ namespace QuestPDF.Elements
         
         internal override string? GetCompanionHint()
         {
-            var width = FormatRange("Width", MinWidth, MaxWidth);
-            var height = FormatRange("Height", MinHeight, MaxHeight);
+            var width = FormatRange("W", MinWidth, MaxWidth);
+            var height = FormatRange("H", MinHeight, MaxHeight);
             
             return string.Join("   ", width.Concat(height));
 
