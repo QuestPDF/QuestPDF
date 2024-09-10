@@ -30,6 +30,17 @@ namespace QuestPDF.Elements
         public string Label { get; set; }
         
         internal override string? GetCompanionSearchableContent() => Label;
+
+        public DebugPointer()
+        {
+            
+        }
+        
+        public DebugPointer(DebugPointerType type, string label)
+        {
+            Type = type;
+            Label = label;
+        }
         
         internal override IEnumerable<KeyValuePair<string, string>>? GetCompanionProperties()
         {
