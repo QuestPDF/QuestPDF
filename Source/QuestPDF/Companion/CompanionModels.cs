@@ -102,8 +102,7 @@ namespace QuestPDF.Companion
             
             internal class StackFrame
             {
-                public string Namespace { get; set; }
-                public string MethodName { get; set; }
+                public string CodeLocation { get; set; }
                 public string? FileName { get; set; }
                 public int? LineNumber { get; set; }
             }

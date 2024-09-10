@@ -76,24 +76,18 @@ internal static class CompanionModelHelpers
 
             if (fullMatch.Success)
             {
-                var locationParts = fullMatch.Groups["codeLocation"].Value.Split('.');
-
                 frames.Add(new CompanionCommands.ShowGenericException.StackFrame
                 {
-                    Namespace = string.Join(".", locationParts.SkipLast(2)),
-                    MethodName = string.Join(".", locationParts.TakeLast(2)),
+                    CodeLocation = fullMatch.Groups["codeLocation"].Value,
                     FileName = fullMatch.Groups["fileName"].Value,
                     LineNumber = int.Parse(fullMatch.Groups["lineNumber"].Value)
                 });
             }
             else if (codeOnlyMatch.Success)
             {
-                var locationParts = codeOnlyMatch.Groups["codeLocation"].Value.Split('.');
-
                 frames.Add(new CompanionCommands.ShowGenericException.StackFrame
                 {
-                    Namespace = string.Join(".", locationParts.SkipLast(2)),
-                    MethodName = string.Join(".", locationParts.TakeLast(2))
+                    CodeLocation = fullMatch.Groups["codeLocation"].Value
                 });
             }
         }
