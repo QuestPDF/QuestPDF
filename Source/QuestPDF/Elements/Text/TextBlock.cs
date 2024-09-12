@@ -28,7 +28,8 @@ namespace QuestPDF.Elements.Text
         public float ParagraphFirstLineIndentation { get; set; }
         
         public TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;
-        
+        public float[]? AutoFontSizeCandidates { get; set; }
+
         // cache
         private bool RebuildParagraphForEveryPage { get; set; }
         private bool AreParagraphMetricsValid { get; set; }
@@ -39,6 +40,8 @@ namespace QuestPDF.Elements.Text
         private float MaximumWidth { get; set; }
         private SkRect[] PlaceholderPositions { get; set; }
         private bool? ContainsOnlyWhiteSpace { get; set; }
+        private float? AutoFontSizePrevious { get; set; } = null;
+        private float? AutoFontSize {get; set; } = null;
         
         // native objects
         private SkParagraph Paragraph { get; set; }
@@ -75,9 +78,14 @@ namespace QuestPDF.Elements.Text
                     : SpacePlan.Wrap("The available vertical space is not sufficient to render even a single line of text.");
             }
             
+            var isAvailableSizeZero = Size.Equal(availableSpace, Size.Zero);
+
+            if (!isAvailableSizeZero && AutoFontSizeCandidates != null && AutoFontSize == null)
+                FindAutoFontSize(availableSpace);
+
             Initialize();
             
-            if (Size.Equal(availableSpace, Size.Zero))
+            if (isAvailableSizeZero)
                 return SpacePlan.PartialRender(Size.Zero);
             
             CalculateParagraphMetrics(availableSpace);
@@ -252,10 +260,41 @@ namespace QuestPDF.Elements.Text
                 return CurrentTopOffset <= position.Y || position.Y <= CurrentTopOffset + takenHeight;
             }
         }
-        
+
+        private void FindAutoFontSize(Size availableSpace)
+        {
+            var minIdx = 0;
+            var maxIdx = AutoFontSizeCandidates!.Length - 1;
+            var bestIdx = -1;
+
+            while (minIdx <= maxIdx)
+            {
+                var midIdx = (minIdx + maxIdx) / 2;
+                AutoFontSize = AutoFontSizeCandidates[midIdx];
+                
+                Initialize();
+                CalculateParagraphMetrics(availableSpace);
+                
+                var totalHeight = LineMetrics.Sum(x => x.Height);
+                var fits = MaximumWidth <= availableSpace.Width && totalHeight <= availableSpace.Height;
+                if (fits)
+                {
+                    bestIdx = midIdx;
+                    minIdx = midIdx + 1;
+                }
+                else
+                    maxIdx = midIdx - 1;
+            }
+
+            if (bestIdx != -1)
+                AutoFontSize = AutoFontSizeCandidates[bestIdx];
+            else
+                throw new DocumentDrawingException("No font size found that fits the available space.");
+        }
+
         private void Initialize()
         {
-            if (Paragraph != null && !RebuildParagraphForEveryPage)
+            if (Paragraph != null && !RebuildParagraphForEveryPage && AutoFontSize == AutoFontSizePrevious)
                 return;
 
             if (!AreParagraphItemsTransformedWithSpacingAndIndentation)
@@ -267,6 +306,7 @@ namespace QuestPDF.Elements.Text
             RebuildParagraphForEveryPage = Items.Any(x => x is TextBlockPageNumber);
             BuildParagraph();
             AreParagraphMetricsValid = false;
+            AutoFontSizePrevious = AutoFontSize;
         }
 
         private void BuildParagraph()
@@ -349,10 +389,15 @@ namespace QuestPDF.Elements.Text
             
                         else if (textBlockItem is TextBlockPageNumber textBlockPageNumber)
                             textBlockPageNumber.UpdatePageNumberText(PageContext);
-                
-                        var textStyle = textBlockSpan.Style.GetSkTextStyle();
+
+                        var textStyle = AutoFontSize.HasValue ?
+                            textBlockSpan.Style with { Size = AutoFontSize.Value } : 
+                            textBlockSpan.Style;
+                        if (AutoFontSize != AutoFontSizePrevious)
+                            textStyle.ClearCache();
+                        var textStyleNative = textStyle.GetSkTextStyle();
                         var text = textBlockSpan.Text?.Replace("\r", "") ?? "";
-                        builder.AddText(text, textStyle);
+                        builder.AddText(text, textStyleNative);
                         currentTextIndex += text.Length;
                     }
                     else if (textBlockItem is TextBlockElement textBlockElement)

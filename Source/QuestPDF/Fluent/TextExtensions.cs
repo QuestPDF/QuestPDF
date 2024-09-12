@@ -163,6 +163,48 @@ namespace QuestPDF.Fluent
         {
             DefaultStyle = style(TextStyle.Default);
         }
+
+        /// <summary>
+        /// Automatically try to find the best font size that fits the width and height of the container.
+        /// </summary>
+        /// <param name="minSize">The lower bound of the font size range (inclusive).</param>
+        /// <param name="maxSize">The upper bound of the font size range (inclusive).</param>
+        /// <param name="stepSize">The step between font sizes.</param>
+        public void AutoFontSize(float minSize, float maxSize, float stepSize) {
+            if (minSize < 0)
+                throw new ArgumentException("Minimum font size must be greater or equal to zero", nameof(minSize));
+            if (maxSize < minSize)
+                throw new ArgumentException("Maximum font size must be greater or equal to the minimum font size", nameof(maxSize));
+            if (stepSize <= 0) 
+                throw new ArgumentException("Step size must be greater than zero", nameof(stepSize));
+
+            int count = (int)((maxSize - minSize) / stepSize) + 1;
+
+            AutoFontSize(
+                Enumerable.Range(0, count)
+                .Select(i => minSize + i * stepSize)
+            );
+        }
+
+        /// <summary>
+        /// Automatically try to find the best font size that fits the width and height of the container.
+        /// </summary>
+        /// <param name="sizes">A strictly increasing array of floats greater than zero that represent the possible font sizes</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        public void AutoFontSize(IEnumerable<float> sizes) {
+            if (sizes == null)
+                throw new ArgumentNullException(nameof(sizes));
+            if (!sizes.Any())
+                throw new ArgumentException("The collection of font sizes must not be empty", nameof(sizes));
+            if (sizes.Aggregate((a, b) => {
+                if (a >= b) throw new ArgumentException("All font sizes must be strictly increasing", nameof(sizes));
+                return b;
+            }) <= 0) 
+                throw new ArgumentException("All font sizes must be greater than zero", nameof(sizes));
+
+            TextBlock.AutoFontSizeCandidates = sizes.ToArray();
+        }
   
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.alignment.left"]/*' />
         public void AlignLeft()
