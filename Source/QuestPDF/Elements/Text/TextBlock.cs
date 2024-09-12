@@ -29,6 +29,7 @@ namespace QuestPDF.Elements.Text
         
         public TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;
         public float[]? AutoFontSizeCandidates { get; set; }
+        public int? AutoFontMaxLines { get; set; }
 
         // cache
         private bool RebuildParagraphForEveryPage { get; set; }
@@ -276,7 +277,9 @@ namespace QuestPDF.Elements.Text
                 CalculateParagraphMetrics(availableSpace);
                 
                 var totalHeight = LineMetrics.Sum(x => x.Height);
-                var fits = MaximumWidth <= availableSpace.Width && totalHeight <= availableSpace.Height;
+                var fits = MaximumWidth <= availableSpace.Width 
+                    && totalHeight <= availableSpace.Height 
+                    && (AutoFontMaxLines == null || LineMetrics.Length <= AutoFontMaxLines);
                 if (fits)
                 {
                     bestIdx = midIdx;
