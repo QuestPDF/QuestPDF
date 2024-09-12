@@ -77,8 +77,10 @@ namespace QuestPDF.Companion
                 }
                 catch
                 {
-                    await Task.Delay(TimeSpan.FromMilliseconds(250));
+                    
                 }
+                
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
             }
         }
         
