@@ -133,14 +133,14 @@ namespace QuestPDF.Companion
                 {
                     try
                     {
-                        RenderRequestedPageSnapshots();
+                        await RenderRequestedPageSnapshots();
                     }
                     catch
                     {
                         
                     }
                     
-                    await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+                    await Task.Delay(TimeSpan.FromMilliseconds(25), cancellationToken);
                 }
             });
         }
@@ -160,8 +160,11 @@ namespace QuestPDF.Companion
                 return;
       
             // render snapshots
+            if (!requestedSnapshots.Any())
+                return;
+
             var renderingTasks = requestedSnapshots
-                .Select(async index =>
+                .Select(index => Task.Run(() =>
                 {
                     var image = CurrentDocumentSnapshot
                         .Pictures
@@ -174,11 +177,8 @@ namespace QuestPDF.Companion
                         ZoomLevel = index.ZoomLevel,
                         ImageData = Convert.ToBase64String(image)
                     };
-                })
+                }))
                 .ToList();
-
-            if (!renderingTasks.Any())
-                return;
 
             var renderedPages = await Task.WhenAll(renderingTasks);
             var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
