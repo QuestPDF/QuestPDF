@@ -80,7 +80,7 @@ namespace QuestPDF.Companion
                     
                 }
                 
-                await Task.Delay(TimeSpan.FromMilliseconds(100));
+                await Task.Delay(TimeSpan.FromMilliseconds(250));
             }
         }
         
@@ -129,7 +129,7 @@ namespace QuestPDF.Companion
         {
             Task.Run(async () =>
             {
-                while (true)
+                while (!cancellationToken.IsCancellationRequested)
                 {
                     try
                     {
@@ -137,10 +137,8 @@ namespace QuestPDF.Companion
                     }
                     catch
                     {
-                        
+                        await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
                     }
-                    
-                    await Task.Delay(TimeSpan.FromMilliseconds(25), cancellationToken);
                 }
             });
         }
