@@ -17,7 +17,6 @@ internal class ElementLocationCapturer : ContainerElement, IContentDirectionAwar
             return;
 
         var matrix = Canvas.GetCurrentMatrix();
-        var size = Child?.Measure(availableSpace) ?? SpacePlan.Empty();
 
         var position = new PageElementLocation
         {
@@ -25,10 +24,10 @@ internal class ElementLocationCapturer : ContainerElement, IContentDirectionAwar
             
             PageNumber = PageContext.CurrentPage,
             
-            Width = size.Width,
-            Height = size.Height,
+            Width = availableSpace.Width,
+            Height = availableSpace.Height,
             
-            X = ContentDirection == ContentDirection.LeftToRight ? matrix.TranslateX : matrix.TranslateX - size.Width,
+            X = ContentDirection == ContentDirection.LeftToRight ? matrix.TranslateX : matrix.TranslateX - availableSpace.Width,
             Y = matrix.TranslateY,
         };
         

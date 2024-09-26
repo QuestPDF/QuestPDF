@@ -45,6 +45,7 @@ namespace QuestPDF.Examples
                         .TranslateY(position.Y - containerLocation.Y)
                         .Width(position.Width)
                         .Height(position.Height)
+                        .Border(1)
                         .Background(Placeholders.BackgroundColor());
                 }
 
@@ -85,10 +86,12 @@ namespace QuestPDF.Examples
                                 foreach (var i in Enumerable.Range(0, 20))
                                 {
                                     column.Item()
+                                        .Shrink()
                                         .CaptureLocation($"capture_{i}")
+                                        .Border(1)
+                                        .Background(Placeholders.BackgroundColor())
                                         .Width(Random.Shared.Next(25, 125))
-                                        .Height(Random.Shared.Next(25, 125))
-                                        .Background(Placeholders.BackgroundColor());
+                                        .Height(Random.Shared.Next(25, 125));
                                 }
                             });
                             
