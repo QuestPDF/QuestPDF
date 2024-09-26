@@ -87,7 +87,7 @@ internal static class CompanionModelHelpers
             {
                 frames.Add(new CompanionCommands.ShowGenericException.StackFrame
                 {
-                    CodeLocation = fullMatch.Groups["codeLocation"].Value
+                    CodeLocation = codeOnlyMatch.Groups["codeLocation"].Value
                 });
             }
         }
