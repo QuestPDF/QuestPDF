@@ -35,14 +35,14 @@ internal readonly struct CanvasMatrix
     
     public CanvasMatrix Rotate(float angle)
     {
-        var radians = angle * MathF.PI / 180;
+        var radians = angle * Math.PI / 180;
         
-        var sin = MathF.Sin(radians);
-        var cos = MathF.Cos(radians);
+        var sin = Math.Sin(radians);
+        var cos = Math.Cos(radians);
         
         return new CanvasMatrix(
-            ScaleX * cos - ScaleY * sin,
-            ScaleX * sin + ScaleY * cos,
+            (float)(ScaleX * cos - ScaleY * sin),
+            (float)(ScaleX * sin + ScaleY * cos),
             TranslateX,
             TranslateY,
             SkewX,
