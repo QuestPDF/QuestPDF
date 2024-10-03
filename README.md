@@ -56,7 +56,20 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 
 ⭐ Please give this repository a star. It takes seconds and help thousands of developers! ⭐
 
-<img src="https://github.com/user-attachments/assets/a4c98918-430a-48e8-8aad-6f2ba0d41e4b" width="700" />
+<img src="https://github.com/user-attachments/assets/853f5d28-3ce0-4e42-b968-251476ba2640" width="700" />
+
+
+## QuestPDF Companion App (preview)
+
+The QuestPDF Companion application is a tool designed to simplify and speed up your development lifecycle. First, it shows a preview of your document. But the real magic starts with the hot-reload capability! It observes your code and updates the preview every time you change the implementation. Get real-time results without the need of code recompilation. Save time and enjoy the task!
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/58fc46dd-8f09-4dae-a5c1-c6235f3265ce">
+  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994">
+</picture>
+
+[![Companion App](https://img.shields.io/badge/%F0%9F%9A%80%20read-companion%20app-blue?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
 
 
 ## Please share with the community

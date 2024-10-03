@@ -92,6 +92,7 @@ namespace QuestPDF.Drawing
                 
                 var applicationFiles = Settings
                     .FontDiscoveryPaths
+                    .Where(Directory.Exists)
                     .Select(path => Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories))
                     .SelectMany(file => file)
                     .Take(maxFilesToScan)
