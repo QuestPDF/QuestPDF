@@ -8,9 +8,9 @@ using QuestPDF.ReportSample.Layouts;
 
 Settings.License = LicenseType.Professional;
 
-await RunGenericException();
+//await RunGenericException();
 //await RunLayoutError();
-//await RunSimpleDocument();
+await RunSimpleDocument();
 //await RunReportDocument();
 
 Task RunGenericException()
@@ -29,7 +29,7 @@ Task RunGenericException()
                         x.Item().Text(Placeholders.LoremIpsum());
                         x.Item().Hyperlink("questpdf.com").Image(Placeholders.Image(200, 200));
 
-                        throw new Exception("New5 exception");
+                        throw new Exception("New exception");
                     });
             });
         })

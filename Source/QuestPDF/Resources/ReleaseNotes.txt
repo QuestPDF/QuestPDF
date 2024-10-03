@@ -2,4 +2,5 @@ Version 2024.10.0
 
 - This version includes integration with the new QuestPDF Companion application.
 - Updated the Skia dependency to version m130.
-- Improved nuget package determinism.
+- Improved NuGet package determinism.
+- Enhanced rendering of underline text decoration for certain fonts.
