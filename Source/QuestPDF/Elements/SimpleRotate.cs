@@ -50,5 +50,7 @@ namespace QuestPDF.Elements
             Canvas.Rotate(-rotate);
             Canvas.Translate(translate.Reverse());
         }
+        
+        internal override string? GetCompanionHint() => $"{NormalizedTurnCount * 90} deg clockwise";
     }
 }

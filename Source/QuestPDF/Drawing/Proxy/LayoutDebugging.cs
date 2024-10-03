@@ -57,7 +57,7 @@ internal static class LayoutDebugging
         
         void Traverse(TreeNode<OverflowDebuggingProxy> element)
         {
-            if (element.Value.MeasurementSize is null)
+            if (element.Value.AvailableSpace is null)
                 return;
             
             // element was not part of the current layout measurement,
@@ -119,7 +119,7 @@ internal static class LayoutDebugging
 
             SpacePlanType MeasureElementWithExtendedSpace()
             {
-                return element.Value.TryMeasureWithOverflow(element.Value.MeasurementSize.Value).Type;
+                return element.Value.TryMeasureWithOverflow(element.Value.AvailableSpace.Value).Type;
             }
         }
     }
@@ -129,6 +129,14 @@ internal static class LayoutDebugging
         content.VisitChildren(x =>
         {
             x.CreateProxy(y => y is ElementProxy proxy ? proxy.Child : y);
+        });
+    }
+    
+    public static void RemoveExistingProxiesOfType<TProxy>(this Element content) where TProxy : ElementProxy
+    {
+        content.VisitChildren(x =>
+        {
+            x.CreateProxy(y => y is TProxy proxy ? proxy.Child : y);
         });
     }
 
@@ -156,7 +164,7 @@ internal static class LayoutDebugging
         }
     }
     
-    public static string FormatAncestors(this IEnumerable<OverflowDebuggingProxy> ancestors)
+    public static string FormatAncestors(this IEnumerable<Element> ancestors)
     {
         var result = new StringBuilder();
         
@@ -165,22 +173,22 @@ internal static class LayoutDebugging
         
         return result.ToString();
 
-        void Format(OverflowDebuggingProxy node)
+        void Format(Element node)
         {
-            if (node.Child is DebugPointer debugPointer)
+            if (node is DebugPointer debugPointer)
             {
                 result.AppendLine($"-> {debugPointer.Label}");
             }
-            else if (node.Child is SourceCodePointer sourceCodePointer)
+            else if (node is SourceCodePointer sourceCodePointer)
             {
-                result.AppendLine($"-> In method:   {sourceCodePointer.HandlerName}");
-                result.AppendLine($"   Called from: {sourceCodePointer.ParentName}");
-                result.AppendLine($"   Source path: {sourceCodePointer.SourceFilePath}");
-                result.AppendLine($"   Line number: {sourceCodePointer.SourceLineNumber}");
+                result.AppendLine($"-> In method:   {sourceCodePointer.MethodName}");
+                result.AppendLine($"   Called from: {sourceCodePointer.CalledFrom}");
+                result.AppendLine($"   Source path: {sourceCodePointer.FilePath}");
+                result.AppendLine($"   Line number: {sourceCodePointer.LineNumber}");
             }
             else
             {
-                return;
+                
             }
             
             result.AppendLine();
@@ -216,7 +224,7 @@ internal static class LayoutDebugging
             result.AppendLine();
             result.AppendLine();
             
-            if (proxy.MeasurementSize is null || proxy.SpacePlan is null)
+            if (proxy.AvailableSpace is null || proxy.SpacePlan is null)
                 return;
 
             indentationLevel++;
@@ -239,9 +247,9 @@ internal static class LayoutDebugging
             
             yield return new string('=', title.Length + 1);
 
-            if (proxy is { MeasurementSize: not null, SpacePlan: not null })
+            if (proxy is { AvailableSpace: not null, SpacePlan: not null })
             {
-                yield return $"Available Space: {proxy.MeasurementSize}";
+                yield return $"Available Space: {proxy.AvailableSpace}";
                 yield return $"Space Plan: {proxy.SpacePlan}";
                 
                 if (proxy.SpacePlan?.Type == SpacePlanType.Wrap)
@@ -250,8 +258,8 @@ internal static class LayoutDebugging
                 yield return new string('-', title.Length + 1);
             }
             
-            foreach (var configuration in GetElementConfiguration(child))
-                yield return $"{configuration}";
+            foreach (var configuration in child.GetElementConfiguration())
+                yield return $"{configuration.Property}: {configuration.Value}";
             
             string GetTitle()
             {
@@ -273,36 +281,22 @@ internal static class LayoutDebugging
             }
         }
         
-        static IEnumerable<string> GetElementConfiguration(IElement element)
-        {
-            if (element is DebugPointer)
-                return Enumerable.Empty<string>();
-                
-            return element
-                .GetType()
-                .GetProperties()
-                .Select(x => new
-                {
-                    Property = x.Name.PrettifyName(),
-                    Value = x.GetValue(element)
-                })
-                .Where(x => !(x.Value is IElement))
-                .Where(x => x.Value is string || !(x.Value is IEnumerable))
-                .Where(x => !(x.Value is TextStyle))
-                .Select(x => $"{x.Property}: {FormatValue(x.Value)}");
-
-            string FormatValue(object value)
+    }
+    
+    public static IEnumerable<(string Property, string Value)> GetElementConfiguration(this IElement element)
+    {
+        return element
+            .GetType()
+            .GetProperties()
+            .Select(x => new
             {
-                const int maxLength = 100;
-                    
-                var text = value?.ToString() ?? "-";
-
-                if (text.Length < maxLength)
-                    return text;
-
-                return text.Substring(0, maxLength) + "...";
-            }
-        }
+                Property = x.Name.PrettifyName(),
+                Value = x.GetValue(element)
+            })
+            .Where(x => !(x.Value is IElement))
+            .Where(x => x.Value is string || !(x.Value is IEnumerable))
+            .Where(x => !(x.Value is TextStyle))
+            .Select(x => (x.Property, x.Value?.ToString() ?? "-"));
     }
 
     public const string LayoutVisualizationLegend =

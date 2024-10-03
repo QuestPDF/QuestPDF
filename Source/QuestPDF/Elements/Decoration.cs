@@ -24,9 +24,9 @@ namespace QuestPDF.Elements
     {
         public ContentDirection ContentDirection { get; set; }
         
-        internal Element Before { get; set; } = new Empty();
-        internal Element Content { get; set; } = new Empty();
-        internal Element After { get; set; } = new Empty();
+        internal Element Before { get; set; } = new DebugPointer(DebugPointerType.ElementStructure, "Before");
+        internal Element Content { get; set; } = new DebugPointer(DebugPointerType.ElementStructure, "Content");
+        internal Element After { get; set; } = new DebugPointer(DebugPointerType.ElementStructure, "After");
 
         internal override IEnumerable<Element?> GetChildren()
         {

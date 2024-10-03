@@ -273,9 +273,11 @@ namespace QuestPDF.Elements.Text
         {
             using var clampLinesEllipsis = new SkText(LineClampEllipsis);
             
+            Alignment ??= TextHorizontalAlignment.Start;
+            
             var paragraphStyle = new ParagraphStyleConfiguration
             {
-                Alignment = MapAlignment(Alignment ?? TextHorizontalAlignment.Start),
+                Alignment = MapAlignment(Alignment.Value),
                 Direction = MapDirection(ContentDirection),
                 MaxLinesVisible = LineClamp ?? 1_000_000,
                 LineClampEllipsis = clampLinesEllipsis.Instance
@@ -623,5 +625,8 @@ namespace QuestPDF.Elements.Text
         }
     
         #endregion
+
+        internal override string? GetCompanionHint() => Text.Substring(0, Math.Min(Text.Length, 50));
+        internal override string? GetCompanionSearchableContent() => Text;
     }
 }

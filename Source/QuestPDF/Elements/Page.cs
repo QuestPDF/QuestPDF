@@ -37,8 +37,8 @@ namespace QuestPDF.Elements
                 {
                     layers
                         .Layer()
-                        .DebugPointer(DebugPointerType.LayoutStructure, "Page background layer")
                         .Repeat()
+                        .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Background.ToString())
                         .Element(Background);
                     
                     layers
@@ -59,26 +59,26 @@ namespace QuestPDF.Elements
                         {
                             decoration
                                 .Before()
-                                .DebugPointer(DebugPointerType.LayoutStructure, "Page header")
+                                .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Header.ToString())
                                 .Element(Header);
 
                             decoration
                                 .Content()
                                 .NonTrackingElement(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
                                 .NonTrackingElement(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
-                                .DebugPointer(DebugPointerType.LayoutStructure, "Page content")
+                                .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Content.ToString())
                                 .Element(Content);
 
                             decoration
                                 .After()
-                                .DebugPointer(DebugPointerType.LayoutStructure, "Page footer")
+                                .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Footer.ToString())
                                 .Element(Footer);
                         });
                     
                     layers
                         .Layer()
-                        .DebugPointer(DebugPointerType.LayoutStructure, "Page foreground layer")
                         .Repeat()
+                        .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Foreground.ToString())
                         .Element(Foreground);
                 });
 

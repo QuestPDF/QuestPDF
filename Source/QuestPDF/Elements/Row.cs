@@ -13,13 +13,21 @@ namespace QuestPDF.Elements
         Relative
     }
 
-    internal sealed class RowItem : Container
+    internal sealed class RowItem : ContainerElement
     {
         public bool IsRendered { get; set; }
         public float Width { get; set; }
         
         public RowItemType Type { get; set; }
         public float Size { get; set; }
+
+        public override string ToString()
+        {
+            if (Type == RowItemType.Auto)
+                return "Auto";
+            
+            return $"{Type}({Size})";
+        }
     }
 
     internal sealed class RowItemRenderingCommand
@@ -37,19 +45,9 @@ namespace QuestPDF.Elements
         internal List<RowItem> Items { get; } = new();
         internal float Spacing { get; set; }
 
-        public string Layout => string.Join(", ", Items.Select(x =>
-        {
-            var result = x.Type.ToString();
-            
-            if (x.Type != RowItemType.Auto)
-                result += $"({x.Size})";
-
-            return result;
-        }));
-
         internal override IEnumerable<Element?> GetChildren()
         {
-            return Items;
+            return Items.Select(x => x.Child);
         }
         
         internal override void CreateProxy(Func<Element?, Element?> create)

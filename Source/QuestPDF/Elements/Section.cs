@@ -1,4 +1,5 @@
-﻿using QuestPDF.Infrastructure;
+﻿using System.Collections.Generic;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
@@ -28,5 +29,13 @@ namespace QuestPDF.Elements
         public void SetState(object state) => IsRendered = (bool) state;
     
         #endregion
+        
+        internal override string? GetCompanionHint() => SectionName;
+        internal override string? GetCompanionSearchableContent() => SectionName;
+        
+        internal override IEnumerable<KeyValuePair<string, string>>? GetCompanionProperties()
+        {
+            yield return new("SectionName", SectionName);
+        }
     }
 }

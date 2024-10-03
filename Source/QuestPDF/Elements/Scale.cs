@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
@@ -50,6 +52,23 @@ namespace QuestPDF.Elements
              
             Canvas.Scale(1/ScaleX, 1/ScaleY);
             Canvas.Translate(translate.Reverse());
+        }
+        
+        internal override string? GetCompanionHint()
+        {
+            return string.Join("   ", GetOptions().Where(x => x.value != 1).Select(x => $"{x.Label}={x.value}"));
+            
+            IEnumerable<(string Label, float value)> GetOptions()
+            {
+                if (ScaleX == ScaleY)
+                {
+                    yield return ("A", ScaleX);
+                    yield break;
+                }
+                
+                yield return ("X", ScaleX);
+                yield return ("Y", ScaleY);
+            }
         }
     }
 }

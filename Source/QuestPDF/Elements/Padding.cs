@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -53,9 +55,30 @@ namespace QuestPDF.Elements
                 availableSpace.Height - Top - Bottom);
         }
         
-        public override string ToString()
+        internal override string? GetCompanionHint()
         {
-            return $"Padding: Top({Top}) Right({Right}) Bottom({Bottom}) Left({Left})";
+            return string.Join("   ", GetOptions().Where(x => x.value != 0).Select(x => $"{x.Label}={x.value:F1}"));
+            
+            IEnumerable<(string Label, float value)> GetOptions()
+            {
+                if (Top == Bottom && Right == Left && Top == Right)
+                {
+                    yield return ("A", Top);
+                    yield break;
+                }
+
+                if (Top == Bottom && Right == Left)
+                {
+                    yield return ("V", Top);
+                    yield return ("H", Left);
+                    yield break;
+                }
+                
+                yield return ("T", Top);
+                yield return ("R", Right);
+                yield return ("B", Bottom);
+                yield return ("L", Left);
+            }
         }
     }
 }

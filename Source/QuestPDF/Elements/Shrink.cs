@@ -1,3 +1,4 @@
+using System;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
@@ -28,6 +29,17 @@ namespace QuestPDF.Elements
             Canvas.Translate(translate);
             base.Draw(targetSize);
             Canvas.Translate(translate.Reverse());
+        }
+
+        internal override string? GetCompanionHint()
+        {
+            return (Vertical, Horizontal) switch
+            {
+                (true, true) => "Both axes",
+                (true, false) => "Vertical axis",
+                (false, true) => "Horizontal axis",
+                (false, false) => null,
+            };
         }
     }
 }

@@ -3,8 +3,6 @@ using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
-using Svg.Skia;
 
 namespace QuestPDF.Examples
 {

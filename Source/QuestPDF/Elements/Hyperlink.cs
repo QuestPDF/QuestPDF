@@ -1,4 +1,5 @@
-﻿using QuestPDF.Drawing;
+﻿using System.Collections.Generic;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -24,6 +25,13 @@ namespace QuestPDF.Elements
             Canvas.Translate(horizontalOffset.Reverse());
             
             base.Draw(availableSpace);
+        }
+
+        internal override string? GetCompanionHint() => Url;
+        
+        internal override IEnumerable<KeyValuePair<string, string>>? GetCompanionProperties()
+        {
+            yield return new("Url", Url);
         }
     }
 }

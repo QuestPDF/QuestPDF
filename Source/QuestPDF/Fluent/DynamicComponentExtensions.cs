@@ -38,7 +38,7 @@ namespace QuestPDF.Fluent
         public static void Dynamic<TState>(this IContainer element, IDynamicComponent<TState> dynamicElement) where TState : struct
         {
             var componentProxy = DynamicComponentProxy.CreateFrom(dynamicElement);
-            element.Element(new DynamicHost(componentProxy));
+            element.DebugPointer(DebugPointerType.Dynamic, dynamicElement.GetType().Name).Element(new DynamicHost(componentProxy));
         }
         
         /// <summary>

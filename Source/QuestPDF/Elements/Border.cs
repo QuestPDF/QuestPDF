@@ -37,9 +37,20 @@ namespace QuestPDF.Elements
                 Color);
         }
 
-        public override string ToString()
+        internal override string? GetCompanionHint()
         {
-            return $"Border: Top({Top}) Right({Right}) Bottom({Bottom}) Left({Left}) Color({Color})";
+            return $"C={Color}   {FormatSides()}";
+
+            string FormatSides()
+            {
+                if (Top == Bottom && Right == Left && Top == Right)
+                    return $"A={Top:F1}";
+                
+                if (Top == Bottom && Right == Left)
+                    return $"V={Top:F1}   H={Left:F1}";
+                
+                return $"T={Top:F1}   R={Right:F1}   B={Bottom:F1}   L={Left:F1}";
+            }
         }
     }
 }

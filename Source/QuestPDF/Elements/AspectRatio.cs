@@ -73,5 +73,7 @@ namespace QuestPDF.Elements
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
+
+        internal override string? GetCompanionHint() => $"{Option.ToString()} with ratio {Ratio:F1}";
     }
 }

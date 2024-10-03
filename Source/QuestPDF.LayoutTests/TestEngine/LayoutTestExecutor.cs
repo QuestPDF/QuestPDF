@@ -24,7 +24,7 @@ internal static class LayoutTestExecutor
             var pageContext = new PageContext();
             pageContext.ProceedToNextRenderingPhase();
 
-            var canvas = new PreviewerCanvas();
+            var canvas = new CompanionCanvas();
         
             container.InjectDependencies(pageContext, canvas);
         

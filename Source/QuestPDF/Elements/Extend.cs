@@ -33,5 +33,16 @@ namespace QuestPDF.Elements
                 ExtendHorizontal ? availableSpace.Width : childSize.Width, 
                 ExtendVertical ? availableSpace.Height : childSize.Height);
         }
+        
+        internal override string? GetCompanionHint()
+        {
+            return (ExtendVertical, ExtendHorizontal) switch
+            {
+                (true, true) => "Both axes",
+                (true, false) => "Vertical axis",
+                (false, true) => "Horizontal axis",
+                (false, false) => null
+            };
+        }
     }
 }
