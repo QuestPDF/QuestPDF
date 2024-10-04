@@ -59,13 +59,13 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 <img src="https://github.com/user-attachments/assets/853f5d28-3ce0-4e42-b968-251476ba2640" width="700" />
 
 
-## QuestPDF Companion App (preview)
+## QuestPDF Companion App
 
 The QuestPDF Companion application is a tool designed to simplify and speed up your development lifecycle. First, it shows a preview of your document. But the real magic starts with the hot-reload capability! It observes your code and updates the preview every time you change the implementation. Get real-time results without the need of code recompilation. Save time and enjoy the task!
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/58fc46dd-8f09-4dae-a5c1-c6235f3265ce">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/39d4c08c-6a78-4743-8837-208c0c1718fd">
   <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994">
 </picture>
 
