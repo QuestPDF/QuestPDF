@@ -39,7 +39,7 @@ namespace QuestPDF.Infrastructure
 
         public ArrayContainer(object array)
         {
-            Items = (array as T[]) ?? Array.Empty<T>();
+            Items = (array as T[]) ?? [];
         }
         
         public bool Equals(ArrayContainer<T> other)
@@ -154,8 +154,8 @@ namespace QuestPDF.Infrastructure
                 var newTextStyle = origin with { Id = newIndex };
                 newTextStyle.Id = newIndex;
                 
-                newValue ??= Array.Empty<string>();
-                var oldValue = origin.FontFamilies ?? Array.Empty<string>();
+                newValue ??= [];
+                var oldValue = origin.FontFamilies ?? [];
                 
                 if (origin.FontFamilies?.SequenceEqual(newValue) == true)
                     return origin;
