@@ -60,7 +60,7 @@ namespace QuestPDF
         /// </remarks>
         public static ICollection<string> FontDiscoveryPaths { get; } = new List<string>()
         {
-            Helpers.Helpers.ApplicationFilesPath
+            AppDomain.CurrentDomain.BaseDirectory
         };
         
         static Settings()
