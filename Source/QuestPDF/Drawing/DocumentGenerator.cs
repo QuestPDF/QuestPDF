@@ -141,6 +141,12 @@ namespace QuestPDF.Drawing
                 })
                 .ToList();
 
+            foreach (var documentPart in documentParts)
+            {
+                if (canvas is CompanionCanvas)
+                    documentPart.Content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
+            }
+
             if (document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous)
             {
                 var documentPageContext = new PageContext();
@@ -171,6 +177,9 @@ namespace QuestPDF.Drawing
                     RenderPass(pageContext, canvas, documentPart.Content);
                 }
             }
+
+            if (canvas is CompanionCanvas companionCanvas)
+                companionCanvas.Hierarchy = documentParts[0].Content.ExtractHierarchy();
         }
 
         private static Container ConfigureContent(IDocument document, DocumentSettings settings, bool useOriginalImages)
