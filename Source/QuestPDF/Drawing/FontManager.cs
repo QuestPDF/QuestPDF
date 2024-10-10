@@ -93,7 +93,7 @@ namespace QuestPDF.Drawing
                 var applicationFiles = Settings
                     .FontDiscoveryPaths
                     .Where(Directory.Exists)
-                    .Select(path => Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories))
+                    .Select(TryEnumerateFiles)
                     .SelectMany(file => file)
                     .Take(maxFilesToScan)
                     .ToList();
@@ -106,6 +106,21 @@ namespace QuestPDF.Drawing
                 return applicationFiles
                     .Where(x => supportedFontExtensions.Contains(Path.GetExtension(x).ToLowerInvariant()))
                     .ToList();
+                
+                ICollection<string> TryEnumerateFiles(string path)
+                {
+                    try
+                    {
+                        return Directory
+                            .EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
+                            .Take(maxFilesToScan)
+                            .ToArray();
+                    }
+                    catch
+                    {
+                        return Array.Empty<string>();
+                    }
+                }
             }
         }
     }
