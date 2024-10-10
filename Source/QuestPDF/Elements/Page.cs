@@ -30,6 +30,7 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
+                .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Page.ToString())
                 .ContentDirection(ContentDirection)
                 .Background(BackgroundColor)
                 .DefaultTextStyle(DefaultTextStyle)

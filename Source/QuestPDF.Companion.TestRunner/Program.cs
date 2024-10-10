@@ -12,6 +12,7 @@ Settings.License = LicenseType.Professional;
 //await RunLayoutError();
 await RunSimpleDocument();
 //await RunReportDocument();
+//await RunDocumentWithMultiplePages();
 
 Task RunGenericException()
 {
@@ -111,4 +112,50 @@ Task RunReportDocument()
     var model = DataSource.GetReport();
     var report = new StandardReport(model);
     return report.ShowInCompanionAsync();
+}
+
+Task RunDocumentWithMultiplePages()
+{
+    return Document
+        .Create(document =>
+        {
+            foreach (var i in Enumerable.Range(10, 10))
+            {
+                document.Page(page =>
+                {
+                    page.Size(new PageSize(i * 20, i * 30));
+                    page.Margin(20);
+                    page.Content().Background(Placeholders.BackgroundColor());
+                });
+            }
+        })
+        .ShowInCompanionAsync();
+}
+
+Task RunMergedDocument()
+{
+    var document1 = Document
+        .Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Content()
+                    .Text("Page 1!")
+                    .SemiBold().FontSize(36).FontColor(Colors.Blue.Medium);
+            });
+        });
+    var document2 = Document
+        .Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Content()
+                    .Text("Page 2!")
+                    .SemiBold().FontSize(36).FontColor(Colors.Blue.Medium);
+            });
+        });
+
+    var mergedDocument = Document.Merge(document1, document2);
+
+    return mergedDocument.ShowInCompanionAsync();
 }

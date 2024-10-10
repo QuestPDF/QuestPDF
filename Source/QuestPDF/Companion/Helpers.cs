@@ -99,36 +99,41 @@ internal static class CompanionModelHelpers
     
     internal static CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement ImproveHierarchyStructure(this CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement root)
     {
-        var pointers = new Dictionary<DocumentStructureTypes, CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement>();
-        FindDebugPointers(root);
-        
-        var document = pointers[DocumentStructureTypes.Document];
+        var document = FindDocumentStructurePointersThat(root, x => x == DocumentStructureTypes.Document).Single();
         document.IsSingleChildContainer = false;
-        
-        document.Children = pointers
-            .Where(x => x.Key != DocumentStructureTypes.Document)
-            .Select(x => x.Value)
-            .ToList();
-        
-        return document;
-        
-        CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement? FindDebugPointers(CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement element)
+
+        var pages = FindDocumentStructurePointersThat(document, x => x == DocumentStructureTypes.Page).ToList();
+
+        foreach (var page in pages)
         {
-            if (element.Element is DebugPointer { Type: DebugPointerType.DocumentStructure } debugPointer)
-            {
-                if (Enum.TryParse<DocumentStructureTypes>(debugPointer.Label, out var type))
-                    pointers[type] = element;
-            }
+            page.IsSingleChildContainer = false;
+            page.Children = FindDocumentStructurePointersThat(page, x => x is not (DocumentStructureTypes.Document or DocumentStructureTypes.Page)).ToList();
+        }
+        
+        document.Children = pages;
 
-            foreach (var child in element.Children)
+        if (pages.Count == 1)
+            document.Children = pages.Single().Children;
+
+        return document;
+
+        ICollection<CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement> FindDocumentStructurePointersThat(CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement root, Predicate<DocumentStructureTypes> predicate)
+        {
+            var result = new List<CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement>();
+            Traverse(root);
+            return result;
+
+            void Traverse(CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement element)
             {
-                var result = FindDebugPointers(child);
+                if (element.Element is DebugPointer { Type: DebugPointerType.DocumentStructure } debugPointer && Enum.TryParse<DocumentStructureTypes>(debugPointer.Label, out var structureType) && predicate(structureType))
+                {
+                    result.Add(element);
+                    return;
+                }
                 
-                if (result != null)
-                    return result;
+                foreach (var child in element.Children)
+                    Traverse(child);
             }
-
-            return null;
         }
     }
 }
