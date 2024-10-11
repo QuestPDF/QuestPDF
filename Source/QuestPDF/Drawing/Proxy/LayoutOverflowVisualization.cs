@@ -23,7 +23,7 @@ internal class LayoutOverflowVisualization : ElementProxy, IContentDirectionAwar
         if (childSize.Type == SpacePlanType.FullRender)
             return childSize;
         
-        return SpacePlan.FullRender(availableSpace);
+        return Child.TryMeasureWithOverflow(availableSpace);
     }
         
     internal override void Draw(Size availableSpace)
