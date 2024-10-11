@@ -27,6 +27,9 @@ namespace QuestPDF.Companion
             Settings.EnableCaching = false;
             Settings.EnableDebugging = true;
             
+            if (document is MergedDocument)
+                throw new NotSupportedException("The QuestPDF Companion App does not currently support merged documents. Please use the tool with a single document at a time.");
+            
             var companionService = new CompanionService(port);
             
             using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -68,7 +71,7 @@ namespace QuestPDF.Companion
                 }
             }
         }
-        
+
         #else
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.notSupported"]/*' />
