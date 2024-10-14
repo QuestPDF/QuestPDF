@@ -1,6 +1,13 @@
 Version 2024.10.0
-
 - This version includes integration with the new QuestPDF Companion application.
 - Updated the Skia dependency to version m130.
 - Improved NuGet package determinism.
 - Enhanced rendering of underline text decoration for certain fonts.
+
+
+Version 2024.10.1
+- Engine: Improved overflow annotation and layout algorithm for better handling of content overflow.
+- Companion App: Enhanced message clarity regarding compatibility with merged documents.
+- Companion App: Improved support for documents with multiple page configurations.
+- Font discovery: Fixed file-access related exceptions.
+- Font discovery: Improved default file path for font discovery.
