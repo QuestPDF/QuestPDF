@@ -230,9 +230,9 @@ namespace QuestPDF.Fluent
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.bold"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
-        public static T Bold<T>(this T descriptor) where T : TextSpanDescriptor
+        public static T Bold<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
-            descriptor.MutateTextStyle(TextStyleExtensions.Bold);
+            descriptor.MutateTextStyle(TextStyleExtensions.Bold, value);
             return descriptor;
         }
         
