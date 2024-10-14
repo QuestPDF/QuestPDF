@@ -16,7 +16,8 @@ internal static class SkNativeDependencyProvider
         "linux-arm64",
         "linux-musl-x64",
         "osx-x64",
-        "osx-arm64"
+        "osx-arm64",
+        "amazonlinux-2.8.0-x64"
     };
     
     public static void EnsureNativeFileAvailability()
@@ -89,7 +90,13 @@ internal static class SkNativeDependencyProvider
                 return "win";
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return IsLinuxMusl() ? "linux-musl" : "linux";
+            {
+                if (IsLinuxMusl())
+                    return "linux-musl";
+                if (IsAmazonLinux())
+                    return "amazonlinux-2.8.0";
+                return "linux";
+            }
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 return "osx";
@@ -132,6 +139,26 @@ internal static class SkNativeDependencyProvider
                 
                 var outputText = standardOutputText + standardErrorText;
                 return outputText.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        static bool IsAmazonLinux()
+        {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                return false;
+
+            try
+            {
+                var osReleaseFile = "/etc/os-release";
+                if (!File.Exists(osReleaseFile))
+                    return false;
+
+                var osReleaseContent = File.ReadAllText(osReleaseFile);
+                return osReleaseContent.Contains("Amazon Linux 2");
             }
             catch
             {
