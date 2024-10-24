@@ -56,7 +56,7 @@ namespace QuestPDF.Elements.Table
             {
                 MaxRow = 0;
                 MaxRowSpan = 1;
-                CellsCache = Array.Empty<TableCell[]>();
+                CellsCache = [];
                 
                 return;
             }
@@ -70,7 +70,7 @@ namespace QuestPDF.Elements.Table
 
             CellsCache = Enumerable
                 .Range(0, MaxRow + 1)
-                .Select(x => groups.TryGetValue(x, out var value) ? value : Array.Empty<TableCell>())
+                .Select(x => groups.TryGetValue(x, out var value) ? value : [])
                 .ToArray();
         }
         
