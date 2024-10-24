@@ -271,16 +271,14 @@ namespace QuestPDF.Elements.Text
 
         private void BuildParagraph()
         {
-            using var clampLinesEllipsis = new SkText(LineClampEllipsis);
-            
             Alignment ??= TextHorizontalAlignment.Start;
             
-            var paragraphStyle = new ParagraphStyleConfiguration
+            var paragraphStyle = new ParagraphStyle
             {
                 Alignment = MapAlignment(Alignment.Value),
                 Direction = MapDirection(ContentDirection),
                 MaxLinesVisible = LineClamp ?? 1_000_000,
-                LineClampEllipsis = clampLinesEllipsis.Instance
+                LineClampEllipsis = LineClampEllipsis
             };
             
             var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
@@ -559,10 +557,12 @@ namespace QuestPDF.Elements.Text
             
             static float Measure(int textStyleId)
             {
-                var paragraphStyle = new ParagraphStyleConfiguration
+                var paragraphStyle = new ParagraphStyle
                 {
                     Alignment = ParagraphStyleConfiguration.TextAlign.Start,
-                    Direction = ParagraphStyleConfiguration.TextDirection.Ltr
+                    Direction = ParagraphStyleConfiguration.TextDirection.Ltr,
+                    MaxLinesVisible = 1_000_000,
+                    LineClampEllipsis = string.Empty
                 };
             
                 var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);

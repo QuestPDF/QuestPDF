@@ -11,3 +11,8 @@ Version 2024.10.1
 - Companion App: Improved support for documents with multiple page configurations.
 - Font discovery: Fixed file-access related exceptions.
 - Font discovery: Improved default file path for font discovery.
+
+
+Version 2024.10.2
+- Fixed parsing of color values from both strings and uint.
+- Fixed a rare memory leak issue occurring on certain CPU architectures.
