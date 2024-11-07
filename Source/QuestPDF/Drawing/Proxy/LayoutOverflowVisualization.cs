@@ -1,3 +1,4 @@
+using System;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
@@ -22,8 +23,16 @@ internal class LayoutOverflowVisualization : ElementProxy, IContentDirectionAwar
         
         if (childSize.Type == SpacePlanType.FullRender)
             return childSize;
+
+        var minimalSize = Child.TryMeasureWithOverflow(availableSpace);
+
+        if (minimalSize.Type is SpacePlanType.Wrap)
+            return minimalSize;
         
-        return Child.TryMeasureWithOverflow(availableSpace);
+        var width = Math.Min(availableSpace.Width, minimalSize.Width);
+        var height = Math.Min(availableSpace.Height, minimalSize.Height);
+        
+        return new SpacePlan(minimalSize.Type, width, height);
     }
         
     internal override void Draw(Size availableSpace)
