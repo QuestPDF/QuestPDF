@@ -1,18 +1,13 @@
-Version 2024.10.0
-- This version includes integration with the new QuestPDF Companion application.
-- Updated the Skia dependency to version m130.
-- Improved NuGet package determinism.
-- Enhanced rendering of underline text decoration for certain fonts.
+Version 2024.11.0
 
+This release introduces several long-awaited features releated to document operations such as:
+- Assemble: Rearrange, select, and remove specific pages within a document.
+- Merge: Combine multiple PDF files into a single document.
+- Add Attachments: Embed additional files (such as text or images) as attachments within the PDF.
+- Underlay and Overlay: Apply other PDF as a background (underlay) or foreground (overlay) to another, adding layered content.
+- Linearize: Optimize files for fast web viewing, allowing compatible PDF readers to display the document before it’s fully downloaded.
+- Encrypt with Access Restrictions: Secure PDFs with user and owner passwords, applying access controls (like permissions for printing, filling forms, extracting or modifying content).
 
-Version 2024.10.1
-- Engine: Improved overflow annotation and layout algorithm for better handling of content overflow.
-- Companion App: Enhanced message clarity regarding compatibility with merged documents.
-- Companion App: Improved support for documents with multiple page configurations.
-- Font discovery: Fixed file-access related exceptions.
-- Font discovery: Improved default file path for font discovery.
-
-
-Version 2024.10.2
-- Fixed parsing of color values from both strings and uint.
-- Fixed a rare memory leak issue occurring on certain CPU architectures.
+These features are built using the qpdf library, available under the "Apache-2.0" license.
+The qpdf library is available at: https://github.com/qpdf/qpdf
+We extend our thanks to the authors of qpdf for their contributions to the open-source community.
