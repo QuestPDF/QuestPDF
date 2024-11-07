@@ -57,6 +57,12 @@ internal static class LayoutDebugging
         
         void Traverse(TreeNode<OverflowDebuggingProxy> element)
         {
+            if (element.Value.Child is DebugPointer or SourceCodePointer or Container)
+            {
+                Traverse(element.Children.First());
+                return;
+            }
+            
             if (element.Value.AvailableSpace is null)
                 return;
             
@@ -96,7 +102,7 @@ internal static class LayoutDebugging
             // strategy:
             // the current contains wrapping children, they are likely the root cause,
             // traverse them and attempt to fix them
-            foreach (var child in element.Children.Where(x => x.Value.SpacePlan?.Type is SpacePlanType.Wrap))
+            foreach (var child in element.Children.Where(x => x.Value.SpacePlan?.Type is SpacePlanType.Wrap).ToList())
                 Traverse(child);
                 
             // check if fixing wrapping children helped
@@ -106,7 +112,7 @@ internal static class LayoutDebugging
             // strategy:
             // the current has layout issues but no obvious/trivial root causes
             // possibly the problem is in nested children of partial rendering children
-            foreach (var child in element.Children.Where(x => x.Value.SpacePlan?.Type is SpacePlanType.PartialRender))
+            foreach (var child in element.Children.Where(x => x.Value.SpacePlan?.Type is SpacePlanType.PartialRender).ToList())
                 Traverse(child);
                 
             // check if fixing partial children helped
