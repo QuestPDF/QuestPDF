@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using QuestPDF.Qpdf;
 
-namespace NativeQpdf.Qpdf;
+namespace QuestPDF.Fluent;
 
 /// <summary>
 /// Provides functionality for performing various operations on PDF documents, including loading, merging, overlaying, underlaying, selecting specific pages, adding attachments, and applying encryption settings.
@@ -24,118 +24,21 @@ public class DocumentOperation
         /// Specifies the range of pages in the output document where the overlay or underlay will be applied.
         /// If not specified, the overlay or underlay is applied to all output pages.
         /// </summary>
-        /// <remarks>
-        /// <list type="table">
-        ///     <listheader>
-        ///         <term>Syntax</term>
-        ///         <description>Description</description>
-        ///     </listheader>
-        ///     <item>
-        ///         <term>1, 2, 3</term>
-        ///         <description>Plain numbers indicate pages numbered from the start</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>r1, r2</term>
-        ///         <description>Numbers with 'r' prefix count from the end (r1 = last page)</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>z</term>
-        ///         <description>Represents the last page (equivalent to r1)</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>1-5</term>
-        ///         <description>Dash-separated ranges are inclusive</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>5-1</term>
-        ///         <description>Reversed ranges list pages in descending order</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>x1-3</term>
-        ///         <description>Excludes specified pages from previous range</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>:odd</term>
-        ///         <description>Selects odd-positioned pages from the resulting page-set</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>:even</term>
-        ///         <description>Selects even-positioned pages from the resulting page-set</description>
-        ///     </item>
-        /// </list>
-        /// </remarks>
-        /// <example>
-        /// <list type="table">
-        ///     <listheader>
-        ///         <term>Expression</term>
-        ///         <description>Result</description>
-        ///     </listheader>
-        ///     <item>
-        ///         <term>1,6,4</term>
-        ///         <description>pages 1, 6, and 4 in that order</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>3-7</term>
-        ///         <description>pages 3 through 7 inclusive</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>7-3</term>
-        ///         <description>pages 7, 6, 5, 4, and 3 in that order</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>1-z</term>
-        ///         <description>all pages in order</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>z-1</term>
-        ///         <description>all pages in reverse order</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>r3-r1</term>
-        ///         <description>the last three pages of the document</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>r1-r3</term>
-        ///         <description>the last three pages of the document in reverse order</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>1-20:even</term>
-        ///         <description>even pages from 2 to 20</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>5,7-9,12</term>
-        ///         <description>pages 5, 7, 8, 9, and 12</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>5,7-9,12:odd</term>
-        ///         <description>pages 5, 8, and 12 (pages in odd positions from the original set of 5, 7, 8, 9, 12)</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>5,7-9,12:even</term>
-        ///         <description>pages 7 and 9 (pages in even positions from the original set of 5, 7, 8, 9, 12)</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>1-10,x3-4</term>
-        ///         <description>pages 1 through 10 except pages 3 and 4 (1, 2, and 5 through 10)</description>
-        ///     </item>
-        ///     <item>
-        ///         <term>4-10,x7-9,12-8,xr5</term>
-        ///         <description>In a 15-page file: pages 4, 5, 6, 10, 12, 10, 9, and 8 in that order (pages 4 through 10 except 7 through 9, followed by 12 through 8 descending, except 11 which is the fifth page from the end)</description>
-        ///     </item>
-        /// </list>
-        /// </example>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
         public string? TargetPages { get; set; }
 
         /// <summary>
         /// Specifies the range of pages in the overlay or underlay file to be used initially.
         /// If not specified, all pages in the overlay or underlay file will be used in sequence.
         /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
         public string? SourcePages { get; set; }
 
         /// <summary>
         /// Specifies an optional range of pages in the overlay or underlay file that will repeat after the initial source pages are exhausted.
         /// Useful for repeating certain pages of the overlay or underlay file across multiple pages of the output.
         /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
         public string? RepeatSourcePages { get; set; }
     }
     
@@ -205,90 +108,58 @@ public class DocumentOperation
     
     public class Encryption40Bit : EncryptionBase
     {
-        /// <summary>
-        /// Specifies whether the user is permitted to add signatures and annotations to the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.annotation"]/*' />
         public bool AllowAnnotation { get; set; } = true;
         
-        /// <summary>
-        /// Specifies whether the user is allowed to copy text and graphics from the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.contentExtraction"]/*' />
         public bool AllowContentExtraction { get; set; } = true;
         
-        /// <summary>
-        /// Specifies whether the user is permitted to insert, rotate, or delete pages within the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.modification"]/*' />
         public bool AllowModification { get; set; } = true;
 
-        /// <summary>
-        /// Specifies whether the user can print the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.printing"]/*' />
         public bool AllowPrinting { get; set; } = true;
     }
 
     public class Encryption128Bit : EncryptionBase
     {
-        /// <summary>
-        /// Specifies whether the user is permitted to add signatures and annotations to the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.annotation"]/*' />
         public bool AllowAnnotation { get; set; } = true;
     
-        /// <summary>
-        /// Specifies whether the user is permitted to insert, rotate, or delete pages within the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.assembly"]/*' />
         public bool AllowAssembly { get; set; } = true;
     
-        /// <summary>
-        /// Specifies whether the user is allowed to copy text and graphics from the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.contentExtraction"]/*' />
         public bool AllowContentExtraction { get; set; } = true;
     
-        /// <summary>
-        /// Specifies whether the user is allowed to fill out existing form fields in the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.fillingForms"]/*' />
         public bool AllowFillingForms { get; set; } = true;
 
-        /// <summary>
-        /// Specifies whether the user can print the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.printing"]/*' />
         public bool AllowPrinting { get; set; } = true;
     
-        /// <summary>
-        /// Determines whether the document's metadata is included in encryption.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.encryptMetadata"]/*' />
         public bool EncryptMetadata { get; set; } = true;
     }
 
     public class Encryption256Bit : EncryptionBase
     {
-        /// <summary>
-        /// Specifies whether the user is permitted to add signatures and annotations to the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.annotation"]/*' />
         public bool AllowAnnotation { get; set; } = true;
     
-        /// <summary>
-        /// Specifies whether the user is permitted to insert, rotate, or delete pages within the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.assembly"]/*' />
         public bool AllowAssembly { get; set; } = true;
     
-        /// <summary>
-        /// Specifies whether the user is allowed to copy text and graphics from the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.contentExtraction"]/*' />
         public bool AllowContentExtraction { get; set; } = true;
     
-        /// <summary>
-        /// Specifies whether the user is allowed to fill out existing form fields in the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.fillingForms"]/*' />
         public bool AllowFillingForms { get; set; } = true;
 
-        /// <summary>
-        /// Specifies whether the user can print the document.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.printing"]/*' />
         public bool AllowPrinting { get; set; } = true;
     
-        /// <summary>
-        /// Determines whether the document's metadata is included in encryption.
-        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.encryptMetadata"]/*' />
         public bool EncryptMetadata { get; set; } = true;
     }
     
@@ -322,6 +193,7 @@ public class DocumentOperation
     /// <summary>
     /// Selects specific pages from the current document based on the provided page selector, marking them for further operations.
     /// </summary>
+    /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
     public DocumentOperation TakePages(string pageSelector)
     {
         Configuration.Pages ??= new List<JobConfiguration.PageConfiguration>();
@@ -340,6 +212,7 @@ public class DocumentOperation
     /// </summary>
     /// <param name="filePath">The path to the PDF file to be merged.</param>
     /// <param name="pageSelector">An optional <see cref="DocumentPageSelector"/> to specify the range of pages to merge. If not provided, all pages will be merged.</param>
+    /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
     public DocumentOperation MergeFile(string filePath, string? pageSelector = null)
     {
         if (!File.Exists(filePath))
