@@ -22,3 +22,4 @@ Version 2024.10.3
 - Improved the layout debugging engine by fixing rare exceptions and increasing stability.
 - Updated the Skia dependency to version m131.
 - Changed conformance level to PDF/A-3b.
+- Strong-named the official nuget package.
