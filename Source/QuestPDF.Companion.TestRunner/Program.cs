@@ -28,7 +28,7 @@ Task RunGenericException()
                         x.Spacing(20);
 
                         x.Item().Text(Placeholders.LoremIpsum());
-                        x.Item().Hyperlink("questpdf.com").Image(Placeholders.Image(200, 200));
+                        x.Item().Hyperlink("questpdf.com").Image(Placeholders.Image(300, 200));
 
                         throw new Exception("New exception");
                     });
