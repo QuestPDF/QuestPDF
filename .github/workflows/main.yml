@@ -69,13 +69,6 @@ jobs:
           dotnet-version: '8.0.x'
 
 
-      - name: Decode and save the SNK file
-        shell: bash
-        run: echo "$NUGET_STRONG_NAME_SIGNING_KEY_FOR_QUESTPDF" | base64 --decode > NugetStrongNameSigningKeyForQuestPDF.snk
-        env:
-          NUGET_STRONG_NAME_SIGNING_KEY: ${{ secrets.NUGET_STRONG_NAME_SIGNING_KEY_FOR_QUESTPDF }}
-
-
       - name: Build and test solution
         shell: bash
         working-directory: ./Source
