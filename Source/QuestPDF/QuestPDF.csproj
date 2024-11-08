@@ -27,6 +27,8 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>NugetStrongNameSigningKeyForQuestPDF.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
 
     <ItemGroup>
