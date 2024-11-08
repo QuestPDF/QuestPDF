@@ -27,8 +27,8 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <SignAssembly>true</SignAssembly>
-        <AssemblyOriginatorKeyFile>NugetStrongNameSigningKeyForQuestPDF.snk</AssemblyOriginatorKeyFile>
+        <SignAssembly Condition="'$(GITHUB_ACTIONS)' == 'true'">true</SignAssembly>
+        <AssemblyOriginatorKeyFile Condition="'$(GITHUB_ACTIONS)' == 'true'">../NugetStrongNameSigningKeyForQuestPDF.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
 
     <ItemGroup>
