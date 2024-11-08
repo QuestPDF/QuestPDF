@@ -28,7 +28,7 @@
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <SignAssembly Condition="'$(GITHUB_ACTIONS)' == 'true'">true</SignAssembly>
-        <AssemblyOriginatorKeyFile Condition="'$(GITHUB_ACTIONS)' == 'true'">../NugetStrongNameSigningKeyForQuestPDF.snk</AssemblyOriginatorKeyFile>
+        <AssemblyOriginatorKeyFile Condition="'$(GITHUB_ACTIONS)' == 'true'">NugetStrongNameSigningKeyForQuestPDF.snk</AssemblyOriginatorKeyFile>
     </PropertyGroup>
 
     <ItemGroup>
