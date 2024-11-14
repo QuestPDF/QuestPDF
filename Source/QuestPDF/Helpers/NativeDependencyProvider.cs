@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace QuestPDF.Skia;
+namespace QuestPDF.Helpers;
 
-internal static class SkNativeDependencyProvider
+internal static class NativeDependencyProvider
 {
     public static readonly string[] SupportedPlatforms =
     {
@@ -57,7 +57,7 @@ internal static class SkNativeDependencyProvider
             Environment.CurrentDirectory,
             AppContext.BaseDirectory,
             Directory.GetCurrentDirectory(),
-            new FileInfo(typeof(SkNativeDependencyProvider).Assembly.Location).Directory?.FullName
+            new FileInfo(typeof(NativeDependencyProvider).Assembly.Location).Directory?.FullName
         };
         
         foreach (var location in availableLocations)
