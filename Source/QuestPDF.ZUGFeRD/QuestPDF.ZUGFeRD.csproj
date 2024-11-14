@@ -4,9 +4,9 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
+        <PlatformTarget>ARM64</PlatformTarget>
     </PropertyGroup>
 
     <ItemGroup>
@@ -22,16 +22,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\QuestPDF\QuestPDF.csproj" />
+        <ProjectReference Include="..\QuestPDF\QuestPDF.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="resource-factur-x.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="resource-zugferd-metadata.xml">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <None Update="resource-factur-x.xml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="resource-zugferd-metadata.xml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

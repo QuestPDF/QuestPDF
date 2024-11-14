@@ -477,6 +477,9 @@ public class DocumentOperation
     /// <param name="filePath">The path where the output file will be saved.</param>
     public void Save(string filePath)
     {
+        if (File.Exists(filePath))
+            File.Delete(filePath);
+        
         Configuration.OutputFile = filePath;
         var json = SimpleJsonSerializer.Serialize(Configuration);
         QpdfAPI.ExecuteJob(json);
