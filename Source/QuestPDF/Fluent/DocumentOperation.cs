@@ -41,6 +41,34 @@ public class DocumentOperation
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
         public string? RepeatSourcePages { get; set; }
     }
+
+    public enum DocumentAttachmentRelationship
+    {
+        /// <summary>
+        /// Indicates data files relevant to the document (e.g., supporting datasets or data tables).
+        /// </summary>
+        Data,
+        
+        /// <summary>
+        /// Represents a source file directly used to create the document.
+        /// </summary>
+        Source,
+        
+        /// <summary>
+        /// An alternative representation of the document content (e.g., XML, HTML).
+        /// </summary>
+        Alternative,
+        
+        /// <summary>
+        /// A file supplementing the content, like additional resources.
+        /// </summary>
+        Supplement,
+        
+        /// <summary>
+        /// No specific relationship is defined.
+        /// </summary>
+        Unspecified
+    }
     
     public class DocumentAttachment
     {
@@ -89,6 +117,11 @@ public class DocumentOperation
         /// If false, an exception is thrown if an attachment with the same key already exists.
         /// </summary>
         public bool Replace { get; set; } = true;
+        
+        /// <summary>
+        /// Specifies the relationship of the embedded file to the document for PDF/A-3b compliance.
+        /// </summary>
+        public DocumentAttachmentRelationship? Relationship { get; set; } = null;
     }
 
     public class EncryptionBase
@@ -295,7 +328,8 @@ public class DocumentOperation
             ModificationDate = GetFormattedDate(attachment.ModificationDate, File.GetLastWriteTime(attachment.FilePath)),
             MimeType = attachment.MimeType ?? GetDefaultMimeType(),
             Description = attachment.Description,
-            Replace = attachment.Replace ? string.Empty : null
+            Replace = attachment.Replace ? string.Empty : null,
+            Relationship = GetRelationship(attachment.Relationship)
         });
         
         return this;
@@ -309,6 +343,20 @@ public class DocumentOperation
         string GetFormattedDate(DateTime? value, DateTime defaultValue)
         {
             return $"D:{(value ?? defaultValue).ToUniversalTime():yyyyMMddHHmmsss}Z";
+        }
+        
+        string? GetRelationship(DocumentAttachmentRelationship? relationship)
+        {
+            return relationship switch
+            {
+                DocumentAttachmentRelationship.Data => "/Data",
+                DocumentAttachmentRelationship.Source => "/Source",
+                DocumentAttachmentRelationship.Alternative => "/Alternative",
+                DocumentAttachmentRelationship.Supplement => "/Alternative",
+                DocumentAttachmentRelationship.Unspecified => "/Unspecified",
+                null => null,
+                _ => throw new ArgumentOutOfRangeException(nameof(relationship), relationship, null)
+            };
         }
     }
     

@@ -45,6 +45,7 @@ class JobConfiguration
         [Name("mimetype")] public string? MimeType { get; set; }
         [Name("description")] public string? Description { get; set; }
         [Name("replace")] public string? Replace { get; set; }
+        [Name("relationship")] public string? Relationship { get; set; }
     }
 
     public class EncryptionSettings
