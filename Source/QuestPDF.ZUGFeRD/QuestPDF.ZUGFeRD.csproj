@@ -6,7 +6,6 @@
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
-        <PlatformTarget>ARM64</PlatformTarget>
     </PropertyGroup>
 
     <ItemGroup>
