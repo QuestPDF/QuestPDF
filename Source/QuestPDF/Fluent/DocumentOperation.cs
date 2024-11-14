@@ -306,6 +306,25 @@ public class DocumentOperation
         
         return this;
     }
+
+    /// <summary>
+    /// Extends the current document's XMP metadata by adding content within the <c>rdf:Description</c> tag.
+    /// This allows for adding additional descriptive metadata to the PDF, which is useful for compliance standards
+    /// like PDF/A or for industry-specific metadata (e.g., ZUGFeRD).
+    /// </summary>
+    /// <param name="metadata">
+    /// A string containing the metadata to add. This metadata must be valid XML content and conform to the
+    /// RDF structure required by the PDF XMP metadata specification.
+    /// </param>
+    public DocumentOperation ExtendMetadata(string metadata)
+    {
+        Configuration.ExtendMetadata = metadata
+            .Replace("\"", "\\\"")
+            .Replace("\n", "\\n")
+            .Replace("\r", "");
+        
+        return this;
+    }
     
     /// <summary>
     /// Adds an attachment to the document, with specified metadata and configuration options.
