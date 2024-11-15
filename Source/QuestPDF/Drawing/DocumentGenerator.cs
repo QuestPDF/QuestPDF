@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using QuestPDF.Companion;
 using QuestPDF.Drawing.Exceptions;
@@ -18,7 +17,7 @@ namespace QuestPDF.Drawing
     {
         static DocumentGenerator()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
         
         internal static void GeneratePdf(SkWriteStream stream, IDocument document)

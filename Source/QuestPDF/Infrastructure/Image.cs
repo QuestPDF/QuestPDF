@@ -26,7 +26,7 @@ namespace QuestPDF.Infrastructure
     {
         static Image()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
         
         internal SkImage SkImage { get; }

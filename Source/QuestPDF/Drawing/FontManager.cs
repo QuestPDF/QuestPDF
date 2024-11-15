@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -22,7 +21,7 @@ namespace QuestPDF.Drawing
 
         static FontManager()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
             RegisterLibraryDefaultFonts();
         }
         

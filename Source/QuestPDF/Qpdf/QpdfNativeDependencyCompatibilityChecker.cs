@@ -1,17 +1,26 @@
 using System;
-using QuestPDF.Qpdf;
+using QuestPDF.Helpers;
 
-namespace QuestPDF.Skia;
+namespace QuestPDF.Qpdf;
 
 internal static class QpdfNativeDependencyCompatibilityChecker
 {
-    public static void CheckIfExceptionIsThrownWhenLoadingNativeDependencies()
+    private static bool IsCompatibilityChecked = false;
+    
+    public static void Test()
     {
-        QpdfAPI.Initialize();
+        if (IsCompatibilityChecked)
+            return;
         
-        var qpdfVersion = QpdfAPI.GetQpdfVersion();
+        NativeDependencyCompatibilityChecker.Test(ExecuteNativeCode);
+        IsCompatibilityChecked = true;
+
+        void ExecuteNativeCode()
+        {
+            var qpdfVersion = QpdfAPI.GetQpdfVersion();
         
-        if (string.IsNullOrEmpty(qpdfVersion))
-            throw new Exception();
+            if (string.IsNullOrEmpty(qpdfVersion))
+                throw new Exception();
+        }
     }
 }

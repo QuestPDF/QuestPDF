@@ -6,11 +6,6 @@ namespace QuestPDF.Qpdf;
 
 class QpdfAPI
 {
-    public static void Initialize()
-    {
-        API.qpdf_init();
-    }
-    
     public static string? GetQpdfVersion()
     {
         var ptr = API.qpdf_get_qpdf_version();
@@ -19,6 +14,8 @@ class QpdfAPI
     
     public static void ExecuteJob(string jobJson)
     {
+        QpdfNativeDependencyCompatibilityChecker.Test();
+        
         // create StringBuilder that will store the error message
         var error = new StringBuilder();
         var errorHandle = GCHandle.Alloc(error);
@@ -71,9 +68,6 @@ class QpdfAPI
         
         /* GENERAL */
         
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr qpdf_init();
-    
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr qpdf_get_qpdf_version();
     

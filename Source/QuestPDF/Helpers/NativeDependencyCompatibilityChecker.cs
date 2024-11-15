@@ -7,25 +7,17 @@ namespace QuestPDF.Helpers
 {
     internal static class NativeDependencyCompatibilityChecker
     {
-        private static bool IsCompatibilityChecked = false;
-            
-        public static void Test()
+        public static void Test(Action executeNativeCode)
         {
             const string exceptionBaseMessage = "The QuestPDF library has encountered an issue while loading one of its dependencies.";
             const string paragraph = "\n\n";
-            
-            if (IsCompatibilityChecked)
-                return;
                 
             // test with dotnet-based mechanism where native files are provided
             // in the "runtimes/{rid}/native" folder on Core, or by the targets file on .NET Framework
-            var innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
+            var innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies(executeNativeCode);
 
             if (innerException == null)
-            {
-                IsCompatibilityChecked = true;
                 return;
-            }
 
             if (!NativeDependencyProvider.IsCurrentPlatformSupported())
                 ThrowCompatibilityException(innerException);
@@ -33,13 +25,10 @@ namespace QuestPDF.Helpers
             // detect platform, copy appropriate native files and test compatibility again
             NativeDependencyProvider.EnsureNativeFileAvailability();
             
-            innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
+            innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies(executeNativeCode);
 
             if (innerException == null)
-            {
-                IsCompatibilityChecked = true;
                 return;
-            }
 
             ThrowCompatibilityException(innerException);
             
@@ -72,13 +61,11 @@ namespace QuestPDF.Helpers
             }
         }
     
-        private static Exception? CheckIfExceptionIsThrownWhenLoadingNativeDependencies()
+        private static Exception? CheckIfExceptionIsThrownWhenLoadingNativeDependencies(Action executeNativeCode)
         {
             try
             {
-                SkNativeDependencyCompatibilityChecker.CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
-                QpdfNativeDependencyCompatibilityChecker.CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
-
+                executeNativeCode();
                 return null;
             }
             catch (Exception exception)
