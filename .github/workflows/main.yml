@@ -63,6 +63,17 @@ jobs:
           apk add libstdc++ libgcc
 
 
+      - name: Install Dependencies required for QPDF (Linux)
+        if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
+        shell: bash
+        run: apt install libjpeg --yes
+          
+
+      - name: Install Dependencies required for QPDF (Linux MUSL)
+        if: matrix.runtime.name == 'linux-musl-x64'
+        run: apk add libjpeg-turbo
+
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
