@@ -7,29 +7,28 @@ namespace QuestPDF.Skia;
 
 internal static class SkNativeDependencyCompatibilityChecker
 {
-    private static bool IsCompatibilityChecked = false;
+    private static NativeDependencyCompatibilityChecker Instance { get; } = new()
+    {
+        ExecuteNativeCode = ExecuteNativeCode
+    };
     
     public static void Test()
     {
-        if (IsCompatibilityChecked)
-            return;
-        
-        NativeDependencyCompatibilityChecker.Test(ExecuteNativeCode);
-        IsCompatibilityChecked = true;
+        Instance.Test();
+    }
 
-        void ExecuteNativeCode()
-        {
-            var random = new Random();
+    private static void ExecuteNativeCode()
+    {
+        var random = new Random();
             
-            var a = random.Next();
-            var b = random.Next();
+        var a = random.Next();
+        var b = random.Next();
         
-            var expected = a + b;
-            var returned = API.check_compatibility_by_calculating_sum(a, b);
+        var expected = a + b;
+        var returned = API.check_compatibility_by_calculating_sum(a, b);
         
-            if (expected != returned)
-                throw new Exception();
-        }
+        if (expected != returned)
+            throw new Exception();
     }
     
     private static class API

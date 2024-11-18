@@ -1,20 +1,36 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using QuestPDF.Skia;
 
 namespace QuestPDF.Helpers
 {
-    internal static class NativeDependencyCompatibilityChecker
+    internal class NativeDependencyCompatibilityChecker
     {
-        public static void Test(Action executeNativeCode)
+        private bool IsCompatibilityChecked { get; set; } = false;
+
+        public Action ExecuteNativeCode { get; set; } = () => { };
+        public Func<string> ExceptionHint { get; set; } = () => string.Empty;
+        
+        public void Test()
         {
+            if (IsCompatibilityChecked)
+                return;
+
+            TestOnce();
+            IsCompatibilityChecked = true;
+        }
+        
+        private void TestOnce()
+        {
+            if (IsCompatibilityChecked)
+                return;
+            
             const string exceptionBaseMessage = "The QuestPDF library has encountered an issue while loading one of its dependencies.";
             const string paragraph = "\n\n";
                 
             // test with dotnet-based mechanism where native files are provided
             // in the "runtimes/{rid}/native" folder on Core, or by the targets file on .NET Framework
-            var innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies(executeNativeCode);
+            var innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
 
             if (innerException == null)
                 return;
@@ -25,14 +41,14 @@ namespace QuestPDF.Helpers
             // detect platform, copy appropriate native files and test compatibility again
             NativeDependencyProvider.EnsureNativeFileAvailability();
             
-            innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies(executeNativeCode);
+            innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
 
             if (innerException == null)
                 return;
 
             ThrowCompatibilityException(innerException);
             
-            static void ThrowCompatibilityException(Exception innerException)
+            void ThrowCompatibilityException(Exception innerException)
             {
                 var supportedRuntimes = string.Join(", ", NativeDependencyProvider.SupportedPlatforms);
                 var currentRuntime = NativeDependencyProvider.GetRuntimePlatform();
@@ -56,16 +72,21 @@ namespace QuestPDF.Helpers
                 
                 if (RuntimeInformation.ProcessArchitecture is Architecture.Arm)
                     message += $"{paragraph}Please consider setting the 'Platform target' property to 'Arm64' in your project settings.";
+
+                var hint = ExceptionHint.Invoke();
+                
+                if (!string.IsNullOrEmpty(hint))
+                    message += $"{paragraph}{ExceptionHint}";
                 
                 throw new Exception(message, innerException);
             }
         }
     
-        private static Exception? CheckIfExceptionIsThrownWhenLoadingNativeDependencies(Action executeNativeCode)
+        private Exception? CheckIfExceptionIsThrownWhenLoadingNativeDependencies()
         {
             try
             {
-                executeNativeCode();
+                ExecuteNativeCode();
                 return null;
             }
             catch (Exception exception)
