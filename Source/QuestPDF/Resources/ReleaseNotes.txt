@@ -23,3 +23,7 @@ Version 2024.10.3
 - Updated the Skia dependency to version m131.
 - Changed conformance level to PDF/A-3b.
 - Strong-named the official nuget package.
+
+
+Version 2024.10.4
+- Fixed: The text underline decoration was not rendering correctly.
