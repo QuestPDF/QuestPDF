@@ -526,7 +526,7 @@ namespace QuestPDF.Elements.Text
         
         #region Handling Of Text Blocks With Only With Space
         
-        private ConcurrentDictionary<int, float> ParagraphContainingOnlyWhiteSpaceHeightCache { get; } = new(); // key: TextStyle.Id
+        private static ConcurrentDictionary<int, float> ParagraphContainingOnlyWhiteSpaceHeightCache { get; } = new(); // key: TextStyle.Id
         
         private bool CheckIfContainsOnlyWhiteSpace()
         {
