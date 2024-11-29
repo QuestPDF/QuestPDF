@@ -51,8 +51,8 @@ class SimpleJsonSerializer
         if (value == null) 
             return "null";
         
-        if (value is string) 
-            return $"\"{value}\"";
+        if (value is string text) 
+            return $"\"{EscapeStringForJson(text)}\"";
         
         if (value is bool)
             return value.ToString().ToLower();
@@ -77,5 +77,42 @@ class SimpleJsonSerializer
             return Serialize(value);
         
         return value.ToString();
+    }
+
+    private static string EscapeStringForJson(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        var builder = new StringBuilder(input.Length);
+
+        foreach (char c in input)
+        {
+            if (c == '\\')
+                builder.Append("\\\\");
+            
+            else if (c == '"')
+                builder.Append("\\\"");
+            
+            else if (c == '\b')
+                builder.Append("\\b");
+            
+            else if (c == '\f')
+                builder.Append("\\f");
+            
+            else if (c == '\n')
+                builder.Append("\\n");
+            
+            else if (c == '\r')
+                builder.Append("\\r");
+            
+            else if (c == '\t')
+                builder.Append("\\t");
+            
+            else
+                builder.Append(c);
+        }
+
+        return builder.ToString();
     }
 }

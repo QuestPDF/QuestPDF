@@ -318,11 +318,7 @@ public class DocumentOperation
     /// </param>
     public DocumentOperation ExtendMetadata(string metadata)
     {
-        Configuration.ExtendMetadata = metadata
-            .Replace("\"", "\\\"")
-            .Replace("\n", "\\n")
-            .Replace("\r", "");
-        
+        Configuration.ExtendMetadata = metadata;
         return this;
     }
     
