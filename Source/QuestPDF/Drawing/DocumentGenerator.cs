@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using QuestPDF.Companion;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.Proxy;
@@ -93,18 +94,54 @@ namespace QuestPDF.Drawing
             RenderDocument(canvas, document, DocumentSettings.Default);
             return canvas.GetContent();
         }
+
+        /// <summary>
+        /// Adjusts the concurrency level for the RenderDocument method to optimize performance.
+        /// 
+        /// While the Skia implementation is thread-safe, it appears to contain internal locks that hinder scalability.
+        /// Consequently, using multithreading for document rendering can reduce performance. This includes increased memory usage 
+        /// and slower generation times—potentially even worse than rendering documents sequentially.
+        /// 
+        /// Based on testing, using two concurrent threads yields the best performance in the current environment, 
+        /// though it is still not optimal. A potential area for investigation is the `SkParagraph.PlanLayout` method, 
+        /// which utilizes a paragraph cache within the `SkFontCollection` class. 
+        /// 
+        /// Notably:
+        /// - In theory, the paragraph cache is already disabled.
+        /// - Despite this, the method does not scale linearly with the number of CPU cores, indicating underlying synchronization bottlenecks.
+        /// 
+        /// Other potential contributors to the scalability issues may include:
+        /// 1. Garbage Collection: The generation process might create a large number of layout element instances 
+        ///    whose lifetimes span the entire document rendering process.
+        /// 2. CPU Cache Efficiency: Complex, large, and deeply nested document layout trees may lead to cache misses 
+        ///    as they are repeatedly traversed during rendering.
+        /// 
+        /// TODO:
+        /// - Investigate the underlying causes of these scalability issues in future releases.
+        /// - Explore optimizations for reducing locking contention, improving memory efficiency, and enhancing CPU cache utilization.
+        /// </summary>
+        private static SemaphoreSlim RenderDocumentSemaphore = new(2);
         
         private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
         {
-            canvas.BeginDocument();
+            RenderDocumentSemaphore.Wait();
+
+            try
+            {
+                canvas.BeginDocument();
             
-            if (document is MergedDocument mergedDocument)
-                RenderMergedDocument(canvas, mergedDocument, settings);
+                if (document is MergedDocument mergedDocument)
+                    RenderMergedDocument(canvas, mergedDocument, settings);
             
-            else
-                RenderSingleDocument(canvas, document, settings);
+                else
+                    RenderSingleDocument(canvas, document, settings);
             
-            canvas.EndDocument();
+                canvas.EndDocument();
+            }
+            finally
+            {
+                RenderDocumentSemaphore.Release();
+            }
         }
 
         private static void RenderSingleDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings)
