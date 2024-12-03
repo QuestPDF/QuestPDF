@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent
 {
@@ -11,7 +12,7 @@ namespace QuestPDF.Fluent
     {
         static ElementExtensions()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
         
         internal static Container Create(Action<IContainer> factory)

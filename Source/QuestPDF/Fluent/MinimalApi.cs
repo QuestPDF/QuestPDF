@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent
 {
@@ -9,7 +9,7 @@ namespace QuestPDF.Fluent
     {
         static Document()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
         
         private Action<IDocumentContainer> ContentSource { get; }

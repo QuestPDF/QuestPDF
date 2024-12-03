@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF
 {
@@ -65,7 +65,7 @@ namespace QuestPDF
         
         static Settings()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
     }
 }

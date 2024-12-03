@@ -15,7 +15,7 @@ namespace QuestPDF.Helpers
     {
         static Helpers()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
         
         internal static byte[] LoadEmbeddedResource(string resourceName)

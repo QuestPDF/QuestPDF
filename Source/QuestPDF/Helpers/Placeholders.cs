@@ -9,7 +9,7 @@ namespace QuestPDF.Helpers
     {
         static Placeholders()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
         
         public static readonly Random Random = new Random();
