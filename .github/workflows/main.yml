@@ -96,6 +96,8 @@ jobs:
 
           dotnet build QuestPDF/QuestPDF.csproj --configuration Release --property WarningLevel=0 --property BUILD_PACKAGE=true
 
+          dotnet build QuestPDF/QuestPDF.csproj --configuration Release --property WarningLevel=0 --property BUILD_PACKAGE=true
+
           TEST_EXECUTION_PATH='QuestPDF.ReportSample/bin/Release/net8.0/${{ matrix.runtime.name }}'
           mkdir -p testOutput/${{ matrix.runtime.name }} 
           cp -r $TEST_EXECUTION_PATH/report.pdf testOutput/${{ matrix.runtime.name }} 

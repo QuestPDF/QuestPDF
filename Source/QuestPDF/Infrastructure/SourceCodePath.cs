@@ -22,7 +22,11 @@ internal readonly struct SourceCodePath(StackFrame frame)
         // TODO: revise for dotnet 9
         if (CompanionService.IsDocumentHotReloaded)
             return null;
-
+        
+        #else
+        
+        return null;
+        
         #endif
 
         var stackTrace = new StackTrace(true);
