@@ -388,6 +388,9 @@ namespace QuestPDF.Drawing
                     return true;
                 }
 
+                if (content is Lazy lazy)
+                    return lazy.IsCacheable;
+
                 if (content is DynamicHost)
                     return false;
                 
@@ -468,6 +471,13 @@ namespace QuestPDF.Drawing
                     dynamicHost.ImageCompressionQuality ??= imageCompressionQuality;
                     dynamicHost.UseOriginalImage |= useOriginalImages;
                 }
+                
+                if (x is Lazy lazy)
+                {
+                    lazy.ImageTargetDpi ??= imageRasterDpi;
+                    lazy.ImageCompressionQuality ??= imageCompressionQuality;
+                    lazy.UseOriginalImage |= useOriginalImages;
+                }
 
                 if (x is TextBlock textBlock)
                 {
@@ -502,6 +512,9 @@ namespace QuestPDF.Drawing
 
             if (content is DynamicHost dynamicHost)
                 dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
+            
+            if (content is Lazy lazy)
+                lazy.TextStyle = lazy.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
             
             if (content is DefaultTextStyle defaultTextStyleElement)
                documentDefaultTextStyle = defaultTextStyleElement.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);

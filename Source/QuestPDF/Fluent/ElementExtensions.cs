@@ -8,6 +8,9 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent
 {
+    /// <summary>
+    /// Provides extension methods for manipulating and enhancing elements within a container.
+    /// </summary>
     public static class ElementExtensions
     {
         static ElementExtensions()
@@ -414,7 +417,42 @@ namespace QuestPDF.Fluent
         {
             return element.Element(new RepeatContent());
         }
-
+        
+        /// <summary>
+        /// <para>
+        /// Delays the creation of document content and reduces its lifetime, significantly lowering memory usage in large documents containing thousands of pages. 
+        /// This approach also enhances garbage collection efficiency in memory-constrained environments.
+        /// </para>
+        /// <para>
+        /// The provided <paramref name="contentBuilder"/> delegate is invoked later in the document generation process.
+        /// For optimal performance, divide your document into smaller sections, each encapsulated within its own Lazy element.
+        /// Further optimizations can be achieved by nesting Lazy elements within each other. 
+        /// However, note that this technique may increase the overall document generation time due to deferred content processing.
+        /// </para>
+        /// </summary>
+        public static void Lazy(this IContainer element, Action<IContainer> contentBuilder)
+        {
+            element.Element(new Lazy
+            {
+                ContentSource = contentBuilder,
+                IsCacheable = false
+            });
+        }
+        
+        /// <summary>
+        /// Functions similarly to the Lazy element but enables the library to use caching mechanisms for the content.
+        /// This can help optimize managed memory usage, although native memory usage may remain high.
+        /// Use LazyWithCache only when the increased generation time associated with the Lazy element is unacceptable.
+        /// </summary>
+        public static void LazyWithCache(this IContainer element, Action<IContainer> contentBuilder)
+        {
+            element.Element(new Lazy
+            {
+                ContentSource = contentBuilder,
+                IsCacheable = true
+            });
+        }
+        
         #region Canvas [Obsolete]
 
         private const string CanvasDeprecatedMessage = "The Canvas API has been deprecated since version 2024.3.0. Please use the .Svg(stringContent) API to provide custom content, and consult documentation webpage regarding integrating SkiaSharp with QuestPDF: https://www.questpdf.com/concepts/skia-sharp-integration.html";
