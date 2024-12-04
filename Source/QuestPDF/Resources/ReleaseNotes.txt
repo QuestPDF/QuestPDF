@@ -11,3 +11,10 @@ This release introduces several long-awaited features releated to document opera
 These features are built using the qpdf library, available under the "Apache-2.0" license.
 The qpdf library is available at: https://github.com/qpdf/qpdf
 We extend our thanks to the authors of qpdf for their contributions to the open-source community.
+
+
+Further improvements:
+- Adjusted the default path for loading font files to prevent rare application hangs in certain environments
+- Performance optimization: improved scalability by limiting the maximum level of parallelism
+- Performance optimization for legacy .NET Framework: collect stack trace only when running with the Companion App
+- TextBlock: slightly reduced memory usage
