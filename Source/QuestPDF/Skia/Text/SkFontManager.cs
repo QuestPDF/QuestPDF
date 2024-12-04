@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia.Text;
@@ -7,7 +8,7 @@ internal sealed class SkFontManager
 {
     public IntPtr Instance { get; }
     
-    public static SkFontManager Local { get; } = new(API.font_manager_create_local(Helpers.Helpers.ApplicationFilesPath));
+    public static SkFontManager Local { get; } = new(API.font_manager_create_local(Settings.FontDiscoveryPaths.FirstOrDefault() ?? Helpers.Helpers.ApplicationFilesPath));
     public static SkFontManager Global { get; } = new(API.font_manager_create_global());
 
     private SkFontManager(IntPtr instance)

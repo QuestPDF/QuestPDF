@@ -131,8 +131,19 @@ namespace QuestPDF.Helpers
             process.Start();
             process.WaitForExit();
         }
-        
-        internal static string ApplicationFilesPath => AppDomain.CurrentDomain.RelativeSearchPath ?? AppDomain.CurrentDomain.BaseDirectory;
+
+        internal static string ApplicationFilesPath
+        {
+            get
+            {
+                var baseDirectory = AppContext.BaseDirectory;
+
+                if (string.IsNullOrWhiteSpace(baseDirectory) || baseDirectory == "/")
+                    return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+
+                return baseDirectory;
+            }
+        }
         
         internal static (float widthScale, float heightScale) CalculateSpaceScale(this SkSvgImage image, Size availableSpace)
         {
