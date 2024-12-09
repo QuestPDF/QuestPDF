@@ -64,13 +64,13 @@ jobs:
 
 
       - name: Install Dependencies required for QPDF (Linux)
-        if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
+        if: (matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64') && false
         shell: bash
         run: apt install libssl-dev gnutls-dev libjpeg-dev --yes
           
 
       - name: Install Dependencies required for QPDF (Linux MUSL)
-        if: matrix.runtime.name == 'linux-musl-x64'
+        if: matrix.runtime.name == 'linux-musl-x64' && false
         run: apk add openssl gnutls libjpeg-turbo
 
 
