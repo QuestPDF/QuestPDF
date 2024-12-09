@@ -22,3 +22,4 @@ Further improvements:
 
 Version 2024.12.1
 - Fixed: The library now provides hints when an additional dependency is required.
+- Improved license-related exception.
