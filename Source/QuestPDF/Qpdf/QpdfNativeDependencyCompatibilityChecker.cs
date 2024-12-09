@@ -31,8 +31,6 @@ internal static class QpdfNativeDependencyCompatibilityChecker
         if (!platform.StartsWith("linux"))
             return string.Empty;
         
-        const string openSslHint = "Please also ensure that the OpenSSL library is installed on your system with version at least 3.0.0.";
-        
         var command = platform switch
         {
             "linux-x64" or "linux-arm64" => "apt install openssl-bin gnutls-bin libjpeg-dev",
@@ -40,6 +38,9 @@ internal static class QpdfNativeDependencyCompatibilityChecker
             _ => throw new NotSupportedException()
         };
         
-        return $"Installing additional dependencies may help. Likely command: '{command}'. {openSslHint}";
+        const string openSslHint = "Please also ensure that the OpenSSL library is installed on your system with version at least 3.0.0.";
+        const string qpdfHint = "Do NOT install the qpdf package.";
+        
+        return $"Installing additional dependencies may help. Please try the following command: '{command}'. {openSslHint} {qpdfHint}";
     }
 }
