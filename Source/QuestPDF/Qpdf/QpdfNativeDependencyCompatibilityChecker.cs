@@ -33,7 +33,7 @@ internal static class QpdfNativeDependencyCompatibilityChecker
         
         var command = platform switch
         {
-            "linux-x64" or "linux-arm64" => "apt install openssl-bin gnutls-bin libjpeg-dev",
+            "linux-x64" or "linux-arm64" => "apt install openssl gnutls-bin libjpeg-dev",
             "linux-musl-x64" => "apk add openssl gnutls libjpeg-turbo",
             _ => throw new NotSupportedException()
         };
