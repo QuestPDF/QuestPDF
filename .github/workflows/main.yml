@@ -70,7 +70,7 @@ jobs:
           
 
       - name: Install Dependencies required for QPDF (Linux MUSL)
-        if: matrix.runtime.name == 'linux-musl-x64' && false
+        if: matrix.runtime.name == 'linux-musl-x64'
         run: apk add openssl gnutls libjpeg-turbo
 
 
