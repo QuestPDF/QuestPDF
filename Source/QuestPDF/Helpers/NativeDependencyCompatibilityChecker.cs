@@ -76,7 +76,7 @@ namespace QuestPDF.Helpers
                 var hint = ExceptionHint.Invoke();
                 
                 if (!string.IsNullOrEmpty(hint))
-                    message += $"{paragraph}{ExceptionHint}";
+                    message += $"{paragraph}{hint}";
                 
                 throw new Exception(message, innerException);
             }

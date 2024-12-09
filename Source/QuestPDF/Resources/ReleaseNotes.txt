@@ -18,3 +18,7 @@ Further improvements:
 - Performance optimization: improved scalability by limiting the maximum level of parallelism
 - Performance optimization for legacy .NET Framework: collect stack trace only when running with the Companion App
 - TextBlock: slightly reduced memory usage
+
+
+Version 2024.12.1
+- Fixed: The library now provides hints when an additional dependency is required.
