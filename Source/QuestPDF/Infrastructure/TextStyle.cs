@@ -71,6 +71,11 @@ namespace QuestPDF.Infrastructure
 
         private SkTextStyle? SkTextStyleCache;
         
+        internal void ClearCache() 
+        {
+            SkTextStyleCache = null;
+        }
+
         internal SkTextStyle GetSkTextStyle()
         {
             if (SkTextStyleCache != null)
