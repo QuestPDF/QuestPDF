@@ -18,44 +18,44 @@
 
 ```csharp
 Document
-    .Create(document =>
+  .Create(document =>
+  {
+    document.Page(page =>
     {
-        document.Page(page =>
+      page.Size(PageSizes.Postcard);
+      page.Margin(0.3f, Unit.Inch);
+
+      page.Header()
+        .Text("Hello PDF!")
+        .FontSize(28)
+        .Bold()
+        .FontColor(Colors.Blue.Darken2);
+
+      page.Content()
+        .PaddingVertical(8)
+        .Column(column => 
         {
-            page.Size(PageSizes.Postcard);
-            page.Margin(0.3f, Unit.Inch);
+           column.Spacing(8);
 
-            page.Header()
-                .Text("Hello PDF!")
-                .FontSize(28)
-                .Bold()
-                .FontColor(Colors.Blue.Darken2);
+           column.Item()
+            .Text(Placeholders.LoremIpsum())
+            .Justify();
 
-            page.Content()
-                .PaddingVertical(8)
-                .Column(column => 
-                {
-                     column.Spacing(8);
-
-                     column.Item()
-                        .Text(Placeholders.LoremIpsum())
-                        .Justify();
-
-                    column.Item()
-                        .AspectRatio(16 / 9f)
-                        .Image(Placeholders.Image);
-                });
-
-            page.Footer()
-                .AlignCenter()
-                .Text(text => 
-                {
-                     text.Span("Page ");
-                     text.CurrentPageNumber();
-                });				
+          column.Item()
+            .AspectRatio(16 / 9f)
+            .Image(Placeholders.Image);
         });
-    })
-    .GeneratePdfAndShow();
+
+      page.Footer()
+        .AlignCenter()
+        .Text(text => 
+        {
+           text.Span("Page ");
+           text.CurrentPageNumber();
+        });				
+    });
+  })
+  .GeneratePdfAndShow();
 ```
 
 <img src="https://github.com/user-attachments/assets/ceb5fbbb-843e-46ae-97c1-082a704e8a99" width="400">
