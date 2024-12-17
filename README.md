@@ -56,7 +56,7 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 
 ⭐ Please give this repository a star. It takes seconds and help thousands of developers! ⭐
 
-<img src="https://github.com/user-attachments/assets/b1264e8a-ed11-4ab6-aec2-9e2d93066292" width="700" />
+<img src="https://github.com/user-attachments/assets/bbc7cdc6-ac09-4bb3-bb9d-8abfa81e79fb" width="700" />
 
 
 ## QuestPDF Companion App
