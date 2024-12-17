@@ -33,11 +33,11 @@ Document
 
       page.Content()
         .PaddingVertical(8)
-        .Column(column => 
+        .Column(column =>
         {
-           column.Spacing(8);
+          column.Spacing(8);
 
-           column.Item()
+          column.Item()
             .Text(Placeholders.LoremIpsum())
             .Justify();
 
@@ -48,17 +48,17 @@ Document
 
       page.Footer()
         .AlignCenter()
-        .Text(text => 
+        .Text(text =>
         {
-           text.Span("Page ");
-           text.CurrentPageNumber();
-        });				
+          text.Span("Page ");
+          text.CurrentPageNumber();
+        });
     });
   })
   .GeneratePdfAndShow();
 ```
 
-<img src="https://github.com/user-attachments/assets/ceb5fbbb-843e-46ae-97c1-082a704e8a99" width="400">
+<img src="https://github.com/user-attachments/assets/ceb5fbbb-843e-46ae-97c1-082a704e8a99" width="300">
 
 
 <br />
