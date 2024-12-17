@@ -18,34 +18,6 @@
 
 <img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
 
-<table>
-<tr>
-    <td>👨‍💻</td>
-    <td>Design PDF documents using C# and employ a code-only approach. Utilize your version control system to its fullest potential.</td>
-</tr>
-<tr>
-    <td>🧱</td>
-    <td>Compose PDF document with a range of powerful and predictable structural elements, such as text, image, border, table, and many more.</td>
-</tr>
-<tr>
-    <td>⚙️</td>
-    <td>Utilize a comprehensive layout engine, specifically designed for PDF document generation and paging support.</td>
-</tr>
-<tr>
-    <td>📖</td>
-    <td>Write code using concise and easy-to-understand C# Fluent API. Utilize IntelliSense to quickly discover available options.</td>
-</tr>
-<tr>
-    <td>🔗</td>
-    <td>Don't be limited to any proprietary scripting language or format. Follow your experience and leverage all modern C# features.</td>
-</tr>
-<tr>
-    <td>⌛</td>
-    <td>Save time thanks to a hot-reload capability, allowing real-time PDF document preview without code recompilation.</td>
-</tr>
-</table>
-
-<br />
 
 <br />
 
@@ -75,6 +47,88 @@ Accelerate your development with live document preview powered by the hot-reload
 
 [![Companion App](https://img.shields.io/badge/%F0%9F%9A%80%20read-companion%20app-blue?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
 
+<br />
+
+
+
+## What you need is here
+
+### Comprehensive Layout Engine
+A layout engine tailored for document generation, offering advanced paging and precise content control.
+
+### Rich Toolkit
+Craft documents with intuitive, reusable components and over 50 layout elements for complex designs.
+
+### High Performance
+Generate thousands of pages per second with minimal CPU and memory usage.
+
+### Advanced Language Support
+Seamlessly create multilingual documents with support for RTL, text shaping, and bi-directional content.
+
+<br />
+
+## Code-Focused Paradigm
+
+Using C# to design PDF documents leverages powerful control structures like if-statements, for-loops, and methods, enabling dynamic and highly customizable content generation.
+
+It promotes best practices such as modular design and reusability while seamlessly integrating with source control systems for collaboration and versioning.
+
+```csharp
+.Column(column =>
+{
+    if (Model.Comments != null)
+        column.Item().Text(Model.Comments);
+
+    foreach(var item in Model.Items)
+       column.Item().Element(c => CreateItem(c, item);
+});
+```
+
+```diff
+void CreateItem(IContainer container, Item item)
+{
+    container
+-       .Background(Colors.Grey.Lighten2)
++       .Background(item.Color)
+        .Padding(10)
+        .Text(item.Text);
+}
+```
+
+<br />
+
+## Perform common PDF operations
+
+- Merge documents
+- Attach files
+- Extract pages
+- Encrypt / decrypt
+- Extend metadata
+- Limit access
+- Optimize for Web
+- Overlay / underlay
+
+```csharp
+DocumentOperation
+    .LoadFile("input.pdf")
+    .TakePages("1-10")
+    .MergeFile("appendix.pdf", "1-z") // all pages
+    .AddAttachment(new DocumentAttachment
+    {
+        FilePath = "metadata.xml"
+    })
+    .Encrypt(new Encryption256Bit
+    {
+        OwnerPassword = "mypassword",
+        AllowPrinting = true,
+        AllowContentExtraction = false
+    })
+    .Save("final-document.pdf");
+```
+
+[![Getting started tutorial](https://img.shields.io/badge/%F0%9F%9A%80%20read-document%20operations-blue?style=for-the-badge)](https://www.questpdf.com/concepts/document-operations.html)
+
+<br />
 
 ## Let's get started
 
