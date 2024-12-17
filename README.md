@@ -61,7 +61,11 @@ Choosing a project dependency could be difficult. We need to ensure stability an
 
 ## QuestPDF Companion App
 
-The QuestPDF Companion application is a tool designed to simplify and speed up your development lifecycle. First, it shows a preview of your document. But the real magic starts with the hot-reload capability! It observes your code and updates the preview every time you change the implementation. Get real-time results without the need of code recompilation. Save time and enjoy the task!
+Accelerate your development with live document preview powered by the hot-reload capability, eliminating the need for code recompilation:
+- Explore document structure and hierarchy
+- Quickly magnify and measure content
+- Debug runtime exceptions with stack traces and code snippets
+- Identify, understand and solve layout errors
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
@@ -72,23 +76,9 @@ The QuestPDF Companion application is a tool designed to simplify and speed up y
 [![Companion App](https://img.shields.io/badge/%F0%9F%9A%80%20read-companion%20app-blue?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
 
 
-## Please share with the community
-
-As an open-source project without funding, I cannot afford advertising QuestPDF in a typical way. Instead, the library relies on community interactions. Please consider sharing a post about QuestPDF and the value it provides. It really does help!
-
-[![Share on Reddit](https://img.shields.io/badge/share%20on-reddit-red?logo=reddit&style=for-the-badge)](https://reddit.com/submit?url=https://github.com/QuestPDF/QuestPDF&title=Check%20out%20QuestPDF%20%F0%9F%8E%8A%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation%20%F0%9F%9A%80)
-[![Share on Twitter](https://img.shields.io/badge/share%20on-twitter-03A9F4?logo=twitter&style=for-the-badge)](https://twitter.com/share?url=https://github.com/QuestPDF/QuestPDF&text=Check%20out%20QuestPDF%20%F0%9F%8E%8A%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation%20%F0%9F%9A%80%20%23dotnet%20%23csharp%20%23questpdf)
-[![Share on HackerNews](https://img.shields.io/badge/share%20on-hacker%20news-orange?logo=ycombinator&style=for-the-badge)](https://news.ycombinator.com/submitlink?u=https://github.com/QuestPDF/QuestPDF&t=QuestPDF%20-%20a%20modern%20open-source%20.NET%20library%20%20for%20PDF%20document%20generation)
-[![Share on Facebook](https://img.shields.io/badge/share%20on-facebook-1976D2?logo=facebook&style=for-the-badge)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/QuestPDF/QuestPDF)
-
-<br />
-
-
 ## Let's get started
 
-Begin exploring the QuestPDF library today. You are 250 lines of C# code away from creating a fully functional PDF invoice implementation.
-
-Read the Getting Started tutorial to familiarize yourself with general library architecture, important layout structures as well as to better understand helpful patterns and practices. Easily start designing your PDF documents, reports, invoices and even more.
+Follow our detailed tutorial, and see how easy it is to produce a fully functional invoice with fewer than 250 lines of C# code.
 
 [![Getting started tutorial](https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue?style=for-the-badge)](https://www.questpdf.com/getting-started.html)
 
@@ -97,13 +87,12 @@ Read the Getting Started tutorial to familiarize yourself with general library a
 <br />
 
 
-## Library License
+## Sustainable and Fair License
 
-We identify the importance of the library in your projects, so we want to ensure you can safely and confidently continue the development.
+By offering free access to most users and premium licenses for larger organizations, the project maintains its commitment to excellence while ensuring sustainable, long-term development for all.
 
-Being a healthy and growing community is the primary goal that motivates us to pursue professionalism.
-
-The library is available for free to the vast majority of users. However, please look at the QuestPDF License and Pricing webpage for more details:
+> [!WARNING]
+> The library is free to use for any individual or business with less than 1 million USD annual gross revenue, or operates as a non-profit organization, or is a FOSS project.
 
 [![Library license details](https://img.shields.io/badge/%F0%9F%93%9C%0A%20read-license%20details-blue?style=for-the-badge)](https://www.questpdf.com/license/)
 
