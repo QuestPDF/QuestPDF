@@ -58,7 +58,7 @@ Document
     .GeneratePdfAndShow();
 ```
 
-<img src="https://github.com/user-attachments/assets/ceb5fbbb-843e-46ae-97c1-082a704e8a99" width="500">
+<img src="https://github.com/user-attachments/assets/ceb5fbbb-843e-46ae-97c1-082a704e8a99" width="400">
 
 
 <br />
@@ -82,7 +82,7 @@ Accelerate your development with live document preview powered by the hot-reload
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/39d4c08c-6a78-4743-8837-208c0c1718fd">
-  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="500">
+  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="600">
 </picture>
 
 [![Companion App](https://img.shields.io/badge/%F0%9F%9A%80%20read-companion%20app-blue?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
