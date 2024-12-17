@@ -9,14 +9,56 @@
 [![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/stargazers)
 [![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
 [![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
-[![QuestPDF License](https://img.shields.io/badge/LICENSE%20details-Community%20MIT%20and%20professional-green?style=for-the-badge)](https://www.questpdf.com/pricing.html)
+[![QuestPDF License](https://img.shields.io/badge/LICENSE%20details-Community%20MIT%20and%20professional-green?style=for-the-badge)](https://www.questpdf.com/license/)
 
 <br />
 
 
 ### QuestPDF is a modern open-source .NET library for PDF document generation. Offering comprehensive layout engine powered by concise and discoverable C# Fluent API.
 
-<img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/previewer/animation.gif?raw=true" width="100%">
+```csharp
+Document
+	.Create(document =>
+	{
+		document.Page(page =>
+		{
+			page.Size(PageSizes.Postcard);
+			page.Margin(0.3f, Unit.Inch);
+
+			page.Header()
+				.Text("Hello PDF!")
+				.FontSize(28)
+				.Bold()
+				.FontColor(Colors.Blue.Darken2);
+
+			page.Content()
+				.PaddingVertical(8)
+				.Column(column => 
+				{
+ 					column.Spacing(8);
+
+ 					column.Item()
+						.Text(Placeholders.LoremIpsum())
+						.Justify();
+
+					column.Item()
+						.AspectRatio(16 / 9f)
+						.Image(Placeholders.Image);
+				});
+
+			page.Footer()
+				.AlignCenter()
+				.Text(text => 
+				{
+ 					text.Span("Page ");
+ 					text.CurrentPageNumber();
+				});				
+		});
+	})
+	.GeneratePdfAndShow();
+```
+
+![image](https://github.com/user-attachments/assets/ceb5fbbb-843e-46ae-97c1-082a704e8a99)
 
 
 <br />
@@ -24,9 +66,7 @@
 
 ## Please help by giving a star
 
-Choosing a project dependency could be difficult. We need to ensure stability and maintainability of our projects. Surveys show that GitHub stars count play an important factor when assessing library quality. 
-
-⭐ Please give this repository a star. It takes seconds and help thousands of developers! ⭐
+GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! ⭐
 
 <img src="https://github.com/user-attachments/assets/bbc7cdc6-ac09-4bb3-bb9d-8abfa81e79fb" width="700" />
 
@@ -49,21 +89,12 @@ Accelerate your development with live document preview powered by the hot-reload
 
 <br />
 
-
-
 ## What you need is here
 
-### Comprehensive Layout Engine
-A layout engine tailored for document generation, offering advanced paging and precise content control.
-
-### Rich Toolkit
-Craft documents with intuitive, reusable components and over 50 layout elements for complex designs.
-
-### High Performance
-Generate thousands of pages per second with minimal CPU and memory usage.
-
-### Advanced Language Support
-Seamlessly create multilingual documents with support for RTL, text shaping, and bi-directional content.
+- `Comprehensive Layout Engine` - A layout engine tailored for document generation, offering advanced paging and precise content control.
+- `Rich Toolkit` - Craft documents with intuitive, reusable components and over 50 layout elements for complex designs.
+- `High Performance` - Generate thousands of pages per second with minimal CPU and memory usage.
+- `Advanced Language Support` - Seamlessly create multilingual documents with support for RTL, text shaping, and bi-directional content.
 
 <br />
 
@@ -94,6 +125,17 @@ void CreateItem(IContainer container, Item item)
         .Text(item.Text);
 }
 ```
+
+<br />
+
+## Multiplatform
+
+The library supports all major operating systems, integrates seamlessly with leading IDEs as well as popular cloud platforms and technologies to ensure maximum flexibility.
+
+- `Technologies`: modern dotnet, legacy .NET Framework, Docker
+- `Operating systems`: Windows, Linux, MacOS
+- `Cloud providers`: Azure, AWS, Google Cloud
+- `IDE`: Visual Studio, Visual Code, JetBrains Rider, others
 
 <br />
 
