@@ -18,47 +18,47 @@
 
 ```csharp
 Document
-	.Create(document =>
-	{
-		document.Page(page =>
-		{
-			page.Size(PageSizes.Postcard);
-			page.Margin(0.3f, Unit.Inch);
+    .Create(document =>
+    {
+        document.Page(page =>
+        {
+            page.Size(PageSizes.Postcard);
+            page.Margin(0.3f, Unit.Inch);
 
-			page.Header()
-				.Text("Hello PDF!")
-				.FontSize(28)
-				.Bold()
-				.FontColor(Colors.Blue.Darken2);
+            page.Header()
+                .Text("Hello PDF!")
+                .FontSize(28)
+                .Bold()
+                .FontColor(Colors.Blue.Darken2);
 
-			page.Content()
-				.PaddingVertical(8)
-				.Column(column => 
-				{
- 					column.Spacing(8);
+            page.Content()
+                .PaddingVertical(8)
+                .Column(column => 
+                {
+                     column.Spacing(8);
 
- 					column.Item()
-						.Text(Placeholders.LoremIpsum())
-						.Justify();
+                     column.Item()
+                        .Text(Placeholders.LoremIpsum())
+                        .Justify();
 
-					column.Item()
-						.AspectRatio(16 / 9f)
-						.Image(Placeholders.Image);
-				});
+                    column.Item()
+                        .AspectRatio(16 / 9f)
+                        .Image(Placeholders.Image);
+                });
 
-			page.Footer()
-				.AlignCenter()
-				.Text(text => 
-				{
- 					text.Span("Page ");
- 					text.CurrentPageNumber();
-				});				
-		});
-	})
-	.GeneratePdfAndShow();
+            page.Footer()
+                .AlignCenter()
+                .Text(text => 
+                {
+                     text.Span("Page ");
+                     text.CurrentPageNumber();
+                });				
+        });
+    })
+    .GeneratePdfAndShow();
 ```
 
-![image](https://github.com/user-attachments/assets/ceb5fbbb-843e-46ae-97c1-082a704e8a99)
+<img src="https://github.com/user-attachments/assets/ceb5fbbb-843e-46ae-97c1-082a704e8a99" width="500">
 
 
 <br />
@@ -82,7 +82,7 @@ Accelerate your development with live document preview powered by the hot-reload
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
   <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/39d4c08c-6a78-4743-8837-208c0c1718fd">
-  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994">
+  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="500">
 </picture>
 
 [![Companion App](https://img.shields.io/badge/%F0%9F%9A%80%20read-companion%20app-blue?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
@@ -91,10 +91,13 @@ Accelerate your development with live document preview powered by the hot-reload
 
 ## What you need is here
 
-- `Comprehensive Layout Engine` - A layout engine tailored for document generation, offering advanced paging and precise content control.
-- `Rich Toolkit` - Craft documents with intuitive, reusable components and over 50 layout elements for complex designs.
-- `High Performance` - Generate thousands of pages per second with minimal CPU and memory usage.
-- `Advanced Language Support` - Seamlessly create multilingual documents with support for RTL, text shaping, and bi-directional content.
+`Comprehensive Layout Engine` - A layout engine tailored for document generation, offering advanced paging and precise content control.
+
+`Rich Toolkit` - Craft documents with intuitive, reusable components and over 50 layout elements for complex designs.
+
+`High Performance` - Generate thousands of pages per second with minimal CPU and memory usage.
+
+`Advanced Language Support` - Seamlessly create multilingual documents with support for RTL, text shaping, and bi-directional content.
 
 <br />
 
