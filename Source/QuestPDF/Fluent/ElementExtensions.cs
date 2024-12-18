@@ -223,7 +223,7 @@ namespace QuestPDF.Fluent
         /// <remarks>
         /// This is especially useful for elements like tables, where you'd want to display several rows together. By setting the minHeight, you can avoid scenarios where only a single row appears at the page's end, ensuring a more cohesive presentation.
         /// </remarks>
-        public static IContainer EnsureSpace(this IContainer element, float minHeight = Elements.EnsureSpace.DefaultMinHeight)
+        public static IContainer EnsureSpace(this IContainer element, float? minHeight = null)
         {
             return element.Element(new EnsureSpace
             {

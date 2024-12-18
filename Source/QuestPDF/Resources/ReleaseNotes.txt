@@ -23,3 +23,7 @@ Further improvements:
 Version 2024.12.1
 - Fixed: The library now provides hints when an additional dependency is required.
 - Improved license-related exception.
+
+
+Version 2024.12.2
+- Enhanced the EnsureSpace element to work dynamically without a pre-configured vertical space threshold.
