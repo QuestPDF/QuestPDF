@@ -9,7 +9,7 @@ namespace QuestPDF
     {
         /// <summary>
         /// <para>Please kindly select license type that applies to your usage of the QuestPDF library.</para>
-        /// <para>For more details, please check the <a href="https://www.questpdf.com/pricing.html">QuestPDF License and Pricing webpage</a></para>
+        /// <para>For more details, please check the <a href="https://www.questpdf.com/license">QuestPDF License and Pricing webpage</a></para>
         /// </summary>
         public static LicenseType? License { get; set; }
         
