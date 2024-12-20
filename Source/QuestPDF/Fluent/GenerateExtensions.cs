@@ -15,7 +15,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static byte[] GeneratePdf(this IDocument document)
         {
-            return document.GeneratePdf();
+            return document.GeneratePdf(out var _);
         }
 
         /// <summary>
