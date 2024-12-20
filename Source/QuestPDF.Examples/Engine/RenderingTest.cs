@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using NUnit.Framework;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -24,7 +25,7 @@ namespace QuestPDF.Examples.Engine
         private bool ApplyDebugging { get; set; }
         private RenderingTestResult ResultType { get; set; } = RenderingTestResult.Images;
 
-        private bool ShowingResultsEnabled = true;
+        private static readonly bool ShowingResultsEnabled = (Environment.GetEnvironmentVariable("TEST_SHOW_RESULTS") ?? "true") == "true";
         
         private RenderingTest()
         {
@@ -125,7 +126,7 @@ namespace QuestPDF.Examples.Engine
 
             if (ResultType == RenderingTestResult.Pdf)
             {
-                if (ShowResult)
+                if (ShowResult && ShowingResultsEnabled)
                     document.GeneratePdfAndShow();
 
                 else

@@ -18,7 +18,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
         public static TextStyle FontColor(this TextStyle style, Color color)
         {
-            return style.Mutate(TextStyleProperty.Color, color);
+            return style
+                .Mutate(TextStyleProperty.Color, color)
+                .Mutate(TextStyleProperty.DecorationColor, color);
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.backgroundColor"]/*' />
@@ -56,11 +58,12 @@ namespace QuestPDF.Fluent
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.lineHeight"]/*' />
-        public static TextStyle LineHeight(this TextStyle style, float factor = 1)
+        public static TextStyle LineHeight(this TextStyle style, float? factor)
         {
             if (factor <= 0)
                 throw new ArgumentException("Line height must be greater than 0.");
             
+            factor ??= TextStyle.NormalLineHeightCalculatedFromFontMetrics;
             return style.Mutate(TextStyleProperty.LineHeight, factor);
         }
 
@@ -319,6 +322,22 @@ namespace QuestPDF.Fluent
             return style.TextDirection(Infrastructure.TextDirection.RightToLeft);
         }
 
+        #endregion
+
+        #region Font Features
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFeatures"]/*' />
+        public static TextStyle EnableFontFeature(this TextStyle style, string featureName)
+        {
+            return style.Mutate(TextStyleProperty.FontFeatures, new[] { (featureName, true) });
+        }
+
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFeatures"]/*' />
+        public static TextStyle DisableFontFeature(this TextStyle style, string featureName)
+        {
+            return style.Mutate(TextStyleProperty.FontFeatures, new[] { (featureName, false) });
+        }
+        
         #endregion
     }
 }

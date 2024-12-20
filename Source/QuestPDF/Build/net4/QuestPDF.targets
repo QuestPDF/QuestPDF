@@ -2,6 +2,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
         <None Include="$(MSBuildThisFileDirectory)\..\..\runtimes\**\*.*">
+            <Visible>false</Visible>
             <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>

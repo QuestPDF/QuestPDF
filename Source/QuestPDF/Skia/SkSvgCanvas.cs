@@ -14,7 +14,7 @@ internal sealed class SkSvgCanvas
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr svg_create_canvas(SkRect bounds, IntPtr writeStream);
     }
 }

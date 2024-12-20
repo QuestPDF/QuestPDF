@@ -5,16 +5,21 @@ using QuestPDF.Helpers;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
 
+using TextStyleFontFeature = (string Name, bool Enabled);
+
 namespace QuestPDF.Infrastructure
 {
     public record TextStyle
     {
+        internal const float NormalLineHeightCalculatedFromFontMetrics = 0;
+        
         internal int Id { get; set; }
         
         internal Color? Color { get; set; }
         internal Color? BackgroundColor { get; set; }
         internal Color? DecorationColor { get; set; }
         internal string[]? FontFamilies { get; set; }
+        internal TextStyleFontFeature[]? FontFeatures { get; set; }
         internal float? Size { get; set; }
         internal float? LineHeight { get; set; }
         internal float? LetterSpacing { get; set; }
@@ -40,9 +45,10 @@ namespace QuestPDF.Infrastructure
             Color = Colors.Black,
             BackgroundColor = Colors.Transparent,
             DecorationColor = Colors.Black,
-            FontFamilies = new[] { Fonts.Lato },
+            FontFamilies = [ Fonts.Lato ],
+            FontFeatures = [],
             Size = 12,
-            LineHeight = 1.2f,
+            LineHeight = NormalLineHeightCalculatedFromFontMetrics,
             LetterSpacing = 0,
             WordSpacing = 0f,
             FontWeight = Infrastructure.FontWeight.Normal,
@@ -52,8 +58,15 @@ namespace QuestPDF.Infrastructure
             HasUnderline = false,
             HasOverline = false,
             DecorationStyle = TextStyleConfiguration.TextDecorationStyle.Solid,
-            DecorationThickness = 2f,
+            DecorationThickness = 1f,
             Direction = TextDirection.Auto
+        };
+        
+        internal static TextStyle ParagraphSpacing { get; } = LibraryDefault with
+        {
+            Id = 2,
+            Size = 0,
+            LineHeight = 1
         };
 
         private SkTextStyle? SkTextStyleCache;
@@ -69,9 +82,11 @@ namespace QuestPDF.Infrastructure
             {
                 FontSize = CalculateTargetFontSize(),
                 FontWeight = (TextStyleConfiguration.FontWeights?)FontWeight ?? TextStyleConfiguration.FontWeights.Normal,
-                
                 IsItalic = IsItalic ?? false,
+                
                 FontFamilies = GetFontFamilyPointers(fontFamilyTexts),
+                FontFeatures = GetFontFeatures(),
+                
                 ForegroundColor = Color ?? Colors.Black,
                 BackgroundColor = BackgroundColor ?? Colors.Transparent,
                 DecorationColor = DecorationColor ?? Colors.Black,
@@ -81,7 +96,7 @@ namespace QuestPDF.Infrastructure
                 DecorationStyle = DecorationStyle ?? TextStyleConfiguration.TextDecorationStyle.Solid,
                 DecorationThickness = DecorationThickness ?? 1,
                 
-                LineHeight = LineHeight ?? 1,
+                LineHeight = LineHeight ?? NormalLineHeightCalculatedFromFontMetrics,
                 LetterSpacing = (LetterSpacing ?? 0) * (Size ?? 1),
                 WordSpacing = (WordSpacing ?? 0) * (Size ?? 1),
                 BaselineOffset = CalculateBaselineOffset(),
@@ -96,6 +111,19 @@ namespace QuestPDF.Infrastructure
                 
                 for (var i = 0; i < Math.Min(result.Length, texts.Count); i++)
                     result[i] = texts[i].Instance;
+                
+                return result;
+            }
+            
+            TextStyleConfiguration.FontFeature[] GetFontFeatures(params (string name, int value)[] features)
+            {
+                var result = new TextStyleConfiguration.FontFeature[TextStyleConfiguration.FONT_FEATURES_LENGTH];
+
+                foreach (var (feature, index) in FontFeatures.Take(TextStyleConfiguration.FONT_FEATURES_LENGTH).Select((x, i) => (x, i)))
+                {
+                    result[index].Name = feature.Name;
+                    result[index].Value = feature.Enabled ? 1 : 0;
+                }
                 
                 return result;
             }

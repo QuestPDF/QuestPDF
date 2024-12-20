@@ -44,7 +44,7 @@ namespace QuestPDF.UnitTests
                 
                 // In the next attempt of measuring element, it should behave like empty parent.
                 .MeasureElement(new Size(600, 200))
-                .CheckMeasureResult(SpacePlan.FullRender(0, 0))
+                .CheckMeasureResult(SpacePlan.Empty())
                 
                 // In the next attempt of measuring element, it should not draw its child
                 .DrawElement(new Size(600, 200))

@@ -6,20 +6,27 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class DecorationItemRenderingCommand
+    internal class DecorationElementLayout
     {
-        public Element Element { get; set; }
-        public SpacePlan Measurement { get; set; }
-        public Position Offset { get; set; }
+        public ItemCommand Before { get; set; }
+        public ItemCommand Content { get; set; }
+        public ItemCommand After { get; set; }
+        
+        public struct ItemCommand
+        {
+            public Element Element;
+            public SpacePlan Measurement;
+            public Position Offset;
+        }
     }
 
-    internal sealed class Decoration : Element, ICacheable, IContentDirectionAware
+    internal sealed class Decoration : Element, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         
-        internal Element Before { get; set; } = new Empty();
-        internal Element Content { get; set; } = new Empty();
-        internal Element After { get; set; } = new Empty();
+        internal Element Before { get; set; } = new DebugPointer(DebugPointerType.ElementStructure, "Before");
+        internal Element Content { get; set; } = new DebugPointer(DebugPointerType.ElementStructure, "Content");
+        internal Element After { get; set; } = new DebugPointer(DebugPointerType.ElementStructure, "After");
 
         internal override IEnumerable<Element?> GetChildren()
         {
@@ -37,19 +44,38 @@ namespace QuestPDF.Elements
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            var renderingCommands = PlanLayout(availableSpace).ToList();
+            var layout = PlanLayout(availableSpace);
 
-            if (renderingCommands.Any(x => x.Measurement.Type == SpacePlanType.Wrap))
-                return SpacePlan.Wrap();
+            if (layout.Content.Measurement.Type == SpacePlanType.Empty)
+                return SpacePlan.Empty();
+            
+            if (layout.Content.Measurement.Type == SpacePlanType.Wrap)
+                return SpacePlan.Wrap("The primary content does not fit on the page.");
 
-            var width = renderingCommands.Max(x => x.Measurement.Width);
-            var height = renderingCommands.Sum(x => x.Measurement.Height);
+            if (layout.Before.Measurement.Type == SpacePlanType.Wrap)
+                return layout.Before.Measurement;
+            
+            if (layout.After.Measurement.Type == SpacePlanType.Wrap)
+                return layout.After.Measurement;
+            
+            var itemMeasurements = new[]
+            {
+                layout.Before.Measurement,
+                layout.Content.Measurement,
+                layout.After.Measurement
+            };
+            
+            var width = itemMeasurements.Max(x => x.Width);
+            var height = itemMeasurements.Sum(x => x.Height);
             var size = new Size(width, height);
             
-            if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
-                return SpacePlan.Wrap();
+            if (width > availableSpace.Width + Size.Epsilon)
+                return SpacePlan.Wrap("The content slot requires more horizontal space than available.");
             
-            var willBeFullyRendered = renderingCommands.All(x => x.Measurement.Type == SpacePlanType.FullRender);
+            if (height > availableSpace.Height + Size.Epsilon)
+                return SpacePlan.Wrap("The content slot requires more vertical space than available.");
+            
+            var willBeFullyRendered = itemMeasurements.All(x => x.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
 
             return willBeFullyRendered
                 ? SpacePlan.FullRender(size)
@@ -58,10 +84,18 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            var renderingCommands = PlanLayout(availableSpace).ToList();
-            var width = renderingCommands.Max(x => x.Measurement.Width);
+            var layout = PlanLayout(availableSpace);
             
-            foreach (var command in renderingCommands)
+            var drawingCommands = new[]
+            {
+                layout.Before,
+                layout.Content,
+                layout.After
+            };
+            
+            var width = drawingCommands.Max(x => x.Measurement.Width);
+            
+            foreach (var command in drawingCommands)
             {
                 var elementSize = new Size(width, command.Measurement.Height);
                 
@@ -75,15 +109,16 @@ namespace QuestPDF.Elements
             }
         }
 
-        private IEnumerable<DecorationItemRenderingCommand> PlanLayout(Size availableSpace)
+        private DecorationElementLayout PlanLayout(Size availableSpace)
         {
             SpacePlan GetDecorationMeasurement(Element element)
             {
                 var measurement = element.Measure(availableSpace);
-                
-                return measurement.Type == SpacePlanType.FullRender 
-                    ? measurement 
-                    : SpacePlan.Wrap();
+
+                if (measurement.Type is SpacePlanType.PartialRender or SpacePlanType.Wrap)
+                    return SpacePlan.Wrap("Decoration slot (before or after) does not fit fully on the page.");
+
+                return measurement;
             }
             
             var beforeMeasurement = GetDecorationMeasurement(Before);
@@ -92,25 +127,26 @@ namespace QuestPDF.Elements
             var contentSpace = new Size(availableSpace.Width, availableSpace.Height - beforeMeasurement.Height - afterMeasurement.Height);
             var contentMeasurement = Content.Measure(contentSpace);
 
-            yield return new DecorationItemRenderingCommand
+            return new DecorationElementLayout
             {
-                Element = Before,
-                Measurement = beforeMeasurement,
-                Offset = Position.Zero
-            };
-            
-            yield return new DecorationItemRenderingCommand
-            {
-                Element = Content,
-                Measurement = contentMeasurement,
-                Offset = new Position(0, beforeMeasurement.Height)
-            };
-
-            yield return new DecorationItemRenderingCommand
-            {
-                Element = After,
-                Measurement = afterMeasurement,
-                Offset = new Position(0, beforeMeasurement.Height + contentMeasurement.Height)
+                Before = new DecorationElementLayout.ItemCommand
+                {
+                    Element = Before,
+                    Measurement = beforeMeasurement,
+                    Offset = Position.Zero
+                },
+                Content = new DecorationElementLayout.ItemCommand
+                {
+                    Element = Content,
+                    Measurement = contentMeasurement,
+                    Offset = new Position(0, beforeMeasurement.Height)
+                },
+                After = new DecorationElementLayout.ItemCommand
+                {
+                    Element = After,
+                    Measurement = afterMeasurement,
+                    Offset = new Position(0, beforeMeasurement.Height + contentMeasurement.Height)
+                },
             };
         }
     }

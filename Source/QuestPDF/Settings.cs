@@ -1,6 +1,7 @@
 ﻿using System;
-using QuestPDF.Helpers;
+using System.Collections.Generic;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF
 {
@@ -8,7 +9,7 @@ namespace QuestPDF
     {
         /// <summary>
         /// <para>Please kindly select license type that applies to your usage of the QuestPDF library.</para>
-        /// <para>For more details, please check the <a href="https://www.questpdf.com/pricing.html">QuestPDF License and Pricing webpage</a></para>
+        /// <para>For more details, please check the <a href="https://www.questpdf.com/license">QuestPDF License and Pricing webpage</a></para>
         /// </summary>
         public static LicenseType? License { get; set; }
         
@@ -19,12 +20,12 @@ namespace QuestPDF
         /// This flag generates additional document elements to cache layout calculation results.
         /// In the vast majority of cases, this significantly improves performance, while slightly increasing memory consumption.
         /// </summary>
-        /// <remarks>By default, this flag is enabled only when the debugger is NOT attached.</remarks>
-        public static bool EnableCaching { get; set; } = !System.Diagnostics.Debugger.IsAttached;
+        /// <remarks>Enabled by default.</remarks>
+        public static bool EnableCaching { get; set; } = true;
         
         /// <summary>
         /// This flag generates additional document elements to improve layout debugging experience.
-        /// When the provided content contains size constraints impossible to meet, the library generates special visual annotations to help determining the root cause.
+        /// When the provided content contains size constraints impossible to meet, the library generates an enhanced exception message with additional location and layout measurement details.
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>  
         public static bool EnableDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
@@ -50,9 +51,21 @@ namespace QuestPDF
         /// </remarks>
         public static bool UseEnvironmentFonts { get; set; } = true;
         
+        /// <summary>
+        /// Specifies the collection of paths where the library will automatically search for font files to register.
+        /// </summary>
+        /// <remarks>
+        /// <para>By default, this collection contains the application files path.</para>
+        /// <para>You can add additional paths to this collection to include more directories for automatic font registration.</para>
+        /// </remarks>
+        public static ICollection<string> FontDiscoveryPaths { get; } = new List<string>()
+        {
+            Helpers.Helpers.ApplicationFilesPath
+        };
+        
         static Settings()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
     }
 }

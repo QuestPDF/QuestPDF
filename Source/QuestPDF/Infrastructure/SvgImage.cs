@@ -18,12 +18,12 @@ public class SvgImage
     
     private SvgImage(string content)
     {
-        SkSvgImage = new SkSvgImage(content, FontManager.CurrentFontManager);    
+        SkSvgImage = new SkSvgImage(content, SkResourceProvider.CurrentResourceProvider, FontManager.CurrentFontManager);    
     }
 
     ~SvgImage()
     {
-        SkSvgImage.Dispose();
+        SkSvgImage?.Dispose();
     }
     
     /// <summary>
@@ -34,7 +34,14 @@ public class SvgImage
     public static SvgImage FromFile(string filePath)
     {
         if (!File.Exists(filePath))
-            throw new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
+        {
+            var fallbackPath = Path.Combine(Helpers.Helpers.ApplicationFilesPath, filePath);
+                
+            if (!File.Exists(fallbackPath))
+                throw new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
+                
+            filePath = fallbackPath;
+        }
             
         var svg = File.ReadAllText(filePath);
         return new SvgImage(svg);

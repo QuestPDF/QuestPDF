@@ -32,6 +32,12 @@ QuestPDF Contributors:
 - donmurta
 - jcl-aadlab
 - lmingle
+- JeremyVm
+- ebarnard
+- MercinaM
+- rima1098
+- JerryZingg
+
 
 You can always find the most up-to-date list at: https://github.com/QuestPDF/QuestPDF/graphs/contributors
 

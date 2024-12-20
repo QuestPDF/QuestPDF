@@ -160,7 +160,7 @@ namespace QuestPDF.Examples
         [Test]
         public void Exception()
         {
-            Assert.Throws<Exception>(() =>
+            Assert.Throws<DocumentComposeException>(() =>
             {
                 RenderingTest
                     .Create()

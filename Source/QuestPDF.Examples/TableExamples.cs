@@ -123,12 +123,12 @@ namespace QuestPDF.Examples
             RenderingTest
                 .Create()
                 .ProduceImages()
-                .PageSize(320, 80)
+                .PageSize(440, 100)
                 .ShowResults()
                 .Render(container =>
                 {
                     container
-                        .Padding(10)
+                        .Padding(20)
                         .Table(table =>
                         {
                             table.ColumnsDefinition(columns =>
@@ -139,7 +139,7 @@ namespace QuestPDF.Examples
                                 columns.RelativeColumn(3);
                             });
 
-                            table.Cell().ColumnSpan(4).LabelCell("Total width: 300px");
+                            table.Cell().ColumnSpan(4).LabelCell("Total width: 400px");
                             table.Cell().ValueCell("50px");
                             table.Cell().ValueCell("100px");
                             table.Cell().ValueCell("100px");
@@ -313,6 +313,40 @@ namespace QuestPDF.Examples
                             table.Cell().Image(image);
                             table.Cell().Image(image);
                             table.Cell().Image(image);
+                        });
+                });
+        }
+        
+        [Test]
+        public void TableContinued()
+        {
+            RenderingTest
+                .Create()
+                .ProducePdf()
+                .PageSize(PageSizes.A5)
+                .ShowResults()
+                .Render(container =>
+                {
+                    var content = new[]
+                    {
+                        ("Label 1", "Value 234"),
+                        ("Label 12", "Value 34"),
+                        ("Label 123", "Value 4")
+                    };
+                    
+                    container
+                        .Padding(20)
+                        .AlignRight()
+                        .Column(column =>
+                        {
+                            foreach (var value in content)
+                            {
+                                column.Item().AlignRight().Row(row =>
+                                {
+                                    row.AutoItem().Text($"{value.Item1}:").Bold();
+                                    row.ConstantItem(75).AlignRight().Text(value.Item2);
+                                });
+                            }
                         });
                 });
         }

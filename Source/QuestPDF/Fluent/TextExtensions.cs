@@ -111,9 +111,30 @@ namespace QuestPDF.Fluent
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.clampLines"]/*' />
-        public TextBlockDescriptor ClampLines(int maxLines)
+        public TextBlockDescriptor ClampLines(int maxLines, string ellipsis = TextDescriptor.DefaultLineClampEllipsis)
         {
             TextBlock.LineClamp = maxLines;
+            TextBlock.LineClampEllipsis = ellipsis;
+            return this;
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.paragraph.spacing"]/*' />
+        public TextBlockDescriptor ParagraphSpacing(float value, Unit unit = Unit.Point)
+        {
+            if (value < 0)
+                throw new ArgumentException("Paragraph spacing must be greater or equal to zero", nameof(value));
+            
+            TextBlock.ParagraphSpacing = value.ToPoints(unit);
+            return this;
+        }
+
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.paragraph.firstLineIndentation"]/*' />
+        public TextBlockDescriptor ParagraphFirstLineIndentation(float value, Unit unit = Unit.Point)
+        {
+            if (value < 0)
+                throw new ArgumentException("Paragraph indentation must be greater or equal to zero", nameof(value));
+            
+            TextBlock.ParagraphFirstLineIndentation = value.ToPoints(unit);
             return this;
         }
     }
@@ -123,6 +144,8 @@ namespace QuestPDF.Fluent
         internal TextBlock TextBlock { get; } = new();
         private TextStyle? DefaultStyle { get; set; }
 
+        internal const string DefaultLineClampEllipsis = "…";
+        
         /// <summary>
         /// Applies a consistent text style for the whole content within this <see cref="TextExtensions.Text">Text</see> element.
         /// </summary>
@@ -178,15 +201,28 @@ namespace QuestPDF.Fluent
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.clampLines"]/*' />
-        public void ClampLines(int maxLines)
+        public void ClampLines(int maxLines, string ellipsis = DefaultLineClampEllipsis)
         {
             TextBlock.LineClamp = maxLines;
+            TextBlock.LineClampEllipsis = ellipsis;
         }
         
-        [Obsolete("This method is not supported since the 2024.3 version. Please split your text into separate paragraphs, combine using the Column element that also provides the Spacing capability.")]
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.paragraph.spacing"]/*' />
         public void ParagraphSpacing(float value, Unit unit = Unit.Point)
         {
+            if (value < 0)
+                throw new ArgumentException("Paragraph spacing must be greater or equal to zero", nameof(value));
             
+            TextBlock.ParagraphSpacing = value.ToPoints(unit);
+        }
+
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.paragraph.firstLineIndentation"]/*' />
+        public void ParagraphFirstLineIndentation(float value, Unit unit = Unit.Point)
+        {
+            if (value < 0)
+                throw new ArgumentException("Paragraph indentation must be greater or equal to zero", nameof(value));
+            
+            TextBlock.ParagraphFirstLineIndentation = value.ToPoints(unit);
         }
 
         [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
@@ -201,7 +237,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public TextSpanDescriptor Span(string? text)
         {
-            if (IsNullOrEmpty(text))
+            if (text == null)
                 return new TextSpanDescriptor(new TextBlockSpan());
 
             var textSpan = new TextBlockSpan() { Text = text };
@@ -316,7 +352,7 @@ namespace QuestPDF.Fluent
             if (IsNullOrEmpty(sectionName))
                 throw new ArgumentException("Section name cannot be null or empty", nameof(sectionName));
 
-            if (IsNullOrEmpty(text))
+            if (text == null)
                 return new TextSpanDescriptor(new TextBlockSpan());
 
             var textBlockItem = new TextBlockSectionLink
@@ -345,7 +381,7 @@ namespace QuestPDF.Fluent
             if (IsNullOrEmpty(url))
                 throw new ArgumentException("Url cannot be null or empty", nameof(url));
 
-            if (IsNullOrEmpty(text))
+            if (text == null)
                 return new TextSpanDescriptor(new TextBlockSpan());
             
             var textBlockItem = new TextBlockHyperlink
@@ -442,7 +478,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public static TextBlockDescriptor Text(this IContainer container, string? text)
         {
-            if (IsNullOrEmpty(text))
+            if (text == null)
                 return new TextBlockDescriptor(new TextBlock(), new TextBlockSpan());
             
             var textBlock = new TextBlock();

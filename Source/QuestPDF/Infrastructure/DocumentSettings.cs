@@ -5,9 +5,9 @@
         public const int DefaultRasterDpi = 72;
         
         /// <summary>
-        /// Gets or sets a value indicating whether or not make the document PDF/A-2b conformant.
+        /// Gets or sets a value indicating whether or not make the document PDF/A-3b conformant.
         /// If true, include XMP metadata, a document UUID, and sRGB output intent information.
-        /// This adds length to the document and makes it non-reproducable, but are necessary features for PDF/A-2b conformance.
+        /// This adds length to the document and makes it non-reproducable, but are necessary features for PDF/A-3b conformance.
         /// </summary>
         public bool PdfA { get; set; } = false;
 

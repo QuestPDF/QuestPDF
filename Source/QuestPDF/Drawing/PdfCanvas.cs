@@ -39,8 +39,6 @@ namespace QuestPDF.Drawing
                 ModificationDate = new SkDateTime(documentMetadata.ModifiedDate),
                 
                 RasterDPI = documentSettings.ImageRasterDpi,
-                ImageEncodingQuality = documentSettings.ImageCompressionQuality.ToQualityValue(),
-                
                 SupportPDFA = documentSettings.PdfA,
                 CompressDocument = documentSettings.CompressDocument
             };

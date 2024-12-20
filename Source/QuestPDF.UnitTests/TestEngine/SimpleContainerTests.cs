@@ -22,8 +22,8 @@ namespace QuestPDF.UnitTests.TestEngine
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(400, 300), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(new Size(400, 300), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         private static void Measure_PartialRender<TElement>() where TElement : Element, IContainer, new()

@@ -1,6 +1,8 @@
+using QuestPDF.Infrastructure;
+
 namespace QuestPDF.Elements.Table
 {
-    internal sealed class TableCell : Container, ITableCellContainer
+    internal sealed class TableCell : ContainerElement, ITableCellContainer
     {
         public int Row { get; set; } = 0;
         public int RowSpan { get; set; } = 1;

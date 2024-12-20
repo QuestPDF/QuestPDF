@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Scale : ContainerElement, ICacheable
+    internal sealed class Scale : ContainerElement
     {
         public float ScaleX { get; set; } = 1;
         public float ScaleY { get; set; } = 1;
@@ -17,8 +19,8 @@ namespace QuestPDF.Elements
             
             var measure = base.Measure(targetSpace);
 
-            if (measure.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+            if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+                return measure;
 
             var targetSize = new Size(
                 Math.Abs(measure.Width * ScaleX), 
@@ -50,6 +52,23 @@ namespace QuestPDF.Elements
              
             Canvas.Scale(1/ScaleX, 1/ScaleY);
             Canvas.Translate(translate.Reverse());
+        }
+        
+        internal override string? GetCompanionHint()
+        {
+            return string.Join("   ", GetOptions().Where(x => x.value != 1).Select(x => $"{x.Label}={x.value}"));
+            
+            IEnumerable<(string Label, float value)> GetOptions()
+            {
+                if (ScaleX == ScaleY)
+                {
+                    yield return ("A", ScaleX);
+                    yield break;
+                }
+                
+                yield return ("X", ScaleX);
+                yield return ("Y", ScaleY);
+            }
         }
     }
 }

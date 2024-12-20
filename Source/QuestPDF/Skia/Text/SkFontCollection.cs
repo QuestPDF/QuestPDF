@@ -35,10 +35,10 @@ internal sealed class SkFontCollection : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr font_collection_create(IntPtr fontManager, IntPtr typefaceProvider);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void font_collection_unref(IntPtr fontCollection);
     }
 }

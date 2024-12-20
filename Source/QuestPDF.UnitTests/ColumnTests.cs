@@ -17,14 +17,8 @@ namespace QuestPDF.UnitTests
             {
                 Items =
                 {
-                    new ColumnItem
-                    {
-                        Child = testPlan.CreateChild("first")
-                    },
-                    new ColumnItem
-                    {
-                        Child = testPlan.CreateChild("second")
-                    }
+                    testPlan.CreateChild("first"),
+                    testPlan.CreateChild("second")
                 }
             };
         }
@@ -32,7 +26,7 @@ namespace QuestPDF.UnitTests
         private Column CreateColumnWithTwoItemsWhereFirstIsFullyRendered(TestPlan testPlan)
         {
             var column = CreateColumnWithTwoItems(testPlan);
-            column.Items.First().IsRendered = true;
+            column.CurrentRenderingIndex = 1;
             return column;
         }
         
@@ -44,8 +38,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(CreateColumnWithTwoItems)
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("The available space is not sufficient for even partially rendering a single item."));
         }
         
         [Test]
@@ -65,7 +59,7 @@ namespace QuestPDF.UnitTests
                 .For(CreateColumnWithTwoItems)
                 .MeasureElement(new Size(400, 300))
                 .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap())
+                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap("Mock"))
                 .CheckMeasureResult(SpacePlan.PartialRender(200, 100));
         }
         
@@ -101,7 +95,7 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(CreateColumnWithTwoItems)
                 .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap())
+                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap("Mock"))
                 .CheckDrawResult();
         }
         
@@ -125,7 +119,7 @@ namespace QuestPDF.UnitTests
                 .For(CreateColumnWithTwoItems)
                 .DrawElement(new Size(400, 300))
                 .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap())
+                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap("Mock"))
                 .ExpectCanvasTranslate(0, 0)
                 .ExpectChildDraw("first", new Size(400, 100))
                 .ExpectCanvasTranslate(0, 0)
@@ -176,12 +170,12 @@ namespace QuestPDF.UnitTests
                 .ExpectCanvasTranslate(0, 0)
                 .ExpectChildDraw("second", new Size(400, 300))
                 .ExpectCanvasTranslate(0, 0)
-                .CheckState<Column>(x => x.Items.First().IsRendered)
+                .CheckState<Column>(x => x.CurrentRenderingIndex > 0)
                 .CheckDrawResult();
         }
         
         [Test]
-        public void Draw_TogglesFirstRenderedFlag_WhenSecondFullyRenders()
+        public void Draw_DoesNotToggleFirstRenderedFlag_WhenSecondFullyRenders()
         {
             TestPlan
                 .For(CreateColumnWithTwoItemsWhereFirstIsFullyRendered)
@@ -191,7 +185,7 @@ namespace QuestPDF.UnitTests
                 .ExpectChildDraw("second", new Size(400, 300))
                 .ExpectCanvasTranslate(0, 0)
                 .CheckDrawResult()
-                .CheckState<Column>(x => !x.Items.First().IsRendered);
+                .CheckState<Column>(x => x.CurrentRenderingIndex == 2);
         }
         
         #endregion

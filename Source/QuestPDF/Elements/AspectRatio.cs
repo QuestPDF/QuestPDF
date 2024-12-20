@@ -1,10 +1,11 @@
 using System;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class AspectRatio : ContainerElement, ICacheable, IContentDirectionAware
+    internal sealed class AspectRatio : ContainerElement, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         
@@ -15,22 +16,22 @@ namespace QuestPDF.Elements
         {
             if (Ratio == 0)
                 return SpacePlan.FullRender(0, 0);
-            
-            if (Child == null)
-                return SpacePlan.FullRender(0, 0);
+ 
+            if (Child.IsEmpty())
+                return SpacePlan.Empty();
             
             var targetSize = GetTargetSize(availableSpace);
             
             if (targetSize.Height > availableSpace.Height + Size.Epsilon)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("To preserve the target aspect ratio, the content requires more vertical space than available.");
             
             if (targetSize.Width > availableSpace.Width + Size.Epsilon)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("To preserve the target aspect ratio, the content requires more horizontal space than available.");
 
             var childSize = base.Measure(targetSize);
 
             if (childSize.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+                return childSize;
 
             if (childSize.Type == SpacePlanType.PartialRender)
                 return SpacePlan.PartialRender(targetSize);
@@ -43,9 +44,6 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            if (Child == null)
-                return;
-            
             var size = GetTargetSize(availableSpace);
             
             var offset = ContentDirection == ContentDirection.LeftToRight
@@ -75,5 +73,7 @@ namespace QuestPDF.Elements
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
+
+        internal override string? GetCompanionHint() => $"{Option.ToString()} with ratio {Ratio:F1}";
     }
 }

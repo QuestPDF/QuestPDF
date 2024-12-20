@@ -6,39 +6,32 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
 {
-    internal sealed class Table : Element, IStateResettable, IContentDirectionAware
+    internal sealed class Table : Element, IStateful, IContentDirectionAware
     {
-        public ContentDirection ContentDirection { get; set; }
-        
+        // configuration
         public List<TableColumnDefinition> Columns { get; set; } = new();
         public List<TableCell> Cells { get; set; } = new();
         public bool ExtendLastCellsToTableBottom { get; set; }
         
+        public ContentDirection ContentDirection { get; set; }
+        
+        // cache
         private bool CacheInitialized { get; set; }
         private int StartingRowsCount { get; set; }
         private int RowsCount { get; set; }
-        private int CurrentRow { get; set; }
+        private int MaxRow { get; set; }
+        private int MaxRowSpan { get; set; }
         
         // cache that stores all cells
         // first index: row number
         // inner table: list of all cells that ends at the corresponding row
         private TableCell[][] CellsCache { get; set; }
-        private int MaxRow { get; set; }
-        private int MaxRowSpan { get; set; }
+        
+        private bool IsRendered => CurrentRow > StartingRowsCount;
         
         internal override IEnumerable<Element?> GetChildren()
         {
             return Cells;
-        }
-
-        public void ResetState()
-        {
-            Initialize();
-            
-            foreach (var x in Cells)
-                x.IsRendered = false;
-            
-            CurrentRow = 1;
         }
         
         private void Initialize()
@@ -83,21 +76,26 @@ namespace QuestPDF.Elements.Table
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            Initialize();
+            
             if (!Cells.Any())
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
+            
+            if (IsRendered)
+                return SpacePlan.Empty();
             
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
             if (!renderingCommands.Any())
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("Insufficient space to render (even partially) a single row.");
             
             var width = Columns.Sum(x => x.Width);
             var height = renderingCommands.Max(x => x.Offset.Y + x.Size.Height);
             var tableSize = new Size(width, height);
 
             if (tableSize.Width > availableSpace.Width + Size.Epsilon)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The content requires more horizontal space than available.");
 
             return CalculateCurrentRow(renderingCommands) > StartingRowsCount 
                 ? SpacePlan.FullRender(tableSize) 
@@ -106,12 +104,17 @@ namespace QuestPDF.Elements.Table
 
         internal override void Draw(Size availableSpace)
         {
+            Initialize();
+            
+            if (IsRendered)
+                return;
+            
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
             foreach (var command in renderingCommands.OrderBy(x => x.Cell.ZIndex))
             {
-                if (command.Measurement.Type == SpacePlanType.FullRender)
+                if (command.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                     command.Cell.IsRendered = true;
 
                 if (command.Measurement.Type == SpacePlanType.Wrap)
@@ -127,17 +130,13 @@ namespace QuestPDF.Elements.Table
             }
 
             CurrentRow = CalculateCurrentRow(renderingCommands);
-            var isFullyRendered = CurrentRow > StartingRowsCount;
-            
-            if (isFullyRendered)
-                ResetState();
         }
 
         private int CalculateCurrentRow(ICollection<TableCellRenderingCommand> commands)
         {
             var lastFullyRenderedRow = commands
                 .GroupBy(x => x.Cell.Row)
-                .Where(x => x.All(y => y.Cell.IsRendered || y.Measurement.Type == SpacePlanType.FullRender))
+                .Where(x => x.All(y => y.Cell.IsRendered || y.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender))
                 .Select(x => x.Key)
                 .ToArray();
             
@@ -305,5 +304,50 @@ namespace QuestPDF.Elements.Table
                 return columnOffsets[cell.Column + cell.ColumnSpan - 1] - columnOffsets[cell.Column - 1];
             }
         }
+        
+        #region IStateful
+        
+        private int CurrentRow { get; set; }
+        // state is also stored in TableCell instances
+    
+        public struct TableState
+        {
+            public bool[] CellsRenderingState;
+            public int CurrentRow;
+        }
+        
+        public void ResetState(bool hardReset = false)
+        {
+            foreach (var x in Cells)
+                x.IsRendered = false;
+            
+            CurrentRow = 1;
+        }
+
+        public object GetState()
+        {
+            var cellsRenderingState = new bool[Cells.Count];
+            
+            for (var i = 0; i < Cells.Count; i++)
+                cellsRenderingState[i] = Cells[i].IsRendered;
+            
+            return new TableState
+            {
+                CellsRenderingState = cellsRenderingState,
+                CurrentRow = CurrentRow
+            };
+        }
+
+        public void SetState(object state)
+        {
+            var tableState = (TableState) state;
+            
+            for (var i = 0; i < Cells.Count; i++)
+                Cells[i].IsRendered = tableState.CellsRenderingState[i];
+            
+            CurrentRow = tableState.CurrentRow;
+        }
+    
+        #endregion
     }
 }

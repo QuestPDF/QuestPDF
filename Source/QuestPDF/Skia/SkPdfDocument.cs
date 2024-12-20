@@ -18,9 +18,7 @@ internal struct SkPdfDocumentMetadata
 
     [MarshalAs(UnmanagedType.I1)] public bool SupportPDFA;
     [MarshalAs(UnmanagedType.I1)] public bool CompressDocument;
-    
-    public float RasterDPI;
-    public int ImageEncodingQuality;
+    public float RasterDPI;    
 }
 
 internal static class SkPdfDocument
@@ -33,7 +31,7 @@ internal static class SkPdfDocument
 
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr pdf_document_create(IntPtr stream, SkPdfDocumentMetadata metadata);
     }
 }

@@ -45,8 +45,8 @@ namespace QuestPDF.UnitTests
             TestPlan
                 .For(GetLayers)
                 .MeasureElement(new Size(800, 600))
-                .ExpectChildMeasure(MainLayer, new Size(800, 600), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(MainLayer, new Size(800, 600), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("The content of the primary layer does not fit (even partially) the available space."));
         }
 
         [Test]
@@ -101,7 +101,7 @@ namespace QuestPDF.UnitTests
                 
                 .ExpectChildMeasure(BackgroundLayer, new Size(800, 600), SpacePlan.PartialRender(100, 200))
                 .ExpectChildMeasure(MainLayer, new Size(800, 600), SpacePlan.PartialRender(200, 300))
-                .ExpectChildMeasure(ForegroundLayer, new Size(800, 600), SpacePlan.Wrap())
+                .ExpectChildMeasure(ForegroundLayer, new Size(800, 600), SpacePlan.Wrap("Mock"))
                 
                 .ExpectChildDraw(BackgroundLayer, new Size(800, 600))
                 .ExpectChildDraw(MainLayer, new Size(800, 600))
@@ -116,7 +116,7 @@ namespace QuestPDF.UnitTests
                 .For(GetLayers)
                 .MeasureElement(new Size(800, 600))
                 
-                .ExpectChildMeasure(BackgroundLayer, new Size(800, 600), SpacePlan.Wrap())
+                .ExpectChildMeasure(BackgroundLayer, new Size(800, 600), SpacePlan.Wrap("Mock"))
                 .ExpectChildMeasure(MainLayer, new Size(800, 600), SpacePlan.PartialRender(200, 300))
                 .ExpectChildMeasure(ForegroundLayer, new Size(800, 600), SpacePlan.PartialRender(300, 400))
                 

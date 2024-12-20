@@ -1,44 +1,29 @@
-Version 2024.3.0
+Version 2024.12.0
 
-The primary theme of this release is the removal of the SkiaSharp dependency and the introduction of a custom native layer built on top of Skia M124.
+This release introduces several long-awaited features releated to document operations such as:
+- Assemble: Rearrange, select, and remove specific pages within a document.
+- Merge: Combine multiple PDF files into a single document.
+- Add Attachments: Embed additional files (such as text or images) as attachments within the PDF.
+- Underlay and Overlay: Apply other PDF as a background (underlay) or foreground (overlay) to another, adding layered content.
+- Linearize: Optimize files for fast web viewing, allowing compatible PDF readers to display the document before it’s fully downloaded.
+- Encrypt with Access Restrictions: Secure PDFs with user and owner passwords, applying access controls (like permissions for printing, filling forms, extracting or modifying content).
 
-
-This change was necessary to provide much higher flexibility and enable several new long-awaited features:
-- Font subsetting - this feature includes only necessary font glyphs in the output document, greatly reducing the file size, especially when using glyph-rich fonts supporting multiple languages,
-- Improved text-related capabilities, including but not limited to text justification, bi-directionality, enhanced line breaking algorithms, more styles for text decoration, word spacing, and more,
-- Introduced additional document compression to further reduce file size,
-- Integrated native SVG support,
-- In future releases: enhanced accessibility through support for PDF tags.
-
-
-Other changes:
-- Removed the SkiaSharp dependency, thereby making QuestPDF a standalone library,
-- Updated the Lato font to the latest version (2.015),
-- Included licenses of the third-party dependencies in the NuGet package,
-- Included a list of Contributors in the NuGet package to acknowledge the valuable input from our Community in improving QuestPDF.
+These features are built using the qpdf library, available under the "Apache-2.0" license.
+The qpdf library is available at: https://github.com/qpdf/qpdf
+We extend our thanks to the authors of qpdf for their contributions to the open-source community.
 
 
-Unfortunately, this release also introduces breaking changes:
-- Removed support for injecting SkiaSharp content directly into the document. It is still possible to integrate SkiaSharp through vector and raster graphics; please consult the documentation for more details,
-- Removed support for platforms: Android, iOS, UWP, WASM, and Linux-Alpine. We are currently investigating reintroducing support for WASM and Linux-Alpine in future releases.
-
-We would like to thank the SkiaSharp project, its maintainers, and contributors, for creating a fantastic graphics library. It was a fantastic foundation for QuestPDF for over 3 years.
-
-
-Version 2024.3.1
-- Enhanced discoverability of text alignment options (AlignLeft, AlignCenter, AlignRight, AlignStart, AlignEnd and Justify) when using the shorthand Text method (common use case).
-- To enhance compatibility with existing codebases, we've removed the breaking change associated with the deprecation of the TextStyle.Fallback method. Although this method remains obsolete, we've reintroduced it with a compatibility layer to prevent disruptions.
-- Enhanced compatibility with dotnet standard projects.
-- Fix: on the Windows platform, the "Could not find an appropriate font fallback for the following glyphs: $U-000D" exception is thrown when the "QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable" is set true, and the "TextDescriptor.Line" method is used (that inserts the '\r' character).
-- Fix: resolved an issue where the positioning of hyperlinks was incorrect when text contained injected block items.
+Further improvements:
+- Adjusted the default path for loading font files to prevent rare application hangs in certain environments
+- Performance optimization: improved scalability by limiting the maximum level of parallelism
+- Performance optimization for legacy .NET Framework: collect stack trace only when running with the Companion App
+- TextBlock: slightly reduced memory usage
 
 
-Version 2024.3.2
-- Introduced support for the linux-musl-x64 platform.
-- Adjusted how the Lato font is embedded in the NuGet package to prevent issues with the files not being provided on the platform-specific runtimes.
-- Improved compatibility with texts that contain the carriage return character '\r'.
-- Enhanced exception messages when the FontManager.RegisterFont method fails due to an invalid font file.
-- Enhanced the Canvas element deprecation message by adding a link to the documentation.
-- Fixed: the SVG image is not always scaled properly, especially when uses relative units internally (percentage, cm, "mm", etc.).
-- Fixed a sporadic `AccessViolationException` that occurred when UseEnvironmentFonts was set to `false` and documents were generated in parallel.
-- Fixed an issue where dynamic SVG images were not utilizing the available space correctly. This resulted in images with a zero size.
+Version 2024.12.1
+- Fixed: The library now provides hints when an additional dependency is required.
+- Improved license-related exception.
+
+
+Version 2024.12.2
+- Enhanced the EnsureSpace element to work dynamically without a pre-configured vertical space threshold.

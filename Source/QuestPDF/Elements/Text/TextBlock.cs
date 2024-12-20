@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
@@ -11,52 +12,77 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Elements.Text
 {
-    internal sealed class TextBlock : Element, IStateResettable, IContentDirectionAware
+    internal sealed class TextBlock : Element, IStateful, IContentDirectionAware
     {
+        // content
+        public List<ITextBlockItem> Items { get; set; } = new();
+        
+        // configuration
+        public TextHorizontalAlignment? Alignment { get; set; }
         public ContentDirection ContentDirection { get; set; }
         
-        public TextHorizontalAlignment? Alignment { get; set; }
         public int? LineClamp { get; set; }
-        public List<ITextBlockItem> Items { get; set; } = new();
+        public string LineClampEllipsis { get; set; }
 
-        private SkParagraph Paragraph { get; set; }
+        public float ParagraphSpacing { get; set; }
+        public float ParagraphFirstLineIndentation { get; set; }
         
+        public TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;
+        
+        // cache
         private bool RebuildParagraphForEveryPage { get; set; }
         private bool AreParagraphMetricsValid { get; set; }
+        private bool AreParagraphItemsTransformedWithSpacingAndIndentation { get; set; }
         
         private SkSize[] LineMetrics { get; set; }
         private float WidthForLineMetricsCalculation { get; set; }
-        private SkRect[] PlaceholderPositions { get; set; }
         private float MaximumWidth { get; set; }
+        private SkRect[] PlaceholderPositions { get; set; }
+        private bool? ContainsOnlyWhiteSpace { get; set; }
         
-        private int CurrentLineIndex { get; set; }
-        private float CurrentTopOffset { get; set; }
-        
+        // native objects
+        private SkParagraph Paragraph { get; set; }
+        internal bool ClearInternalCacheAfterFullRender { get; set; } = true;
+
         public string Text => string.Join(" ", Items.OfType<TextBlockSpan>().Select(x => x.Text));
 
         ~TextBlock()
         {
             Paragraph?.Dispose();
         }
-        
-        public void ResetState()
-        {
-            CurrentLineIndex = 0;
-            CurrentTopOffset = 0;
-        }
-        
+
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (Items.Count == 0)
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
+            
+            if (IsRendered)
+                return SpacePlan.Empty();
+            
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap("The available space is negative.");
+
+            // if the text block does not contain any items, or all items are null, return SpacePlan.Empty
+            // but if the text block contains only whitespace, return SpacePlan.FullRender with zero width and font-based height
+            ContainsOnlyWhiteSpace ??= CheckIfContainsOnlyWhiteSpace();
+
+            if (ContainsOnlyWhiteSpace == true)
+            {
+                var requiredHeight = MeasureHeightOfParagraphContainingOnlyWhiteSpace();
+                
+                return requiredHeight < availableSpace.Height + Size.Epsilon 
+                    ? SpacePlan.FullRender(0, requiredHeight) 
+                    : SpacePlan.Wrap("The available vertical space is not sufficient to render even a single line of text.");
+            }
             
             Initialize();
+            
+            if (Size.Equal(availableSpace, Size.Zero))
+                return SpacePlan.PartialRender(Size.Zero);
+            
             CalculateParagraphMetrics(availableSpace);
 
             if (MaximumWidth == 0)
-                return SpacePlan.FullRender(Size.Zero);
-            
-            if (CurrentLineIndex > LineMetrics.Length)
                 return SpacePlan.FullRender(Size.Zero);
             
             var totalHeight = 0f;
@@ -75,7 +101,7 @@ namespace QuestPDF.Elements.Text
             }
 
             if (totalLines == 0)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The available space is not sufficient to render even a single line of text.");
 
             var requiredArea = new Size(
                 Math.Min(MaximumWidth, availableSpace.Width),
@@ -91,6 +117,12 @@ namespace QuestPDF.Elements.Text
         {
             if (Items.Count == 0)
                 return;
+
+            if (IsRendered)
+                return;
+            
+            if (ContainsOnlyWhiteSpace == true)
+                return;
             
             CalculateParagraphMetrics(availableSpace);
 
@@ -104,7 +136,13 @@ namespace QuestPDF.Elements.Text
             CurrentTopOffset += takenHeight;
 
             if (CurrentLineIndex == LineMetrics.Length)
-                ResetState();
+                IsRendered = true;
+            
+            if (IsRendered && ClearInternalCacheAfterFullRender)
+            {
+                Paragraph?.Dispose();
+                Paragraph = null;
+            }
             
             return;
 
@@ -151,14 +189,11 @@ namespace QuestPDF.Elements.Text
 
             void DrawInjectedElements()
             {
-                var elementItems = Items.OfType<TextBlockElement>().ToArray();
-                
-                for (var placeholderIndex = 0; placeholderIndex < PlaceholderPositions.Length; placeholderIndex++)
+                foreach (var textBlockElement in Items.OfType<TextBlockElement>())
                 {
-                    var placeholder = PlaceholderPositions[placeholderIndex];
-                    var associatedElement = elementItems[placeholderIndex];
+                    var placeholder = PlaceholderPositions[textBlockElement.ParagraphBlockIndex];
                     
-                    associatedElement.ConfigureElement(PageContext, Canvas);
+                    textBlockElement.ConfigureElement(PageContext, Canvas);
 
                     var offset = new Position(placeholder.Left, placeholder.Top);
                     
@@ -166,7 +201,7 @@ namespace QuestPDF.Elements.Text
                         continue;
                     
                     Canvas.Translate(offset);
-                    associatedElement.Element.Draw(new Size(placeholder.Width, placeholder.Height));
+                    textBlockElement.Element.Draw(new Size(placeholder.Width, placeholder.Height));
                     Canvas.Translate(offset.Reverse());
                 }
             }
@@ -222,28 +257,28 @@ namespace QuestPDF.Elements.Text
         {
             if (Paragraph != null && !RebuildParagraphForEveryPage)
                 return;
+
+            if (!AreParagraphItemsTransformedWithSpacingAndIndentation)
+            {
+                Items = ApplyParagraphSpacingToTextBlockItems().ToList();
+                AreParagraphItemsTransformedWithSpacingAndIndentation = true;
+            }
             
             RebuildParagraphForEveryPage = Items.Any(x => x is TextBlockPageNumber);
-            
-            RemoveCarriageReturnCharacters();
             BuildParagraph();
-            
             AreParagraphMetricsValid = false;
-        }
-
-        private void RemoveCarriageReturnCharacters()
-        {
-            foreach (var textBlockSpan in Items.OfType<TextBlockSpan>().Where(x => x.Text != null))
-                textBlockSpan.Text = textBlockSpan.Text.Replace("\r", "");
         }
 
         private void BuildParagraph()
         {
-            var paragraphStyle = new ParagraphStyleConfiguration
+            Alignment ??= TextHorizontalAlignment.Start;
+            
+            var paragraphStyle = new ParagraphStyle
             {
-                Alignment = MapAlignment(Alignment ?? TextHorizontalAlignment.Start),
+                Alignment = MapAlignment(Alignment.Value),
                 Direction = MapDirection(ContentDirection),
-                MaxLinesVisible = LineClamp ?? 1_000_000
+                MaxLinesVisible = LineClamp ?? 1_000_000,
+                LineClampEllipsis = LineClampEllipsis
             };
             
             var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
@@ -297,7 +332,11 @@ namespace QuestPDF.Elements.Text
             SkParagraph CreateParagraph(SkParagraphBuilder builder)
             {
                 var currentTextIndex = 0;
+                var currentBlockIndex = 0;
             
+                if (!Items.Any(x => x is TextBlockSpan))
+                    builder.AddText("\u200B", DefaultTextStyle.GetSkTextStyle());
+                
                 foreach (var textBlockItem in Items)
                 {
                     if (textBlockItem is TextBlockSpan textBlockSpan)
@@ -312,13 +351,15 @@ namespace QuestPDF.Elements.Text
                             textBlockPageNumber.UpdatePageNumberText(PageContext);
                 
                         var textStyle = textBlockSpan.Style.GetSkTextStyle();
-                        builder.AddText(textBlockSpan.Text, textStyle);
-                        currentTextIndex += textBlockSpan.Text.Length;
+                        var text = textBlockSpan.Text?.Replace("\r", "") ?? "";
+                        builder.AddText(text, textStyle);
+                        currentTextIndex += text.Length;
                     }
                     else if (textBlockItem is TextBlockElement textBlockElement)
                     {
                         textBlockElement.ConfigureElement(PageContext, Canvas);
                         textBlockElement.UpdateElementSize();
+                        textBlockElement.ParagraphBlockIndex = currentBlockIndex;
                     
                         builder.AddPlaceholder(new SkPlaceholderStyle
                         {
@@ -330,19 +371,112 @@ namespace QuestPDF.Elements.Text
                         });
 
                         currentTextIndex++;
+                        currentBlockIndex++;
+                    }
+                    else if (textBlockItem is TextBlockParagraphSpacing spacing)
+                    {
+                        builder.AddPlaceholder(new SkPlaceholderStyle
+                        {
+                            Width = spacing.Width,
+                            Height = spacing.Height,
+                            Alignment = SkPlaceholderStyle.PlaceholderAlignment.Middle,
+                            Baseline = SkPlaceholderStyle.PlaceholderBaseline.Alphabetic,
+                            BaselineOffset = 0
+                        });
+
+                        currentTextIndex++;
+                        currentBlockIndex++;
                     }
                 }
 
                 return builder.CreateParagraph();
             }
         }
-        
+
+        private IEnumerable<ITextBlockItem> ApplyParagraphSpacingToTextBlockItems()
+        {
+            if (ParagraphSpacing < Size.Epsilon && ParagraphFirstLineIndentation < Size.Epsilon)
+                return Items;
+            
+            var result = new List<ITextBlockItem>();
+            AddParagraphFirstLineIndentation();
+            
+            foreach (var textBlockItem in Items)
+            {
+                if (textBlockItem is not TextBlockSpan textBlockSpan)
+                {
+                    result.Add(textBlockItem);
+                    continue;
+                }
+                
+                if (textBlockItem is TextBlockPageNumber)
+                {
+                    result.Add(textBlockItem);
+                    continue;
+                }
+                
+                var textFragments = textBlockSpan.Text.Split('\n');
+                    
+                foreach (var textFragment in textFragments)
+                {
+                    AddClonedTextBlockSpanWithTextFragment(textBlockSpan, textFragment);
+                        
+                    if (textFragment == textFragments.Last())
+                        continue;
+
+                    AddParagraphSpacing();
+                    AddParagraphFirstLineIndentation();
+                }
+            }
+
+            return result;
+
+            void AddClonedTextBlockSpanWithTextFragment(TextBlockSpan originalSpan, string textFragment)
+            {
+                TextBlockSpan newItem;
+                        
+                if (originalSpan is TextBlockSectionLink textBlockSectionLink)
+                    newItem = new TextBlockSectionLink { SectionName = textBlockSectionLink.SectionName };
+            
+                else if (originalSpan is TextBlockHyperlink textBlockHyperlink)
+                    newItem = new TextBlockHyperlink { Url = textBlockHyperlink.Url };
+            
+                else if (originalSpan is TextBlockPageNumber textBlockPageNumber)
+                    newItem = textBlockPageNumber;
+
+                else
+                    newItem = new TextBlockSpan();
+
+                newItem.Text = textFragment;
+                newItem.Style = originalSpan.Style;
+                
+                result.Add(newItem);
+            }
+            
+            void AddParagraphSpacing()
+            {
+                if (ParagraphSpacing <= Size.Epsilon)
+                    return;
+                
+                // space ensure proper line spacing
+                result.Add(new TextBlockSpan() { Text = "\n ", Style = TextStyle.ParagraphSpacing }); 
+                result.Add(new TextBlockParagraphSpacing(0, ParagraphSpacing));
+                result.Add(new TextBlockSpan() { Text = " \n", Style = TextStyle.ParagraphSpacing });
+            }
+            
+            void AddParagraphFirstLineIndentation()
+            {
+                if (ParagraphFirstLineIndentation <= Size.Epsilon)
+                    return;
+                
+                result.Add(new TextBlockSpan() { Text = "\n", Style = TextStyle.ParagraphSpacing });
+                result.Add(new TextBlockParagraphSpacing(ParagraphFirstLineIndentation, 0));
+            }
+        }
+
         private void CalculateParagraphMetrics(Size availableSpace)
         {
-            // SkParagraph seems to require a bigger space buffer to calculate metrics correctly
-            const float epsilon = 1f;
-            
-            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > epsilon)
+            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > Size.Epsilon)
                 AreParagraphMetricsValid = false;
             
             if (AreParagraphMetricsValid) 
@@ -350,7 +484,7 @@ namespace QuestPDF.Elements.Text
             
             WidthForLineMetricsCalculation = availableSpace.Width;
                 
-            Paragraph.PlanLayout(availableSpace.Width + epsilon);
+            Paragraph.PlanLayout(availableSpace.Width);
             CheckUnresolvedGlyphs();
                 
             LineMetrics = Paragraph.GetLineMetrics();
@@ -389,5 +523,110 @@ namespace QuestPDF.Elements.Text
                 $"You can disable this check by setting the 'Settings.CheckIfAllTextGlyphsAreAvailable' option to 'false'. \n" +
                 $"However, this may result with text glyphs being incorrectly rendered without any warning.");
         }
+        
+        #region Handling Of Text Blocks With Only With Space
+        
+        private static ConcurrentDictionary<int, float> ParagraphContainingOnlyWhiteSpaceHeightCache { get; } = new(); // key: TextStyle.Id
+        
+        private bool CheckIfContainsOnlyWhiteSpace()
+        {
+            foreach (var textBlockItem in Items)
+            {
+                // TextBlockPageNumber needs to be checked first, as it derives from TextBlockSpan,
+                // and before the generation starts, its Text property is empty 
+                if (textBlockItem is TextBlockPageNumber)
+                    return false;
+                
+                if (textBlockItem is TextBlockSpan textBlockSpan && !string.IsNullOrWhiteSpace(textBlockSpan.Text))
+                    return false;
+
+                if (textBlockItem is TextBlockElement)
+                    return false;
+            }
+            
+            return true;
+        }
+        
+        private float MeasureHeightOfParagraphContainingOnlyWhiteSpace()
+        {
+            return Items
+                .OfType<TextBlockSpan>()
+                .Select(x => ParagraphContainingOnlyWhiteSpaceHeightCache.GetOrAdd(x.Style.Id, Measure))
+                .DefaultIfEmpty(0)
+                .Max();
+            
+            static float Measure(int textStyleId)
+            {
+                var paragraphStyle = new ParagraphStyle
+                {
+                    Alignment = ParagraphStyleConfiguration.TextAlign.Start,
+                    Direction = ParagraphStyleConfiguration.TextDirection.Ltr,
+                    MaxLinesVisible = 1_000_000,
+                    LineClampEllipsis = string.Empty
+                };
+            
+                var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
+
+                try
+                {
+                    var textStyle = TextStyleManager.GetTextStyle(textStyleId).GetSkTextStyle();
+                    builder.AddText("\u00A0", textStyle); // non-breaking space
+
+                    var paragraph = builder.CreateParagraph();
+                    paragraph.PlanLayout(1000);
+                    return paragraph.GetLineMetrics().First().Height;
+                }
+                finally
+                {
+                    SkParagraphBuilderPoolManager.Return(builder);
+                }
+            }
+        }
+        
+        #endregion
+        
+        #region IStateful
+        
+        private bool IsRendered { get; set; }
+        private int CurrentLineIndex { get; set; }
+        private float CurrentTopOffset { get; set; }
+    
+        public struct TextBlockState
+        {
+            public bool IsRendered;
+            public int CurrentLineIndex;
+            public float CurrentTopOffset;
+        }
+        
+        public void ResetState(bool hardReset = false)
+        {
+            IsRendered = false;
+            CurrentLineIndex = 0;
+            CurrentTopOffset = 0;
+        }
+
+        public object GetState()
+        {
+            return new TextBlockState
+            {
+                IsRendered = IsRendered,
+                CurrentLineIndex = CurrentLineIndex,
+                CurrentTopOffset = CurrentTopOffset
+            };
+        }
+
+        public void SetState(object state)
+        {
+            var textBlockState = (TextBlockState) state;
+            
+            IsRendered = textBlockState.IsRendered;
+            CurrentLineIndex = textBlockState.CurrentLineIndex;
+            CurrentTopOffset = textBlockState.CurrentTopOffset;
+        }
+    
+        #endregion
+
+        internal override string? GetCompanionHint() => Text.Substring(0, Math.Min(Text.Length, 50));
+        internal override string? GetCompanionSearchableContent() => Text;
     }
 }

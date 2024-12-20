@@ -221,6 +221,30 @@
         
         <param name="value">Actual font family (e.g. "Times New Roman", "Calibri", "Lato") or custom identifier used when invoking the <see cref="Drawing.FontManager.RegisterFontWithCustomName">FontManager</see> method.</param>
     </doc>
+
+    <doc for="text.fontFeatures">
+        <summary>
+            <para>Enables or disables font features defined by the OpenType standard, e.g. kernig, ligatures.</para>
+            
+            <para>
+                Font features are always encoded as 4-character long strings. For example, the ligatures feature is encode as <c>liga</c>, while the kernig feature as <c>kern</c>.
+                For a list of available features, refer to the <see cref="QuestPDF.Helpers.FontFeatures">FontFeatures</see> class.
+            </para>
+        </summary>
+
+        <remarks>
+            <para>To better understand what font features are, please consider example definitions. Please note that there are many more various font features. Most fonts support only a handful of them, having some of them enabled by default:</para>
+            <para>Ligatures in typography are specific character combinations that are designed to improve the aesthetics and readability of certain letter pairs. For example, in some fonts, when you type certain combinations of letters like 'fi' or 'fl', they will be replaced with a single, joined glyph.</para>
+            <para>Kerning in typography refers to the adjustment of space between characters in a proportional font. It's used to achieve a visually pleasing result by adjusting the spacing of specific character pairs. For example, in many fonts, the pair 'AV' is kerned so that the 'A' and 'V' are closer together than they would be by default.</para>
+        </remarks>
+
+        <example>
+            <para>TextStyle.Default.EnableFontFeature(FontFeatures.StandardLigatures);</para>
+            <para>TextStyle.Default.DisableFontFeature(FontFeatures.Kerning);</para>
+        </example>
+        
+        <param name="value">Provide font feature name or use the <see cref="QuestPDF.Helpers.FontFeatures">FontFeatures</see> class.</param>
+    </doc>
     
     <doc for="text.fontSize">
         <summary>
@@ -248,8 +272,10 @@
         </summary>
 
         <param name="factor">
-            <para>Sets the proportion of vertical spacing relative to the original.</para> 
-            <para>A value greater than 1 increases spacing, while a value less than 1 reduces it. Must be greater than 0.</para>
+            <para>Sets the proportion of vertical spacing relative to the font size.</para>
+            <para>A value greater than 1 increases the spacing, while a value less than 1 decreases it. The value must be greater than 0.</para>
+            <para>A value of <c>1</c> sets the line height equal to the font size. This setting may result in insufficient vertical spacing around the text.</para>
+            <para>A value of <c>default</c> indicates that the font metrics should be used to calculate the line spacing, which is the default behavior.</para>
         </param>
     </doc>
 
@@ -276,6 +302,18 @@
             <para>Sets the proportion by which the horizontal space between words is changed.</para>
             <para>A value of 0 maintains the original spacing. When the value is positive, the text is more spread out. When it is negative, the text is more condensed.</para>
         </param>
+    </doc>
+
+    <doc for="text.paragraph.spacing">
+        <summary>
+            Adjusts the gap between successive paragraphs (separated by line breaks).
+        </summary>
+    </doc>
+
+    <doc for="text.paragraph.firstLineIndentation">
+        <summary>
+            Adjusts the indentation of the first line in each paragraph.
+        </summary>
     </doc>
     
     <!-- TEXT EFFECTS -->
@@ -498,11 +536,11 @@
     
     <!-- PREVIEWER -->
 
-    <doc for="previewer.support">
+    <doc for="companion.support">
         <summary>
-            Connects to the QuestPDF Previewer application to automatically preview the document being currently implemented after every code modification,
+            Connects to the QuestPDF Companion application to automatically preview the document being currently implemented after every code modification,
             without the need to recompile the code or restart the application.
-            <a href="https://www.questpdf.com/document-previewer.html">Learn more</a>
+            <a href="https://www.questpdf.com/document-companion.html">Learn more</a>
         </summary>
         
         <remarks>
@@ -512,11 +550,12 @@
         <param name="port">Specifies port for communication with the QuestPDF Previewer application. Default value is 12500.</param>
     </doc>
 
-    <doc for="previewer.notSupported">
+    <doc for="companion.notSupported">
         <summary>
-            The hot-reload feature and QuestPDF Previewer integration are available only in the .NET 6 environment or later.
+            The hot-reload feature and QuestPDF Companion integration are available only in the .NET 6 environment or later.
             Please consider updating your project.
-            <a href="https://www.questpdf.com/document-previewer.html">Learn more</a>
+            <a href="https://www.questpdf.com/companion/usage.html">Installation and usage</a><br />
+            <a href="https://www.questpdf.com/companion/features.html">Features overview</a>
         </summary>
         
         <param name="port">This parameter is ignored.</param>
@@ -535,5 +574,153 @@
             Consider the scenario of a company-wide page header. 
             Instead of replicating the same header design across various documents, a single component can be created and referenced wherever needed.
         </example>
+    </doc>
+
+    <!-- DOCUMENT OPERATIONS -->
+
+    <doc for="documentOperation.pageSelector">
+        <remarks>
+            <list type="table">
+                <listheader>
+                    <term>Syntax</term>
+                    <description>Description</description>
+                </listheader>
+                <item>
+                    <term>1, 2, 3</term>
+                    <description>Plain numbers indicate pages numbered from the start</description>
+                </item>
+                <item>
+                    <term>r1, r2</term>
+                    <description>Numbers with 'r' prefix count from the end (r1 = last page)</description>
+                </item>
+                <item>
+                    <term>z</term>
+                    <description>Represents the last page (equivalent to r1)</description>
+                </item>
+                <item>
+                    <term>1-5</term>
+                    <description>Dash-separated ranges are inclusive</description>
+                </item>
+                <item>
+                    <term>5-1</term>
+                    <description>Reversed ranges list pages in descending order</description>
+                </item>
+                <item>
+                    <term>x1-3</term>
+                    <description>Excludes specified pages from previous range</description>
+                </item>
+                <item>
+                    <term>:odd</term>
+                    <description>Selects odd-positioned pages from the resulting page-set</description>
+                </item>
+                <item>
+                    <term>:even</term>
+                    <description>Selects even-positioned pages from the resulting page-set</description>
+                </item>
+            </list>
+        </remarks>
+        
+        <example>
+            <list type="table">
+                <listheader>
+                    <term>Expression</term>
+                    <description>Result</description>
+                </listheader>
+                <item>
+                    <term>1,6,4</term>
+                    <description>pages 1, 6, and 4 in that order</description>
+                </item>
+                <item>
+                    <term>3-7</term>
+                    <description>pages 3 through 7 inclusive</description>
+                </item>
+                <item>
+                    <term>7-3</term>
+                    <description>pages 7, 6, 5, 4, and 3 in that order</description>
+                </item>
+                <item>
+                    <term>1-z</term>
+                    <description>all pages in order</description>
+                </item>
+                <item>
+                    <term>z-1</term>
+                    <description>all pages in reverse order</description>
+                </item>
+                <item>
+                    <term>r3-r1</term>
+                    <description>the last three pages of the document</description>
+                </item>
+                <item>
+                    <term>r1-r3</term>
+                    <description>the last three pages of the document in reverse order</description>
+                </item>
+                <item>
+                    <term>1-20:even</term>
+                    <description>even pages from 2 to 20</description>
+                </item>
+                <item>
+                    <term>5,7-9,12</term>
+                    <description>pages 5, 7, 8, 9, and 12</description>
+                </item>
+                <item>
+                    <term>5,7-9,12:odd</term>
+                    <description>pages 5, 8, and 12 (pages in odd positions from the original set of 5, 7, 8, 9, 12)</description>
+                </item>
+                <item>
+                    <term>5,7-9,12:even</term>
+                    <description>pages 7 and 9 (pages in even positions from the original set of 5, 7, 8, 9, 12)</description>
+                </item>
+                <item>
+                    <term>1-10,x3-4</term>
+                    <description>pages 1 through 10 except pages 3 and 4 (1, 2, and 5 through 10)</description>
+                </item>
+                <item>
+                    <term>4-10,x7-9,12-8,xr5</term>
+                    <description>In a 15-page file: pages 4, 5, 6, 10, 12, 10, 9, and 8 in that order (pages 4 through 10 except 7 through 9, followed by 12 through 8 descending, except 11 which is the fifth page from the end)</description>
+                </item>
+            </list>
+        </example>
+    </doc>
+    
+    <doc for="documentOperation.encryption.allow.annotation">
+        <summary>
+            Specifies whether the user is permitted to add signatures and annotations to the document.
+        </summary>
+    </doc>
+
+    <doc for="documentOperation.encryption.allow.contentExtraction">
+        <summary>
+            Specifies whether the user is allowed to copy text and graphics from the document.
+        </summary>
+    </doc>
+
+    <doc for="documentOperation.encryption.allow.modification">
+        <summary>
+            Specifies whether the user is permitted to insert, rotate, or delete pages within the document.
+        </summary>
+    </doc>
+
+    <doc for="documentOperation.encryption.allow.printing">
+        <summary>
+            Specifies whether the user can print the document.
+        </summary>
+    </doc>
+
+    <doc for="documentOperation.encryption.allow.assembly">
+        <summary>
+            Specifies whether the user is permitted to insert, rotate, or delete pages within the document.
+        </summary>
+    </doc>
+
+    <doc for="documentOperation.encryption.allow.fillingForms">
+        <summary>
+            Specifies whether the user is allowed to fill out existing form fields in the document.
+        </summary>
+    </doc>
+
+    <doc for="documentOperation.encryption.encryptMetadata">
+        <summary>
+            Determines whether the document's metadata is included in encryption.
+        </summary>
     </doc>
 </documentation>

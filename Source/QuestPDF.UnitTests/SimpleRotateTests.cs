@@ -21,8 +21,8 @@ namespace QuestPDF.UnitTests
                     TurnCount = 0
                 })
                 .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(400, 300), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(new Size(400, 300), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         [Test]

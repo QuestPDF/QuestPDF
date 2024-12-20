@@ -1,3 +1,4 @@
+using System;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -5,28 +6,41 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Image : Element, ICacheable
+    internal sealed class Image : Element, IStateful
     {
         public Infrastructure.Image? DocumentImage { get; set; }
 
         internal bool UseOriginalImage { get; set; }
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
+ 
+        private int DrawnImageSize { get; set; }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            return availableSpace.IsNegative() 
-                ? SpacePlan.Wrap() 
-                : SpacePlan.FullRender(Size.Zero);
+            if (IsRendered)
+                return SpacePlan.Empty();
+
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap("The available space is negative.");
+        
+            return SpacePlan.FullRender(Size.Zero);
         }
 
         internal override void Draw(Size availableSpace)
         {
             if (DocumentImage == null)
                 return;
+            
+            if (IsRendered)
+                return;
 
             var image = GetImageToDraw(availableSpace);
             Canvas.DrawImage(image, availableSpace);
+
+            DrawnImageSize = Math.Max(DrawnImageSize, image.EncodedDataSize);
+            
+            IsRendered = true;
         }
 
         private SkImage GetImageToDraw(Size availableSpace)
@@ -60,6 +74,22 @@ namespace QuestPDF.Elements
                 return imageResolution;
 
             return targetResolution;
+        }
+        
+        #region IStateful
+        
+        private bool IsRendered { get; set; }
+    
+        public void ResetState(bool hardReset = false) => IsRendered = false;
+        public object GetState() => IsRendered;
+        public void SetState(object state) => IsRendered = (bool) state;
+    
+        #endregion
+
+        internal override string? GetCompanionHint()
+        {
+            var sizeKB = Math.Max(1, DrawnImageSize / 1024);
+            return $"{sizeKB}KB";
         }
     }
 }

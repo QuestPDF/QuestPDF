@@ -13,7 +13,7 @@ internal static class SkXpsDocument
 
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr xps_document_create(IntPtr stream, float dpi);
     }
 }

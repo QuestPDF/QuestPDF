@@ -13,13 +13,21 @@ namespace QuestPDF.Elements
         Relative
     }
 
-    internal sealed class RowItem : Container
+    internal sealed class RowItem : ContainerElement
     {
         public bool IsRendered { get; set; }
         public float Width { get; set; }
         
         public RowItemType Type { get; set; }
         public float Size { get; set; }
+
+        public override string ToString()
+        {
+            if (Type == RowItemType.Auto)
+                return "Auto";
+            
+            return $"{Type}({Size})";
+        }
     }
 
     internal sealed class RowItemRenderingCommand
@@ -30,21 +38,16 @@ namespace QuestPDF.Elements
         public Position Offset { get; set; }
     }
 
-    internal sealed class Row : Element, ICacheable, IStateResettable, IContentDirectionAware
+    internal sealed class Row : Element, IStateful, IContentDirectionAware
     {
         public ContentDirection ContentDirection { get; set; }
         
         internal List<RowItem> Items { get; } = new();
         internal float Spacing { get; set; }
 
-        public void ResetState()
-        {
-            Items.ForEach(x => x.IsRendered = false);
-        }
-        
         internal override IEnumerable<Element?> GetChildren()
         {
-            return Items;
+            return Items.Select(x => x.Child);
         }
         
         internal override void CreateProxy(Func<Element?, Element?> create)
@@ -55,20 +58,30 @@ namespace QuestPDF.Elements
         internal override SpacePlan Measure(Size availableSpace)
         {
             if (!Items.Any())
-                return SpacePlan.FullRender(Size.Zero);
+                return SpacePlan.Empty();
+
+            if (Items.All(x => x.IsRendered))
+                return SpacePlan.Empty();
             
             UpdateItemsWidth(availableSpace.Width);
+            
+            if (Items.Any(x => x.Width < -Size.Epsilon))
+                return SpacePlan.Wrap("One of the items has a negative size, indicating insufficient horizontal space. Usually, constant items require more space than is available, potentially causing other content to overflow.");
+            
             var renderingCommands = PlanLayout(availableSpace);
 
             if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.Wrap))
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("One of the items does not fit (even partially) in the available space.");
 
             var width = renderingCommands.Last().Offset.X + renderingCommands.Last().Size.Width;
             var height = renderingCommands.Max(x => x.Size.Height);
             var size = new Size(width, height);
 
-            if (width > availableSpace.Width + Size.Epsilon || height > availableSpace.Height + Size.Epsilon)
-                return SpacePlan.Wrap();
+            if (width > availableSpace.Width + Size.Epsilon)
+                return SpacePlan.Wrap("The content requires more horizontal space than available.");
+            
+            if (height > availableSpace.Height + Size.Epsilon)
+                return SpacePlan.Wrap("The content requires more vertical space than available.");
             
             if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.PartialRender))
                 return SpacePlan.PartialRender(size);
@@ -86,10 +99,10 @@ namespace QuestPDF.Elements
 
             foreach (var command in renderingCommands)
             {
-                if (command.Measurement.Type == SpacePlanType.FullRender)
+                if (command.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                     command.RowItem.IsRendered = true;
                 
-                if (command.Measurement.Type == SpacePlanType.Wrap)
+                if (command.Measurement.Type is SpacePlanType.Wrap)
                     continue;
 
                 var offset = ContentDirection == ContentDirection.LeftToRight
@@ -98,13 +111,13 @@ namespace QuestPDF.Elements
 
                 var targetSize = new Size(command.Size.Width, availableSpace.Height);
                     
+                if (targetSize.Width < -Size.Epsilon)
+                    continue;
+                
                 Canvas.Translate(offset);
                 command.RowItem.Draw(targetSize);
                 Canvas.Translate(offset.Reverse());
             }
-            
-            if (Items.All(x => x.IsRendered))
-                ResetState();
         }
 
         private void UpdateItemsWidth(float availableWidth)
@@ -166,5 +179,34 @@ namespace QuestPDF.Elements
             
             return renderingCommands;
         }
+        
+        #region IStateful
+        
+        // State is stored in the RowItem instances
+    
+        public void ResetState(bool hardReset = false)
+        {
+            Items.ForEach(x => x.IsRendered = false);
+        }
+
+        public object GetState()
+        {
+            var result = new bool[Items.Count];
+            
+            for (var i = 0; i < Items.Count; i++)
+                result[i] = Items[i].IsRendered;
+            
+            return result;
+        }
+
+        public void SetState(object state)
+        {
+            var states = (bool[]) state;
+            
+            for (var i = 0; i < Items.Count; i++)
+                Items[i].IsRendered = states[i];
+        }
+    
+        #endregion
     }
 }

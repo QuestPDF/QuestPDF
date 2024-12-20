@@ -9,6 +9,7 @@ internal record struct ParagraphStyleConfiguration
     public TextAlign Alignment;
     public TextDirection Direction;
     public int MaxLinesVisible;
+    public IntPtr LineClampEllipsis; // SKText
 
     internal enum TextAlign
     {
@@ -81,21 +82,39 @@ internal struct SkPlaceholderStyle
     }
 }
 
+record ParagraphStyle
+{
+    public ParagraphStyleConfiguration.TextAlign Alignment { get; init; }
+    public ParagraphStyleConfiguration.TextDirection Direction { get; init; }
+    public int MaxLinesVisible { get; init; }
+    public string LineClampEllipsis { get; init; }
+}
+
 internal sealed class SkParagraphBuilder : IDisposable
 {
     public IntPtr Instance { get; private set; }
     
-    public ParagraphStyleConfiguration Configuration { get; private set; }
+    public ParagraphStyle Style { get; private set; }
 
-    public static SkParagraphBuilder Create(ParagraphStyleConfiguration paragraphStyleConfiguration, SkFontCollection fontCollection)
+    public static SkParagraphBuilder Create(ParagraphStyle style, SkFontCollection fontCollection)
     {
+        using var clampLinesEllipsis = new SkText(style.LineClampEllipsis);
+
+        var paragraphStyleConfiguration = new ParagraphStyleConfiguration
+        {
+            Alignment = style.Alignment,
+            Direction = style.Direction,
+            MaxLinesVisible = style.MaxLinesVisible,
+            LineClampEllipsis = clampLinesEllipsis.Instance
+        };
+        
         var instance = API.paragraph_builder_create(paragraphStyleConfiguration, fontCollection.Instance);
         SkiaAPI.EnsureNotNull(instance);
         
         return new SkParagraphBuilder
         {
             Instance = instance,
-            Configuration = paragraphStyleConfiguration
+            Style = style
         };
     }
     
@@ -136,22 +155,22 @@ internal sealed class SkParagraphBuilder : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr paragraph_builder_create(ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr fontCollection);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_builder_add_text(IntPtr paragraphBuilder, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string text, IntPtr textStyle);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_builder_add_placeholder(IntPtr paragraphBuilder, SkPlaceholderStyle placeholderStyle);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr paragraph_builder_create_paragraph(IntPtr paragraphBuilder);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_builder_reset(IntPtr paragraphBuilder);
         
-        [DllImport(SkiaAPI.LibraryName)]
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_builder_delete(IntPtr paragraphBuilder);
     }
 }

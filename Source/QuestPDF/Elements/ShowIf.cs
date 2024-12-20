@@ -17,7 +17,7 @@ internal class ShowIf : ContainerElement
     internal override SpacePlan Measure(Size availableSpace)
     {
         if (!CheckVisibility())
-            return SpacePlan.FullRender(Size.Zero);
+            return SpacePlan.Empty();
 
         return base.Measure(availableSpace);
     }

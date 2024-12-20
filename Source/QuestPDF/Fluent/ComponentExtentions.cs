@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using QuestPDF.Drawing.Exceptions;
+using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -59,10 +60,11 @@ namespace QuestPDF.Fluent
             var descriptor = new ComponentDescriptor<T>(component);
             handler?.Invoke(descriptor);
 
-            if (System.Diagnostics.Debugger.IsAttached)
-                element = element.DebugPointer(component.GetType().Name, highlight: false);
-
-            component.Compose(element.Container());
+            var componentContainer = element
+                .Container()
+                .DebugPointer(DebugPointerType.Component, component.GetType().Name);
+            
+            component.Compose(componentContainer);
         }
         
         static void Component<T>(this IContainer element, Action<ComponentDescriptor<T>>? handler = null) where T : IComponent, new()

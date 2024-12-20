@@ -3,32 +3,40 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class ShowOnce : ContainerElement, IStateResettable, ICacheable
+    internal sealed class ShowOnce : ContainerElement, IStateful
     {
-        private bool IsRendered { get; set; }
-
-        public void ResetState()
-        {
-            IsRendered = false;
-        }
-
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (Child == null || IsRendered)
-                return SpacePlan.FullRender(0, 0);
+            if (IsRendered)
+                return SpacePlan.Empty();
             
             return base.Measure(availableSpace);
         }
 
         internal override void Draw(Size availableSpace)
         {
-            if (Child == null || IsRendered)
+            if (IsRendered)
                 return;
             
-            if (base.Measure(availableSpace).Type == SpacePlanType.FullRender)
+            if (base.Measure(availableSpace).Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                 IsRendered = true;
             
             base.Draw(availableSpace);
         }
+        
+        #region IStateful
+        
+        private bool IsRendered { get; set; }
+
+        public void ResetState(bool hardReset = false)
+        {
+            if (hardReset)
+                IsRendered = false;
+        }
+        
+        public object GetState() => IsRendered;
+        public void SetState(object state) => IsRendered = (bool) state;
+    
+        #endregion
     }
 }

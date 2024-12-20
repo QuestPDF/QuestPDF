@@ -30,8 +30,9 @@ internal class SkText : IDisposable
         {
             var ptr = (byte*)nativeArray;
             Encoding.UTF8.GetBytes(pText, text.Length, ptr, length);
-            *(ptr + length) = 0; // null termination
         }
+        
+        Marshal.WriteByte(nativeArray, length, 0); // null termination
         
         return nativeArray;
     } 

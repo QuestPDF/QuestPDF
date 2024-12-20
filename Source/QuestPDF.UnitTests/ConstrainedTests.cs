@@ -20,7 +20,7 @@ namespace QuestPDF.UnitTests
                     MinHeight = 100
                 })
                 .MeasureElement(new Size(400, 50))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("The available vertical space is less than the minimum height."));
         }
         
         [Test]
@@ -33,6 +33,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 200))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(400, 50))
                 .CheckMeasureResult(SpacePlan.FullRender(400, 100));
         }
@@ -47,6 +48,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 200))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 200), SpacePlan.FullRender(400, 150))
                 .CheckMeasureResult(SpacePlan.FullRender(400, 150));
         }
@@ -73,6 +75,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 200))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(400, 100), SpacePlan.PartialRender(400, 75))
                 .CheckMeasureResult(SpacePlan.PartialRender(400, 75));
         }
@@ -87,8 +90,9 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(400, 200))
-                .ExpectChildMeasure(new Size(400, 100), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
+                .ExpectChildMeasure(new Size(400, 100), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         #endregion
@@ -104,7 +108,7 @@ namespace QuestPDF.UnitTests
                     MinWidth = 100
                 })
                 .MeasureElement(new Size(50, 400))
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .CheckMeasureResult(SpacePlan.Wrap("The available horizontal space is less than the minimum width."));
         }
         
         [Test]
@@ -117,6 +121,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(200, 400))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(200, 400), SpacePlan.FullRender(50, 400))
                 .CheckMeasureResult(SpacePlan.FullRender(100, 400));
         }
@@ -131,6 +136,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(200, 400))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(200, 400), SpacePlan.FullRender(150, 400))
                 .CheckMeasureResult(SpacePlan.FullRender(150, 400));
         }
@@ -157,6 +163,7 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(200, 400))
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
                 .ExpectChildMeasure(new Size(100, 400), SpacePlan.PartialRender(75, 400))
                 .CheckMeasureResult(SpacePlan.PartialRender(75, 400));
         }
@@ -171,8 +178,9 @@ namespace QuestPDF.UnitTests
                     Child = x.CreateChild()
                 })
                 .MeasureElement(new Size(200, 400))
-                .ExpectChildMeasure(new Size(100, 400), SpacePlan.Wrap())
-                .CheckMeasureResult(SpacePlan.Wrap());
+                .ExpectChildMeasure(Size.Zero, SpacePlan.PartialRender(Size.Zero))
+                .ExpectChildMeasure(new Size(100, 400), SpacePlan.Wrap("Mock"))
+                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
         }
         
         #endregion

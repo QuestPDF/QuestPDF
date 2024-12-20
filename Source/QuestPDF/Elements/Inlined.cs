@@ -5,11 +5,6 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class InlinedElement : Container
-    {
-
-    }
-
     internal enum InlinedAlignment
     {
         Left,
@@ -25,23 +20,17 @@ namespace QuestPDF.Elements
         public SpacePlan Size { get; set; }
     }
 
-    internal sealed class Inlined : Element, IStateResettable, IContentDirectionAware
+    internal sealed class Inlined : Element, IContentDirectionAware, IStateful
     {
+        public List<Element> Elements { get; internal set; } = new();
+
         public ContentDirection ContentDirection { get; set; }
         
-        public List<InlinedElement> Elements { get; internal set; } = new List<InlinedElement>();
-        private Queue<InlinedElement> ChildrenQueue { get; set; }
-
         internal float VerticalSpacing { get; set; }
         internal float HorizontalSpacing { get; set; }
         
         internal InlinedAlignment? ElementsAlignment { get; set; }
         internal VerticalAlignment BaselineAlignment { get; set; }
-        
-        public void ResetState()
-        {
-            ChildrenQueue = new Queue<InlinedElement>(Elements);
-        }
         
         internal override IEnumerable<Element?> GetChildren()
         {
@@ -52,13 +41,13 @@ namespace QuestPDF.Elements
         {
             SetDefaultAlignment();   
             
-            if (!ChildrenQueue.Any())
-                return SpacePlan.FullRender(Size.Zero);
+            if (CurrentRenderingIndex == Elements.Count)
+                return SpacePlan.Empty();
             
             var lines = Compose(availableSpace);
 
             if (!lines.Any())
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("The available space is not sufficient to fully render even a single item.");
 
             var lineSizes = lines
                 .Select(line =>
@@ -74,16 +63,18 @@ namespace QuestPDF.Elements
             var height = lineSizes.Sum(x => x.Height) + (lines.Count - 1) * VerticalSpacing;
             var targetSize = new Size(width, height);
 
-            var isPartiallyRendered = lines.Sum(x => x.Count) != ChildrenQueue.Count;
+            var totalRenderedItems = CurrentRenderingIndex + lines.Sum(x => x.Count);
+            var willBeFullyRendered = totalRenderedItems == Elements.Count;
 
-            if (isPartiallyRendered)
-                return SpacePlan.PartialRender(targetSize);
-            
-            return SpacePlan.FullRender(targetSize);
+            return willBeFullyRendered
+                ? SpacePlan.FullRender(targetSize)
+                : SpacePlan.PartialRender(targetSize);
         }
 
         internal override void Draw(Size availableSpace)
         {
+            // TODO: empty elements should not introduce spacing?
+            
             SetDefaultAlignment();
             
             var lines = Compose(availableSpace);
@@ -100,10 +91,9 @@ namespace QuestPDF.Elements
             }
             
             Canvas.Translate(new Position(0, -topOffset));
-            lines.SelectMany(x => x).ToList().ForEach(x => ChildrenQueue.Dequeue());
             
-            if (!ChildrenQueue.Any())
-                ResetState();
+            var fullyRenderedItems = lines.Sum(x => x.Count);
+            CurrentRenderingIndex += fullyRenderedItems;
 
             void DrawLine(ICollection<InlinedMeasurement> lineMeasurements)
             {
@@ -196,7 +186,7 @@ namespace QuestPDF.Elements
         // list of lines, each line is a list of elements
         private ICollection<ICollection<InlinedMeasurement>> Compose(Size availableSize)
         {
-            var queue = new Queue<InlinedElement>(ChildrenQueue);
+            var localRenderingIndex = CurrentRenderingIndex;
             var result = new List<ICollection<InlinedMeasurement>>();
 
             var topOffset = 0f;
@@ -226,10 +216,10 @@ namespace QuestPDF.Elements
                 
                 while (true)
                 {
-                    if (!queue.Any())
+                    if (localRenderingIndex == Elements.Count)
                         break;
                     
-                    var element = queue.Peek();
+                    var element = Elements[localRenderingIndex];
                     var size = element.Measure(new Size(availableSize.Width, Size.Max.Height));
                     
                     if (size.Type == SpacePlanType.Wrap)
@@ -238,7 +228,7 @@ namespace QuestPDF.Elements
                     if (leftOffset + size.Width > availableSize.Width + Size.Epsilon)
                         break;
 
-                    queue.Dequeue();
+                    localRenderingIndex++;
                     leftOffset += size.Width + HorizontalSpacing;
                     
                     result.Add(new InlinedMeasurement
@@ -262,5 +252,15 @@ namespace QuestPDF.Elements
                 };
             }
         }
+        
+        #region IStateful
+        
+        private int CurrentRenderingIndex { get; set; }
+    
+        public void ResetState(bool hardReset = false) => CurrentRenderingIndex = 0;
+        public object GetState() => CurrentRenderingIndex;
+        public void SetState(object state) => CurrentRenderingIndex = (int) state;
+        
+        #endregion
     }
 }

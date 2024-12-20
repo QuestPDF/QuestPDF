@@ -3,11 +3,11 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2024.3.2</Version>
+        <Version>2024.12.1</Version>
         <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API. Easily generate PDF reports, invoices, exports, etc.</PackageDescription>
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
-        <LangVersion>10</LangVersion>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <LangVersion>12</LangVersion>
+        <Deterministic>true</Deterministic>
         <EnablePackageValidation>true</EnablePackageValidation>
         <PackageIcon>Logo.png</PackageIcon>
         <PackageIconUrl>https://www.questpdf.com/images/package-logo.png</PackageIconUrl>
@@ -27,8 +27,16 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
-    <ItemGroup>
+    <PropertyGroup Condition="'$(BUILD_PACKAGE)' == 'true'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+        <SignAssembly>true</SignAssembly>
+        <AssemblyOriginatorKeyFile>NugetStrongNameSigningKeyForQuestPDF.snk</AssemblyOriginatorKeyFile>
+    </PropertyGroup>
+    
+    <ItemGroup Condition="'$(BUILD_PACKAGE)' == ''">
         <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+        <InternalsVisibleTo Include="QuestPDF.Examples" />
         <InternalsVisibleTo Include="QuestPDF.UnitTests" />
         <InternalsVisibleTo Include="QuestPDF.LayoutTests" />
     </ItemGroup>
@@ -50,6 +58,7 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
             <Pack>true</Pack>
+            <TargetPath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
             <PackagePath>runtimes\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
 

@@ -120,7 +120,7 @@ namespace QuestPDF.Fluent
         /// <returns>The container of the newly created item.</returns>
         public IContainer Item()
         {
-            var container = new InlinedElement();
+            var container = new Constrained();
             Inlined.Elements.Add(container);
             return container;
         }

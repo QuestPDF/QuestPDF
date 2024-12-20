@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Padding : ContainerElement, ICacheable
+    internal sealed class Padding : ContainerElement
     {
         public float Top { get; set; }
         public float Right { get; set; }
@@ -13,18 +16,15 @@ namespace QuestPDF.Elements
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (Child == null)
-                return SpacePlan.FullRender(0, 0);
-            
             var internalSpace = InternalSpace(availableSpace);
 
-            if (internalSpace.Width < -Size.Epsilon || internalSpace.Height < -Size.Epsilon)
-                return SpacePlan.Wrap();
+            if (internalSpace.IsNegative())
+                return Child.IsEmpty() ? SpacePlan.Empty() : SpacePlan.Wrap("The available space is negative.");
             
             var measure = base.Measure(internalSpace);
 
-            if (measure.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+            if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+                return measure;
 
             var newSize = new Size(
                 measure.Width + Left + Right,
@@ -41,9 +41,6 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            if (Child == null)
-                return;
-
             var internalSpace = InternalSpace(availableSpace);
             
             Canvas.Translate(new Position(Left, Top));
@@ -58,9 +55,30 @@ namespace QuestPDF.Elements
                 availableSpace.Height - Top - Bottom);
         }
         
-        public override string ToString()
+        internal override string? GetCompanionHint()
         {
-            return $"Padding: Top({Top}) Right({Right}) Bottom({Bottom}) Left({Left})";
+            return string.Join("   ", GetOptions().Where(x => x.value != 0).Select(x => $"{x.Label}={x.value:F1}"));
+            
+            IEnumerable<(string Label, float value)> GetOptions()
+            {
+                if (Top == Bottom && Right == Left && Top == Right)
+                {
+                    yield return ("A", Top);
+                    yield break;
+                }
+
+                if (Top == Bottom && Right == Left)
+                {
+                    yield return ("V", Top);
+                    yield return ("H", Left);
+                    yield break;
+                }
+                
+                yield return ("T", Top);
+                yield return ("R", Right);
+                yield return ("B", Bottom);
+                yield return ("L", Left);
+            }
         }
     }
 }

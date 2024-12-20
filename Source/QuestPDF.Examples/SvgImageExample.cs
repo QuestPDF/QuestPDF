@@ -3,8 +3,6 @@ using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using SkiaSharp;
-using Svg.Skia;
 
 namespace QuestPDF.Examples
 {
@@ -52,12 +50,22 @@ namespace QuestPDF.Examples
 
                         foreach (var size in sizes)
                         {
-                            column
-                                .Item()
-                                .Width(200)
-                                .Height(100)
-                                .Background(Colors.Grey.Lighten2)
-                                .Svg(CreateSvg(size.Item1, size.Item2));
+                            column.Item().Row(row =>
+                            {
+                                // normal SVG
+                                row.RelativeItem()
+                                    .Width(200)
+                                    .Height(100)
+                                    .Background(Colors.Grey.Lighten2)
+                                    .Svg(CreateSvg(size.Item1, size.Item2));
+                                
+                                // dynamic SVG
+                                row.RelativeItem()
+                                    .Width(200)
+                                    .Height(100)
+                                    .Background(Colors.Grey.Lighten2)
+                                    .Svg(_ => CreateSvg(size.Item1, size.Item2));
+                            });
                         }
                     });
                 });

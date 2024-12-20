@@ -138,8 +138,8 @@ namespace QuestPDF.Examples
                         .Padding(20)
                         .Column(column =>
                         {
-                            var letterSpacing = new[] { -0.1f, 0f, 0.2f };
-                            var paragraph = Placeholders.Sentence().ToUpper();
+                            var letterSpacing = new[] { -0.05f, 0f, 0.2f };
+                            var paragraph = Placeholders.Sentence();
 
                             foreach (var spacing in letterSpacing)
                             {
@@ -165,9 +165,9 @@ namespace QuestPDF.Examples
                         });
                 });
         }
-
+        
         [Test]
-        public void LetterSpacing_Arabic()
+        public void WordSpacing()
         {
             RenderingTest
                 .Create()
@@ -177,31 +177,32 @@ namespace QuestPDF.Examples
                 .Render(container =>
                 {
                     container
-                        .Padding(50)
+                        .Padding(20)
                         .Column(column =>
                         {
-                            var letterSpacing = new[] { -0.1f, 0f, 0.2f };
-                            var paragraph = "ينا الألم. في بعض الأحيان ونظراً للالتزامات التي يفرضها علينا";
-                            foreach (var spacing in letterSpacing)
+                            var wordSpacing = new[] { -0.2f, 0f, 0.2f };
+                            var paragraph = Placeholders.Sentence();
+
+                            foreach (var spacing in wordSpacing)
                             {
                                 column
-                                   .Item()
-                                   .Border(1)
-                                   .Padding(10)
-                                   .Column(nestedColumn =>
-                                   {
-                                       nestedColumn.Item()
-                                                   .Text(paragraph)
-                                                   .FontSize(16)
-                                                   .FontFamily(Fonts.Calibri)
-                                                   .LetterSpacing(spacing);
+                                    .Item()
+                                    .Border(1)
+                                    .Padding(10)
+                                    .Column(nestedColumn =>
+                                    {
+                                        nestedColumn.Item()
+                                            .Text(paragraph)
+                                            .FontSize(16)
+                                            .WordSpacing(spacing);
 
-                                       nestedColumn.Item()
-                                                   .Text($"Letter spacing of {spacing} em")
-                                                   .FontSize(10)
-                                                   .Italic()
-                                                   .FontColor(Colors.Blue.Medium);
-                                   });
+                                        nestedColumn.Item()
+                                            .Text($"Word spacing of {spacing} em")
+                                            .FontSize(10)
+                                            .Italic()
+                                            .FontColor(Colors.Blue.Medium);
+                                    });
+                                
                             }
                         });
                 });
@@ -339,7 +340,7 @@ namespace QuestPDF.Examples
         {
             RenderingTest
                 .Create()
-                .PageSize(500, 500)
+                .PageSize(400, 500)
                 .ProduceImages()
                 .ShowResults()
                 .Render(container =>
@@ -347,12 +348,30 @@ namespace QuestPDF.Examples
                     container
                         .Padding(5)
                         .MinimalBox()
-                        .Border(1)
                         .Padding(10)
-                        .Text(text =>
-                        {
-                            text.Line(Placeholders.Paragraph());
-                        });
+                        .Text(Placeholders.Paragraphs())
+                        .ParagraphSpacing(10)
+                        .FontSize(16);
+                });
+        }
+        
+        [Test]
+        public void ParagraphFirstLineIndentation()
+        {
+            RenderingTest
+                .Create()
+                .PageSize(400, 500)
+                .ProduceImages()
+                .ShowResults()
+                .Render(container =>
+                {
+                    container
+                        .Padding(5)
+                        .MinimalBox()
+                        .Padding(10)
+                        .Text(Placeholders.Paragraphs())
+                        .ParagraphFirstLineIndentation(20)
+                        .FontSize(16);
                 });
         }
         
@@ -536,7 +555,7 @@ namespace QuestPDF.Examples
                             text.Span("This text is a normal text, ");
                             text.Span("this is a bold text, ").Bold();
                             text.Span("this is a red and underlined text, ").FontColor(Colors.Red.Medium).Underline();
-                            text.Span("and this is slightly bigger text.").FontSize(16);
+                            text.Span("and this is slightly bigger text.").FontSize(24);
                             
                             text.Span("The new text element also supports injecting custom content between words: ");
                             text.Element().PaddingBottom(-4).Height(16).Width(32).Image(Placeholders.Image);
@@ -913,37 +932,45 @@ namespace QuestPDF.Examples
         }
         
         [Test]
-        public void InconsistentLineHeightWhenUsingNewLineTest()
+        public void InconsistentLineHeight()
         {
             RenderingTest
                 .Create()
-                .PageSize(PageSizes.A4)
-                .ProduceImages()
+                .PageSize(new PageSize(1000, 100))
+                .ProducePdf()
                 .ShowResults()
                 .Render(container =>
                 {
                     container
                         .Padding(20)
-                        .Background(Colors.Grey.Lighten4)
-                        .Text(text =>
+                        .Scale(1 / 5f)
+                        .DefaultTextStyle(TextStyle.Default.FontFamily("Lato").FontSize(7f).Bold())
+                        .Row(row =>
                         {
-                            text.DefaultTextStyle(x => x.FontSize(16));
+                            var text = Placeholders.Paragraph();
+
+                            var i = 0;
                             
-                            text.Line(Placeholders.Paragraph());
-                            text.Line("");
-                            text.Line(Placeholders.Paragraph());
-                            
-                            text.Line(Placeholders.Label()).FontSize(48);
-                            
-                            text.Line(Placeholders.Paragraph());
-                            text.Line("");
-                            text.Line(Placeholders.Paragraph());
+                            while(true)
+                            {
+                                var lineHeight = 0.7f + i * 0.01f;
+                                i++;
+                                
+                                if (lineHeight > 1.5f)
+                                    break;
+                                
+                                row.RelativeItem()
+                                    .ShrinkVertical()
+                                    .Background(Placeholders.BackgroundColor())
+                                    .Text($"{i}\n{text}")
+                                    .LineHeight(lineHeight);
+                            }
                         });
                 });
         }
         
         [Test]
-         public void FontFallback_Nested()
+        public void FontFallback_Nested()
         {
             RenderingTest
                 .Create()
@@ -1012,8 +1039,48 @@ namespace QuestPDF.Examples
                  });
          }
          
+         
          [Test]
          public void TextAlignment()
+         {
+             RenderingTest
+                 .Create()
+                 .ProduceImages()
+                 .ShowResults()
+                 .PageSize(500, 800)
+                 .Render(content =>
+                 {
+                     var text = Placeholders.Paragraph();
+                    
+                     content.Padding(20).Column(column =>
+                     {
+                         column.Spacing(20);
+                        
+                         IContainer BlockStyle(IContainer container) => container.Background(Colors.Grey.Lighten3).Padding(10);
+
+                         column.Item().Text("Left alignment").Bold();
+                         column.Item().Element(BlockStyle).Text(text).AlignLeft();
+                         
+                         column.Item().Text("Center alignment").Bold();
+                         column.Item().Element(BlockStyle).Text(text).AlignCenter();
+                         
+                         column.Item().Text("Right alignment").Bold();
+                         column.Item().Element(BlockStyle).Text(text).AlignRight();
+                         
+                         column.Item().Text("Start alignment").Bold();
+                         column.Item().Element(BlockStyle).Text(text).AlignStart();
+                         
+                         column.Item().Text("End alignment").Bold();
+                         column.Item().Element(BlockStyle).Text(text).AlignEnd();
+                         
+                         column.Item().Text("Justify alignment").Bold();
+                         column.Item().Element(BlockStyle).Text(text).Justify();
+                     });
+                 });
+         }
+         
+         [Test]
+         public void TextAlignmentComplex()
          {
              RenderingTest
                  .Create()
@@ -1082,6 +1149,53 @@ namespace QuestPDF.Examples
                                  });
                          };
                      }
+                 });
+         }
+         
+         [Test]
+         public void ClampLines()
+         {
+             RenderingTest
+                 .Create()
+                 .PageSize(300, 80)
+                
+                 .ProduceImages()
+                 .ShowResults()
+                 .Render(container =>
+                 {
+                     container
+                         .Padding(10)
+                         .Text(Placeholders.Paragraph())
+                         .ClampLines(3, " [...]");
+                 });
+         }
+         
+         [Test]
+         public void FontFeaturesTest()
+         {
+             RenderingTest
+                 .Create()
+                 .PageSize(500, 150)
+                 .ProducePdf()
+                 .ShowResults()
+                 .Render(container =>
+                 {
+                     container.Padding(25).Row(row =>
+                     {
+                         row.Spacing(25);
+                         
+                         row.RelativeItem().Column(column =>
+                         {
+                             column.Item().Text("Without ligatures").FontSize(16);
+                             column.Item().Text("fly and fight").FontSize(32).DisableFontFeature(FontFeatures.StandardLigatures);
+                         });
+                         
+                         row.RelativeItem().Column(column =>
+                         {
+                             column.Item().Text("With ligatures").FontSize(16);
+                             column.Item().Text("fly and fight").FontSize(32).EnableFontFeature(FontFeatures.StandardLigatures);
+                         });
+                     });
                  });
          }
     }

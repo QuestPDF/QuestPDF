@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -21,7 +21,8 @@ namespace QuestPDF.Drawing
 
         static FontManager()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
+            RegisterLibraryDefaultFonts();
         }
         
         [Obsolete("Since version 2022.8 this method has been renamed. Please use the RegisterFontWithCustomName method.")]
@@ -65,6 +66,61 @@ namespace QuestPDF.Drawing
                 throw new ArgumentException($"Cannot load font file from an embedded resource. Please make sure that the resource is available or the path is correct: {pathName}");
             
             RegisterFont(stream);
+        }
+        
+        private static void RegisterLibraryDefaultFonts()
+        {
+            var fontFilePaths = SearchFontFiles();
+            
+            foreach (var fileName in fontFilePaths)
+            {
+                try
+                {
+                    using var fontFileStream = File.OpenRead(fileName);
+                    RegisterFont(fontFileStream);
+                }
+                catch
+                {
+                    
+                }
+            }
+
+            ICollection<string> SearchFontFiles()
+            {
+                const int maxFilesToScan = 100_000;
+                
+                var applicationFiles = Settings
+                    .FontDiscoveryPaths
+                    .Where(Directory.Exists)
+                    .Select(TryEnumerateFiles)
+                    .SelectMany(file => file)
+                    .Take(maxFilesToScan)
+                    .ToList();
+                
+                if (applicationFiles.Count == maxFilesToScan)
+                    throw new InvalidOperationException($"The library has reached the limit of {maxFilesToScan} files to scan for font files. Please adjust the {nameof(Settings.FontDiscoveryPaths)} collection to include only the necessary directories. The reason of this exception is to prevent scanning too many files and avoid performance issues on the application startup.");
+                
+                var supportedFontExtensions = new[] { ".ttf", ".otf", ".ttc", ".pfb" };
+                
+                return applicationFiles
+                    .Where(x => supportedFontExtensions.Contains(Path.GetExtension(x).ToLowerInvariant()))
+                    .ToList();
+                
+                ICollection<string> TryEnumerateFiles(string path)
+                {
+                    try
+                    {
+                        return Directory
+                            .EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
+                            .Take(maxFilesToScan)
+                            .ToArray();
+                    }
+                    catch
+                    {
+                        return Array.Empty<string>();
+                    }
+                }
+            }
         }
     }
 }

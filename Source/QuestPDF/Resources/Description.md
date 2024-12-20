@@ -20,15 +20,15 @@
 <table>
 <tr>
     <td>👨‍💻</td>
-    <td>Design documents using C# and employ a code-only approach. Utilize your version control system to its fullest potential.</td>
+    <td>Design PDF documents using C# and employ a code-only approach. Utilize your version control system to its fullest potential.</td>
 </tr>
 <tr>
     <td>🧱</td>
-    <td>Compose document with a range of powerful and predictable structural elements, such as text, image, border, table, and many more.</td>
+    <td>Compose PDF document with a range of powerful and predictable structural elements, such as text, image, border, table, and many more.</td>
 </tr>
 <tr>
     <td>⚙️</td>
-    <td>Utilize a comprehensive layout engine, specifically designed for document generation and paging support.</td>
+    <td>Utilize a comprehensive layout engine, specifically designed for PDF document generation and paging support.</td>
 </tr>
 <tr>
     <td>📖</td>
@@ -40,7 +40,7 @@
 </tr>
 <tr>
     <td>⌛</td>
-    <td>Save time thanks to a hot-reload capability, allowing real-time document preview without code recompilation.</td>
+    <td>Save time thanks to a hot-reload capability, allowing real-time PDF document preview without code recompilation.</td>
 </tr>
 </table>
 

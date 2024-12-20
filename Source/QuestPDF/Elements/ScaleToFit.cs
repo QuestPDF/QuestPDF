@@ -8,23 +8,20 @@ namespace QuestPDF.Elements
     {
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (Child == null)
-                return SpacePlan.FullRender(Size.Zero);
-
-            var perfectScale = FindPerfectScale(Child, availableSpace);
+            var perfectScale = FindPerfectScale(availableSpace);
 
             if (perfectScale == null)
-                return SpacePlan.Wrap();
+                return SpacePlan.Wrap("Cannot find the perfect scale to fit the child element in the available space.");
 
             var scaledSpace = ScaleSize(availableSpace, 1 / perfectScale.Value);
-            var childSizeInScale = Child.Measure(scaledSpace);
+            var childSizeInScale = base.Measure(scaledSpace);
             var childSizeInOriginalScale = ScaleSize(childSizeInScale, perfectScale.Value);
             return SpacePlan.FullRender(childSizeInOriginalScale);
         }
         
         internal override void Draw(Size availableSpace)
         {
-            var perfectScale = FindPerfectScale(Child, availableSpace);
+            var perfectScale = FindPerfectScale(availableSpace);
             
             if (!perfectScale.HasValue)
                 return;
@@ -42,7 +39,7 @@ namespace QuestPDF.Elements
             return new Size(size.Width * factor, size.Height * factor);
         }
         
-        private static float? FindPerfectScale(Element child, Size availableSpace)
+        private float? FindPerfectScale(Size availableSpace)
         {
             if (ChildFits(1))
                 return 1;
@@ -72,7 +69,7 @@ namespace QuestPDF.Elements
             bool ChildFits(float scale)
             {
                 var scaledSpace = ScaleSize(availableSpace, 1 / scale);
-                return child.Measure(scaledSpace).Type == SpacePlanType.FullRender;
+                return base.Measure(scaledSpace).Type is SpacePlanType.Empty or SpacePlanType.FullRender;
             }
         }
     }

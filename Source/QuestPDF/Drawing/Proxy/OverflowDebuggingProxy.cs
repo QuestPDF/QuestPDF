@@ -4,8 +4,10 @@ namespace QuestPDF.Drawing.Proxy;
 
 internal class OverflowDebuggingProxy : ElementProxy
 {
-    public Size MeasurementSize { get; private set; }
-    public SpacePlanType? SpacePlanType { get; private set; }
+    public bool IsMeasuring { get; private set; } = true;
+    
+    public Size? AvailableSpace { get; private set; }
+    public SpacePlan? SpacePlan { get; private set; }
 
     public OverflowDebuggingProxy(Element child)
     {
@@ -16,9 +18,17 @@ internal class OverflowDebuggingProxy : ElementProxy
     {
         var spacePlan = Child.Measure(availableSpace);
 
-        MeasurementSize = availableSpace;
-        SpacePlanType = spacePlan.Type;
+        if (IsMeasuring)
+        {
+            AvailableSpace = availableSpace;
+            SpacePlan = spacePlan;
+        }
         
         return spacePlan;
+    }
+    
+    public void StopMeasuring()
+    {
+        IsMeasuring = false;
     }
 }

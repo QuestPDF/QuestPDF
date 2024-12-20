@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class SimpleRotate : ContainerElement, ICacheable
+    internal sealed class SimpleRotate : ContainerElement
     {
         public int TurnCount { get; set; }
         public int NormalizedTurnCount => (TurnCount % 4 + 4) % 4;
@@ -17,8 +17,8 @@ namespace QuestPDF.Elements
             availableSpace = new Size(availableSpace.Height, availableSpace.Width);
             var childSpace = base.Measure(availableSpace);
 
-            if (childSpace.Type == SpacePlanType.Wrap)
-                return SpacePlan.Wrap();
+            if (childSpace.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+                return childSpace;
 
             var targetSpace = new Size(childSpace.Height, childSpace.Width);
 
@@ -50,5 +50,7 @@ namespace QuestPDF.Elements
             Canvas.Rotate(-rotate);
             Canvas.Translate(translate.Reverse());
         }
+        
+        internal override string? GetCompanionHint() => $"{NormalizedTurnCount * 90} deg clockwise";
     }
 }

@@ -10,12 +10,9 @@ namespace QuestPDF.Elements
         
         internal override void Draw(Size availableSpace)
         {
-            if (Child == null)
-                return;
-            
             var childMeasurement = base.Measure(availableSpace);
             
-            if (childMeasurement.Type == SpacePlanType.Wrap)
+            if (childMeasurement.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return;
 
             var childSize = new Size(
@@ -55,5 +52,7 @@ namespace QuestPDF.Elements
                 _ => 0
             };
         }
+        
+        internal override string? GetCompanionHint() => $"{Vertical} {Horizontal}";
     }
 }

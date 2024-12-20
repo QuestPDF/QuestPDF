@@ -6,12 +6,12 @@ namespace QuestPDF.Elements
 {
     internal sealed class Empty : Element
     {
-        internal static Empty Instance { get; } = new Empty();
+        internal static Empty Instance { get; } = new();
         
         internal override SpacePlan Measure(Size availableSpace)
         {
             return availableSpace.IsNegative() 
-                ? SpacePlan.Wrap() 
+                ? SpacePlan.Wrap("The available space is negative.") 
                 : SpacePlan.FullRender(0, 0);
         }
 

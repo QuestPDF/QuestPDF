@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Extend : ContainerElement, ICacheable
+    internal sealed class Extend : ContainerElement
     {
         public bool ExtendVertical { get; set; }
         public bool ExtendHorizontal { get; set; }
@@ -13,7 +13,7 @@ namespace QuestPDF.Elements
         {
             var childSize = base.Measure(availableSpace);
 
-            if (childSize.Type == SpacePlanType.Wrap)
+            if (childSize.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return childSize;
             
             var targetSize = GetTargetSize(availableSpace, childSize);
@@ -32,6 +32,17 @@ namespace QuestPDF.Elements
             return new Size(
                 ExtendHorizontal ? availableSpace.Width : childSize.Width, 
                 ExtendVertical ? availableSpace.Height : childSize.Height);
+        }
+        
+        internal override string? GetCompanionHint()
+        {
+            return (ExtendVertical, ExtendHorizontal) switch
+            {
+                (true, true) => "Both axes",
+                (true, false) => "Vertical axis",
+                (false, true) => "Horizontal axis",
+                (false, false) => null
+            };
         }
     }
 }

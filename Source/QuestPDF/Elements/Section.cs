@@ -1,17 +1,12 @@
-﻿using QuestPDF.Infrastructure;
+﻿using System.Collections.Generic;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Section : ContainerElement, IStateResettable
+    internal sealed class Section : ContainerElement, IStateful
     {
         public string SectionName { get; set; }
-        private bool IsRendered { get; set; }
-        
-        public void ResetState()
-        {
-            IsRendered = false;
-        }
-        
+
         internal override void Draw(Size availableSpace)
         {
             if (!IsRendered)
@@ -23,6 +18,24 @@ namespace QuestPDF.Elements
             
             PageContext.SetSectionPage(SectionName);
             base.Draw(availableSpace);
+        }
+        
+        #region IStateful
+        
+        private bool IsRendered { get; set; }
+    
+        public void ResetState(bool hardReset = false) => IsRendered = false;
+        public object GetState() => IsRendered;
+        public void SetState(object state) => IsRendered = (bool) state;
+    
+        #endregion
+        
+        internal override string? GetCompanionHint() => SectionName;
+        internal override string? GetCompanionSearchableContent() => SectionName;
+        
+        internal override IEnumerable<KeyValuePair<string, string>>? GetCompanionProperties()
+        {
+            yield return new("SectionName", SectionName);
         }
     }
 }

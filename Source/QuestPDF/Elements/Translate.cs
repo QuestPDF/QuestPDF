@@ -1,4 +1,6 @@
-﻿using QuestPDF.Infrastructure;
+﻿using System.Collections.Generic;
+using System.Linq;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
@@ -14,6 +16,17 @@ namespace QuestPDF.Elements
             Canvas.Translate(translate);
             base.Draw(availableSpace);
             Canvas.Translate(translate.Reverse());
+        }
+
+        internal override string? GetCompanionHint()
+        {
+            return string.Join("   ", GetOptions().Where(x => x.value != 0).Select(x => $"{x.Label}={x.value}"));
+            
+            IEnumerable<(string Label, float value)> GetOptions()
+            {
+                yield return ("X", TranslateX);
+                yield return ("Y", TranslateY);
+            }
         }
     }
 }

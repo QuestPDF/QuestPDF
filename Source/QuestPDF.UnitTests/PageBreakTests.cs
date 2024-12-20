@@ -22,7 +22,7 @@ namespace QuestPDF.UnitTests
                 .CheckDrawResult()
                 
                 .MeasureElement(new Size(500, 400))
-                .CheckMeasureResult(SpacePlan.FullRender(0, 0));
+                .CheckMeasureResult(SpacePlan.Empty());
         }
     }
 }

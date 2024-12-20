@@ -6,6 +6,7 @@ using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
+using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.UnitTests.TestEngine.Operations;
@@ -205,6 +206,7 @@ namespace QuestPDF.UnitTests.TestEngine
             ClassicAssert.AreEqual(expected.Width, actual.Width, "Measure: width");
             ClassicAssert.AreEqual(expected.Height, actual.Height, "Measure: height");
             ClassicAssert.AreEqual(expected.Type, actual.Type, "Measure: height");
+            ClassicAssert.AreEqual(expected.WrapReason, actual.WrapReason, "Measure: wrap");
             
             return this;
         }
@@ -231,53 +233,13 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public static Element CreateUniqueElement()
         {
-            return new Constrained
-            {
-                MinWidth = 90,
-                MinHeight = 60,
-                
-                Child = new DynamicImage
-                {
-                    CompressionQuality = ImageCompressionQuality.Medium,
-                    TargetDpi = DocumentSettings.DefaultRasterDpi,
-                    Source = paylaod => Placeholders.Image(paylaod.ImageSize)
-                }
-            };
-        }
+            var content = new Container();
 
-        public static void CompareOperations(Element value, Element expected, Size? availableSpace = null)
-        {
-            CompareMeasureOperations(value, expected, availableSpace);
-            CompareDrawOperations(value, expected, availableSpace);
-        }
-        
-        private static void CompareMeasureOperations(Element value, Element expected, Size? availableSpace = null)
-        {
-            availableSpace ??= new Size(400, 300);
+            content
+                .AspectRatio(4 / 3f)
+                .Image(Placeholders.Image);
             
-            var canvas = new FreeCanvas();
-            value.InjectDependencies(null, canvas);
-            var valueMeasure = value.Measure(availableSpace.Value);
-            
-            expected.InjectDependencies(null, canvas);
-            var expectedMeasure = expected.Measure(availableSpace.Value);
-            
-            valueMeasure.Should().BeEquivalentTo(expectedMeasure);
-        }
-        
-        private static void CompareDrawOperations(Element value, Element expected, Size? availableSpace = null)
-        {
-            availableSpace ??= new Size(400, 300);
-            
-            var valueCanvas = new OperationRecordingCanvas();
-            value.InjectDependencies(null, valueCanvas);
-            value.Draw(availableSpace.Value);
-            
-            var expectedCanvas = new OperationRecordingCanvas();
-            expected.InjectDependencies(null, expectedCanvas);
-            expected.Draw(availableSpace.Value);
-            
-            valueCanvas.Operations.Should().BeEquivalentTo(expectedCanvas.Operations);
+            return content;
         }
     }
 }

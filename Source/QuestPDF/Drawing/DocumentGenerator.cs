@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Threading;
+using QuestPDF.Companion;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
@@ -17,7 +18,7 @@ namespace QuestPDF.Drawing
     {
         static DocumentGenerator()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
         
         internal static int GeneratePdf(SkWriteStream stream, IDocument document)
@@ -51,8 +52,18 @@ namespace QuestPDF.Drawing
 
             return canvas.Images;
         }
+        
+        internal static ICollection<string> GenerateSvg(IDocument document)
+        {
+            ValidateLicense();
+            
+            var canvas = new SvgCanvas();
+            RenderDocument(canvas, document, document.GetSettings());
 
-        private static void ValidateLicense()
+            return canvas.Images;
+        }
+
+        internal static void ValidateLicense()
         {
             if (Settings.License.HasValue)
                 return;
@@ -60,16 +71,15 @@ namespace QuestPDF.Drawing
             const string newParagraph = "\n\n";
 
             var exceptionMessage = 
-                $"QuestPDF is a modern open-source library. " +
-                $"We identify the importance of the library in your projects and therefore want to make sure you can safely and confidently continue the development. " +
-                $"Being a healthy and growing community is the primary goal that motivates us to pursue professionalism. {newParagraph}" +
-                $"Please refer to the QuestPDF License and Pricing webpage for more details. (https://www.questpdf.com/license/) {newParagraph}" +
-                $"If you are an existing QuestPDF user and for any reason cannot update, you can stay with the 2022.12.X release with the extended quality support but without any new features, improvements, or optimizations. " +
-                $"That release will always be available under the MIT license, free for commercial usage. We are planning to sunset support for the 2022.12.X branch around Q1 2024. Until then, it will continue to receive quality and bug-fix updates. {newParagraph}" +
-                $"The library does not require any license key. We trust our users, and therefore the process is simple. " +
-                $"To disable license validation and turn off this exception, please configure an eligible license using the QuestPDF.Settings.License API, for example: {newParagraph}" +
-                $"\"QuestPDF.Settings.License = LicenseType.Community;\" {newParagraph}" +
-                $"Learn more on: https://www.questpdf.com/license/configuration.html {newParagraph}";
+                $"{newParagraph}{newParagraph}Welcome to QuestPDF! 👋 {newParagraph}" +
+                $"QuestPDF is an open-source library committed to long-term sustainability and continuous improvement. {newParagraph}" +
+                $"To maintain high-quality development and support while keeping the library free for most users, we use a fair pricing model where only larger organizations help by providing necessary funding for the project. {newParagraph}" +
+                $"If your organization’s annual gross revenue exceeds $1M USD, a Commercial License is required for production use (you can freely evaluate and test QuestPDF in non-production environments at no cost). " +
+                $"In that case, please share this information with your team or management. By purchasing a license, you directly contribute to the ongoing development and reliability of QuestPDF. {newParagraph}" +
+                $"For details on the license types and determining which applies to you, please visit: https://www.questpdf.com/license/ {newParagraph}" +
+                $"We trust our users. To continue, no license key is needed. Instead, simply select and configure the appropriate license in your code. For example, if you qualify for the Community license, add: {newParagraph}" +
+                $"> QuestPDF.Settings.License = LicenseType.Community; {newParagraph}" +
+                $"Thank you for supporting QuestPDF! ❤️ By choosing the right license, you help ensure that our project remains transparent, sustainable, and continuously improving for everyone. 🚀 {newParagraph}{newParagraph}";
             
             throw new Exception(exceptionMessage)
             {
@@ -77,25 +87,63 @@ namespace QuestPDF.Drawing
             };
         }
 
-        internal static PreviewerDocumentSnapshot GeneratePreviewerContent(IDocument document)
+        internal static CompanionDocumentSnapshot GenerateCompanionContent(IDocument document)
         {
-            var canvas = new PreviewerCanvas();
+            var canvas = new CompanionCanvas();
             RenderDocument(canvas, document, DocumentSettings.Default);
             return canvas.GetContent();
         }
+
+        /// <summary>
+        /// Adjusts the concurrency level for the RenderDocument method to optimize performance.
+        /// 
+        /// While the Skia implementation is thread-safe, it appears to contain internal locks that hinder scalability.
+        /// Consequently, using multithreading for document rendering can reduce performance. This includes increased memory usage 
+        /// and slower generation times—potentially even worse than rendering documents sequentially.
+        /// 
+        /// Based on testing, using two concurrent threads yields the best performance in the current environment, 
+        /// though it is still not optimal. A potential area for investigation is the `SkParagraph.PlanLayout` method, 
+        /// which utilizes a paragraph cache within the `SkFontCollection` class. 
+        /// 
+        /// Notably:
+        /// - In theory, the paragraph cache is already disabled.
+        /// - Despite this, the method does not scale linearly with the number of CPU cores, indicating underlying synchronization bottlenecks.
+        /// 
+        /// Other potential contributors to the scalability issues may include:
+        /// 1. Garbage Collection: The generation process might create a large number of layout element instances 
+        ///    whose lifetimes span the entire document rendering process.
+        /// 2. CPU Cache Efficiency: Complex, large, and deeply nested document layout trees may lead to cache misses 
+        ///    as they are repeatedly traversed during rendering.
+        /// 
+        /// TODO:
+        /// - Investigate the underlying causes of these scalability issues in future releases.
+        /// - Explore optimizations for reducing locking contention, improving memory efficiency, and enhancing CPU cache utilization.
+        /// </summary>
+        private static SemaphoreSlim RenderDocumentSemaphore = new(2);
         
         private static int RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
         {
             int totalPages;
-            canvas.BeginDocument();
+
+            RenderDocumentSemaphore.Wait();
+
+            try
+            {
+                canvas.BeginDocument();
             
-            if (document is MergedDocument mergedDocument)
-                totalPages = RenderMergedDocument(canvas, mergedDocument, settings);
+                if (document is MergedDocument mergedDocument)
+                    totalPages = RenderMergedDocument(canvas, mergedDocument, settings);
             
-            else
-                totalPages = RenderSingleDocument(canvas, document, settings);
+                else
+                    totalPages = RenderSingleDocument(canvas, document, settings);
             
-            canvas.EndDocument();
+                canvas.EndDocument();
+            }
+            finally
+            {
+                RenderDocumentSemaphore.Release();
+            }
+
             return totalPages;
         }
 
@@ -105,11 +153,17 @@ namespace QuestPDF.Drawing
             var useOriginalImages = canvas is ImageCanvas;
 
             var content = ConfigureContent(document, settings, useOriginalImages);
-
+            
+            if (canvas is CompanionCanvas)
+                content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
+            
             var pageContext = new PageContext();
             RenderPass(pageContext, new FreeCanvas(), content);
             pageContext.ProceedToNextRenderingPhase();
             RenderPass(pageContext, canvas, content);
+
+            if (canvas is CompanionCanvas companionCanvas)
+                companionCanvas.Hierarchy = content.ExtractHierarchy();
 
             return pageContext.DocumentLength;
         }
@@ -175,7 +229,7 @@ namespace QuestPDF.Drawing
             content.ApplyInheritedAndGlobalTexStyle(TextStyle.Default);
             content.ApplyContentDirection(settings.ContentDirection);
             content.ApplyDefaultImageConfiguration(settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
-                    
+
             if (Settings.EnableCaching)
                 content.ApplyCaching();
             
@@ -186,7 +240,7 @@ namespace QuestPDF.Drawing
             where TCanvas : ICanvas, IRenderingCanvas
         {
             content.InjectDependencies(pageContext, canvas);
-            content.VisitChildren(x => (x as IStateResettable)?.ResetState());
+            content.VisitChildren(x => (x as IStateful)?.ResetState(hardReset: true));
 
             while(true)
             {
@@ -196,15 +250,16 @@ namespace QuestPDF.Drawing
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
                     pageContext.DecrementPageNumber();
-                    
-                    if (Settings.EnableDebugging)
-                    {
-                        ApplyLayoutDebugging();
-                        continue;
-                    }
-                    
                     canvas.EndDocument();
+
+                    #if NET6_0_OR_GREATER
+                    if (!CompanionService.IsCompanionAttached)
+                        ThrowLayoutException();
+                    #else
                     ThrowLayoutException();
+                    #endif
+                    
+                    ApplyLayoutDebugging();
                 }
 
                 try
@@ -223,36 +278,87 @@ namespace QuestPDF.Drawing
                 if (spacePlan.Type == SpacePlanType.FullRender)
                     break;
             }
-
+            
             void ApplyLayoutDebugging()
             {
-                content.RemoveExistingProxies();
+                content.RemoveExistingProxiesOfType<SnapshotRecorder>();
 
                 content.ApplyLayoutOverflowDetection();
                 content.Measure(Size.Max);
 
-                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().FirstOrDefault();
+                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
+                overflowState.StopMeasuring();
                 overflowState.ApplyLayoutOverflowVisualization();
                 
                 content.ApplyContentDirection();
                 content.InjectDependencies(pageContext, canvas);
 
-                content.RemoveExistingProxies();
+                content.VisitChildren(x => (x as LayoutProxy)?.CaptureLayoutErrorMeasurement());
+                content.RemoveExistingProxiesOfType<OverflowDebuggingProxy>();
             }
             
             void ThrowLayoutException()
             {
                 var newLine = "\n";
                 var newParagraph = newLine + newLine;
-                    
+                
+                const string debuggingSettingsName = $"{nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDebugging)}";
+
                 var message =
                     $"The provided document content contains conflicting size constraints. " +
-                    $"For example, some elements may require more space than is available. {newParagraph}" +
-                    $"To quickly determine the place where the problem is likely occurring, please generate the document with the attached debugger. " +
-                    $"The library will generate a PDF document with visually annotated places where layout constraints are invalid. {newParagraph}" +
-                    $"Alternatively, if you don’t want to or cannot attach the debugger, you can set the {nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDebugging)} flag to true.";
+                    $"For example, some elements may require more space than is available. {newParagraph}";
                 
-                throw new DocumentLayoutException(message);
+                if (Settings.EnableDebugging)
+                {
+                    var (ancestors, layout) = GenerateLayoutExceptionDebuggingInfo();
+
+                    var ancestorsText = ancestors.FormatAncestors();
+                    var layoutText = layout.FormatLayoutSubtree();
+
+                    message +=
+                        $"The layout issue is likely present in the following part of the document: {newParagraph}{ancestorsText}{newParagraph}" +
+                        $"To learn more, please analyse the document measurement of the problematic location: {newParagraph}{layoutText}" +
+                        $"{LayoutDebugging.LayoutVisualizationLegend}{newParagraph}" +
+                        $"This detailed information is generated because you run the application with a debugger attached or with the {debuggingSettingsName} flag set to true. ";
+
+                    throw new DocumentLayoutException(message);
+                }
+                else
+                {
+                    message +=
+                        $"To further investigate the location of the root cause, please run the application with a debugger attached or set the {debuggingSettingsName} flag to true. " +
+                        $"The library will generate additional debugging information such as probable code problem location and detailed layout measurement overview.";
+                    
+                    throw new DocumentLayoutException(message);
+                }
+            }
+            
+            (ICollection<Element> ancestors, TreeNode<OverflowDebuggingProxy> layout) GenerateLayoutExceptionDebuggingInfo()
+            {
+                content.RemoveExistingProxies();
+                content.ApplyLayoutOverflowDetection();
+                content.Measure(Size.Max);
+                
+                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
+                overflowState.StopMeasuring();
+                overflowState.ApplyLayoutOverflowVisualization();
+
+                var rootCause = overflowState.FindLayoutOverflowVisualizationNodes().First();
+                
+                var ancestors = rootCause
+                    .ExtractAncestors()
+                    .Select(x => x.Value.Child)
+                    .Where(x => x is DebugPointer or SourceCodePointer)
+                    .Reverse()
+                    .ToArray();
+
+                var layout = rootCause
+                    .ExtractAncestors()
+                    .First(x => x.Value.Child is SourceCodePointer or DebugPointer)
+                    .Children
+                    .First();
+
+                return (ancestors, layout);
             }
         }
 
@@ -267,16 +373,69 @@ namespace QuestPDF.Drawing
                 x.Canvas = canvas;
             });
         }
-
-        private static void ApplyCaching(this Container content)
+        
+        internal static void ApplyCaching(this Element? content)
         {
-            content.VisitChildren(x =>
-            {
-                if (x is ICacheable)
-                    x.CreateProxy(y => new CacheProxy(y));
-            });
-        }
+            var canApplyCaching = Traverse(content);
+            
+            if (canApplyCaching)
+                content?.CreateProxy(x => new SnapshotRecorder(x));
 
+            // returns true if can apply caching
+            bool Traverse(Element? content)
+            {
+                if (content is TextBlock textBlock)
+                {
+                    foreach (var textBlockItem in textBlock.Items)
+                    {
+                        if (textBlockItem is TextBlockPageNumber)
+                            return false;
+                        
+                        if (textBlockItem is TextBlockElement textBlockElement)
+                            return Traverse(textBlockElement.Element);
+                    }
+
+                    return true;
+                }
+
+                if (content is DynamicHost)
+                    return false;
+                
+                if (content is ContainerElement containerElement)
+                    return Traverse(containerElement.Child);
+
+                if (content is MultiColumn multiColumn)
+                {
+                    var multiColumnSupportsCaching = Traverse(multiColumn.Content) && Traverse(multiColumn.Spacer);
+                    
+                    multiColumn.Content.RemoveExistingProxies();
+                    multiColumn.Spacer.RemoveExistingProxies();
+                    
+                    return multiColumnSupportsCaching;
+                }
+
+                var canApplyCachingPerChild = content.GetChildren().Select(Traverse).ToArray();
+                
+                if (canApplyCachingPerChild.All(x => x))
+                    return true;
+
+                if (content is Row row && row.Items.Any(x => x.Type == RowItemType.Auto))
+                    return false;
+
+                var childIndex = 0;
+                
+                content.CreateProxy(x =>
+                {
+                    var canApplyCaching = canApplyCachingPerChild[childIndex];
+                    childIndex++;
+
+                    return canApplyCaching ? new SnapshotRecorder(x) : x;
+                });
+                
+                return false;
+            }
+        }
+        
         internal static void ApplyContentDirection(this Element? content, ContentDirection? direction = null)
         {
             if (content == null)
@@ -337,6 +496,8 @@ namespace QuestPDF.Drawing
             
             if (content is TextBlock textBlock)
             {
+                textBlock.DefaultTextStyle = textBlock.DefaultTextStyle.ApplyInheritedStyle(documentDefaultTextStyle).ApplyGlobalStyle();
+                
                 foreach (var textBlockItem in textBlock.Items)
                 {
                     if (textBlockItem is TextBlockSpan textSpan)

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Net.Mime;
+using System.Runtime.CompilerServices;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent
 {
@@ -10,7 +12,7 @@ namespace QuestPDF.Fluent
     {
         static ElementExtensions()
         {
-            NativeDependencyCompatibilityChecker.Test();
+            SkNativeDependencyCompatibilityChecker.Test();
         }
         
         internal static Container Create(Action<IContainer> factory)
@@ -34,6 +36,9 @@ namespace QuestPDF.Fluent
             if (element != child as Element)
                 element.Child = child as Element;
             
+            if (child is Element childElement)
+                childElement.CodeLocation = SourceCodePath.CreateFromCurrentStackTrace();
+
             return child;
         }
         
@@ -46,9 +51,25 @@ namespace QuestPDF.Fluent
         /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
         /// </remarks>
         /// <param name="handler">A delegate that takes the current container and populates it with content.</param>
-        public static void Element(this IContainer parent, Action<IContainer> handler)
+        public static void Element(
+            this IContainer parent, 
+            Action<IContainer> handler,
+            [CallerArgumentExpression("handler")] string handlerName = null,
+            [CallerMemberName] string parentName = "",
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
         {
-            handler(parent.Container());
+            var handlerContainer = parent
+                .Container()
+                .Element(new SourceCodePointer
+                {
+                    MethodName = handlerName,
+                    CalledFrom = parentName,
+                    FilePath = sourceFilePath,
+                    LineNumber = sourceLineNumber
+                });
+            
+            handler(handlerContainer);
         }
         
         /// <summary>
@@ -61,9 +82,29 @@ namespace QuestPDF.Fluent
         /// </remarks>
         /// <param name="handler">A method that accepts the current container, optionally populates it with content, and returns a subsequent container to continue the Fluent API chain.</param>
         /// <returns>The container returned by the <paramref name="handler"/> method.</returns>
-        public static IContainer Element(this IContainer parent, Func<IContainer, IContainer> handler)
+        public static IContainer Element(
+            this IContainer parent, 
+            Func<IContainer, IContainer> handler,
+            [CallerArgumentExpression("handler")] string handlerName = null,
+            [CallerMemberName] string parentName = "",
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
         {
-            return handler(parent.Container()).Container();
+            var handlerContainer = parent
+                .Element(new SourceCodePointer
+                {
+                    MethodName = handlerName,
+                    CalledFrom = parentName,
+                    FilePath = sourceFilePath,
+                    LineNumber = sourceLineNumber
+                });
+            
+            return handler(handlerContainer);
+        }
+        
+        internal static IContainer NonTrackingElement(this IContainer parent, Func<IContainer, IContainer> handler)
+        {
+            return handler(parent.Container());
         }
         
         /// <summary>
@@ -182,7 +223,7 @@ namespace QuestPDF.Fluent
         /// <remarks>
         /// This is especially useful for elements like tables, where you'd want to display several rows together. By setting the minHeight, you can avoid scenarios where only a single row appears at the page's end, ensuring a more cohesive presentation.
         /// </remarks>
-        public static IContainer EnsureSpace(this IContainer element, float minHeight = Elements.EnsureSpace.DefaultMinHeight)
+        public static IContainer EnsureSpace(this IContainer element, float? minHeight = null)
         {
             return element.Element(new EnsureSpace
             {
@@ -247,10 +288,12 @@ namespace QuestPDF.Fluent
         /// <param name="sectionName">An internal text key representing the section. It should be unique and won't appear in the final document.</param>
         public static IContainer Section(this IContainer element, string sectionName)
         {
-            return element.Element(new Section
-            {
-                SectionName = sectionName
-            });
+            return element
+                .DebugPointer(DebugPointerType.Section, sectionName)
+                .Element(new Section
+                {
+                    SectionName = sectionName
+                });
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]
@@ -306,7 +349,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Applies a default text style to all nested <see cref="TextExtensions.Text">Text</see> elements.
+        /// Applies a default text style to all nested <see cref="MediaTypeNames.Text">Text</see> elements.
         /// <a href="https://www.questpdf.com/api-reference/default-text-style.html">Learn more</a>
         /// </summary>
         /// <remarks>
@@ -322,7 +365,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Applies a default text style to all nested <see cref="TextExtensions.Text">Text</see> elements.
+        /// Applies a default text style to all nested <see cref="MediaTypeNames.Text">Text</see> elements.
         /// <a href="https://www.questpdf.com/api-reference/default-text-style.html">Learn more</a>
         /// </summary>
         /// <remarks>
@@ -357,6 +400,19 @@ namespace QuestPDF.Fluent
         public static IContainer ScaleToFit(this IContainer element)
         {
             return element.Element(new ScaleToFit());
+        }
+
+        /// <summary>
+        /// Repeats its content across multiple pages.
+        /// </summary>
+        /// <remarks>
+        /// In certain layout structures, the content visibility may depend on other elements.
+        /// By default, most elements are rendered only once.
+        /// Use this element to repeat the content across multiple pages.
+        /// </remarks>
+        public static IContainer Repeat(this IContainer element)
+        {
+            return element.Element(new RepeatContent());
         }
 
         #region Canvas [Obsolete]

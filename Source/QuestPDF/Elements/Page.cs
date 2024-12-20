@@ -30,6 +30,7 @@ namespace QuestPDF.Elements
         public void Compose(IContainer container)
         {
             container
+                .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Page.ToString())
                 .ContentDirection(ContentDirection)
                 .Background(BackgroundColor)
                 .DefaultTextStyle(DefaultTextStyle)
@@ -37,17 +38,19 @@ namespace QuestPDF.Elements
                 {
                     layers
                         .Layer()
-                        .DebugPointer("Page background layer")
+                        .Repeat()
+                        .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Background.ToString())
                         .Element(Background);
                     
                     layers
                         .PrimaryLayer()
+                        
                         .MinWidth(MinSize.Width)
                         .MinHeight(MinSize.Height)
-                
                         .MaxWidth(MaxSize.Width)
                         .MaxHeight(MaxSize.Height)
-
+                        .EnforceSizeWhenEmpty()
+                        
                         .PaddingLeft(MarginLeft)
                         .PaddingRight(MarginRight)
                         .PaddingTop(MarginTop)
@@ -57,25 +60,26 @@ namespace QuestPDF.Elements
                         {
                             decoration
                                 .Before()
-                                .DebugPointer("Page header")
+                                .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Header.ToString())
                                 .Element(Header);
 
                             decoration
                                 .Content()
-                                .Element(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
-                                .Element(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
-                                .DebugPointer("Page content")
+                                .NonTrackingElement(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
+                                .NonTrackingElement(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
+                                .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Content.ToString())
                                 .Element(Content);
 
                             decoration
                                 .After()
-                                .DebugPointer("Page footer")
+                                .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Footer.ToString())
                                 .Element(Footer);
                         });
                     
                     layers
                         .Layer()
-                        .DebugPointer("Page foreground layer")
+                        .Repeat()
+                        .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Foreground.ToString())
                         .Element(Foreground);
                 });
 

@@ -78,6 +78,9 @@ namespace QuestPDF.Fluent
         /// <param name="handler">Handler to define columns of the table.</param>
         public void ColumnsDefinition(Action<TableColumnsDefinitionDescriptor> handler)
         {
+            if (ContentTable.Columns.Any())
+                throw new DocumentComposeException("Table columns have already been defined. Please call the 'Table.ColumnsDefinition' method only once.");
+            
             var descriptor = new TableColumnsDefinitionDescriptor();
             handler(descriptor);
 
@@ -105,6 +108,9 @@ namespace QuestPDF.Fluent
         /// <param name="handler">Handler for configuring the header cells.</param>
         public void Header(Action<TableCellDescriptor> handler)
         {
+            if (HeaderTable.Cells.Any())
+                throw new DocumentComposeException("The 'Table.Header' layer has already been defined. Please call this method only once.");
+            
             var descriptor = new TableCellDescriptor(HeaderTable.Cells);
             handler(descriptor);
         }
@@ -116,6 +122,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void Footer(Action<TableCellDescriptor> handler)
         {
+            if (FooterTable.Cells.Any())
+                throw new DocumentComposeException("The 'Table.Footer' layer has already been defined. Please call this method only once.");
+            
             var descriptor = new TableCellDescriptor(FooterTable.Cells);
             handler(descriptor);
         }
@@ -143,7 +152,7 @@ namespace QuestPDF.Fluent
                 .Decoration(decoration =>
                 {
                     decoration.Before().Element(HeaderTable);
-                    decoration.Content().Element(ContentTable);
+                    decoration.Content().ShowIf(ContentTable.Cells.Any()).Element(ContentTable);
                     decoration.After().Element(FooterTable);
                 });
 
