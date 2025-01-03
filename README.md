@@ -67,7 +67,7 @@ Document
 
 GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! ⭐
 
-<img src="https://github.com/user-attachments/assets/bbc7cdc6-ac09-4bb3-bb9d-8abfa81e79fb" width="700" />
+<img src="https://github.com/user-attachments/assets/80358d4c-7eeb-4b0d-bec4-6d907239208f" width="700" />
 
 <br />
 
