@@ -6,6 +6,7 @@
 
 [![QuestPDF Homepage](https://img.shields.io/badge/Homepage-blue?style=for-the-badge)](https://www.questpdf.com)
 [![Dotnet](https://img.shields.io/badge/platform-.NET-blue?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
+https://github.com/user-attachments/assets/4fa6a207-69a9-4b03-ba26-3543caa5ed78
 [![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/stargazers)
 [![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
 [![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
@@ -15,49 +16,7 @@
 
 ### QuestPDF is a modern open-source .NET library for PDF document generation. Offering comprehensive layout engine powered by concise and discoverable C# Fluent API.
 
-```csharp
-Document
-  .Create(document =>
-  {
-    document.Page(page =>
-    {
-      page.Size(PageSizes.Postcard);
-      page.Margin(0.3f, Unit.Inch);
-
-      page.Header()
-        .Text("Hello PDF!")
-        .FontSize(28)
-        .Bold()
-        .FontColor(Colors.Blue.Darken2);
-
-      page.Content()
-        .PaddingVertical(8)
-        .Column(column =>
-        {
-          column.Spacing(8);
-
-          column.Item()
-            .Text(Placeholders.LoremIpsum())
-            .Justify();
-
-          column.Item()
-            .AspectRatio(16 / 9f)
-            .Image(Placeholders.Image);
-        });
-
-      page.Footer()
-        .AlignCenter()
-        .Text(text =>
-        {
-          text.Span("Page ");
-          text.CurrentPageNumber();
-        });
-    });
-  })
-  .GeneratePdfAndShow();
-```
-
-<img src="https://github.com/user-attachments/assets/ceb5fbbb-843e-46ae-97c1-082a704e8a99" width="300">
+https://github.com/user-attachments/assets/a674c413-34c4-47b5-b559-f279b1bf46c0
 
 <br />
 <br />
