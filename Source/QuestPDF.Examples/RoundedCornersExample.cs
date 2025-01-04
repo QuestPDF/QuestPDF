@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework;
+using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -11,31 +12,31 @@ public class RoundedCornersExample
     [Test]
     public void ItemTypes()
     {
-        Document
-            .Create(document =>
+        RenderingTest
+            .Create()
+            .ProducePdf()
+            .PageSize(650, 300)
+            .ShowResults()
+            .Render(container =>
             {
-                document.Page(page =>
+                var roundedRectangle = new RoundedRectangleParameters
                 {
-                    var roundedRectangle = new RoundedRectangleParameters
-                    {
-                        TopLeftRadius = 5,
-                        TopRightRadius = 10,
-                        BottomRightRadius = 15,
-                        BottomLeftRadius = 20,
-                        FillColor = Colors.Blue.Lighten3
-                    };
+                    TopLeftRadius = 5,
+                    TopRightRadius = 10,
+                    BottomRightRadius = 15,
+                    BottomLeftRadius = 20,
+                    FillColor = Colors.Blue.Lighten3
+                };
 
-                    page.Content()
-                        .Padding(10)
-                        .Shrink()
-                        .Layers(layers =>
-                        {
-                            layers.Layer().Svg(roundedRectangle.GenerateSVG);
-                            layers.PrimaryLayer().Padding(10).Text(Placeholders.Sentence());
-                        });
-                });
-            })
-            .GeneratePdfAndShow();
+                container
+                    .Padding(10)
+                    .Shrink()
+                    .Layers(layers =>
+                    {
+                        layers.Layer().Svg(roundedRectangle.GenerateSVG);
+                        layers.PrimaryLayer().Padding(10).Text(Placeholders.Sentence());
+                    });
+            });
     }
 }
 
