@@ -25,6 +25,7 @@ internal sealed class SkTypeface : IDisposable
         
         API.typeface_unref(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

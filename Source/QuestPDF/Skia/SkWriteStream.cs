@@ -31,6 +31,7 @@ internal sealed class SkWriteStream : IDisposable
         
         API.write_stream_delete(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

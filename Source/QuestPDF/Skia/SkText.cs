@@ -46,5 +46,6 @@ internal class SkText : IDisposable
         
         Marshal.FreeHGlobal(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
 }

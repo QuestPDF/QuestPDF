@@ -68,6 +68,7 @@ internal sealed class SkData : IDisposable
         
         API.data_unref(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

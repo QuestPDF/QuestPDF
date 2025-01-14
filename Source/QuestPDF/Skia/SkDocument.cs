@@ -41,6 +41,7 @@ internal sealed class SkDocument : IDisposable
         
         API.document_unref(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

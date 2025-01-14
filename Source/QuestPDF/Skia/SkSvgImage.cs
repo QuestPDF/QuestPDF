@@ -68,6 +68,7 @@ internal sealed class SkSvgImage : IDisposable
         
         API.svg_unref(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API
