@@ -49,6 +49,8 @@ internal class DynamicSvgImage : Element, IStateful
             Canvas.Scale(widthScale,  heightScale);
             Canvas.DrawSvg(targetImage, availableSpace);
             Canvas.Restore();
+            
+            targetImage.Dispose();
         }
             
         IsRendered = true;

@@ -42,6 +42,7 @@ internal sealed class Lazy : ContainerElement, IContentDirectionAware, IStateful
         if (isFullyRendered && ClearCacheAfterFullRender)
         {
             IsRendered = true;
+            Child.ReleaseDisposableChildren();
             Child = Empty.Instance;
         }
     }

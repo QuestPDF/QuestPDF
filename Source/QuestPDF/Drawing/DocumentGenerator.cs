@@ -161,6 +161,8 @@ namespace QuestPDF.Drawing
             
             if (canvas is CompanionCanvas companionCanvas)
                 companionCanvas.Hierarchy = content.ExtractHierarchy();
+            
+            content.ReleaseDisposableChildren();
         }
         
         private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)
@@ -192,7 +194,8 @@ namespace QuestPDF.Drawing
                 foreach (var documentPart in documentParts)
                 {
                     documentPageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPageContext, canvas, documentPart.Content);   
+                    RenderPass(documentPageContext, canvas, documentPart.Content);
+                    documentPart.Content.ReleaseDisposableChildren();
                 }
             }
             else
@@ -205,6 +208,8 @@ namespace QuestPDF.Drawing
                     RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
                     pageContext.ProceedToNextRenderingPhase();
                     RenderPass(pageContext, canvas, documentPart.Content);
+                    
+                    documentPart.Content.ReleaseDisposableChildren();
                 }
             }
         }

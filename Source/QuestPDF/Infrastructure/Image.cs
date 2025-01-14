@@ -22,13 +22,14 @@ namespace QuestPDF.Infrastructure
     /// <remarks>
     /// This class is thread safe.
     /// </remarks>
-    public class Image
+    public class Image : IDisposable
     {
         static Image()
         {
             SkNativeDependencyCompatibilityChecker.Test();
         }
-        
+
+        internal bool IsShared { get; set; } = true;
         internal SkImage SkImage { get; }
         internal ImageSize Size { get; }
 
@@ -42,12 +43,17 @@ namespace QuestPDF.Infrastructure
         
         ~Image()
         {
+            Dispose();
+        }
+        
+        public void Dispose()
+        {
             SkImage?.Dispose();
             
             foreach (var cacheKey in ScaledImageCache)
                 cacheKey.image?.Dispose();
         }
-        
+
         #region Scaling Image
 
         internal SkImage GetVersionOfSize(GetImageVersionRequest request)

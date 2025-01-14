@@ -68,6 +68,8 @@ namespace QuestPDF.Elements
             if (targetImage != null)
                 Canvas.DrawImage(targetImage, availableSpace);
             
+            targetImage?.Dispose();
+            
             GenerationTime += (float) stopWatch.Elapsed.TotalMilliseconds;
             DrawnImageSize += targetImage?.EncodedDataSize ?? 0;
             

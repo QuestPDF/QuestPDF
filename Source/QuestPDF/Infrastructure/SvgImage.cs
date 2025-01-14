@@ -15,6 +15,7 @@ namespace QuestPDF.Infrastructure;
 public class SvgImage
 {
     internal SkSvgImage SkSvgImage { get; }
+    internal bool IsShared { get; set; } = true;
     
     private SvgImage(string content)
     {
@@ -23,9 +24,14 @@ public class SvgImage
 
     ~SvgImage()
     {
+        Dispose();
+    }
+        
+    public void Dispose()
+    {
         SkSvgImage?.Dispose();
     }
-    
+
     /// <summary>
     /// Loads the SVG image from a file with specified path.
     /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>

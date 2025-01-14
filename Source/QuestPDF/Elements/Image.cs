@@ -6,7 +6,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Image : Element, IStateful
+    internal sealed class Image : Element, IStateful, IDisposable
     {
         public Infrastructure.Image? DocumentImage { get; set; }
 
@@ -15,6 +15,14 @@ namespace QuestPDF.Elements
         internal ImageCompressionQuality? CompressionQuality { get; set; }
  
         private int DrawnImageSize { get; set; }
+        
+        public void Dispose()
+        {
+            if (DocumentImage == null || DocumentImage.IsShared)
+                return;
+            
+            DocumentImage?.Dispose();
+        }
         
         internal override SpacePlan Measure(Size availableSpace)
         {

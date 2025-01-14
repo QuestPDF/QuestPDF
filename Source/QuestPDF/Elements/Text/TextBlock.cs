@@ -12,7 +12,7 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Elements.Text
 {
-    internal sealed class TextBlock : Element, IStateful, IContentDirectionAware
+    internal sealed class TextBlock : Element, IStateful, IContentDirectionAware, IDisposable
     {
         // content
         public List<ITextBlockItem> Items { get; set; } = new();
@@ -47,6 +47,11 @@ namespace QuestPDF.Elements.Text
         public string Text => string.Join(" ", Items.OfType<TextBlockSpan>().Select(x => x.Text));
 
         ~TextBlock()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
         {
             Paragraph?.Dispose();
         }

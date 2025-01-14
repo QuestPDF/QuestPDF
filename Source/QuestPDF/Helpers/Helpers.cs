@@ -63,6 +63,11 @@ namespace QuestPDF.Helpers
             handler(element);
         }
 
+        internal static void ReleaseDisposableChildren(this Element? element)
+        {
+            element.VisitChildren(x => (x as IDisposable)?.Dispose());
+        }
+
         internal static bool IsNegative(this Size size)
         {
             return size.Width < -Size.Epsilon || size.Height < -Size.Epsilon;

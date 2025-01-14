@@ -6,9 +6,17 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal class SvgImage : Element, IStateful
+internal class SvgImage : Element, IStateful, IDisposable
 {
     public Infrastructure.SvgImage Image { get; set; }
+    
+    public void Dispose()
+    {
+        if (Image == null || Image.IsShared)
+            return;
+            
+        Image?.Dispose();
+    }
     
     internal override SpacePlan Measure(Size availableSpace)
     {
