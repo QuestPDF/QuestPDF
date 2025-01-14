@@ -120,7 +120,7 @@ namespace QuestPDF.Drawing
         /// - Investigate the underlying causes of these scalability issues in future releases.
         /// - Explore optimizations for reducing locking contention, improving memory efficiency, and enhancing CPU cache utilization.
         /// </summary>
-        private static SemaphoreSlim RenderDocumentSemaphore = new(2);
+        private static SemaphoreSlim RenderDocumentSemaphore = new(4);
         
         private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
         {
