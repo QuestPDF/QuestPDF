@@ -6,7 +6,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal class SnapshotRecorder : ElementProxy
+internal class SnapshotRecorder : ElementProxy, IDisposable
 {
     SnapshotRecorderCanvas RecorderCanvas { get; } = new();
     SkPictureRecorder PictureRecorder { get; } = new();
@@ -15,10 +15,17 @@ internal class SnapshotRecorder : ElementProxy
 
     ~SnapshotRecorder()
     {
+        Dispose();
+    }
+
+    public void Dispose()
+    {
         PictureRecorder.Dispose();
         
         foreach (var cacheValue in DrawCache.Values)
             cacheValue.Dispose();
+        
+        GC.SuppressFinalize(this);
     }
     
     public SnapshotRecorder(Element child)

@@ -276,6 +276,7 @@ namespace QuestPDF.Drawing
             
             void ApplyLayoutDebugging()
             {
+                content.VisitChildren(x => (x as SnapshotRecorder)?.Dispose());
                 content.RemoveExistingProxiesOfType<SnapshotRecorder>();
 
                 content.ApplyLayoutOverflowDetection();
@@ -524,8 +525,15 @@ namespace QuestPDF.Drawing
             if (content is DefaultTextStyle defaultTextStyleElement)
                documentDefaultTextStyle = defaultTextStyleElement.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
 
-            foreach (var child in content.GetChildren())
-                ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
+            if (content is ContainerElement containerElement)
+            {
+                ApplyInheritedAndGlobalTexStyle(containerElement.Child, documentDefaultTextStyle);
+            }
+            else
+            {
+                foreach (var child in content.GetChildren())
+                    ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
+            }
         }
     }
 }
