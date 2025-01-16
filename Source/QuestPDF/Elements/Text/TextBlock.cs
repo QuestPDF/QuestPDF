@@ -54,6 +54,7 @@ namespace QuestPDF.Elements.Text
         public void Dispose()
         {
             Paragraph?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         internal override SpacePlan Measure(Size availableSpace)
