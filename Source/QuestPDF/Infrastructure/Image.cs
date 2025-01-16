@@ -52,6 +52,8 @@ namespace QuestPDF.Infrastructure
             
             foreach (var cacheKey in ScaledImageCache)
                 cacheKey.image?.Dispose();
+            
+            GC.SuppressFinalize(this);
         }
 
         #region Scaling Image
