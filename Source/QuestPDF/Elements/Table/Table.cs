@@ -134,13 +134,12 @@ namespace QuestPDF.Elements.Table
 
         private int CalculateCurrentRow(ICollection<TableCellRenderingCommand> commands)
         {
-            var lastFullyRenderedRow = commands
+            return commands
                 .GroupBy(x => x.Cell.Row)
                 .Where(x => x.All(y => y.Cell.IsRendered || y.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender))
-                .Select(x => x.Key)
-                .ToArray();
-            
-            return lastFullyRenderedRow.Any() ? lastFullyRenderedRow.Max() + 1 : CurrentRow;
+                .Select(x => x.Key + 1)
+                .DefaultIfEmpty(CurrentRow)
+                .Max();
         }
         
         private void UpdateColumnsWidth(float availableWidth)
