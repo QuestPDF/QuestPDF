@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
@@ -8,7 +9,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal class DynamicSvgImage : Element, IStateful
+internal class DynamicSvgImage : Element, IStateful, IDisposable
 {
     public GenerateDynamicSvgDelegate SvgSource { get; set; }
 
@@ -16,8 +17,15 @@ internal class DynamicSvgImage : Element, IStateful
     
     ~DynamicSvgImage()
     {
+        Dispose();
+    }
+    
+    public void Dispose()
+    {
         foreach (var cacheItem in Cache)
             cacheItem.Image?.Dispose();
+            
+        GC.SuppressFinalize(this);
     }
     
     internal override SpacePlan Measure(Size availableSpace)
