@@ -1,9 +1,10 @@
-﻿using QuestPDF.Infrastructure;
+﻿using System;
+using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
-    internal class SkiaDocumentCanvasBase : SkiaCanvasBase
+    internal class SkiaDocumentCanvasBase : SkiaCanvasBase, IDisposable
     {
         private SkDocument? Document { get; }
 
@@ -14,7 +15,14 @@ namespace QuestPDF.Drawing
 
         ~SkiaDocumentCanvasBase()
         {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            Canvas?.Dispose();
             Document?.Dispose();
+            GC.SuppressFinalize(this);
         }
         
         public override void BeginDocument()

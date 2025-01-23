@@ -27,7 +27,7 @@ namespace QuestPDF.Drawing
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
-            var canvas = new PdfCanvas(stream, metadata, settings);
+            using var canvas = new PdfCanvas(stream, metadata, settings);
             RenderDocument(canvas, document, settings);
         }
         
@@ -36,7 +36,7 @@ namespace QuestPDF.Drawing
             ValidateLicense();
             
             var settings = document.GetSettings();
-            var canvas = new XpsCanvas(stream, settings);
+            using var canvas = new XpsCanvas(stream, settings);
             RenderDocument(canvas, document, settings);
         }
         
@@ -47,7 +47,7 @@ namespace QuestPDF.Drawing
             var documentSettings = document.GetSettings();
             documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
             
-            var canvas = new ImageCanvas(imageGenerationSettings);
+            using var canvas = new ImageCanvas(imageGenerationSettings);
             RenderDocument(canvas, document, documentSettings);
 
             return canvas.Images;
@@ -57,7 +57,7 @@ namespace QuestPDF.Drawing
         {
             ValidateLicense();
             
-            var canvas = new SvgCanvas();
+            using var canvas = new SvgCanvas();
             RenderDocument(canvas, document, document.GetSettings());
 
             return canvas.Images;

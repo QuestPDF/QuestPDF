@@ -6,7 +6,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
-    internal sealed class ImageCanvas : SkiaCanvasBase
+    internal sealed class ImageCanvas : SkiaCanvasBase, IDisposable
     {
         private ImageGenerationSettings Settings { get; }
         private SkBitmap Bitmap { get; set; }
@@ -22,8 +22,14 @@ namespace QuestPDF.Drawing
         
         ~ImageCanvas()
         {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
             Canvas?.Dispose();
             Bitmap?.Dispose();
+            GC.SuppressFinalize(this);
         }
         
         public override void BeginDocument()
@@ -33,7 +39,8 @@ namespace QuestPDF.Drawing
 
         public override void EndDocument()
         {
-            
+            Canvas?.Dispose();
+            Bitmap?.Dispose();
         }
 
         public override void BeginPage(Size size)

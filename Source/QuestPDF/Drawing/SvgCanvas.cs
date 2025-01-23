@@ -9,14 +9,21 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
-    internal sealed class SvgCanvas : SkiaCanvasBase
+    internal sealed class SvgCanvas : SkiaCanvasBase, IDisposable
     {
         internal SkWriteStream WriteStream { get; set; }
         internal ICollection<string> Images { get; } = new List<string>();
         
         ~SvgCanvas()
         {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            Canvas?.Dispose();
             WriteStream?.Dispose();
+            GC.SuppressFinalize(this);
         }
         
         public override void BeginDocument()
@@ -26,7 +33,8 @@ namespace QuestPDF.Drawing
 
         public override void EndDocument()
         {
-            
+            Canvas?.Dispose();
+            WriteStream?.Dispose();
         }
 
         public override void BeginPage(Size size)
