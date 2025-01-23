@@ -10,6 +10,7 @@ jobs:
     name: ${{ matrix.runtime.name }}
     runs-on: ${{ matrix.runtime.runs-on }}
     container: ${{ matrix.runtime.container }}
+    timeout-minutes: 15
   
     strategy:
       fail-fast: false
@@ -66,7 +67,7 @@ jobs:
       - name: Install Dependencies required for QPDF (Linux)
         if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
         shell: bash
-        run: apt install libssl-dev gnutls-dev libjpeg-dev --yes
+        run: apt install openssl gnutls-bin libjpeg-dev --yes
           
 
       - name: Install Dependencies required for QPDF (Linux MUSL)
@@ -104,9 +105,9 @@ jobs:
 
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: questpdf-test-results
+          name: questpdf-test-results-${{ matrix.runtime.name }}
           path: |
             **/*.pdf
 
@@ -121,3 +122,13 @@ jobs:
             **/*.snupkg
             !.nuget
 
+  merge:
+    runs-on: ubuntu-latest
+    needs: main
+    steps:
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: questpdf-test-results
+          pattern: questpdf-test-results-*
+          delete-merged: true
