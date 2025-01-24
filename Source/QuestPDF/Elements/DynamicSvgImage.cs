@@ -25,6 +25,7 @@ internal class DynamicSvgImage : Element, IStateful, IDisposable
         foreach (var cacheItem in Cache)
             cacheItem.Image?.Dispose();
             
+        Cache.Clear();
         GC.SuppressFinalize(this);
     }
     
@@ -57,8 +58,6 @@ internal class DynamicSvgImage : Element, IStateful, IDisposable
             Canvas.Scale(widthScale,  heightScale);
             Canvas.DrawSvg(targetImage, availableSpace);
             Canvas.Restore();
-            
-            targetImage.Dispose();
         }
             
         IsRendered = true;

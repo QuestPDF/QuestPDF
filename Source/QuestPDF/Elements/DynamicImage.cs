@@ -46,6 +46,7 @@ namespace QuestPDF.Elements
             foreach (var cacheItem in Cache)
                 cacheItem.Image?.Dispose();
             
+            Cache.Clear();
             GC.SuppressFinalize(this);
         }
         
@@ -74,8 +75,6 @@ namespace QuestPDF.Elements
        
             if (targetImage != null)
                 Canvas.DrawImage(targetImage, availableSpace);
-            
-            targetImage?.Dispose();
             
             GenerationTime += (float) stopWatch.Elapsed.TotalMilliseconds;
             DrawnImageSize += targetImage?.EncodedDataSize ?? 0;

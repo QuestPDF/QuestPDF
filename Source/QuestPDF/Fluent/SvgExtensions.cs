@@ -90,6 +90,7 @@ public static class SvgExtensions
         var isFile = Path.GetExtension(svg).Equals(".svg", StringComparison.OrdinalIgnoreCase);
         
         var image = isFile ? SvgImage.FromFile(svg) : SvgImage.FromText(svg);
+        image.IsShared = false;
         return container.Svg(image);
     }
     
