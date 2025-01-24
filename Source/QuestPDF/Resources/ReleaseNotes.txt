@@ -29,3 +29,8 @@ Version 2024.12.2
 - Enhanced the EnsureSpace element to work dynamically without a pre-configured vertical space threshold.
 - Improved table rendering stability in rare scenarios.
 - Fixed an exception that occurred when rendering an image with a zero target size.
+
+
+Version 2024.12.3
+- Updated the native dependency: qpdf.
+- Reduced Linux requirements by removing the GnuTLS dependency.
