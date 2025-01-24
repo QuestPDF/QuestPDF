@@ -12,7 +12,7 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Elements.Text
 {
-    internal sealed class TextBlock : Element, IStateful, IContentDirectionAware
+    internal sealed class TextBlock : Element, IStateful, IContentDirectionAware, IDisposable
     {
         // content
         public List<ITextBlockItem> Items { get; set; } = new();
@@ -48,7 +48,13 @@ namespace QuestPDF.Elements.Text
 
         ~TextBlock()
         {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
             Paragraph?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         internal override SpacePlan Measure(Size availableSpace)
@@ -476,7 +482,10 @@ namespace QuestPDF.Elements.Text
 
         private void CalculateParagraphMetrics(Size availableSpace)
         {
-            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > Size.Epsilon)
+            // optimization, invalidate cache when both:
+            // 1) the width for which cache was calculated is different from the provided width
+            // 2) provided width is different from the target width of the text component
+            if (AreDifferent(WidthForLineMetricsCalculation, availableSpace.Width) && AreDifferent(MaximumWidth, availableSpace.Width))
                 AreParagraphMetricsValid = false;
             
             if (AreParagraphMetricsValid) 
@@ -492,6 +501,8 @@ namespace QuestPDF.Elements.Text
             MaximumWidth = LineMetrics.Any() ? LineMetrics.Max(x => x.Width) : 0;
             
             AreParagraphMetricsValid = true;
+            
+            static bool AreDifferent(float x, float y) => Math.Abs(x - y) > Size.Epsilon;
         }
         
         private void CheckUnresolvedGlyphs()

@@ -99,6 +99,7 @@ internal sealed class SkTextStyle : IDisposable
         
         API.text_style_delete(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

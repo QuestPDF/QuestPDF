@@ -35,6 +35,7 @@ internal sealed class SkTypefaceProvider : IDisposable
         
         API.typeface_font_provider_unref(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

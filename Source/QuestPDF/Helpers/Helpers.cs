@@ -52,15 +52,32 @@ namespace QuestPDF.Helpers
             return Regex.Replace(text, @"([a-z])([A-Z])", "$1 $2", RegexOptions.Compiled);
         }
 
-        internal static void VisitChildren(this Element? element, Action<Element?> handler)
+        internal static void VisitChildren(this Element? root, Action<Element?> handler)
         {
-            if (element == null)
-                return;
-            
-            foreach (var child in element.GetChildren())
-                VisitChildren(child, handler);
+            Traverse(root);
 
-            handler(element);
+            void Traverse(Element? element)
+            {
+                if (element == null)
+                    return;
+                
+                if (element is ContainerElement containerElement)
+                {
+                    Traverse(containerElement.Child);
+                }
+                else
+                {
+                    foreach (var child in element.GetChildren())
+                        Traverse(child);  
+                }
+            
+                handler(element);
+            }
+        }
+
+        internal static void ReleaseDisposableChildren(this Element? element)
+        {
+            element.VisitChildren(x => (x as IDisposable)?.Dispose());
         }
 
         internal static bool IsNegative(this Size size)

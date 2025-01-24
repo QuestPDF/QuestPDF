@@ -69,6 +69,7 @@ internal sealed class SkImage : IDisposable
         
         API.image_unref(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

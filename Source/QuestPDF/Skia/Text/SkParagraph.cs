@@ -95,6 +95,7 @@ internal sealed class SkParagraph : IDisposable
         
         API.paragraph_delete(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

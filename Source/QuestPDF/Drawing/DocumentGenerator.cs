@@ -27,7 +27,7 @@ namespace QuestPDF.Drawing
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
-            var canvas = new PdfCanvas(stream, metadata, settings);
+            using var canvas = new PdfCanvas(stream, metadata, settings);
             RenderDocument(canvas, document, settings);
         }
         
@@ -36,7 +36,7 @@ namespace QuestPDF.Drawing
             ValidateLicense();
             
             var settings = document.GetSettings();
-            var canvas = new XpsCanvas(stream, settings);
+            using var canvas = new XpsCanvas(stream, settings);
             RenderDocument(canvas, document, settings);
         }
         
@@ -47,7 +47,7 @@ namespace QuestPDF.Drawing
             var documentSettings = document.GetSettings();
             documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
             
-            var canvas = new ImageCanvas(imageGenerationSettings);
+            using var canvas = new ImageCanvas(imageGenerationSettings);
             RenderDocument(canvas, document, documentSettings);
 
             return canvas.Images;
@@ -57,7 +57,7 @@ namespace QuestPDF.Drawing
         {
             ValidateLicense();
             
-            var canvas = new SvgCanvas();
+            using var canvas = new SvgCanvas();
             RenderDocument(canvas, document, document.GetSettings());
 
             return canvas.Images;
@@ -119,7 +119,7 @@ namespace QuestPDF.Drawing
         /// - Investigate the underlying causes of these scalability issues in future releases.
         /// - Explore optimizations for reducing locking contention, improving memory efficiency, and enhancing CPU cache utilization.
         /// </summary>
-        private static SemaphoreSlim RenderDocumentSemaphore = new(2);
+        private static readonly SemaphoreSlim RenderDocumentSemaphore = new(4);
         
         private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
         {
@@ -160,6 +160,8 @@ namespace QuestPDF.Drawing
             
             if (canvas is CompanionCanvas companionCanvas)
                 companionCanvas.Hierarchy = content.ExtractHierarchy();
+            
+            content.ReleaseDisposableChildren();
         }
         
         private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)
@@ -191,7 +193,8 @@ namespace QuestPDF.Drawing
                 foreach (var documentPart in documentParts)
                 {
                     documentPageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPageContext, canvas, documentPart.Content);   
+                    RenderPass(documentPageContext, canvas, documentPart.Content);
+                    documentPart.Content.ReleaseDisposableChildren();
                 }
             }
             else
@@ -204,6 +207,8 @@ namespace QuestPDF.Drawing
                     RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
                     pageContext.ProceedToNextRenderingPhase();
                     RenderPass(pageContext, canvas, documentPart.Content);
+                    
+                    documentPart.Content.ReleaseDisposableChildren();
                 }
             }
         }
@@ -270,6 +275,7 @@ namespace QuestPDF.Drawing
             
             void ApplyLayoutDebugging()
             {
+                content.VisitChildren(x => (x as SnapshotRecorder)?.Dispose());
                 content.RemoveExistingProxiesOfType<SnapshotRecorder>();
 
                 content.ApplyLayoutOverflowDetection();
@@ -387,6 +393,9 @@ namespace QuestPDF.Drawing
                     return true;
                 }
 
+                if (content is Lazy lazy)
+                    return lazy.IsCacheable;
+
                 if (content is DynamicHost)
                     return false;
                 
@@ -467,6 +476,13 @@ namespace QuestPDF.Drawing
                     dynamicHost.ImageCompressionQuality ??= imageCompressionQuality;
                     dynamicHost.UseOriginalImage |= useOriginalImages;
                 }
+                
+                if (x is Lazy lazy)
+                {
+                    lazy.ImageTargetDpi ??= imageRasterDpi;
+                    lazy.ImageCompressionQuality ??= imageCompressionQuality;
+                    lazy.UseOriginalImage |= useOriginalImages;
+                }
 
                 if (x is TextBlock textBlock)
                 {
@@ -502,11 +518,21 @@ namespace QuestPDF.Drawing
             if (content is DynamicHost dynamicHost)
                 dynamicHost.TextStyle = dynamicHost.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
             
+            if (content is Lazy lazy)
+                lazy.TextStyle = lazy.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
+            
             if (content is DefaultTextStyle defaultTextStyleElement)
                documentDefaultTextStyle = defaultTextStyleElement.TextStyle.ApplyInheritedStyle(documentDefaultTextStyle);
 
-            foreach (var child in content.GetChildren())
-                ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
+            if (content is ContainerElement containerElement)
+            {
+                ApplyInheritedAndGlobalTexStyle(containerElement.Child, documentDefaultTextStyle);
+            }
+            else
+            {
+                foreach (var child in content.GetChildren())
+                    ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
+            }
         }
     }
 }

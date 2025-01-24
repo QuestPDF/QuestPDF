@@ -31,6 +31,7 @@ internal sealed class SkFontCollection : IDisposable
         
         API.font_collection_unref(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

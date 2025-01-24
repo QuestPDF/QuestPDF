@@ -136,6 +136,7 @@ namespace QuestPDF.Fluent
         public static ImageDescriptor Image(this IContainer parent, byte[] imageData)
         {
             var image = Infrastructure.Image.FromBinaryData(imageData);
+            image.IsShared = false;
             return parent.Image(image);
         }
         
@@ -148,6 +149,7 @@ namespace QuestPDF.Fluent
         public static ImageDescriptor Image(this IContainer parent, string filePath)
         {
             var image = Infrastructure.Image.FromFile(filePath);
+            image.IsShared = false;
             return parent.Image(image);
         }
         
@@ -160,6 +162,7 @@ namespace QuestPDF.Fluent
         public static ImageDescriptor Image(this IContainer parent, Stream fileStream)
         {
             var image = Infrastructure.Image.FromStream(fileStream);
+            image.IsShared = false;
             return parent.Image(image);
         }
         

@@ -43,6 +43,7 @@ internal sealed class SkBitmap : IDisposable
         
         API.bitmap_delete(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

@@ -12,9 +12,10 @@ namespace QuestPDF.Infrastructure;
 /// <remarks>
 /// This class is thread safe.
 /// </remarks>
-public class SvgImage
+public class SvgImage : IDisposable
 {
     internal SkSvgImage SkSvgImage { get; }
+    internal bool IsShared { get; set; } = true;
     
     private SvgImage(string content)
     {
@@ -23,9 +24,15 @@ public class SvgImage
 
     ~SvgImage()
     {
-        SkSvgImage?.Dispose();
+        Dispose();
     }
-    
+        
+    public void Dispose()
+    {
+        SkSvgImage?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
     /// <summary>
     /// Loads the SVG image from a file with specified path.
     /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>

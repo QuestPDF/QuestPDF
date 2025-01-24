@@ -1,36 +1,7 @@
-Version 2024.12.0
+Version 2025.1.0-alpha0
+- Implemented a Lazy element that delays content creation to reduce memory usage and enhance garbage collection efficiency in large documents.
 
-This release introduces several long-awaited features releated to document operations such as:
-- Assemble: Rearrange, select, and remove specific pages within a document.
-- Merge: Combine multiple PDF files into a single document.
-- Add Attachments: Embed additional files (such as text or images) as attachments within the PDF.
-- Underlay and Overlay: Apply other PDF as a background (underlay) or foreground (overlay) to another, adding layered content.
-- Linearize: Optimize files for fast web viewing, allowing compatible PDF readers to display the document before it’s fully downloaded.
-- Encrypt with Access Restrictions: Secure PDFs with user and owner passwords, applying access controls (like permissions for printing, filling forms, extracting or modifying content).
-
-These features are built using the qpdf library, available under the "Apache-2.0" license.
-The qpdf library is available at: https://github.com/qpdf/qpdf
-We extend our thanks to the authors of qpdf for their contributions to the open-source community.
-
-
-Further improvements:
-- Adjusted the default path for loading font files to prevent rare application hangs in certain environments
-- Performance optimization: improved scalability by limiting the maximum level of parallelism
-- Performance optimization for legacy .NET Framework: collect stack trace only when running with the Companion App
-- TextBlock: slightly reduced memory usage
-
-
-Version 2024.12.1
-- Fixed: The library now provides hints when an additional dependency is required.
-- Improved license-related exception.
-
-
-Version 2024.12.2
-- Enhanced the EnsureSpace element to work dynamically without a pre-configured vertical space threshold.
-- Improved table rendering stability in rare scenarios.
-- Fixed an exception that occurred when rendering an image with a zero target size.
-
-
-Version 2024.12.3
-- Updated the native dependency: qpdf.
-- Reduced Linux requirements by removing the GnuTLS dependency.
+Version 2025.1.0-rc0
+- Optimization: releasing native objects as early as possible to reduce peak memory usage,
+- Various performance and memory optimizations,
+- Increased maximum level of parallelism from 2 to 4.

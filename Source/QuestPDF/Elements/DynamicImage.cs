@@ -24,7 +24,7 @@ namespace QuestPDF.Elements
     /// <returns>An image in PNG, JPEG, or WEBP image format returned as byte array.</returns>
     public delegate byte[]? GenerateDynamicImageDelegate(GenerateDynamicImageDelegatePayload payload);
     
-    internal sealed class DynamicImage : Element, IStateful
+    internal sealed class DynamicImage : Element, IStateful, IDisposable
     {
         internal int? TargetDpi { get; set; }
         internal ImageCompressionQuality? CompressionQuality { get; set; }
@@ -38,8 +38,15 @@ namespace QuestPDF.Elements
         
         ~DynamicImage()
         {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
             foreach (var cacheItem in Cache)
                 cacheItem.Image?.Dispose();
+            
+            GC.SuppressFinalize(this);
         }
         
         internal override SpacePlan Measure(Size availableSpace)
@@ -67,6 +74,8 @@ namespace QuestPDF.Elements
        
             if (targetImage != null)
                 Canvas.DrawImage(targetImage, availableSpace);
+            
+            targetImage?.Dispose();
             
             GenerationTime += (float) stopWatch.Elapsed.TotalMilliseconds;
             DrawnImageSize += targetImage?.EncodedDataSize ?? 0;

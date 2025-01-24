@@ -151,6 +151,7 @@ internal sealed class SkParagraphBuilder : IDisposable
         
         API.paragraph_builder_delete(Instance);
         Instance = IntPtr.Zero;
+        GC.SuppressFinalize(this);
     }
     
     private static class API

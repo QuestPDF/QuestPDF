@@ -47,6 +47,7 @@ namespace QuestPDF.Elements
             var composeResult = ComposeContent(availableSpace, acceptNewState: true);
             var content = composeResult.Content as Element; 
             content?.Draw(availableSpace);
+            content.ReleaseDisposableChildren();
             
             if (!composeResult.HasMoreContent)
                 IsRendered = true;
