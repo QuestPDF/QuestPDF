@@ -140,7 +140,7 @@ internal static class NativeDependencyProvider
         }
     }
 
-    static void CopyFileIfNewer(string sourcePath, string targetPath)
+    private static void CopyFileIfNewer(string sourcePath, string targetPath)
     {
         if (!File.Exists(sourcePath))
             throw new FileNotFoundException($"Source file not found: {sourcePath}");
