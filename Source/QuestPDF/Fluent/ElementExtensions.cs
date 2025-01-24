@@ -111,7 +111,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Constrains its content to maintain a given aspect ratio.
+        /// Constrains its content to maintain a given width-to-height ratio.
         /// <a href="https://www.questpdf.com/api-reference/aspect-ratio.html">Learn more</a>
         /// </summary>
         /// <remarks>
@@ -163,13 +163,14 @@ namespace QuestPDF.Fluent
         }
 
         /// <summary>
-        /// If the container spans multiple pages, its content appears only on the first one.
+        /// <para>The ShowOnce element modifies how content is displayed across multiple pages.</para>
+        /// <para>
+        /// By default, all elements are fully rendered only once and never repeated.
+        /// However, in some contexts such as page headers and footers, as well as decoration before and after slots, the content is repeated on every page.
+        /// To prevent this, you can use the ShowOnce element.
+        /// </para>
         /// <a href="https://www.questpdf.com/api-reference/show-once.html">Learn more</a>
         /// </summary>
-        /// <remarks>
-        /// <para>This element is useful if you wish to display a header on every page but want certain elements visible only on the first page.</para>
-        /// <para>Depending on the content, certain elements (such as Row or Table) may repeatedly draw their items across multiple pages. Use the ShowOnce element to modify this behavior if it's not desired.</para>
-        /// </remarks>
         /// <example>
         /// <para>Combine this element with SkipOnce to achieve more complex behaviors, e.g.:</para>
         /// <para><c>.SkipOnce().ShowOnce()</c> ensures the child element is displayed only on the second page.</para>
@@ -226,7 +227,7 @@ namespace QuestPDF.Fluent
         /// <remarks>
         /// This is especially useful for elements like tables, where you'd want to display several rows together. By setting the minHeight, you can avoid scenarios where only a single row appears at the page's end, ensuring a more cohesive presentation.
         /// </remarks>
-        public static IContainer EnsureSpace(this IContainer element, float minHeight = Elements.EnsureSpace.DefaultMinHeight)
+        public static IContainer EnsureSpace(this IContainer element, float? minHeight = null)
         {
             return element.Element(new EnsureSpace
             {

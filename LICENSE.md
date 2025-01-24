@@ -1,5 +1,8 @@
 ﻿# QuestPDF License
 
+ 
+<img src="https://github.com/user-attachments/assets/6bc20263-d916-425a-9031-8f372aeb9cfa" width="48px" />
+
 ## License Selection Guide
 
 Welcome to QuestPDF! This guide will help you understand how to select the appropriate license for our library, based on your usage context.
@@ -37,7 +40,10 @@ Enterprise License - If your company has more than 10 developers using QuestPDF,
 
 Remember, purchasing a license isn't just about adhering to our guidelines, but also supporting the development of QuestPDF. Your contribution helps us to improve the library and offer top-notch support to all users.
 
-
+<br>
+<br>
+<br>
+<img src="https://github.com/user-attachments/assets/8fc05829-2253-4114-93e8-b46199dd1218" width="48px" />
 
 ## QuestPDF Community MIT License
 
@@ -53,7 +59,12 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
+<br>
+<br>
+<br>
+<img src="https://github.com/user-attachments/assets/690ad53b-bf57-4a5c-b3ac-cc3f6d009d2f" width="48px" />
+&nbsp;
+<img src="https://github.com/user-attachments/assets/4feff827-8b66-48e4-a3c2-f63e0237cb6f" width="48px" />
 
 ## QuestPDF Professional and Enterprise Use License
 

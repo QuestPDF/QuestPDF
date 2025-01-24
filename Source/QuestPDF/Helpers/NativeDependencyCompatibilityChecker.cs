@@ -25,7 +25,6 @@ namespace QuestPDF.Helpers
             if (IsCompatibilityChecked)
                 return;
             
-            const string exceptionBaseMessage = "The QuestPDF library has encountered an issue while loading one of its dependencies.";
             const string paragraph = "\n\n";
                 
             // test with dotnet-based mechanism where native files are provided
@@ -52,21 +51,17 @@ namespace QuestPDF.Helpers
             {
                 var supportedRuntimes = string.Join(", ", NativeDependencyProvider.SupportedPlatforms);
                 var currentRuntime = NativeDependencyProvider.GetRuntimePlatform();
+                var isRuntimeSupported = NativeDependencyProvider.SupportedPlatforms.Contains(currentRuntime);
+
+                var message = $"The QuestPDF library has encountered an issue while loading one of its dependencies.";
                 
-                var message = 
-                    $"{exceptionBaseMessage}{paragraph}" +
-                    "Your runtime is currently not supported by QuestPDF. " +
-                    $"Currently supported runtimes are: {supportedRuntimes}. ";
-
-                if (NativeDependencyProvider.SupportedPlatforms.Contains(currentRuntime))
+                if (!isRuntimeSupported)
                 {
-                    message += $"{paragraph}It appears that your current operating system distribution may be outdated. For optimal compatibility, please consider updating it to a more recent version.";
+                    message += $"{paragraph}Your runtime is not supported by QuestPDF. " +
+                                $"The following runtimes are supported: {supportedRuntimes}. " +
+                                $"Your current runtime is detected as '{currentRuntime}'. ";
                 }
-                else
-                {
-                    message += $"{paragraph}Your current runtime is detected as '{currentRuntime}'.";
-                }
-
+                
                 if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                     message += $"{paragraph}Please always set the 'Platform target' to either 'X86' or 'X64' in your startup project settings. Please do not use the 'Any CPU' option.";
                 
@@ -76,7 +71,10 @@ namespace QuestPDF.Helpers
                 var hint = ExceptionHint.Invoke();
                 
                 if (!string.IsNullOrEmpty(hint))
-                    message += $"{paragraph}{ExceptionHint}";
+                    message += $"{paragraph}{hint}";
+
+                if (isRuntimeSupported)
+                    message += $"{paragraph}If the problem persists, it may mean that your current operating system distribution is outdated. For optimal compatibility, please consider updating it to a more recent version.";
                 
                 throw new Exception(message, innerException);
             }

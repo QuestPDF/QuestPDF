@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.Companion.TestRunn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.ZUGFeRD", "QuestPDF.ZUGFeRD\QuestPDF.ZUGFeRD.csproj", "{B301CCFC-9E8B-4C4E-B34A-C95CF6D03367}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.DocumentationExamples", "QuestPDF.DocumentationExamples\QuestPDF.DocumentationExamples.csproj", "{91293E51-0830-4E30-8AD5-75536F19DB95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,5 +55,9 @@ Global
 		{B301CCFC-9E8B-4C4E-B34A-C95CF6D03367}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B301CCFC-9E8B-4C4E-B34A-C95CF6D03367}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B301CCFC-9E8B-4C4E-B34A-C95CF6D03367}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91293E51-0830-4E30-8AD5-75536F19DB95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91293E51-0830-4E30-8AD5-75536F19DB95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91293E51-0830-4E30-8AD5-75536F19DB95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91293E51-0830-4E30-8AD5-75536F19DB95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

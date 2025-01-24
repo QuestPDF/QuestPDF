@@ -17,6 +17,7 @@ namespace QuestPDF.Elements.Table
         
         // cache
         private bool CacheInitialized { get; set; }
+        private bool HasRelativeColumns { get; set; }
         private int StartingRowsCount { get; set; }
         private int RowsCount { get; set; }
         private int MaxRow { get; set; }
@@ -39,6 +40,7 @@ namespace QuestPDF.Elements.Table
             if (CacheInitialized)
                 return;
 
+            HasRelativeColumns = Columns.Any(x => x.RelativeSize > 0);
             StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
             RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
             Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
@@ -83,6 +85,9 @@ namespace QuestPDF.Elements.Table
             
             if (IsRendered)
                 return SpacePlan.Empty();
+            
+            if (HasRelativeColumns && availableSpace.Width < Size.Epsilon)
+                return SpacePlan.Wrap("Insufficient space to render columns of relative size.");
             
             UpdateColumnsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);

@@ -125,6 +125,9 @@ namespace QuestPDF.Helpers
 
         internal static SkImage ResizeAndCompressImage(this SkImage image, ImageSize targetResolution, ImageCompressionQuality compressionQuality)
         {
+            if (targetResolution.Width == 0 || targetResolution.Height == 0)
+                targetResolution = new ImageSize(1, 1);
+            
             return image.ResizeAndCompress(targetResolution.Width, targetResolution.Height, compressionQuality.ToQualityValue(), compressionQuality.ToDownsamplingStrategy());
         }
 

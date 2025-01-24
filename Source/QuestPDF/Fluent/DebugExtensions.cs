@@ -31,8 +31,12 @@ namespace QuestPDF.Fluent
         }
 
         /// <summary>
-        /// <para>Inserts a virtual debug element visible in the "element trace" provided along with the <see cref="DocumentLayoutException" />.</para>
-        /// <para>Helps with understanding and navigation of that "element trace" tree hierarchy.</para>
+        /// <para>
+        ///     Inserts a virtual debug element visible in the document hierarchy tree in the QuestPDF Companion App,
+        ///     as well as in the enhanced debugging message provided by the <see cref="DocumentLayoutException" />.
+        /// </para>
+        /// 
+        /// <para>It helps with understanding and navigation of the document hierarchy.</para>
         /// <a href="https://www.questpdf.com/api-reference/debug-pointer.html">Learn more</a>
         /// </summary>
         /// <remarks>

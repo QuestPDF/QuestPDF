@@ -3,21 +3,47 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class EnsureSpace : ContainerElement
+    internal sealed class EnsureSpace : ContainerElement, IStateful
     {
-        public const float DefaultMinHeight = 150;
-        public float MinHeight { get; set; } = DefaultMinHeight;
+        public float? MinHeight { get; set; } = null;
 
         internal override SpacePlan Measure(Size availableSpace)
         {
             var measurement = base.Measure(availableSpace);
 
-            if (measurement.Type == SpacePlanType.PartialRender && availableSpace.Height < MinHeight)
-                return SpacePlan.Wrap("The available vertical space is smaller than requested in the constraint.");
+            if (IsFirstPageRendered)
+                return measurement;
 
-            return measurement;
+            if (measurement.Type != SpacePlanType.PartialRender)
+                return measurement;
+
+            if (MinHeight == null || MinHeight <= availableSpace.Height)
+                return measurement;
+            
+            return SpacePlan.Wrap("The available vertical space is smaller than requested in the constraint.");
+        }
+        
+        internal override void Draw(Size availableSpace)
+        {
+            base.Draw(availableSpace);
+            IsFirstPageRendered = true;
         }
 
-        internal override string? GetCompanionHint() => $"at least {MinHeight}";
+        internal override string? GetCompanionHint() => MinHeight.HasValue ? $"at least {MinHeight.Value}" : null;
+        
+        #region IStateful
+        
+        private bool IsFirstPageRendered { get; set; }
+
+        public void ResetState(bool hardReset = false)
+        {
+            if (hardReset)
+                IsFirstPageRendered = false;
+        }
+        
+        public object GetState() => IsFirstPageRendered;
+        public void SetState(object state) => IsFirstPageRendered = (bool) state;
+    
+        #endregion
     }
 }
