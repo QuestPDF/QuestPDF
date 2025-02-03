@@ -482,10 +482,7 @@ namespace QuestPDF.Elements.Text
 
         private void CalculateParagraphMetrics(Size availableSpace)
         {
-            // optimization, invalidate cache when both:
-            // 1) the width for which cache was calculated is different from the provided width
-            // 2) provided width is different from the target width of the text component
-            if (AreDifferent(WidthForLineMetricsCalculation, availableSpace.Width) && AreDifferent(MaximumWidth, availableSpace.Width))
+            if (Math.Abs(WidthForLineMetricsCalculation - availableSpace.Width) > Size.Epsilon)
                 AreParagraphMetricsValid = false;
             
             if (AreParagraphMetricsValid) 
@@ -501,8 +498,6 @@ namespace QuestPDF.Elements.Text
             MaximumWidth = LineMetrics.Any() ? LineMetrics.Max(x => x.Width) : 0;
             
             AreParagraphMetricsValid = true;
-            
-            static bool AreDifferent(float x, float y) => Math.Abs(x - y) > Size.Epsilon;
         }
         
         private void CheckUnresolvedGlyphs()
