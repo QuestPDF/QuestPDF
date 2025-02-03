@@ -3,3 +3,7 @@ Version 2025.1.0
 - Optimization: releasing native objects as early as possible to reduce peak memory usage,
 - Various performance and memory optimizations,
 - Increased maximum level of parallelism from 2 to 4.
+
+
+Version 2025.1.1
+- Fixed rarely broken text alignment caused by too aggressive cache optimization.
