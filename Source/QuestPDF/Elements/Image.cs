@@ -55,8 +55,8 @@ namespace QuestPDF.Elements
         {
             var originalImage = DocumentImage.SkImage;
             
-            if (UseOriginalImage)
-                return originalImage;
+            // if (UseOriginalImage)
+            //     return originalImage;
             
             var request = new GetImageVersionRequest
             {

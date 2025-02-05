@@ -15,6 +15,7 @@
         <PackageReference Include="NUnit" Version="3.14.0"/>
         <PackageReference Include="NUnit.Analyzers" Version="3.9.0"/>
         <PackageReference Include="NUnit3TestAdapter" Version="4.5.0"/>
+        <PackageReference Include="SkiaSharp" Version="3.116.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -40,6 +41,27 @@
       </None>
       <None Update="unit-test-failed-icon.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="photo.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="photo-gallery-1.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="photo-gallery-2.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="photo-gallery-3.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="photo-gallery-4.jpg">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="checkbox.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="pdf-icon.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>
 

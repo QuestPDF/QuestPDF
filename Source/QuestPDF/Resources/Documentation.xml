@@ -59,9 +59,11 @@
     
     <doc for="image.rasterDPI">
         <summary>
-            <para>Specifies the DPI (dots-per-inch) for rasterizing images.</para>
+            <para>
+                Specifies the DPI (dots-per-inch) for rasterizing images, which is a measure of an image's resolution that indicates how many individual dots (or pixels) fit into one inch of a printed image. 
+                Higher DPI values result in greater detail and sharpness, making images appear clearer when printed, while lower DPI values can cause images to look blurry or pixelated.
+            </para>
             <para>The target resolution is computed by multiplying the DPI with the physical image size on the document.</para>
-            <para>Higher DPI results in superior image quality but may increase the output file size.</para>
             <para>Default DPI value is 288 DPI.</para>
         </summary>
         
@@ -76,7 +78,10 @@
 
     <doc for="image.compressionQuality">
         <summary>
-            <para>Controls the balance between encoding quality and file size.</para>
+            <para>
+                Controls the balance between an image's file size and its visual fidelity during compression.
+                Higher quality values preserve more detail with larger file sizes, while lower values reduce file size at the cost of potential image degradation, such as blurriness or artifacts.
+            </para>
             <para>Opaque images are JPEG-encoded based on this setting, while images with an alpha channel default to PNG format, disregarding this option.</para>
             <para>Default is set to "high quality".</para>
         </summary>
