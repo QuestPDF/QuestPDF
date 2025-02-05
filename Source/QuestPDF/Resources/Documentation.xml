@@ -142,7 +142,7 @@
 
     <doc for="text.clampLines">
         <summary>
-            Sets the maximum number of lines to display.
+            Limits the number of visible lines in a paragraph, truncating overflow text with an ellipsis or by hiding it to maintain layout consistency.
         </summary>
     </doc>
 
@@ -176,7 +176,7 @@
     <doc for="text.alignment.end">
         <summary>
             Aligns the text horizontally to the end of the container.
-            This method sets the horizontal alignment of the text to the end (right for left-to-right languages, start for right-to-left languages).
+            This method sets the horizontal alignment of the text to the end (right for left-to-right languages, left for right-to-left languages).
         </summary>
     </doc>
 
@@ -199,18 +199,26 @@
     <doc for="text.fontColor">
         <summary>
             Sets the font color.
+            The font color determines the color applied to text characters, affecting their visual appearance.
         </summary>
+
+        <remarks>
+            It also influences the default color of text decorations, such as underlines.
+        </remarks>
     </doc>
 
     <doc for="text.backgroundColor">
         <summary>
             Sets a solid background color for the text.
+            This color fills the area behind the text or other elements, enhancing contrast and providing visual emphasis.
         </summary>
     </doc>
     
     <doc for="text.fontFamily">
         <summary>
-            <para>Sets the font family of the text.</para>
+            Sets the font family of the text.
+            A font family is a collection of related fonts that share a consistent design style but may vary in weight, style, or width.
+            Examples of font families include Arial, Times New Roman, and Calibri.
         </summary>
         
         <remarks>
@@ -249,11 +257,11 @@
     <doc for="text.fontSize">
         <summary>
             Sets font size for the text.
+            Font size measures the height of text characters, determining how large or small the text appears.
         </summary>
 
         <remarks>
-            The visual size of the text is determined by its font size. 
-            However, it's worth noting that different fonts may render text with distinct visual sizes, even when assigned the same numerical font size.
+            It's worth noting that different fonts may render text with distinct visual sizes, even when assigned the same numerical font size.
         </remarks>
     </doc>
 
@@ -265,7 +273,7 @@
     
     <doc for="text.lineHeight">
         <summary>
-            Adjusts the vertical spacing between text lines.
+            Adjusts the vertical spacing between lines of text, affecting readability and overall text layout.
             The added space is proportional to the text size. 
             A <paramref name="factor"/> value of 1 retains the original spacing.
             <a href="https://www.questpdf.com/api-reference/text.html#line-height">Learn more</a>
@@ -281,7 +289,7 @@
 
     <doc for="text.letterSpacing">
         <summary>
-            Adjusts the horizontal spacing between characters in the text.
+            Adjusts the horizontal spacing between characters in the text, affecting readability and overall visual style.
             The adjustment is proportional to the text size.
             <a href="https://www.questpdf.com/api-reference/text.html#letter-spacing">Learn more</a>
         </summary>
@@ -294,7 +302,7 @@
 
     <doc for="text.wordSpacing">
         <summary>
-            Adjusts the horizontal spacing between words in the text.
+            Adjusts the horizontal spacing between words in the text, affecting readability and overall visual style.
             The adjustment is proportional to the text size.
         </summary>
 
@@ -306,13 +314,15 @@
 
     <doc for="text.paragraph.spacing">
         <summary>
-            Adjusts the gap between successive paragraphs (separated by line breaks).
+            Adjusts the vertical gap between successive paragraphs (separated by line breaks),
+            helping to visually separate blocks of text for improved readability.
         </summary>
     </doc>
 
     <doc for="text.paragraph.firstLineIndentation">
         <summary>
-            Adjusts the indentation of the first line in each paragraph.
+            Specifies the horizontal offset of the first line in a paragraph.
+            Commonly used to visually separate paragraphs in a block of text.
         </summary>
     </doc>
     
@@ -320,7 +330,8 @@
 
     <doc for="text.italic">
         <summary>
-            Draws text with a italic effect, where letters are slightly slanted to the right.
+            Renders text with an italic effect, where letters are slightly slanted to the right.
+            Commonly used for emphasis or to distinguish specific words.
         </summary>
     </doc>
 
@@ -471,8 +482,12 @@
 
     <doc for="text.weight.remarks">
         <remarks>
-            Not all fonts support every weight. 
-            If the specified weight isn't available, the library selects the closest available option.
+            <para>Determines the thickness of the text characters, ranging from light to bold, to create visual hierarchy or emphasis.</para>
+            
+            <para>
+                Not all fonts support every weight.
+                If the specified weight isn't available, the library selects the closest available option.
+            </para>
         </remarks>
     </doc>
     
@@ -487,7 +502,7 @@
 
     <doc for="text.position.subscript">
         <summary>
-            Sets the text style to subscript, making it smaller and positioning it below the baseline, e.g.: H₂0
+            Sets the text style to subscript, making it smaller and positioning it below the baseline, e.g.: H₂0.
             <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
         </summary>
     </doc>
