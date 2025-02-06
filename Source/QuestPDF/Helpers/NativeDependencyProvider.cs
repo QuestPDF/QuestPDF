@@ -40,7 +40,6 @@ internal static class NativeDependencyProvider
             NativeLibrary.Load(nativeFilePath);
 #endif
             
-            NativeLibrary.Load(nativeFilePath);
             var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
             Console.WriteLine($"Copying native file: {nativeFilePath}; to: {targetPath}");
             CopyFileIfNewer(nativeFilePath, targetPath);
