@@ -9,8 +9,7 @@ namespace QuestPDF.Helpers
         private bool IsCompatibilityChecked { get; set; } = false;
 
         public Action ExecuteNativeCode { get; set; } = () => { };
-        public Func<string> ExceptionHint { get; set; } = () => string.Empty;
-        
+
         public void Test()
         {
             if (IsCompatibilityChecked)
@@ -67,11 +66,6 @@ namespace QuestPDF.Helpers
                 
                 if (RuntimeInformation.ProcessArchitecture is Architecture.Arm)
                     message += $"{paragraph}Please consider setting the 'Platform target' property to 'Arm64' in your project settings.";
-
-                var hint = ExceptionHint.Invoke();
-                
-                if (!string.IsNullOrEmpty(hint))
-                    message += $"{paragraph}{hint}";
 
                 if (isRuntimeSupported)
                     message += $"{paragraph}If the problem persists, it may mean that your current operating system distribution is outdated. For optimal compatibility, please consider updating it to a more recent version.";
