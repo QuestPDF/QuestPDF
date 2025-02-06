@@ -22,12 +22,15 @@ internal static class NativeDependencyProvider
     public static void EnsureNativeFileAvailability()
     {
         var nativeFilesPath = GetNativeFileSourcePath();
+        Console.WriteLine($"Native files source: {nativeFilesPath}");
         
         if (nativeFilesPath == null)
             return;
 
         foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
         {
+            Console.WriteLine($"Copying native file: {nativeFilePath}");
+            
             var targetDirectory = new FileInfo(nativeFilePath)
                 .Directory
                 .Parent // native
@@ -49,6 +52,7 @@ internal static class NativeDependencyProvider
     static string? GetNativeFileSourcePath()
     {
         var platform = GetRuntimePlatform();
+        Console.WriteLine($"Detected platform: {platform}");
 
         var availableLocations = new[]
         {
@@ -67,6 +71,8 @@ internal static class NativeDependencyProvider
 
             var nativeFileSourcePath = Path.Combine(location, "runtimes", platform, "native");
 
+            Console.WriteLine($"Trying access potential native file location: {nativeFileSourcePath}");
+            
             if (Directory.Exists(nativeFileSourcePath))
                 return nativeFileSourcePath;
         }
