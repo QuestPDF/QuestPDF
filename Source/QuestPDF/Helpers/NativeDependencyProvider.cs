@@ -27,7 +27,7 @@ internal static class NativeDependencyProvider
         if (nativeFilesPath == null)
             return;
 
-        foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
+        foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath).OrderBy(x => x))
         {
             var targetDirectory = new FileInfo(nativeFilePath)
                 .Directory
