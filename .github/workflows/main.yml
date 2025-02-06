@@ -16,23 +16,23 @@ jobs:
       fail-fast: false
       matrix:
         runtime: 
-        - name: win-x64
-          runs-on: windows-latest-xlarge
-        - name: win-x86
-          runs-on: windows-latest-xlarge
-        - name: linux-x64
-          runs-on: ubuntu-latest-xlarge
-          container: ubuntu:24.04
-        - name: linux-arm64
-          runs-on: ubuntu-latest-xlarge-arm64
-          container: ubuntu:24.04
+        # - name: win-x64
+        #   runs-on: windows-latest-xlarge
+        # - name: win-x86
+        #   runs-on: windows-latest-xlarge
+        # - name: linux-x64
+        #   runs-on: ubuntu-latest-xlarge
+        #   container: ubuntu:24.04
+        # - name: linux-arm64
+        #   runs-on: ubuntu-latest-xlarge-arm64
+        #   container: ubuntu:24.04
         - name: linux-musl-x64
           runs-on: ubuntu-latest-xlarge
           container: alpine:3.17
-        - name: osx-x64
-          runs-on: macos-latest-large
-        - name: osx-arm64
-          runs-on: macos-latest-xlarge
+        # - name: osx-x64
+        #   runs-on: macos-latest-large
+        # - name: osx-arm64
+        #   runs-on: macos-latest-xlarge
 
     steps:
       - name: Checkout sources
@@ -63,6 +63,8 @@ jobs:
           # required by dotnet build command
           apk add libstdc++ libgcc
 
+          apk add strace
+
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
@@ -82,9 +84,7 @@ jobs:
           dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }}
           dotnet test QuestPDF.Examples --configuration Release --runtime ${{ matrix.runtime.name }}
           dotnet test QuestPDF.ReportSample --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
-          dotnet test QuestPDF.ZUGFeRD --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
-
-          dotnet build QuestPDF/QuestPDF.csproj --configuration Release --property WarningLevel=0 --property BUILD_PACKAGE=true
+          strace -e openat dotnet test QuestPDF.ZUGFeRD --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
 
           dotnet build QuestPDF/QuestPDF.csproj --configuration Release --property WarningLevel=0 --property BUILD_PACKAGE=true
 
