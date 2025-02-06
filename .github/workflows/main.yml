@@ -82,7 +82,7 @@ jobs:
           dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }}
           dotnet test QuestPDF.Examples --configuration Release --runtime ${{ matrix.runtime.name }}
           dotnet test QuestPDF.ReportSample --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
-          dotnet test QuestPDF.ZUGFeRD --configuration Release --runtime ${{ matrix.runtime.name }}
+          dotnet test QuestPDF.ZUGFeRD --configuration Release
 
           dotnet build QuestPDF/QuestPDF.csproj --configuration Release --property WarningLevel=0 --property BUILD_PACKAGE=true
 
