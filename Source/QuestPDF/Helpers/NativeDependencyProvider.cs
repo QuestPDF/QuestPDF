@@ -35,6 +35,10 @@ internal static class NativeDependencyProvider
                 .Parent // platform
                 .Parent // runtimes
                 .FullName;
+
+#if NETCOREAPP3_0_OR_GREATER
+            NativeLibrary.Load(nativeFilePath);
+#endif
             
             NativeLibrary.Load(nativeFilePath);
             var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
