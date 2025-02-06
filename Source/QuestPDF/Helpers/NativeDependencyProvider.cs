@@ -36,6 +36,7 @@ internal static class NativeDependencyProvider
                 .Parent // runtimes
                 .FullName;
             
+            NativeLibrary.Load(nativeFilePath);
             var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
             Console.WriteLine($"Copying native file: {nativeFilePath}; to: {targetPath}");
             CopyFileIfNewer(nativeFilePath, targetPath);
