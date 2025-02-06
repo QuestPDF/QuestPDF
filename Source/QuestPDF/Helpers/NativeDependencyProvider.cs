@@ -29,8 +29,6 @@ internal static class NativeDependencyProvider
 
         foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
         {
-            Console.WriteLine($"Copying native file: {nativeFilePath}");
-            
             var targetDirectory = new FileInfo(nativeFilePath)
                 .Directory
                 .Parent // native
@@ -39,6 +37,7 @@ internal static class NativeDependencyProvider
                 .FullName;
             
             var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
+            Console.WriteLine($"Copying native file: {nativeFilePath}; to: {targetPath}");
             CopyFileIfNewer(nativeFilePath, targetPath);
         }
     }
@@ -63,6 +62,11 @@ internal static class NativeDependencyProvider
             Directory.GetCurrentDirectory(),
             new FileInfo(typeof(NativeDependencyProvider).Assembly.Location).Directory?.FullName
         };
+
+        foreach (var location in availableLocations)
+        {
+            Console.WriteLine($"Listing potential native file location: {location}");
+        }
         
         foreach (var location in availableLocations)
         {
