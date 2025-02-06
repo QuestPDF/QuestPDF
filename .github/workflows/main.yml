@@ -28,7 +28,7 @@ jobs:
           container: ubuntu:24.04
         - name: linux-musl-x64
           runs-on: ubuntu-latest-xlarge
-          container: alpine:3.18
+          container: alpine:3.17
         - name: osx-x64
           runs-on: macos-latest-large
         - name: osx-arm64
