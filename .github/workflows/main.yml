@@ -67,7 +67,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '9.0.x'
 
 
       - name: Build and test solution
@@ -86,7 +86,7 @@ jobs:
 
           dotnet build QuestPDF/QuestPDF.csproj --configuration Release --property WarningLevel=0 --property BUILD_PACKAGE=true
 
-          TEST_EXECUTION_PATH='QuestPDF.ReportSample/bin/Release/net8.0/${{ matrix.runtime.name }}'
+          TEST_EXECUTION_PATH='QuestPDF.ReportSample/bin/Release/net9.0/${{ matrix.runtime.name }}'
           mkdir -p testOutput/${{ matrix.runtime.name }} 
           cp -r $TEST_EXECUTION_PATH/report.pdf testOutput/${{ matrix.runtime.name }} 
 
