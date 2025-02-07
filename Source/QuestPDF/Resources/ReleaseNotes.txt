@@ -7,3 +7,7 @@ Version 2025.1.0
 
 Version 2025.1.1
 - Fixed rarely broken text alignment caused by too aggressive cache optimization.
+
+
+Version 2025.1.2
+- Adjusted the Row.AutoItem behavior to preserve its size when the Row element covers more than one page.

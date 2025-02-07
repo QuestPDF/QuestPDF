@@ -44,6 +44,32 @@ public class RowExamples
     }
     
     [Test]
+    public void AutoItem()
+    {
+        // TODO: improve and update documentation
+        
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(0, 0));
+                    page.MaxSize(new PageSize(500, 300));
+                    page.DefaultTextStyle(x => x.FontSize(20));
+
+                    page.Content()
+                        .Padding(25)
+                        .Row(row =>
+                        {
+                            row.AutoItem().Text("Auto column");
+                            row.RelativeItem().Text(Placeholders.LoremIpsum());
+                        });
+                });
+            })
+            .GeneratePdfAndShow();
+    }
+    
+    [Test]
     public void SpacingExample()
     {
         Document
