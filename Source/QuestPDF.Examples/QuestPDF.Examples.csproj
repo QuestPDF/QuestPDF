@@ -13,8 +13,8 @@
         <PackageReference Include="NUnit3TestAdapter" Version="4.6.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
         <PackageReference Include="ScottPlot" Version="5.0.39" />
-        <PackageReference Include="SkiaSharp" Version="2.88.8" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="2.88.8" />
+        <PackageReference Include="SkiaSharp" Version="3.116.1" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.1" />
     </ItemGroup>
 
     <ItemGroup>

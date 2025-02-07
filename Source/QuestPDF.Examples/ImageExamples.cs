@@ -7,6 +7,7 @@ using QuestPDF.Examples.Engine;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 using SkiaSharp;
 
 namespace QuestPDF.Examples
@@ -198,9 +199,9 @@ namespace QuestPDF.Examples
             QuestPDF.Infrastructure.Image LoadImageWithTransparency(string fileName, float transparency)
             {
                 using var originalImage = SKImage.FromEncodedData(fileName);
-
-                using var surface = SKSurface.Create(originalImage.Width, originalImage.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
-                using var canvas = surface.Canvas;                
+                
+                using var bitmap = new SKBitmap(originalImage.Width, originalImage.Height, SKColorType.Rgba8888, SKAlphaType.Premul);
+                using var canvas = new SKCanvas(bitmap);                
 
                 using var transparencyPaint = new SKPaint
                 {
@@ -209,7 +210,7 @@ namespace QuestPDF.Examples
                 
                 canvas.DrawImage(originalImage, new SKPoint(0, 0), transparencyPaint);
 
-                var encodedImage = surface.Snapshot().Encode(SKEncodedImageFormat.Png, 100).ToArray();
+                var encodedImage = bitmap.Encode(SKEncodedImageFormat.Png, 100).ToArray();
                 return Image.FromBinaryData(encodedImage);
             }
         }
