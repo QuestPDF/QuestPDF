@@ -16,10 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         runtime: 
-        # - name: win-x64
-        #   runs-on: windows-latest-xlarge
-        # - name: win-x86
-        #   runs-on: windows-latest-xlarge
+        - name: win-x64
+          runs-on: windows-latest-xlarge
+        - name: win-x86
+          runs-on: windows-latest-xlarge
         - name: linux-x64
           runs-on: ubuntu-latest-xlarge
           container: ubuntu:24.04
@@ -29,10 +29,10 @@ jobs:
         - name: linux-musl-x64
           runs-on: ubuntu-latest-xlarge
           container: alpine:3.20
-        # - name: osx-x64
-        #   runs-on: macos-latest-large
-        # - name: osx-arm64
-        #   runs-on: macos-latest-xlarge
+        - name: osx-x64
+          runs-on: macos-latest-large
+        - name: osx-arm64
+          runs-on: macos-latest-xlarge
 
     steps:
       - name: Checkout sources
@@ -62,11 +62,6 @@ jobs:
 
           # required by dotnet build command
           apk add libstdc++ libgcc
-
-
-      - name: Install Dependencies required for QPDF (Linux MUSL)
-        if: matrix.runtime.name == 'linux-musl-x64'
-        run: apk add libjpeg-turbo
 
 
       - name: Setup dotnet
