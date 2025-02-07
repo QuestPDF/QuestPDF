@@ -8,34 +8,6 @@ using QuestPDF.ReportSample.Layouts;
 
 Settings.License = LicenseType.Professional;
 
-while (true)
-{
-    Document
-        .Create(container =>
-        {
-            container.Page(page =>
-            {
-                var clampText = Placeholders.LoremIpsum();
-                
-                page.Content()
-                    .PaddingVertical(1, Unit.Centimetre)
-                    .Column(column =>
-                    {
-                        foreach (var i in Enumerable.Range(0, 100_000))
-                        {
-                            column.Item()
-                                .Text(Placeholders.Paragraph())
-                                .FontSize(20)
-                                .ClampLines(4, "1234567890");
-                        }
-                    });
-            });
-        })
-        .GeneratePdf();
-    
-    Console.WriteLine("-");
-}
-
 //await RunGenericException();
 //await RunLayoutError();
 await RunSimpleDocument();
