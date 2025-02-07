@@ -45,8 +45,6 @@ namespace QuestPDF.Elements
         internal List<RowItem> Items { get; } = new();
         internal float Spacing { get; set; }
         
-        private bool AreItemsWidthsUpdated { get; set; }
-
         internal override IEnumerable<Element?> GetChildren()
         {
             return Items.Select(x => x.Child);
@@ -124,10 +122,7 @@ namespace QuestPDF.Elements
 
         private void UpdateItemsWidth(float availableWidth)
         {
-            if (AreItemsWidthsUpdated)
-                return;
-            
-            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto))
+            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto && x.Size != 0))
                 rowItem.Size = rowItem.Measure(Size.Max).Width;
             
             var constantWidth = Items.Where(x => x.Type != RowItemType.Relative).Sum(x => x.Size);
@@ -144,8 +139,6 @@ namespace QuestPDF.Elements
             
             foreach (var item in Items.Where(x => x.Type == RowItemType.Relative))
                 item.Width = item.Size * widthPerRelativeUnit;
-            
-            AreItemsWidthsUpdated = true;
         }
         
         private ICollection<RowItemRenderingCommand> PlanLayout(Size availableSpace)
