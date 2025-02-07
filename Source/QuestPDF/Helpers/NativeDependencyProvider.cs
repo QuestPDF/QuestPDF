@@ -22,12 +22,11 @@ internal static class NativeDependencyProvider
     public static void EnsureNativeFileAvailability()
     {
         var nativeFilesPath = GetNativeFileSourcePath();
-        Console.WriteLine($"Native files source: {nativeFilesPath}");
         
         if (nativeFilesPath == null)
             return;
 
-        foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath).OrderBy(x => x))
+        foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
         {
             var targetDirectory = new FileInfo(nativeFilePath)
                 .Directory
@@ -35,13 +34,8 @@ internal static class NativeDependencyProvider
                 .Parent // platform
                 .Parent // runtimes
                 .FullName;
-
-#if NETCOREAPP3_0_OR_GREATER
-            NativeLibrary.Load(nativeFilePath);
-#endif
             
             var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
-            Console.WriteLine($"Copying native file: {nativeFilePath}; to: {targetPath}");
             CopyFileIfNewer(nativeFilePath, targetPath);
         }
     }
@@ -55,7 +49,6 @@ internal static class NativeDependencyProvider
     static string? GetNativeFileSourcePath()
     {
         var platform = GetRuntimePlatform();
-        Console.WriteLine($"Detected platform: {platform}");
 
         var availableLocations = new[]
         {
@@ -66,11 +59,6 @@ internal static class NativeDependencyProvider
             Directory.GetCurrentDirectory(),
             new FileInfo(typeof(NativeDependencyProvider).Assembly.Location).Directory?.FullName
         };
-
-        foreach (var location in availableLocations)
-        {
-            Console.WriteLine($"Listing potential native file location: {location}");
-        }
         
         foreach (var location in availableLocations)
         {
@@ -79,8 +67,6 @@ internal static class NativeDependencyProvider
 
             var nativeFileSourcePath = Path.Combine(location, "runtimes", platform, "native");
 
-            Console.WriteLine($"Trying access potential native file location: {nativeFileSourcePath}");
-            
             if (Directory.Exists(nativeFileSourcePath))
                 return nativeFileSourcePath;
         }
