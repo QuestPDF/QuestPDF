@@ -7,6 +7,33 @@ namespace QuestPDF.DocumentationExamples.Text;
 public class ParagraphStyleExamples
 {
     [Test]
+    public void DefaultTextStyle()
+    {
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(0, 0));
+                    page.MaxSize(new PageSize(400, 1000));
+                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.Margin(25);
+
+                    page.Content()
+                        .Text(text =>
+                        {
+                            text.DefaultTextStyle(x => x.Light().LetterSpacing(-0.1f).WordSpacing(0.1f));
+
+                            text.Span("Changing typography settings helps creating ");
+                            text.Span("significant").LetterSpacing(0.2f).Black().BackgroundColor(Colors.Grey.Lighten2);
+                            text.Span(" visual contrast.");
+                        });
+                });
+            })
+            .GenerateImages(x => "text-paragraph-default-style.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
+    }
+    
+    [Test]
     public void TextAlignment()
     {
         Document
