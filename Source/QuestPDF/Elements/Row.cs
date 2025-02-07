@@ -122,7 +122,7 @@ namespace QuestPDF.Elements
 
         private void UpdateItemsWidth(float availableWidth)
         {
-            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto && x.Size != 0))
+            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto && x.Size == default))
                 rowItem.Size = rowItem.Measure(Size.Max).Width;
             
             var constantWidth = Items.Where(x => x.Type != RowItemType.Relative).Sum(x => x.Size);
