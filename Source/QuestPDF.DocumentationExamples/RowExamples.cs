@@ -66,7 +66,7 @@ public class RowExamples
                         });
                 });
             })
-            .GeneratePdfAndShow();
+            .GeneratePdf();
     }
     
     [Test]
