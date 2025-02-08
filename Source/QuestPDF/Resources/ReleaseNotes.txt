@@ -12,3 +12,4 @@ Version 2025.1.1
 Version 2025.1.2
 - Adjusted the behavior of Row.AutoItem to preserve its size when a Row element spans multiple pages.
 - Improved Linux compatibility by including the necessary native dependencies (OpenSSL and libjpeg-turbo).
+ 
