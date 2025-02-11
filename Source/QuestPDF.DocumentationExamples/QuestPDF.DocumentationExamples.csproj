@@ -28,6 +28,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="Resources\**\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        
       <None Update="NotoEmoji-Regular.ttf">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
