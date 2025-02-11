@@ -210,7 +210,7 @@ namespace QuestPDF.Elements.Table
                         if (rowBottomOffsets[currentRow - 1] > availableSpace.Height + Size.Epsilon)
                             break;
 
-                        foreach (var row in Enumerable.Range(cell.Row, cell.Row - currentRow))
+                        foreach (var row in Enumerable.Range(currentRow + 1, cell.Row - (currentRow + 1)))
                             rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);
                         
                         currentRow = cell.Row;
