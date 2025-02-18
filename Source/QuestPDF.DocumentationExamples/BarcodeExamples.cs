@@ -1,4 +1,3 @@
-using System.Text.Json;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -30,7 +29,7 @@ public class BarcodeExamples
                         .Padding(25)
                         .Row(row =>
                         {
-                            var productId = Random.Shared.NextInt64() % 1_000_000_000_000;
+                            var productId = Random.Shared.NextInt64() % 10_000_000;
                             
                             row.Spacing(20);
 
@@ -39,7 +38,7 @@ public class BarcodeExamples
                                 text.ParagraphSpacing(10);
                                 
                                 text.Span("Product ID: ").Bold();
-                                text.Line(productId.ToString("D12"));
+                                text.Line(productId.ToString("D7"));
                                 
                                 text.Span("Name: ").Bold();
                                 text.Line(Placeholders.Label());
@@ -56,12 +55,12 @@ public class BarcodeExamples
                                 .Height(75)
                                 .Svg(size =>
                                 {
-                                    var content = productId.ToString("D12");
+                                    var content = productId.ToString("D7");
                                     
-                                    var writer = new EAN13Writer();
-                                    var eanCode = writer.encode(content, BarcodeFormat.EAN_13, (int)size.Width, (int)size.Height);
+                                    var writer = new EAN8Writer();
+                                    var eanCode = writer.encode(content, BarcodeFormat.EAN_8, (int)size.Width, (int)size.Height);
                                     var renderer = new SvgRenderer { FontName = "Lato", FontSize = 16 };
-                                    return renderer.Render(eanCode, BarcodeFormat.EAN_13, content).Content;
+                                    return renderer.Render(eanCode, BarcodeFormat.EAN_8, content).Content;
                                 });
                         });
                 });

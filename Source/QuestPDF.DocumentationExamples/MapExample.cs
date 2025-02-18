@@ -42,16 +42,13 @@ public class MapExample
             {
                 document.Page(page =>
                 {
-                    page.MinSize(new PageSize(0, 0));
-                    page.MaxSize(new PageSize(1000, 1000));
-                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.ContinuousSize(550);
+                    page.Margin(25);
 
                     page.Content()
-                        .Width(550)
-                        .Padding(25)
                         .Column(column =>
                         {
-                            column.Item().Text("Map of Kraków").Bold();
+                            column.Item().Text("Map of Kraków").FontSize(20).Bold();
                             column.Item().Text("Capital of Lesser Poland Voivodeship").FontSize(16).Light();
                             column.Item().Height(15);
 

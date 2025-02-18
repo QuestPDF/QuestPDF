@@ -20,7 +20,6 @@ public class ComplexGraphicsExamples
                     page.Margin(25);
                     
                     page.Content()
-                        .Shrink()
                         .Layers(layers =>
                         {
                             layers.Layer().Svg(size =>
