@@ -16,7 +16,7 @@ public class RowExamples
                 {
                     page.MinSize(new PageSize(0, 0));
                     page.MaxSize(new PageSize(1000, 1000));
-                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.Margin(25);
 
                     page.Content()
                         .Padding(25)
@@ -44,32 +44,6 @@ public class RowExamples
     }
     
     [Test]
-    public void AutoItem()
-    {
-        // TODO: improve and update documentation
-        
-        Document
-            .Create(document =>
-            {
-                document.Page(page =>
-                {
-                    page.MinSize(new PageSize(0, 0));
-                    page.MaxSize(new PageSize(500, 300));
-                    page.DefaultTextStyle(x => x.FontSize(20));
-
-                    page.Content()
-                        .Padding(25)
-                        .Row(row =>
-                        {
-                            row.AutoItem().Text("Auto column");
-                            row.RelativeItem().Text(Placeholders.LoremIpsum());
-                        });
-                });
-            })
-            .GeneratePdf();
-    }
-    
-    [Test]
     public void SpacingExample()
     {
         Document
@@ -79,7 +53,7 @@ public class RowExamples
                 {
                     page.MinSize(new PageSize(0, 0));
                     page.MaxSize(new PageSize(1000, 1000));
-                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.Margin(25);
 
                     page.Content()
                         .Padding(25)
@@ -96,5 +70,34 @@ public class RowExamples
                 });
             })
             .GenerateImages(x => "row-spacing.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
+    }
+    
+    [Test]
+    public void CustomSpacingExample()
+    {
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(250, 0));
+                    page.MaxSize(new PageSize(250, 1000));
+                    page.Margin(25);
+
+                    page.Content()
+                        .Height(50)
+                        .Row(row =>
+                        {
+                            row.RelativeItem().Background(Colors.Grey.Darken1);
+                            row.ConstantItem(10);
+                            row.RelativeItem().Background(Colors.Grey.Medium);
+                            row.ConstantItem(20);
+                            row.RelativeItem().Background(Colors.Grey.Lighten1);
+                            row.ConstantItem(30);
+                            row.RelativeItem().Background(Colors.Grey.Lighten2);
+                        });
+                });
+            })
+            .GenerateImages(x => "row-spacing-custom.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
 }
