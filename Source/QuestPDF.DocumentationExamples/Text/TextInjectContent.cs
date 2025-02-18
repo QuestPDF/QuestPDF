@@ -23,10 +23,10 @@ public class TextInjectContent
                         .Text(text =>
                         {
                             text.Span("A unit test can either ");
-                            text.Element().PaddingBottom(-4).Height(24).Image("unit-test-completed-icon.png");
+                            text.Element().PaddingBottom(-4).Height(24).Image("Resources/unit-test-completed-icon.png");
                             text.Span(" pass").FontColor(Colors.Green.Medium);
                             text.Span(" or ");
-                            text.Element().PaddingBottom(-4).Height(24).Image("unit-test-failed-icon.png");
+                            text.Element().PaddingBottom(-4).Height(24).Image("Resources/unit-test-failed-icon.png");
                             text.Span(" fail").FontColor(Colors.Red.Medium);
                             text.Span(".");
                         });
@@ -52,7 +52,7 @@ public class TextInjectContent
                         .Text(text =>
                         {
                             text.Span("To synchronize your email inbox, please click the ");
-                            text.Element().PaddingBottom(-4).Height(24).Svg("mail-synchronize-icon.svg");
+                            text.Element().PaddingBottom(-4).Height(24).Svg("Resources/mail-synchronize-icon.svg");
                             text.Span(" icon.");
                         });
                 });

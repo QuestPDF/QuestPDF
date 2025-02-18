@@ -29,10 +29,10 @@ public class ImageExamples
                             
                             grid.Item(2).Text("My photo gallery:").Bold();
                             
-                            grid.Item().Image("photo-gallery-1.jpg");
-                            grid.Item().Image("photo-gallery-2.jpg");
-                            grid.Item().Image("photo-gallery-3.jpg");
-                            grid.Item().Image("photo-gallery-4.jpg");
+                            grid.Item().Image("Resources/Photos/photo-gallery-1.jpg");
+                            grid.Item().Image("Resources/Photos/photo-gallery-2.jpg");
+                            grid.Item().Image("Resources/Photos/photo-gallery-3.jpg");
+                            grid.Item().Image("Resources/Photos/photo-gallery-4.jpg");
                         });
                 });
             })
@@ -60,7 +60,7 @@ public class ImageExamples
                                 .Height(150)
                                 .Border(4)
                                 .BorderColor(Colors.Red.Medium)
-                                .Image("photo.jpg")
+                                .Image("Resources/Photos/photo.jpg")
                                 .FitWidth();
 
                             column.Item().Height(15);
@@ -71,7 +71,7 @@ public class ImageExamples
                                 .Height(100)
                                 .Border(4)
                                 .BorderColor(Colors.Red.Medium)
-                                .Image("photo.jpg")
+                                .Image("Resources/Photos/photo.jpg")
                                 .FitHeight();
                             
                             column.Item().Height(15);
@@ -82,7 +82,7 @@ public class ImageExamples
                                 .Height(100)
                                 .Border(4)
                                 .BorderColor(Colors.Red.Medium)
-                                .Image("photo.jpg")
+                                .Image("Resources/Photos/photo.jpg")
                                 .FitArea();
                             
                             column.Item().Height(15);
@@ -93,7 +93,7 @@ public class ImageExamples
                                 .Height(150)
                                 .Border(4)
                                 .BorderColor(Colors.Red.Medium)
-                                .Image("photo.jpg")
+                                .Image("Resources/Photos/photo.jpg")
                                 .FitArea();
                             
                             column.Item().Height(15);
@@ -104,7 +104,7 @@ public class ImageExamples
                                 .Height(50)
                                 .Border(4)
                                 .BorderColor(Colors.Red.Medium)
-                                .Image("photo.jpg")
+                                .Image("Resources/Photos/photo.jpg")
                                 .FitUnproportionally();
                         });
                 });
@@ -132,13 +132,13 @@ public class ImageExamples
                             // lower raster dpi = lower resolution, pixelation
                             column
                                 .Item()
-                                .Image("photo.jpg")
+                                .Image("Resources/Photos/photo.jpg")
                                 .WithRasterDpi(16);
     
                             // higher raster dpi = higher resolution
                             column
                                 .Item()
-                                .Image("photo.jpg")
+                                .Image("Resources/Photos/photo.jpg")
                                 .WithRasterDpi(288);
                         });
                 });
@@ -166,13 +166,13 @@ public class ImageExamples
                             // low quality = smaller output file
                             column
                                 .Item()
-                                .Image("photo.jpg")
+                                .Image("Resources/Photos/photo.jpg")
                                 .WithCompressionQuality(ImageCompressionQuality.VeryLow);
         
                             // high quality / fidelity = larger output file
                             column
                                 .Item()
-                                .Image("photo.jpg")
+                                .Image("Resources/Photos/photo.jpg")
                                 .WithCompressionQuality(ImageCompressionQuality.VeryHigh);
                         });
                 });
@@ -188,7 +188,7 @@ public class ImageExamples
             {
                 document.Page(page =>
                 {
-                    page.Content().Image("photo.jpg");
+                    page.Content().Image("Resources/Photos/photo.jpg");
                 });
             })
             .WithSettings(new DocumentSettings
@@ -205,7 +205,7 @@ public class ImageExamples
     [Test]
     public void SharedImages()
     {
-        var image = Image.FromFile("checkbox.png");
+        var image = Image.FromFile("Resources/checkbox.png");
         
         Document
             .Create(document =>
@@ -309,7 +309,7 @@ public class ImageExamples
                     //     .Svg("pdf-icon.svg")
                     //     .FitArea();
 
-                    var svgContent = File.ReadAllText("pdf-icon.svg");
+                    var svgContent = File.ReadAllText("Resources/pdf-icon.svg");
                     
                     page.Content()
                         .Svg(svgContent);
