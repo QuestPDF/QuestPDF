@@ -7,7 +7,7 @@ namespace QuestPDF.DocumentationExamples;
 public class ComplexGraphicsExamples
 {
     [Test]
-    public void Example()
+    public void RoundedRectangleWithGradient()
     {
         Document
             .Create(document =>
@@ -48,6 +48,52 @@ public class ComplexGraphicsExamples
                         });
                 });
             })
-            .GenerateImages(x => "complex-graphics.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
+            .GenerateImages(x => "complex-graphics-rounded-rectangle-with-gradient.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
+    }
+    
+    [Test]
+    public void DottedLine()
+    {
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(500, 0));
+                    page.MaxSize(new PageSize(500, 1000));
+                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.Margin(25);
+                    
+                    page.Content()
+                        .Column(column =>
+                        {
+                            column.Spacing(5);
+                            
+                            foreach (var i in Enumerable.Range(1, 5))
+                            {
+                                var pageNumber = i * 7 + 4;
+                                
+                                column.Item().Row(row =>
+                                {
+                                    row.AutoItem().Text($"{i}.");
+                                    row.ConstantItem(10);
+                                    row.AutoItem().Text(Placeholders.Label());
+
+                                    row.RelativeItem().PaddingHorizontal(3).TranslateY(20).Height(2).Svg(size =>
+                                    {
+                                        return $"""
+                                                <svg width="{size.Width}" height="{size.Height}" xmlns="http://www.w3.org/2000/svg">
+                                                    <line x1="0" y1="0" x2="{size.Width}" y2="0" fill="none" stroke="black" stroke-width="2" stroke-dasharray="2 6" />
+                                                </svg>
+                                                """;
+                                    });
+
+                                    row.AutoItem().Text($"{pageNumber}");
+                                });
+                            }
+                        });
+                });
+            })
+            .GenerateImages(x => "complex-graphics-dotted-line.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
     }
 }
