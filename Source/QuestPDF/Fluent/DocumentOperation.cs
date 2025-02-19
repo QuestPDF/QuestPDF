@@ -352,6 +352,7 @@ public class DocumentOperation
         string GetDefaultMimeType()
         {
             var fileExtension = Path.GetExtension(attachment.FilePath);
+            fileExtension = fileExtension.TrimStart('.').ToLowerInvariant();
             return MimeHelper.FileExtensionToMimeConversionTable.TryGetValue(fileExtension, out var value) ? value : "text/plain";
         }
         
