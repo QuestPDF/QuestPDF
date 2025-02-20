@@ -193,6 +193,17 @@ namespace QuestPDF.Helpers
             return $"{Random.Next(100, 999)}-{Random.Next(100, 999)}-{Random.Next(1000, 9999)}";
         }
         
+        /// <summary>
+        /// Generates random text resembling a webpage address.
+        /// </summary>
+        /// <example>
+        /// www.libero.com
+        /// </example>
+        public static string WebpageUrl()
+        {
+            return $"www.{LongRandomWord()}.com";
+        }
+        
         private static string FirstCharToUpper(this string text)
         {
             return text.First().ToString().ToUpper() + text.Substring(1);
