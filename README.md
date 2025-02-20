@@ -25,7 +25,8 @@ https://github.com/user-attachments/assets/a674c413-34c4-47b5-b559-f279b1bf46c0
 
 GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! ⭐
 
-<img src="https://github.com/user-attachments/assets/10aa9123-c395-4dc9-8977-aa9531e07227" width="700" />
+<img src="https://github.com/user-attachments/assets/ca15fc33-cfab-43b8-9eb8-c0391b1aea68" width="700" />
+
 
 <br />
 
