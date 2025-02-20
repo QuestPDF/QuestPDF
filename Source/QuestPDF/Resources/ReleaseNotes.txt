@@ -17,3 +17,5 @@ Version 2025.1.2
 Version 2025.1.3
 - Fixed a rare layout rendering bug in the Table element.
 - Improved memory management for Shared Image API by adjusting GC Memory Pressure.
+- Fixed a bug in the DocumentOperation.AddAttachment method that incorrectly detected the file's MIME type when it was not explicitly provided.
+- Added a new Placeholders.WebpageUrl() method.
