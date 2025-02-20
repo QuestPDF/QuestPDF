@@ -14,26 +14,29 @@ public class DecorationExamples
             {
                 document.Page(page =>
                 {
-                    page.MinSize(new PageSize(0, 0));
-                    page.MaxSize(new PageSize(1000, 1000));
+                    page.MinSize(new PageSize(350, 0));
+                    page.MaxSize(new PageSize(350, 300));
+                    page.Margin(25);
                     page.DefaultTextStyle(x => x.FontSize(20));
 
                     page.Content()
-                        .MaxHeight(300)
-                        .MaxWidth(300)
+                        .Background(Colors.Grey.Lighten3)
+                        .Padding(15)
                         .Decoration(decoration =>
                         {
                             decoration
                                 .Before()
-                                .Background(Colors.Grey.Medium)
-                                .Padding(10)
-                                .Text("Notes").FontColor("#FFF").Bold();
+                                .DefaultTextStyle(x => x.Bold())
+                                .Column(column =>
+                                {
+                                    column.Item().ShowOnce().Text("Customer Instructions:");
+                                    column.Item().SkipOnce().Text("Customer Instructions [continued]:");
+                                });
 
                             decoration
                                 .Content()
-                                .Background(Colors.Grey.Lighten3)
-                                .Padding(10)
-                                .Text(Helpers.Placeholders.LoremIpsum());
+                                .PaddingTop(10)
+                                .Text("Please wrap the item in elegant gift paper and include a small blank card for a personal message. If possible, remove any price tags or invoices from the package. Make sure the wrapping is secure but easy to open without damaging the contents.");
                         });
                 });
             })

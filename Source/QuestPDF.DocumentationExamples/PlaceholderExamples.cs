@@ -145,4 +145,32 @@ public class PlaceholderExamples
             })
             .GenerateImages(x => "placeholders-image.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
     }
+    
+    [Test]
+    public void ElementExample()
+    {
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.Size(PageSizes.A5);
+                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.Margin(25);
+
+                    page.Header()
+                        .Height(100)
+                        .Placeholder("Header");
+                    
+                    page.Content()
+                        .PaddingVertical(25)
+                        .Placeholder();
+                    
+                    page.Footer()
+                        .Height(100)
+                        .Placeholder("Footer");
+                });
+            })
+            .GenerateImages(x => "placeholder-element.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.High, RasterDpi = 144 });
+    }
 }
