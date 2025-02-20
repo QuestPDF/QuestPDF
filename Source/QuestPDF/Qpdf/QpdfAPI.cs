@@ -28,7 +28,10 @@ class QpdfAPI
         // perform the job
         var jobHandle = API.qpdfjob_init();
         API.qpdfjob_set_logger(jobHandle, logger);
-        API.qpdfjob_initialize_from_json(jobHandle, jobJson);
+
+        byte[] utf8JsonBytes = Encoding.UTF8.GetBytes(jobJson + "\0"); // Ensure null termination
+        API.qpdfjob_initialize_from_json(jobHandle, utf8JsonBytes);
+
         API.qpdfjob_run(jobHandle);
         API.qpdfjob_cleanup(jobHandle);
         
@@ -78,9 +81,9 @@ class QpdfAPI
     
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void qpdfjob_cleanup(IntPtr jobHandle);
-    
+
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int qpdfjob_initialize_from_json(IntPtr jobHandle, string json);
+        public static extern int qpdfjob_initialize_from_json(IntPtr jobHandle, byte[] json);
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int qpdfjob_run(IntPtr jobHandle);
