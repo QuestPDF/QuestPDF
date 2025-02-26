@@ -20,6 +20,9 @@ namespace QuestPDF.Elements
             if (Child.IsEmpty())
                 return SpacePlan.Empty();
             
+            if (availableSpace.Width == 0 && availableSpace.Height == 0)
+                return SpacePlan.Wrap("The available space is zero.");
+            
             var targetSize = GetTargetSize(availableSpace);
             
             if (targetSize.Height > availableSpace.Height + Size.Epsilon)
