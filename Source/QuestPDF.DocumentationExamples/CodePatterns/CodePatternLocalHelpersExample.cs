@@ -2,9 +2,9 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace QuestPDF.DocumentationExamples;
+namespace QuestPDF.DocumentationExamples.CodePatterns;
 
-public class SvgExamples
+public class CodePatternLocalHelpersExample
 {
     [Test]
     public void Example()
@@ -24,7 +24,7 @@ public class SvgExamples
                         {
                             column.Spacing(15);
 
-                            column.Item().Text("Business details:").Bold().FontColor(Colors.Blue.Darken2);
+                            column.Item().Text("Business details:").FontSize(24).Bold().FontColor(Colors.Blue.Darken2);
                             
                             AddContactItem("Resources/Icons/phone.svg", Placeholders.PhoneNumber());
                             AddContactItem("Resources/Icons/email.svg", Placeholders.Email());
@@ -42,6 +42,6 @@ public class SvgExamples
                         });
                 });
             })
-            .GenerateImages(x => $"svg.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
+            .GenerateImages(x => $"code-pattern-local-helpers.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
     }
 }

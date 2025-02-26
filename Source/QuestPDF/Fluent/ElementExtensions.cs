@@ -105,6 +105,11 @@ namespace QuestPDF.Fluent
             return handler(handlerContainer);
         }
         
+        public static void Element(this IContainer parent, IContainer child)
+        {
+            parent.Child = child as IElement;
+        }
+        
         internal static IContainer NonTrackingElement(this IContainer parent, Func<IContainer, IContainer> handler)
         {
             return handler(parent.Container());

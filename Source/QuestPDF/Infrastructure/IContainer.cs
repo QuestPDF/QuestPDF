@@ -1,4 +1,6 @@
-﻿namespace QuestPDF.Infrastructure
+﻿using QuestPDF.Elements;
+
+namespace QuestPDF.Infrastructure
 {
     /// <summary>
     /// Represents a layout structure with exactly one child element.
@@ -10,5 +12,9 @@
     public interface IContainer
     {
         IElement? Child { get; set; }
+        
+        #if NETCOREAPP3_0_OR_GREATER
+        public static IContainer Empty => new Container();
+        #endif
     }
 }
