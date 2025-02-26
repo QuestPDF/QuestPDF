@@ -204,6 +204,18 @@ namespace QuestPDF.Helpers
             return $"www.{LongRandomWord()}.com";
         }
         
+        /// <summary>
+        /// Generates random text resembling a price value.
+        /// </summary>
+        /// <example>
+        /// $12.99
+        /// </example>
+        public static string Price()
+        {
+            var price = (decimal) Math.Round(Random.NextDouble() * 100) + 0.99m;
+            return $"{price:C}";
+        }
+        
         private static string FirstCharToUpper(this string text)
         {
             return text.First().ToString().ToUpper() + text.Substring(1);
