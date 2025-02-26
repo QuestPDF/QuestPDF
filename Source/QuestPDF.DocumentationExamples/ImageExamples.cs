@@ -302,19 +302,21 @@ public class ImageExamples
             {
                 document.Page(page =>
                 {
-                    page.Size(PageSizes.A7.Portrait());
+                    page.ContinuousSize(250);
+                    page.DefaultTextStyle(x => x.FontSize(20));
                     page.Margin(25);
-
-                    // page.Content()
-                    //     .Svg("pdf-icon.svg")
-                    //     .FitArea();
-
+                    
                     var svgContent = File.ReadAllText("Resources/pdf-icon.svg");
                     
                     page.Content()
-                        .Svg(svgContent);
+                        .Column(column =>
+                        {
+                            column.Item().Text("The classic PDF icon looks like this:").Bold();
+                            column.Item().Height(15);
+                            column.Item().Svg(svgContent);
+                        });
                 });
             })
-            .GeneratePdf("image-svg.pdf");
+            .GenerateImages(x => "image-svg.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
 }
