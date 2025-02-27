@@ -29,6 +29,7 @@ public class LazyExamples
     }
 
     [Test]
+    [Ignore("This test is for manual testing only.")]
     public void Disabled()
     {
         Document
@@ -57,6 +58,7 @@ public class LazyExamples
     }
 
     [Test]
+    [Ignore("This test is for manual testing only.")]
     public void Enabled()
     {
         Document
@@ -90,6 +92,7 @@ public class LazyExamples
     }
     
     [Test]
+    [Ignore("This test is for manual testing only.")]
     public void EnabledWithCache()
     {
         Document
