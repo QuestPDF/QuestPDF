@@ -18,13 +18,6 @@ namespace QuestPDF.Fluent
             SkNativeDependencyCompatibilityChecker.Test();
         }
         
-        internal static Container Create(Action<IContainer> factory)
-        {
-            var container = new Container();
-            factory(container);
-            return container;
-        }
-
         internal static T Element<T>(this IContainer element, T child) where T : IElement
         {
             if (element?.Child != null && element.Child is Empty == false)

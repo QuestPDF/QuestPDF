@@ -12,9 +12,5 @@ namespace QuestPDF.Infrastructure
     public interface IContainer
     {
         IElement? Child { get; set; }
-        
-        #if NETCOREAPP3_0_OR_GREATER
-        public static IContainer Empty => new Container();
-        #endif
     }
 }

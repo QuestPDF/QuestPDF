@@ -1,17 +1,5 @@
-using QuestPDF.Elements;
-
 namespace QuestPDF.Infrastructure
 {
-    interface ISlot
-    {
-        
-    }
-
-    class Slot : Container, ISlot
-    {
-        
-    }
-    
     /// <summary>
     /// <para>This interface represents a reusable document fragment.</para>
     /// <para>

@@ -88,7 +88,7 @@ public class CodePatternConfigurableComponentExample
         
         public IContainer Custom(string label)
         {
-            var content = IContainer.Empty;
+            var content = EmptyContainer.Create();
             Fields.Add((label, content));
             return content;
         }
