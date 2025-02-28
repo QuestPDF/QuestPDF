@@ -84,6 +84,11 @@ namespace QuestPDF.Helpers
         {
             return size.Width < -Size.Epsilon || size.Height < -Size.Epsilon;
         }
+        
+        internal static bool IsCloseToZero(this Size size)
+        {
+            return Math.Abs(size.Width) < Size.Epsilon && Math.Abs(size.Height) < Size.Epsilon;
+        }
 
         internal static bool IsEmpty(this Element element)
         {
