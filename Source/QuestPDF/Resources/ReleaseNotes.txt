@@ -19,3 +19,12 @@ Version 2025.1.3
 - Improved memory management for Shared Image API by adjusting GC Memory Pressure.
 - Fixed a bug in the DocumentOperation.AddAttachment method that incorrectly detected the file's MIME type when it was not explicitly provided.
 - Added a new Placeholders.WebpageUrl() method.
+
+
+Version 2025.1.4
+- Added support for creating empty containers that can be injected into the document, significantly enhancing component extensibility.
+- Added new element: PreventPageBreak.
+- Updated in-code links to documentation to reflect recent changes.
+- Fixed: AspectRatio element rarely positioned its content incorrectly.
+- Fixed: The Row element incorrectly calculated the size of AutoItem when it contained text representing page numbers
+- Fixed: Paragraph spacing was not applied when a span contained only a newline.
