@@ -122,7 +122,7 @@ namespace QuestPDF.Elements
 
         private void UpdateItemsWidth(float availableWidth)
         {
-            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto && x.Size == default))
+            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto && x.Size == 0))
                 rowItem.Size = rowItem.Measure(Size.Max).Width;
             
             var constantWidth = Items.Where(x => x.Type != RowItemType.Relative).Sum(x => x.Size);
@@ -186,7 +186,14 @@ namespace QuestPDF.Elements
     
         public void ResetState(bool hardReset = false)
         {
-            Items.ForEach(x => x.IsRendered = false);
+            foreach (var rowItem in Items)
+            {
+                rowItem.IsRendered = false;
+                
+                // required when the row contains items with text representing page numbers
+                if (rowItem.Type == RowItemType.Auto)
+                    rowItem.Size = 0;
+            }
         }
 
         public object GetState()
