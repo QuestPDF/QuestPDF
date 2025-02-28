@@ -421,6 +421,13 @@ namespace QuestPDF.Elements.Text
                     continue;
                 }
                 
+                if (textBlockSpan.Text == "\n")
+                {
+                    AddParagraphSpacing();
+                    AddParagraphFirstLineIndentation();
+                    continue;
+                }
+                
                 var textFragments = textBlockSpan.Text.Split('\n');
                     
                 foreach (var textFragment in textFragments)
