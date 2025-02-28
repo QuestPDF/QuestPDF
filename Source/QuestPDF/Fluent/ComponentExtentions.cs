@@ -13,7 +13,11 @@ namespace QuestPDF.Fluent
         /// <param name="component">Instance of the class implementing the <see cref="IComponent"></see> interface.</param>
         public static void Component<T>(this IContainer element, T component) where T : IComponent
         {
-            element.Component(component);
+            var componentContainer = element
+                .Container()
+                .DebugPointer(DebugPointerType.Component, component.GetType().Name);
+            
+            component.Compose(componentContainer);
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="component"]/*' />

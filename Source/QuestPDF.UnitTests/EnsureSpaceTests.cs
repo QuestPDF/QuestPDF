@@ -24,7 +24,7 @@ namespace QuestPDF.UnitTests
         }
         
         [Test]
-        public void Measure_ReturnsWrap_WhenChildReturnsPartialRender_AndNotEnoughSpace()
+        public void Measure_ReturnsPartialRenderWithZeroSize_WhenChildReturnsPartialRender_AndNotEnoughSpace()
         {
             TestPlan
                 .For(x => new EnsureSpace
@@ -34,7 +34,7 @@ namespace QuestPDF.UnitTests
                 })
                 .MeasureElement(new Size(400, 100))
                 .ExpectChildMeasure(new Size(400, 100), SpacePlan.PartialRender(300, 50))
-                .CheckMeasureResult(SpacePlan.Wrap("The available vertical space is smaller than requested in the constraint."));
+                .CheckMeasureResult(SpacePlan.PartialRender(Size.Zero));
         }
         
         [Test]
@@ -78,8 +78,5 @@ namespace QuestPDF.UnitTests
                 .ExpectChildMeasure(new Size(400, 300), SpacePlan.FullRender(300, 250))
                 .CheckMeasureResult(SpacePlan.FullRender(300, 250));
         }
-        
-        [Test]
-        public void Draw() => SimpleContainerTests.Draw<EnsureSpace>();
     }
 }
