@@ -213,19 +213,26 @@ namespace QuestPDF.Fluent
         }
 
         /// <summary>
-        /// <para>Serves as a less-strict approach compared to the <see cref="ElementExtensions.ShowEntire">ShowEntire</see> element.</para>
         /// <para>
-        /// It impacts only the very first page of its content's occurence.
-        /// If the element fits within its first page, it's rendered as usual.
-        /// However, if the element doesn't fit and the available space has less vertical space than required height, the content is entirely shifted to the next page.
+        /// Ensures that the container's content occupies at least a specified minimum height on its first page of occurrence.
+        /// If there is enough space, the content is rendered as usual. However, if a page break is required,
+        /// this method ensures that a minimum amount of space is available before rendering the content.
+        /// If the required space is not available, the content is moved to the next page.
+        /// </para>
+        /// <para>
+        /// This rule applies only to the first page where the content appears. If the content spans multiple pages,
+        /// all subsequent pages are rendered without this restriction. 
+        /// </para>
+        /// <para>
+        /// This method is particularly useful for structured elements like tables, where rendering only a small fragment 
+        /// at the bottom of a page could negatively impact readability. By ensuring a minimum height, 
+        /// you can prevent undesired content fragmentation.
         /// </para>
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/ensure-space.html">Learn more</a>
         /// </summary>
-        /// <remarks>
-        /// This is especially useful for elements like tables, where you'd want to display several rows together. By setting the minHeight, you can avoid scenarios where only a single row appears at the page's end, ensuring a more cohesive presentation.
-        /// </remarks>
-        public static IContainer EnsureSpace(this IContainer element, float? minHeight = null)
+        /// <param name="minHeight">The minimum height, in points, that the element should occupy before a page break.</param>
+        public static IContainer EnsureSpace(this IContainer element, float minHeight = Elements.EnsureSpace.DefaultMinHeight)
         {
             return element.Element(new EnsureSpace
             {

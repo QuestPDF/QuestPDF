@@ -5,7 +5,8 @@ namespace QuestPDF.Elements
 {
     internal sealed class EnsureSpace : ContainerElement, IStateful
     {
-        public float? MinHeight { get; set; } = null;
+        public const float DefaultMinHeight = 150;
+        public float MinHeight { get; set; } = DefaultMinHeight;
 
         internal override SpacePlan Measure(Size availableSpace)
         {
@@ -17,19 +18,29 @@ namespace QuestPDF.Elements
             if (measurement.Type != SpacePlanType.PartialRender)
                 return measurement;
 
-            if (MinHeight == null || MinHeight <= availableSpace.Height)
+            if (MinHeight <= measurement.Height)
                 return measurement;
             
-            return SpacePlan.Wrap("The available vertical space is smaller than requested in the constraint.");
+            return SpacePlan.PartialRender(Size.Zero);
         }
         
         internal override void Draw(Size availableSpace)
         {
-            base.Draw(availableSpace);
+            if (IsFirstPageRendered)
+            {
+                base.Draw(availableSpace);
+                return;
+            }
+
+            var measurement = base.Measure(availableSpace);
+            
+            if (MinHeight <= measurement.Height)
+                base.Draw(availableSpace);
+            
             IsFirstPageRendered = true;
         }
 
-        internal override string? GetCompanionHint() => MinHeight.HasValue ? $"at least {MinHeight.Value}" : null;
+        internal override string? GetCompanionHint() => $"at least {MinHeight}";
         
         #region IStateful
         
