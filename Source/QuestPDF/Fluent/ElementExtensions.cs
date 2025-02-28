@@ -239,6 +239,23 @@ namespace QuestPDF.Fluent
                 MinHeight = minHeight
             });
         }
+        
+        /// <summary>
+        /// <para>
+        /// Attempts to keep the container's content together on its first page of occurrence.
+        /// If the content does not fit entirely on that page, it is moved to the next page. 
+        /// If it spans multiple pages, all subsequent pages are rendered as usual without restriction.
+        /// </para>
+        /// <para>
+        /// This method is useful for ensuring that content remains visually coherent and is not arbitrarily split.
+        /// </para>
+        /// <br />
+        /// <a href="https://www.questpdf.com/api-reference/prevent-page-break.html">Learn more</a>
+        /// </summary>
+        public static IContainer PreventPageBreak(this IContainer element)
+        {
+            return element.Element(new PreventPageBreak());
+        }
 
         /// <summary>
         /// Inserts a break that pushes the subsequent content to start on a new page.
