@@ -49,7 +49,7 @@ namespace QuestPDF.Fluent
 
         /// <summary>
         /// Provides the capability to render the page number in a custom text format (e.g., roman numerals).
-        /// <a href="https://www.questpdf.com/api-reference/text.html#page-numbers">Lear more</a>
+        /// <a href="https://www.questpdf.com/api-reference/text/page-numbers.html">Lear more</a>
         /// </summary>
         /// <param name="formatter">The function designated to modify the number into text. When given a null input, a typical-sized placeholder text must be produced.</param>
         public TextPageNumberDescriptor Format(PageNumberFormatter formatter)

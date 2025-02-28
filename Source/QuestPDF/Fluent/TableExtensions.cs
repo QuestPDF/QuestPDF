@@ -23,7 +23,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Defines a column with a relative size that adjusts its width in relation to other relative columns.
-        /// <a href="https://www.questpdf.com/api-reference/table.html#column-definitions">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/table/basics.html#columns-definition">Learn more</a>
         /// </summary>
         /// <example>
         /// For a table 100 points wide with three columns: a relative size of 1, a relative size of 5, and a constant size of 10 points, they will span 15 points, 75 points, and 10 points respectively.
@@ -70,7 +70,7 @@ namespace QuestPDF.Fluent
 
         /// <summary>
         /// Specifies the order and size of the table columns.
-        /// <a href="https://www.questpdf.com/api-reference/table.html#column-definitions">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/table/basics.html#columns-definition">Learn more</a>
         /// </summary>
         /// <remarks>
         /// This configuration affects both the main content as well as the header and footer sections.
@@ -93,7 +93,6 @@ namespace QuestPDF.Fluent
         /// Adjusts rendering algorithm to better handle complex table structures, especially those spanning multiple pages. 
         /// This applies a unique rule to the final cells in each column, ensuring they stretch to fill the table's bottom edge.
         /// Such an approach can enhance your table's visual appeal.
-        /// <a href="https://www.questpdf.com/api-reference/table.html#extend-last-cells-to-table-bottom">Learn more</a>
         /// </summary>
         public void ExtendLastCellsToTableBottom()
         {
@@ -103,7 +102,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Specifies a table header that appears on each page, positioned above the main content.
         /// The cell placement and dimensions in this header are distinct from those in the main content.
-        /// <a href="https://www.questpdf.com/api-reference/table.html#table-header-footer">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/table/header-and-footer.html">Learn more</a>
         /// </summary>
         /// <param name="handler">Handler for configuring the header cells.</param>
         public void Header(Action<TableCellDescriptor> handler)
@@ -118,7 +117,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Specifies a table footer that appears on each page, positioned below the main content.
         /// The placement and dimensions of cells within this footer are distinct from the main content.
-        /// <a href="https://www.questpdf.com/api-reference/table.html#table-header-footer">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/table/header-and-footer.html">Learn more</a>
         /// </summary>
         public void Footer(Action<TableCellDescriptor> handler)
         {
@@ -190,7 +189,7 @@ namespace QuestPDF.Fluent
     {
         /// <summary>
         /// Specifies the column position (horizontal axis) of the cell.
-        /// <a href="https://www.questpdf.com/api-reference/table.html#basic-usage">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/table/basics.html">Learn more</a>
         /// </summary>
         /// <param name="value">Columns are numbered starting with 1.</param>
         public static ITableCellContainer Column(this ITableCellContainer tableCellContainer, uint value)
@@ -203,7 +202,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Defines the number of columns a cell spans in the horizontal axis.
-        /// <a href="https://www.questpdf.com/api-reference/table.html#row-spans-and-column-spans">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/table/basics.html#manual-cell-placement">Learn more</a>
         /// </summary>
         /// <remarks>
         /// Useful when creating complex layouts.
@@ -218,7 +217,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Specifies the row position (vertical axis) of the cell.
-        /// <a href="https://www.questpdf.com/api-reference/table.html#basic-usage">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/table/basics.html">Learn more</a>
         /// </summary>
         /// <param name="value">Rows are numbered starting with 1.</param>
         public static ITableCellContainer Row(this ITableCellContainer tableCellContainer, uint value)
@@ -231,7 +230,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Defines the number of rows a cell spans in the vertical axis.
-        /// <a href="https://www.questpdf.com/api-reference/table.html#row-spans-and-column-spans">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/table/basics.html#manual-cell-placement">Learn more</a>
         /// </summary>
         /// <remarks>
         /// Useful when creating complex layouts.

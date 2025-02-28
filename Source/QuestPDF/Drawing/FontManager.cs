@@ -34,7 +34,7 @@ namespace QuestPDF.Drawing
         /// <summary>
         /// Registers a TrueType font from a stream under the provided custom <paramref name="fontName"/>.
         /// Refer to this font by using the same name as a font family in the <see cref="TextStyle"/> API later on.
-        /// <a href="https://www.questpdf.com/going-production/font-management.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
         /// </summary>
         public static void RegisterFontWithCustomName(string fontName, Stream stream)
         {
@@ -45,7 +45,7 @@ namespace QuestPDF.Drawing
 
         /// <summary>
         /// Registers a TrueType font from a stream. The font family name and all related attributes are detected automatically.
-        /// <a href="https://www.questpdf.com/going-production/font-management.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
         /// </summary>
         public static void RegisterFont(Stream stream)
         {
@@ -55,7 +55,7 @@ namespace QuestPDF.Drawing
         
         /// <summary>
         /// Registers a TrueType font from an embedded resource. The font family name and all related attributes are detected automatically.
-        /// <a href="https://www.questpdf.com/going-production/font-management.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
         /// </summary>
         /// <param name="pathName">Path to the embedded resource (the case-sensitive name of the manifest resource being requested).</param>
         public static void RegisterFontFromEmbeddedResource(string pathName)

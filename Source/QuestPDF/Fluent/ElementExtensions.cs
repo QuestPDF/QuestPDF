@@ -40,7 +40,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
-        /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/concepts/code-patterns/content-styling.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
@@ -70,7 +70,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
-        /// <a href="https://www.questpdf.com/api-reference/element.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/concepts/code-patterns/content-styling.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
@@ -430,6 +430,7 @@ namespace QuestPDF.Fluent
 
         /// <summary>
         /// Repeats its content across multiple pages.
+        /// <a href="https://www.questpdf.com/api-reference/repeat.html">Learn more</a>
         /// </summary>
         /// <remarks>
         /// In certain layout structures, the content visibility may depend on other elements.
@@ -452,6 +453,7 @@ namespace QuestPDF.Fluent
         /// Further optimizations can be achieved by nesting Lazy elements within each other. 
         /// However, note that this technique may increase the overall document generation time due to deferred content processing.
         /// </para>
+        /// <a href="https://www.questpdf.com/api-reference/lazy.html">Learn more</a>
         /// </summary>
         public static void Lazy(this IContainer element, Action<IContainer> contentBuilder)
         {
@@ -466,6 +468,7 @@ namespace QuestPDF.Fluent
         /// Functions similarly to the Lazy element but enables the library to use caching mechanisms for the content.
         /// This can help optimize managed memory usage, although native memory usage may remain high.
         /// Use LazyWithCache only when the increased generation time associated with the Lazy element is unacceptable.
+        /// <a href="https://www.questpdf.com/api-reference/lazy.html">Learn more</a>
         /// </summary>
         public static void LazyWithCache(this IContainer element, Action<IContainer> contentBuilder)
         {

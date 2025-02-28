@@ -281,7 +281,7 @@
             Adjusts the vertical spacing between lines of text, affecting readability and overall text layout.
             The added space is proportional to the text size. 
             A <paramref name="factor"/> value of 1 retains the original spacing.
-            <a href="https://www.questpdf.com/api-reference/text.html#line-height">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#line-height">Learn more</a>
         </summary>
 
         <param name="factor">
@@ -296,7 +296,7 @@
         <summary>
             Adjusts the horizontal spacing between characters in the text, affecting readability and overall visual style.
             The adjustment is proportional to the text size.
-            <a href="https://www.questpdf.com/api-reference/text.html#letter-spacing">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#letter-spacing">Learn more</a>
         </summary>
 
         <param name="factor">
@@ -418,70 +418,70 @@
     <doc for="text.weight.thin">
         <summary>
             Sets the font weight to "thin" (equivalent to CSS 100).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.weight.extraLight">
         <summary>
             Sets the font weight to "extra light" (equivalent to CSS 200).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.weight.light">
         <summary>
             Sets the font weight to "light" (equivalent to CSS 300).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.weight.normal">
         <summary>
             Sets the font weight to "normal" or "regular (equivalent to CSS 400).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.weight.medium">
         <summary>
             Sets the font weight to "medium" (equivalent to CSS 500).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.weight.semiBold">
         <summary>
             Sets the font weight to "semi bold" (equivalent to CSS 600).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.weight.bold">
         <summary>
             Sets the font weight to "bold" (equivalent to CSS 700).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.weight.extraBold">
         <summary>
             Sets the font weight to "extra bold" (equivalent to CSS 800).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.weight.black">
         <summary>
             Sets the font weight to "black" (equivalent to CSS 900).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.weight.extraBlack">
         <summary>
             Sets the font weight to "extra black" (equivalent to CSS 1000).
-            <a href="https://www.questpdf.com/api-reference/text.html#font-weight">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#font-weight">Learn more</a>
         </summary>
     </doc>
 
@@ -501,21 +501,21 @@
     <doc for="text.position.normal">
         <summary>
             Resets the text position and size to default, utilizing the full available line height.
-            <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#subscript">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.position.subscript">
         <summary>
             Sets the text style to subscript, making it smaller and positioning it below the baseline, e.g.: H₂0.
-            <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#subscript">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.position.superscript">
         <summary>
             Sets the text style to subscript, making it smaller and positioning it above the baseline, e.g.: y² + x² = 1.
-            <a href="https://www.questpdf.com/api-reference/text.html#subscript-and-superscript">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/text-style.html#superscript">Learn more</a>
         </summary>
     </doc>
     
@@ -524,21 +524,18 @@
     <doc for="text.direction.auto">
         <summary>
             Resets the text direction, enabling content to follow the automatically detected direction.
-            <a href="https://www.questpdf.com/api-reference/text.html#forcing-text-direction-rtl">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.direction.ltr">
         <summary>
             Enforces a left-to-right text direction.
-            <a href="https://www.questpdf.com/api-reference/text.html#forcing-text-direction-rtl">Learn more</a>
         </summary>
     </doc>
 
     <doc for="text.direction.rtl">
         <summary>
             Enforces a right-to-left text direction.
-            <a href="https://www.questpdf.com/api-reference/text.html#forcing-text-direction-rtl">Learn more</a>
         </summary>
     </doc>
     
@@ -546,7 +543,7 @@
     <doc for="text.style">
         <summary>
             Sets a font style using the typography pattern.
-            <a href="https://www.questpdf.com/api-reference/text.html#typography-pattern">Learn more</a>
+            <a href="https://www.questpdf.com/api-reference/text/basics.html#typography-pattern">Learn more</a>
         </summary>
         
         <remarks>

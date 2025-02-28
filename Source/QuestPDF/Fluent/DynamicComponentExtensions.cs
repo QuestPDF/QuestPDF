@@ -8,7 +8,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Represents a dynamically generated section of the document.
         /// Components are page-aware, understand their positioning, can dynamically construct other content elements, and assess their dimensions, enabling complex layout creations.
-        /// <a href="https://www.questpdf.com/concepts/dynamic-components.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/concepts/code-patterns/dynamic-components.html">Learn more</a>
         /// </summary>
         /// <example>
         /// <para>
@@ -26,7 +26,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Represents a section of the document dynamically created based on its inner state.
         /// Components are page-aware, understand their positioning, can dynamically construct other content elements, and assess their dimensions, enabling complex layout creations.
-        /// <a href="https://www.questpdf.com/concepts/dynamic-components.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/concepts/code-patterns/dynamic-components.html">Learn more</a>
         /// </summary>
         /// <example>
         /// <para>

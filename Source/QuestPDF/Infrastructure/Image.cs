@@ -77,7 +77,7 @@ namespace QuestPDF.Infrastructure
 
         /// <summary>
         /// Loads the image from binary data.
-        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/image/basics.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         public static Image FromBinaryData(byte[] imageBytes)
@@ -88,7 +88,7 @@ namespace QuestPDF.Infrastructure
 
         /// <summary>
         /// Loads the image from a file with specified path.
-        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/image/basics.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         public static Image FromFile(string filePath)
@@ -109,7 +109,7 @@ namespace QuestPDF.Infrastructure
 
         /// <summary>
         /// Loads the image from a stream.
-        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/image/basics.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         public static Image FromStream(Stream stream)

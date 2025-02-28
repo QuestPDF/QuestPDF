@@ -78,7 +78,7 @@ public static class SvgExtensions
     
     /// <summary>
     /// Draws the SVG image loaded from a text.
-    /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+    /// <a href="https://www.questpdf.com/api-reference/image/svg.html">Learn more</a>
     /// </summary>
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="svg.remarks"]/*' />
     /// <param name="svg">
@@ -96,7 +96,7 @@ public static class SvgExtensions
     
     /// <summary>
     /// Draws the <see cref="Infrastructure.SvgImage" /> object. Allows to optimize the generation process.
-    /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+    /// <a href="https://www.questpdf.com/api-reference/image/svg.html">Learn more</a>
     /// </summary>
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="svg.remarks"]/*' />
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="svg.descriptor"]/*' />

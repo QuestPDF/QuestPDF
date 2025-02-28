@@ -162,7 +162,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Applies a left-to-right (LTR) content direction to all elements within the page set.
-        /// <a href="https://www.questpdf.com/api-reference/content-direction.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/page/settings.html#content-direction">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="contentDirection.ltr.remarks"]/*' />
         public void ContentFromLeftToRight()
@@ -172,7 +172,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Applies a right-to-left (RTL) content direction to all elements within the page set.
-        /// <a href="https://www.questpdf.com/api-reference/content-direction.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/page/settings.html#content-direction">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="contentDirection.rtl.remarks"]/*' />
         public void ContentFromRightToLeft()

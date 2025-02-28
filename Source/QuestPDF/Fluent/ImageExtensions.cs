@@ -129,7 +129,7 @@ namespace QuestPDF.Fluent
     {
         /// <summary>
         /// Draws an image by decoding it from a provided byte array.
-        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/image/basics.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.descriptor"]/*' />
@@ -142,7 +142,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Draws the image loaded from a file located at the provided path.
-        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/image/basics.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.descriptor"]/*' />
@@ -155,7 +155,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Draws the image loaded from a stream.
-        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/image/basics.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.descriptor"]/*' />
@@ -168,7 +168,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Draws the <see cref="Infrastructure.Image" /> object. Allows to optimize the generation process.
-        /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/image/basics.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.descriptor"]/*' />

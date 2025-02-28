@@ -35,7 +35,7 @@ public class SvgImage : IDisposable
 
     /// <summary>
     /// Loads the SVG image from a file with specified path.
-    /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+    /// <a href="https://www.questpdf.com/api-reference/image/svg.html">Learn more</a>
     /// </summary>
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
     public static SvgImage FromFile(string filePath)
@@ -56,7 +56,7 @@ public class SvgImage : IDisposable
 
     /// <summary>
     /// Loads the SVG image from a stream.
-    /// <a href="https://www.questpdf.com/api-reference/image.html">Learn more</a>
+    /// <a href="https://www.questpdf.com/api-reference/image/svg.html">Learn more</a>
     /// </summary>
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
     public static SvgImage FromText(string svg)
