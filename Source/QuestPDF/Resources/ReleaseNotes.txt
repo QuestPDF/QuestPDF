@@ -28,3 +28,7 @@ Version 2025.1.4
 - Fixed: AspectRatio element rarely positioned its content incorrectly.
 - Fixed: The Row element incorrectly calculated the size of AutoItem when it contained text representing page numbers
 - Fixed: Paragraph spacing was not applied when a span contained only a newline.
+
+
+Version 2025.1.5
+- Fixed: EnsureSpace did not render its content in some cases.
