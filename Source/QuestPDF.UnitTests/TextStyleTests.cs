@@ -52,5 +52,19 @@ namespace QuestPDF.UnitTests
             spanTextStyle.Id.Should().BeGreaterThan(1);
             targetStyle.Should().BeEquivalentTo(expectedStyle);
         }
+
+        [TestCase(true, FontWeight.Bold)]
+        [TestCase(false, FontWeight.Normal)]
+        public void BoldWithBooleanParameter(bool isBold, FontWeight expectedWeight)
+        {
+            // arrange
+            var textStyle = TextStyle.Default.ExtraBold();
+
+            // act
+            textStyle = textStyle.Bold(isBold);
+
+            // assert
+            textStyle.FontWeight.Should().Be(expectedWeight);
+        }
     }
 }
