@@ -386,8 +386,8 @@ namespace QuestPDF.Drawing
                         if (textBlockItem is TextBlockPageNumber)
                             return false;
                         
-                        if (textBlockItem is TextBlockElement textBlockElement)
-                            return Traverse(textBlockElement.Element);
+                        if (textBlockItem is TextBlockElement textBlockElement && !Traverse(textBlockElement.Element))
+                            return false;
                     }
 
                     return true;
