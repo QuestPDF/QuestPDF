@@ -25,6 +25,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Update="innehåller-icke-ascii.txt">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Update="resource-factur-x.xml">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
