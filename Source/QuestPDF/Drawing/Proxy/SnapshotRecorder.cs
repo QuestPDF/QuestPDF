@@ -9,7 +9,6 @@ namespace QuestPDF.Drawing.Proxy;
 internal class SnapshotRecorder : ElementProxy, IDisposable
 {
     SnapshotRecorderCanvas RecorderCanvas { get; } = new();
-    SkPictureRecorder PictureRecorder { get; } = new();
     Dictionary<(int pageNumber, float availableWidth, float availableHeight), SpacePlan> MeasureCache { get; } = new();
     Dictionary<int, SkPicture> DrawCache { get; } = new();
 
@@ -20,8 +19,6 @@ internal class SnapshotRecorder : ElementProxy, IDisposable
 
     public void Dispose()
     {
-        PictureRecorder.Dispose();
-        
         foreach (var cacheValue in DrawCache.Values)
             cacheValue.Dispose();
         
@@ -73,13 +70,14 @@ internal class SnapshotRecorder : ElementProxy, IDisposable
             return;
         }
         
-        using var canvas = PictureRecorder.BeginRecording(Size.Max.Width, Size.Max.Height);
+        using var pictureRecorder = new SkPictureRecorder();
+        using var canvas = pictureRecorder.BeginRecording(Size.Max.Width, Size.Max.Height);
         RecorderCanvas.Canvas = canvas;
 
         RecorderCanvas.Translate(cachePictureOffset);
         base.Draw(availableSpace);
         
-        DrawCache[PageContext.CurrentPage] = PictureRecorder.EndRecording();
+        DrawCache[PageContext.CurrentPage] = pictureRecorder.EndRecording();
         RecorderCanvas.Canvas = null;
     }
 }
