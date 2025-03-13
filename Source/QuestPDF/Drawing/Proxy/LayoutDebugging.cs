@@ -132,17 +132,21 @@ internal static class LayoutDebugging
 
     public static void RemoveExistingProxies(this Element content)
     {
-        content.VisitChildren(x =>
-        {
-            x.CreateProxy(y => y is ElementProxy proxy ? proxy.Child : y);
-        });
+        content.RemoveExistingProxiesOfType<ElementProxy>();
     }
     
     public static void RemoveExistingProxiesOfType<TProxy>(this Element content) where TProxy : ElementProxy
     {
         content.VisitChildren(x =>
         {
-            x.CreateProxy(y => y is TProxy proxy ? proxy.Child : y);
+            x.CreateProxy(y =>
+            {
+                if (y is not TProxy proxy)
+                    return y;
+                
+                (proxy as IDisposable)?.Dispose();
+                return proxy.Child;
+            });
         });
     }
 
