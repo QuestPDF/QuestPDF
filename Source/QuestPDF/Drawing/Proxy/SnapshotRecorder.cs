@@ -69,6 +69,7 @@ internal class SnapshotRecorder : ElementProxy, IDisposable
             Canvas.Translate(cachePictureOffset);
             
             snapshot.Dispose();
+            DrawCache.Remove(PageContext.CurrentPage);
             return;
         }
         
