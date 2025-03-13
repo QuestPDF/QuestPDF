@@ -54,6 +54,10 @@ namespace QuestPDF.Elements.Text
         public void Dispose()
         {
             Paragraph?.Dispose();
+            
+            foreach (var textBlockElement in Items.OfType<TextBlockElement>())
+                textBlockElement.Element.ReleaseDisposableChildren();
+            
             GC.SuppressFinalize(this);
         }
 
