@@ -89,7 +89,7 @@ namespace QuestPDF.Drawing
 
         internal static CompanionDocumentSnapshot GenerateCompanionContent(IDocument document)
         {
-            var canvas = new CompanionCanvas();
+            using var canvas = new CompanionCanvas();
             RenderDocument(canvas, document, DocumentSettings.Default);
             return canvas.GetContent();
         }

@@ -36,7 +36,7 @@ namespace QuestPDF.Drawing
         public CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
     }
     
-    internal class CompanionCanvas : SkiaCanvasBase
+    internal class CompanionCanvas : SkiaCanvasBase, IDisposable
     {
         private SkPictureRecorder? PictureRecorder { get; set; }
         private Size? CurrentPageSize { get; set; }
@@ -44,6 +44,19 @@ namespace QuestPDF.Drawing
         private ICollection<CompanionPageSnapshot> PageSnapshots { get; } = new List<CompanionPageSnapshot>();
         
         internal CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
+        
+        ~CompanionCanvas()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            Canvas?.Dispose();
+            PictureRecorder?.Dispose();
+            // do not dispose PageSnapshots, they are used by the CompanionDocumentSnapshot
+            GC.SuppressFinalize(this);
+        }
         
         public override void BeginDocument()
         {
