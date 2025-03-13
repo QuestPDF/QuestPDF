@@ -153,15 +153,20 @@ namespace QuestPDF.Drawing
             if (canvas is CompanionCanvas)
                 content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
             
-            var pageContext = new PageContext();
-            RenderPass(pageContext, new FreeCanvas(), content);
-            pageContext.ProceedToNextRenderingPhase();
-            RenderPass(pageContext, canvas, content);
+            try
+            {
+                var pageContext = new PageContext();
+                RenderPass(pageContext, new FreeCanvas(), content);
+                pageContext.ProceedToNextRenderingPhase();
+                RenderPass(pageContext, canvas, content);
             
-            if (canvas is CompanionCanvas companionCanvas)
-                companionCanvas.Hierarchy = content.ExtractHierarchy();
-            
-            content.ReleaseDisposableChildren();
+                if (canvas is CompanionCanvas companionCanvas)
+                    companionCanvas.Hierarchy = content.ExtractHierarchy();
+            }
+            finally
+            {
+                content.ReleaseDisposableChildren();
+            }
         }
         
         private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)
@@ -177,39 +182,47 @@ namespace QuestPDF.Drawing
                     Content = ConfigureContent(document.Documents[index], settings, useOriginalImages)
                 })
                 .ToList();
-
-            if (document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous)
+            
+            try
             {
-                var documentPageContext = new PageContext();
-
-                foreach (var documentPart in documentParts)
+                if (document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous)
                 {
-                    documentPageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content);
-                }
+                    var documentPageContext = new PageContext();
+
+                    foreach (var documentPart in documentParts)
+                    {
+                        documentPageContext.SetDocumentId(documentPart.DocumentId);
+                        RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content);
+                    }
                 
-                documentPageContext.ProceedToNextRenderingPhase();
+                    documentPageContext.ProceedToNextRenderingPhase();
 
-                foreach (var documentPart in documentParts)
+                    foreach (var documentPart in documentParts)
+                    {
+                        documentPageContext.SetDocumentId(documentPart.DocumentId);
+                        RenderPass(documentPageContext, canvas, documentPart.Content);
+                        documentPart.Content.ReleaseDisposableChildren();
+                    }
+                }
+                else
                 {
-                    documentPageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPageContext, canvas, documentPart.Content);
-                    documentPart.Content.ReleaseDisposableChildren();
+                    foreach (var documentPart in documentParts)
+                    {
+                        var pageContext = new PageContext();
+                        pageContext.SetDocumentId(documentPart.DocumentId);
+                    
+                        RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
+                        pageContext.ProceedToNextRenderingPhase();
+                        RenderPass(pageContext, canvas, documentPart.Content);
+                    
+                        documentPart.Content.ReleaseDisposableChildren();
+                    }
                 }
             }
-            else
+            catch
             {
-                foreach (var documentPart in documentParts)
-                {
-                    var pageContext = new PageContext();
-                    pageContext.SetDocumentId(documentPart.DocumentId);
-                    
-                    RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
-                    pageContext.ProceedToNextRenderingPhase();
-                    RenderPass(pageContext, canvas, documentPart.Content);
-                    
-                    documentPart.Content.ReleaseDisposableChildren();
-                }
+                documentParts.ForEach(x => x.Content.ReleaseDisposableChildren());
+                throw;
             }
         }
 
@@ -315,17 +328,15 @@ namespace QuestPDF.Drawing
                         $"To learn more, please analyse the document measurement of the problematic location: {newParagraph}{layoutText}" +
                         $"{LayoutDebugging.LayoutVisualizationLegend}{newParagraph}" +
                         $"This detailed information is generated because you run the application with a debugger attached or with the {debuggingSettingsName} flag set to true. ";
-
-                    throw new DocumentLayoutException(message);
                 }
                 else
                 {
                     message +=
                         $"To further investigate the location of the root cause, please run the application with a debugger attached or set the {debuggingSettingsName} flag to true. " +
                         $"The library will generate additional debugging information such as probable code problem location and detailed layout measurement overview.";
-                    
-                    throw new DocumentLayoutException(message);
                 }
+                
+                throw new DocumentLayoutException(message);
             }
             
             (ICollection<Element> ancestors, TreeNode<OverflowDebuggingProxy> layout) GenerateLayoutExceptionDebuggingInfo()
