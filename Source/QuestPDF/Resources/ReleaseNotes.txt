@@ -32,3 +32,12 @@ Version 2025.1.4
 
 Version 2025.1.5
 - Fixed: EnsureSpace did not render its content in some cases.
+
+
+Version 2025.1.6
+- Likely fixed a memory leak related to layout calculation caching by adjusting how Skia objects are used,
+- Optimized memory usage by disposing native objects as early as possible in many rare scenarios, such as when an exception is thrown during generation,
+- Improved caching algorithm accuracy,
+- Updated skia native dependency to version 134,
+- Updated qpdf native dependency to version 11.10.1,
+- Updated OpenSSL native dependency to version 3.4.1.
