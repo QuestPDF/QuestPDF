@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
@@ -65,8 +67,14 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Generates the document in XPS format and returns it as a byte array.
         /// </summary>
+        /// <remarks>
+        /// Supported only on the Windows platform.
+        /// </remarks>
         public static byte[] GenerateXps(this IDocument document)
         {
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                throw new PlatformNotSupportedException("XPS generation is only supported on the Windows platform.");
+            
             using var stream = new SkWriteStream();
             DocumentGenerator.GenerateXps(stream, document);
             
@@ -77,6 +85,9 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Generates the document in XPS format and saves it to the specified file path.
         /// </summary>
+        /// <remarks>
+        /// Supported only on the Windows platform.
+        /// </remarks>
         public static void GenerateXps(this IDocument document, string filePath)
         {
             var data = document.GenerateXps();
@@ -90,6 +101,9 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Generates the document in XPS format and outputs it to a provided stream.
         /// </summary>
+        /// <remarks>
+        /// Supported only on the Windows platform.
+        /// </remarks>
         public static void GenerateXps(this IDocument document, Stream stream)
         {
             var data = document.GenerateXps();
@@ -99,6 +113,9 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Generates the document in XPS format, saves it in temporary file, and then opens it with the default application.
         /// </summary>
+        /// <remarks>
+        /// Supported only on the Windows platform.
+        /// </remarks>
         public static void GenerateXpsAndShow(this IDocument document)
         {
             GenerateAndShowCounter++;
