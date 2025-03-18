@@ -83,7 +83,7 @@ namespace QuestPDF.Infrastructure
         public static Image FromBinaryData(byte[] imageBytes)
         {
             using var imageData = SkData.FromBinary(imageBytes);
-            return DecodeImage(imageData);
+            return StaticImageCache.DecodeImage(imageData);
         }
 
         /// <summary>
@@ -93,18 +93,7 @@ namespace QuestPDF.Infrastructure
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         public static Image FromFile(string filePath)
         {
-            if (!File.Exists(filePath))
-            {
-                var fallbackPath = Path.Combine(Helpers.Helpers.ApplicationFilesPath, filePath);
-                
-                if (!File.Exists(fallbackPath))
-                    throw new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
-                
-                filePath = fallbackPath;
-            }
-            
-            using var imageData = SkData.FromFile(filePath);
-            return DecodeImage(imageData);
+            return StaticImageCache.Load(filePath);
         }
 
         /// <summary>
@@ -115,20 +104,7 @@ namespace QuestPDF.Infrastructure
         public static Image FromStream(Stream stream)
         {
             using var imageData = SkData.FromStream(stream);
-            return DecodeImage(imageData);
-        }
-        
-        private static Image DecodeImage(SkData imageData)
-        {
-            try
-            {
-                var image = SkImage.FromData(imageData);
-                return new Image(image);
-            }
-            catch
-            {
-                throw new DocumentComposeException("Cannot decode the provided image.");
-            }
+            return StaticImageCache.DecodeImage(imageData);
         }
 
         #endregion

@@ -149,7 +149,6 @@ namespace QuestPDF.Fluent
         public static ImageDescriptor Image(this IContainer parent, string filePath)
         {
             var image = Infrastructure.Image.FromFile(filePath);
-            image.IsShared = false;
             return parent.Image(image);
         }
         
