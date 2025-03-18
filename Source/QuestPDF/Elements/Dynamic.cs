@@ -33,6 +33,7 @@ namespace QuestPDF.Elements
             var result = ComposeContent(availableSpace, acceptNewState: false);
             var content = result.Content as Element ?? Empty.Instance;
             var measurement = content.Measure(availableSpace);
+            content.ReleaseDisposableChildren();
             
             if (measurement.Type is SpacePlanType.PartialRender or SpacePlanType.Wrap)
                 throw new DocumentLayoutException("Dynamic component generated content that does not fit on a single page.");
