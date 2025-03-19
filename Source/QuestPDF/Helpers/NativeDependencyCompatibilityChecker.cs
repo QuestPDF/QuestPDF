@@ -6,6 +6,8 @@ namespace QuestPDF.Helpers
 {
     internal class NativeDependencyCompatibilityChecker
     {
+        private static readonly Version RequiredGlibcVersionOnLinux = Version.Parse("2.29");
+        
         private bool IsCompatibilityChecked { get; set; } = false;
 
         public Action ExecuteNativeCode { get; set; } = () => { };
@@ -74,7 +76,20 @@ namespace QuestPDF.Helpers
                     message += $"{paragraph}{hint}";
 
                 if (isRuntimeSupported)
-                    message += $"{paragraph}If the problem persists, it may mean that your current operating system distribution is outdated. For optimal compatibility, please consider updating it to a more recent version.";
+                {
+                    var glibcVersion = NativeDependencyProvider.GetGlibcVersion();
+
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && glibcVersion < RequiredGlibcVersionOnLinux)
+                    {
+                        message += $"{paragraph}Please consider updating your operating system distribution. " +
+                                   $"Current GLIBC version: {glibcVersion}. " +
+                                   $"The minimum required version is {RequiredGlibcVersionOnLinux}. ";
+                    }
+                    else
+                    {
+                        message += $"{paragraph}If the problem persists, it may mean that your current operating system distribution is outdated. For optimal compatibility, please consider updating it to a more recent version.";
+                    }
+                }
                 
                 throw new Exception(message, innerException);
             }

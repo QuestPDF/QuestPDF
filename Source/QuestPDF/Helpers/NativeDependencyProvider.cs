@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace QuestPDF.Helpers;
 
@@ -101,43 +102,64 @@ internal static class NativeDependencyProvider
         {
             return RuntimeInformation.ProcessArchitecture.ToString().ToLower();
         }
+    }
+    
+    private static string? ExecuteLddCommand()
+    {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            return null;
         
-        static bool IsLinuxMusl()
+        try
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return false;
-            
-            try
-            { 
-                var processStartInfo = new ProcessStartInfo
-                {
-                    FileName = "ldd",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-                
-                using var process = Process.Start(processStartInfo);
-                
-                if (process == null)
-                    return false;
-                
-                process.Start();
-                
-                var standardOutputText = process.StandardOutput.ReadToEnd();
-                var standardErrorText = process.StandardError.ReadToEnd();
-                
-                process.WaitForExit();
-                
-                var outputText = standardOutputText + standardErrorText;
-                return outputText.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
-            }
-            catch
+            var processStartInfo = new ProcessStartInfo
             {
-                return false;
-            }
+                FileName = "ldd",
+                Arguments = "--version",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+                
+            using var process = Process.Start(processStartInfo);
+                
+            if (process == null)
+                return null;
+                
+            var standardOutputText = process.StandardOutput.ReadToEnd();
+            var standardErrorText = process.StandardError.ReadToEnd();
+                
+            process.WaitForExit();
+                
+            return standardOutputText + standardErrorText;
         }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static bool IsLinuxMusl()
+    {
+        var lddCommandOutput = ExecuteLddCommand() ?? string.Empty;
+        var containsMuslText = lddCommandOutput.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
+        return containsMuslText;
+    }
+
+    public static Version? GetGlibcVersion()
+    {
+        var lddCommandOutput = ExecuteLddCommand() ?? string.Empty;
+        var match = Regex.Match(lddCommandOutput, @"ldd \(.+\) (?<version>[1-9]\.[0-9]{2})");
+    
+        if (!match.Success)
+            return null;
+
+        var versionGroup = match.Groups["version"];
+        
+        if (!versionGroup.Success)
+            return null;
+    
+        return Version.TryParse(versionGroup.Value, out var parsedVersion) ? parsedVersion : null;
     }
 
     private static void CopyFileIfNewer(string sourcePath, string targetPath)
