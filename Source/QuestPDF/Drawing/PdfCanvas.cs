@@ -25,6 +25,7 @@ namespace QuestPDF.Drawing
             using var keywords = new SkText(documentMetadata.Keywords);
             using var creator = new SkText(documentMetadata.Creator);
             using var producer = new SkText(documentMetadata.Producer);
+            using var language = new SkText(documentMetadata.Language);
             
             var internalMetadata = new SkPdfDocumentMetadata
             {
@@ -34,6 +35,7 @@ namespace QuestPDF.Drawing
                 Keywords = keywords,
                 Creator = creator,
                 Producer = producer,
+                Language = language,
                 
                 CreationDate = new SkDateTime(documentMetadata.CreationDate),
                 ModificationDate = new SkDateTime(documentMetadata.ModifiedDate),

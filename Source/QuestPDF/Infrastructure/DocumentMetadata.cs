@@ -36,6 +36,11 @@ namespace QuestPDF.Infrastructure
         public string? Producer { get; set; }
 
         /// <summary>
+        /// Specifies the language of the document content, defined using language tags such as "en-US" for American English.
+        /// </summary>
+        public string? Language { get; set; }
+        
+        /// <summary>
         /// Represents the date and time when the document was created.
         /// This property is used to specify the creation timestamp.
         /// </summary>

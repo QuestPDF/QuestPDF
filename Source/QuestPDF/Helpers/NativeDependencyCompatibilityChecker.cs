@@ -11,6 +11,7 @@ namespace QuestPDF.Helpers
         private bool IsCompatibilityChecked { get; set; } = false;
 
         public Action ExecuteNativeCode { get; set; } = () => { };
+        public Func<bool>? CheckNativeLibraryVersion { get; set; } = () => false;
         public Func<string> ExceptionHint { get; set; } = () => string.Empty;
         
         public void Test()
@@ -27,6 +28,7 @@ namespace QuestPDF.Helpers
             if (IsCompatibilityChecked)
                 return;
             
+            const string exceptionBaseMessage = "The QuestPDF library has encountered an issue while loading one of its dependencies.";
             const string paragraph = "\n\n";
                 
             // test with dotnet-based mechanism where native files are provided
@@ -34,7 +36,12 @@ namespace QuestPDF.Helpers
             var innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
 
             if (innerException == null)
+            {
+                if (CheckNativeLibraryVersion != null && !CheckNativeLibraryVersion())
+                    throw new Exception($"{exceptionBaseMessage}{paragraph}The loaded native library version is incompatible with the current QuestPDF version. To resolve this issue, please: 1) Clean and rebuild your solution, 2) Remove the bin and obj folders, and 3) Ensure all projects in your solution use the same QuestPDF NuGet package version.");
+
                 return;
+            }
 
             if (!NativeDependencyProvider.IsCurrentPlatformSupported())
                 ThrowCompatibilityException(innerException);
@@ -55,7 +62,7 @@ namespace QuestPDF.Helpers
                 var currentRuntime = NativeDependencyProvider.GetRuntimePlatform();
                 var isRuntimeSupported = NativeDependencyProvider.SupportedPlatforms.Contains(currentRuntime);
 
-                var message = $"The QuestPDF library has encountered an issue while loading one of its dependencies.";
+                var message = $"{exceptionBaseMessage}";
                 
                 if (!isRuntimeSupported)
                 {
