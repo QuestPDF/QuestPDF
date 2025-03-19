@@ -11,7 +11,7 @@ namespace QuestPDF.Helpers
         private bool IsCompatibilityChecked { get; set; } = false;
 
         public Action ExecuteNativeCode { get; set; } = () => { };
-        public Func<bool>? CheckNativeLibraryVersion { get; set; } = () => false;
+        public Func<bool> CheckNativeLibraryVersion { get; set; } = () => true;
         public Func<string> ExceptionHint { get; set; } = () => string.Empty;
         
         public void Test()
@@ -37,7 +37,7 @@ namespace QuestPDF.Helpers
 
             if (innerException == null)
             {
-                if (CheckNativeLibraryVersion != null && !CheckNativeLibraryVersion())
+                if (!CheckNativeLibraryVersion())
                     throw new Exception($"{exceptionBaseMessage}{paragraph}The loaded native library version is incompatible with the current QuestPDF version. To resolve this issue, please: 1) Clean and rebuild your solution, 2) Remove the bin and obj folders, and 3) Ensure all projects in your solution use the same QuestPDF NuGet package version.");
 
                 return;
