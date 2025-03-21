@@ -36,7 +36,6 @@
     
     <ItemGroup Condition="'$(BUILD_PACKAGE)' == ''">
         <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
-        <InternalsVisibleTo Include="QuestPDF.Examples" />
         <InternalsVisibleTo Include="QuestPDF.UnitTests" />
         <InternalsVisibleTo Include="QuestPDF.LayoutTests" />
     </ItemGroup>

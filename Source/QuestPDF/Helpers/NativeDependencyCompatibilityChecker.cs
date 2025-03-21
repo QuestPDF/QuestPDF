@@ -86,7 +86,7 @@ namespace QuestPDF.Helpers
                 {
                     var glibcVersion = NativeDependencyProvider.GetGlibcVersion();
 
-                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && glibcVersion < RequiredGlibcVersionOnLinux)
+                    if (glibcVersion != null && glibcVersion < RequiredGlibcVersionOnLinux)
                     {
                         message += $"{paragraph}Please consider updating your operating system distribution. " +
                                    $"Current GLIBC version: {glibcVersion}. " +
