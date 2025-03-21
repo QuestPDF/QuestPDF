@@ -205,7 +205,7 @@ public class ImageExamples
     [Test]
     public void SharedImages()
     {
-        var image = Image.FromFile("Resources/checkbox.png");
+        using var image = Image.FromFile("Resources/checkbox.png");
         
         Document
             .Create(document =>

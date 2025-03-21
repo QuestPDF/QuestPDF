@@ -84,7 +84,7 @@ namespace QuestPDF.Infrastructure
         public static Image FromBinaryData(byte[] imageBytes)
         {
             using var imageData = SkData.FromBinary(imageBytes);
-            return StaticImageCache.DecodeImage(imageData, isShared: false);
+            return StaticImageCache.DecodeImage(imageData, isShared: true);
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace QuestPDF.Infrastructure
         public static Image FromStream(Stream stream)
         {
             using var imageData = SkData.FromStream(stream);
-            return StaticImageCache.DecodeImage(imageData, isShared: false);
+            return StaticImageCache.DecodeImage(imageData, isShared: true);
         }
 
         #endregion

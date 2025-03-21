@@ -48,6 +48,9 @@ namespace QuestPDF.Elements.Text
 
         ~TextBlock()
         {
+            if (Paragraph == null)
+                return;
+            
             this.WarnThatFinalizerIsReached();
             Dispose();
         }
