@@ -48,6 +48,9 @@ namespace QuestPDF.Elements.Text
 
         ~TextBlock()
         {
+            if (Paragraph == null)
+                return;
+            
             this.WarnThatFinalizerIsReached();
             Dispose();
         }
@@ -596,7 +599,7 @@ namespace QuestPDF.Elements.Text
                     var textStyle = TextStyleManager.GetTextStyle(textStyleId).GetSkTextStyle();
                     builder.AddText("\u00A0", textStyle); // non-breaking space
 
-                    var paragraph = builder.CreateParagraph();
+                    using var paragraph = builder.CreateParagraph();
                     paragraph.PlanLayout(1000);
                     return paragraph.GetLineMetrics().First().Height;
                 }

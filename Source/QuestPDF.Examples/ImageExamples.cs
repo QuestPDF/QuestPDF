@@ -115,6 +115,8 @@ namespace QuestPDF.Examples
         [Test]
         public void ReusingImage_With()
         {
+            using var image = Image.FromFile("checkbox.png");
+            
             RenderingTest
                 .Create()
                 .PageSize(400, 600)
@@ -125,8 +127,6 @@ namespace QuestPDF.Examples
                     page.Padding(15).Column(column =>
                     {
                         column.Spacing(15);
-
-                        var image = Image.FromFile("checkbox.png");
                         
                         foreach (var i in Enumerable.Range(0, 5))
                         {
@@ -191,12 +191,12 @@ namespace QuestPDF.Examples
                             .FontColor(Colors.Blue.Medium)
                             .Bold();
                         
-                        var image = LoadImageWithTransparency("photo.jpg", 0.75f);
-                        page.Foreground().Image(image);
+                        var imageData = LoadImageWithTransparency("photo.jpg", 0.75f);
+                        page.Foreground().Image(imageData);
                     });
                 });
 
-            QuestPDF.Infrastructure.Image LoadImageWithTransparency(string fileName, float transparency)
+            byte[] LoadImageWithTransparency(string fileName, float transparency)
             {
                 using var originalImage = SKImage.FromEncodedData(fileName);
                 
@@ -210,8 +210,7 @@ namespace QuestPDF.Examples
                 
                 canvas.DrawImage(originalImage, new SKPoint(0, 0), transparencyPaint);
 
-                var encodedImage = bitmap.Encode(SKEncodedImageFormat.Png, 100).ToArray();
-                return Image.FromBinaryData(encodedImage);
+                return bitmap.Encode(SKEncodedImageFormat.Png, 100).ToArray();
             }
         }
     }

@@ -18,7 +18,7 @@ namespace QuestPDF.Examples
                 .ShowResults()
                 .Render(container =>
                 {
-                    container.Svg(SvgImage.FromFile("pdf-icon.svg"));
+                    container.Svg("pdf-icon.svg");
                 });
         }
         

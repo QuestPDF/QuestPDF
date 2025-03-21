@@ -24,10 +24,12 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Measure_TakesMinimalSpaceRegardlessOfSize()
         {
+            using var image = GenerateDocumentImage(400, 300);
+            
             TestPlan
                 .For(x => new ImageElement
                 {
-                    DocumentImage = GenerateDocumentImage(400, 300)
+                    DocumentImage = image
                 })
                 .MeasureElement(new Size(300, 200))
                 .CheckMeasureResult(SpacePlan.FullRender(0, 0));
@@ -36,12 +38,14 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Draw_TakesAvailableSpaceRegardlessOfSize()
         {
+            using var image = GenerateDocumentImage(400, 300);
+            
             TestPlan
                 .For(x => new ImageElement
                 {
                     CompressionQuality = ImageCompressionQuality.High,
                     TargetDpi = DocumentSettings.DefaultRasterDpi,
-                    DocumentImage = GenerateDocumentImage(400, 300)
+                    DocumentImage = image
                 })
                 .DrawElement(new Size(300, 200))
                 .ExpectCanvasDrawImage(new Position(0, 0), new Size(300, 200))
@@ -51,7 +55,7 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Fluent_RecognizesImageProportions()
         {
-            var image = GenerateDocumentImage(60, 20);
+            using var image = GenerateDocumentImage(60, 20);
             
             TestPlan
                 .For(x =>
