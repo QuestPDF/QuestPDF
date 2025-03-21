@@ -109,12 +109,12 @@ namespace QuestPDF.UnitTests
                 });
             });
 
+            using var sharedImage = DocumentImage.FromBinaryData(photo);
+            
             var documentWithSingleImageUsedMultipleTimesSize = GetDocumentSize(container =>
             {
                 container.Column(column =>
                 {
-                    var sharedImage = DocumentImage.FromBinaryData(photo);
-                    
                     foreach (var i in Enumerable.Range(0, 10))
                         column.Item().Image(sharedImage);
                 });
