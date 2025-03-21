@@ -23,7 +23,7 @@ namespace QuestPDF.UnitTests.TestEngine
 
         public void DrawFilledRectangle(Position vector, Size size, Color color) => DrawRectFunc(vector, size, color);
         public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color) => throw new NotImplementedException();
-        public void DrawParagraph(SkParagraph paragraph) => throw new NotImplementedException();
+        public void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo) => throw new NotImplementedException();
         public void DrawImage(SkImage image, Size size) => DrawImageFunc(image, Position.Zero, size);
         public void DrawPicture(SkPicture picture) => throw new NotImplementedException();
         public void DrawSvgPath(string path, Color color) => throw new NotImplementedException();

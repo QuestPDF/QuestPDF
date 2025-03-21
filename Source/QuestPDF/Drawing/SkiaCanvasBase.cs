@@ -86,9 +86,9 @@ namespace QuestPDF.Drawing
             Canvas.DrawStrokeRectangle(position, strokeWidth, color);
         }
 
-        public void DrawParagraph(SkParagraph paragraph)
+        public void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo)
         {
-            Canvas.DrawParagraph(paragraph);
+            Canvas.DrawParagraph(paragraph, lineFrom, lineTo);
         }
 
         public void DrawImage(SkImage image, Size size)

@@ -185,11 +185,14 @@ namespace QuestPDF.Elements.Text
                 if (takesMultiplePages)
                 {
                     Canvas.Save();
-                    Canvas.ClipRectangle(new SkRect(0, 0, availableSpace.Width, takenHeight));
                     Canvas.Translate(new Position(0, -CurrentTopOffset));
                 }
+
+                Canvas.DrawParagraph(Paragraph, CurrentLineIndex, CurrentLineIndex + linesToDraw - 1);
                 
-                Canvas.DrawParagraph(Paragraph);
+                if (takesMultiplePages)
+                    Canvas.ClipRectangle(new SkRect(0, CurrentTopOffset, availableSpace.Width, takenHeight + CurrentTopOffset));
+                
                 DrawInjectedElements();
                 DrawHyperlinks();
                 DrawSectionLinks();
@@ -596,7 +599,7 @@ namespace QuestPDF.Elements.Text
                     var textStyle = TextStyleManager.GetTextStyle(textStyleId).GetSkTextStyle();
                     builder.AddText("\u00A0", textStyle); // non-breaking space
 
-                    var paragraph = builder.CreateParagraph();
+                    using var paragraph = builder.CreateParagraph();
                     paragraph.PlanLayout(1000);
                     return paragraph.GetLineMetrics().First().Height;
                 }

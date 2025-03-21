@@ -64,7 +64,7 @@ namespace QuestPDF.Drawing
             
         }
         
-        public void DrawParagraph(SkParagraph paragraph)
+        public void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo)
         {
             
         }

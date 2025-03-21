@@ -12,7 +12,7 @@ namespace QuestPDF.Infrastructure
         
         void DrawFilledRectangle(Position vector, Size size, Color color);
         void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color);
-        void DrawParagraph(SkParagraph paragraph);
+        void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo);
         void DrawImage(SkImage image, Size size);
         void DrawPicture(SkPicture picture);
         void DrawSvgPath(string path, Color color);

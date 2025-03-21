@@ -68,9 +68,9 @@ internal sealed class SkCanvas : IDisposable
         API.canvas_draw_picture(Instance, picture.Instance);
     }
     
-    public void DrawParagraph(SkParagraph paragraph)
+    public void DrawParagraph(SkParagraph paragraph, int? lineFrom = null, int? lineTo = null)
     {
-        API.canvas_draw_paragraph(Instance, paragraph.Instance);
+        API.canvas_draw_paragraph(Instance, paragraph.Instance, lineFrom ?? 0, lineTo ?? int.MaxValue);
     }
     
     public void DrawSvgPath(string svg, uint color)
@@ -184,7 +184,7 @@ internal sealed class SkCanvas : IDisposable
         public static extern void canvas_draw_stroke_rectangle(IntPtr canvas, SkRect position, float strokeWidth, uint color);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_draw_paragraph(IntPtr canvas, IntPtr paragraph);
+        public static extern void canvas_draw_paragraph(IntPtr canvas, IntPtr paragraph, int lineFrom, int lineTo);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void canvas_draw_svg_path(IntPtr canvas, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string svg, uint color);

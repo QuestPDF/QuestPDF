@@ -33,9 +33,9 @@ internal sealed class ProxyCanvas : ICanvas
         Target.DrawStrokeRectangle(vector, size, strokeWidth, color);
     }
 
-    public void DrawParagraph(SkParagraph paragraph)
+    public void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo)
     {
-        Target.DrawParagraph(paragraph);
+        Target.DrawParagraph(paragraph, lineFrom, lineTo);
     }
 
     public void DrawImage(SkImage image, Size size)
