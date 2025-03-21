@@ -51,7 +51,7 @@ internal static class LayoutDebugging
         });
     }
     
-    public static void ApplyLayoutOverflowVisualization(this TreeNode<OverflowDebuggingProxy> hierarchyRoot)
+    public static void TryToFixTheLayoutOverflowIssue(this TreeNode<OverflowDebuggingProxy> hierarchyRoot)
     {
         Traverse(hierarchyRoot);
         

@@ -296,7 +296,7 @@ namespace QuestPDF.Drawing
 
                 var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
                 overflowState.StopMeasuring();
-                overflowState.ApplyLayoutOverflowVisualization();
+                overflowState.TryToFixTheLayoutOverflowIssue();
                 
                 content.ApplyContentDirection();
                 content.InjectDependencies(pageContext, canvas);
@@ -347,7 +347,7 @@ namespace QuestPDF.Drawing
                 
                 var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
                 overflowState.StopMeasuring();
-                overflowState.ApplyLayoutOverflowVisualization();
+                overflowState.TryToFixTheLayoutOverflowIssue();
 
                 var rootCause = overflowState.FindLayoutOverflowVisualizationNodes().First();
                 
