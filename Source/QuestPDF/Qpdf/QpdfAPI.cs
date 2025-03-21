@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Qpdf;
 
@@ -80,7 +81,7 @@ class QpdfAPI
         public static extern void qpdfjob_cleanup(IntPtr jobHandle);
     
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int qpdfjob_initialize_from_json(IntPtr jobHandle, string json);
+        public static extern int qpdfjob_initialize_from_json(IntPtr jobHandle, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string json);
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int qpdfjob_run(IntPtr jobHandle);
