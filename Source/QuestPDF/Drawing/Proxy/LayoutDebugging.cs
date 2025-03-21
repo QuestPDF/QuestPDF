@@ -71,6 +71,11 @@ internal static class LayoutDebugging
             if (element.Value.SpacePlan is null)
                 return;
             
+            // element is empty,
+            // it could not impact the process
+            if (element.Value.SpacePlan?.Type is SpacePlanType.Empty)
+                return;
+            
             // element renders fully,
             // it could not impact the process
             if (element.Value.SpacePlan?.Type is SpacePlanType.FullRender)
@@ -91,8 +96,8 @@ internal static class LayoutDebugging
             
             // strategy
             // the current does not contain any wrapping elements, no obvious root causes,
-            // if it renders fully with extended space, it is a layout root cause
-            if (element.Children.All(x => x.Value.SpacePlan?.Type is not SpacePlanType.Wrap) && MeasureElementWithExtendedSpace() is SpacePlanType.FullRender)
+            // if it renders at least partially with extended space, it is a layout root cause
+            if (element.Children.All(x => x.Value.SpacePlan?.Type is not SpacePlanType.Wrap) && MeasureElementWithExtendedSpace() is SpacePlanType.PartialRender or SpacePlanType.FullRender)
             {
                 // so apply the layout overflow proxy
                 element.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });
@@ -100,7 +105,7 @@ internal static class LayoutDebugging
             }
 
             // strategy:
-            // the current contains wrapping children, they are likely the root cause,
+            // the current element contains wrapping children, they are likely the root cause,
             // traverse them and attempt to fix them
             foreach (var child in element.Children.Where(x => x.Value.SpacePlan?.Type is SpacePlanType.Wrap).ToList())
                 Traverse(child);
@@ -110,7 +115,7 @@ internal static class LayoutDebugging
                 return;
 
             // strategy:
-            // the current has layout issues but no obvious/trivial root causes
+            // the current element has layout issues but no obvious/trivial root causes
             // possibly the problem is in nested children of partial rendering children
             foreach (var child in element.Children.Where(x => x.Value.SpacePlan?.Type is SpacePlanType.PartialRender).ToList())
                 Traverse(child);
