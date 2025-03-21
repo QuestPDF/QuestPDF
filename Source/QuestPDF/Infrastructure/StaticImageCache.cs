@@ -66,17 +66,18 @@ static class StaticImageCache
     private static Image LoadImage(string filePath, bool isShared)
     {
         using var imageData = SkData.FromFile(filePath);
-        var image = DecodeImage(imageData);
-        image.IsShared = isShared;
-        return image;
+        return DecodeImage(imageData, isShared);
     }
     
-    public static Image DecodeImage(SkData imageData)
+    public static Image DecodeImage(SkData imageData, bool isShared)
     {
         try
         {
-            var image = SkImage.FromData(imageData);
-            return new Image(image);
+            var skImage = SkImage.FromData(imageData);
+            var image = new Image(skImage);
+            image.IsShared = isShared;
+            
+            return image;
         }
         catch
         {
