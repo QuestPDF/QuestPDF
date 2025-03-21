@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class DecorationDescriptor
+    public sealed class DecorationDescriptor
     {
         internal Decoration Decoration { get; } = new Decoration();
         

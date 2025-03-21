@@ -14,7 +14,7 @@ namespace QuestPDF.Fluent;
 /// <returns>An SVG format compatible text.</returns>
 public delegate string? GenerateDynamicSvgDelegate(Size size);
 
-public class SvgImageDescriptor
+public sealed class SvgImageDescriptor
 {
     private Elements.SvgImage ImageElement { get; }
     private AspectRatio AspectRatioElement { get; }

@@ -15,7 +15,7 @@ namespace QuestPDF.Helpers
     /// <example>
     /// <c>PageSizes.A4.Landscape();</c>
     /// </example>
-    public class PageSize
+    public sealed class PageSize
     {
         public readonly float Width;
         public readonly float Height;

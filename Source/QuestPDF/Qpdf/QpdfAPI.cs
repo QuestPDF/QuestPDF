@@ -4,7 +4,7 @@ using System.Text;
 
 namespace QuestPDF.Qpdf;
 
-class QpdfAPI
+static class QpdfAPI
 {
     public static string? GetQpdfVersion()
     {

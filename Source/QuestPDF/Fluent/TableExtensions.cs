@@ -8,7 +8,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class TableColumnsDefinitionDescriptor
+    public sealed class TableColumnsDefinitionDescriptor
     {
         internal List<TableColumnDefinition> Columns { get; } = new();
         
@@ -41,7 +41,7 @@ namespace QuestPDF.Fluent
         }
     }
 
-    public class TableCellDescriptor
+    public sealed class TableCellDescriptor
     {
         private ICollection<TableCell> Cells { get; }
 
@@ -62,7 +62,7 @@ namespace QuestPDF.Fluent
         }
     }
     
-    public class TableDescriptor
+    public sealed class TableDescriptor
     {
         private Table HeaderTable { get; } = new();
         private Table ContentTable { get; } = new();

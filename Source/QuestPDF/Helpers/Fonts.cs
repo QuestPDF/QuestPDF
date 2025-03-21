@@ -5,7 +5,7 @@ namespace QuestPDF.Helpers
     /// <summary>
     /// Contains a collection of fonts defined by the PDF standard.
     /// </summary>
-    public class Fonts
+    public static class Fonts
     {
         public const string Arial = "Arial";
         public const string Calibri = "Calibri";

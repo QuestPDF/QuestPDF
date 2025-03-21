@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent;
 
-public class MultiColumnDescriptor
+public sealed class MultiColumnDescriptor
 {
     internal MultiColumn MultiColumn { get; } = new MultiColumn();
         

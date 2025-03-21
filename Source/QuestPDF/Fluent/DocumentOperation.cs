@@ -8,12 +8,12 @@ namespace QuestPDF.Fluent;
 /// <summary>
 /// Provides functionality for performing various operations on PDF documents, including loading, merging, overlaying, underlaying, selecting specific pages, adding attachments, and applying encryption settings.
 /// </summary>
-public class DocumentOperation
+public sealed class DocumentOperation
 {
     /// <summary>
     /// Represents configuration options for applying an overlay or underlay to a PDF document using qpdf.
     /// </summary>
-    public class LayerConfiguration
+    public sealed class LayerConfiguration
     {
         /// <summary>
         /// The file path of the overlay or underlay PDF file to be used.
@@ -70,7 +70,7 @@ public class DocumentOperation
         Unspecified
     }
     
-    public class DocumentAttachment
+    public sealed class DocumentAttachment
     {
         /// <summary>
         /// Sets the key for the attachment, specific to the PDF format.
@@ -139,7 +139,7 @@ public class DocumentOperation
         public string OwnerPassword { get; set; }
     }
     
-    public class Encryption40Bit : EncryptionBase
+    public sealed class Encryption40Bit : EncryptionBase
     {
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.annotation"]/*' />
         public bool AllowAnnotation { get; set; } = true;
@@ -154,7 +154,7 @@ public class DocumentOperation
         public bool AllowPrinting { get; set; } = true;
     }
 
-    public class Encryption128Bit : EncryptionBase
+    public sealed class Encryption128Bit : EncryptionBase
     {
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.annotation"]/*' />
         public bool AllowAnnotation { get; set; } = true;
@@ -175,7 +175,7 @@ public class DocumentOperation
         public bool EncryptMetadata { get; set; } = true;
     }
 
-    public class Encryption256Bit : EncryptionBase
+    public sealed class Encryption256Bit : EncryptionBase
     {
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.annotation"]/*' />
         public bool AllowAnnotation { get; set; } = true;

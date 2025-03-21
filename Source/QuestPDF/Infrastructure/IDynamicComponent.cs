@@ -33,7 +33,7 @@ namespace QuestPDF.Infrastructure
     /// <summary>
     /// Represents the output from the DynamicComponent describing what should be rendered on the current page.
     /// </summary>
-    public class DynamicComponentComposeResult
+    public sealed class DynamicComponentComposeResult
     {
         /// <summary>
         /// Any content created with the <see cref="DynamicContext.CreateElement" /> method that should be drawn on the currently rendered page.

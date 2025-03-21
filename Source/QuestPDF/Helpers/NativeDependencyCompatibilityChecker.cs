@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Helpers
 {
-    internal class NativeDependencyCompatibilityChecker
+    internal sealed class NativeDependencyCompatibilityChecker
     {
         private static readonly Version RequiredGlibcVersionOnLinux = Version.Parse("2.29");
         

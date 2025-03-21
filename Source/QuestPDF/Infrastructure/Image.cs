@@ -22,7 +22,7 @@ namespace QuestPDF.Infrastructure
     /// <remarks>
     /// This class is thread safe.
     /// </remarks>
-    public class Image : IDisposable
+    public sealed class Image : IDisposable
     {
         static Image()
         {

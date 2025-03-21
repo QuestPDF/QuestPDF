@@ -4,7 +4,7 @@ namespace QuestPDF.Qpdf;
 
 using Name = SimpleJsonPropertyNameAttribute;
 
-class JobConfiguration
+sealed class JobConfiguration
 {
     [Name("inputFile")] public string InputFile { get; set; }
     [Name("password")] public string? Password { get; set; }
@@ -22,13 +22,13 @@ class JobConfiguration
     [Name("linearize")] public string? Linearize { get; set; }
     [Name("newlineBeforeEndstream")] public string? NewlineBeforeEndstream { get; set; } = string.Empty;
     
-    internal class PageConfiguration
+    internal sealed class PageConfiguration
     {
         [Name("file")] public string File { get; set; }
         [Name("range")] public string Range { get; set; }
     }
     
-    internal class LayerConfiguration
+    internal sealed class LayerConfiguration
     {
         [Name("file")] public string File { get; set; }
         [Name("to")] public string? To { get; set; }
@@ -36,7 +36,7 @@ class JobConfiguration
         [Name("repeat")] public string? Repeat { get; set; }
     }
     
-    public class AddDocumentAttachment
+    public sealed class AddDocumentAttachment
     {
         [Name("key")] public string Key { get; set; }
         [Name("file")] public string File { get; set; }
@@ -49,7 +49,7 @@ class JobConfiguration
         [Name("relationship")] public string? Relationship { get; set; }
     }
 
-    public class EncryptionSettings
+    public sealed class EncryptionSettings
     {
         [Name("userPassword")] public string? UserPassword { get; set; }
         [Name("ownerPassword")] public string OwnerPassword { get; set; }
@@ -59,7 +59,7 @@ class JobConfiguration
         [Name("256bit")] public Encryption256Bit? Options256Bit { get; set; }
     }
     
-    public class Encryption40Bit
+    public sealed class Encryption40Bit
     {
         [Name("annotate")] public string Annotate { get; set; }
         [Name("extract")] public string Extract { get; set; }
@@ -67,7 +67,7 @@ class JobConfiguration
         [Name("print")] public string Print { get; set; }
     }
 
-    public class Encryption128Bit
+    public sealed class Encryption128Bit
     {
         [Name("annotate")] public string Annotate { get; set; }
         [Name("assemble")] public string Assemble { get; set; }
@@ -77,7 +77,7 @@ class JobConfiguration
         [Name("cleartextMetadata")] public string? CleartextMetadata { get; set; }
     }
 
-    public class Encryption256Bit
+    public sealed class Encryption256Bit
     {
         [Name("annotate")] public string Annotate { get; set; }
         [Name("assemble")] public string Assemble { get; set; }

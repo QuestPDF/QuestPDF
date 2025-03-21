@@ -5,7 +5,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal class SvgPath : Element, IStateful
+internal sealed class SvgPath : Element, IStateful
 {
     public string Path { get; set; } = string.Empty;
     public Color FillColor { get; set; } = Colors.Black;

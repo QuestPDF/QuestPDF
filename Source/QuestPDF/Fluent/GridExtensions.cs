@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class GridDescriptor
+    public sealed class GridDescriptor
     {
         internal Grid Grid { get; } = new Grid();
         

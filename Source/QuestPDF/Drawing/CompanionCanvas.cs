@@ -6,7 +6,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
-    internal class CompanionPageSnapshot
+    internal sealed class CompanionPageSnapshot
     {
         public SkPicture Picture { get; set; }
         public Size Size { get; set; }
@@ -29,14 +29,14 @@ namespace QuestPDF.Drawing
         }
     }
     
-    internal class CompanionDocumentSnapshot
+    internal sealed class CompanionDocumentSnapshot
     {
         public ICollection<CompanionPageSnapshot> Pictures { get; set; }
         public bool DocumentContentHasLayoutOverflowIssues { get; set; }
         public CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
     }
     
-    internal class CompanionCanvas : SkiaCanvasBase, IDisposable
+    internal sealed class CompanionCanvas : SkiaCanvasBase, IDisposable
     {
         private SkPictureRecorder? PictureRecorder { get; set; }
         private Size? CurrentPageSize { get; set; }

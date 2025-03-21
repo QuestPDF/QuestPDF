@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal class SourceCodePointer : ContainerElement
+internal sealed class SourceCodePointer : ContainerElement
 {
     public string MethodName { get; set; }
     public string CalledFrom { get; set; }

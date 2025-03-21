@@ -6,7 +6,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal class SvgImage : Element, IStateful, IDisposable
+internal sealed class SvgImage : Element, IStateful, IDisposable
 {
     public Infrastructure.SvgImage Image { get; set; }
     

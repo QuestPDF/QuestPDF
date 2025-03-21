@@ -37,7 +37,7 @@ namespace QuestPDF.Fluent
     /// </remarks>
     public delegate string PageNumberFormatter(int? pageNumber);
     
-    public class TextPageNumberDescriptor : TextSpanDescriptor
+    public sealed class TextPageNumberDescriptor : TextSpanDescriptor
     {
         internal Action<PageNumberFormatter> AssignFormatFunction { get; }
         
@@ -59,7 +59,7 @@ namespace QuestPDF.Fluent
         }
     }
     
-    public class TextBlockDescriptor : TextSpanDescriptor
+    public sealed class TextBlockDescriptor : TextSpanDescriptor
     {
         private TextBlock TextBlock;
 
@@ -139,7 +139,7 @@ namespace QuestPDF.Fluent
         }
     }
     
-    public class TextDescriptor
+    public sealed class TextDescriptor
     {
         internal TextBlock TextBlock { get; } = new();
         private TextStyle? DefaultStyle { get; set; }

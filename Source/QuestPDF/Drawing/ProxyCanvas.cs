@@ -4,7 +4,7 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing;
 
-internal class ProxyCanvas : ICanvas
+internal sealed class ProxyCanvas : ICanvas
 {
     public ICanvas Target { get; set; }
 

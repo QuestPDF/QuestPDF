@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal class TreeNode<T>
+internal sealed class TreeNode<T>
 {
     public T Value { get; }
     public TreeNode<T>? Parent { get; set; }

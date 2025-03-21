@@ -5,7 +5,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent
 {
-    public class Document : IDocument
+    public sealed class Document : IDocument
     {
         static Document()
         {

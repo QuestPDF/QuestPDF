@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class Shrink : ContainerElement, IContentDirectionAware
+    internal sealed class Shrink : ContainerElement, IContentDirectionAware
     {
         public bool Vertical { get; set; }
         public bool Horizontal { get; set; }

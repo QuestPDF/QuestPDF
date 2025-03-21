@@ -9,7 +9,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal class DynamicSvgImage : Element, IStateful, IDisposable
+internal sealed class DynamicSvgImage : Element, IStateful, IDisposable
 {
     public GenerateDynamicSvgDelegate SvgSource { get; set; }
 

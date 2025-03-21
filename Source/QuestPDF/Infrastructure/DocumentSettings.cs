@@ -1,6 +1,6 @@
 ﻿namespace QuestPDF.Infrastructure
 {
-    public class DocumentSettings
+    public sealed class DocumentSettings
     {
         public const int DefaultRasterDpi = 72;
         

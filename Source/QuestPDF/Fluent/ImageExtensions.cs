@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class DynamicImageDescriptor
+    public sealed class DynamicImageDescriptor
     {
         private Elements.DynamicImage ImageElement { get; }
         
@@ -37,7 +37,7 @@ namespace QuestPDF.Fluent
         }
     }
     
-    public class ImageDescriptor
+    public sealed class ImageDescriptor
     {
         private Elements.Image ImageElement { get; }
         private AspectRatio AspectRatioElement { get; }

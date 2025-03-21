@@ -102,7 +102,7 @@ namespace QuestPDF.Elements
     /// <summary>
     /// Stores all contextual information available for the dynamic component.
     /// </summary>
-    public class DynamicContext
+    public sealed class DynamicContext
     {
         internal IPageContext PageContext { get; set; }
         internal ICanvas Canvas { get; set; }

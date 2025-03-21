@@ -2,7 +2,7 @@
 
 namespace QuestPDF.Drawing.Exceptions
 {
-    public class DocumentComposeException : Exception
+    public sealed class DocumentComposeException : Exception
     {
         internal DocumentComposeException(string message) : base(message)
         {

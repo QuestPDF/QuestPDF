@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class InlinedDescriptor
+    public sealed class InlinedDescriptor
     {
         internal Inlined Inlined { get; } = new Inlined();
         

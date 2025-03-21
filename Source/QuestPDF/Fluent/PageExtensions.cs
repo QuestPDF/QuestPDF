@@ -7,7 +7,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class PageDescriptor
+    public sealed class PageDescriptor
     {
         internal Page Page { get; } = new Page();
 

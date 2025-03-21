@@ -2,7 +2,7 @@ using System;
 
 namespace QuestPDF.Infrastructure
 {
-    public class DocumentMetadata
+    public sealed class DocumentMetadata
     {
         /// <summary>
         /// Represents the main heading or name of the document, often displayed as a prominent identifier or label in PDF metadata.

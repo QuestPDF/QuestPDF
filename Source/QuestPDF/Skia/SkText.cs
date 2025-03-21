@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
 
-internal class SkText : IDisposable
+internal sealed class SkText : IDisposable
 {
     public IntPtr Instance { get; private set; }
 

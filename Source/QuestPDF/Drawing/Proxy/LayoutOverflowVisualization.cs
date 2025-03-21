@@ -5,7 +5,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal class LayoutOverflowVisualization : ElementProxy, IContentDirectionAware
+internal sealed class LayoutOverflowVisualization : ElementProxy, IContentDirectionAware
 {
     private const float BorderThickness = 1.5f;
     private readonly Color LineColor = Colors.Red.Medium;

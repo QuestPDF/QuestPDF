@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace QuestPDF.Qpdf;
 
-class MimeHelper
+static class MimeHelper
 {
     public static readonly IReadOnlyDictionary<string, string> FileExtensionToMimeConversionTable = new Dictionary<string, string>
     {

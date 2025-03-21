@@ -14,7 +14,7 @@ using QuestPDF.Drawing;
 
 namespace QuestPDF.Companion
 {
-    internal class CompanionService
+    internal sealed class CompanionService
     {
         private int Port { get; }
         private HttpClient HttpClient { get; }

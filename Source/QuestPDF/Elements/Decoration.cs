@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal class DecorationElementLayout
+    internal sealed class DecorationElementLayout
     {
         public ItemCommand Before { get; set; }
         public ItemCommand Content { get; set; }

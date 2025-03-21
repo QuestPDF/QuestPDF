@@ -8,7 +8,7 @@ using SvgImage = QuestPDF.Elements.SvgImage;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal class LayoutProxy : ElementProxy
+internal sealed class LayoutProxy : ElementProxy
 {
     public List<CompanionCommands.UpdateDocumentStructure.PageLocation> Snapshots { get; } = new();
     public List<CompanionCommands.UpdateDocumentStructure.LayoutErrorMeasurement> LayoutErrorMeasurements { get; } = new();

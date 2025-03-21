@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class ColumnDescriptor
+    public sealed class ColumnDescriptor
     {
         internal Column Column { get; } = new();
 

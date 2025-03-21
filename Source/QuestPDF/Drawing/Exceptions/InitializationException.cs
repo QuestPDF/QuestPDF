@@ -2,7 +2,7 @@
 
 namespace QuestPDF.Drawing.Exceptions
 {
-    public class InitializationException : Exception
+    public sealed class InitializationException : Exception
     {
         internal InitializationException(string message) : base(message)
         {

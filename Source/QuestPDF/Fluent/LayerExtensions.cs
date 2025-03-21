@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class LayersDescriptor
+    public sealed class LayersDescriptor
     {
         internal Layers Layers { get; } = new Layers();
         

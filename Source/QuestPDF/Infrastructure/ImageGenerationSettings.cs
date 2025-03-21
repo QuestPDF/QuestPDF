@@ -1,6 +1,6 @@
 ﻿namespace QuestPDF.Infrastructure
 {
-    public class ImageGenerationSettings
+    public sealed class ImageGenerationSettings
     {
         /// <summary>
         /// The file format used to encode the image(s).

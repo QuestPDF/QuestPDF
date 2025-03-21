@@ -2,7 +2,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal class OverflowDebuggingProxy : ElementProxy
+internal sealed class OverflowDebuggingProxy : ElementProxy
 {
     public bool IsMeasuring { get; private set; } = true;
     

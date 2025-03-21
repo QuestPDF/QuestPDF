@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
 {
-    public class RowDescriptor
+    public sealed class RowDescriptor
     {
         internal Row Row { get; } = new();
 

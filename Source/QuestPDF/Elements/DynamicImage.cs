@@ -9,7 +9,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
-    public class GenerateDynamicImageDelegatePayload
+    public sealed class GenerateDynamicImageDelegatePayload
     {
         public Size AvailableSpace { get; set; }
         public ImageSize ImageSize { get; set; }

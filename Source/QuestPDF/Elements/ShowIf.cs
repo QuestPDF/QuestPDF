@@ -4,13 +4,13 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-public class ShowIfContext
+public sealed class ShowIfContext
 {
     public int PageNumber { get; internal set; }
     public int TotalPages { get; internal set; }
 }
 
-internal class ShowIf : ContainerElement
+internal sealed class ShowIf : ContainerElement
 {
     public Predicate<ShowIfContext> VisibilityPredicate { get; set; }
     

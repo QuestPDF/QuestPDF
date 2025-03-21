@@ -12,7 +12,7 @@ namespace QuestPDF.Infrastructure;
 /// <remarks>
 /// This class is thread safe.
 /// </remarks>
-public class SvgImage : IDisposable
+public sealed class SvgImage : IDisposable
 {
     internal SkSvgImage SkSvgImage { get; }
     internal bool IsShared { get; set; } = true;

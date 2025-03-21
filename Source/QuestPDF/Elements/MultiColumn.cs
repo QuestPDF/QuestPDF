@@ -10,7 +10,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal class MultiColumnChildDrawingObserver : ElementProxy
+internal sealed class MultiColumnChildDrawingObserver : ElementProxy
 {
     public bool HasBeenDrawn => ChildStateBeforeDrawingOperation != null;
     public object? ChildStateBeforeDrawingOperation { get; private set; }
@@ -42,7 +42,7 @@ internal class MultiColumnChildDrawingObserver : ElementProxy
     }
 }
 
-internal class MultiColumn : Element, IContentDirectionAware
+internal sealed class MultiColumn : Element, IContentDirectionAware
 {
     // items
     internal Element Content { get; set; } = Empty.Instance;

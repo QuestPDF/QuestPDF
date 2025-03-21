@@ -6,7 +6,7 @@ using System.Text;
 
 namespace QuestPDF.Qpdf;
 
-class SimpleJsonPropertyNameAttribute(string name) : Attribute
+sealed class SimpleJsonPropertyNameAttribute(string name) : Attribute
 {
     public string Name { get; } = name;
 }
@@ -14,7 +14,7 @@ class SimpleJsonPropertyNameAttribute(string name) : Attribute
 /// <summary>
 /// Never use in performance critical scenarios!
 /// </summary>
-class SimpleJsonSerializer
+static class SimpleJsonSerializer
 {
     public static string Serialize(object obj)
     {

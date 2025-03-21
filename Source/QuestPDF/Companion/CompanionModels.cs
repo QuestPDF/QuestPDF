@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Companion
 {
-    class PageSnapshotIndex
+    sealed class PageSnapshotIndex
     {
         public int PageIndex { get; set; }
         public int ZoomLevel { get; set; }
@@ -15,7 +15,7 @@ namespace QuestPDF.Companion
     
     static internal class CompanionCommands
     {
-        internal class Notify
+        internal sealed class Notify
         {
             private static readonly string CurrentClientId = Guid.NewGuid().ToString();
             
@@ -23,19 +23,19 @@ namespace QuestPDF.Companion
             public LicenseType License => Settings.License ?? LicenseType.Community;
         }
         
-        internal class UpdateDocumentStructure
+        internal sealed class UpdateDocumentStructure
         {
             public bool IsDocumentHotReloaded { get; set; }
             public ICollection<PageSize> Pages { get; set; }
             public DocumentHierarchyElement Hierarchy { get; set; }
     
-            public class PageSize
+            public sealed class PageSize
             {
                 public float Width { get; set; }
                 public float Height { get; set; }
             }
             
-            internal class DocumentHierarchyElement
+            internal sealed class DocumentHierarchyElement
             {
                 internal Element Element { get; set; }
                 
@@ -50,7 +50,7 @@ namespace QuestPDF.Companion
                 public ICollection<DocumentHierarchyElement> Children { get; set; }
             }
 
-            internal class PageLocation
+            internal sealed class PageLocation
             {
                 public int PageNumber { get; init; }
                 public float Left { get; init; }
@@ -59,7 +59,7 @@ namespace QuestPDF.Companion
                 public float Bottom { get; init; }
             }
 
-            internal class LayoutErrorMeasurement
+            internal sealed class LayoutErrorMeasurement
             {
                 public int PageNumber { get; set; }
                 public ElementSize? AvailableSpace { get; set; }
@@ -69,18 +69,18 @@ namespace QuestPDF.Companion
                 public bool IsLayoutErrorRootCause { get; set; }
             }
             
-            internal class SourceCodePath
+            internal sealed class SourceCodePath
             {
                 public string FilePath { get; set; }
                 public int LineNumber { get; set; }
             }
         }
         
-        internal class ProvideRenderedDocumentPage
+        internal sealed class ProvideRenderedDocumentPage
         {
             public ICollection<RenderedPage> Pages { get; set; }
 
-            internal class RenderedPage
+            internal sealed class RenderedPage
             {
                 public int PageIndex { get; set; }
                 public int ZoomLevel { get; set; }
@@ -88,11 +88,11 @@ namespace QuestPDF.Companion
             }
         }
         
-        internal class ShowGenericException
+        internal sealed class ShowGenericException
         {
             public GenericExceptionDetails Exception { get; set; }
             
-            internal class GenericExceptionDetails
+            internal sealed class GenericExceptionDetails
             {
                 public string Type { get; set; }
                 public string Message { get; set; }
@@ -100,7 +100,7 @@ namespace QuestPDF.Companion
                 public GenericExceptionDetails? InnerException { get; set; }
             }
             
-            internal class StackFrame
+            internal sealed class StackFrame
             {
                 public string CodeLocation { get; set; }
                 public string? FileName { get; set; }
@@ -108,19 +108,19 @@ namespace QuestPDF.Companion
             }
         }
 
-        internal class ElementSize
+        internal sealed class ElementSize
         {
             public float Width { get; set; }
             public float Height { get; set; }
         }
         
-        internal class ElementProperty
+        internal sealed class ElementProperty
         {
             public string Label { get; set; }
             public string Value { get; set; }
         }
 
-        internal class GetVersionCommandResponse
+        internal sealed class GetVersionCommandResponse
         {
             public ICollection<int> SupportedVersions { get; set; }
         }
