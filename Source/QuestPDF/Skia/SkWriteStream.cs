@@ -21,6 +21,7 @@ internal sealed class SkWriteStream : IDisposable
     
     ~SkWriteStream()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

@@ -31,6 +31,7 @@ internal sealed class SkDocument : IDisposable
     
     ~SkDocument()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

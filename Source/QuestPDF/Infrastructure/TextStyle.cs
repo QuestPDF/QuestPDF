@@ -34,6 +34,13 @@ namespace QuestPDF.Infrastructure
         internal float? DecorationThickness { get; set; }
         internal TextDirection? Direction { get; set; }
 
+        ~TextStyle()
+        {
+            // TextStyle is meant to be an object spanning the entire application lifetime
+            // It does not require the IDisposable pattern
+            SkTextStyleCache?.Dispose();
+        }
+
         public static TextStyle Default { get; } = new()
         {
             Id = 0
@@ -69,16 +76,30 @@ namespace QuestPDF.Infrastructure
             LineHeight = 1
         };
 
-        private SkTextStyle? SkTextStyleCache;
+        private volatile SkTextStyle? SkTextStyleCache;
+        private readonly object SkTextStyleCacheLock = new();
         
         internal SkTextStyle GetSkTextStyle()
         {
             if (SkTextStyleCache != null)
                 return SkTextStyleCache;
-            
+
+            lock (SkTextStyleCacheLock)
+            {
+                if (SkTextStyleCache != null)
+                    return SkTextStyleCache;
+
+                var temp = CreateSkTextStyle();
+                SkTextStyleCache = temp;
+                return temp;
+            }
+        }
+
+        private SkTextStyle CreateSkTextStyle()
+        {
             var fontFamilyTexts = FontFamilies.Select(x => new SkText(x)).ToList();
 
-            SkTextStyleCache = new SkTextStyle(new TextStyleConfiguration
+            var result = new SkTextStyle(new TextStyleConfiguration
             {
                 FontSize = CalculateTargetFontSize(),
                 FontWeight = (TextStyleConfiguration.FontWeights?)FontWeight ?? TextStyleConfiguration.FontWeights.Normal,
@@ -103,7 +124,7 @@ namespace QuestPDF.Infrastructure
             });
             
             fontFamilyTexts.ForEach(x => x.Dispose());
-            return SkTextStyleCache;
+            return result;
 
             IntPtr[] GetFontFamilyPointers(IList<SkText> texts)
             {

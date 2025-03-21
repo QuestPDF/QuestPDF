@@ -135,7 +135,6 @@ namespace QuestPDF.Infrastructure
                 
                 var newIndex = TextStyles.Count;
                 var newTextStyle = origin with { Id = newIndex };
-                newTextStyle.Id = newIndex;
                 property.SetValue(newTextStyle, newValue);
 
                 TextStyles.Add(newTextStyle);
@@ -150,15 +149,14 @@ namespace QuestPDF.Infrastructure
                 if (overrideValue && newValue is null)
                     return origin;
                 
-                var newIndex = TextStyles.Count;
-                var newTextStyle = origin with { Id = newIndex };
-                newTextStyle.Id = newIndex;
-                
                 newValue ??= Array.Empty<string>();
                 var oldValue = origin.FontFamilies ?? Array.Empty<string>();
                 
                 if (origin.FontFamilies?.SequenceEqual(newValue) == true)
                     return origin;
+                
+                var newIndex = TextStyles.Count;
+                var newTextStyle = origin with { Id = newIndex };
                 
                 newTextStyle.FontFamilies = overrideValue 
                     ? newValue 
@@ -176,10 +174,6 @@ namespace QuestPDF.Infrastructure
                 if (overrideValue && newValue is null)
                     return origin;
                 
-                var newIndex = TextStyles.Count;
-                var newTextStyle = origin with { Id = newIndex };
-                newTextStyle.Id = newIndex;
-                
                 newValue ??= [];
                 var oldValue = origin.FontFeatures ?? [];
                 
@@ -189,6 +183,9 @@ namespace QuestPDF.Infrastructure
                 var extendedSet = overrideValue
                     ? newValue.Concat(oldValue)
                     : oldValue.Concat(newValue);
+                
+                var newIndex = TextStyles.Count;
+                var newTextStyle = origin with { Id = newIndex };
                 
                 newTextStyle.FontFeatures = extendedSet
                     .GroupBy(x => x.Name)

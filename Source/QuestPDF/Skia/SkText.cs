@@ -15,6 +15,7 @@ internal class SkText : IDisposable
 
     ~SkText()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     
@@ -41,11 +42,12 @@ internal class SkText : IDisposable
     
     public void Dispose()
     {
-        if (Instance == IntPtr.Zero)
-            return;
+        if (Instance != IntPtr.Zero)
+        {
+            Marshal.FreeHGlobal(Instance);
+            Instance = IntPtr.Zero;
+        }
         
-        Marshal.FreeHGlobal(Instance);
-        Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
 }

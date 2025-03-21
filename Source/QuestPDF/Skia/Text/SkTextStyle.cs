@@ -89,6 +89,7 @@ internal sealed class SkTextStyle : IDisposable
     
     ~SkTextStyle()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia.Text;
@@ -6,6 +7,7 @@ namespace QuestPDF.Skia.Text;
 internal sealed class SkTypefaceProvider : IDisposable
 {
     public IntPtr Instance { get; private set; }
+    private List<SkTypeface> Typefaces { get; } = new();
     
     public SkTypefaceProvider()
     {
@@ -16,6 +18,7 @@ internal sealed class SkTypefaceProvider : IDisposable
     public void AddTypefaceFromData(SkData data, string? alias = null)
     {
         var typeface = SkFontManager.Global.CreateTypeface(data);
+        Typefaces.Add(typeface);
         
         if (alias == null)
             API.typeface_font_provider_add_typeface(Instance, typeface.Instance);
@@ -25,6 +28,7 @@ internal sealed class SkTypefaceProvider : IDisposable
     
     ~SkTypefaceProvider()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     
@@ -32,6 +36,9 @@ internal sealed class SkTypefaceProvider : IDisposable
     {
         if (Instance == IntPtr.Zero)
             return;
+        
+        foreach (var typeface in Typefaces)
+            typeface.Dispose();
         
         API.typeface_font_provider_unref(Instance);
         Instance = IntPtr.Zero;

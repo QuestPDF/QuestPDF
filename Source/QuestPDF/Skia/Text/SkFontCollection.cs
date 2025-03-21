@@ -21,6 +21,7 @@ internal sealed class SkFontCollection : IDisposable
     
     ~SkFontCollection()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

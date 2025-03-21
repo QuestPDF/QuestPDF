@@ -24,6 +24,7 @@ public class SvgImage : IDisposable
 
     ~SvgImage()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
         

@@ -15,13 +15,19 @@ namespace QuestPDF.Elements
         internal ImageCompressionQuality? CompressionQuality { get; set; }
  
         private int DrawnImageSize { get; set; }
+
+        ~Image()
+        {
+            this.WarnThatFinalizerIsReached();
+            Dispose();
+        }
         
         public void Dispose()
         {
-            if (DocumentImage == null || DocumentImage.IsShared)
-                return;
+            if (DocumentImage != null && !DocumentImage.IsShared) 
+                DocumentImage?.Dispose();
             
-            DocumentImage?.Dispose();
+            GC.SuppressFinalize(this);
         }
         
         internal override SpacePlan Measure(Size availableSpace)
