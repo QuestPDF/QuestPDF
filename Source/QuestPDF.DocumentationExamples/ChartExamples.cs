@@ -95,7 +95,7 @@ public class ChartExamples
                                 .AspectRatio(2)
                                 .Svg(size =>
                                 {
-                                    ScottPlot.Plot plot = new();
+                                    using Plot plot = new();
                                     
                                     var bars = new Bar[]
                                     {

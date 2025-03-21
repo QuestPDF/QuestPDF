@@ -24,12 +24,10 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Measure_TakesMinimalSpaceRegardlessOfSize()
         {
-            using var image = GenerateDocumentImage(400, 300);
-            
             TestPlan
                 .For(x => new ImageElement
                 {
-                    DocumentImage = image
+                    DocumentImage = GenerateDocumentImage(400, 300)
                 })
                 .MeasureElement(new Size(300, 200))
                 .CheckMeasureResult(SpacePlan.FullRender(0, 0));
@@ -38,14 +36,12 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Draw_TakesAvailableSpaceRegardlessOfSize()
         {
-            using var image = GenerateDocumentImage(400, 300);
-            
             TestPlan
                 .For(x => new ImageElement
                 {
                     CompressionQuality = ImageCompressionQuality.High,
                     TargetDpi = DocumentSettings.DefaultRasterDpi,
-                    DocumentImage = image
+                    DocumentImage = GenerateDocumentImage(400, 300)
                 })
                 .DrawElement(new Size(300, 200))
                 .ExpectCanvasDrawImage(new Position(0, 0), new Size(300, 200))
@@ -55,13 +51,11 @@ namespace QuestPDF.UnitTests
         [Test]
         public void Fluent_RecognizesImageProportions()
         {
-            using var image = GenerateDocumentImage(60, 20);
-            
             TestPlan
                 .For(x =>
                 {
                     var container = new Container();
-                    container.Image(image);
+                    container.Image(GenerateDocumentImage(60, 20));
                     return container;
                 })
                 .MeasureElement(new Size(300, 200))
@@ -166,8 +160,10 @@ namespace QuestPDF.UnitTests
 
         static DocumentImage GenerateDocumentImage(int width, int height)
         {
-            var image = Placeholders.Image(width, height);
-            return DocumentImage.FromBinaryData(image);
+            var imageData = Placeholders.Image(width, height);
+            var image = DocumentImage.FromBinaryData(imageData);
+            image.IsShared = false;
+            return image;
         }
     }
 }
