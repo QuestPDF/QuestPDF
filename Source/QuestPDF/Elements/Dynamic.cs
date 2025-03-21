@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
@@ -21,7 +22,6 @@ namespace QuestPDF.Elements
         public DynamicHost(DynamicComponentProxy child)
         {
             Child = child;
-            
             InitialComponentState = Child.GetState();
         }
  
@@ -29,10 +29,13 @@ namespace QuestPDF.Elements
         {
             if (IsRendered)
                 return SpacePlan.Empty();
-            
-            var result = ComposeContent(availableSpace, acceptNewState: false);
+
+            var context = CreateContext(availableSpace);
+            var result = ComposeContent(context, acceptNewState: false);
             var content = result.Content as Element ?? Empty.Instance;
             var measurement = content.Measure(availableSpace);
+            
+            context.DisposeCreatedElements();
             content.ReleaseDisposableChildren();
             
             if (measurement.Type is SpacePlanType.PartialRender or SpacePlanType.Wrap)
@@ -45,20 +48,21 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            var composeResult = ComposeContent(availableSpace, acceptNewState: true);
+            var context = CreateContext(availableSpace);
+            var composeResult = ComposeContent(context, acceptNewState: true);
             var content = composeResult.Content as Element; 
             content?.Draw(availableSpace);
+            
+            context.DisposeCreatedElements();
             content.ReleaseDisposableChildren();
             
             if (!composeResult.HasMoreContent)
                 IsRendered = true;
         }
 
-        private DynamicComponentComposeResult ComposeContent(Size availableSize, bool acceptNewState)
+        private DynamicContext CreateContext(Size availableSize)
         {
-            var componentState = Child.GetState();
-            
-            var context = new DynamicContext
+            return new DynamicContext
             {
                 PageContext = PageContext,
                 Canvas = Canvas,
@@ -74,6 +78,11 @@ namespace QuestPDF.Elements
                 TotalPages = PageContext.IsInitialRenderingPhase ? int.MaxValue : PageContext.DocumentLength,
                 AvailableSize = availableSize
             };
+        }
+        
+        private DynamicComponentComposeResult ComposeContent(DynamicContext context, bool acceptNewState)
+        {
+            var componentState = Child.GetState();
             
             var result = Child.Compose(context);
 
@@ -114,6 +123,8 @@ namespace QuestPDF.Elements
         internal ImageCompressionQuality ImageCompressionQuality { get; set; }
         internal bool UseOriginalImage { get; set; }
         
+        internal List<Element> CreatedElements { get; } = new();
+        
         /// <summary>
         /// Returns the number of the page being rendered at the moment.
         /// </summary>
@@ -144,6 +155,7 @@ namespace QuestPDF.Elements
         public IDynamicElement CreateElement(Action<IContainer> content)
         {
             var container = new DynamicElement();
+            CreatedElements.Add(container);
             content(container);
             
             container.ApplyInheritedAndGlobalTexStyle(TextStyle);
@@ -156,6 +168,14 @@ namespace QuestPDF.Elements
             container.Size = container.Measure(Size.Max);
             
             return container;
+        }
+        
+        internal void DisposeCreatedElements()
+        {
+            foreach (var element in CreatedElements)
+                element.ReleaseDisposableChildren();
+            
+            CreatedElements.Clear();
         }
     }
 
