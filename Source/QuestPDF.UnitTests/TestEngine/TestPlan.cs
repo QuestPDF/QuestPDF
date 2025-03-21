@@ -200,6 +200,7 @@ namespace QuestPDF.UnitTests.TestEngine
             Element.InjectDependencies(null, Canvas);
             
             var actual = Element.Measure(OperationInput);
+            Element.ReleaseDisposableChildren();
             
             ClassicAssert.AreEqual(expected.GetType(), actual.GetType());
             
@@ -215,6 +216,7 @@ namespace QuestPDF.UnitTests.TestEngine
         {
             Element.InjectDependencies(null, Canvas);
             Element.Draw(OperationInput);
+            Element.ReleaseDisposableChildren();
             return this;
         }
 
