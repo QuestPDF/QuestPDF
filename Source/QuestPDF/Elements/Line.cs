@@ -56,11 +56,11 @@ namespace QuestPDF.Elements
             
             if (Type == LineType.Vertical)
             {
-                Canvas.DrawFilledRectangle(new Position(-Thickness/2, 0), new Size(Thickness, availableSpace.Height), Color);
+                Canvas.DrawFilledRectangle(Position.Zero, new Size(Thickness, availableSpace.Height), Color);
             }
             else if (Type == LineType.Horizontal)
             {
-                Canvas.DrawFilledRectangle(new Position(0, -Thickness/2), new Size(availableSpace.Width, Thickness), Color);
+                Canvas.DrawFilledRectangle(Position.Zero, new Size(availableSpace.Width, Thickness), Color);
             }
             
             IsRendered = true;
