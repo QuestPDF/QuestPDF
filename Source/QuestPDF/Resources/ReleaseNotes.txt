@@ -41,3 +41,13 @@ Version 2025.1.6
 - Updated skia native dependency to version 134,
 - Updated qpdf native dependency to version 11.10.1,
 - Updated OpenSSL native dependency to version 3.4.1.
+
+
+Version 2025.1.7
+- Enhanced Layout Issue Debugging Algorithm,
+- Fixed a memory leak related to rendering text elements with page numbers,
+- Added finalizer warnings to various classes to help prevent memory leaks in the future,
+- Optimized memory management for native objects across multiple areas,
+- Adjusted the QPDF implementation to reliably handle non-ASCII content using a UTF-8 marshaler,
+- Improved cross-platform compatibility by including required dependencies for macOS,
+- Fixed: the Line element was rendered in an incorrect position.
