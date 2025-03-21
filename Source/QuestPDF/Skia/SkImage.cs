@@ -61,6 +61,7 @@ internal sealed class SkImage : IDisposable
     
     ~SkImage()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

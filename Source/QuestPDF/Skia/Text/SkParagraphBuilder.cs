@@ -95,6 +95,7 @@ internal sealed class SkParagraphBuilder : IDisposable
     public IntPtr Instance { get; private set; }
     
     public ParagraphStyle Style { get; private set; }
+    private SkFontCollection FontCollection { get; set; }
 
     public static SkParagraphBuilder Create(ParagraphStyle style, SkFontCollection fontCollection)
     {
@@ -114,7 +115,8 @@ internal sealed class SkParagraphBuilder : IDisposable
         return new SkParagraphBuilder
         {
             Instance = instance,
-            Style = style
+            Style = style,
+            FontCollection = fontCollection
         };
     }
     
@@ -141,6 +143,7 @@ internal sealed class SkParagraphBuilder : IDisposable
     
     ~SkParagraphBuilder()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     
@@ -148,6 +151,8 @@ internal sealed class SkParagraphBuilder : IDisposable
     {
         if (Instance == IntPtr.Zero)
             return;
+        
+        FontCollection?.Dispose();
         
         API.paragraph_builder_delete(Instance);
         Instance = IntPtr.Zero;

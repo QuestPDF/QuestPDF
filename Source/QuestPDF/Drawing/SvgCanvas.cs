@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using QuestPDF.Drawing.Exceptions;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
@@ -16,6 +13,7 @@ namespace QuestPDF.Drawing
         
         ~SvgCanvas()
         {
+            this.WarnThatFinalizerIsReached();
             Dispose();
         }
 

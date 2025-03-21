@@ -15,6 +15,7 @@ internal sealed class SkTypeface : IDisposable
     
     ~SkTypeface()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

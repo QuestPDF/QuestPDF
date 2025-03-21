@@ -6,6 +6,7 @@ namespace QuestPDF.Skia;
 internal sealed class SkPictureRecorder : IDisposable
 {
     public IntPtr Instance { get; private set; }
+    private bool IsRecording { get; set; }
     
     public SkPictureRecorder()
     {
@@ -16,17 +17,20 @@ internal sealed class SkPictureRecorder : IDisposable
     public SkCanvas BeginRecording(float width, float height)
     {
         var canvasInstance = API.picture_recorder_begin_recording(Instance, width, height);
+        IsRecording = true;
         return new SkCanvas(canvasInstance, disposeNativeObject: false);
     }
     
     public SkPicture EndRecording()
     {
         var pictureInstance = API.picture_recorder_end_recording(Instance);
+        IsRecording = false;
         return new SkPicture(pictureInstance);
     }
     
     ~SkPictureRecorder()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     
@@ -34,6 +38,19 @@ internal sealed class SkPictureRecorder : IDisposable
     {
         if (Instance == IntPtr.Zero)
             return;
+
+        if (IsRecording)
+        {
+            try
+            {
+                var picture = EndRecording();
+                picture.Dispose();
+            }
+            catch
+            {
+                // ignored
+            }
+        }
         
         API.picture_recorder_delete(Instance);
         Instance = IntPtr.Zero;

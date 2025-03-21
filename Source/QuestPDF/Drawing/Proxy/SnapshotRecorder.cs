@@ -14,6 +14,7 @@ internal class SnapshotRecorder : ElementProxy, IDisposable
 
     ~SnapshotRecorder()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
 

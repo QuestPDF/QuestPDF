@@ -58,6 +58,7 @@ internal sealed class SkSvgImage : IDisposable
     
     ~SkSvgImage()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

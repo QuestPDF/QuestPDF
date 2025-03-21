@@ -43,6 +43,7 @@ namespace QuestPDF.Infrastructure
         
         ~Image()
         {
+            this.WarnThatFinalizerIsReached();
             Dispose();
         }
         

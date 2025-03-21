@@ -85,6 +85,7 @@ internal sealed class SkParagraph : IDisposable
     
     ~SkParagraph()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

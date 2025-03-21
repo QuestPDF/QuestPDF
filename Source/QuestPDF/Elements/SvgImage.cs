@@ -10,12 +10,18 @@ internal class SvgImage : Element, IStateful, IDisposable
 {
     public Infrastructure.SvgImage Image { get; set; }
     
+    ~SvgImage()
+    {
+        this.WarnThatFinalizerIsReached();
+        Dispose();
+    }
+    
     public void Dispose()
     {
-        if (Image == null || Image.IsShared)
-            return;
-            
-        Image?.Dispose();
+        if (Image != null && !Image.IsShared)
+            Image?.Dispose();
+        
+        GC.SuppressFinalize(this);
     }
     
     internal override SpacePlan Measure(Size availableSpace)

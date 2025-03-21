@@ -123,6 +123,7 @@ internal sealed class SkCanvas : IDisposable
     
     ~SkCanvas()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

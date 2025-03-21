@@ -22,6 +22,7 @@ namespace QuestPDF.Drawing
         
         ~ImageCanvas()
         {
+            this.WarnThatFinalizerIsReached();
             Dispose();
         }
 

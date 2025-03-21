@@ -38,6 +38,7 @@ namespace QuestPDF.Elements
         
         ~DynamicImage()
         {
+            this.WarnThatFinalizerIsReached();
             Dispose();
         }
 

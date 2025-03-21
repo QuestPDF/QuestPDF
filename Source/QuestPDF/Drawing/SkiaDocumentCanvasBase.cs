@@ -15,6 +15,7 @@ namespace QuestPDF.Drawing
 
         ~SkiaDocumentCanvasBase()
         {
+            this.WarnThatFinalizerIsReached();
             Dispose();
         }
 

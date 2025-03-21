@@ -48,6 +48,7 @@ namespace QuestPDF.Elements.Text
 
         ~TextBlock()
         {
+            this.WarnThatFinalizerIsReached();
             Dispose();
         }
 
@@ -290,6 +291,12 @@ namespace QuestPDF.Elements.Text
                 MaxLinesVisible = LineClamp ?? 1_000_000,
                 LineClampEllipsis = LineClampEllipsis
             };
+
+            if (Paragraph != null)
+            {
+                Paragraph.Dispose();
+                Paragraph = null;
+            }
             
             var builder = SkParagraphBuilderPoolManager.Get(paragraphStyle);
 

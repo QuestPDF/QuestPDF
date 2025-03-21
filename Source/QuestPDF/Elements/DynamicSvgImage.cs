@@ -17,6 +17,7 @@ internal class DynamicSvgImage : Element, IStateful, IDisposable
     
     ~DynamicSvgImage()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

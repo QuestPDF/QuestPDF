@@ -58,6 +58,7 @@ internal sealed class SkData : IDisposable
     
     ~SkData()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

@@ -47,6 +47,7 @@ namespace QuestPDF.Drawing
         
         ~CompanionCanvas()
         {
+            this.WarnThatFinalizerIsReached();
             Dispose();
         }
 

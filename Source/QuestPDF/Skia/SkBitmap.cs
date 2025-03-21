@@ -33,6 +33,7 @@ internal sealed class SkBitmap : IDisposable
     
     ~SkBitmap()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     

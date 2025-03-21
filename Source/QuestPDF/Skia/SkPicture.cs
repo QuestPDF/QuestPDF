@@ -27,6 +27,7 @@ internal sealed class SkPicture : IDisposable
     
     ~SkPicture()
     {
+        this.WarnThatFinalizerIsReached();
         Dispose();
     }
     
