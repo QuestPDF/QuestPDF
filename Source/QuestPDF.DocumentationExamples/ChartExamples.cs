@@ -35,7 +35,7 @@ public class ChartExamples
                                 .AspectRatio(1)
                                 .Svg(size =>
                                 {
-                                    ScottPlot.Plot plot = new();
+                                    using ScottPlot.Plot plot = new();
                                     
                                     var slices = new PieSlice[]
                                     {
