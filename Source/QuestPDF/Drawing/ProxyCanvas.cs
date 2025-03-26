@@ -18,9 +18,39 @@ internal sealed class ProxyCanvas : ICanvas
         Target.Restore();
     }
 
+    public void SetZIndex(int index)
+    {
+        Target.SetZIndex(index);
+    }
+
+    public int GetZIndex()
+    {
+        return Target.GetZIndex();
+    }
+    
+    public SkCanvasMatrix GetCurrentMatrix()
+    {
+        return Target.GetCurrentMatrix();
+    }
+
+    public void SetMatrix(SkCanvasMatrix matrix)
+    {
+        Target.SetMatrix(matrix);
+    }
+    
     public void Translate(Position vector)
     {
         Target.Translate(vector);
+    }
+    
+    public void Scale(float scaleX, float scaleY)
+    {
+        Target.Scale(scaleX, scaleY);
+    }
+    
+    public void Rotate(float angle)
+    {
+        Target.Rotate(angle);
     }
 
     public void DrawFilledRectangle(Position vector, Size size, Color color)
@@ -86,15 +116,5 @@ internal sealed class ProxyCanvas : ICanvas
     public void DrawSection(string sectionName)
     {
         Target.DrawSection(sectionName);
-    }
-
-    public void Rotate(float angle)
-    {
-        Target.Rotate(angle);
-    }
-
-    public void Scale(float scaleX, float scaleY)
-    {
-        Target.Scale(scaleX, scaleY);
     }
 }

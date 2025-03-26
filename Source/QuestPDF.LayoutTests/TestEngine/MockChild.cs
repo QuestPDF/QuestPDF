@@ -54,7 +54,7 @@ internal class ElementMock : Element
         if (Canvas is not SkiaCanvasBase canvasBase)
             return;
 
-        var matrix = canvasBase.Canvas.GetCurrentTotalMatrix();
+        var matrix = canvasBase.Canvas.GetCurrentMatrix();
         
         DrawingCommands.Add(new MockDrawingCommand
         {

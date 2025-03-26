@@ -48,8 +48,38 @@ namespace QuestPDF.Drawing
         {
             
         }
+
+        public void SetZIndex(int index)
+        {
+            
+        }
+
+        public int GetZIndex()
+        {
+            return 0;
+        }
         
+        public SkCanvasMatrix GetCurrentMatrix()
+        {
+            return default;
+        }
+
+        public void SetMatrix(SkCanvasMatrix matrix)
+        {
+            
+        }
+
         public void Translate(Position vector)
+        {
+            
+        }
+        
+        public void Scale(float scaleX, float scaleY)
+        {
+            
+        }
+        
+        public void Rotate(float angle)
         {
             
         }
@@ -115,16 +145,6 @@ namespace QuestPDF.Drawing
         }
 
         public void DrawSection(string sectionName)
-        {
-            
-        }
-
-        public void Rotate(float angle)
-        {
-            
-        }
-
-        public void Scale(float scaleX, float scaleY)
         {
             
         }

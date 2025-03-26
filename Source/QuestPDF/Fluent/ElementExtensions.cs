@@ -485,6 +485,21 @@ namespace QuestPDF.Fluent
             });
         }
         
+        /// <summary>
+        /// By default the library draws content in the order it is defined, which is not always the desired behavior.
+        /// This element allows you to alter the rendering order, ensuring that the content is displayed in the correct sequence.
+        /// The default z-index is equal to 0, unless a different values is inherited from a parent container.
+        /// <a href="https://www.questpdf.com/api-reference/z-index.html">Learn more</a>
+        /// </summary>
+        /// <param name="indexValue">The z-index value. Higher values are rendered above lower values.</param>
+        public static IContainer ZIndex(this IContainer element, int indexValue)
+        {
+            return element.Element(new ZIndex
+            {
+                Depth = indexValue
+            });
+        }
+        
         #region Canvas [Obsolete]
 
         private const string CanvasDeprecatedMessage = "The Canvas API has been deprecated since version 2024.3.0. Please use the .Svg(stringContent) API to provide custom content, and consult documentation webpage regarding integrating SkiaSharp with QuestPDF: https://www.questpdf.com/concepts/skia-sharp-integration.html";
