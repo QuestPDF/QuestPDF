@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
@@ -23,10 +25,15 @@ namespace QuestPDF.Drawing
         {
             CurrentPageSize = size;
             CurrentPageHasLayoutIssues = false;
+
+            SetZIndex(0);
         }
 
         public virtual void EndPage()
         {
+            DrawZIndexContent(Canvas);
+            DisposeZIndexCanvases();
+            
             if (CurrentPageHasLayoutIssues)
                 DrawLayoutIssuesIndicatorOnCurrentPage();
         }
@@ -51,6 +58,52 @@ namespace QuestPDF.Drawing
         
         #endregion
         
+        #region ZIndex
+        
+        private SkCanvas CurrentCanvas { get; set; }
+        
+        private int CurrentZIndex { get; set; } = 0;
+        private IDictionary<int, (SkPictureRecorder PictureRecorder, SkCanvas Canvas)> ZIndexCanvases { get; } = new Dictionary<int, (SkPictureRecorder, SkCanvas)>();
+        
+        SkCanvas GetCanvasForZIndex(int zIndex)
+        {
+            if (ZIndexCanvases.TryGetValue(zIndex, out var value))
+                return value.Canvas;
+            
+            var pictureRecorder = new SkPictureRecorder();
+            var canvas = pictureRecorder.BeginRecording(CurrentPageSize.Width, CurrentPageSize.Height);
+            
+            ZIndexCanvases.Add(zIndex, (pictureRecorder, canvas));
+            return canvas;
+        }
+
+        private void DrawZIndexContent(SkCanvas canvas)
+        {
+            foreach (var zIndex in ZIndexCanvases.OrderBy(x => x.Key).Select(x => x.Value))
+            {
+                using var pictureRecorder = zIndex.PictureRecorder;
+                using var picture = pictureRecorder.EndRecording();
+                zIndex.Canvas.Dispose();
+                canvas.DrawPicture(picture);
+            }
+        }
+        
+        private void DisposeZIndexCanvases()
+        {
+            CurrentCanvas.Dispose();
+            CurrentCanvas = null;
+
+            foreach (var layer in ZIndexCanvases.Values)
+            {
+                layer.Canvas.Dispose();
+                layer.PictureRecorder.Dispose();
+            }
+            
+            ZIndexCanvases.Clear();
+        }
+        
+        #endregion
+        
         #region ICanvas
         
         public void Save()
@@ -63,9 +116,40 @@ namespace QuestPDF.Drawing
             Canvas.Restore();
         }
         
+        public void SetZIndex(int index)
+        {
+            CurrentZIndex = index;
+            CurrentCanvas = GetCanvasForZIndex(CurrentZIndex);
+        }
+
+        public int GetZIndex()
+        {
+            return CurrentZIndex;
+        }
+
+        public SkCanvasMatrix GetCurrentMatrix()
+        {
+            return CurrentCanvas.GetCurrentMatrix();
+        }
+
+        public void SetMatrix(SkCanvasMatrix matrix)
+        {
+            CurrentCanvas.SetCurrentMatrix(matrix);
+        }
+        
         public void Translate(Position vector)
         {
-            Canvas.Translate(vector.X, vector.Y);
+            CurrentCanvas.Translate(vector.X, vector.Y);
+        }
+        
+        public void Scale(float scaleX, float scaleY)
+        {
+            CurrentCanvas.Scale(scaleX, scaleY);
+        }
+        
+        public void Rotate(float angle)
+        {
+            CurrentCanvas.Rotate(angle);
         }
 
         public void DrawFilledRectangle(Position vector, Size size, Color color)
@@ -74,7 +158,7 @@ namespace QuestPDF.Drawing
                 return;
 
             var position = new SkRect(vector.X, vector.Y, vector.X + size.Width, vector.Y + size.Height);
-            Canvas.DrawFilledRectangle(position, color);
+            CurrentCanvas.DrawFilledRectangle(position, color);
         }
         
         public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color)
@@ -83,72 +167,62 @@ namespace QuestPDF.Drawing
                 return;
 
             var position = new SkRect(vector.X, vector.Y, vector.X + size.Width, vector.Y + size.Height);
-            Canvas.DrawStrokeRectangle(position, strokeWidth, color);
+            CurrentCanvas.DrawStrokeRectangle(position, strokeWidth, color);
         }
 
         public void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo)
         {
-            Canvas.DrawParagraph(paragraph, lineFrom, lineTo);
+            CurrentCanvas.DrawParagraph(paragraph, lineFrom, lineTo);
         }
 
         public void DrawImage(SkImage image, Size size)
         {
-            Canvas.DrawImage(image, size.Width, size.Height);
+            CurrentCanvas.DrawImage(image, size.Width, size.Height);
         }
 
         public void DrawPicture(SkPicture picture)
         {
-            Canvas.DrawPicture(picture);
+            CurrentCanvas.DrawPicture(picture);
         }
 
         public void DrawSvgPath(string path, Color color)
         {
-            Canvas.DrawSvgPath(path, color);
+            CurrentCanvas.DrawSvgPath(path, color);
         }
 
         public void DrawSvg(SkSvgImage svgImage, Size size)
         {
-            Canvas.DrawSvg(svgImage, size.Width, size.Height);
+            CurrentCanvas.DrawSvg(svgImage, size.Width, size.Height);
         }
         
         public void DrawOverflowArea(SkRect area)
         {
-            Canvas.DrawOverflowArea(area);
+            CurrentCanvas.DrawOverflowArea(area);
         }
     
         public void ClipOverflowArea(SkRect availableSpace, SkRect requiredSpace)
         {
-            Canvas.ClipOverflowArea(availableSpace, requiredSpace);
+            CurrentCanvas.ClipOverflowArea(availableSpace, requiredSpace);
         }
     
         public void ClipRectangle(SkRect clipArea)
         {
-            Canvas.ClipRectangle(clipArea);
+            CurrentCanvas.ClipRectangle(clipArea);
         }
         
         public void DrawHyperlink(string url, Size size)
         {
-            Canvas.AnnotateUrl(size.Width, size.Height, url);
+            CurrentCanvas.AnnotateUrl(size.Width, size.Height, url);
         }
         
         public void DrawSectionLink(string sectionName, Size size)
         {
-            Canvas.AnnotateDestinationLink(size.Width, size.Height, sectionName);
+            CurrentCanvas.AnnotateDestinationLink(size.Width, size.Height, sectionName);
         }
 
         public void DrawSection(string sectionName)
         {
-            Canvas.AnnotateDestination(sectionName);
-        }
-
-        public void Rotate(float angle)
-        {
-            Canvas.Rotate(angle);
-        }
-
-        public void Scale(float scaleX, float scaleY)
-        {
-            Canvas.Scale(scaleX, scaleY);
+            CurrentCanvas.AnnotateDestination(sectionName);
         }
         
         #endregion

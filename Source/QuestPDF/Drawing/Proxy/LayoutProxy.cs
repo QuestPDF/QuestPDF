@@ -29,15 +29,15 @@ internal sealed class LayoutProxy : ElementProxy
         if (canvas == null)
             return;
         
-        var position = canvas.Canvas.GetCurrentTotalMatrix();
-
+        var matrix = canvas.Canvas.GetCurrentMatrix();
+        
         Snapshots.Add(new CompanionCommands.UpdateDocumentStructure.PageLocation
         {
             PageNumber = PageContext.CurrentPage,
-            Left = position.TranslateX,
-            Top = position.TranslateY,
-            Right = position.TranslateX + size.Width,
-            Bottom = position.TranslateY + size.Height
+            Left = matrix.TranslateX,
+            Top = matrix.TranslateY,
+            Right = matrix.TranslateX + size.Width,
+            Bottom = matrix.TranslateY + size.Height
         });
 
         bool ProvideIntrinsicSize()
