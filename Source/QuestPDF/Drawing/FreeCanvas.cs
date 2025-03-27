@@ -4,7 +4,7 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing
 {
-    internal sealed class FreeCanvas : ICanvas, IRenderingCanvas
+    internal sealed class FreeCanvas : ICanvas, IDocumentCanvas
     {
         #region IRenderingCanvas
 
