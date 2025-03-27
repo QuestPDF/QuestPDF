@@ -121,7 +121,7 @@ namespace QuestPDF.Drawing
         /// </summary>
         private static readonly SemaphoreSlim RenderDocumentSemaphore = new(4);
         
-        private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
+        private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IDocumentCanvas
         {
             RenderDocumentSemaphore.Wait();
 
@@ -144,7 +144,7 @@ namespace QuestPDF.Drawing
         }
 
         private static void RenderSingleDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings)
-            where TCanvas : ICanvas, IRenderingCanvas
+            where TCanvas : ICanvas, IDocumentCanvas
         {
             var useOriginalImages = canvas is ImageCanvas;
 
@@ -170,7 +170,7 @@ namespace QuestPDF.Drawing
         }
         
         private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)
-            where TCanvas : ICanvas, IRenderingCanvas
+            where TCanvas : ICanvas, IDocumentCanvas
         {
             var useOriginalImages = canvas is ImageCanvas;
             
@@ -244,7 +244,7 @@ namespace QuestPDF.Drawing
         }
 
         private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, ContainerElement content)
-            where TCanvas : ICanvas, IRenderingCanvas
+            where TCanvas : ICanvas, IDocumentCanvas
         {
             content.InjectDependencies(pageContext, canvas);
             content.VisitChildren(x => (x as IStateful)?.ResetState(hardReset: true));

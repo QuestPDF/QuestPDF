@@ -7,7 +7,7 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing
 {
-    internal abstract class SkiaCanvasBase : ICanvas, IRenderingCanvas
+    internal abstract class SkiaCanvasBase : ICanvas, IDocumentCanvas
     {
         internal SkCanvas Canvas { get; set; }
 
