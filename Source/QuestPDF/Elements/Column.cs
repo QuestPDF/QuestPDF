@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -36,6 +37,9 @@ namespace QuestPDF.Elements
             
             if (CurrentRenderingIndex == Items.Count)
                 return SpacePlan.Empty();
+            
+            if (availableSpace.IsNegative())
+                return SpacePlan.Wrap("The available space is negative.");
             
             var renderingCommands = PlanLayout(availableSpace);
 
