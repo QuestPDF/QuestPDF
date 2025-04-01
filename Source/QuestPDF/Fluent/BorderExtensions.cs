@@ -1,4 +1,5 @@
-﻿using QuestPDF.Elements;
+﻿using System;
+using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -10,6 +11,18 @@ namespace QuestPDF.Fluent
         {
             var border = element as Border ?? new Border();
 
+            if (top < 0)
+                throw new ArgumentOutOfRangeException(nameof(top), "The top border cannot be negative.");
+            
+            if (bottom < 0)
+                throw new ArgumentOutOfRangeException(nameof(bottom), "The bottom border cannot be negative.");
+            
+            if (left < 0)
+                throw new ArgumentOutOfRangeException(nameof(left), "The left border cannot be negative.");
+            
+            if (right < 0)
+                throw new ArgumentOutOfRangeException(nameof(right), "The right border cannot be negative.");
+            
             border.Top += top;
             border.Bottom += bottom;
             border.Left += left;

@@ -25,6 +25,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.rasterDPI"]/*' />
         public DynamicImageDescriptor WithRasterDpi(int dpi)
         {
+            if (dpi <= 0)
+                throw new DocumentComposeException("DPI value must be greater than 0.");
+            
             ImageElement.TargetDpi = dpi;
             return this;
         }
@@ -62,6 +65,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.rasterDPI"]/*' />
         public ImageDescriptor WithRasterDpi(int dpi)
         {
+            if (dpi <= 0)
+                throw new DocumentComposeException("DPI value must be greater than 0.");
+            
             ImageElement.TargetDpi = dpi;
             return this;
         }

@@ -113,8 +113,11 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.clampLines"]/*' />
         public TextBlockDescriptor ClampLines(int maxLines, string ellipsis = TextDescriptor.DefaultLineClampEllipsis)
         {
+            if (maxLines < 0)
+                throw new ArgumentException("Line clamp must be greater or equal to zero", nameof(maxLines));
+            
             TextBlock.LineClamp = maxLines;
-            TextBlock.LineClampEllipsis = ellipsis;
+            TextBlock.LineClampEllipsis = ellipsis ?? TextDescriptor.DefaultLineClampEllipsis;
             return this;
         }
         

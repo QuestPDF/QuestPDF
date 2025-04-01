@@ -24,6 +24,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void VerticalSpacing(float value, Unit unit = Unit.Point)
         {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "The Inlined vertical spacing cannot be negative.");
+            
             Inlined.VerticalSpacing = value.ToPoints(unit);
         }
 
@@ -32,6 +35,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void HorizontalSpacing(float value, Unit unit = Unit.Point)
         {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "The Inlined horizontal spacing cannot be negative.");
+            
             Inlined.HorizontalSpacing = value.ToPoints(unit);
         }
         

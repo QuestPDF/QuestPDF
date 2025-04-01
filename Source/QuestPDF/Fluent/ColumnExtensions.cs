@@ -13,6 +13,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void Spacing(float value, Unit unit = Unit.Point)
         {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "The column spacing cannot be negative.");
+            
             Column.Spacing = value.ToPoints(unit);
         }
         

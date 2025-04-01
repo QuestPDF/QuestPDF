@@ -39,6 +39,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.fontFamily"]/*' />
         public static TextStyle FontFamily(this TextStyle style, params string[] values)
         {
+            if (values == null || values.Length == 0)
+                return style;
+            
             return style.Mutate(TextStyleProperty.FontFamilies, values);
         }
         
@@ -60,10 +63,11 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.lineHeight"]/*' />
         public static TextStyle LineHeight(this TextStyle style, float? factor)
         {
-            if (factor <= 0)
+            factor ??= TextStyle.NormalLineHeightCalculatedFromFontMetrics;
+            
+            if (factor < 0)
                 throw new ArgumentException("Line height must be greater than 0.");
             
-            factor ??= TextStyle.NormalLineHeightCalculatedFromFontMetrics;
             return style.Mutate(TextStyleProperty.LineHeight, factor);
         }
 

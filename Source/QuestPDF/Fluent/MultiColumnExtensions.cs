@@ -30,7 +30,7 @@ public sealed class MultiColumnDescriptor
     /// </remarks>
     public void Columns(int value = 2)
     {
-        if (value <= 1)
+        if (value < 2)
             throw new DocumentComposeException("The 'MultiColumn.Columns' value should be higher than 1.");
         
         MultiColumn.ColumnCount = value;

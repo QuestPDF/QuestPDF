@@ -14,6 +14,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void Spacing(float value, Unit unit = Unit.Point)
         {
+            if (value < 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "The row spacing cannot be negative.");
+            
             Row.Spacing = value.ToPoints(unit);
         }
 
@@ -51,6 +54,9 @@ namespace QuestPDF.Fluent
         /// <returns>The container of the newly added item.</returns>
         public IContainer RelativeItem(float size = 1)
         {
+            if (size < 0)
+                throw new ArgumentOutOfRangeException(nameof(size), "The relative item size cannot be negative.");
+            
             return Item(RowItemType.Relative, size);
         }
         
@@ -60,6 +66,9 @@ namespace QuestPDF.Fluent
         /// <returns>The container of the newly created item.</returns>
         public IContainer ConstantItem(float size, Unit unit = Unit.Point)
         {
+            if (size < 0)
+                throw new ArgumentOutOfRangeException(nameof(size), "The constant item size cannot be negative.");
+            
             return Item(RowItemType.Constant, size.ToPoints(unit));
         }
 

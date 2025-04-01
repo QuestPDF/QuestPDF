@@ -22,6 +22,12 @@ namespace QuestPDF.Helpers
         
         public PageSize(float width, float height, Unit unit = Unit.Point)
         {
+            if (width < 0)
+                throw new ArgumentOutOfRangeException(nameof(width), "Page width must be greater than 0.");
+            
+            if (height < 0)
+                throw new ArgumentOutOfRangeException(nameof(height), "Page height must be greater than 0.");
+            
             Width = width.ToPoints(unit);
             Height = height.ToPoints(unit);
         }

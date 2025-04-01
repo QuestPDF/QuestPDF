@@ -1,4 +1,5 @@
-﻿using QuestPDF.Elements;
+﻿using System;
+using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -11,6 +12,15 @@ namespace QuestPDF.Fluent
         {
             var constrained = element as Constrained ?? new Constrained();
 
+            if (min < 0)
+                throw new ArgumentOutOfRangeException(nameof(min), "The minimum width cannot be negative.");
+            
+            if (max < 0)
+                throw new ArgumentOutOfRangeException(nameof(max), "The maximum width cannot be negative.");
+            
+            if (min > max)
+                throw new ArgumentOutOfRangeException(nameof(min), "The minimum width cannot be greater than the maximum width.");
+            
             if (min.HasValue)
                 constrained.MinWidth = min;
             
@@ -60,7 +70,16 @@ namespace QuestPDF.Fluent
         private static IContainer ConstrainedHeight(this IContainer element, float? min = null, float? max = null)
         {
             var constrained = element as Constrained ?? new Constrained();
-
+            
+            if (min < 0)
+                throw new ArgumentOutOfRangeException(nameof(min), "The minimum height cannot be negative.");
+            
+            if (max < 0)
+                throw new ArgumentOutOfRangeException(nameof(max), "The maximum height cannot be negative.");
+            
+            if (min > max)
+                throw new ArgumentOutOfRangeException(nameof(min), "The minimum height cannot be greater than the maximum height.");
+            
             if (min.HasValue) 
                 constrained.MinHeight = min;
             

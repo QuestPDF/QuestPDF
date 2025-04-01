@@ -18,6 +18,9 @@ namespace QuestPDF.Fluent
         /// <returns>The container of the newly created column.</returns>
         public void ConstantColumn(float width, Unit unit = Unit.Point)
         {
+            if (width <= 0)
+                throw new ArgumentOutOfRangeException(nameof(width), "Constant column width must be greater than zero.");
+            
             ComplexColumn(constantWidth: width.ToPoints(unit));
         }
         
@@ -31,6 +34,9 @@ namespace QuestPDF.Fluent
         /// <returns>The container for the newly defined column.</returns>
         public void RelativeColumn(float width = 1)
         {
+            if (width <= 0)
+                throw new ArgumentOutOfRangeException(nameof(width), "Relative column width must be greater than zero.");
+            
             ComplexColumn(relativeWidth: width);
         }
         

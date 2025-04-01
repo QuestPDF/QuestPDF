@@ -1,4 +1,5 @@
-﻿using QuestPDF.Elements;
+﻿using System;
+using QuestPDF.Elements;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -8,6 +9,9 @@ namespace QuestPDF.Fluent
     {
         private static ILine Line(this IContainer element, LineType type, float thickness)
         {
+            if (thickness < 0)
+                throw new ArgumentOutOfRangeException(nameof(thickness), "The Line thickness cannot be negative.");
+            
             var line = new Line
             {
                 Thickness = thickness,

@@ -119,6 +119,9 @@ namespace QuestPDF.Fluent
         /// <param name="option">Determines the approach the component should adopt when maintaining the specified aspect ratio.</param>
         public static IContainer AspectRatio(this IContainer element, float ratio, AspectRatioOption option = AspectRatioOption.FitWidth)
         {
+            if (ratio <= 0)
+                throw new ArgumentOutOfRangeException(nameof(ratio), "The aspect ratio must be greater than zero.");
+            
             return element.Element(new AspectRatio
             {
                 Ratio = ratio,
@@ -234,6 +237,9 @@ namespace QuestPDF.Fluent
         /// <param name="minHeight">The minimum height, in points, that the element should occupy before a page break.</param>
         public static IContainer EnsureSpace(this IContainer element, float minHeight = Elements.EnsureSpace.DefaultMinHeight)
         {
+            if (minHeight < 0)
+                throw new ArgumentOutOfRangeException(nameof(minHeight), "The EnsureSpace minimum height cannot be negative.");
+            
             return element.Element(new EnsureSpace
             {
                 MinHeight = minHeight
