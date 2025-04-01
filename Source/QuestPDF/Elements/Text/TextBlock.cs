@@ -36,6 +36,7 @@ namespace QuestPDF.Elements.Text
         
         private SkSize[] LineMetrics { get; set; }
         private float WidthForLineMetricsCalculation { get; set; }
+        private float MinimumWidth { get; set; }
         private float MaximumWidth { get; set; }
         private SkRect[] PlaceholderPositions { get; set; }
         private bool? ContainsOnlyWhiteSpace { get; set; }
@@ -88,13 +89,16 @@ namespace QuestPDF.Elements.Text
                     ? SpacePlan.FullRender(0, requiredHeight) 
                     : SpacePlan.Wrap("The available vertical space is not sufficient to render even a single line of text.");
             }
+
+            if (availableSpace.Width < Size.Epsilon || availableSpace.Height < Size.Epsilon)
+                return SpacePlan.Wrap("The available space is not sufficient to render even a single line of text.");
             
             Initialize();
-            
-            if (Size.Equal(availableSpace, Size.Zero))
-                return SpacePlan.PartialRender(Size.Zero);
-            
+
             CalculateParagraphMetrics(availableSpace);
+            
+            if (availableSpace.Width < MinimumWidth)
+                return SpacePlan.Wrap("The available space is not sufficient to render even a single character.");
 
             if (MaximumWidth == 0)
                 return SpacePlan.FullRender(Size.Zero);
@@ -519,6 +523,7 @@ namespace QuestPDF.Elements.Text
                 
             LineMetrics = Paragraph.GetLineMetrics();
             PlaceholderPositions = Paragraph.GetPlaceholderPositions();
+            MinimumWidth = LineMetrics.Any() ? LineMetrics.Min(x => x.Width) : 0;
             MaximumWidth = LineMetrics.Any() ? LineMetrics.Max(x => x.Width) : 0;
             
             AreParagraphMetricsValid = true;
