@@ -10,7 +10,7 @@ namespace QuestPDF.UnitTests
     public class EnsureSpaceTests
     {
         [Test]
-        public void Measure_ReturnsWrap_WhenChildReturnsWrap()
+        public void Measure_ReturnsPartialRenderWithZeroSize_WhenChildReturnsWrap()
         {
             TestPlan
                 .For(x => new EnsureSpace
@@ -20,7 +20,7 @@ namespace QuestPDF.UnitTests
                 })
                 .MeasureElement(new Size(400, 100))
                 .ExpectChildMeasure(new Size(400, 100), SpacePlan.Wrap("Mock"))
-                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
+                .CheckMeasureResult(SpacePlan.PartialRender(Size.Zero));
         }
         
         [Test]
