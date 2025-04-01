@@ -14,8 +14,11 @@ namespace QuestPDF.Elements
 
             if (IsFirstPageRendered)
                 return measurement;
+            
+            if (measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
+                return measurement;
 
-            if (measurement.Type != SpacePlanType.PartialRender || MinHeight <= measurement.Height)
+            if (measurement.Type == SpacePlanType.PartialRender && MinHeight <= measurement.Height)
                 return measurement;
             
             return SpacePlan.PartialRender(Size.Zero);
@@ -31,7 +34,10 @@ namespace QuestPDF.Elements
 
             var measurement = base.Measure(availableSpace);
             
-            if (measurement.Type != SpacePlanType.PartialRender || MinHeight <= measurement.Height)
+            if (measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
+                base.Draw(availableSpace);
+            
+            if (measurement.Type is SpacePlanType.PartialRender && MinHeight <= measurement.Height)
                 base.Draw(availableSpace);
             
             IsFirstPageRendered = true;
