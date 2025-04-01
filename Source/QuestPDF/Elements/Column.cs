@@ -80,7 +80,6 @@ namespace QuestPDF.Elements
         private List<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
         {
             var topOffset = 0f;
-            var targetWidth = 0f;
             var commands = new List<ColumnItemRenderingCommand>();
 
             foreach (var item in Items.Skip(CurrentRenderingIndex))
@@ -109,10 +108,7 @@ namespace QuestPDF.Elements
                     Measurement = measurement,
                     Offset = new Position(0, topOffset)
                 });
-                
-                if (measurement.Width > targetWidth)
-                    targetWidth = measurement.Width;
-                
+
                 if (measurement.Type == SpacePlanType.PartialRender)
                     break;
                 
