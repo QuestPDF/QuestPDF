@@ -88,23 +88,36 @@ namespace QuestPDF.Elements
 
             foreach (var item in Items.Skip(CurrentRenderingIndex))
             {
-                var availableHeight = availableSpace.Height - topOffset;
+                var isFirstItem = commands.Count == 0;
 
-                var itemSpace = availableHeight >= 0
-                    ? new Size(availableSpace.Width, availableHeight)
-                    : Size.Zero;
+                var availableHeight = availableSpace.Height - topOffset;
+                
+                if (availableHeight < -Size.Epsilon)
+                    break;
+
+                availableHeight = Math.Max(0, availableHeight);
+                
+                if (!isFirstItem)
+                    availableHeight -= Spacing;
+
+                var allowOnlyZeroSpaceItems = availableHeight < Size.Epsilon;
+                
+                var itemSpace = allowOnlyZeroSpaceItems
+                    ? Size.Zero
+                    : new Size(availableSpace.Width, availableHeight);
                 
                 var measurement = item.Measure(itemSpace);
                 
                 if (measurement.Type == SpacePlanType.Wrap)
                     break;
+
+                var currentItemTookSpace = !Size.Equal(measurement, Size.Zero);
                 
-                if (Size.Equal(itemSpace, Size.Zero) && !Size.Equal(measurement, Size.Zero))
+                if (allowOnlyZeroSpaceItems && currentItemTookSpace)
                     break;
 
-                // when the item does not take any space, do not add spacing
-                if (topOffset > 0 && measurement.Width < Size.Epsilon && measurement.Height < Size.Epsilon)
-                    topOffset -= Spacing;
+                if (!isFirstItem && currentItemTookSpace)
+                    topOffset += Spacing;
                 
                 commands.Add(new ColumnItemRenderingCommand
                 {
@@ -115,8 +128,8 @@ namespace QuestPDF.Elements
 
                 if (measurement.Type == SpacePlanType.PartialRender)
                     break;
-                
-                topOffset += measurement.Height + Spacing;
+
+                topOffset += measurement.Height;
             }
 
             return commands;
