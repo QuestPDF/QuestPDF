@@ -11,6 +11,7 @@ internal static class LayoutTestExecutor
     public static LayoutTestResult.DocumentLayout Execute(Size pageSize, Container container)
     {
         var (pageSizes, generatesInfiniteLayout) = GenerateDocument();
+        container.ReleaseDisposableChildren();
 
         return new LayoutTestResult.DocumentLayout
         {
@@ -24,7 +25,7 @@ internal static class LayoutTestExecutor
             var pageContext = new PageContext();
             pageContext.ProceedToNextRenderingPhase();
 
-            var canvas = new CompanionCanvas();
+            using var canvas = new CompanionCanvas();
         
             container.InjectDependencies(pageContext, canvas);
         

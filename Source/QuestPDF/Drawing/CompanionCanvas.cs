@@ -81,6 +81,8 @@ namespace QuestPDF.Drawing
 
             PictureRecorder?.Dispose();
             PictureRecorder = null;
+            
+            Canvas?.Dispose();
         }
 
         public override void EndDocument() { }
