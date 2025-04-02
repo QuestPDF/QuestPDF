@@ -4,7 +4,7 @@ namespace QuestPDF.Infrastructure
 {
     public readonly struct Size
     {
-        public const float Epsilon = 0.001f;
+        public const float Epsilon = 0.01f;
         public const float Infinity = 14_400;
 
         public readonly float Width;
