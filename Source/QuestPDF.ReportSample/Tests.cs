@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
@@ -42,7 +43,18 @@ namespace QuestPDF.ReportSample
         [Test]
         public void GeneratePdfForManualVerificationTesting()
         {
-            Report.GeneratePdf("report.pdf");
+            Report.GeneratePdfAndShow();
+        }
+        
+        [Test]
+        public void StabilityTesting()
+        {
+            Parallel.ForEach(Enumerable.Range(0, 1000), i =>
+            {
+                var model = DataSource.GetReport();
+                var report = new StandardReport(model);
+                report.GeneratePdf();
+            });
         }
     }
 }
