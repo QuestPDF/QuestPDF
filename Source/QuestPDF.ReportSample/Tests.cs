@@ -43,7 +43,7 @@ namespace QuestPDF.ReportSample
         [Test]
         public void GeneratePdfForManualVerificationTesting()
         {
-            Report.GeneratePdfAndShow();
+            Report.GeneratePdf("report.pdf");
         }
         
         [Test]
