@@ -23,13 +23,11 @@ internal sealed class LayoutProxy : ElementProxy
         var size = ProvideIntrinsicSize() ? Child.Measure(availableSpace) : availableSpace;
         
         base.Draw(availableSpace);
-        
-        var canvas = Canvas as SkiaCanvasBase;
-        
-        if (canvas == null)
+
+        if (Canvas is FreeDrawingCanvas)
             return;
         
-        var matrix = canvas.Canvas.GetCurrentMatrix();
+        var matrix = Canvas.GetCurrentMatrix();
         
         Snapshots.Add(new CompanionCommands.UpdateDocumentStructure.PageLocation
         {

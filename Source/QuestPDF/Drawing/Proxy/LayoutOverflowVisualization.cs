@@ -47,10 +47,7 @@ internal sealed class LayoutOverflowVisualization : ElementProxy, IContentDirect
         }
 
         Canvas = Child.Canvas;
-        
-        if (Canvas is SkiaCanvasBase skiaCanvasBase)
-            skiaCanvasBase.MarkCurrentPageAsHavingLayoutIssues();
-        
+
         // check overflow area
         var contentArea = Child.TryMeasureWithOverflow(availableSpace);
 

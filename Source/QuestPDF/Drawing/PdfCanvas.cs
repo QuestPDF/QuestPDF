@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Helpers;
@@ -7,12 +8,15 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
-    internal sealed class PdfCanvas : SkiaDocumentCanvasBase
+    internal sealed class PdfCanvas : IDocumentCanvas, IDisposable
     {
-        public PdfCanvas(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings) 
-            : base(CreatePdf(stream, documentMetadata, documentSettings))
+        private SkDocument Document { get; }
+        private SkCanvas? CurrentPageCanvas { get; set; }
+        private ProxyDrawingCanvas DrawingCanvas { get; } = new();
+        
+        public PdfCanvas(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
         {
-            
+            Document = CreatePdf(stream, documentMetadata, documentSettings);
         }
 
         private static SkDocument CreatePdf(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
@@ -54,5 +58,58 @@ namespace QuestPDF.Drawing
                 throw new InitializationException("PDF", exception);
             }
         }
+        
+        #region IDisposable
+        
+        ~PdfCanvas()
+        {
+            this.WarnThatFinalizerIsReached();
+            Dispose();
+        }
+        
+        public void Dispose()
+        {
+            Document?.Dispose();
+            GC.SuppressFinalize(this);
+        }
+        
+        #endregion
+        
+        #region IDocumentCanvas
+        
+        public void BeginDocument()
+        {
+            
+        }
+
+        public void EndDocument()
+        {
+            Document?.Close();
+            Document?.Dispose();
+        }
+
+        public void BeginPage(Size size)
+        {
+            CurrentPageCanvas = Document?.BeginPage(size.Width, size.Height);
+            
+            DrawingCanvas.Target = new SkiaDrawingCanvas(size.Width, size.Height);
+            DrawingCanvas.SetZIndex(0);
+        }
+
+        public void EndPage()
+        {
+            Debug.Assert(CurrentPageCanvas != null);
+            
+            using var documentPageSnapshot = DrawingCanvas.GetSnapshot();
+            documentPageSnapshot.DrawOnSkCanvas(CurrentPageCanvas);
+            Document.EndPage();
+        }
+        
+        public IDrawingCanvas GetDrawingCanvas()
+        {
+            return DrawingCanvas;
+        }
+        
+        #endregion
     }
 }

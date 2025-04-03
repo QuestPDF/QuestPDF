@@ -56,7 +56,7 @@ internal sealed class MultiColumn : Element, IContentDirectionAware
     public ContentDirection ContentDirection { get; set; }
 
     // cache
-    private ProxyCanvas ChildrenCanvas { get; } = new();
+    private ProxyDrawingCanvas ChildrenCanvas { get; } = new();
     private TreeNode<MultiColumnChildDrawingObserver>[] State { get; set; }
 
     internal override void CreateProxy(Func<Element?, Element?> create)
@@ -92,7 +92,7 @@ internal sealed class MultiColumn : Element, IContentDirectionAware
         if (Content.Canvas != ChildrenCanvas)
             Content.InjectDependencies(PageContext, ChildrenCanvas);
         
-        ChildrenCanvas.Target = new FreeCanvas();
+        ChildrenCanvas.Target = new FreeDrawingCanvas();
         
         return FindPerfectSpace();
 

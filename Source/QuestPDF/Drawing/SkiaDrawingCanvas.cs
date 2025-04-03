@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Helpers;
@@ -7,90 +8,25 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing
 {
-    internal abstract class SkiaCanvasBase : ICanvas, IDocumentCanvas
+    internal class SkiaDrawingCanvas : IDrawingCanvas, IDisposable
     {
-        internal SkCanvas Canvas { get; set; }
-
-        #region IRenderingCanvas
+        public float Width { get; }
+        public float Height { get; }
         
-        public bool DocumentContentHasLayoutOverflowIssues { get; set; }
-        
-        private Size CurrentPageSize { get; set; } = Size.Zero;
-        private bool CurrentPageHasLayoutIssues { get; set; }
-        
-        public abstract void BeginDocument();
-        public abstract void EndDocument();
-
-        public virtual void BeginPage(Size size)
+        public SkiaDrawingCanvas(float width, float height)
         {
-            CurrentPageSize = size;
-            CurrentPageHasLayoutIssues = false;
-
-            SetZIndex(0);
-        }
-
-        public virtual void EndPage()
-        {
-            DrawZIndexContent(Canvas);
-            DisposeZIndexCanvases();
-            
-            if (CurrentPageHasLayoutIssues)
-                DrawLayoutIssuesIndicatorOnCurrentPage();
-        }
-
-        public void MarkCurrentPageAsHavingLayoutIssues()
-        {
-            CurrentPageHasLayoutIssues = true;
-            DocumentContentHasLayoutOverflowIssues = true;
+            Width = width;
+            Height = height;
         }
         
-        private void DrawLayoutIssuesIndicatorOnCurrentPage()
+        ~SkiaDrawingCanvas()
         {
-            // visual configuration
-            var lineColor = Colors.Red.Medium;
-            const byte lineOpacity = 64;
-        
-            // implementation
-            var indicatorColor = lineColor.WithAlpha(lineOpacity);
-            var position = new SkRect(0, 0, CurrentPageSize.Width, CurrentPageSize.Height);
-            Canvas.DrawFilledRectangle(position, indicatorColor);
+            Dispose();
         }
         
-        #endregion
-        
-        #region ZIndex
-        
-        private SkCanvas CurrentCanvas { get; set; }
-        
-        private int CurrentZIndex { get; set; } = 0;
-        private IDictionary<int, (SkPictureRecorder PictureRecorder, SkCanvas Canvas)> ZIndexCanvases { get; } = new Dictionary<int, (SkPictureRecorder, SkCanvas)>();
-        
-        SkCanvas GetCanvasForZIndex(int zIndex)
+        public void Dispose()
         {
-            if (ZIndexCanvases.TryGetValue(zIndex, out var value))
-                return value.Canvas;
-            
-            var pictureRecorder = new SkPictureRecorder();
-            var canvas = pictureRecorder.BeginRecording(CurrentPageSize.Width, CurrentPageSize.Height);
-            
-            ZIndexCanvases.Add(zIndex, (pictureRecorder, canvas));
-            return canvas;
-        }
-
-        private void DrawZIndexContent(SkCanvas canvas)
-        {
-            foreach (var zIndex in ZIndexCanvases.OrderBy(x => x.Key).Select(x => x.Value))
-            {
-                using var pictureRecorder = zIndex.PictureRecorder;
-                using var picture = pictureRecorder.EndRecording();
-                zIndex.Canvas.Dispose();
-                canvas.DrawPicture(picture);
-            }
-        }
-        
-        private void DisposeZIndexCanvases()
-        {
-            CurrentCanvas.Dispose();
+            CurrentCanvas?.Dispose();
             CurrentCanvas = null;
 
             foreach (var layer in ZIndexCanvases.Values)
@@ -100,20 +36,72 @@ namespace QuestPDF.Drawing
             }
             
             ZIndexCanvases.Clear();
+            
+            GC.SuppressFinalize(this);
+        }
+        
+        #region ZIndex
+        
+        private SkCanvas CurrentCanvas { get; set; }
+        
+        private int CurrentZIndex { get; set; } = 0;
+        private IDictionary<int, (SkPictureRecorder PictureRecorder, SkCanvas Canvas)> ZIndexCanvases { get; } = new Dictionary<int, (SkPictureRecorder, SkCanvas)>();
+        private ICollection<DocumentPageSnapshot> InternalDocumentPageSnapshots { get; } = new List<DocumentPageSnapshot>(0);
+        
+        SkCanvas GetCanvasForZIndex(int zIndex)
+        {
+            if (ZIndexCanvases.TryGetValue(zIndex, out var value))
+                return value.Canvas;
+            
+            var pictureRecorder = new SkPictureRecorder();
+            var canvas = pictureRecorder.BeginRecording(Width, Height);
+            
+            ZIndexCanvases.Add(zIndex, (pictureRecorder, canvas));
+            return canvas;
         }
         
         #endregion
         
         #region ICanvas
-        
+
+        public DocumentPageSnapshot GetSnapshot()
+        { 
+            return new DocumentPageSnapshot
+            {
+                Layers = ZIndexCanvases
+                    .Select(zindex =>
+                    {
+                        using var pictureRecorder = zindex.Value.PictureRecorder;
+                        var picture = pictureRecorder.EndRecording();
+                        
+                        zindex.Value.Canvas.Dispose();
+                        
+                        return new DocumentPageSnapshot.LayerSnapshot
+                        {
+                            ZIndex = zindex.Key,
+                            Picture = picture
+                        };
+                    })
+                    .ToList()
+            };
+        }
+
+        public void DrawSnapshot(DocumentPageSnapshot snapshot)
+        {
+            foreach (var snapshotLayer in snapshot.Layers.OrderBy(x => x.ZIndex))
+            {
+                ZIndexCanvases[snapshotLayer.ZIndex].Canvas.DrawPicture(snapshotLayer.Picture);
+            }
+        }
+
         public void Save()
         {
-            Canvas.Save();
+            CurrentCanvas.Save();
         }
 
         public void Restore()
         {
-            Canvas.Restore();
+            CurrentCanvas.Restore();
         }
         
         public void SetZIndex(int index)

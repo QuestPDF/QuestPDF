@@ -6,13 +6,13 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal sealed class SnapshotRecorder : ElementProxy, IDisposable
+internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
 {
-    SnapshotRecorderCanvas RecorderCanvas { get; } = new();
+    ProxyDrawingCanvas RecorderCanvas { get; } = new();
     Dictionary<(int pageNumber, float availableWidth, float availableHeight), SpacePlan> MeasureCache { get; } = new();
-    Dictionary<int, SkPicture> DrawCache { get; } = new();
+    Dictionary<int, DocumentPageSnapshot> DrawCache { get; } = new();
 
-    ~SnapshotRecorder()
+    ~SnapshotCacheRecorderProxy()
     {
         this.WarnThatFinalizerIsReached();
         Dispose();
@@ -26,14 +26,14 @@ internal sealed class SnapshotRecorder : ElementProxy, IDisposable
         GC.SuppressFinalize(this);
     }
     
-    public SnapshotRecorder(Element child)
+    public SnapshotCacheRecorderProxy(Element child)
     {
         Child = child;
     }
     
     private void Initialize()
     {
-        if (Child.Canvas is SnapshotRecorderCanvas)
+        if (Child.Canvas == RecorderCanvas)
             return;
         
         Child.VisitChildren(x => x.Canvas = RecorderCanvas);
@@ -47,8 +47,11 @@ internal sealed class SnapshotRecorder : ElementProxy, IDisposable
         
         if (MeasureCache.TryGetValue(cacheItem, out var measurement))
             return measurement;
-        
+
+        RecorderCanvas.Target = new FreeDrawingCanvas();
         var result = base.Measure(availableSpace);
+        RecorderCanvas.Target = null;
+        
         MeasureCache[cacheItem] = result;
         return result;
     }
@@ -63,7 +66,7 @@ internal sealed class SnapshotRecorder : ElementProxy, IDisposable
         if (DrawCache.TryGetValue(PageContext.CurrentPage, out var snapshot))
         {
             Canvas.Translate(cachePictureOffset.Reverse());
-            Canvas.DrawPicture(snapshot);
+            Canvas.DrawSnapshot(snapshot);
             Canvas.Translate(cachePictureOffset);
             
             snapshot.Dispose();
@@ -71,14 +74,14 @@ internal sealed class SnapshotRecorder : ElementProxy, IDisposable
             return;
         }
         
-        using var pictureRecorder = new SkPictureRecorder();
-        using var canvas = pictureRecorder.BeginRecording(Size.Max.Width, Size.Max.Height);
-        RecorderCanvas.Canvas = canvas;
-
+        using var skiaCanvas = new SkiaDrawingCanvas(Size.Max.Width, Size.Max.Height);
+        RecorderCanvas.Target = skiaCanvas;
+        RecorderCanvas.SetZIndex(0);
+        
         RecorderCanvas.Translate(cachePictureOffset);
         base.Draw(availableSpace);
         
-        DrawCache[PageContext.CurrentPage] = pictureRecorder.EndRecording();
-        RecorderCanvas.Canvas = null;
+        DrawCache[PageContext.CurrentPage] = skiaCanvas.GetSnapshot();
+        RecorderCanvas.Target = null;
     }
 }

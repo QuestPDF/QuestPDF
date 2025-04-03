@@ -1,63 +1,80 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing
 {
-    internal sealed class ImageCanvas : SkiaCanvasBase, IDisposable
+    internal sealed class ImageCanvas : IDocumentCanvas, IDisposable
     {
         private ImageGenerationSettings Settings { get; }
         private SkBitmap Bitmap { get; set; }
-
-        // TODO: consider using SkSurface to cache drawing operations and then encode the surface to an image at the very end of the generation process      
-        // this change should reduce memory usage and improve performance
+        
+        private SkDocument Document { get; }
+        private SkCanvas? CurrentPageCanvas { get; set; }
+        private ProxyDrawingCanvas DrawingCanvas { get; } = new();
+        
         internal ICollection<byte[]> Images { get; } = new List<byte[]>();
         
         public ImageCanvas(ImageGenerationSettings settings)
         {
             Settings = settings;
         }
+
+        #region IDisposable
         
         ~ImageCanvas()
         {
             this.WarnThatFinalizerIsReached();
             Dispose();
         }
-
+        
         public void Dispose()
         {
-            Canvas?.Dispose();
+            CurrentPageCanvas?.Dispose();
             Bitmap?.Dispose();
             GC.SuppressFinalize(this);
         }
         
-        public override void BeginDocument()
+        #endregion
+        
+        #region IDocumentCanvas
+        
+        public void BeginDocument()
         {
             
         }
 
-        public override void EndDocument()
+        public void EndDocument()
         {
-            Canvas?.Dispose();
+            CurrentPageCanvas?.Dispose();
             Bitmap?.Dispose();
         }
 
-        public override void BeginPage(Size size)
+        public void BeginPage(Size size)
         {
             var scalingFactor = Settings.RasterDpi / (float) PageSizes.PointsPerInch;
 
             Bitmap = new SkBitmap((int) (size.Width * scalingFactor), (int) (size.Height * scalingFactor));
-            Canvas = SkCanvas.CreateFromBitmap(Bitmap);
+            CurrentPageCanvas = SkCanvas.CreateFromBitmap(Bitmap);
             
-            Canvas.Scale(scalingFactor, scalingFactor);
+            CurrentPageCanvas.Scale(scalingFactor, scalingFactor);
+            
+            DrawingCanvas.Target = new SkiaDrawingCanvas(size.Width, size.Height);
+            DrawingCanvas.SetZIndex(0);
         }
 
-        public override void EndPage()
+        public void EndPage()
         {
-            Canvas.Save();
-            Canvas.Dispose();
+            Debug.Assert(CurrentPageCanvas != null);
+            
+            using var documentPageSnapshot = DrawingCanvas.GetSnapshot();
+            documentPageSnapshot.DrawOnSkCanvas(CurrentPageCanvas);
+            
+            CurrentPageCanvas.Save();
+            CurrentPageCanvas.Dispose();
             
             using var imageData = EncodeBitmap();
             var imageBytes = imageData.ToBytes();
@@ -76,5 +93,12 @@ namespace QuestPDF.Drawing
                 };
             }
         }
+        
+        public IDrawingCanvas GetDrawingCanvas()
+        {
+            return DrawingCanvas;
+        }
+        
+        #endregion
     }
 }
