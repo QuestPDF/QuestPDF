@@ -9,9 +9,9 @@ namespace QuestPDF.Drawing.Proxy;
 
 internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
 {
-    ProxyDrawingCanvas RecorderCanvas { get; } = new();
-    Dictionary<(int pageNumber, float availableWidth, float availableHeight), SpacePlan> MeasureCache { get; } = new();
-    Dictionary<int, DocumentPageSnapshot> DrawCache { get; } = new();
+    private ProxyDrawingCanvas RecorderCanvas { get; } = new();
+    private Dictionary<(int pageNumber, float availableWidth, float availableHeight), SpacePlan> MeasureCache { get; } = new();
+    private Dictionary<int, DocumentPageSnapshot> DrawCache { get; } = new();
 
     ~SnapshotCacheRecorderProxy()
     {
@@ -21,6 +21,8 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
 
     public void Dispose()
     {
+        RecorderCanvas?.Dispose();
+        
         foreach (var cacheValue in DrawCache.Values)
             cacheValue.Dispose();
         

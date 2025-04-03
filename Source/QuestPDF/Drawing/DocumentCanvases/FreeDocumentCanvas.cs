@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.DocumentCanvases;
 
-internal class FreeDocumentCanvas : IDocumentCanvas
+internal sealed class FreeDocumentCanvas : IDocumentCanvas
 {
     private FreeDrawingCanvas DrawingCanvas { get; } = new();
         

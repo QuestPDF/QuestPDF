@@ -13,7 +13,6 @@ namespace QuestPDF.Drawing.DocumentCanvases
         private ImageGenerationSettings Settings { get; }
         private SkBitmap Bitmap { get; set; }
         
-        private SkDocument Document { get; }
         private SkCanvas? CurrentPageCanvas { get; set; }
         private ProxyDrawingCanvas DrawingCanvas { get; } = new();
         
@@ -36,6 +35,8 @@ namespace QuestPDF.Drawing.DocumentCanvases
         {
             CurrentPageCanvas?.Dispose();
             Bitmap?.Dispose();
+            DrawingCanvas?.Dispose();
+            
             GC.SuppressFinalize(this);
         }
         
@@ -76,6 +77,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
             
             CurrentPageCanvas.Save();
             CurrentPageCanvas.Dispose();
+            CurrentPageCanvas = null;
             
             using var imageData = EncodeBitmap();
             var imageBytes = imageData.ToBytes();

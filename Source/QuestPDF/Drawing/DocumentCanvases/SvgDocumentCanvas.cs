@@ -28,6 +28,8 @@ namespace QuestPDF.Drawing.DocumentCanvases
         {
             CurrentPageCanvas?.Dispose();
             WriteStream?.Dispose();
+            DrawingCanvas?.Dispose();
+            
             GC.SuppressFinalize(this);
         }
         
@@ -65,6 +67,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
             
             CurrentPageCanvas.Save();
             CurrentPageCanvas.Dispose();
+            CurrentPageCanvas = null;
             
             using var data = WriteStream.DetachData();
             var svgImage = Encoding.UTF8.GetString(data.ToBytes());

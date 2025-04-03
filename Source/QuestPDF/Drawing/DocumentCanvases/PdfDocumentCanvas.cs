@@ -69,6 +69,9 @@ namespace QuestPDF.Drawing.DocumentCanvases
         public void Dispose()
         {
             Document?.Dispose();
+            CurrentPageCanvas?.Dispose();
+            DrawingCanvas?.Dispose();
+            
             GC.SuppressFinalize(this);
         }
         
@@ -101,6 +104,11 @@ namespace QuestPDF.Drawing.DocumentCanvases
             
             using var documentPageSnapshot = DrawingCanvas.GetSnapshot();
             documentPageSnapshot.DrawOnSkCanvas(CurrentPageCanvas);
+            
+            CurrentPageCanvas.Save();
+            CurrentPageCanvas.Dispose();
+            CurrentPageCanvas = null;
+            
             Document.EndPage();
         }
         
