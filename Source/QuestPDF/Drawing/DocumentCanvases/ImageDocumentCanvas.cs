@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
-namespace QuestPDF.Drawing
+namespace QuestPDF.Drawing.DocumentCanvases
 {
-    internal sealed class ImageCanvas : IDocumentCanvas, IDisposable
+    internal sealed class ImageDocumentCanvas : IDocumentCanvas, IDisposable
     {
         private ImageGenerationSettings Settings { get; }
         private SkBitmap Bitmap { get; set; }
@@ -18,14 +19,14 @@ namespace QuestPDF.Drawing
         
         internal ICollection<byte[]> Images { get; } = new List<byte[]>();
         
-        public ImageCanvas(ImageGenerationSettings settings)
+        public ImageDocumentCanvas(ImageGenerationSettings settings)
         {
             Settings = settings;
         }
 
         #region IDisposable
         
-        ~ImageCanvas()
+        ~ImageDocumentCanvas()
         {
             this.WarnThatFinalizerIsReached();
             Dispose();

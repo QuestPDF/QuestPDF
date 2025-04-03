@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using QuestPDF.Companion;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
-namespace QuestPDF.Drawing
+namespace QuestPDF.Drawing.DocumentCanvases
 {
     internal sealed class CompanionPageSnapshot
     {

@@ -1,7 +1,7 @@
-using System;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Infrastructure;
 
-namespace QuestPDF.Drawing;
+namespace QuestPDF.Drawing.DocumentCanvases;
 
 internal class FreeDocumentCanvas : IDocumentCanvas
 {

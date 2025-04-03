@@ -2,7 +2,7 @@
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
 
-namespace QuestPDF.Drawing
+namespace QuestPDF.Drawing.DrawingCanvases
 {
     internal sealed class FreeDrawingCanvas : IDrawingCanvas
     {
