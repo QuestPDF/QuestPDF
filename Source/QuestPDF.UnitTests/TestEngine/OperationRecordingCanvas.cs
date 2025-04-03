@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -7,9 +8,12 @@ using QuestPDF.UnitTests.TestEngine.Operations;
 
 namespace QuestPDF.UnitTests.TestEngine
 {
-    internal sealed class OperationRecordingCanvas : ICanvas
+    internal sealed class OperationRecordingCanvas : IDrawingCanvas
     {
         public ICollection<OperationBase> Operations { get; } = new List<OperationBase>();
+        
+        public DocumentPageSnapshot GetSnapshot() => throw new NotImplementedException();
+        public void DrawSnapshot(DocumentPageSnapshot snapshot) => throw new NotImplementedException();
         
         public void Save() => throw new NotImplementedException();
         public void Restore() => throw new NotImplementedException();

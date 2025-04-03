@@ -4,40 +4,17 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing
 {
-    internal sealed class FreeCanvas : ICanvas, IDocumentCanvas
+    internal sealed class FreeDrawingCanvas : IDrawingCanvas
     {
-        #region IRenderingCanvas
+        public DocumentPageSnapshot GetSnapshot()
+        {
+            return new DocumentPageSnapshot();
+        }
 
-        public bool DocumentContentHasLayoutOverflowIssues { get; set; }
-        
-        public void BeginDocument()
+        public void DrawSnapshot(DocumentPageSnapshot snapshot)
         {
             
         }
-
-        public void EndDocument()
-        {
-            
-        }
-
-        public void BeginPage(Size size)
-        {
-            
-        }
-
-        public void EndPage()
-        {
-            
-        }
-
-        public void MarkCurrentPageAsHavingLayoutIssues()
-        {
-            
-        }
-
-        #endregion
-
-        #region ICanvas
 
         public void Save()
         {
@@ -148,7 +125,5 @@ namespace QuestPDF.Drawing
         {
             
         }
-
-        #endregion
     }
 }

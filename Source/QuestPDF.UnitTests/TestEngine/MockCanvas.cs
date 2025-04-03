@@ -1,4 +1,5 @@
 ﻿using System;
+using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -6,13 +7,16 @@ using SkiaSharp;
 
 namespace QuestPDF.UnitTests.TestEngine
 {
-    internal sealed class MockCanvas : ICanvas
+    internal sealed class MockCanvas : IDrawingCanvas
     {
         public Action<Position> TranslateFunc { get; set; }
         public Action<float> RotateFunc { get; set; }
         public Action<float, float> ScaleFunc { get; set; }
         public Action<SkImage, Position, Size> DrawImageFunc { get; set; }
         public Action<Position, Size, Color> DrawRectFunc { get; set; }
+
+        public DocumentPageSnapshot GetSnapshot() => throw new NotImplementedException();
+        public void DrawSnapshot(DocumentPageSnapshot snapshot) => throw new NotImplementedException();
 
         public void Save() => throw new NotImplementedException();
         public void Restore() => throw new NotImplementedException();

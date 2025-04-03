@@ -4,9 +4,19 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing;
 
-internal sealed class ProxyCanvas : ICanvas
+internal sealed class ProxyDrawingCanvas : IDrawingCanvas
 {
-    public ICanvas Target { get; set; }
+    public IDrawingCanvas Target { get; set; }
+
+    public DocumentPageSnapshot GetSnapshot()
+    {
+        return Target.GetSnapshot();
+    }
+
+    public void DrawSnapshot(DocumentPageSnapshot snapshot)
+    {
+        Target.DrawSnapshot(snapshot);
+    }
 
     public void Save()
     {

@@ -24,9 +24,9 @@ internal static class LayoutTestExecutor
             var pageContext = new PageContext();
             pageContext.ProceedToNextRenderingPhase();
 
-            var canvas = new CompanionCanvas();
+            var canvas = new CompanionDocumentCanvas();
         
-            container.InjectDependencies(pageContext, canvas);
+            container.InjectDependencies(pageContext, canvas.GetDrawingCanvas());
         
             // distribute global state
             container.ApplyInheritedAndGlobalTexStyle(TextStyle.Default);
@@ -35,8 +35,6 @@ internal static class LayoutTestExecutor
         
             // render
             container.VisitChildren(x => (x as IStateful)?.ResetState());
-        
-            canvas.BeginDocument();
             
             var pageSizes = new List<Size>();
         

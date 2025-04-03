@@ -1,10 +1,14 @@
+using QuestPDF.Drawing;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Infrastructure
 {
-    internal interface ICanvas
+    internal interface IDrawingCanvas
     {
+        DocumentPageSnapshot GetSnapshot();
+        void DrawSnapshot(DocumentPageSnapshot snapshot);
+        
         void Save();
         void Restore();
 

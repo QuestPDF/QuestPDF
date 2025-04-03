@@ -11,7 +11,7 @@ namespace QuestPDF.Elements.Text.Items
         public TextInjectedElementAlignment Alignment { get; set; } = TextInjectedElementAlignment.AboveBaseline;
         public int ParagraphBlockIndex { get; set; }
 
-        public void ConfigureElement(IPageContext pageContext, ICanvas canvas)
+        public void ConfigureElement(IPageContext pageContext, IDrawingCanvas canvas)
         {
             Element.VisitChildren(x => (x as IStateful)?.ResetState());
             Element.InjectDependencies(pageContext, canvas);
