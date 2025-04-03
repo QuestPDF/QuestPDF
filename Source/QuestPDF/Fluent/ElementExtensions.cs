@@ -487,7 +487,7 @@ namespace QuestPDF.Fluent
         
         #region Canvas [Obsolete]
 
-        private const string CanvasDeprecatedMessage = "The Canvas API has been deprecated since version 2024.3.0. Please use the .Svg(stringContent) API to provide custom content, and consult documentation webpage regarding integrating SkiaSharp with QuestPDF: https://www.questpdf.com/concepts/skia-sharp-integration.html";
+        private const string CanvasDeprecatedMessage = "The Canvas API has been deprecated since version 2024.3.0. Please use the .Svg(stringContent) API to provide custom content, and consult documentation webpage regarding integrating SkiaSharp with QuestPDF: https://www.questpdf.com/api-reference/skiasharp-integration.html";
         
         [Obsolete(CanvasDeprecatedMessage)]
         public delegate void DrawOnCanvas(object canvas, Size availableSpace);
