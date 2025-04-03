@@ -1,23 +1,38 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
+using QuestPDF.Drawing.DrawingCanvases;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
-namespace QuestPDF.Drawing
+namespace QuestPDF.Drawing.DocumentCanvases
 {
-    internal sealed class SvgDocumentCanvas : IDocumentCanvas, IDisposable
+    internal sealed class XpsDocumentCanvas : IDocumentCanvas, IDisposable
     {
+        private SkDocument Document { get; }
         private SkCanvas? CurrentPageCanvas { get; set; }
         private ProxyDrawingCanvas DrawingCanvas { get; } = new();
         
-        private SkWriteStream WriteStream { get; set; }
-        internal ICollection<string> Images { get; } = new List<string>();
+        public XpsDocumentCanvas(SkWriteStream stream, DocumentSettings documentSettings)
+        {
+            Document = CreateXps(stream, documentSettings);
+        }
+        
+        private static SkDocument CreateXps(SkWriteStream stream, DocumentSettings documentSettings)
+        {
+            try
+            {
+                return SkXpsDocument.Create(stream, documentSettings.ImageRasterDpi);
+            }
+            catch (TypeInitializationException exception)
+            {
+                throw new InitializationException("XPS", exception);
+            }
+        }
         
         #region IDisposable
         
-        ~SvgDocumentCanvas()
+        ~XpsDocumentCanvas()
         {
             this.WarnThatFinalizerIsReached();
             Dispose();
@@ -25,8 +40,7 @@ namespace QuestPDF.Drawing
         
         public void Dispose()
         {
-            CurrentPageCanvas?.Dispose();
-            WriteStream?.Dispose();
+            Document?.Dispose();
             GC.SuppressFinalize(this);
         }
         
@@ -41,15 +55,13 @@ namespace QuestPDF.Drawing
 
         public void EndDocument()
         {
-            CurrentPageCanvas?.Dispose();
-            WriteStream?.Dispose();
+            Document?.Close();
+            Document?.Dispose();
         }
 
         public void BeginPage(Size size)
         {
-            WriteStream?.Dispose();
-            WriteStream = new SkWriteStream();
-            CurrentPageCanvas = SkSvgCanvas.CreateSvg(size.Width, size.Height, WriteStream);
+            CurrentPageCanvas = Document?.BeginPage(size.Width, size.Height);
             
             DrawingCanvas.Target = new SkiaDrawingCanvas(size.Width, size.Height);
             DrawingCanvas.SetZIndex(0);
@@ -58,18 +70,10 @@ namespace QuestPDF.Drawing
         public void EndPage()
         {
             Debug.Assert(CurrentPageCanvas != null);
-
+            
             using var documentPageSnapshot = DrawingCanvas.GetSnapshot();
             documentPageSnapshot.DrawOnSkCanvas(CurrentPageCanvas);
-            
-            CurrentPageCanvas.Save();
-            CurrentPageCanvas.Dispose();
-            
-            using var data = WriteStream.DetachData();
-            var svgImage = Encoding.UTF8.GetString(data.ToBytes());
-            Images.Add(svgImage);
-            
-            WriteStream.Dispose();
+            Document.EndPage();
         }
         
         public IDrawingCanvas GetDrawingCanvas()

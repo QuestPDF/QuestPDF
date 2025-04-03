@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using QuestPDF.Companion;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Infrastructure;

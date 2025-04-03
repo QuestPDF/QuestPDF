@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Drawing.Exceptions;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
-namespace QuestPDF.Drawing
+namespace QuestPDF.Drawing.DocumentCanvases
 {
-    internal sealed class PdfCanvas : IDocumentCanvas, IDisposable
+    internal sealed class PdfDocumentCanvas : IDocumentCanvas, IDisposable
     {
         private SkDocument Document { get; }
         private SkCanvas? CurrentPageCanvas { get; set; }
         private ProxyDrawingCanvas DrawingCanvas { get; } = new();
         
-        public PdfCanvas(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
+        public PdfDocumentCanvas(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
         {
             Document = CreatePdf(stream, documentMetadata, documentSettings);
         }
@@ -61,7 +60,7 @@ namespace QuestPDF.Drawing
         
         #region IDisposable
         
-        ~PdfCanvas()
+        ~PdfDocumentCanvas()
         {
             this.WarnThatFinalizerIsReached();
             Dispose();

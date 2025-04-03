@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements.Text;
 using QuestPDF.Helpers;

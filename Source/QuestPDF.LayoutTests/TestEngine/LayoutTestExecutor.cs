@@ -1,4 +1,5 @@
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;

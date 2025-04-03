@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using QuestPDF.Companion;
+using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
@@ -27,7 +28,7 @@ namespace QuestPDF.Drawing
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
-            using var canvas = new PdfCanvas(stream, metadata, settings);
+            using var canvas = new PdfDocumentCanvas(stream, metadata, settings);
             RenderDocument(canvas, document, settings);
         }
         
@@ -47,7 +48,7 @@ namespace QuestPDF.Drawing
             var documentSettings = document.GetSettings();
             documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
             
-            using var canvas = new ImageCanvas(imageGenerationSettings);
+            using var canvas = new ImageDocumentCanvas(imageGenerationSettings);
             RenderDocument(canvas, document, documentSettings);
 
             return canvas.Images;
@@ -145,7 +146,7 @@ namespace QuestPDF.Drawing
 
         private static void RenderSingleDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
         {
-            var useOriginalImages = canvas is ImageCanvas;
+            var useOriginalImages = canvas is ImageDocumentCanvas;
 
             var content = ConfigureContent(document, settings, useOriginalImages);
             
@@ -170,7 +171,7 @@ namespace QuestPDF.Drawing
         
         private static void RenderMergedDocument(IDocumentCanvas canvas, MergedDocument document, DocumentSettings settings)
         {
-            var useOriginalImages = canvas is ImageCanvas;
+            var useOriginalImages = canvas is ImageDocumentCanvas;
             
             var documentParts = Enumerable
                 .Range(0, document.Documents.Count)
