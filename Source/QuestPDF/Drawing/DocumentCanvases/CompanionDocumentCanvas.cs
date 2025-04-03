@@ -66,7 +66,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
         
         public void Dispose()
         {
-            // TODO
+            DrawingCanvas.Dispose();
             GC.SuppressFinalize(this);
         }
         

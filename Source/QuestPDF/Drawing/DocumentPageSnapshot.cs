@@ -30,14 +30,6 @@ internal class DocumentPageSnapshot : IDisposable
         public SkPicture Picture { get; init; }
     }
 
-    public static DocumentPageSnapshot Merge(ICollection<DocumentPageSnapshot> snapshots)
-    {
-        return new DocumentPageSnapshot
-        {
-            Layers = snapshots.SelectMany(x => x.Layers).ToList()
-        };
-    }
-
     public void DrawOnSkCanvas(SkCanvas canvas)
     {
         foreach (var layerSnapshot in Layers.OrderBy(x => x.ZIndex))

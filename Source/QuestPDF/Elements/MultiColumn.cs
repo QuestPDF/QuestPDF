@@ -8,6 +8,7 @@ using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements.Text;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
@@ -43,7 +44,7 @@ internal sealed class MultiColumnChildDrawingObserver : ElementProxy
     }
 }
 
-internal sealed class MultiColumn : Element, IContentDirectionAware
+internal sealed class MultiColumn : Element, IContentDirectionAware, IDisposable
 {
     // items
     internal Element Content { get; set; } = Empty.Instance;
@@ -60,6 +61,18 @@ internal sealed class MultiColumn : Element, IContentDirectionAware
     private ProxyDrawingCanvas ChildrenCanvas { get; } = new();
     private TreeNode<MultiColumnChildDrawingObserver>[] State { get; set; }
 
+    ~MultiColumn()
+    {
+        this.WarnThatFinalizerIsReached();
+        Dispose();
+    }
+    
+    public void Dispose()
+    {
+        ChildrenCanvas?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+    
     internal override void CreateProxy(Func<Element?, Element?> create)
     {
         Content = create(Content);

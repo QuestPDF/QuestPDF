@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
@@ -43,6 +44,21 @@ namespace QuestPDF.ReportSample
         public void GeneratePdfForManualVerificationTesting()
         {
             Report.GeneratePdf("report.pdf");
+        }
+        
+        [Test]
+        public async Task CheckFinalizersStability()
+        {
+            Settings.EnableCaching = true;
+
+            Report.GeneratePdf();
+            Report.GenerateImages();
+            Report.GenerateSvg();
+
+            await Task.Delay(1000);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            await Task.Delay(1000);
         }
     }
 }

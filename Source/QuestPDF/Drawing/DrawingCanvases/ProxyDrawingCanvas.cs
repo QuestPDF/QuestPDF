@@ -1,13 +1,32 @@
+using System;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing.DrawingCanvases;
 
-internal sealed class ProxyDrawingCanvas : IDrawingCanvas
+internal sealed class ProxyDrawingCanvas : IDrawingCanvas, IDisposable
 {
     public IDrawingCanvas Target { get; set; }
 
+    #region IDisposable
+    
+    ~ProxyDrawingCanvas()
+    {
+        this.WarnThatFinalizerIsReached();
+        Dispose();
+    }
+    
+    public void Dispose()
+    {
+        (Target as IDisposable)?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+    
+    #endregion
+    
+    #region IDrawingCanvas
+    
     public DocumentPageSnapshot GetSnapshot()
     {
         return Target.GetSnapshot();
@@ -127,4 +146,6 @@ internal sealed class ProxyDrawingCanvas : IDrawingCanvas
     {
         Target.DrawSection(sectionName);
     }
+    
+    #endregion
 }

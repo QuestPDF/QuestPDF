@@ -7,7 +7,7 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing.DrawingCanvases
 {
-    internal class SkiaDrawingCanvas : IDrawingCanvas, IDisposable
+    internal sealed class SkiaDrawingCanvas : IDrawingCanvas, IDisposable
     {
         public float Width { get; }
         public float Height { get; }
@@ -45,9 +45,8 @@ namespace QuestPDF.Drawing.DrawingCanvases
         
         private int CurrentZIndex { get; set; } = 0;
         private IDictionary<int, (SkPictureRecorder PictureRecorder, SkCanvas Canvas)> ZIndexCanvases { get; } = new Dictionary<int, (SkPictureRecorder, SkCanvas)>();
-        private ICollection<DocumentPageSnapshot> InternalDocumentPageSnapshots { get; } = new List<DocumentPageSnapshot>(0);
-        
-        SkCanvas GetCanvasForZIndex(int zIndex)
+
+        private SkCanvas GetCanvasForZIndex(int zIndex)
         {
             if (ZIndexCanvases.TryGetValue(zIndex, out var value))
                 return value.Canvas;
