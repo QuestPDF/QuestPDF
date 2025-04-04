@@ -4,6 +4,37 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Skia;
 
+[StructLayout(LayoutKind.Sequential)]
+internal struct SkCanvasMatrix
+{
+    public float ScaleX;
+    public float SkewX;
+    public float TranslateX;
+    
+    public float SkewY;
+    public float ScaleY;
+    public float TranslateY;
+
+    public float Perspective1;
+    public float Perspective2;
+    public float Perspective3;
+
+    public static SkCanvasMatrix Identity => new SkCanvasMatrix
+    {
+        ScaleX = 1,
+        SkewX = 0,
+        TranslateX = 0,
+        
+        SkewY = 0,
+        ScaleY = 1,
+        TranslateY = 0,
+        
+        Perspective1 = 0,
+        Perspective2 = 0,
+        Perspective3 = 1
+    };
+}
+
 internal sealed class SkCanvas : IDisposable
 {
     public IntPtr Instance { get; private set; }
@@ -116,9 +147,15 @@ internal sealed class SkCanvas : IDisposable
         API.canvas_annotate_destination_link(Instance, width, height, destinationName);
     }
     
-    public CanvasMatrix GetCurrentTotalMatrix()
+    public SkCanvasMatrix GetCurrentMatrix()
     {
-        return API.canvas_get_matrix(Instance);
+        API.canvas_get_matrix9(Instance, out var result);
+        return result;
+    }
+    
+    public void SetCurrentMatrix(SkCanvasMatrix matrix)
+    {
+        API.canvas_set_matrix9(Instance, matrix);
     }
     
     ~SkCanvas()
@@ -139,15 +176,6 @@ internal sealed class SkCanvas : IDisposable
         GC.SuppressFinalize(this);
     }
     
-    public struct CanvasMatrix
-    {
-        public float ScaleX;
-        public float TranslateX;
-
-        public float ScaleY;
-        public float TranslateY;
-    }
-
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -211,6 +239,9 @@ internal sealed class SkCanvas : IDisposable
         public static extern void canvas_annotate_destination_link(IntPtr canvas, float width, float height, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string destinationName);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern CanvasMatrix canvas_get_matrix(IntPtr canvas);
+        public static extern void canvas_get_matrix9(IntPtr canvas, out SkCanvasMatrix matrix);
+        
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void canvas_set_matrix9(IntPtr canvas, SkCanvasMatrix matrix);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using QuestPDF.Companion;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Infrastructure;
@@ -23,21 +24,19 @@ internal sealed class LayoutProxy : ElementProxy
         var size = ProvideIntrinsicSize() ? Child.Measure(availableSpace) : availableSpace;
         
         base.Draw(availableSpace);
-        
-        var canvas = Canvas as SkiaCanvasBase;
-        
-        if (canvas == null)
+
+        if (Canvas is FreeDrawingCanvas)
             return;
         
-        var position = canvas.Canvas.GetCurrentTotalMatrix();
-
+        var matrix = Canvas.GetCurrentMatrix();
+        
         Snapshots.Add(new CompanionCommands.UpdateDocumentStructure.PageLocation
         {
             PageNumber = PageContext.CurrentPage,
-            Left = position.TranslateX,
-            Top = position.TranslateY,
-            Right = position.TranslateX + size.Width,
-            Bottom = position.TranslateY + size.Height
+            Left = matrix.TranslateX,
+            Top = matrix.TranslateY,
+            Right = matrix.TranslateX + size.Width,
+            Bottom = matrix.TranslateY + size.Height
         });
 
         bool ProvideIntrinsicSize()

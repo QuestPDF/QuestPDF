@@ -20,7 +20,7 @@ namespace QuestPDF.UnitTests.TestEngine
         private static Random Random { get; } = new Random();
         
         private Element Element { get; set; }
-        private ICanvas Canvas { get; }
+        private IDrawingCanvas Canvas { get; }
         
         private Size OperationInput { get; set; }
         private Queue<OperationBase> Operations { get; } = new Queue<OperationBase>();
@@ -48,7 +48,7 @@ namespace QuestPDF.UnitTests.TestEngine
             return null;
         }
         
-        private ICanvas CreateCanvas()
+        private IDrawingCanvas CreateCanvas()
         {
             return new MockCanvas
             {

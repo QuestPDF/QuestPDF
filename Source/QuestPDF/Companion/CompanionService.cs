@@ -11,6 +11,7 @@ using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.DocumentCanvases;
 
 namespace QuestPDF.Companion
 {

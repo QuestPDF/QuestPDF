@@ -56,5 +56,20 @@ namespace QuestPDF.ReportSample
                 report.GeneratePdf();
             });
         }
+        
+        [Test]
+        public async Task CheckFinalizersStability()
+        {
+            Settings.EnableCaching = true;
+
+            Report.GeneratePdf();
+            Report.GenerateImages();
+            Report.GenerateSvg();
+
+            await Task.Delay(1000);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            await Task.Delay(1000);
+        }
     }
 }

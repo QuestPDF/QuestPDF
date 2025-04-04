@@ -51,10 +51,7 @@ internal class ElementMock : Element
         
         Canvas.DrawFilledRectangle(Position.Zero, size, Colors.Grey.Medium);
         
-        if (Canvas is not SkiaCanvasBase canvasBase)
-            return;
-
-        var matrix = canvasBase.Canvas.GetCurrentTotalMatrix();
+        var matrix = Canvas.GetCurrentMatrix();
         
         DrawingCommands.Add(new MockDrawingCommand
         {

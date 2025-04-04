@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using QuestPDF.Companion;
+using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
@@ -27,7 +28,7 @@ namespace QuestPDF.Drawing
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
-            using var canvas = new PdfCanvas(stream, metadata, settings);
+            using var canvas = new PdfDocumentCanvas(stream, metadata, settings);
             RenderDocument(canvas, document, settings);
         }
         
@@ -36,7 +37,7 @@ namespace QuestPDF.Drawing
             ValidateLicense();
             
             var settings = document.GetSettings();
-            using var canvas = new XpsCanvas(stream, settings);
+            using var canvas = new XpsDocumentCanvas(stream, settings);
             RenderDocument(canvas, document, settings);
         }
         
@@ -47,7 +48,7 @@ namespace QuestPDF.Drawing
             var documentSettings = document.GetSettings();
             documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
             
-            using var canvas = new ImageCanvas(imageGenerationSettings);
+            using var canvas = new ImageDocumentCanvas(imageGenerationSettings);
             RenderDocument(canvas, document, documentSettings);
 
             return canvas.Images;
@@ -57,7 +58,7 @@ namespace QuestPDF.Drawing
         {
             ValidateLicense();
             
-            using var canvas = new SvgCanvas();
+            using var canvas = new SvgDocumentCanvas();
             RenderDocument(canvas, document, document.GetSettings());
 
             return canvas.Images;
@@ -89,7 +90,7 @@ namespace QuestPDF.Drawing
 
         internal static CompanionDocumentSnapshot GenerateCompanionContent(IDocument document)
         {
-            using var canvas = new CompanionCanvas();
+            using var canvas = new CompanionDocumentCanvas();
             RenderDocument(canvas, document, DocumentSettings.Default);
             return canvas.GetContent();
         }
@@ -121,7 +122,7 @@ namespace QuestPDF.Drawing
         /// </summary>
         private static readonly SemaphoreSlim RenderDocumentSemaphore = new(4);
         
-        private static void RenderDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings) where TCanvas : ICanvas, IRenderingCanvas
+        private static void RenderDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
         {
             RenderDocumentSemaphore.Wait();
 
@@ -143,24 +144,23 @@ namespace QuestPDF.Drawing
             }
         }
 
-        private static void RenderSingleDocument<TCanvas>(TCanvas canvas, IDocument document, DocumentSettings settings)
-            where TCanvas : ICanvas, IRenderingCanvas
+        private static void RenderSingleDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
         {
-            var useOriginalImages = canvas is ImageCanvas;
+            var useOriginalImages = canvas is ImageDocumentCanvas;
 
             var content = ConfigureContent(document, settings, useOriginalImages);
             
-            if (canvas is CompanionCanvas)
+            if (canvas is CompanionDocumentCanvas)
                 content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
             
             try
             {
                 var pageContext = new PageContext();
-                RenderPass(pageContext, new FreeCanvas(), content);
+                RenderPass(pageContext, new FreeDocumentCanvas(), content);
                 pageContext.ProceedToNextRenderingPhase();
                 RenderPass(pageContext, canvas, content);
             
-                if (canvas is CompanionCanvas companionCanvas)
+                if (canvas is CompanionDocumentCanvas companionCanvas)
                     companionCanvas.Hierarchy = content.ExtractHierarchy();
             }
             finally
@@ -169,10 +169,9 @@ namespace QuestPDF.Drawing
             }
         }
         
-        private static void RenderMergedDocument<TCanvas>(TCanvas canvas, MergedDocument document, DocumentSettings settings)
-            where TCanvas : ICanvas, IRenderingCanvas
+        private static void RenderMergedDocument(IDocumentCanvas canvas, MergedDocument document, DocumentSettings settings)
         {
-            var useOriginalImages = canvas is ImageCanvas;
+            var useOriginalImages = canvas is ImageDocumentCanvas;
             
             var documentParts = Enumerable
                 .Range(0, document.Documents.Count)
@@ -192,7 +191,7 @@ namespace QuestPDF.Drawing
                     foreach (var documentPart in documentParts)
                     {
                         documentPageContext.SetDocumentId(documentPart.DocumentId);
-                        RenderPass(documentPageContext, new FreeCanvas(), documentPart.Content);
+                        RenderPass(documentPageContext, new FreeDocumentCanvas(), documentPart.Content);
                     }
                 
                     documentPageContext.ProceedToNextRenderingPhase();
@@ -211,7 +210,7 @@ namespace QuestPDF.Drawing
                         var pageContext = new PageContext();
                         pageContext.SetDocumentId(documentPart.DocumentId);
                     
-                        RenderPass(pageContext, new FreeCanvas(), documentPart.Content);
+                        RenderPass(pageContext, new FreeDocumentCanvas(), documentPart.Content);
                         pageContext.ProceedToNextRenderingPhase();
                         RenderPass(pageContext, canvas, documentPart.Content);
                     
@@ -243,10 +242,9 @@ namespace QuestPDF.Drawing
             return content;
         }
 
-        private static void RenderPass<TCanvas>(PageContext pageContext, TCanvas canvas, ContainerElement content)
-            where TCanvas : ICanvas, IRenderingCanvas
+        private static void RenderPass(PageContext pageContext, IDocumentCanvas canvas, ContainerElement content)
         {
-            content.InjectDependencies(pageContext, canvas);
+            content.InjectDependencies(pageContext, canvas.GetDrawingCanvas());
             content.VisitChildren(x => (x as IStateful)?.ResetState(hardReset: true));
 
             while(true)
@@ -288,8 +286,8 @@ namespace QuestPDF.Drawing
             
             void ApplyLayoutDebugging()
             {
-                content.VisitChildren(x => (x as SnapshotRecorder)?.Dispose());
-                content.RemoveExistingProxiesOfType<SnapshotRecorder>();
+                content.VisitChildren(x => (x as SnapshotCacheRecorderProxy)?.Dispose());
+                content.RemoveExistingProxiesOfType<SnapshotCacheRecorderProxy>();
 
                 content.ApplyLayoutOverflowDetection();
                 content.Measure(Size.Max);
@@ -299,7 +297,7 @@ namespace QuestPDF.Drawing
                 overflowState.TryToFixTheLayoutOverflowIssue();
                 
                 content.ApplyContentDirection();
-                content.InjectDependencies(pageContext, canvas);
+                content.InjectDependencies(pageContext, canvas.GetDrawingCanvas());
 
                 content.VisitChildren(x => (x as LayoutProxy)?.CaptureLayoutErrorMeasurement());
                 content.RemoveExistingProxiesOfType<OverflowDebuggingProxy>();
@@ -368,7 +366,7 @@ namespace QuestPDF.Drawing
             }
         }
 
-        internal static void InjectDependencies(this Element content, IPageContext pageContext, ICanvas canvas)
+        internal static void InjectDependencies(this Element content, IPageContext pageContext, IDrawingCanvas canvas)
         {
             content.VisitChildren(x =>
             {
@@ -385,7 +383,7 @@ namespace QuestPDF.Drawing
             var canApplyCaching = Traverse(content);
             
             if (canApplyCaching)
-                content?.CreateProxy(x => new SnapshotRecorder(x));
+                content?.CreateProxy(x => new SnapshotCacheRecorderProxy(x));
 
             // returns true if can apply caching
             bool Traverse(Element? content)
@@ -438,7 +436,7 @@ namespace QuestPDF.Drawing
                     var canApplyCaching = canApplyCachingPerChild[childIndex];
                     childIndex++;
 
-                    return canApplyCaching ? new SnapshotRecorder(x) : x;
+                    return canApplyCaching ? new SnapshotCacheRecorderProxy(x) : x;
                 });
                 
                 return false;

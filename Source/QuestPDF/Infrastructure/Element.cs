@@ -9,7 +9,7 @@ namespace QuestPDF.Infrastructure
     internal abstract class Element : IElement
     {
         internal IPageContext PageContext { get; set; }
-        internal ICanvas Canvas { get; set; }
+        internal IDrawingCanvas Canvas { get; set; }
         internal SourceCodePath? CodeLocation { get; set; }
         
         internal virtual IEnumerable<Element?> GetChildren()
