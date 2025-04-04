@@ -63,14 +63,10 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
     {
         // element may overflow the available space
         // capture as much as possible around the origin point
-        var cachePictureSize = Size.Max;
-        var cachePictureOffset = new Position(cachePictureSize.Width / 2, cachePictureSize.Height / 2);
         
         if (DrawCache.TryGetValue(PageContext.CurrentPage, out var snapshot))
         {
-            Canvas.Translate(cachePictureOffset.Reverse());
             Canvas.DrawSnapshot(snapshot);
-            Canvas.Translate(cachePictureOffset);
             
             snapshot.Dispose();
             DrawCache.Remove(PageContext.CurrentPage);
@@ -81,7 +77,6 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
         RecorderCanvas.Target = skiaCanvas;
         RecorderCanvas.SetZIndex(0);
         
-        RecorderCanvas.Translate(cachePictureOffset);
         base.Draw(availableSpace);
         
         DrawCache[PageContext.CurrentPage] = skiaCanvas.GetSnapshot();

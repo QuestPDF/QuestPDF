@@ -88,7 +88,12 @@ namespace QuestPDF.Drawing.DrawingCanvases
         {
             foreach (var snapshotLayer in snapshot.Layers.OrderBy(x => x.ZIndex))
             {
-                ZIndexCanvases[snapshotLayer.ZIndex].Canvas.DrawPicture(snapshotLayer.Picture);
+                var canvas = GetCanvasForZIndex(snapshotLayer.ZIndex);
+
+                canvas.Save();
+                canvas.SetCurrentMatrix(SkCanvasMatrix.Identity);
+                canvas.DrawPicture(snapshotLayer.Picture);
+                canvas.Restore();
             }
         }
 

@@ -7,7 +7,7 @@ namespace QuestPDF.Drawing;
 
 internal class DocumentPageSnapshot : IDisposable
 {
-    public List<LayerSnapshot> Layers { get; init; } = new(1);
+    public List<LayerSnapshot> Layers { get; init; }
     
     ~DocumentPageSnapshot()
     {

@@ -18,6 +18,21 @@ internal struct SkCanvasMatrix
     public float Perspective1;
     public float Perspective2;
     public float Perspective3;
+
+    public static SkCanvasMatrix Identity => new SkCanvasMatrix
+    {
+        ScaleX = 1,
+        SkewX = 0,
+        TranslateX = 0,
+        
+        SkewY = 0,
+        ScaleY = 1,
+        TranslateY = 0,
+        
+        Perspective1 = 0,
+        Perspective2 = 0,
+        Perspective3 = 1
+    };
 }
 
 internal sealed class SkCanvas : IDisposable
