@@ -32,7 +32,7 @@ public class DocumentCompressionTests
                             columns.ConstantColumn(100);
                         });
 
-                        foreach (var y in Enumerable.Range(1, 1_00))
+                        foreach (var y in Enumerable.Range(1, 100))
                         {
                             foreach (var x in Enumerable.Range(1, 4))
                             {
@@ -55,6 +55,8 @@ public class DocumentCompressionTests
             });
         });
 
+        document.GeneratePdfAndShow();
+        
         // warmup cache
         document.GeneratePdf();
 

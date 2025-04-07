@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using QuestPDF.Drawing;
@@ -65,6 +66,9 @@ namespace QuestPDF.ReportSample
             Report.GeneratePdf();
             Report.GenerateImages();
             Report.GenerateSvg();
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                Report.GenerateXps();
 
             await Task.Delay(1000);
             GC.Collect();
