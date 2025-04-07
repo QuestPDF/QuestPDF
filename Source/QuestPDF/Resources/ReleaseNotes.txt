@@ -1,43 +1,11 @@
-Version 2025.1.0
-- Implemented a Lazy element that delays content creation to reduce memory usage and enhance garbage collection efficiency in large documents.
-- Optimization: releasing native objects as early as possible to reduce peak memory usage,
-- Various performance and memory optimizations,
-- Increased maximum level of parallelism from 2 to 4.
-
-
-Version 2025.1.1
-- Fixed rarely broken text alignment caused by too aggressive cache optimization.
-
-
-Version 2025.1.2
-- Adjusted the behavior of Row.AutoItem to preserve its size when a Row element spans multiple pages.
-- Improved Linux compatibility by including the necessary native dependencies (OpenSSL and libjpeg-turbo).
- 
-
-Version 2025.1.3
-- Fixed a rare layout rendering bug in the Table element.
-- Improved memory management for Shared Image API by adjusting GC Memory Pressure.
-- Fixed a bug in the DocumentOperation.AddAttachment method that incorrectly detected the file's MIME type when it was not explicitly provided.
-- Added a new Placeholders.WebpageUrl() method.
-
-
-Version 2025.1.4
-- Added support for creating empty containers that can be injected into the document, significantly enhancing component extensibility.
-- Added new element: PreventPageBreak.
-- Updated in-code links to documentation to reflect recent changes.
-- Fixed: AspectRatio element rarely positioned its content incorrectly.
-- Fixed: The Row element incorrectly calculated the size of AutoItem when it contained text representing page numbers
-- Fixed: Paragraph spacing was not applied when a span contained only a newline.
-
-
-Version 2025.1.5
-- Fixed: EnsureSpace did not render its content in some cases.
-
-
-Version 2025.1.6
-- Likely fixed a memory leak related to layout calculation caching by adjusting how Skia objects are used,
-- Optimized memory usage by disposing native objects as early as possible in many rare scenarios, such as when an exception is thrown during generation,
-- Improved caching algorithm accuracy,
-- Updated skia native dependency to version 134,
-- Updated qpdf native dependency to version 11.10.1,
-- Updated OpenSSL native dependency to version 3.4.1.
+Version 2025.4.0
+- Introduced a new Z-Index feature that allows you to alter the rendering order of content, ensuring elements are displayed in the correct sequence regardless of their definition order,
+- Added automated caching mechanism for Shared Image API to improve performance of static assets,
+- Fixed text measuring issues where Skia doesn't properly respect maxWidth when planning layouts, particularly with small maxWidth values,
+- Fixed rendering artifacts occurring at container edges when text spans multiple pages,
+- Optimized rendering performance for lengthy text elements,
+- Enhanced the EnsureSpace and PreventPageBreak elements to provide more consistent page layout management,
+- Improved XPS generation to throw exceptions when encountering non-Windows operating systems,
+- Added argument validation for Fluent API to prevent unpredictable behavior,
+- Redesigned Column implementation for improved stability and layout consistency,
+- Fixed incorrect URL in obsolete message for Skia Canvas API (contributed by user-named-void).
