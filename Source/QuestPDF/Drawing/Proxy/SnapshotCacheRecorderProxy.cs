@@ -72,7 +72,7 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
         
         using var skiaCanvas = new SkiaDrawingCanvas(Size.Max.Width, Size.Max.Height);
         RecorderCanvas.Target = skiaCanvas;
-        RecorderCanvas.SetZIndex(0);
+        RecorderCanvas.SetZIndex(Canvas.GetZIndex());
         RecorderCanvas.SetMatrix(Canvas.GetCurrentMatrix());
         
         base.Draw(availableSpace);
