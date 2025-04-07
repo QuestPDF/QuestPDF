@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements.Text;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
@@ -42,7 +44,7 @@ internal sealed class MultiColumnChildDrawingObserver : ElementProxy
     }
 }
 
-internal sealed class MultiColumn : Element, IContentDirectionAware
+internal sealed class MultiColumn : Element, IContentDirectionAware, IDisposable
 {
     // items
     internal Element Content { get; set; } = Empty.Instance;
@@ -56,9 +58,21 @@ internal sealed class MultiColumn : Element, IContentDirectionAware
     public ContentDirection ContentDirection { get; set; }
 
     // cache
-    private ProxyCanvas ChildrenCanvas { get; } = new();
+    private ProxyDrawingCanvas ChildrenCanvas { get; } = new();
     private TreeNode<MultiColumnChildDrawingObserver>[] State { get; set; }
 
+    ~MultiColumn()
+    {
+        this.WarnThatFinalizerIsReached();
+        Dispose();
+    }
+    
+    public void Dispose()
+    {
+        ChildrenCanvas?.Dispose();
+        GC.SuppressFinalize(this);
+    }
+    
     internal override void CreateProxy(Func<Element?, Element?> create)
     {
         Content = create(Content);
@@ -92,7 +106,7 @@ internal sealed class MultiColumn : Element, IContentDirectionAware
         if (Content.Canvas != ChildrenCanvas)
             Content.InjectDependencies(PageContext, ChildrenCanvas);
         
-        ChildrenCanvas.Target = new FreeCanvas();
+        ChildrenCanvas.Target = new FreeDrawingCanvas();
         
         return FindPerfectSpace();
 

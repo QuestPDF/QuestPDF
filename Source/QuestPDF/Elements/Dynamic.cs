@@ -114,7 +114,7 @@ namespace QuestPDF.Elements
     public sealed class DynamicContext
     {
         internal IPageContext PageContext { get; set; }
-        internal ICanvas Canvas { get; set; }
+        internal IDrawingCanvas Canvas { get; set; }
 
         internal TextStyle TextStyle { get; set; }
         internal ContentDirection ContentDirection { get; set; }
