@@ -61,9 +61,6 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
         
     internal override void Draw(Size availableSpace)
     {
-        // element may overflow the available space
-        // capture as much as possible around the origin point
-        
         if (DrawCache.TryGetValue(PageContext.CurrentPage, out var snapshot))
         {
             Canvas.DrawSnapshot(snapshot);
@@ -76,6 +73,7 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
         using var skiaCanvas = new SkiaDrawingCanvas(Size.Max.Width, Size.Max.Height);
         RecorderCanvas.Target = skiaCanvas;
         RecorderCanvas.SetZIndex(0);
+        RecorderCanvas.SetMatrix(Canvas.GetCurrentMatrix());
         
         base.Draw(availableSpace);
         

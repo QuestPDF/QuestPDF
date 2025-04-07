@@ -1,4 +1,5 @@
-﻿using QuestPDF.Infrastructure;
+﻿using System.Collections.Generic;
+using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
 
@@ -6,6 +7,10 @@ namespace QuestPDF.Drawing.DrawingCanvases
 {
     internal sealed class FreeDrawingCanvas : IDrawingCanvas
     {
+        private Stack<SkCanvasMatrix> MatrixStack { get; } = new();
+        private SkCanvasMatrix CurrentMatrix { get; set; } = SkCanvasMatrix.Identity;
+        private int CurrentZIndex { get; set; } = 0;
+        
         public DocumentPageSnapshot GetSnapshot()
         {
             return new DocumentPageSnapshot();
@@ -18,47 +23,47 @@ namespace QuestPDF.Drawing.DrawingCanvases
 
         public void Save()
         {
-            
+            MatrixStack.Push(CurrentMatrix);
         }
 
         public void Restore()
         {
-            
+            CurrentMatrix = MatrixStack.Pop();
         }
 
         public void SetZIndex(int index)
         {
-            
+            CurrentZIndex = index;
         }
 
         public int GetZIndex()
         {
-            return 0;
+            return CurrentZIndex;
         }
         
         public SkCanvasMatrix GetCurrentMatrix()
         {
-            return default;
+            return CurrentMatrix;
         }
 
         public void SetMatrix(SkCanvasMatrix matrix)
         {
-            
+            CurrentMatrix = matrix;
         }
 
         public void Translate(Position vector)
         {
-            
+            CurrentMatrix = CurrentMatrix.Translate(vector.X, vector.Y);
         }
         
         public void Scale(float scaleX, float scaleY)
         {
-            
+            CurrentMatrix = CurrentMatrix.Scale(scaleX, scaleY);
         }
         
         public void Rotate(float angle)
         {
-            
+            CurrentMatrix = CurrentMatrix.Rotate(angle);
         }
 
         public void DrawFilledRectangle(Position vector, Size size, Color color)

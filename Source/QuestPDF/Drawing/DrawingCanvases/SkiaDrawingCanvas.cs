@@ -109,8 +109,12 @@ namespace QuestPDF.Drawing.DrawingCanvases
         
         public void SetZIndex(int index)
         {
+            var currentMatrix = CurrentCanvas?.GetCurrentMatrix() ?? SkCanvasMatrix.Identity;
+            
             CurrentZIndex = index;
             CurrentCanvas = GetCanvasForZIndex(CurrentZIndex);
+            
+            CurrentCanvas.SetCurrentMatrix(currentMatrix);
         }
 
         public int GetZIndex()
