@@ -55,8 +55,6 @@ public class DocumentCompressionTests
             });
         });
 
-        document.GeneratePdfAndShow();
-        
         // warmup cache
         document.GeneratePdf();
 
