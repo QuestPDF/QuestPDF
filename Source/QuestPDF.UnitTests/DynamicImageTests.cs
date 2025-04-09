@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
@@ -74,8 +73,8 @@ namespace QuestPDF.UnitTests
                 .ExpectCanvasDrawImage(Position.Zero, new Size(400, 300))
                 .CheckDrawResult();
             
-            passedSize.Width.Should().Be(1200);
-            passedSize.Height.Should().Be(900);
+            Assert.That(passedSize.Width, Is.EqualTo(1200));
+            Assert.That(passedSize.Height, Is.EqualTo(900));
         }
         
         byte[] GenerateImage(ImageSize size)

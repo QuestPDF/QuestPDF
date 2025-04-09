@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Threading;
-using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
@@ -68,7 +67,7 @@ namespace QuestPDF.UnitTests
         public void ImageObject_ThrowsEncodingException_WhenImageDataIsIncorrect()
         {
             Func<Infrastructure.Image> action = () => Infrastructure.Image.FromBinaryData(new byte[] { 1, 2, 3 });
-            action.Should().ThrowExactly<DocumentComposeException>().WithMessage("Cannot decode the provided image.");
+            Assert.That(action, Throws.Exception.TypeOf<DocumentComposeException>().With.Message.EqualTo("Cannot decode the provided image."));
         }
         
         [Test]
@@ -80,14 +79,14 @@ namespace QuestPDF.UnitTests
                 return Infrastructure.Image.FromStream(stream);
             };
 
-            action.Should().ThrowExactly<DocumentComposeException>().WithMessage("Cannot decode the provided image.");
+            Assert.That(action, Throws.Exception.TypeOf<DocumentComposeException>().With.Message.EqualTo("Cannot decode the provided image."));
         }
         
         [Test]
         public void ImageObject_ThrowsFileNotFoundException_FileIsNotFound()
         {
             Func<Infrastructure.Image> action = () => Infrastructure.Image.FromFile("non-existing-file.jpg");
-            action.Should().ThrowExactly<DocumentComposeException>().WithMessage("Cannot load provided image, file not found: *");
+            Assert.That(action, Throws.Exception.TypeOf<DocumentComposeException>().With.Message.EqualTo("Cannot load provided image, file not found: non-existing-file.jpg"));
         }
 
         [Test]
@@ -120,8 +119,11 @@ namespace QuestPDF.UnitTests
                 });
             });
 
-            (documentWithMultipleImagesSize / (float)documentWithSingleImageSize).Should().BeInRange(9.9f, 10);
-            (documentWithSingleImageUsedMultipleTimesSize / (float)documentWithSingleImageSize).Should().BeInRange(1f, 1.05f);
+            var documentWithMultipleImagesSizeRatio = (documentWithMultipleImagesSize / (float)documentWithSingleImageSize);
+            Assert.That(documentWithMultipleImagesSizeRatio, Is.InRange(9.9f, 10));
+            
+            var documentWithSingleImageUsedMultipleTimesSizeRatio = (documentWithSingleImageUsedMultipleTimesSize / (float)documentWithSingleImageSize);
+            Assert.That(documentWithSingleImageUsedMultipleTimesSizeRatio, Is.InRange(1f, 1.05f));
         }
         
         [Test]
@@ -132,7 +134,8 @@ namespace QuestPDF.UnitTests
             var veryLowCompressionSize = GetDocumentSize(container => container.Image(photo).WithCompressionQuality(ImageCompressionQuality.VeryLow));
             var bestCompressionSize = GetDocumentSize(container => container.Image(photo).WithCompressionQuality(ImageCompressionQuality.Best));
 
-            (bestCompressionSize / (float)veryLowCompressionSize).Should().BeGreaterThan(10);
+            var compressionSizeRatio = (bestCompressionSize / (float)veryLowCompressionSize);
+            Assert.That(compressionSizeRatio, Is.GreaterThan(10));
         }
         
         [Test]
@@ -143,7 +146,8 @@ namespace QuestPDF.UnitTests
             var lowDpiSize = GetDocumentSize(container => container.Image(photo).WithRasterDpi(12));
             var highDpiSize = GetDocumentSize(container => container.Image(photo).WithRasterDpi(144));
 
-            (highDpiSize / (float)lowDpiSize).Should().BeGreaterThan(40);
+            var dpiSizeRatio = (highDpiSize / (float)lowDpiSize);
+            Assert.That(dpiSizeRatio, Is.GreaterThan(40));
         }
         
         private static int GetDocumentSize(Action<IContainer> container)

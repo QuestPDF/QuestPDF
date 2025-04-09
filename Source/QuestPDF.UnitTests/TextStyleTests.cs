@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -49,8 +48,10 @@ namespace QuestPDF.UnitTests
                 HasStrikethrough = true
             };
 
-            spanTextStyle.Id.Should().BeGreaterThan(1);
-            targetStyle.Should().BeEquivalentTo(expectedStyle);
+            Assert.That(targetStyle, Is.Not.Null);
+            Assert.That(targetStyle.Id, Is.GreaterThan(1));
+
+            Assert.That(targetStyle.ToString(), Is.EqualTo(expectedStyle.ToString()));
         }
     }
 }

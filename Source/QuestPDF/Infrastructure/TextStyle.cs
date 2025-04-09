@@ -46,7 +46,7 @@ namespace QuestPDF.Infrastructure
             Id = 0
         };
         
-        internal static TextStyle LibraryDefault { get; } = new()
+        internal static TextStyle  LibraryDefault { get; } = new()
         {
             Id = 1,
             Color = Colors.Black,

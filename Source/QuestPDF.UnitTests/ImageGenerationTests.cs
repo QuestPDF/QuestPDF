@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -23,19 +23,20 @@ namespace QuestPDF.UnitTests
                     page.Size(testCase.PageSize);
                     page.Content().Text("Test");
                 }))
-                .GenerateImages(new ImageGenerationSettings { RasterDpi = testCase.TargetDpi });
+                .GenerateImages(new ImageGenerationSettings { RasterDpi = testCase.TargetDpi })
+                .ToList();
             
             // assert
-            images.Should().HaveCount(1);
+            Assert.That(images, Has.Exactly(1).Items);
 
             var imageData = images.First();
-            imageData.Should().NotBeNull();
+            Assert.That(imageData, Is.Not.Null);
             
             using var image = SKImage.FromEncodedData(imageData);
-            image.Should().NotBeNull();
+            Assert.That(image, Is.Not.Null);
             
-            image.Width.Should().Be(testCase.ExpectedImageSize.Width);
-            image.Height.Should().Be(testCase.ExpectedImageSize.Height);
+            Assert.That(image.Width, Is.EqualTo(testCase.ExpectedImageSize.Width));
+            Assert.That(image.Height, Is.EqualTo(testCase.ExpectedImageSize.Height));
         }
 
         public record GeneratedImageResolutionCorrespondsToTargetDpi_TestCaseItem(PageSize PageSize, int TargetDpi, ImageSize ExpectedImageSize);
@@ -64,17 +65,19 @@ namespace QuestPDF.UnitTests
             var imageSizeWithHighQuality = CheckImageSize(ImageCompressionQuality.High);
             
             // assert
-            imageSizeWithLowQuality.Should().BeLessThan(imageSizeWithMediumQuality);
-            imageSizeWithMediumQuality.Should().BeLessThan(imageSizeWithHighQuality);
+            Assert.That(imageSizeWithLowQuality, Is.LessThan(imageSizeWithMediumQuality));
+            Assert.That(imageSizeWithMediumQuality, Is.LessThan(imageSizeWithHighQuality));
 
             int CheckImageSize(ImageCompressionQuality quality)
             {
-                var images = document.GenerateImages(new ImageGenerationSettings() { ImageFormat = ImageFormat.Jpeg, ImageCompressionQuality = quality });
+                var images = document
+                    .GenerateImages(new ImageGenerationSettings() { ImageFormat = ImageFormat.Jpeg, ImageCompressionQuality = quality })
+                    .ToList();
                 
-                images.Should().HaveCount(1);
+                Assert.That(images, Has.Exactly(1).Items);
 
                 var image = images.First();
-                image.Should().NotBeNull();
+                Assert.That(image, Is.Not.Null);
 
                 return image.Length;
             }
@@ -94,17 +97,19 @@ namespace QuestPDF.UnitTests
                         page.Content().Padding(25).AspectRatio(2).Background(Colors.Red.Medium);
                     });
                 })
-                .GenerateImages(new ImageGenerationSettings() { ImageFormat = imageFormat });
+                .GenerateImages(new ImageGenerationSettings() { ImageFormat = imageFormat })
+                .ToList();
             
-            images.Should().HaveCount(1);
+            Assert.That(images, Has.Exactly(1).Items);
 
             var imageData = images.First();
-            imageData.Should().NotBeNull();
+            Assert.That(imageData, Is.Not.Null);
 
             using var imageStream = new MemoryStream(imageData);
             using var imageCodec = SKCodec.Create(imageStream);
 
-            imageCodec.EncodedFormat.ToString().Should().Be(imageFormat.ToString());
+            Assert.That(imageCodec, Is.Not.Null);
+            Assert.That(imageCodec.EncodedFormat.ToString(), Is.EqualTo(imageFormat.ToString()));
         }
     }
 }

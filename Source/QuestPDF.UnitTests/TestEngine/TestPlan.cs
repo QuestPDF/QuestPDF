@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Legacy;
 using QuestPDF.Drawing;

@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using FluentAssertions;
 using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -62,9 +61,10 @@ public class DocumentCompressionTests
         var withCompression = MeasureDocumentSizeAndGenerationTime(true);
         
         var sizeRatio = withoutCompression.documentSize / (float)withCompression.documentSize;
-        sizeRatio.Should().BeGreaterThan(3);
+        Assert.That(sizeRatio, Is.GreaterThan(3));
 
-        (withCompression.generationTime / withoutCompression.generationTime).Should().BeLessThan(2f);
+        var generationTimeRatio = withCompression.generationTime / (float)withoutCompression.generationTime;
+        Assert.That(generationTimeRatio, Is.LessThan(2));
         
         (int documentSize, float generationTime) MeasureDocumentSizeAndGenerationTime(bool compress)
         {
