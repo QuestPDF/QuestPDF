@@ -157,9 +157,9 @@ By offering free access to most users and premium licenses for larger organizati
 <br />
 
 
-## QuestPDF on YouTube
+## Cummunity QuestPDF
 
-We are incredibly grateful to the YouTube Community for their positive reviews and recommendations of the QuestPDF library. Your support and feedback are invaluable and motivate us to keep improving and expanding this project. Thank you for helping us grow and reach more developers!
+We are incredibly grateful to our Community for their positive reviews and recommendations of the QuestPDF library. Your support and feedback are invaluable and motivate us to keep improving and expanding this project. Thank you for helping us grow and reach more developers!
 
 #### Nick Chapsas: The Easiest Way to Create PDFs in .NET
 
@@ -177,4 +177,8 @@ We are incredibly grateful to the YouTube Community for their positive reviews a
 
 [![Felipe Gavilan Generating PDFs with C# - Very Easy (two examples)](https://img.youtube.com/vi/bhR4Cmg16gs/0.jpg)](https://www.youtube.com/watch?v=bhR4Cmg16gs)
 
+
+#### Learning materials
+
+- `PDF Generation using QuestPDF in ASP.NET Core` written by [Olufemi Oyedepo]([olufemioyedepo](https://github.com/olufemioyedepo)): [Part 1](https://medium.com/@olufemioyedepo/pdf-generation-using-questpdf-in-asp-net-core-part-1-5ef9a63d462a) [Part 2](https://medium.com/@olufemioyedepo/pdf-generation-using-questpdf-in-asp-net-core-part-2-aadec120c31a)
 
