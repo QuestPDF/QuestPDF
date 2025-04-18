@@ -33,28 +33,79 @@ internal struct SkCanvasMatrix
         Perspective3 = 1
     };
     
-    public SkCanvasMatrix Translate(float x, float y)
+    public static SkCanvasMatrix CreateTranslation(float x, float y)
     {
-        return this with { TranslateX = TranslateX + x, TranslateY = TranslateY + y };
-    }  
-    
-    public SkCanvasMatrix Scale(float x, float y)
-    {
-        return this with { ScaleX = ScaleX * x, ScaleY = ScaleY * y };
+        return new SkCanvasMatrix
+        {
+            ScaleX = 1,
+            SkewX = 0,
+            TranslateX = x,
+            
+            SkewY = 0,
+            ScaleY = 1,
+            TranslateY = y,
+            
+            Perspective1 = 0,
+            Perspective2 = 0,
+            Perspective3 = 1
+        };
     }
     
-    public SkCanvasMatrix Rotate(float angle)
+    public static SkCanvasMatrix CreateScale(float x, float y)
+    {
+        return new SkCanvasMatrix
+        {
+            ScaleX = x,
+            SkewX = 0,
+            TranslateX = 0,
+            
+            SkewY = 0,
+            ScaleY = y,
+            TranslateY = 0,
+            
+            Perspective1 = 0,
+            Perspective2 = 0,
+            Perspective3 = 1
+        };
+    }
+    
+    public static SkCanvasMatrix CreateRotation(float angle)
     {
         var radians = Math.PI * angle / 180;
         var cos = (float)Math.Cos(radians);
         var sin = (float)Math.Sin(radians);
         
-        return this with
+        return new SkCanvasMatrix
         {
-            ScaleX = ScaleX * cos - SkewY * sin,
-            SkewX = ScaleX * sin + SkewY * cos,
-            ScaleY = ScaleY * cos - SkewX * sin,
-            SkewY = ScaleY * sin + SkewX * cos
+            ScaleX = cos,
+            SkewX = sin,
+            TranslateX = 0,
+            
+            SkewY = -sin,
+            ScaleY = cos,
+            TranslateY = 0,
+            
+            Perspective1 = 0,
+            Perspective2 = 0,
+            Perspective3 = 1
+        };
+    }
+    
+    public static SkCanvasMatrix operator *(SkCanvasMatrix a, SkCanvasMatrix b)
+    {
+        return new SkCanvasMatrix
+        {
+            ScaleX = a.ScaleX * b.ScaleX + a.SkewY * b.SkewX,
+            SkewX = a.ScaleX * b.SkewY + a.SkewY * b.ScaleY,
+            TranslateX = a.ScaleX * b.TranslateX + a.SkewY * b.TranslateY + a.TranslateX,
+            
+            SkewY = a.SkewX * b.ScaleX + a.ScaleY * b.SkewX,
+            ScaleY = a.SkewX * b.SkewY + a.ScaleY * b.ScaleY,
+            TranslateY = a.SkewX * b.TranslateX + a.ScaleY * b.TranslateY + a.TranslateY,
+            
+            Perspective1 = 0,
+            Perspective2 = 0,
+            Perspective3 = 1
         };
     }
 }

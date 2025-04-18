@@ -1,4 +1,6 @@
-﻿namespace QuestPDF.Infrastructure
+﻿using System.Collections.Generic;
+
+namespace QuestPDF.Infrastructure
 {
     internal sealed class DocumentLocation
     {
@@ -9,6 +11,19 @@
         public int Length => PageEnd - PageStart + 1;
     }
     
+    public class PageElementLocation
+    {
+        public string Id { get; set; }
+
+        public int PageNumber { get; set; }
+
+        public float Width { get; set; }
+        public float Height { get; set; }
+
+        public float X { get; set; }
+        public float Y { get; set; }
+    }
+    
     internal interface IPageContext
     {
         bool IsInitialRenderingPhase { get; }
@@ -17,5 +32,8 @@
         void SetSectionPage(string name);
         DocumentLocation? GetLocation(string name);
         string GetDocumentLocationName(string locationName);
+        
+        void CaptureContentPosition(PageElementLocation location);
+        ICollection<PageElementLocation> GetContentPosition(string id);
     }
 }

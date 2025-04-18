@@ -146,6 +146,14 @@ namespace QuestPDF.Elements
         /// Returns the vertical and horizontal space, in points, available to the dynamic component.
         /// </summary>
         public Size AvailableSize { get; internal set; }
+        
+        /// <summary>
+        /// Returns all page locations of the captured element.
+        /// </summary>
+        public ICollection<PageElementLocation> GetElementCapturedPositions(string id)
+        {
+            return PageContext.GetContentPosition(id);
+        }
 
         /// <summary>
         /// Enables the creation of unattached layout structures and provides their size measurements.

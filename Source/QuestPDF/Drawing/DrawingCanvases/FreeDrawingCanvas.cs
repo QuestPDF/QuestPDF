@@ -53,17 +53,17 @@ namespace QuestPDF.Drawing.DrawingCanvases
 
         public void Translate(Position vector)
         {
-            CurrentMatrix = CurrentMatrix.Translate(vector.X, vector.Y);
+            CurrentMatrix *= SkCanvasMatrix.CreateTranslation(vector.X, vector.Y);
         }
         
         public void Scale(float scaleX, float scaleY)
         {
-            CurrentMatrix = CurrentMatrix.Scale(scaleX, scaleY);
+            CurrentMatrix *= SkCanvasMatrix.CreateScale(scaleX, scaleY);
         }
         
         public void Rotate(float angle)
         {
-            CurrentMatrix = CurrentMatrix.Rotate(angle);
+            CurrentMatrix *= SkCanvasMatrix.CreateRotation(angle);
         }
 
         public void DrawFilledRectangle(Position vector, Size size, Color color)

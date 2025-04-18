@@ -61,50 +61,50 @@ public class CodePatternComponentProgressbarComponentExample
             })
             .GeneratePdf();
     }
-}
-
-public class PageProgressbarComponent : IDynamicComponent
-{
-    public DynamicComponentComposeResult Compose(DynamicContext context)
+    
+    public class PageProgressbarComponent : IDynamicComponent
     {
-        var content = context.CreateElement(element =>
+        public DynamicComponentComposeResult Compose(DynamicContext context)
         {
-            var width = context.AvailableSize.Width * context.PageNumber / context.TotalPages;
+            var content = context.CreateElement(element =>
+            {
+                var width = context.AvailableSize.Width * context.PageNumber / context.TotalPages;
                 
-            element
-                .Background(Colors.Blue.Lighten3)
-                .Height(5)
-                .Width(width)
-                .Background(Colors.Blue.Darken2);
-        });
+                element
+                    .Background(Colors.Blue.Lighten3)
+                    .Height(5)
+                    .Width(width)
+                    .Background(Colors.Blue.Darken2);
+            });
 
-        return new DynamicComponentComposeResult
-        {
-            Content = content,
-            HasMoreContent = false
-        };
+            return new DynamicComponentComposeResult
+            {
+                Content = content,
+                HasMoreContent = false
+            };
+        }
     }
-}
 
-public class PageNumberSideComponent : IDynamicComponent
-{
-    public DynamicComponentComposeResult Compose(DynamicContext context)
+    public class PageNumberSideComponent : IDynamicComponent
     {
-        var content = context.CreateElement(element =>
+        public DynamicComponentComposeResult Compose(DynamicContext context)
         {
-            element
-                .Element(x => context.PageNumber % 2 == 0 ? x.AlignRight() : x.AlignLeft())
-                .Text(text =>
-                {
-                    text.Span("Page ");
-                    text.CurrentPageNumber();
-                });
-        });
+            var content = context.CreateElement(element =>
+            {
+                element
+                    .Element(x => context.PageNumber % 2 == 0 ? x.AlignRight() : x.AlignLeft())
+                    .Text(text =>
+                    {
+                        text.Span("Page ");
+                        text.CurrentPageNumber();
+                    });
+            });
 
-        return new DynamicComponentComposeResult
-        {
-            Content = content,
-            HasMoreContent = false
-        };
+            return new DynamicComponentComposeResult
+            {
+                Content = content,
+                HasMoreContent = false
+            };
+        }
     }
 }
