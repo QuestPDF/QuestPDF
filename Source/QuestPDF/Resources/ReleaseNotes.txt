@@ -1,11 +1,9 @@
-Version 2025.4.0
-- Introduced a new Z-Index feature that allows you to alter the rendering order of content, ensuring elements are displayed in the correct sequence regardless of their definition order,
-- Added automated caching mechanism for Shared Image API to improve performance of static assets,
-- Fixed text measuring issues where Skia doesn't properly respect maxWidth when planning layouts, particularly with small maxWidth values,
-- Fixed rendering artifacts occurring at container edges when text spans multiple pages,
-- Optimized rendering performance for lengthy text elements,
-- Enhanced the EnsureSpace and PreventPageBreak elements to provide more consistent page layout management,
-- Improved XPS generation to throw exceptions when encountering non-Windows operating systems,
-- Added argument validation for Fluent API to prevent unpredictable behavior,
-- Redesigned Column implementation for improved stability and layout consistency,
-- Fixed incorrect URL in obsolete message for Skia Canvas API (contributed by user-named-void).
+Version 2025.4.1
+- Updated the Skia library to version m136,
+- Updated the NuGet package README,
+- Added `DocumentOperation.Decrypt` featre to remove encryption from PDF documents,
+- Added `DocumentOperation.RemoveRestrictions` feature,
+- Improved availability of native resources on the legacy .NET Framework,
+- Fixed compatibility with Unity3D on Linux and macOS builds,
+- Fixed encryption of PDF files with 40-bit keys,
+- Fixed encryption of PDF files with 128-bit keys.

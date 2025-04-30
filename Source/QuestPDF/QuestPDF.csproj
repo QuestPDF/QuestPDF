@@ -3,8 +3,8 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2025.4.0</Version>
-        <PackageDescription>QuestPDF is an open-source, modern and battle-tested library that can help you with generating PDF documents by offering friendly, discoverable and predictable C# fluent API. Easily generate PDF reports, invoices, exports, etc.</PackageDescription>
+        <Version>2025.4.1</Version>
+        <PackageDescription>Generate and edit PDF documents in your .NET applications using the open-source QuestPDF library and its C# Fluent API. Build invoices, reports and data exports with ease.</PackageDescription>
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
         <LangVersion>12</LangVersion>
         <Deterministic>true</Deterministic>
@@ -18,7 +18,7 @@
         <RepositoryUrl>https://github.com/QuestPDF/library.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
-        <PackageTags>PDF;C#;dotnet;csharp;.NET;PDF library;PDF document;PDF generation;PDF creation;PDF report;PDF invoice;PDF export;windows;linux;mac;azure;aws;open-source;open source;free;adobe;file;SVG;HTML;XPS</PackageTags>
+        <PackageTags>pdf generation creation export merge edit html</PackageTags>
         <Nullable>enable</Nullable>
         <TargetFrameworks>net8.0;net6.0;netstandard2.0</TargetFrameworks>
         <IncludeSymbols>true</IncludeSymbols>
