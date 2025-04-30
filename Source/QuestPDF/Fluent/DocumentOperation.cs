@@ -375,6 +375,15 @@ public sealed class DocumentOperation
             };
         }
     }
+
+    /// <summary>
+    /// Removes any existing encryption from the current PDF document, effectively making it accessible without a password or encryption restrictions.
+    /// </summary>
+    public DocumentOperation Decrypt()
+    {
+        Configuration.Decrypt = string.Empty;
+        return this;
+    }
     
     /// <summary>
     /// Encrypts the document using 40-bit encryption, applying specified owner and user passwords along with defined permissions.
@@ -392,8 +401,8 @@ public sealed class DocumentOperation
             {
                 Annotate = FormatBooleanFlag(encryption.AllowAnnotation),
                 Extract = FormatBooleanFlag(encryption.AllowContentExtraction),
-                Modify = FormatBooleanFlag(encryption.AllowModification),
-                Print = FormatBooleanFlag(encryption.AllowPrinting)
+                Modify = encryption.AllowModification ? "all" : "none",
+                Print = encryption.AllowPrinting ? "full" : "none",
             }
         };
         

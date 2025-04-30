@@ -19,6 +19,8 @@ sealed class JobConfiguration
     [Name("addAttachment")] public ICollection<AddDocumentAttachment>? AddAttachment { get; set; }
     
     [Name("encrypt")] public EncryptionSettings? Encrypt { get; set; } 
+    [Name("allowWeakCrypto")] public string AllowWeakCrypto { get; set; } = string.Empty;
+    [Name("decrypt")] public string? Decrypt { get; set; } 
     [Name("linearize")] public string? Linearize { get; set; }
     [Name("newlineBeforeEndstream")] public string? NewlineBeforeEndstream { get; set; } = string.Empty;
     
@@ -62,7 +64,7 @@ sealed class JobConfiguration
     public sealed class Encryption40Bit
     {
         [Name("annotate")] public string Annotate { get; set; }
-        [Name("extract")] public string Extract { get; set; }
+        [Name("extract")] public string Extract { get; set; } 
         [Name("modify")] public string Modify { get; set; }
         [Name("print")] public string Print { get; set; }
     }
@@ -74,6 +76,7 @@ sealed class JobConfiguration
         [Name("extract")] public string Extract { get; set; }
         [Name("form")] public string Form { get; set; }
         [Name("print")] public string? Print { get; set; }
+        [Name("useAes")] public string? UseAES { get; set; } = "y";
         [Name("cleartextMetadata")] public string? CleartextMetadata { get; set; }
     }
 
