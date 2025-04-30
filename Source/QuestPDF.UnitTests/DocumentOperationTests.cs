@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.InteropServices;
 using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -13,6 +14,12 @@ namespace QuestPDF.UnitTests;
 /// </summary>
 public class DocumentOperationTests
 {
+    public DocumentOperationTests()
+    {
+        if (RuntimeInformation.RuntimeIdentifier == "linux-musl-x64")
+            Assert.Ignore("The DocumentOperations functionality is not supported on Linux Musl, e.g. Alpine.");
+    }
+    
     [Test]
     public void TakePages()
     {

@@ -11,12 +11,6 @@ namespace QuestPDF.UnitTests;
 
 public class DocumentCompressionTests
 {
-    public DocumentCompressionTests()
-    {
-        if (RuntimeInformation.RuntimeIdentifier == "linux-musl-x64")
-            Assert.Ignore("The DocumentOperations functionality is not supported on Linux Musl, e.g. Alpine.");
-    }
-    
     [Test]
     public void Test()
     {
