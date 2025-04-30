@@ -32,7 +32,7 @@ internal sealed class SkParagraph : IDisposable
             managedArray[i] = Marshal.PtrToStructure<SkSize>(ptr);
         }
 
-        Marshal.FreeHGlobal(array);
+        API.paragraph_delete_line_metrics(array);
         return managedArray;
     }
     
@@ -42,7 +42,7 @@ internal sealed class SkParagraph : IDisposable
         
         var managedArray = new int[arrayLength];
         Marshal.Copy(array, managedArray,  0, arrayLength);
-        Marshal.FreeHGlobal(array);
+        API.paragraph_delete_unresolved_codepoints(array);
 
         return managedArray;
     }
@@ -61,7 +61,7 @@ internal sealed class SkParagraph : IDisposable
             managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
         }
 
-        Marshal.FreeHGlobal(array);
+        API.paragraph_delete_positions(array);
         return managedArray;
     }
     
@@ -79,7 +79,7 @@ internal sealed class SkParagraph : IDisposable
             managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
         }
 
-        Marshal.FreeHGlobal(array);
+        API.paragraph_delete_positions(array);
         return managedArray;
     }
     
@@ -108,13 +108,22 @@ internal sealed class SkParagraph : IDisposable
         public static extern void paragraph_get_line_metrics(IntPtr paragraph, out IntPtr array, out int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void paragraph_delete_line_metrics(IntPtr array);
+        
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_get_unresolved_codepoints(IntPtr paragraph, out IntPtr array, out int arrayLength);
+        
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void paragraph_delete_unresolved_codepoints(IntPtr array);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_get_placeholder_positions(IntPtr paragraph, out IntPtr array, out int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_get_text_range_positions(IntPtr paragraph, int rangeStart, int rangeEnd, out IntPtr array, out int arrayLength);
+        
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void paragraph_delete_positions(IntPtr array);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_delete(IntPtr paragraph);
