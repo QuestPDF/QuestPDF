@@ -160,6 +160,28 @@ public class DocumentOperationTests
     }
     
     [Test]
+    public void RemoveRestrictionsTest()
+    {
+        GenerateSampleDocument("remove-restrictions-input-not-encrypted.pdf", Colors.Red.Medium, 10);
+        
+        DocumentOperation
+            .LoadFile("remove-restrictions-input-not-encrypted.pdf")
+            .Encrypt(new DocumentOperation.Encryption256Bit()
+            {
+                UserPassword = string.Empty,
+                OwnerPassword = "owner_password",
+                AllowPrinting = false,
+                AllowContentExtraction = false
+            })
+            .Save("remove-restrictions-input-encrypted.pdf");
+        
+        DocumentOperation
+            .LoadFile("remove-restrictions-input-encrypted.pdf", "owner_password")
+            .RemoveRestrictions()
+            .Save("operation-remove-restrictions.pdf");
+    }
+    
+    [Test]
     public void LoadEncryptedWithIncorrectPasswordTest()
     {
         GenerateSampleDocument("load-encrypted-input-not-encrypted.pdf", Colors.Red.Medium, 10);
@@ -192,7 +214,6 @@ public class DocumentOperationTests
             .ExtendMetadata("<rdf:Description xmlns:dc=\"http://purl.org/dc/elements/1.1/\" rdf:about=\"\"></rdf:Description>")
             .Save("operation-extend-metadata.pdf");
     }
-
     
     private void GenerateSampleDocument(string filePath, Color color, int length)
     {

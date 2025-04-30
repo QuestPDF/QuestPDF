@@ -386,6 +386,18 @@ public sealed class DocumentOperation
     }
     
     /// <summary>
+    /// Remove security restrictions associated with digitally signed PDF files.
+    /// This may be combined with Decrypt() operation to allow free editing of previously signed/encrypted files.
+    /// This option invalidates and disables any digital signatures but leaves their visual appearances intact.
+    /// </summary>
+    public DocumentOperation RemoveRestrictions()
+    {
+        Configuration.Decrypt = string.Empty;
+        Configuration.RemoveRestrictions = string.Empty;
+        return this;
+    }
+    
+    /// <summary>
     /// Encrypts the document using 40-bit encryption, applying specified owner and user passwords along with defined permissions.
     /// </summary>
     public DocumentOperation Encrypt(Encryption40Bit encryption)

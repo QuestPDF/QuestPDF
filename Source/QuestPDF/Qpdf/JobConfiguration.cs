@@ -21,6 +21,7 @@ sealed class JobConfiguration
     [Name("encrypt")] public EncryptionSettings? Encrypt { get; set; } 
     [Name("allowWeakCrypto")] public string AllowWeakCrypto { get; set; } = string.Empty;
     [Name("decrypt")] public string? Decrypt { get; set; } 
+    [Name("removeRestrictions")] public string? RemoveRestrictions { get; set; } 
     [Name("linearize")] public string? Linearize { get; set; }
     [Name("newlineBeforeEndstream")] public string? NewlineBeforeEndstream { get; set; } = string.Empty;
     
