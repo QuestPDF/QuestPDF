@@ -1,70 +1,50 @@
-<a href="https://www.questpdf.com/" target="_blank">
-  <img src="https://github.com/QuestPDF/example-invoice/raw/main/images/logo.svg" width="400"> 
-</a>
+# Modern PDF library for C# developers
 
----
+Generate and manipulate PDF documents in your .NET applications <br>
+using the open-source QuestPDF library and its C# Fluent API.
 
-[![QuestPDF Homepage](https://img.shields.io/badge/Homepage-blue?style=for-the-badge)](https://www.questpdf.com)
-[![Dotnet](https://img.shields.io/badge/platform-.NET-blue?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
-[![GitHub Repo stars](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge)](https://github.com/QuestPDF/QuestPDF/stargazers)
-[![Nuget version](https://img.shields.io/nuget/v/QuestPdf?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
-[![Nuget download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge)](https://www.nuget.org/packages/QuestPDF/)
-[![QuestPDF License](https://img.shields.io/badge/LICENSE%20details-Community%20MIT%20and%20professional-green?style=for-the-badge)](https://www.questpdf.com/license/)
+[![QuestPDF Homepage](https://img.shields.io/badge/project%20homepage-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com)
+[![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20MIT%20and%20professional-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/license/)
+<br>
+[![GitHub Stars and Stargazers](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge&label=GitHub%20Stars&logo=github&color=FFEB3B&logoColor=white)](https://github.com/QuestPDF/QuestPDF/stargazers)
+[![Nuget package download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge&label=NuGet%20downloads&logo=nuget&color=0277BD&logoColor=white)](https://www.nuget.org/packages/QuestPDF/)
 
-<br />
 
-### QuestPDF is a modern open-source .NET library for PDF document generation. Offering comprehensive layout engine powered by concise and discoverable C# Fluent API.
+<br><br>
+
+## Quick start  👋
+
+Learn how easy it is to design, implement and generate PDF documents using QuestPDF. <br>
+Effortlessly create documents of all types such as invoices and reports.
+
+[![Learn Quick Start tutorial](https://img.shields.io/badge/read%20quick%20start%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/quick-start.html)
 
 https://github.com/user-attachments/assets/a674c413-34c4-47b5-b559-f279b1bf46c0
 
-<br />
-<br />
-<br />
+<br><br>
 
-## Please help by giving a star
+## Please help by giving a star ⭐
 
-GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! ⭐
+GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! 
 
-<img src="https://github.com/user-attachments/assets/17e0c26d-9237-4301-b295-7be1c20d34cd" width="700" />
+<img src="https://github.com/user-attachments/assets/bec9180d-7ae9-454b-88da-0b00cc94b972" width="700" />
 
-
-<br />
-
-## QuestPDF Companion App
-
-Accelerate your development with live document preview powered by the hot-reload capability, eliminating the need for code recompilation:
-- Explore document structure and hierarchy
-- Quickly magnify and measure content
-- Debug runtime exceptions with stack traces and code snippets
-- Identify, understand and solve layout errors
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/39d4c08c-6a78-4743-8837-208c0c1718fd">
-  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="600">
-</picture>
-
-[![Companion App](https://img.shields.io/badge/%F0%9F%9A%80%20read-companion%20app-blue?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
-
-<br />
-
-## What you need is here
-
-`Comprehensive Layout Engine` - A layout engine tailored for document generation, offering advanced paging and precise content control.
-
-`Rich Toolkit` - Craft documents with intuitive, reusable components and over 50 layout elements for complex designs.
-
-`High Performance` - Generate thousands of pages per second with minimal CPU and memory usage.
-
-`Advanced Language Support` - Seamlessly create multilingual documents with support for RTL, text shaping, and bi-directional content.
-
-<br />
+<br>
 
 ## Code-Focused Paradigm
 
-Using C# to design PDF documents leverages powerful control structures like if-statements, for-loops, and methods, enabling dynamic and highly customizable content generation.
+### Modular and Maintainable C# Code
 
-It promotes best practices such as modular design and reusability while seamlessly integrating with source control systems for collaboration and versioning.
+Implement modular PDF layouts with reusable well-organized classes and methods. 
+Refactor safely with IntelliSense - your logic stays seamlessly integrated with your domain code.
+
+### Familiar Programming Concepts
+
+Use conditions, loops, LINQ, and extension methods to effortlessly generate dynamic, data-driven PDF documents tailored to your unique business needs.
+
+### Git-Friendly Workflow
+
+Enjoy straightforward C# code reviews, meaningful pull-request diffs, and cleaner version control histories.
 
 ```csharp
 .Column(column =>
@@ -88,31 +68,55 @@ void CreateItem(IContainer container, Item item)
 }
 ```
 
-<br />
+<br><br>
 
-## Multiplatform
+## QuestPDF Companion App
 
-The library supports all major operating systems, integrates seamlessly with leading IDEs as well as popular cloud platforms and technologies to ensure maximum flexibility.
+Accelerate your development with live document preview powered by the hot-reload capability, eliminating the need for C# code recompilation.
+- Explore PDF document structure and hierarchy
+- Quickly magnify and measure content
+- Debug runtime exceptions with stack traces and code snippets
+- Identify, understand and solve layout errors
 
-- `Technologies`: modern dotnet, legacy .NET Framework, Docker
-- `Operating systems`: Windows, Linux, MacOS
-- `Cloud providers`: Azure, AWS, Google Cloud
-- `IDE`: Visual Studio, Visual Code, JetBrains Rider, others
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/39d4c08c-6a78-4743-8837-208c0c1718fd">
+  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="600">
+</picture>
 
-<br />
+[![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/companion/usage)
+
+<br><br>
+
+## Exactly what you need
+
+### Comprehensive Layout Engine
+A powerful layout engine built specifically for PDF generation. Gain full control over document structure, precise content positioning, and automatic pagination for complex reports and invoices.
+
+### Rich Toolkit
+Accelerate your PDF development workflow with a rich set of reusable components and over 50 layout elements. Easily implement data-driven documents using a Fluent C# API.
+
+### High Performance
+Generate PDF files at scale with up to thousands of pages per second - while maintaining minimal CPU and memory usage. Perfect for high-throughput .NET applications.
+
+### Advanced Language Support
+Create multilingual PDF documents with full support for right-to-left (RTL) languages, advanced text shaping, and bi-directional layout handling.
+
+<br><br>
 
 ## Perform common PDF operations
 
+Leverage a powerful C# Fluent API to create, customize, and manage your PDF documents with ease.
 - Merge documents
 - Attach files
 - Extract pages
 - Encrypt / decrypt
 - Extend metadata
-- Limit access
+– Limit access
 - Optimize for Web
 - Overlay / underlay
 
-```csharp
+```c#
 DocumentOperation
     .LoadFile("input.pdf")
     .TakePages("1-10")
@@ -130,55 +134,67 @@ DocumentOperation
     .Save("final-document.pdf");
 ```
 
-[![Getting started tutorial](https://img.shields.io/badge/%F0%9F%9A%80%20read-document%20operations-blue?style=for-the-badge)](https://www.questpdf.com/concepts/document-operations.html)
+[![Learn Document Operation API](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/concepts/document-operations)
 
-<br />
+<br><br>
+
+## Multiplatform
+
+Supports all major operating systems and works seamlessly with leading IDEs, cloud platforms, and modern development tools.
+- `Technologies`: modern dotnet, legacy .NET Framework, Docker
+- `Operating systems`: Windows, Linux, MacOS
+- `Cloud providers`: Azure, AWS, Google Cloud
+- `IDE`: Visual Studio, Visual Code, JetBrains Rider, others
+
+<br><br>
+
+## Fair and Sustainable License
+
+By offering free access to most users and premium licenses for larger organizations, the project maintains its commitment to excellence:
+
+- Long-term and sustainable development
+- Regular feature, performance, quality and security updates
+- Active community and enterprise support
+
+> Free for individuals, non-profits, and businesses under $1M in annual revenue, as well as all FOSS projects.
+
+[![QuestPDF License and Pricing](https://img.shields.io/badge/check%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/getting-started)
+
+<br><br>
 
 ## Let's get started
 
-Follow our detailed tutorial, and see how easy it is to produce a fully functional invoice with fewer than 250 lines of C# code.
+Follow our detailed tutorial, and see how easy it is to generate a fully functional invoice with fewer than 250 lines of C# code.
 
-[![Getting started tutorial](https://img.shields.io/badge/%F0%9F%9A%80%20read-getting%20started-blue?style=for-the-badge)](https://www.questpdf.com/getting-started.html)
+<img src="https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/refs/heads/main/docs/public/homepage/invoice.png" width="400px" />
 
-<img src="https://github.com/QuestPDF/QuestPDF-Documentation/blob/main/docs/public/invoice-small.png?raw=true" width="400px">
+[![Read getting started tutorial](https://img.shields.io/badge/read%20getting%20started%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/getting-started)
 
-<br />
-
-
-## Sustainable and Fair License
-
-By offering free access to most users and premium licenses for larger organizations, the project maintains its commitment to excellence while ensuring sustainable, long-term development for all.
-
-> [!WARNING]
-> The library is free to use for any individual or business with less than 1 million USD annual gross revenue, or operates as a non-profit organization, or is a FOSS project.
-
-[![Library license details](https://img.shields.io/badge/%F0%9F%93%9C%0A%20read-license%20details-blue?style=for-the-badge)](https://www.questpdf.com/license/)
-
-<br />
-
+<br><br>
 
 ## Cummunity QuestPDF
 
-We are incredibly grateful to our Community for their positive reviews and recommendations of the QuestPDF library. Your support and feedback are invaluable and motivate us to keep improving and expanding this project. Thank you for helping us grow and reach more developers!
+We are incredibly grateful to our .NET Community for their positive reviews and recommendations of the QuestPDF library. 
+Your support and feedback are invaluable and motivate us to keep improving and expanding this project. 
+Thank you for helping us grow and reach more developers!
 
-#### Nick Chapsas: The Easiest Way to Create PDFs in .NET
+### Nick Chapsas: The Easiest Way to Create PDFs in .NET
 
 [![Nick Chapsas The Easiest Way to Create PDFs in .NET](https://img.youtube.com/vi/_M0IgtGWnvE/0.jpg)](https://www.youtube.com/watch?v=_M0IgtGWnvE)
 
-#### Claudio Bernasconi: QuestPDF - The BEST PDF Generator for .NET?!
+### Claudio Bernasconi: QuestPDF - The BEST PDF Generator for .NET?!
 
 [![Claudio Bernasconi QuestPDF - The BEST PDF Generator for .NET?!](https://img.youtube.com/vi/T89A_7dz1P8/0.jpg)](https://www.youtube.com/watch?v=T89A_7dz1P8)
 
-#### JetBrains: OSS Power-Ups: QuestPDF
+### JetBrains: OSS Power-Ups: QuestPDF
 
 [![JetBrains OSS Power-Ups: QuestPDF](https://img.youtube.com/vi/-iYvZvpLX0g/0.jpg)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
 
-#### Programming with Felipe Gavilan: Generating PDFs with C# - Very Easy (two examples)
+### Programming with Felipe Gavilan: Generating PDFs with C# - Very Easy (two examples)
 
 [![Felipe Gavilan Generating PDFs with C# - Very Easy (two examples)](https://img.youtube.com/vi/bhR4Cmg16gs/0.jpg)](https://www.youtube.com/watch?v=bhR4Cmg16gs)
 
-
-#### Learning materials
+### Learning materials
 
 - `PDF Generation using QuestPDF in ASP.NET Core` written by [Olufemi Oyedepo]([olufemioyedepo](https://github.com/olufemioyedepo)): [Part 1](https://medium.com/@olufemioyedepo/pdf-generation-using-questpdf-in-asp-net-core-part-1-5ef9a63d462a) [Part 2](https://medium.com/@olufemioyedepo/pdf-generation-using-questpdf-in-asp-net-core-part-2-aadec120c31a)
 
