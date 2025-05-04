@@ -1,9 +1,3 @@
-Version 2025.4.1
-- Updated the Skia library to version m136,
-- Updated the NuGet package README,
-- Added `DocumentOperation.Decrypt` featre to remove encryption from PDF documents,
-- Added `DocumentOperation.RemoveRestrictions` feature,
-- Improved availability of native resources on the legacy .NET Framework,
-- Fixed compatibility with Unity3D on Linux and macOS builds,
-- Fixed encryption of PDF files with 40-bit keys,
-- Fixed encryption of PDF files with 128-bit keys.
+Version 2025.4.3
+- Resolved a rare rendering issue that prevented shared images from displaying,
+- Updated the README file reference in the package and corrected the packaging path for the project description.
