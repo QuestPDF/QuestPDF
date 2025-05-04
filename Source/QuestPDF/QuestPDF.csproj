@@ -12,9 +12,9 @@
         <PackageIcon>Logo.png</PackageIcon>
         <PackageIconUrl>https://www.questpdf.com/images/package-logo.png</PackageIconUrl>
         <PackageProjectUrl>https://www.questpdf.com/</PackageProjectUrl>
-        <PackageReadmeFile>PackageReadme.md</PackageReadmeFile>
         <PackageLicenseFile>PackageLicense.md</PackageLicenseFile>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/QuestPDF/library.git</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
@@ -67,7 +67,7 @@
             <Pack>true</Pack>
             <PackagePath>build\%(RecursiveDir)%(Filename)%(Extension);buildTransitive\%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
-
-        <None Include="Resources\Description.md" Pack="true" PackagePath="\README.md" />
+        
+        <None Include="Resources\Description.md" Pack="true" PackagePath="README.md" />
     </ItemGroup>
 </Project>
