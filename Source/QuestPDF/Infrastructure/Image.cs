@@ -94,7 +94,8 @@ namespace QuestPDF.Infrastructure
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.remarks"]/*' />
         public static Image FromFile(string filePath)
         {
-            return StaticImageCache.Load(filePath);
+            using var imageData = SkData.FromFile(filePath);
+            return StaticImageCache.DecodeImage(imageData, isShared: true);
         }
 
         /// <summary>

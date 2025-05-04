@@ -154,7 +154,7 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="image.descriptor"]/*' />
         public static ImageDescriptor Image(this IContainer parent, string filePath)
         {
-            var image = Infrastructure.Image.FromFile(filePath);
+            var image = StaticImageCache.Load(filePath);
             return parent.Image(image);
         }
         
