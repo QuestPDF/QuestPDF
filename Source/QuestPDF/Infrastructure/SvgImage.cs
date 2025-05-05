@@ -46,7 +46,7 @@ public sealed class SvgImage : IDisposable
             var fallbackPath = Path.Combine(Helpers.Helpers.ApplicationFilesPath, filePath);
                 
             if (!File.Exists(fallbackPath))
-                throw new DocumentComposeException($"Cannot load provided image, file not found: ${filePath}");
+                throw new DocumentComposeException($"Cannot load an SVG image under the provided path, file not found: ${filePath}");
                 
             filePath = fallbackPath;
         }

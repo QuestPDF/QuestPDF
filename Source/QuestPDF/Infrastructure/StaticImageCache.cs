@@ -14,40 +14,27 @@ static class StaticImageCache
     private const int MaxCacheSize = 25_000_000;
     private const int MaxItemSize = 1_000_000;
     
-    public static Image Load(string filePath)
+    public static Image LoadFromCache(string filePath)
     {
-        var isPathRooted = Path.IsPathRooted(filePath);
-        
         // check fallback path
-        if (!File.Exists(filePath))
-        {
-            var fallbackPath = Path.Combine(Helpers.Helpers.ApplicationFilesPath, filePath);
+        filePath = AdjustPath(filePath);
 
-            if (!File.Exists(fallbackPath))
-                throw new DocumentComposeException($"Cannot load provided image, file not found: {filePath}");   
-
-            filePath = fallbackPath;
-        }
-        
-        if (isPathRooted)
-            return LoadImage(filePath, false);
+        // check if the image is already in cache
+        if (Items.TryGetValue(filePath, out var cacheItem))
+            return cacheItem;
         
         // check file size
         var fileInfo = new FileInfo(filePath);
         
         if (fileInfo.Length > MaxItemSize)
-            return LoadImage(filePath, false);
-        
-        // check if the image is already in cache
-        if (Items.TryGetValue(filePath, out var cacheItem))
-            return cacheItem;
+            return DirectlyLoadFromFile(filePath, false);
         
         // if cache is larger than expected, the usage might be different from loading static images
         if (!CacheIsEnabled)
-            return LoadImage(filePath, false);
+            return DirectlyLoadFromFile(filePath, false);
         
         // create new cache item and add it to the cache
-        var image = LoadImage(filePath, true);
+        var image = DirectlyLoadFromFile(filePath, true);
         Items.TryAdd(filePath, image);
         
         // check cache size
@@ -56,9 +43,27 @@ static class StaticImageCache
         // return cached value
         return image;
     }
-    
-    private static Image LoadImage(string filePath, bool isShared)
+
+    public static string AdjustPath(string filePath)
     {
+        if (File.Exists(filePath))
+            return filePath;
+        
+        if (Path.IsPathRooted(filePath))
+            throw new DocumentComposeException($"Cannot load an image under the provided absolute path, file not found: {filePath}");
+
+        var fallbackPath = Path.Combine(Helpers.Helpers.ApplicationFilesPath, filePath);
+
+        if (!File.Exists(fallbackPath))
+            throw new DocumentComposeException($"Cannot load an image under the provided relative path, file not found: {filePath}");
+
+        return fallbackPath;
+    }
+    
+    public static Image DirectlyLoadFromFile(string filePath, bool isShared)
+    {
+        filePath = AdjustPath(filePath);
+        
         using var imageData = SkData.FromFile(filePath);
         return DecodeImage(imageData, isShared);
     }
