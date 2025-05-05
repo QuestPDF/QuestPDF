@@ -1,6 +1,6 @@
-## Modern PDF library for C# developers
+## QuestPDF - Modern PDF library for C# developers
 
-Generate and manipulate PDF documents in your .NET applications <br>
+Generate and manipulate PDF documents in your .NET applications
 using the open-source QuestPDF library and its C# Fluent API.
 
 [![GitHub Stars and Stargazers](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge&label=GitHub%20Stars&logo=github&color=FFEB3B&logoColor=white)](https://github.com/QuestPDF/QuestPDF/stargazers)
