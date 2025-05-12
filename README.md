@@ -4,9 +4,9 @@ Generate and manipulate PDF documents in your .NET applications <br>
 using the open-source QuestPDF library and its C# Fluent API.
 
 [![QuestPDF Homepage](https://img.shields.io/badge/project%20homepage-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com)
-[![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20MIT%20and%20professional-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/license/)
+[![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20MIT%20and%20professional-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/license.html)
 <br>
-[![GitHub Stars and Stargazers](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge&label=GitHub%20Stars&logo=github&color=FFEB3B&logoColor=white)](https://github.com/QuestPDF/QuestPDF/stargazers)
+[![GitHub Stars and Stargazers](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge&label=GitHub%20Stars&logo=github&color=FFEB3B&logoColor=white)](https://github.com/QuestPDF/QuestPDF)
 [![Nuget package download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge&label=NuGet%20downloads&logo=nuget&color=0277BD&logoColor=white)](https://www.nuget.org/packages/QuestPDF/)
 
 
@@ -84,7 +84,7 @@ Accelerate your development with live document preview powered by the hot-reload
   <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="600">
 </picture>
 
-[![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/companion/usage)
+[![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/companion/usage.html)
 
 <br><br>
 
@@ -134,7 +134,7 @@ DocumentOperation
     .Save("final-document.pdf");
 ```
 
-[![Learn Document Operation API](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/concepts/document-operations)
+[![Learn Document Operation API](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/concepts/document-operations.html)
 
 <br><br>
 
@@ -158,7 +158,7 @@ By offering free access to most users and premium licenses for larger organizati
 
 > Free for individuals, non-profits, and businesses under $1M in annual revenue, as well as all FOSS projects.
 
-[![QuestPDF License and Pricing](https://img.shields.io/badge/check%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/getting-started)
+[![QuestPDF License and Pricing](https://img.shields.io/badge/check%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/license.html)
 
 <br><br>
 
@@ -168,7 +168,7 @@ Follow our detailed tutorial, and see how easy it is to generate a fully functio
 
 <img src="https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/refs/heads/main/docs/public/homepage/invoice.png" width="400px" />
 
-[![Read getting started tutorial](https://img.shields.io/badge/read%20getting%20started%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/getting-started)
+[![Read getting started tutorial](https://img.shields.io/badge/read%20getting%20started%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/getting-started.html)
 
 <br><br>
 
