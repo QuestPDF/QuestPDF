@@ -19,7 +19,7 @@ Effortlessly create documents of all types such as invoices and reports.
 
 [![Learn Quick Start tutorial](https://img.shields.io/badge/read%20quick%20start%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/quick-start.html)
 
-https://github.com/user-attachments/assets/a674c413-34c4-47b5-b559-f279b1bf46c0
+![questpdf-animation](https://github.com/user-attachments/assets/47d843d6-73d0-4abe-bf4e-1c3701e4a34c)
 
 <br><br>
 
