@@ -1,3 +1,4 @@
-Version 2025.4.3
-- Resolved a rare rendering issue that prevented shared images from displaying,
-- Updated the README file reference in the package and corrected the packaging path for the project description.
+Updated native dependencies:
+- Skia updated to version m137
+- Qpdf updated to version 12.2.0
+- OpenSSL updated to version 3.5.0
