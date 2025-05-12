@@ -108,7 +108,7 @@ Accelerate your development with live document preview powered by the hot-reload
 - Debug runtime exceptions with stack traces and code snippets
 - Identify, understand and solve layout errors
 
-[![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/companion/usage)
+[![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/companion/usage.html)
 
 
 ![QuestPDF Companion App helping .NET developers work more efficiently with C# implementation of the PDF document](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/refs/heads/main/docs/public/companion/application-light.png)
@@ -162,7 +162,7 @@ DocumentOperation
     .Save("final-document.pdf");
 ```
 
-[![Learn Document Operation API](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/concepts/document-operations)
+[![Learn Document Operation API](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/concepts/document-operations.html)
 
 
 
@@ -186,7 +186,7 @@ By offering free access to most users and premium licenses for larger organizati
 
 > Free for individuals, non-profits, and businesses under $1M in annual revenue, as well as all FOSS projects.
 
-[![QuestPDF License and Pricing](https://img.shields.io/badge/check%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/getting-started)
+[![QuestPDF License and Pricing](https://img.shields.io/badge/check%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/license/)
 
 
 
@@ -194,6 +194,6 @@ By offering free access to most users and premium licenses for larger organizati
 
 Follow our detailed tutorial, and see how easy it is to generate a fully functional invoice with fewer than 250 lines of C# code.
 
-[![Read getting started tutorial](https://img.shields.io/badge/read%20getting%20started%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/getting-started)
+[![Read getting started tutorial](https://img.shields.io/badge/read%20getting%20started%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/getting-started.html)
 
 ![Invoice PDF document created in the Getting Started tutorial of the QuestPDF library](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/refs/heads/main/docs/public/homepage/invoice.png)
