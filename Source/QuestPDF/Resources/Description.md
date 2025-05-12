@@ -3,9 +3,10 @@
 Generate and manipulate PDF documents in your .NET applications
 using the open-source QuestPDF library and its C# Fluent API.
 
-[![GitHub Stars and Stargazers](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge&label=GitHub%20Stars&logo=github&color=FFEB3B&logoColor=white)](https://github.com/QuestPDF/QuestPDF/stargazers)
-[![Nuget package download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge&label=NuGet%20downloads&logo=nuget&color=0277BD&logoColor=white)](https://www.nuget.org/packages/QuestPDF/)
+[![QuestPDF Homepage](https://img.shields.io/badge/project%20homepage-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com)
 [![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20MIT%20and%20professional-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/license/)
+[![GitHub Stars and Stargazers](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge&label=GitHub%20Stars&logo=github&color=FFEB3B&logoColor=white)](https://github.com/QuestPDF/QuestPDF)
+[![Nuget package download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge&label=NuGet%20downloads&logo=nuget&color=0277BD&logoColor=white)](https://www.nuget.org/packages/QuestPDF/)
 
 
 
