@@ -28,7 +28,9 @@ namespace QuestPDF.Drawing.DocumentCanvases
             using var canvas = SkCanvas.CreateFromBitmap(bitmap);
             canvas.Scale(scale, scale);
             canvas.DrawPicture(Picture);
-            return bitmap.EncodeAsJpeg(90).ToBytes();
+            
+            using var encodedBitmapData = bitmap.EncodeAsJpeg(90);
+            return encodedBitmapData.ToBytes();
         }
     }
     
