@@ -1,5 +1,7 @@
 name: Build, Test And Create Nuget Package
 
+permissions: {}
+
 on:
   push:
     branches: [ main ]
