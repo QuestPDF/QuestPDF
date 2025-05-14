@@ -500,6 +500,18 @@ namespace QuestPDF.Fluent
             });
         }
         
+        /// <summary>
+        /// Captures the size and location of its content.
+        /// The captured data can be then used in the Dynamic component to build and position other elements.
+        /// </summary>
+        public static IContainer CapturePosition(this IContainer element, string id)
+        {
+            return element.Element(new ElementPositionLocator
+            {
+                Id = id
+            });
+        }
+        
         #region Canvas [Obsolete]
 
         private const string CanvasDeprecatedMessage = "The Canvas API has been deprecated since version 2024.3.0. Please use the .Svg(stringContent) API to provide custom content, and consult documentation webpage regarding integrating SkiaSharp with QuestPDF: https://www.questpdf.com/api-reference/skiasharp-integration.html";
