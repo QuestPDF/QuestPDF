@@ -7,7 +7,18 @@ namespace QuestPDF.Elements;
 public sealed class ShowIfContext
 {
     public int PageNumber { get; internal set; }
-    public int TotalPages { get; internal set; }
+    
+    /// <summary>
+    /// Returns the total count of pages in the document.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Document rendering process is performed in two phases.
+    /// During the first phase, the value of this property is equal to <c>null</c> to indicate its unavailability.
+    /// </para>
+    /// <para>Please note that using this property may result with unstable layouts and unpredicted behaviors, especially when generating conditional content of various sizes.</para>
+    /// </remarks>
+    public int? TotalPages { get; internal set; }
 }
 
 internal sealed class ShowIf : ContainerElement
@@ -33,7 +44,7 @@ internal sealed class ShowIf : ContainerElement
         var context = new ShowIfContext
         {
             PageNumber = PageContext.CurrentPage,
-            TotalPages = PageContext.DocumentLength
+            TotalPages = PageContext.IsInitialRenderingPhase ? null : PageContext.DocumentLength
         };
 
         return VisibilityPredicate(context);
