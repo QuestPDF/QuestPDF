@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Numerics;
 
 namespace QuestPDF.Infrastructure
 {
@@ -22,6 +23,8 @@ namespace QuestPDF.Infrastructure
 
         public float X { get; set; }
         public float Y { get; set; }
+        
+        public Matrix4x4 Transform { get; set; } = Matrix4x4.Identity;
     }
     
     internal interface IPageContext

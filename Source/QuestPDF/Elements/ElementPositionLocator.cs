@@ -1,4 +1,4 @@
-using System;
+using System.Numerics;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -11,7 +11,12 @@ namespace QuestPDF.Elements
         {
             base.Draw(availableSpace);
 
-            var matrix = Canvas.GetCurrentMatrix();
+            var transform = Canvas.GetCurrentMatrix().ToMatrix4x4();
+
+            var scaleX = new Vector2(transform.M11, transform.M12).Length();
+            var scaleY = new Vector2(transform.M21, transform.M22).Length();
+
+            var actualPosition = Vector2.Transform(Vector2.Zero, transform);
 
             var position = new PageElementLocation
             {
@@ -19,11 +24,13 @@ namespace QuestPDF.Elements
 
                 PageNumber = PageContext.CurrentPage,
 
-                Width = availableSpace.Width / matrix.ScaleX,
-                Height = availableSpace.Height / matrix.ScaleY,
+                Width = availableSpace.Width * scaleX,
+                Height = availableSpace.Height * scaleY,
 
-                X = matrix.TranslateX,
-                Y = matrix.TranslateY
+                X = actualPosition.X,
+                Y = actualPosition.Y,
+                
+                Transform = transform
             };
 
             PageContext.CaptureContentPosition(position);

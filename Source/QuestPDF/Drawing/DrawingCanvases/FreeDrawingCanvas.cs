@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -7,8 +9,8 @@ namespace QuestPDF.Drawing.DrawingCanvases
 {
     internal sealed class FreeDrawingCanvas : IDrawingCanvas
     {
-        private Stack<SkCanvasMatrix> MatrixStack { get; } = new();
-        private SkCanvasMatrix CurrentMatrix { get; set; } = SkCanvasMatrix.Identity;
+        private Stack<Matrix4x4> MatrixStack { get; } = new();
+        private Matrix4x4 CurrentMatrix { get; set; } = Matrix4x4.Identity;
         private int CurrentZIndex { get; set; } = 0;
         
         public DocumentPageSnapshot GetSnapshot()
@@ -43,27 +45,27 @@ namespace QuestPDF.Drawing.DrawingCanvases
         
         public SkCanvasMatrix GetCurrentMatrix()
         {
-            return CurrentMatrix;
+            return SkCanvasMatrix.FromMatrix4x4(CurrentMatrix);
         }
 
         public void SetMatrix(SkCanvasMatrix matrix)
         {
-            CurrentMatrix = matrix;
+            CurrentMatrix = matrix.ToMatrix4x4();
         }
 
         public void Translate(Position vector)
         {
-            CurrentMatrix *= SkCanvasMatrix.CreateTranslation(vector.X, vector.Y);
+            CurrentMatrix = Matrix4x4.CreateTranslation(vector.X, vector.Y, 0) * CurrentMatrix;
         }
         
         public void Scale(float scaleX, float scaleY)
         {
-            CurrentMatrix *= SkCanvasMatrix.CreateScale(scaleX, scaleY);
+            CurrentMatrix = Matrix4x4.CreateScale(scaleX, scaleY, 1) * CurrentMatrix;
         }
         
         public void Rotate(float angle)
         {
-            CurrentMatrix *= SkCanvasMatrix.CreateRotation(angle);
+            CurrentMatrix = Matrix4x4.CreateRotationZ((float)Math.PI * angle / 180f) * CurrentMatrix;
         }
 
         public void DrawFilledRectangle(Position vector, Size size, Color color)
