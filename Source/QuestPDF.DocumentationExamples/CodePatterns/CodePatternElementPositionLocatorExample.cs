@@ -10,86 +10,88 @@ public class CodePatternElementPositionLocatorExample
     [Test]
     public void Example()
     {
-        var content = GenerateReport();
-        File.WriteAllBytes("code-pattern-element-position-locator.pdf", content);
-    }
-    
-    public byte[] GenerateReport()
-    {
-        return Document
+        Document
             .Create(document =>
             {
                 document.Page(page =>
                 {
-                    page.Size(PageSizes.A6);
-                    page.Margin(25);
+                    page.ContinuousSize(575);
                     page.DefaultTextStyle(x => x.FontSize(20));
-                    
+                    page.Margin(25);
+
                     page.Content()
                         .Background(Colors.White)
                         .Row(row =>
                         {
-                            row.Spacing(10);
+                            row.Spacing(25);
 
-                            row.ConstantItem(5).Dynamic(new DynamicTextSpanPositionCapture());
- 
+                            row.ConstantItem(0).Dynamic(new DynamicTextSpanPositionCapture());
+
                             row.RelativeItem().CapturePosition("container").Text(text =>
                             {
-               
                                 text.Justify();
-                                text.DefaultTextStyle(x => x.FontSize(18));
+                                
+                                var mistakeTextStyle = TextStyle.Default
+                                    .FontColor(Colors.Red.Darken3)
+                                    .BackgroundColor(Colors.Red.Lighten4)
+                                    .Strikethrough()
+                                    .DecorationThickness(2);
+                                
+                                var correctionTextStyle = TextStyle.Default
+                                    .FontColor(Colors.Green.Darken3)
+                                    .BackgroundColor(Colors.Green.Lighten4);
 
-                                text.Span("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
-                                text.Element(TextInjectedElementAlignment.Top).CapturePosition("span_start");
-                                text.Span("Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.").BackgroundColor(Colors.Red.Lighten4);
-                                text.Element(TextInjectedElementAlignment.Bottom).CapturePosition("span_end");
-                                text.Span(" It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.");
+                                text.Span("Proofreading").Bold().Underline().DecorationThickness(2);
+                                text.Span(" technical documentation is a critical quality assurance step that ensures clarity, accuracy, and consistency across all written content. It involves more than just checking for grammar and ");
+                                text.Span("spilling").Style(mistakeTextStyle);
+                                text.Span("spelling").Style(correctionTextStyle);
+                                text.Element(TextInjectedElementAlignment.Middle).CapturePosition("mistake");
+                                text.Span(" errors—it also includes verifying terminology, code syntax, formatting standards, and logical flow. A common best practice is to have the content reviewed by both a subject matter ");
+                                text.Span("export").Style(mistakeTextStyle);
+                                text.Span("expert").Style(correctionTextStyle);
+                                text.Element(TextInjectedElementAlignment.Middle).CapturePosition("mistake");
+                                text.Span(" and a language specialist, ensuring that the material is technically sound while also being accessible to the intended audience.");
                             });
                         });
-
-                    page.Footer().Text(text =>
-                    {
-                        text.Span("Page ");
-                        text.CurrentPageNumber();
-                        text.Span(" of ");
-                        text.TotalPages();
-                    });
                 });
             })
-            .GeneratePdf();
+            .GenerateImages(x => "code-pattern-element-position-locator.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
-    
 
     public class DynamicTextSpanPositionCapture : IDynamicComponent
     {
         public DynamicComponentComposeResult Compose(DynamicContext context)
         {
             var containerLocation = context.GetElementCapturedPositions("container").FirstOrDefault(x => x.PageNumber == context.PageNumber);
-
-            var spanStartLocation = context.GetElementCapturedPositions("span_start").FirstOrDefault();
-
-            var spanEndLocation = context.GetElementCapturedPositions("span_end").FirstOrDefault();
-
-            if (containerLocation == null || spanStartLocation == null || spanEndLocation == null || containerLocation.PageNumber > spanStartLocation.PageNumber || containerLocation.PageNumber < spanEndLocation.PageNumber)
+            var mistakeLocations = context.GetElementCapturedPositions("mistake").Where(x => x.PageNumber == context.PageNumber).ToList();
+            
+            if (containerLocation == null || mistakeLocations.Count == 0)
             {
                 return new DynamicComponentComposeResult
                 {
-                    Content = context.CreateElement(container => { }),
+                    Content = context.CreateElement(_ => { }),
                     HasMoreContent = false
                 };
             }
-            
-            var positionStart = containerLocation.PageNumber > spanStartLocation.PageNumber ? containerLocation.Y : spanStartLocation.Y;
-            var positionEnd = containerLocation.PageNumber < spanEndLocation.PageNumber ? (containerLocation.Y + containerLocation.Height) : (spanEndLocation.Y + spanEndLocation.Height);
 
             var content = context.CreateElement(container =>
             {
-                container
-                    .TranslateX(0)
-                    .TranslateY(positionStart - containerLocation.Y)
-                    .Width(5)
-                    .Height(positionEnd - positionStart)
-                    .Background(Colors.Red.Medium);
+                container.Layers(layers =>
+                {
+                    layers.PrimaryLayer();
+
+                    foreach (var mistakeLocation in mistakeLocations)
+                    {
+                        layers
+                            .Layer()
+                            .Unconstrained() 
+                            .TranslateY(mistakeLocation.Y - containerLocation.Y)
+                            .TranslateX(-12)
+                            .TranslateY(-12)
+                            .Width(24)
+                            .Svg("Resources/proofreading.svg");
+                    }
+                });
             });
 
             return new DynamicComponentComposeResult
