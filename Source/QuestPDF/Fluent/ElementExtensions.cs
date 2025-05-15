@@ -501,10 +501,11 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Captures the size and location of its content.
+        /// Observes the rendering process of its content and captures its position and size on each page.
         /// The captured data can be then used in the Dynamic component to build and position other elements.
+        /// <a href="https://www.questpdf.com/concepts/code-patterns/capture-content-position.html">Learn more</a>
         /// </summary>
-        public static IContainer CapturePosition(this IContainer element, string id)
+        public static IContainer CaptureContentPosition(this IContainer element, string id)
         {
             return element.Element(new ElementPositionLocator
             {

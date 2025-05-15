@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.DocumentationExamples.CodePatterns;
 
-public class CodePatternElementPositionLocatorExample
+public class CodePatternCapturePositionExample
 {
     [Test]
     public void Example()
@@ -27,7 +27,7 @@ public class CodePatternElementPositionLocatorExample
 
                             row.ConstantItem(0).Dynamic(new DynamicTextSpanPositionCapture());
 
-                            row.RelativeItem().CapturePosition("container").Text(text =>
+                            row.RelativeItem().CaptureContentPosition("container").Text(text =>
                             {
                                 text.Justify();
                                 
@@ -45,11 +45,11 @@ public class CodePatternElementPositionLocatorExample
                                 text.Span(" technical documentation is a critical quality assurance step that ensures clarity, accuracy, and consistency across all written content. It involves more than just checking for grammar and ");
                                 text.Span("spilling").Style(mistakeTextStyle);
                                 text.Span("spelling").Style(correctionTextStyle);
-                                text.Element(TextInjectedElementAlignment.Middle).CapturePosition("mistake");
+                                text.Element(TextInjectedElementAlignment.Middle).CaptureContentPosition("mistake");
                                 text.Span(" errors—it also includes verifying terminology, code syntax, formatting standards, and logical flow. A common best practice is to have the content reviewed by both a subject matter ");
                                 text.Span("export").Style(mistakeTextStyle);
                                 text.Span("expert").Style(correctionTextStyle);
-                                text.Element(TextInjectedElementAlignment.Middle).CapturePosition("mistake");
+                                text.Element(TextInjectedElementAlignment.Middle).CaptureContentPosition("mistake");
                                 text.Span(" and a language specialist, ensuring that the material is technically sound while also being accessible to the intended audience.");
                             });
                         });
@@ -62,8 +62,8 @@ public class CodePatternElementPositionLocatorExample
     {
         public DynamicComponentComposeResult Compose(DynamicContext context)
         {
-            var containerLocation = context.GetElementCapturedPositions("container").FirstOrDefault(x => x.PageNumber == context.PageNumber);
-            var mistakeLocations = context.GetElementCapturedPositions("mistake").Where(x => x.PageNumber == context.PageNumber).ToList();
+            var containerLocation = context.GetContentCapturedPositions("container").FirstOrDefault(x => x.PageNumber == context.PageNumber);
+            var mistakeLocations = context.GetContentCapturedPositions("mistake").Where(x => x.PageNumber == context.PageNumber).ToList();
             
             if (containerLocation == null || mistakeLocations.Count == 0)
             {

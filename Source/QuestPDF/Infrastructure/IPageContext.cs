@@ -37,6 +37,6 @@ namespace QuestPDF.Infrastructure
         string GetDocumentLocationName(string locationName);
         
         void CaptureContentPosition(PageElementLocation location);
-        ICollection<PageElementLocation> GetContentPosition(string id);
+        ICollection<PageElementLocation> GetContentCapturedPositions(string id);
     }
 }

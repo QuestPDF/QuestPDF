@@ -150,9 +150,9 @@ namespace QuestPDF.Elements
         /// <summary>
         /// Returns all page locations of the captured element.
         /// </summary>
-        public ICollection<PageElementLocation> GetElementCapturedPositions(string id)
+        public ICollection<PageElementLocation> GetContentCapturedPositions(string id)
         {
-            return PageContext.GetContentPosition(id);
+            return PageContext.GetContentCapturedPositions(id);
         }
 
         /// <summary>

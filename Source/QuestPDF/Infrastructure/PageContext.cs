@@ -66,16 +66,16 @@ namespace QuestPDF.Infrastructure
             return $"{CurrentDocumentId} | {locationName}";
         }
         
-        private List<PageElementLocation> PageElementLocations { get; } = new();
+        private List<PageElementLocation> ContentCapturedPositions { get; } = new();
 
         public void CaptureContentPosition(PageElementLocation location)
         {
-            PageElementLocations.Add(location);
+            ContentCapturedPositions.Add(location);
         }
 
-        public ICollection<PageElementLocation> GetContentPosition(string id)
+        public ICollection<PageElementLocation> GetContentCapturedPositions(string id)
         {
-            return PageElementLocations.Where(x => x.Id == id).ToList();
+            return ContentCapturedPositions.Where(x => x.Id == id).ToList();
         }
     }
 }
