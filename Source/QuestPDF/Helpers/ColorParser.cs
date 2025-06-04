@@ -14,7 +14,7 @@ static class ColorParser
         if (!TryParseColorHex(hexString, out var color))
         {
             throw new ArgumentException(
-                $"The provided value '{color}' is not a valid hex color. " +
+                $"The provided value '{hexString}' is not a valid hex color. " +
                 "The following formats are supported: #RGB, #ARGB, #RRGGBB, #AARRGGBB. " +
                 "The hash sign is optional so the following formats are also valid: RGB, ARGB, RRGGBB, AARRGGBB. " +
                 "For example #FF8800 is a solid orange color, while #20CF is a barely visible aqua color.",
