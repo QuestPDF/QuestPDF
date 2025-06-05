@@ -17,11 +17,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static byte[] GeneratePdf(this IDocument document)
         {
-            using var stream = new SkWriteStream();
-            DocumentGenerator.GeneratePdf(stream, document);
-            
-            using var data = stream.DetachData();
-            return data.ToBytes();
+            using var memoryStream = new MemoryStream();
+            document.GeneratePdf(memoryStream);
+            return memoryStream.ToArray();
         }
         
         /// <summary>
@@ -29,12 +27,11 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static void GeneratePdf(this IDocument document, string filePath)
         {
-            var data = document.GeneratePdf();
-            
             if (File.Exists(filePath))
                 File.Delete(filePath);
             
-            File.WriteAllBytes(filePath, data);
+            using var fileStream = File.Create(filePath);
+            document.GeneratePdf(fileStream);
         }
 
         /// <summary>
@@ -42,8 +39,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static void GeneratePdf(this IDocument document, Stream stream)
         {
-            var data = document.GeneratePdf();
-            stream.Write(data, 0, data.Length);
+            using var skiaStream = new SkWriteStream(stream);
+            DocumentGenerator.GeneratePdf(skiaStream, document);
+            skiaStream.Flush();
         }
         
         private static int GenerateAndShowCounter = 0;
@@ -72,14 +70,9 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public static byte[] GenerateXps(this IDocument document)
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                throw new PlatformNotSupportedException("XPS generation is only supported on the Windows platform.");
-            
-            using var stream = new SkWriteStream();
-            DocumentGenerator.GenerateXps(stream, document);
-            
-            using var data = stream.DetachData();
-            return data.ToBytes();
+            using var memoryStream = new MemoryStream();
+            document.GenerateXps(memoryStream);
+            return memoryStream.ToArray();
         }
         
         /// <summary>
@@ -90,12 +83,11 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public static void GenerateXps(this IDocument document, string filePath)
         {
-            var data = document.GenerateXps();
-            
             if (File.Exists(filePath))
                 File.Delete(filePath);
             
-            File.WriteAllBytes(filePath, data);
+            using var fileStream = File.Create(filePath);
+            document.GenerateXps(fileStream);
         }
 
         /// <summary>
@@ -106,8 +98,12 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public static void GenerateXps(this IDocument document, Stream stream)
         {
-            var data = document.GenerateXps();
-            stream.Write(data, 0, data.Length);
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                throw new PlatformNotSupportedException("XPS generation is only supported on the Windows platform.");
+            
+            using var skiaStream = new SkWriteStream(stream);
+            DocumentGenerator.GenerateXps(skiaStream, document);
+            skiaStream.Flush();
         }
         
         /// <summary>

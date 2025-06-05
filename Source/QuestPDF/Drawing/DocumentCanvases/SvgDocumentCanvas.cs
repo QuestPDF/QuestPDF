@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Infrastructure;
@@ -13,7 +14,8 @@ namespace QuestPDF.Drawing.DocumentCanvases
         private SkCanvas? CurrentPageCanvas { get; set; }
         private ProxyDrawingCanvas DrawingCanvas { get; } = new();
         
-        private SkWriteStream WriteStream { get; set; }
+        private MemoryStream WriteStream { get; set; }
+        private SkWriteStream SkiaStream { get; set; }
         internal ICollection<string> Images { get; } = new List<string>();
         
         #region IDisposable
@@ -28,6 +30,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
         {
             CurrentPageCanvas?.Dispose();
             WriteStream?.Dispose();
+            SkiaStream?.Dispose();
             DrawingCanvas?.Dispose();
             
             GC.SuppressFinalize(this);
@@ -46,13 +49,17 @@ namespace QuestPDF.Drawing.DocumentCanvases
         {
             CurrentPageCanvas?.Dispose();
             WriteStream?.Dispose();
+            SkiaStream?.Dispose();
         }
 
         public void BeginPage(Size size)
         {
             WriteStream?.Dispose();
-            WriteStream = new SkWriteStream();
-            CurrentPageCanvas = SkSvgCanvas.CreateSvg(size.Width, size.Height, WriteStream);
+            SkiaStream?.Dispose();
+            
+            WriteStream = new MemoryStream();
+            SkiaStream = new SkWriteStream(WriteStream);
+            CurrentPageCanvas = SkSvgCanvas.CreateSvg(size.Width, size.Height, SkiaStream);
             
             DrawingCanvas.Target = new SkiaDrawingCanvas(size.Width, size.Height);
             DrawingCanvas.SetZIndex(0);
@@ -69,10 +76,13 @@ namespace QuestPDF.Drawing.DocumentCanvases
             CurrentPageCanvas.Dispose();
             CurrentPageCanvas = null;
             
-            using var data = WriteStream.DetachData();
-            var svgImage = Encoding.UTF8.GetString(data.ToBytes());
+            SkiaStream.Flush();
+
+            var data = WriteStream.ToArray();
+            var svgImage = Encoding.UTF8.GetString(data);
             Images.Add(svgImage);
             
+            SkiaStream.Dispose();
             WriteStream.Dispose();
         }
         

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
@@ -6,17 +7,34 @@ namespace QuestPDF.Skia;
 internal sealed class SkWriteStream : IDisposable
 {
     public IntPtr Instance { get; private set; }
-    
-    public SkWriteStream()
+    private GCHandle CallbackHandle { get; }
+
+    public SkWriteStream(Stream stream)
     {
-        Instance = API.write_stream_create();
+        var nativeCallback = new API.ByteArrayCallback((data, size) =>
+        {
+#if NETCOREAPP2_1_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+            unsafe
+            {
+                var span = new ReadOnlySpan<byte>((void*)data, size);
+                stream.Write(span);
+            }
+#else
+            var managedArray = new byte[size];
+            Marshal.Copy(data, managedArray, 0, size);
+            stream?.Write(managedArray, 0, managedArray.Length);
+#endif
+        });
+
+        CallbackHandle = GCHandle.Alloc(nativeCallback);
+        
+        Instance = API.write_stream_create(nativeCallback);
         SkiaAPI.EnsureNotNull(Instance);
     }
     
-    public SkData DetachData()
+    public void Flush()
     {
-        var dataInstance = API.write_stream_detach_data(Instance);
-        return new SkData(dataInstance);
+        API.write_stream_flush(Instance);
     }
     
     ~SkWriteStream()
@@ -29,7 +47,8 @@ internal sealed class SkWriteStream : IDisposable
     {
         if (Instance == IntPtr.Zero)
             return;
-        
+     
+        CallbackHandle.Free();
         API.write_stream_delete(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
@@ -37,13 +56,16 @@ internal sealed class SkWriteStream : IDisposable
     
     private static class API
     {
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate void ByteArrayCallback(IntPtr data, int size);
+
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr write_stream_create();
+        public static extern IntPtr write_stream_create(ByteArrayCallback callback);
     
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void write_stream_delete(IntPtr stream);
+        public static extern void write_stream_flush(IntPtr stream);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr write_stream_detach_data(IntPtr stream);    
+        public static extern void write_stream_delete(IntPtr stream);
     }
 }
