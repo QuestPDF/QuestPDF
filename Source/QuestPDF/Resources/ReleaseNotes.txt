@@ -1,4 +1,2 @@
-- Feature: Added the CaptureContentPosition API, allowing developers to inspect the exact position and size of arbitrary content. This enables the generation of dynamic, related content within the DynamicComponent, enhancing flexibility for complex layout requirements.
-- Enhancement: Changed the default page background color from white to transparent, which reduces developer confusion during document operations such as content overlaying. Only JPEG images are rendered with a white background.
-- Fix: ShowIfContext.TotalPages is now set to null during the initial rendering phase to avoid confusion when using the ShowIf API.
-- Fix: Improved memory management in the Companion App workflow by immediately disposing of native resources.
+- Reduced peak memory usage when generating PDF files by properly implementing a stream-based API,
+- Fixed the exception message displayed when the library cannot successfully parse the provided text as a color.
