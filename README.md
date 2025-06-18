@@ -27,7 +27,7 @@ Effortlessly create documents of all types such as invoices and reports.
 
 GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! 
 
-<img src="https://github.com/user-attachments/assets/7fc1dd86-c1df-4a10-a8e0-42b39138629b" width="700" />
+<img src="https://github.com/user-attachments/assets/117da3d8-9d1d-43d6-8592-1caad9ca6e6e" width="700" />
 
 <br>
 
