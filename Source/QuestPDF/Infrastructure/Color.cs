@@ -1,3 +1,4 @@
+using System;
 using QuestPDF.Helpers;
 
 namespace QuestPDF.Infrastructure;
@@ -31,6 +32,21 @@ public readonly struct Color
     {
         var newHex = (Hex & 0x00FFFFFF) | ((uint)alpha << 24);
         return new Color(newHex);
+    }
+    
+    /// <summary>
+    /// Creates a new color instance with the specified alpha transparency value.
+    /// The alpha value should be within the range 0 to 1, where 0 represents fully transparent
+    /// and 1 represents fully opaque.
+    /// </summary>
+    /// <returns>A new color instance with the adjusted alpha transparency.</returns>
+    internal Color WithAlpha(float alpha)
+    {
+        if (alpha < 0 || alpha > 1)
+            throw new ArgumentOutOfRangeException(nameof(alpha), "Alpha value must be between 0 and 1.");
+        
+        var newAlpha = (byte)(255 * alpha);
+        return WithAlpha(newAlpha);
     }
 
     /// <summary>

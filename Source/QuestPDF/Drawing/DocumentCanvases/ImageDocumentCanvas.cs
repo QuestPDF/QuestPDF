@@ -63,9 +63,14 @@ namespace QuestPDF.Drawing.DocumentCanvases
             CurrentPageCanvas = SkCanvas.CreateFromBitmap(Bitmap);
             
             CurrentPageCanvas.Scale(scalingFactor, scalingFactor);
-            
+
             if (Settings.ImageFormat == ImageFormat.Jpeg)
-                CurrentPageCanvas.DrawFilledRectangle(new SkRect(0, 0, size.Width, size.Height), Colors.White);
+            {
+                using var whitePaint = new SkPaint();
+                whitePaint.SetSolidColor(Colors.White);
+                
+                CurrentPageCanvas.DrawRectangle(new SkRect(0, 0, size.Width, size.Height), whitePaint);
+            }
             
             DrawingCanvas.Target = new SkiaDrawingCanvas(size.Width, size.Height);
             DrawingCanvas.SetZIndex(0);

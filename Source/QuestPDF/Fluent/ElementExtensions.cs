@@ -130,19 +130,6 @@ namespace QuestPDF.Fluent
         }
 
         /// <summary>
-        /// Sets a solid background color behind its content.
-        /// <a href="https://www.questpdf.com/api-reference/background.html">Learn more</a>
-        /// </summary>
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="colorParam"]/*' />
-        public static IContainer Background(this IContainer element, Color color)
-        {
-            return element.Element(new Background
-            {
-                Color = color
-            });
-        }
-
-        /// <summary>
         /// Draws a basic placeholder useful for prototyping.
         /// <a href="https://www.questpdf.com/api-reference/placeholder.html">Learn more</a>
         /// </summary>

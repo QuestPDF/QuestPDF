@@ -22,8 +22,10 @@ namespace QuestPDF.Infrastructure
         void Scale(float scaleX, float scaleY);
         void Rotate(float angle);
         
-        void DrawFilledRectangle(Position vector, Size size, Color color);
-        void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color);
+        void DrawLine(Position start, Position end, SkPaint paint);
+        void DrawRectangle(Position vector, Size size, SkPaint paint);
+        void DrawComplexBorder(SkRoundedRect innerRect, SkRoundedRect outerRect, SkPaint paint);
+        void DrawShadow(SkRoundedRect shadowRect, SkBoxShadow shadow);
         void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo);
         void DrawImage(SkImage image, Size size);
         void DrawPicture(SkPicture picture);
@@ -33,6 +35,7 @@ namespace QuestPDF.Infrastructure
         void DrawOverflowArea(SkRect area);
         void ClipOverflowArea(SkRect availableSpace, SkRect requiredSpace);
         void ClipRectangle(SkRect clipArea);
+        void ClipRoundedRectangle(SkRoundedRect clipArea);
         
         void DrawHyperlink(string url, Size size);
         void DrawSectionLink(string sectionName, Size size);

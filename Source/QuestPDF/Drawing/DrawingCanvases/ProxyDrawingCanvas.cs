@@ -82,14 +82,24 @@ internal sealed class ProxyDrawingCanvas : IDrawingCanvas, IDisposable
         Target.Rotate(angle);
     }
 
-    public void DrawFilledRectangle(Position vector, Size size, Color color)
+    public void DrawLine(Position start, Position end, SkPaint paint)
     {
-        Target.DrawFilledRectangle(vector, size, color);
+        Target.DrawLine(start, end, paint);
     }
-
-    public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color)
+    
+    public void DrawRectangle(Position vector, Size size, SkPaint paint)
     {
-        Target.DrawStrokeRectangle(vector, size, strokeWidth, color);
+        Target.DrawRectangle(vector, size, paint);
+    }
+    
+    public void DrawComplexBorder(SkRoundedRect innerRect, SkRoundedRect outerRect, SkPaint paint)
+    {
+        Target.DrawComplexBorder(innerRect, outerRect, paint);
+    }
+    
+    public void DrawShadow(SkRoundedRect shadowRect, SkBoxShadow shadow)
+    {
+        Target.DrawShadow(shadowRect, shadow);
     }
 
     public void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo)
@@ -130,6 +140,11 @@ internal sealed class ProxyDrawingCanvas : IDrawingCanvas, IDisposable
     public void ClipRectangle(SkRect clipArea)
     {
         Target.ClipRectangle(clipArea);
+    }
+    
+    public void ClipRoundedRectangle(SkRoundedRect clipArea)
+    {
+        Target.ClipRoundedRectangle(clipArea);
     }
 
     public void DrawHyperlink(string url, Size size)

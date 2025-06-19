@@ -2,6 +2,7 @@
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
@@ -21,6 +22,8 @@ namespace QuestPDF.Elements
         public LineType Type { get; set; } = LineType.Vertical;
         public Color Color { get; set; } = Colors.Black;
         public float Thickness { get; set; } = 1;
+        public float[] DashPattern { get; set; } = [];
+        public Color[] GradientColors { get; set; } = [];
         
         internal override SpacePlan Measure(Size availableSpace)
         {
@@ -54,15 +57,23 @@ namespace QuestPDF.Elements
             if (IsRendered)
                 return;
             
-            if (Type == LineType.Vertical)
-            {
-                Canvas.DrawFilledRectangle(Position.Zero, new Size(Thickness, availableSpace.Height), Color);
-            }
-            else if (Type == LineType.Horizontal)
-            {
-                Canvas.DrawFilledRectangle(Position.Zero, new Size(availableSpace.Width, Thickness), Color);
-            }
+            var start = Position.Zero;
             
+            var end = Type == LineType.Vertical
+                ? new Position(0, availableSpace.Height)
+                : new Position(availableSpace.Width, 0);
+
+            using var paint = new SkPaint();
+            paint.SetStroke(Thickness);
+            paint.SetSolidColor(Color);
+            
+            if (GradientColors.Length > 0)
+                paint.SetLinearGradient(start, end, GradientColors);
+
+            if (DashPattern.Length > 0)
+                paint.SetDashedPathEffect(DashPattern);
+
+            Canvas.DrawLine(start, end, paint);
             IsRendered = true;
         }
         

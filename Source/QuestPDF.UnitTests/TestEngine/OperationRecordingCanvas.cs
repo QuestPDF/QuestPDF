@@ -28,8 +28,10 @@ namespace QuestPDF.UnitTests.TestEngine
         public void Scale(float scaleX, float scaleY) => Operations.Add(new CanvasScaleOperation(scaleX, scaleY));
         public void Rotate(float angle) => Operations.Add(new CanvasRotateOperation(angle));
 
-        public void DrawFilledRectangle(Position vector, Size size, Color color) => Operations.Add(new CanvasDrawRectangleOperation(vector, size, color));
-        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color) => throw new NotImplementedException();
+        public void DrawLine(Position start, Position end, SkPaint paint) => throw new NotImplementedException();
+        public void DrawRectangle(Position vector, Size size, SkPaint paint) => throw new NotImplementedException();
+        public void DrawComplexBorder(SkRoundedRect innerRect, SkRoundedRect outerRect, SkPaint paint) => throw new NotImplementedException();
+        public void DrawShadow(SkRoundedRect shadowRect, SkBoxShadow shadow) => throw new NotImplementedException();
         public void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo) => throw new NotImplementedException();
         public void DrawImage(SkImage image, Size size) => Operations.Add(new CanvasDrawImageOperation(Position.Zero, size));
         public void DrawPicture(SkPicture picture) => throw new NotImplementedException();
@@ -39,6 +41,7 @@ namespace QuestPDF.UnitTests.TestEngine
         public void DrawOverflowArea(SkRect area) => throw new NotImplementedException();
         public void ClipOverflowArea(SkRect availableSpace, SkRect requiredSpace) => throw new NotImplementedException();
         public void ClipRectangle(SkRect clipArea) => throw new NotImplementedException();
+        public void ClipRoundedRectangle(SkRoundedRect clipArea) => throw new NotImplementedException();
         
         public void DrawHyperlink(string url, Size size) => throw new NotImplementedException();
         public void DrawSectionLink(string sectionName, Size size) => throw new NotImplementedException();
