@@ -27,7 +27,7 @@ internal sealed class SkPaint : IDisposable
         
         var colorArray = colors.Select(c => c.Hex).ToArray();
         
-        API.paint_set_linear_gradient(Instance, startPoint, endPoint, colorArray, colorArray.Length);
+        API.paint_set_linear_gradient(Instance, startPoint, endPoint, colorArray.Length, colorArray);
     }
     
     public void SetStroke(float thickness)
@@ -68,7 +68,7 @@ internal sealed class SkPaint : IDisposable
         public static extern void paint_set_solid_color(IntPtr paint, uint color);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paint_set_linear_gradient(IntPtr paint, SkPoint start, SkPoint end, uint[] colors, int colorsCount);    
+        public static extern void paint_set_linear_gradient(IntPtr paint, SkPoint start, SkPoint end,  int colorsLength, uint[] colors);    
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paint_set_stroke(IntPtr paint, float thickness);    
