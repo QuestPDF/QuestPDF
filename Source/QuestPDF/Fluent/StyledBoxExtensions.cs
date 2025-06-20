@@ -28,7 +28,12 @@ namespace QuestPDF.Fluent
             
             return element.Element(styledBox);
         }
-        
+
+        /// <summary>
+        /// Applies a linear gradient background to the container with the specified angle and colors.
+        /// </summary>
+        /// <param name="angle">The angle in degrees of the gradient direction.</param>
+        /// <param name="colors">An array of <see cref="Color"/> representing the gradient colors.</param>
         public static IContainer BackgroundLinearGradient(this IContainer element, float angle, Color[] colors)
         {
             var border = element as StyledBox ?? new StyledBox();
@@ -228,7 +233,12 @@ namespace QuestPDF.Fluent
             border.BorderColor = color;
             return element.Element(border);
         }
-        
+
+        /// <summary>
+        /// Sets a linear gradient for the border with the specified angle and colors.
+        /// </summary>
+        /// <param name="angle">The angle of the gradient in degrees.</param>
+        /// <param name="colors">An array of <see cref="Color"/> objects representing the gradient colors.</param>
         public static IContainer BorderLinearGradient(this IContainer element, float angle, Color[] colors)
         {
             var border = element as StyledBox ?? new StyledBox();
@@ -276,7 +286,10 @@ namespace QuestPDF.Fluent
         #endregion
         
         #region Shadow
-        
+
+        /// <summary>
+        /// Applies a shadow to the container using the specified shadow style.
+        /// </summary>
         public static IContainer Shadow(this IContainer element, BoxShadowStyle style)
         {
             var styledBox = element as StyledBox ?? new StyledBox();
