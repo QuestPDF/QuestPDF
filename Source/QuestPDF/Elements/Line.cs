@@ -73,7 +73,14 @@ namespace QuestPDF.Elements
             if (DashPattern.Length > 0)
                 paint.SetDashedPathEffect(DashPattern);
 
+            var offset = Type == LineType.Vertical
+                ? new Position(Thickness / 2, 0)
+                : new Position(0, Thickness / 2);
+            
+            Canvas.Translate(offset);
             Canvas.DrawLine(start, end, paint);
+            Canvas.Translate(offset.Reverse());
+            
             IsRendered = true;
         }
         

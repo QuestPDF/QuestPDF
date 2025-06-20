@@ -82,7 +82,7 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Applies a linear gradient to a line using the specified colors.
         /// </summary>
-        public static ILine LineGradient(this ILine descriptor, params Color[] colors)
+        public static ILine LineGradient(this ILine descriptor, Color[] colors)
         {
             if (colors == null)
                 throw new ArgumentNullException(nameof(colors), "The gradient colors cannot be null.");
