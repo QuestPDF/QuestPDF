@@ -73,7 +73,7 @@ namespace QuestPDF.Elements
             using var backgroundPaint = GetBackgroundPaint(availableSpace);
             using var borderPaint = GetBorderPaint(availableSpace);
             
-            if (HasFullBorder && HasUniformBorder && !HasRoundedCorners && HasSimpleStyle && BorderAlignment == 0.5f)
+            if (HasFullBorder && HasUniformBorder && !HasRoundedCorners && HasSimpleStyle && BorderAlignment == 0.5f && Shadow == null)
             {
                 // optimization: draw a simple rectangle with border
                 if (backgroundPaint != null)
@@ -264,36 +264,47 @@ namespace QuestPDF.Elements
             return ExpandRoundedRect(rect, all, all, all, all);
         }
         
-        private SkRoundedRect ExpandRoundedRect(SkRoundedRect rect, float left, float top, float right, float bottom)
+        private SkRoundedRect ExpandRoundedRect(SkRoundedRect input, float left, float top, float right, float bottom)
         {
+            var rect = new SkRect
+            {
+                Left = input.Rect.Left - left,
+                Top = input.Rect.Top - top,
+                Right = input.Rect.Right + right,
+                Bottom = input.Rect.Bottom + bottom
+            };
+            
+            var hasRoundedCorners = 
+                input.TopLeftRadius.X > 0 || 
+                input.TopRightRadius.X > 0 || 
+                input.BottomLeftRadius.X > 0 || 
+                input.BottomRightRadius.X > 0;
+            
+            if (!hasRoundedCorners)
+                return new SkRoundedRect { Rect = rect };
+            
             return new SkRoundedRect
             {
-                Rect = new SkRect
-                {
-                    Left = rect.Rect.Left - left,
-                    Top = rect.Rect.Top - top,
-                    Right = rect.Rect.Right + right,
-                    Bottom = rect.Rect.Bottom + bottom
-                },
+                Rect = rect,
                 TopLeftRadius = new SkPoint
                 {
-                    X = Math.Max(0, rect.TopLeftRadius.X + left),
-                    Y = Math.Max(0, rect.TopLeftRadius.Y + top)
+                    X = Math.Max(0, input.TopLeftRadius.X + left),
+                    Y = Math.Max(0, input.TopLeftRadius.Y + top)
                 },
                 TopRightRadius = new SkPoint
                 {
-                    X = Math.Max(0, rect.TopRightRadius.X + right),
-                    Y = Math.Max(0, rect.TopRightRadius.Y + top)
+                    X = Math.Max(0, input.TopRightRadius.X + right),
+                    Y = Math.Max(0, input.TopRightRadius.Y + top)
                 },
                 BottomLeftRadius = new SkPoint
                 {
-                    X = Math.Max(0, rect.BottomLeftRadius.X + left),
-                    Y = Math.Max(0, rect.BottomLeftRadius.Y + bottom)
+                    X = Math.Max(0, input.BottomLeftRadius.X + left),
+                    Y = Math.Max(0, input.BottomLeftRadius.Y + bottom)
                 },
                 BottomRightRadius = new SkPoint
                 {
-                    X = Math.Max(0, rect.BottomRightRadius.X + right),
-                    Y = Math.Max(0, rect.BottomRightRadius.Y + bottom)
+                    X = Math.Max(0, input.BottomRightRadius.X + right),
+                    Y = Math.Max(0, input.BottomRightRadius.Y + bottom)
                 }
             };
         }

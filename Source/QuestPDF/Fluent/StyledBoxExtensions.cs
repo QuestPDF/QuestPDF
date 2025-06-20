@@ -59,6 +59,9 @@ namespace QuestPDF.Fluent
             
             if (right < 0)
                 throw new ArgumentOutOfRangeException(nameof(right), "The right border cannot be negative.");
+
+            if (styledBox.BorderColor == Colors.Transparent.Hex)
+                styledBox.BorderColor = Colors.Black;
             
             styledBox.BorderTop += top;
             styledBox.BorderBottom += bottom;
