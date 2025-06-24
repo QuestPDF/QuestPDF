@@ -10,7 +10,7 @@
         <PackageReference Include="BenchmarkDotNet" Version="0.15.2" />
         <PackageReference Include="nunit" Version="4.2.2" />
         <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
         <PackageReference Include="SkiaSharp" Version="3.119.0" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.0" />
     </ItemGroup>
