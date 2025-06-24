@@ -3,7 +3,6 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <IsPackable>false</IsPackable>
-        <LangVersion>10</LangVersion>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
