@@ -1,126 +1,101 @@
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.VisualTests;
 
 public class LineTests
 {
     [Test]
-    public void Thickness_Horizontal()
+    public void ThicknessHorizontal(
+        [Values(1, 2, 4, 8)] float thickness)
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
-            container.Column(column =>
-            {
-                column.Spacing(20);
-
-                foreach (var thickness in new[] { 1, 2, 4, 8 })
+            container
+                .Width(100)
+                .Column(column =>
                 {
-                    column.Item()
-                        .Width(100)
-                        .LineHorizontal(thickness);
-                }
-            });
+                    column.Item().Height(50).Background(Colors.Blue.Lighten4);
+                    column.Item().LineHorizontal(thickness);
+                    column.Item().Height(50).Background(Colors.Green.Lighten4);
+                });
         });
     }
     
     [Test]
-    public void Thickness_Vertical()
+    public void ThicknessVertical(
+        [Values(1, 2, 4, 8)] float thickness)
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
-            container.Row(row =>
-            {
-                row.Spacing(20);
-
-                foreach (var thickness in new[] { 1, 2, 4, 8 })
+            container
+                .Height(100)
+                .Row(row =>
                 {
-                    row.AutoItem()
-                        .Height(100)
-                        .LineVertical(thickness);
-                }
-            });
+                    row.AutoItem().Width(50).Background(Colors.Blue.Lighten4);
+                    row.AutoItem().LineVertical(thickness);
+                    row.AutoItem().Width(50).Background(Colors.Green.Lighten4);
+                });
         });
     }
     
-    [Test]
-    public void Color()
-    {
-        var colors = new[]
-        {
-            Colors.Red.Medium,
-            Colors.Green.Medium,
-            Colors.Blue.Medium,
-        };
-        
-        VisualTest.PerformWithDefaultPageSettings(container =>
-        {
-            container.Column(column =>
-            {
-                column.Spacing(20);
-                
-                foreach (var color in colors)
-                {
-                    column.Item()
-                        .Width(100)
-                        .LineHorizontal(4)
-                        .LineColor(color);
-                }
-            });
-        });
-    }
-    
-    [Test]
-    public void Gradient()
-    {
-        VisualTest.PerformWithDefaultPageSettings(container =>
-        {
-            container.Column(column =>
-            {
-                column.Spacing(20);
+    private static readonly IEnumerable<Color> ColorValues = [Colors.Red.Medium, Colors.Green.Medium, Colors.Blue.Medium];
 
-                column.Item()
-                    .Width(100)
-                    .LineHorizontal(4)
-                    .LineGradient([Colors.Red.Medium, Colors.Orange.Medium]);
-                
-                column.Item()
-                    .Width(100)
-                    .LineHorizontal(4)
-                    .LineGradient([Colors.Orange.Medium, Colors.Yellow.Medium, Colors.Lime.Medium]);
-                
-                column.Item()
-                    .Width(100)
-                    .LineHorizontal(4)
-                    .LineGradient([Colors.Blue.Lighten2, Colors.LightBlue.Lighten1, Colors.Cyan.Medium, Colors.Teal.Darken1, Colors.Green.Darken2]);
-            });
-        });
-    }
-    
     [Test]
-    public void DashPattern()
+    public void Color(
+        [ValueSource(nameof(ColorValues))] Color color)
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
-            container.Column(column =>
-            {
-                column.Spacing(20);
+            container
+                .Width(100)
+                .LineHorizontal(4)
+                .LineColor(color);
+        });
+    }
 
-                column.Item()
-                    .Width(200)
-                    .LineHorizontal(4)
-                    .LineDashPattern([4f, 4f]);
-                
-                column.Item()
-                    .Width(200)
-                    .LineHorizontal(4)
-                    .LineDashPattern([12f, 12f]);
-                
-                column.Item()
-                    .Width(200)
-                    .LineHorizontal(4)
-                    .LineDashPattern([4f, 4f, 12f, 4f]);
-            });
+    private static readonly IEnumerable<Color[]> GradientValues =
+    [
+        [Colors.Red.Medium, Colors.Green.Medium],
+        [Colors.Red.Medium, Colors.Yellow.Medium, Colors.Green.Medium],
+        [Colors.Blue.Medium, Colors.LightBlue.Medium, Colors.Cyan.Medium, Colors.Teal.Medium, Colors.Green.Medium]
+    ];
+    
+    [Test]
+    public void Gradient(
+        [ValueSource(nameof(GradientValues))] Color[] colors)
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        {
+            container
+                .Width(400)
+                .LineHorizontal(16)
+                .LineGradient(colors);
+        });
+    }
+
+    private static readonly IEnumerable<float[]> DashPatternCases =
+    [
+        [1, 1],
+        [1, 2],
+        [2, 1],
+        [2, 2],
+        [4, 4],
+        [8, 8],
+        [4, 4, 12, 4],
+        [4, 4, 8, 8, 12, 12],
+    ];
+    
+    [Test, TestCaseSource(nameof(DashPatternCases))]
+    public void DashPattern(float[] dashPattern)
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        {
+            container
+                .Width(400)
+                .LineHorizontal(4)
+                .LineDashPattern(dashPattern);
         });
     }
     

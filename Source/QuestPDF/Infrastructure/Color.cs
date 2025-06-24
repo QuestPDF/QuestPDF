@@ -40,7 +40,7 @@ public readonly struct Color
     /// and 1 represents fully opaque.
     /// </summary>
     /// <returns>A new color instance with the adjusted alpha transparency.</returns>
-    internal Color WithAlpha(float alpha)
+    public Color WithAlpha(float alpha)
     {
         if (alpha < 0 || alpha > 1)
             throw new ArgumentOutOfRangeException(nameof(alpha), "Alpha value must be between 0 and 1.");

@@ -7,129 +7,89 @@ namespace QuestPDF.VisualTests;
 public class StyledBoxTests
 {
     #region Background
+
+    private static readonly IEnumerable<Color> BackgroundColorValues = [ Colors.Red.Medium, Colors.Green.Medium, Colors.Blue.Medium ];
     
-    [Test]
-    public void Background_Color()
+    [Test, TestCaseSource(nameof(BackgroundColorValues))]
+    public void BackgroundColor(Color color)
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
-            container.Column(column =>
-            {
-                column.Spacing(20);
+            container
+                .Width(200)
+                .Height(100)
+                .Background(color);
+        });
+    }
 
-                column.Item()
-                    .Width(200)
-                    .Height(50)
-                    .Background(Colors.Red.Medium);
-                
-                column.Item()
-                    .Width(200)
-                    .Height(100)
-                    .Background(Colors.Green.Medium);
-                
-                column.Item()
-                    .Width(200)
-                    .Height(150)
-                    .Background(Colors.Blue.Medium);
-            });
+    private static readonly IEnumerable<Color[]> BackgroundGradientColorsValues =
+    [
+        [Colors.Red.Medium, Colors.Green.Darken2],
+        [Colors.Red.Medium, Colors.Yellow.Medium, Colors.Green.Medium],
+        [Colors.Blue.Medium, Colors.LightBlue.Medium, Colors.Cyan.Medium, Colors.Teal.Medium, Colors.Green.Medium]
+    ];
+    
+    [Test, TestCaseSource(nameof(BackgroundGradientColorsValues))]
+    public void BackgroundGradientColors(Color[] gradientColors)
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        {
+            container
+                .Width(200)
+                .Height(100)
+                .BackgroundLinearGradient(0, gradientColors);
         });
     }
     
     [Test]
-    public void Background_GradientColors()
-    {
-        VisualTest.PerformWithDefaultPageSettings(container =>
-        {
-            container.Column(column =>
-            {
-                column.Spacing(20);
-
-                column.Item()
-                    .Width(200)
-                    .Height(100)
-                    .BackgroundLinearGradient(0, [Colors.Red.Medium, Colors.Blue.Medium]);
-                
-                column.Item()
-                    .Width(200)
-                    .Height(100)
-                    .BackgroundLinearGradient(0, [Colors.Red.Medium, Colors.Green.Medium, Colors.Blue.Medium]);
-                
-                column.Item()
-                    .Width(200)
-                    .Height(100)
-                    .BackgroundLinearGradient(0, [Colors.Red.Medium, Colors.Yellow.Darken1, Colors.Green.Medium, Colors.Cyan.Medium, Colors.Blue.Medium]);
-            });
-        });
-    }
-    
-    [Test]
-    public void Background_GradientAngle()
+    public void BackgroundGradientAngle(
+        [Values(0, 30, 45, 60, 90)] float angle)
     {
         var gradient = new[]
         {
             Colors.Black,
             Colors.White
         };
-        
-        var angles = new[] { 0, 30, 45, 60, 90 };
-        
+
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
-            container.Column(column =>
-            {
-                column.Spacing(20);
-
-                foreach (var angle in angles)
-                {
-                    column.Item()
-                        .Width(200)
-                        .Height(100)
-                        .BackgroundLinearGradient(angle, gradient);
-                }
-            });
+            container
+                .Width(200)
+                .Height(100)
+                .BackgroundLinearGradient(angle, gradient);
         });
     }
     
     [Test]
-    public void Background_RoundedCorners()
+    public void BackgroundUniformRoundedCorners(
+        [Values(0, 5, 10, 25, 50, 100)] float radius)
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
-            container.Column(column =>
-            {
-                column.Spacing(20);
-
-                column
-                    .Item()
-                    .Width(200)
-                    .Height(150)
-                    .Background(Colors.Grey.Medium)
-                    .BorderRadius(10);
-                
-                column
-                    .Item()
-                    .Width(200)
-                    .Height(150)
-                    .Background(Colors.Grey.Medium)
-                    .BorderRadius(20);
-                
-                column
-                    .Item()
-                    .Width(200)
-                    .Height(150)
-                    .Background(Colors.Grey.Medium)
-                    .BorderRadiusTopLeft(0)
-                    .BorderRadiusTopRight(10)
-                    .BorderRadiusBottomRight(20)
-                    .BorderRadiusBottomLeft(40);
-
-                column
-                    .Item()
-                    .Width(200)
-                    .Height(150)
-                    .Background(Colors.Grey.Medium)
-                    .BorderRadius(100);
-            });
+            container
+                .Width(200)
+                .Height(100)
+                .Background(Colors.Grey.Medium)
+                .BorderRadius(radius);
+        });
+    }
+    
+    [TestCase(0, 10, 20, 40)]
+    [TestCase(10, 20, 40, 0)]
+    [TestCase(20, 40, 0, 10)]
+    [TestCase(40, 0, 10, 20)]
+    public void BackgroundRoundedCorners(float topLeft, float topRight, float bottomRight, float bottomLeft)
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        {
+            container
+                .Width(200)
+                .Height(100)
+                .Background(Colors.Grey.Medium)
+                .BorderRadiusTopLeft(topLeft)
+                .BorderRadiusTopRight(topRight)
+                .BorderRadiusBottomRight(bottomRight)
+                .BorderRadiusBottomLeft(bottomLeft);
         });
     }
     
@@ -138,483 +98,289 @@ public class StyledBoxTests
     #region Border
     
     [Test]
-    public void Border_Thickness_Consistent()
+    public void BorderThicknessUniform(
+        [Values(1, 2, 4, 8)] float thickness)
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-                
-                foreach (var thickness in new[] { 1, 2, 4, 8 })
-                {
-                    row.AutoItem()
-                        .Width(50)
-                        .Height(50)
-                        .Border(thickness)
-                        .BorderColor(Colors.Black)
-                        .Background(Colors.Grey.Lighten2);
-                }
-            });
+            container
+                .Width(100)
+                .Height(100)
+                .Border(thickness)
+                .BorderColor(Colors.Black)
+                .Background(Colors.Grey.Lighten2);
         });
     }
     
     [Test]
-    public void Border_Thickness_Various()
+    public void BorderThickness(
+        [Values(0, 2)] float left, 
+        [Values(0, 4)] float top, 
+        [Values(0, 6)] float right, 
+        [Values(0, 8)] float bottom)
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
+            container
+                .Width(100)
+                .Height(100)
+                .BorderLeft(left)
+                .BorderTop(top)
+                .BorderRight(right)
+                .BorderBottom(bottom)
+                .BorderColor(Colors.Black)
+                .Background(Colors.Grey.Lighten2);
+        });
+    }
+    
+    [Test]
+    public void BorderRoundedCornersUniform(
+        [Values(0, 5, 10, 25, 50, 100)] float radius)
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        { 
+            container
+                .Width(200)
+                .Height(100)
+                .Border(2)
+                .BorderRadius(radius)
+                .BorderColor(Colors.Black)
+                .Background(Colors.Grey.Lighten2);
+        });
+    }
+    
+    [Test]
+    public void BorderRoundedCornersWithVariousCornerRadius(
+        [Values(0, 5)] float left,
+        [Values(0, 5)] float top,
+        [Values(0, 5)] float right,
+        [Values(0, 5)] float bottom,
+        [Values(5, 15)] float roundedRadius)
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        { 
+            container
+                .Width(100)
+                .Height(50)
+                .BorderLeft(left)
+                .BorderTop(top)
+                .BorderRight(right)
+                .BorderBottom(bottom)
+                .BorderRadius(roundedRadius)
+                .Background(Colors.Blue.Lighten3);
+        });
+    }
+    
+    public static readonly IEnumerable<Color> BorderColorCases = [ Colors.Red.Medium, Colors.Green.Medium, Colors.Blue.Medium ];
+    
+    [Test, TestCaseSource(nameof(BorderColorCases))]
+    public void BorderColor(Color color)
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        { 
+            container
+                .Width(200)
+                .Height(100)
+                .Border(5)
+                .BorderColor(color)
+                .Background(Colors.Grey.Lighten2);
+        });
+    }
 
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .BorderLeft(1)
-                    .BorderTop(2)
-                    .BorderRight(4)
-                    .BorderBottom(8)
-                    .Background(Colors.Grey.Lighten2);
-
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .BorderLeft(4)
-                    .BorderTop(8)
-                    .Background(Colors.Grey.Lighten2);
-                
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .BorderLeft(4)
-                    .BorderRight(8)
-                    .Background(Colors.Grey.Lighten2);
-            });
-        });
-    }
+    private static readonly IEnumerable<Color[]> BorderGradientColorsValues =
+    [
+        [Colors.Red.Medium, Colors.Green.Darken2],
+        [Colors.Red.Medium, Colors.Yellow.Medium, Colors.Green.Medium],
+        [Colors.Blue.Medium, Colors.LightBlue.Medium, Colors.Cyan.Medium, Colors.Teal.Medium, Colors.Green.Medium]
+    ];
     
-    [Test]
-    public void Border_RoundedCorners_Simple()
+    [Test, TestCaseSource(nameof(BorderGradientColorsValues))]
+    public void BorderGradientColors(Color[] gradientColors)
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-                
-                foreach (var borderRadius in new[] { 0, 5, 10, 20, 50 })
-                {
-                    row.AutoItem()
-                        .Width(50)
-                        .Height(50)
-                        .Background(Colors.Blue.Lighten3)
-                        .Border(2)
-                        .BorderRadius(borderRadius); 
-                }
-            });
+            container
+                .Width(200)
+                .Height(100)
+                .Border(10)
+                .BorderRadius(5)
+                .BorderLinearGradient(0, gradientColors)
+                .Background(Colors.Grey.Lighten2);
         });
     }
     
     [Test]
-    public void Border_RoundedCorners_Complex1()
-    {
-        VisualTest.PerformWithDefaultPageSettings(container =>
-        { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .BorderLeft(8)
-                    .BorderTop(8)
-                    .BorderRadius(8)
-                    .Background(Colors.Blue.Lighten3);
-                
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .BorderLeft(8)
-                    .BorderRight(8)
-                    .BorderRadius(16)
-                    .Background(Colors.Blue.Lighten3);
-            });
-        });
-    }
-    
-    [Test]
-    public void Border_RoundedCorners_Complex2()
-    {
-        VisualTest.PerformWithDefaultPageSettings(container =>
-        { 
-            container.Row(row =>
-            {
-                row.Spacing(40); 
-
-                foreach (var borderRadius in new[] { 5, 10, 15, 20, 30, 40 })
-                {
-                    row.AutoItem()
-                        .Width(100)
-                        .Height(100)
-                        .Background(Colors.Blue.Lighten3)
-                        .BorderLeft(5)
-                        .BorderTop(10)
-                        .BorderRight(15)
-                        .BorderBottom(20)
-                        .BorderRadius(borderRadius); 
-                }
-            });
-        });
-    }
-    
-    [Test]
-    public void Border_Color()
-    {
-        var colors = new[]
-        { 
-            Colors.Red.Darken3,
-            Colors.Green.Darken3,
-            Colors.Blue.Darken3
-        };
-        
-        VisualTest.PerformWithDefaultPageSettings(container =>
-        { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-                
-                foreach (var color in colors)
-                {
-                    row.AutoItem()
-                        .Width(50)
-                        .Height(50)
-                        .Border(5)
-                        .BorderColor(color)
-                        .Background(Colors.Grey.Lighten2);
-                }
-            });
-        });
-    }
-    
-    [Test]
-    public void Border_GradientColors()
-    {
-        VisualTest.PerformWithDefaultPageSettings(container =>
-        { 
-            container.Column(column =>
-            {
-                column.Spacing(20);
-
-                column.Item()
-                    .Width(200)
-                    .Height(100)
-                    .Border(10)
-                    .BorderRadius(5)
-                    .BorderLinearGradient(0, [Colors.Red.Medium, Colors.Blue.Medium]);
-                
-                column.Item()
-                    .Width(200)
-                    .Height(100)
-                    .Border(10)
-                    .BorderRadius(5)
-                    .BorderLinearGradient(0, [Colors.Red.Medium, Colors.Green.Medium, Colors.Blue.Medium]);
-                
-                column.Item()
-                    .Width(200)
-                    .Height(100)
-                    .Border(10)
-                    .BorderRadius(5)
-                    .BorderLinearGradient(0, [Colors.Red.Medium, Colors.Yellow.Darken1, Colors.Green.Medium, Colors.Cyan.Medium, Colors.Blue.Medium]);
-            });
-        });
-    }
-    
-    [Test]
-    public void Border_GradientAngle()
+    public void BorderGradientAngle(
+        [Values(0, 30, 45, 60, 90)] float angle)
     {
         var gradient = new[]
         {
             Colors.Black,
             Colors.White
         };
-        
-        var angles = new[] { 0, 30, 45, 60, 90 };
-        
+
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
-            container.Column(column =>
-            {
-                column.Spacing(20);
-
-                foreach (var angle in angles)
-                {
-                    column.Item()
-                        .Width(200)
-                        .Height(100)
-                        .Border(10)
-                        .BorderRadius(5)
-                        .BorderLinearGradient(angle, gradient);
-                }
-            });
+            container
+                .Width(200)
+                .Height(100)
+                .Border(10)
+                .BorderRadius(5)
+                .BorderLinearGradient(angle, gradient);
+        });
+    }
+    
+    private void BorderAlignmentTest(Func<IContainer, IContainer> configuration)
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        {
+            container
+                .Width(200)
+                .Height(100)
+                .Border(10)
+                .BorderRadius(10)
+                .BorderColor(Colors.Black.WithAlpha(0.5f))
+                .Apply(configuration)
+                .Background(Colors.Blue.Lighten3);
         });
     }
     
     [Test]
-    public void Border_Alignment()
+    public void BorderAlignmentInside()
     {
-        VisualTest.PerformWithDefaultPageSettings(container =>
-        {
-            container.Row(row =>
-            {
-                row.Spacing(20);
-
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .Border(5)
-                    .BorderAlignmentInside()
-                    .BorderRadius(10)
-                    .Background(Colors.Blue.Lighten3);
-                
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .Border(5)
-                    .BorderAlignmentMiddle()
-                    .BorderRadius(10)
-                    .Background(Colors.Blue.Lighten3);
-                
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .Border(5)
-                    .BorderAlignmentOutside()
-                    .BorderRadius(10)
-                    .Background(Colors.Blue.Lighten3);
-            });
-        });
+        BorderAlignmentTest(x => x.BorderAlignmentInside());
+    }
+    
+    [Test]
+    public void BorderAlignmentMiddle()
+    {
+        BorderAlignmentTest(x => x.BorderAlignmentMiddle());
+    }
+    
+    [Test]
+    public void BorderAlignmentOutside()
+    {
+        BorderAlignmentTest(x => x.BorderAlignmentOutside());
     }
     
     #endregion
     
     #region Shadow
     
-    [Test]
-    public void Shadow_Color()
+    private static readonly IEnumerable<Color> ShadowColorValues = [ Colors.Red.Medium, Colors.Green.Medium, Colors.Blue.Medium ];
+    
+    [Test, TestCaseSource(nameof(ShadowColorValues))]
+    public void ShadowColor(Color shadowColor)
     {
-        var colors = new[]
-        {
-            Colors.Red.Darken3,
-            Colors.Green.Darken3,
-            Colors.Blue.Darken3
-        };
-        
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-                
-                foreach (var color in colors)
+            container
+                .Width(200)
+                .Height(100)
+                .Background(Colors.White)
+                .Shadow(new BoxShadowStyle
                 {
-                    row.AutoItem()
-                        .Width(50)
-                        .Height(50)
-                        .Background(Colors.White)
-                        .Shadow(new BoxShadowStyle
-                        {
-                            Color = color,
-                            Blur = 8
-                        });
-                }
-            });
+                    Color = shadowColor,
+                    Blur = 8
+                });
         });
     }
     
     [Test]
-    public void Shadow_Blur()
+    public void ShadowBlur(
+        [Values(2, 4, 8, 16)] float blur)
     {
-        var blurs = new[]
-        {
-            2, 
-            4,
-            8,
-            16
-        };
-        
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-                
-                foreach (var blur in blurs)
+            container
+                .Width(100)
+                .Height(50)
+                .Background(Colors.White)
+                .Shadow(new BoxShadowStyle
                 {
-                    row.AutoItem()
-                        .Width(50)
-                        .Height(50)
-                        .Background(Colors.White)
-                        .Shadow(new BoxShadowStyle
-                        {
-                            Color = Colors.Grey.Darken2,
-                            Blur = blur,
-                        });
-                }
-            });
+                    Color = Colors.Grey.Darken2,
+                    Blur = blur,
+                });
         });
     }
     
     [Test]
-    public void Shadow_NoBlur()
+    public void ShadowWithoutBlur(
+        [Values] bool applyRoundedCorners, 
+        [Values] bool applySpread, 
+        [Values] bool applyOffset)
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-                
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .Background(Colors.LightBlue.Medium)
-                    .Shadow(new BoxShadowStyle
-                    {
-                        Color = Colors.Grey.Darken2,
-                        OffsetX = 4,
-                        OffsetY = 4
-                    });
-                
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .Background(Colors.LightBlue.Medium)
-                    .Shadow(new BoxShadowStyle
-                    {
-                        Color = Colors.Grey.Darken2,
-                        OffsetX = 0,
-                        OffsetY = 0,
-                        Spread = 4
-                    });
-                
-                row.AutoItem()
-                    .Width(50)
-                    .Height(50)
-                    .BorderRadius(10)
-                    .Background(Colors.LightBlue.Medium)
-                    .Shadow(new BoxShadowStyle
-                    {
-                        Color = Colors.Grey.Darken2,
-                        OffsetX = 4,
-                        OffsetY = 4
-                    });
-            });
+            container
+                .Width(100)
+                .Height(50)
+                .BorderRadius(applyRoundedCorners ? 20f : 0f)
+                .Background(Colors.LightBlue.Medium)
+                .Shadow(new BoxShadowStyle
+                {
+                    Color = Colors.Grey.Darken2,
+                    OffsetX = applyOffset ? 4f : 0f,
+                    OffsetY = applyOffset ? 4f : 0f,
+                    Spread = applySpread ? 8f : 0f,
+                });
         });
     }
     
     [Test]
-    public void Shadow_Spread()
+    public void ShadowSpread(
+        [Values(-4, 0, 4, 8, 12)] float spread)
     {
-        var spreads = new[]
-        {
-            -4,
-            0,
-            4,
-            8,
-            12
-        };
-        
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-                
-                foreach (var spread in spreads)
+            container
+                .Width(100)
+                .Height(100)
+                .Background(Colors.White)
+                .Shadow(new BoxShadowStyle
                 {
-                    row.AutoItem()
-                        .Width(50)
-                        .Height(50)
-                        .Background(Colors.White)
-                        .Shadow(new BoxShadowStyle
-                        {
-                            Color = Colors.Grey.Darken2,
-                            Blur = 4,
-                            Spread = spread
-                        });
-                }
-            });
+                    Color = Colors.Grey.Darken2,
+                    Blur = 4,
+                    Spread = spread
+                });
         });
     }
     
     [Test]
-    public void Shadow_OffsetX()
+    public void ShadowOffsetX(
+        [Values(-8, -4, 0, 4, 8)] float offsetX)
     {
-        var offsets = new[]
-        {
-            -8,
-            -4,
-            0,
-            4,
-            8
-        };
-        
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-                
-                foreach (var offset in offsets)
+            container
+                .Width(100)
+                .Height(100)
+                .Background(Colors.White)
+                .Shadow(new BoxShadowStyle
                 {
-                    row.AutoItem()
-                        .Width(50)
-                        .Height(50)
-                        .Background(Colors.White)
-                        .Shadow(new BoxShadowStyle
-                        {
-                            Color = Colors.Grey.Darken2,
-                            Blur = 8,
-                            OffsetX = offset
-                        });
-                }
-            });
+                    Color = Colors.Grey.Darken2,
+                    Blur = 8,
+                    OffsetX = offsetX
+                });
         });
     }
     
     [Test]
-    public void Shadow_OffsetY()
+    public void ShadowOffsetY(
+        [Values(-8, -4, 0, 4, 8)] float offsetY)
     {
-        var offsets = new[]
-        {
-            -8,
-            -4,
-            0,
-            4,
-            8
-        };
-        
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
-            container.Row(row =>
-            {
-                row.Spacing(40);
-                
-                foreach (var offset in offsets)
+            container
+                .Width(100)
+                .Height(100)
+                .Background(Colors.White)
+                .Shadow(new BoxShadowStyle
                 {
-                    row.AutoItem()
-                        .Width(50)
-                        .Height(50)
-                        .Background(Colors.White)
-                        .Shadow(new BoxShadowStyle
-                        {
-                            Color = Colors.Grey.Darken2,
-                            Blur = 8,
-                            OffsetY = offset
-                        });
-                }
-            });
+                    Color = Colors.Grey.Darken2,
+                    Blur = 8,
+                    OffsetY = offsetY
+                });
         });
     }
     
@@ -623,7 +389,7 @@ public class StyledBoxTests
     #region Clipping
     
     [Test]
-    public void Clip_Image()
+    public void ClipImage()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -640,7 +406,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void Clip_Text()
+    public void ClipText()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -649,6 +415,35 @@ public class StyledBoxTests
                 .Border(2, Colors.Black)
                 .BorderRadius(75)
                 .Text(Placeholders.LoremIpsum());
+        });
+    }
+    
+    [Test]
+    public void ClipContent()
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        {
+            container
+                .Width(400)
+                .Border(2, Colors.Black)
+                .BorderRadius(150)
+                .Table(table =>
+                {
+                    table.ColumnsDefinition(columns =>
+                    {
+                        foreach (var i in Enumerable.Range(1, 10))
+                            columns.RelativeColumn();
+                    });
+
+                    foreach (var i in Enumerable.Range(0, 100))
+                    {
+                        table.Cell()
+                            .Border(1)
+                            .Padding(5)
+                            .AlignCenter()
+                            .Text(i.ToString());
+                    }
+                });
         });
     }
     

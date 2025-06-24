@@ -1,4 +1,3 @@
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -6,6 +5,14 @@ using QuestPDF.Infrastructure;
 using SkiaSharp;
 
 namespace QuestPDF.VisualTests;
+
+public static class Helpers
+{
+    public static TOutput Apply<TInput, TOutput>(this TInput input, Func<TInput, TOutput> func)
+    {
+        return func(input);
+    }
+}
 
 public class ImageComparer
 {
@@ -94,7 +101,7 @@ public static class VisualTestEngine
         }
         
         if (actualImages.Count != expectedOutputFileCount)
-            Assert.Fail($"Generated {actualImages.Count} images but got {expectedOutputFileCount}");
+            Assert.Fail($"Generated {actualImages.Count} images but expected {expectedOutputFileCount}");
 
         foreach (var i in Enumerable.Range(0, actualImages.Count))
         {
