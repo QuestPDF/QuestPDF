@@ -70,7 +70,7 @@ public class StyledBoxTests
                 .Width(200)
                 .Height(100)
                 .Background(Colors.Grey.Medium)
-                .BorderRadius(radius);
+                .CornerRadius(radius);
         });
     }
     
@@ -86,10 +86,10 @@ public class StyledBoxTests
                 .Width(200)
                 .Height(100)
                 .Background(Colors.Grey.Medium)
-                .BorderRadiusTopLeft(topLeft)
-                .BorderRadiusTopRight(topRight)
-                .BorderRadiusBottomRight(bottomRight)
-                .BorderRadiusBottomLeft(bottomLeft);
+                .CornerRadiusTopLeft(topLeft)
+                .CornerRadiusTopRight(topRight)
+                .CornerRadiusBottomRight(bottomRight)
+                .CornerRadiusBottomLeft(bottomLeft);
         });
     }
     
@@ -143,7 +143,7 @@ public class StyledBoxTests
                 .Width(200)
                 .Height(100)
                 .Border(2)
-                .BorderRadius(radius)
+                .CornerRadius(radius)
                 .BorderColor(Colors.Black)
                 .Background(Colors.Grey.Lighten2);
         });
@@ -166,7 +166,7 @@ public class StyledBoxTests
                 .BorderTop(top)
                 .BorderRight(right)
                 .BorderBottom(bottom)
-                .BorderRadius(roundedRadius)
+                .CornerRadius(roundedRadius)
                 .Background(Colors.Blue.Lighten3);
         });
     }
@@ -203,7 +203,7 @@ public class StyledBoxTests
                 .Width(200)
                 .Height(100)
                 .Border(10)
-                .BorderRadius(5)
+                .CornerRadius(5)
                 .BorderLinearGradient(0, gradientColors)
                 .Background(Colors.Grey.Lighten2);
         });
@@ -225,7 +225,7 @@ public class StyledBoxTests
                 .Width(200)
                 .Height(100)
                 .Border(10)
-                .BorderRadius(5)
+                .CornerRadius(5)
                 .BorderLinearGradient(angle, gradient);
         });
     }
@@ -238,7 +238,7 @@ public class StyledBoxTests
                 .Width(200)
                 .Height(100)
                 .Border(10)
-                .BorderRadius(10)
+                .CornerRadius(10)
                 .BorderColor(Colors.Black.WithAlpha(0.5f))
                 .Apply(configuration)
                 .Background(Colors.Blue.Lighten3);
@@ -315,7 +315,7 @@ public class StyledBoxTests
             container
                 .Width(100)
                 .Height(50)
-                .BorderRadius(applyRoundedCorners ? 20f : 0f)
+                .CornerRadius(applyRoundedCorners ? 20f : 0f)
                 .Background(Colors.LightBlue.Medium)
                 .Shadow(new BoxShadowStyle
                 {
@@ -395,7 +395,7 @@ public class StyledBoxTests
         {
             container
                 .Width(200)
-                .BorderRadius(25)
+                .CornerRadius(25)
                 .Shadow(new BoxShadowStyle
                 {
                     Color = Colors.Grey.Darken2,
@@ -413,7 +413,7 @@ public class StyledBoxTests
             container
                 .Width(300)
                 .Border(2, Colors.Black)
-                .BorderRadius(75)
+                .CornerRadius(75)
                 .Text(Placeholders.LoremIpsum());
         });
     }
@@ -426,7 +426,7 @@ public class StyledBoxTests
             container
                 .Width(400)
                 .Border(2, Colors.Black)
-                .BorderRadius(150)
+                .CornerRadius(150)
                 .Table(table =>
                 {
                     table.ColumnsDefinition(columns =>

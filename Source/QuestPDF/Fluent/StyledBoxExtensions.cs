@@ -145,7 +145,7 @@ namespace QuestPDF.Fluent
         
         #region Corner Radius
         
-        private static IContainer BorderRadius(this IContainer element, float? topLeft = null, float? topRight = null, float? bottomRight = null, float? bottomLeft = null)
+        private static IContainer CornerRadius(this IContainer element, float? topLeft = null, float? topRight = null, float? bottomRight = null, float? bottomLeft = null)
         {
             var styledBox = element as StyledBox ?? new StyledBox();
             
@@ -177,48 +177,48 @@ namespace QuestPDF.Fluent
         }
 
         /// <summary>
-        /// Applies a uniform border radius to all corners of the container with the specified value and unit.
+        /// Applies a uniform corner radius to all corners of the container with the specified value and unit.
         /// </summary>
-        public static IContainer BorderRadius(this IContainer element, float value = 0, Unit unit = Unit.Point)
+        public static IContainer CornerRadius(this IContainer element, float value = 0, Unit unit = Unit.Point)
         {
             value = value.ToPoints(unit);
-            return element.BorderRadius(topLeft: value, topRight: value, bottomRight: value, bottomLeft: value);
+            return element.CornerRadius(topLeft: value, topRight: value, bottomRight: value, bottomLeft: value);
         }
 
         /// <summary>
-        /// Applies a border radius to the top-left corner of the container with the specified value and unit.
+        /// Applies a corner radius to the top-left corner of the container with the specified value and unit.
         /// </summary>
-        public static IContainer BorderRadiusTopLeft(this IContainer element, float value = 0, Unit unit = Unit.Point)
+        public static IContainer CornerRadiusTopLeft(this IContainer element, float value = 0, Unit unit = Unit.Point)
         {
             value = value.ToPoints(unit);
-            return element.BorderRadius(topLeft: value);
+            return element.CornerRadius(topLeft: value);
         }
         
         /// <summary>
-        /// Applies a border radius to the top-right corner of the container with the specified value and unit.
+        /// Applies a corner radius to the top-right corner of the container with the specified value and unit.
         /// </summary>
-        public static IContainer BorderRadiusTopRight(this IContainer element, float value = 0, Unit unit = Unit.Point)
+        public static IContainer CornerRadiusTopRight(this IContainer element, float value = 0, Unit unit = Unit.Point)
         {
             value = value.ToPoints(unit);
-            return element.BorderRadius(topRight: value);
+            return element.CornerRadius(topRight: value);
         }
         
         /// <summary>
         /// Applies a border radius to the bottom-left corner of the container with the specified value and unit.
         /// </summary>
-        public static IContainer BorderRadiusBottomLeft(this IContainer element, float value = 0, Unit unit = Unit.Point)
+        public static IContainer CornerRadiusBottomLeft(this IContainer element, float value = 0, Unit unit = Unit.Point)
         {
             value = value.ToPoints(unit);
-            return element.BorderRadius(bottomLeft: value);
+            return element.CornerRadius(bottomLeft: value);
         }
         
         /// <summary>
-        /// Applies a border radius to the bottom-right corner of the container with the specified value and unit.
+        /// Applies a corner radius to the bottom-right corner of the container with the specified value and unit.
         /// </summary>
-        public static IContainer BorderRadiusBottomRight(this IContainer element, float value = 0, Unit unit = Unit.Point)
+        public static IContainer CornerRadiusBottomRight(this IContainer element, float value = 0, Unit unit = Unit.Point)
         {
             value = value.ToPoints(unit);
-            return element.BorderRadius(bottomRight: value);
+            return element.CornerRadius(bottomRight: value);
         }
         
         #endregion
