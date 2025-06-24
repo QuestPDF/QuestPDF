@@ -6,7 +6,7 @@ namespace QuestPDF.VisualTests;
 public class LineTests
 {
     [Test]
-    public void Line_Thickness_Horizontal()
+    public void Thickness_Horizontal()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -25,7 +25,7 @@ public class LineTests
     }
     
     [Test]
-    public void Line_Thickness_Vertical()
+    public void Thickness_Vertical()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -44,7 +44,7 @@ public class LineTests
     }
     
     [Test]
-    public void Line_Colors()
+    public void Color()
     {
         var colors = new[]
         {
@@ -71,7 +71,7 @@ public class LineTests
     }
     
     [Test]
-    public void Line_Gradient()
+    public void Gradient()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -98,7 +98,7 @@ public class LineTests
     }
     
     [Test]
-    public void Line_DashPattern()
+    public void DashPattern()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -125,7 +125,7 @@ public class LineTests
     }
     
     [Test]
-    public void Line_Complex()
+    public void Complex()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {

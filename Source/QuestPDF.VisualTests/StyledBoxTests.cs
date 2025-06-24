@@ -9,7 +9,7 @@ public class StyledBoxTests
     #region Background
     
     [Test]
-    public void StyledBox_Background_Color()
+    public void Background_Color()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -36,7 +36,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Background_GradientColors()
+    public void Background_GradientColors()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -63,7 +63,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Background_GradientAngle()
+    public void Background_GradientAngle()
     {
         var gradient = new[]
         {
@@ -91,7 +91,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Background_RoundedCorners()
+    public void Background_RoundedCorners()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -138,7 +138,7 @@ public class StyledBoxTests
     #region Border
     
     [Test]
-    public void StyledBox_Border_Thickness_Consistent()
+    public void Border_Thickness_Consistent()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
@@ -160,7 +160,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Border_Thickness_Various()
+    public void Border_Thickness_Various()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
@@ -195,7 +195,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Border_RoundedCorners_Simple()
+    public void Border_RoundedCorners_Simple()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
@@ -217,7 +217,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Border_RoundedCorners_Complex1()
+    public void Border_RoundedCorners_Complex1()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
@@ -245,7 +245,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Border_RoundedCorners_Complex2()
+    public void Border_RoundedCorners_Complex2()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
@@ -270,7 +270,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Border_Color()
+    public void Border_Color()
     {
         var colors = new[]
         { 
@@ -299,7 +299,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Border_GradientColors()
+    public void Border_GradientColors()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
@@ -332,7 +332,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Border_GradientAngle()
+    public void Border_GradientAngle()
     {
         var gradient = new[]
         {
@@ -362,7 +362,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Border_Alignment()
+    public void Border_Alignment()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -402,7 +402,7 @@ public class StyledBoxTests
     #region Shadow
     
     [Test]
-    public void StyledBox_Shadow_Color()
+    public void Shadow_Color()
     {
         var colors = new[]
         {
@@ -434,7 +434,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Shadow_Blur()
+    public void Shadow_Blur()
     {
         var blurs = new[]
         {
@@ -467,7 +467,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Shadow_NoBlur()
+    public void Shadow_NoBlur()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         { 
@@ -514,7 +514,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Shadow_Spread()
+    public void Shadow_Spread()
     {
         var spreads = new[]
         {
@@ -549,7 +549,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Shadow_OffsetX()
+    public void Shadow_OffsetX()
     {
         var offsets = new[]
         {
@@ -584,7 +584,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Shadow_OffsetY()
+    public void Shadow_OffsetY()
     {
         var offsets = new[]
         {
@@ -623,7 +623,7 @@ public class StyledBoxTests
     #region Clipping
     
     [Test]
-    public void StyledBox_Clip_Image()
+    public void Clip_Image()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {
@@ -640,7 +640,7 @@ public class StyledBoxTests
     }
     
     [Test]
-    public void StyledBox_Clip_Text()
+    public void Clip_Text()
     {
         VisualTest.PerformWithDefaultPageSettings(container =>
         {

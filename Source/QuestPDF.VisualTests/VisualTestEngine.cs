@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -10,9 +11,6 @@ public class ImageComparer
 {
     public static bool AreImagesIdentical(SKBitmap bitmap1, SKBitmap bitmap2)
     {
-        if (bitmap1 == null || bitmap2 == null)
-            return false;
-            
         if (bitmap1.Width != bitmap2.Width || bitmap1.Height != bitmap2.Height)
             return false;
             
@@ -45,49 +43,90 @@ public class ImageComparer
 
 public static class VisualTestEngine
 {
-    public static void ShouldMatchExpectedImage(this IDocument document, [CallerMemberName] string callerName = null)
+    private static string ActualOutputDirectoryName => Path.Combine(TestContext.CurrentContext.TestDirectory, "ActualOutput");
+    private static string ExpectedOutputDirectoryName => Path.Combine(TestContext.CurrentContext.TestDirectory, "ExpectedOutput");
+    
+    private static readonly Regex TestNameRegex = new(@"QuestPDF\.VisualTests\.(?<name>.*)Tests");
+    
+    public static void ClearActualOutputDirectories()
     {
-        var generatedImageBytes = document.GenerateImages(new ImageGenerationSettings
+        if (Directory.Exists(ActualOutputDirectoryName))
+            Directory.Delete(ActualOutputDirectoryName, true);
+    }
+    
+    public static void ShouldMatchExpectedImage(this IDocument document)
+    {
+        if (TestContext.CurrentContext.Test.ClassName == null)
+            throw new Exception("Test class name is not set.");
+        
+        var match = TestNameRegex.Match(TestContext.CurrentContext.Test.ClassName);
+        var testCategory = match.Groups["name"].Value;
+        
+        var imageGenerationSettings = new ImageGenerationSettings
         {
             ImageFormat = ImageFormat.Png,
             RasterDpi = 144
-        }).First();
+        };
         
-        var expectedImagePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "ExpectedOutput", $"{callerName}.png");
+        var actualImages = document.GenerateImages(imageGenerationSettings).ToList();
+        var hasMultipleImages = actualImages.Count > 1;
         
-        if (!File.Exists(expectedImagePath))
+        var actualOutputPath = Path.Combine(ActualOutputDirectoryName, testCategory);
+        var expectedOutputPath = Path.Combine(ExpectedOutputDirectoryName, testCategory);
+        
+        if (!Directory.Exists(expectedOutputPath))
+            Assert.Inconclusive("Cannot find the expected output folder");
+        
+        var testName = TestContext.CurrentContext.Test.Name;
+        var expectedOutputFileCount = Directory.EnumerateFiles(expectedOutputPath, $"{testName}*.png").Count();
+        
+        Directory.CreateDirectory(actualOutputPath);
+
+        string GetFileName(int index)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(expectedImagePath)!);
+            return hasMultipleImages ? $"{testName}_{index}.png" : $"{testName}.png";
+        }
+        
+        foreach (var i in Enumerable.Range(0, actualImages.Count))
+        {
+            var actualImagePath = Path.Combine(actualOutputPath, GetFileName(i));
+            File.WriteAllBytes(actualImagePath, actualImages[i]);
+        }
+        
+        if (actualImages.Count != expectedOutputFileCount)
+            Assert.Fail($"Generated {actualImages.Count} images but got {expectedOutputFileCount}");
+
+        foreach (var i in Enumerable.Range(0, actualImages.Count))
+        {
+            var expectedImagePath = Path.Combine(expectedOutputPath, GetFileName(i));
             
-            File.WriteAllBytes(expectedImagePath, generatedImageBytes);
-            Assert.Inconclusive($"Expected image created at: {expectedImagePath}. Please verify the image looks correct and re-run the test.");
+            if (!File.Exists(expectedImagePath))
+                Assert.Fail($"Cannot find expected image file {expectedImagePath}");
+            
+            var expectedImageBytes = File.ReadAllBytes(expectedImagePath);
+            var actualImageBytes = actualImages[i];
+
+            var imagesAreIdentical = ImageComparer.AreImagesIdentical(actualImageBytes, expectedImageBytes);
+
+            if (imagesAreIdentical) 
+                continue;
+            
+            var pageText = actualImages.Count > 1 ? $" (page {i})" : string.Empty;
+            Assert.Fail($"Generated image does not match expected image {pageText}.");
         }
-        
-        var imagesAreIdentical = ImageComparer.AreImagesIdentical(generatedImageBytes, File.ReadAllBytes(expectedImagePath));
-        
-        if (!imagesAreIdentical)
-        {
-            var actualImagePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "ActualOutput", $"{callerName}.png");
-            Directory.CreateDirectory(Path.GetDirectoryName(actualImagePath)!);
-            File.WriteAllBytes(actualImagePath, generatedImageBytes);
-            File.SetLastWriteTimeUtc(actualImagePath, DateTime.UtcNow);
-            Assert.Fail($"Generated image does not match expected image. Actual image saved to: {actualImagePath}. rider64 diff {expectedImagePath} {actualImagePath}");
-        }
-        
-        Assert.Pass("Images are identical!");
     }
 }
 
 public static class VisualTest
 {
-    public static void Perform(Action<IDocumentContainer> documentBuilder, [CallerMemberName] string callerName = null)
+    public static void Perform(Action<IDocumentContainer> documentBuilder)
     {
         Document
             .Create(documentBuilder)
-            .ShouldMatchExpectedImage(callerName);
+            .ShouldMatchExpectedImage();
     }
     
-    public static void PerformWithDefaultPageSettings(Action<IContainer> contentBuilder, [CallerMemberName] string callerName = null)
+    public static void PerformWithDefaultPageSettings(Action<IContainer> contentBuilder)
     {
         Document
             .Create(document =>
@@ -104,6 +143,6 @@ public static class VisualTest
                     page.Content().Element(contentBuilder);
                 });
             })
-            .ShouldMatchExpectedImage(callerName);
+            .ShouldMatchExpectedImage();
     }
 }
