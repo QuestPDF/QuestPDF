@@ -22,7 +22,7 @@
         </PackageReference>
         <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
         <PackageReference Include="ScottPlot" Version="5.0.55" />
-        <PackageReference Include="SkiaSharp" Version="3.116.1" />
+        <PackageReference Include="SkiaSharp" Version="3.119.0" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.0" />
         <PackageReference Include="ZXing.Net" Version="0.16.10" />
     </ItemGroup>
