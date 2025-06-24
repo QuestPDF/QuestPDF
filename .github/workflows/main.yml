@@ -80,9 +80,9 @@ jobs:
           DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
         run: |
           dotnet build --configuration Release --property WarningLevel=0
-          dotnet test QuestPDF.UnitTests --configuration Release --runtime ${{ matrix.runtime.name }}
-          dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }}
-          dotnet test QuestPDF.DocumentationExamples --configuration Release --runtime ${{ matrix.runtime.name }}
+          dotnet test QuestPDF.UnitTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
+          dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
+          dotnet test QuestPDF.DocumentationExamples --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
           dotnet test QuestPDF.ReportSample --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
 
           if [ "${{ matrix.runtime.name }}" != "linux-musl-x64" ]; then
