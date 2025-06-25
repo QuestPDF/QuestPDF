@@ -19,16 +19,28 @@ public static class ImageComparer
     public static bool AreImagesIdentical(SKBitmap bitmap1, SKBitmap bitmap2)
     {
         if (bitmap1.Width != bitmap2.Width || bitmap1.Height != bitmap2.Height)
-            return false;
-            
+        {
+            Assert.Fail("Different image sizes: " +
+                        $"Image 1: {bitmap1.Width}x{bitmap1.Height}, " +
+                        $"Image 2: {bitmap2.Width}x{bitmap2.Height}");
+        }
+
         if (bitmap1.ColorType != bitmap2.ColorType)
-            return false;
+        {
+            Assert.Fail("Different image color types: " +
+                        $"Image 1: {bitmap1.ColorType}, " +
+                        $"Image 2: {bitmap2.ColorType}");
+        }
 
         var pixels1 = bitmap1.Pixels;
         var pixels2 = bitmap2.Pixels;
-        
+
         if (pixels1.Length != pixels2.Length)
-            return false;
+        {
+            Assert.Fail("Different image pixel counts: " +
+                        $"Image 1: {pixels1.Length}, " +
+                        $"Image 2: {pixels2.Length}");
+        }
             
         var differences = pixels1.Zip(pixels2, (p1, p2) => new[] {p1.Red - p2.Red, p1.Green - p2.Green, p1.Blue - p2.Blue, p1.Alpha - p2.Alpha })
             .Select(x => x.Select(Math.Abs))
