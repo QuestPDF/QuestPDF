@@ -30,6 +30,20 @@ public class ImageComparer
         if (pixels1.Length != pixels2.Length)
             return false;
             
+        var differences = pixels1.Zip(pixels2, (p1, p2) => new[] {p1.Red - p2.Red, p1.Green - p2.Green, p1.Blue - p2.Blue, p1.Alpha - p2.Alpha })
+            .Select(x => x.Max(Math.Abs))
+            .Where(diff => diff > 0)
+            .ToArray();
+        
+        var min = differences.Min();
+        var max = differences.Max();
+        var average = differences.Average(x => x);
+
+        if (differences.Length > 0)
+        {
+            Console.WriteLine($"Image differences: Count={differences.Length}, Min={min}, Max={max}, Average={average}");
+        }
+        
         for (var i = 0; i < pixels1.Length; i++)
         {
             if (pixels1[i] != pixels2[i])
@@ -119,7 +133,7 @@ public static class VisualTestEngine
                 continue;
             
             var pageText = actualImages.Count > 1 ? $" (page {i})" : string.Empty;
-            Assert.Fail($"Generated image does not match expected image {pageText}.");
+            Assert.Fail($"Generated image does not match expected image{pageText}.");
         }
     }
 }
