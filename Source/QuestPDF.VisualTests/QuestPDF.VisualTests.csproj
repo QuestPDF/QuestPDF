@@ -5,6 +5,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
 
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>

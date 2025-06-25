@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
         <IsPackable>false</IsPackable>
         <RootNamespace>QuestPDF.ReportSample</RootNamespace>
     </PropertyGroup>
