@@ -35,13 +35,15 @@ public class ImageComparer
             .Where(diff => diff > 0)
             .ToArray();
         
-        var min = differences.Min();
-        var max = differences.Max();
-        var average = differences.Average(x => x);
+
 
         if (differences.Length > 0)
         {
-            Console.WriteLine($"Image differences: Count={differences.Length}, Min={min}, Max={max}, Average={average}");
+            var min = differences.Min();
+            var max = differences.Max();
+            var average = differences.Average(x => x);
+            var message = $"Images differ by {min} (min), {max} (max), {average:F2} (avg)";
+            Assert.Fail(message);
         }
         
         for (var i = 0; i < pixels1.Length; i++)
