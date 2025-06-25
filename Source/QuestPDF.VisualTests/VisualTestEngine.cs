@@ -14,7 +14,7 @@ public static class Helpers
     }
 }
 
-public class ImageComparer
+public static class ImageComparer
 {
     public static bool AreImagesIdentical(SKBitmap bitmap1, SKBitmap bitmap2)
     {
@@ -31,7 +31,8 @@ public class ImageComparer
             return false;
             
         var differences = pixels1.Zip(pixels2, (p1, p2) => new[] {p1.Red - p2.Red, p1.Green - p2.Green, p1.Blue - p2.Blue, p1.Alpha - p2.Alpha })
-            .Select(x => x.Max(Math.Abs))
+            .Select(x => x.Select(Math.Abs))
+            .Select(x => x.Max())
             .Where(diff => diff > 0)
             .ToArray();
         
