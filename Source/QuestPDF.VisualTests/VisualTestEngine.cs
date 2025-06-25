@@ -43,7 +43,7 @@ public static class ImageComparer
             var min = differences.Min();
             var max = differences.Max();
             var average = differences.Average(x => x);
-            var message = $"Images differ by {min} (min), {max} (max), {average:F2} (avg)";
+            var message = $"Images differ by {min} (min), {max} (max), {average:F2} (avg). Different pixels: {differences.Length}.";
             Assert.Fail(message);
         }
         
