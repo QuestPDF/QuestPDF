@@ -42,6 +42,38 @@ public sealed class DocumentOperation
         public string? RepeatSourcePages { get; set; }
     }
 
+    /// <summary>
+    /// Represents configuration options for applying an overlay or underlay to a PDF document using qpdf with stream-based input.
+    /// </summary>
+    public sealed class LayerStreamConfiguration
+    {
+        /// <summary>
+        /// The stream containing the overlay or underlay PDF data to be used.
+        /// </summary>
+        public Stream Stream { get; set; }
+
+        /// <summary>
+        /// Specifies the range of pages in the output document where the overlay or underlay will be applied.
+        /// If not specified, the overlay or underlay is applied to all output pages.
+        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
+        public string? TargetPages { get; set; }
+
+        /// <summary>
+        /// Specifies the range of pages in the overlay or underlay file to be used initially.
+        /// If not specified, all pages in the overlay or underlay file will be used in sequence.
+        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
+        public string? SourcePages { get; set; }
+
+        /// <summary>
+        /// Specifies an optional range of pages in the overlay or underlay file that will repeat after the initial source pages are exhausted.
+        /// Useful for repeating certain pages of the overlay or underlay file across multiple pages of the output.
+        /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
+        public string? RepeatSourcePages { get; set; }
+    }
+
     public enum DocumentAttachmentRelationship
     {
         /// <summary>
@@ -99,6 +131,60 @@ public sealed class DocumentOperation
         /// <summary>
         /// Specifies the modification date of the attachment.
         /// Defaults to the file's last modified time.
+        /// </summary>
+        public DateTime? ModificationDate { get; set; }
+    
+        /// <summary>
+        /// Specifies the MIME type of the attachment, such as "text/plain", "application/pdf", "image/png", etc.
+        /// </summary>
+        public string? MimeType { get; set; }
+    
+        /// <summary>
+        /// Sets a description for the attachment, which may be displayed by some PDF viewers.
+        /// </summary>
+        public string? Description { get; set; }
+    
+        /// <summary>
+        /// Indicates whether to replace an existing attachment with the same key.
+        /// If false, an exception is thrown if an attachment with the same key already exists.
+        /// </summary>
+        public bool Replace { get; set; } = true;
+        
+        /// <summary>
+        /// Specifies the relationship of the embedded file to the document for PDF/A-3b compliance.
+        /// </summary>
+        public DocumentAttachmentRelationship? Relationship { get; set; } = null;
+    }
+
+    public sealed class DocumentAttachmentStream
+    {
+        /// <summary>
+        /// Sets the key for the attachment, specific to the PDF format.
+        /// Defaults to the AttachmentName if provided, otherwise a generated key.
+        /// </summary>
+        public string? Key { get; set; }
+    
+        /// <summary>
+        /// The stream containing the attachment data.
+        /// </summary>
+        public Stream Stream { get; set; }
+    
+        /// <summary>
+        /// Specifies the display name for the attachment.
+        /// This name is typically shown to the user and used by most graphical PDF viewers when saving the file.
+        /// Required for stream-based attachments.
+        /// </summary>
+        public string AttachmentName { get; set; }
+    
+        /// <summary>
+        /// Specifies the creation date of the attachment. 
+        /// Defaults to the current date and time.
+        /// </summary>
+        public DateTime? CreationDate { get; set; }
+    
+        /// <summary>
+        /// Specifies the modification date of the attachment.
+        /// Defaults to the current date and time.
         /// </summary>
         public DateTime? ModificationDate { get; set; }
     
@@ -197,10 +283,48 @@ public sealed class DocumentOperation
     }
     
     internal JobConfiguration Configuration { get; private set; }
+    private List<string> TemporaryFiles { get; } = new List<string>();
     
     private DocumentOperation()
     {
             
+    }
+
+    /// <summary>
+    /// Creates a temporary file from a stream and tracks it for cleanup.
+    /// </summary>
+    private string CreateTemporaryFileFromStream(Stream stream)
+    {
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
+
+        var tempFilePath = Path.GetTempFileName();
+        TemporaryFiles.Add(tempFilePath);
+
+        using var fileStream = File.Create(tempFilePath);
+        stream.CopyTo(fileStream);
+        
+        return tempFilePath;
+    }
+
+    /// <summary>
+    /// Cleans up temporary files created during stream operations.
+    /// </summary>
+    private void CleanupTemporaryFiles()
+    {
+        foreach (var tempFile in TemporaryFiles)
+        {
+            try
+            {
+                if (File.Exists(tempFile))
+                    File.Delete(tempFile);
+            }
+            catch
+            {
+                // Ignore cleanup errors - files might be in use or already deleted
+            }
+        }
+        TemporaryFiles.Clear();
     }
 
     /// <summary>
@@ -221,6 +345,28 @@ public sealed class DocumentOperation
                 Password = password
             }
         };
+    }
+    
+    /// <summary>
+    /// Loads a PDF from the specified stream for processing, enabling operations such as merging, overlaying or underlaying content, selecting pages, adding attachments, and encrypting.
+    /// </summary>
+    /// <param name="stream">The stream containing the PDF data to be loaded.</param>
+    /// <param name="password">The password for the PDF file, if it is password-protected. Optional.</param>
+    public static DocumentOperation LoadStream(Stream stream, string? password = null)
+    {
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
+
+        var operation = new DocumentOperation();
+        var tempFilePath = operation.CreateTemporaryFileFromStream(stream);
+        
+        operation.Configuration = new JobConfiguration
+        {
+            InputFile = tempFilePath,
+            Password = password
+        };
+        
+        return operation;
     }
     
     /// <summary>
@@ -264,6 +410,31 @@ public sealed class DocumentOperation
     }
 
     /// <summary>
+    /// Merges pages from the specified PDF stream into the current document, according to the provided page selection.
+    /// </summary>
+    /// <param name="stream">The stream containing the PDF data to be merged.</param>
+    /// <param name="pageSelector">An optional <see cref="DocumentPageSelector"/> to specify the range of pages to merge. If not provided, all pages will be merged.</param>
+    /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
+    public DocumentOperation MergeStream(Stream stream, string? pageSelector = null)
+    {
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
+        
+        var tempFilePath = CreateTemporaryFileFromStream(stream);
+        
+        if (Configuration.Pages == null)
+            TakePages("1-z");
+        
+        Configuration.Pages.Add(new JobConfiguration.PageConfiguration
+        {
+            File = tempFilePath,
+            Range = pageSelector ?? "1-z"
+        });
+        
+        return this;
+    }
+
+    /// <summary>
     /// Applies an underlay to the document using the specified configuration.
     /// The underlay pages are drawn beneath the target pages in the output file, potentially obscured by the original content.
     /// </summary>    
@@ -277,6 +448,30 @@ public sealed class DocumentOperation
         Configuration.Underlay.Add(new JobConfiguration.LayerConfiguration
         {
             File = configuration.FilePath,
+            To = configuration.TargetPages,
+            From = configuration.SourcePages,
+            Repeat = configuration.RepeatSourcePages
+        });
+        
+        return this;
+    }
+
+    /// <summary>
+    /// Applies an underlay to the document using the specified stream-based configuration.
+    /// The underlay pages are drawn beneath the target pages in the output file, potentially obscured by the original content.
+    /// </summary>    
+    public DocumentOperation UnderlayStream(LayerStreamConfiguration configuration)
+    {
+        if (configuration?.Stream == null)
+            throw new ArgumentNullException(nameof(configuration));
+        
+        var tempFilePath = CreateTemporaryFileFromStream(configuration.Stream);
+        
+        Configuration.Underlay ??= new List<JobConfiguration.LayerConfiguration>();
+        
+        Configuration.Underlay.Add(new JobConfiguration.LayerConfiguration
+        {
+            File = tempFilePath,
             To = configuration.TargetPages,
             From = configuration.SourcePages,
             Repeat = configuration.RepeatSourcePages
@@ -299,6 +494,30 @@ public sealed class DocumentOperation
         Configuration.Overlay.Add(new JobConfiguration.LayerConfiguration
         {
             File = configuration.FilePath,
+            To = configuration.TargetPages,
+            From = configuration.SourcePages,
+            Repeat = configuration.RepeatSourcePages
+        });
+        
+        return this;
+    }
+
+    /// <summary>
+    /// Applies an overlay to the document using the specified stream-based configuration.
+    /// The overlay pages are drawn on top of the target pages in the output file, potentially obscuring the original content.
+    /// </summary>
+    public DocumentOperation OverlayStream(LayerStreamConfiguration configuration)
+    {
+        if (configuration?.Stream == null)
+            throw new ArgumentNullException(nameof(configuration));
+        
+        var tempFilePath = CreateTemporaryFileFromStream(configuration.Stream);
+        
+        Configuration.Overlay ??= new List<JobConfiguration.LayerConfiguration>();
+        
+        Configuration.Overlay.Add(new JobConfiguration.LayerConfiguration
+        {
+            File = tempFilePath,
             To = configuration.TargetPages,
             From = configuration.SourcePages,
             Repeat = configuration.RepeatSourcePages
@@ -352,6 +571,63 @@ public sealed class DocumentOperation
         string GetDefaultMimeType()
         {
             var fileExtension = Path.GetExtension(attachment.FilePath);
+            fileExtension = fileExtension.TrimStart('.').ToLowerInvariant();
+            return MimeHelper.FileExtensionToMimeConversionTable.TryGetValue(fileExtension, out var value) ? value : "text/plain";
+        }
+        
+        string GetFormattedDate(DateTime? value, DateTime defaultValue)
+        {
+            return $"D:{(value ?? defaultValue).ToUniversalTime():yyyyMMddHHmmsss}Z";
+        }
+        
+        string? GetRelationship(DocumentAttachmentRelationship? relationship)
+        {
+            return relationship switch
+            {
+                DocumentAttachmentRelationship.Data => "/Data",
+                DocumentAttachmentRelationship.Source => "/Source",
+                DocumentAttachmentRelationship.Alternative => "/Alternative",
+                DocumentAttachmentRelationship.Supplement => "/Alternative",
+                DocumentAttachmentRelationship.Unspecified => "/Unspecified",
+                null => null,
+                _ => throw new ArgumentOutOfRangeException(nameof(relationship), relationship, null)
+            };
+        }
+    }
+
+    /// <summary>
+    /// Adds an attachment to the document from a stream, with specified metadata and configuration options.
+    /// </summary>
+    public DocumentOperation AddAttachmentStream(DocumentAttachmentStream attachment)
+    {
+        if (attachment?.Stream == null)
+            throw new ArgumentNullException(nameof(attachment));
+        if (string.IsNullOrEmpty(attachment.AttachmentName))
+            throw new ArgumentException("AttachmentName is required for stream-based attachments.", nameof(attachment));
+
+        Configuration.AddAttachment ??= new List<JobConfiguration.AddDocumentAttachment>();
+
+        var tempFilePath = CreateTemporaryFileFromStream(attachment.Stream);
+        var now = DateTime.UtcNow;
+        
+        Configuration.AddAttachment.Add(new JobConfiguration.AddDocumentAttachment
+        {
+            Key = attachment.Key ?? attachment.AttachmentName,
+            File = tempFilePath,
+            FileName = attachment.AttachmentName,
+            CreationDate = GetFormattedDate(attachment.CreationDate, now),
+            ModificationDate = GetFormattedDate(attachment.ModificationDate, now),
+            MimeType = attachment.MimeType ?? GetDefaultMimeType(),
+            Description = attachment.Description,
+            Replace = attachment.Replace ? string.Empty : null,
+            Relationship = GetRelationship(attachment.Relationship)
+        });
+        
+        return this;
+
+        string GetDefaultMimeType()
+        {
+            var fileExtension = Path.GetExtension(attachment.AttachmentName);
             fileExtension = fileExtension.TrimStart('.').ToLowerInvariant();
             return MimeHelper.FileExtensionToMimeConversionTable.TryGetValue(fileExtension, out var value) ? value : "text/plain";
         }
@@ -495,11 +771,54 @@ public sealed class DocumentOperation
     /// <param name="filePath">The path where the output file will be saved.</param>
     public void Save(string filePath)
     {
-        if (File.Exists(filePath))
-            File.Delete(filePath);
+        try
+        {
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+            
+            Configuration.OutputFile = filePath;
+            var json = SimpleJsonSerializer.Serialize(Configuration);
+            QpdfAPI.ExecuteJob(json);
+        }
+        finally
+        {
+            CleanupTemporaryFiles();
+        }
+    }
+
+    /// <summary>
+    /// Executes the configured operations on the document and writes the resulting PDF to the specified stream.
+    /// </summary>
+    /// <param name="stream">The stream where the output PDF data will be written.</param>
+    public void SaveToStream(Stream stream)
+    {
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
+
+        var tempOutputFile = Path.GetTempFileName();
         
-        Configuration.OutputFile = filePath;
-        var json = SimpleJsonSerializer.Serialize(Configuration);
-        QpdfAPI.ExecuteJob(json);
+        try
+        {
+            Configuration.OutputFile = tempOutputFile;
+            var json = SimpleJsonSerializer.Serialize(Configuration);
+            QpdfAPI.ExecuteJob(json);
+            
+            using var fileStream = File.OpenRead(tempOutputFile);
+            fileStream.CopyTo(stream);
+        }
+        finally
+        {
+            try
+            {
+                if (File.Exists(tempOutputFile))
+                    File.Delete(tempOutputFile);
+            }
+            catch
+            {
+                // Ignore cleanup errors
+            }
+            
+            CleanupTemporaryFiles();
+        }
     }
 }
