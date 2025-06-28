@@ -3,3 +3,4 @@
 - Border element: Added linear gradient (multiple colors, arbitrary angle), rounded corners, and alignment options (inside, outside, center)
 - Shadow element (new): Added blur, color, offset, and spread support
 - Internal: Introduced visual snapshot testing for the generation process
+- Updated Skia dependency to M138
