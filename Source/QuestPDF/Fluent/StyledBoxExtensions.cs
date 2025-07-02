@@ -44,7 +44,7 @@ namespace QuestPDF.Fluent
         
         #region Thickness
         
-        private static IContainer Border(this IContainer element, float top = 0, float bottom = 0, float left = 0, float right = 0)
+        private static IContainer Border(this IContainer element, float? top = null, float? bottom = null, float? left = null, float? right = null)
         {
             var styledBox = element as StyledBox ?? new StyledBox();
 
@@ -63,10 +63,17 @@ namespace QuestPDF.Fluent
             if (styledBox.BorderColor == Colors.Transparent.Hex)
                 styledBox.BorderColor = Colors.Black;
             
-            styledBox.BorderTop += top;
-            styledBox.BorderBottom += bottom;
-            styledBox.BorderLeft += left;
-            styledBox.BorderRight += right;
+            if (top.HasValue)
+                styledBox.BorderTop = top.Value;
+            
+            if (bottom.HasValue)
+                styledBox.BorderBottom = bottom.Value;
+            
+            if (left.HasValue)
+                styledBox.BorderLeft = left.Value;
+            
+            if (right.HasValue)
+                styledBox.BorderRight = right.Value;
 
             return element.Element(styledBox);
         }
@@ -292,6 +299,7 @@ namespace QuestPDF.Fluent
 
         /// <summary>
         /// Applies a shadow to the container using the specified shadow style.
+        /// Shadows can enhance the visual depth and separation of elements in a document.
         /// </summary>
         public static IContainer Shadow(this IContainer element, BoxShadowStyle style)
         {

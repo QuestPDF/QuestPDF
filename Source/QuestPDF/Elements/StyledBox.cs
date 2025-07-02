@@ -55,7 +55,7 @@ namespace QuestPDF.Elements
             if (BorderAlignment != null) 
                 return;
 
-            var shouldHaveInsetBorder = HasRoundedCorners || !HasFullBorder;
+            var shouldHaveInsetBorder = HasRoundedCorners;
             BorderAlignment = shouldHaveInsetBorder ? 0f : 0.5f;
         }
         
