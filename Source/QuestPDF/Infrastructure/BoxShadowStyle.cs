@@ -1,3 +1,5 @@
+using QuestPDF.Helpers;
+
 namespace QuestPDF.Infrastructure;
 
 /// <summary>
@@ -37,5 +39,5 @@ public sealed class BoxShadowStyle
     /// <summary>
     /// Gets or sets the color of the shadow.
     /// </summary>
-    public Color Color { get; set; }
+    public Color Color { get; set; } = Colors.Black;
 }
