@@ -13,14 +13,14 @@ namespace QuestPDF.Elements
         public float BorderTop { get; set; }
         public float BorderRight { get; set; }
         public float BorderBottom { get; set; }
-        
-        public bool HasFullBorder =>
+
+        private bool HasFullBorder =>
             BorderLeft > 0 && 
             BorderTop > 0 && 
             BorderRight > 0 && 
             BorderBottom > 0;
-        
-        public bool HasUniformBorder =>
+
+        private bool HasUniformBorder =>
             BorderLeft == BorderRight && 
             BorderTop == BorderBottom && 
             BorderLeft == BorderTop;
@@ -29,8 +29,8 @@ namespace QuestPDF.Elements
         public float BorderRadiusTopRight { get; set; }
         public float BorderRadiusBottomLeft { get; set; }
         public float BorderRadiusBottomRight { get; set; }
-        
-        public bool HasRoundedCorners =>
+
+        private bool HasRoundedCorners =>
             BorderRadiusTopLeft > 0 || 
             BorderRadiusTopRight > 0 || 
             BorderRadiusBottomLeft > 0 || 
@@ -45,8 +45,8 @@ namespace QuestPDF.Elements
         public Color BorderColor { get; set; } = Colors.Transparent;
         public Color[] BorderGradientColors { get; set; } = [];
         public float? BorderGradientAngle { get; set; }
-        
-        public bool HasSimpleStyle => BackgroundGradientColors.Length == 0 && BorderGradientColors.Length == 0;
+
+        private bool HasSimpleStyle => BackgroundGradientColors.Length == 0 && BorderGradientColors.Length == 0;
         
         public BoxShadowStyle? Shadow { get; set; }
         
