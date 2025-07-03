@@ -146,23 +146,29 @@ namespace QuestPDF.Drawing.DrawingCanvases
         {
             CurrentCanvas.Rotate(angle);
         }
-
-        public void DrawFilledRectangle(Position vector, Size size, Color color)
+        
+        public void DrawLine(Position start, Position end, SkPaint paint)
         {
-            if (size.Width < Size.Epsilon || size.Height < Size.Epsilon)
-                return;
+            var startPoint = new SkPoint(start.X, start.Y);
+            var endPoint = new SkPoint(end.X, end.Y);
+            
+            CurrentCanvas.DrawLine(startPoint, endPoint, paint);
+        }
 
+        public void DrawRectangle(Position vector, Size size, SkPaint paint)
+        {
             var position = new SkRect(vector.X, vector.Y, vector.X + size.Width, vector.Y + size.Height);
-            CurrentCanvas.DrawFilledRectangle(position, color);
+            CurrentCanvas.DrawRectangle(position, paint);
         }
         
-        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color)
+        public void DrawComplexBorder(SkRoundedRect innerRect, SkRoundedRect outerRect, SkPaint paint)
         {
-            if (size.Width < Size.Epsilon || size.Height < Size.Epsilon)
-                return;
-
-            var position = new SkRect(vector.X, vector.Y, vector.X + size.Width, vector.Y + size.Height);
-            CurrentCanvas.DrawStrokeRectangle(position, strokeWidth, color);
+            CurrentCanvas.DrawComplexBorder(innerRect, outerRect, paint);
+        }
+        
+        public void DrawShadow(SkRoundedRect shadowRect, SkBoxShadow shadow)
+        {
+            CurrentCanvas.DrawShadow(shadowRect, shadow);
         }
 
         public void DrawParagraph(SkParagraph paragraph, int lineFrom, int lineTo)
@@ -203,6 +209,11 @@ namespace QuestPDF.Drawing.DrawingCanvases
         public void ClipRectangle(SkRect clipArea)
         {
             CurrentCanvas.ClipRectangle(clipArea);
+        }
+        
+        public void ClipRoundedRectangle(SkRoundedRect clipArea)
+        {
+            CurrentCanvas.ClipRoundedRectangle(clipArea);
         }
         
         public void DrawHyperlink(string url, Size size)

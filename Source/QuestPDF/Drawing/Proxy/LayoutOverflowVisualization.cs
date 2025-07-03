@@ -79,14 +79,18 @@ internal sealed class LayoutOverflowVisualization : ElementProxy, IContentDirect
 
     private void DrawOverflowArea(Size availableSpace, Size contentSize)
     {
-        var availableSpaceColor = AvailableAreaColor.WithAlpha(AreaOpacity);
-        Canvas.DrawFilledRectangle(Position.Zero, availableSpace, availableSpaceColor);
+        using var availableSpacePaint = new SkPaint();
+        availableSpacePaint.SetSolidColor(AvailableAreaColor.WithAlpha(AreaOpacity));
+        Canvas.DrawRectangle(Position.Zero, availableSpace, availableSpacePaint);
 
         Canvas.Save();
         Canvas.ClipOverflowArea(new SkRect(0, 0, availableSpace.Width, availableSpace.Height), new SkRect(0, 0, contentSize.Width, contentSize.Height));
         Canvas.DrawOverflowArea(new SkRect(0, 0, contentSize.Width, contentSize.Height));
         Canvas.Restore();
 
-        Canvas.DrawStrokeRectangle(Position.Zero, contentSize, BorderThickness, LineColor);
+        using var borderPaint = new SkPaint();
+        borderPaint.SetStroke(BorderThickness);
+        borderPaint.SetSolidColor(LineColor);
+        Canvas.DrawRectangle(Position.Zero, contentSize, borderPaint);
     }
 }

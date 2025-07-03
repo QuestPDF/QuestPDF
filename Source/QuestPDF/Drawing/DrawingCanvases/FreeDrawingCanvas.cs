@@ -68,12 +68,22 @@ namespace QuestPDF.Drawing.DrawingCanvases
             CurrentMatrix = Matrix4x4.CreateRotationZ((float)Math.PI * angle / 180f) * CurrentMatrix;
         }
 
-        public void DrawFilledRectangle(Position vector, Size size, Color color)
+        public void DrawLine(Position start, Position end, SkPaint paint)
         {
             
         }
 
-        public void DrawStrokeRectangle(Position vector, Size size, float strokeWidth, Color color)
+        public void DrawRectangle(Position vector, Size size, SkPaint paint)
+        {
+            
+        }
+
+        public void DrawComplexBorder(SkRoundedRect innerRect, SkRoundedRect outerRect, SkPaint paint)
+        {
+            
+        }
+        
+        public void DrawShadow(SkRoundedRect shadowRect, SkBoxShadow shadow)
         {
             
         }
@@ -114,6 +124,11 @@ namespace QuestPDF.Drawing.DrawingCanvases
         }
 
         public void ClipRectangle(SkRect clipArea)
+        {
+            
+        }
+        
+        public void ClipRoundedRectangle(SkRoundedRect clipArea)
         {
             
         }

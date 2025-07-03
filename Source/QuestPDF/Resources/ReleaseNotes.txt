@@ -1,2 +1,6 @@
-- Reduced peak memory usage when generating PDF files by properly implementing a stream-based API,
-- Fixed the exception message displayed when the library cannot successfully parse the provided text as a color.
+- Line element: Added gradient and dashed pattern support
+- Background element: Added linear gradient (multiple colors, arbitrary angle) and rounded corners
+- Border element: Added linear gradient (multiple colors, arbitrary angle), rounded corners, and alignment options (inside, outside, center)
+- Shadow element (new): Added blur, color, offset, and spread support
+- Internal: Introduced visual snapshot testing for the generation process
+- Updated Skia dependency to M138

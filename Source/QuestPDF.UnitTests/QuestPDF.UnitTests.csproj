@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
         <IsPackable>false</IsPackable>
-        <LangVersion>10</LangVersion>
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
 
@@ -11,8 +11,8 @@
         <PackageReference Include="nunit" Version="4.3.2" />
         <PackageReference Include="NUnit3TestAdapter" Version="5.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
-        <PackageReference Include="SkiaSharp" Version="3.116.1" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.1" />
+        <PackageReference Include="SkiaSharp" Version="3.119.0" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.0" />
     </ItemGroup>
 
     <ItemGroup>

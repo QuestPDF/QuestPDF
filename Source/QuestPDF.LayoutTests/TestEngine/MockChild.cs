@@ -1,6 +1,7 @@
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
@@ -48,8 +49,10 @@ internal class ElementMock : Element
         var size = new Size(TotalWidth, height);
         
         HeightOffset += height;
-        
-        Canvas.DrawFilledRectangle(Position.Zero, size, Colors.Grey.Medium);
+
+        using var paint = new SkPaint();
+        paint.SetSolidColor(Colors.Grey.Medium);
+        Canvas.DrawRectangle(Position.Zero, size, paint);
         
         var matrix = Canvas.GetCurrentMatrix();
         
