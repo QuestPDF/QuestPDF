@@ -18,8 +18,7 @@ internal static class CompanionModelHelpers
         
         CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Traverse(TreeNode<LayoutProxy> node)
         {
-            var layout = node.Value;
-            var child = layout.Child;
+            var child = node.Value.Child;
 
             while (child is ElementProxy elementProxy)
                 child = elementProxy.Child;
@@ -27,25 +26,46 @@ internal static class CompanionModelHelpers
             if (child is Container)
                 return Traverse(node.Children.Single());
             
-            var element = new CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement
+            var hierarchyElement = MapToHierarchyElement(node);
+            
+            // special case to optimize the hierarchy structure in the Companion App
+            if (child is StyledBox styledBox)
+            {
+                var customContentChildren = styledBox
+                    .GetCompanionCustomContent()
+                    .Select(x => hierarchyElement with { ElementType = x.Type, Hint = x.Hint })
+                    .ToArray();
+
+                if (customContentChildren.Length == 0)
+                    return hierarchyElement;
+                
+                for (var i = 0; i <= customContentChildren.Length - 2; i++)
+                    customContentChildren[i].Children = [customContentChildren[i + 1]];
+                
+                return customContentChildren.First();
+            }
+
+            return hierarchyElement;
+        }
+        
+        CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement MapToHierarchyElement(TreeNode<LayoutProxy> node)
+        {
+            var layout = node.Value;
+            var child = layout.Child;
+                
+            return new CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement
             {
                 Element = child,
-                
                 ElementType = child.GetType().Name,
                 Hint = child.GetCompanionHint(),
                 SearchableContent = child.GetCompanionSearchableContent(),
-                
                 PageLocations = layout.Snapshots,
                 SourceCodeDeclarationPath = GetSourceCodePath(child.CodeLocation),
                 LayoutErrorMeasurements = layout.LayoutErrorMeasurements,
-                
                 IsSingleChildContainer = child is ContainerElement,
                 Properties = child.GetCompanionProperties()?.Select(x => new CompanionCommands.ElementProperty { Label = x.Key, Value = x.Value }).ToList() ?? [],
-                
                 Children = node.Children.Select(Traverse).ToList()
             };
-
-            return element;
         }
     }
 
