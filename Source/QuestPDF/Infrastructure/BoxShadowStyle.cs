@@ -39,5 +39,5 @@ public sealed class BoxShadowStyle
     /// <summary>
     /// Gets or sets the color of the shadow.
     /// </summary>
-    public Color Color { get; set; } = Colors.Black;
+    public Color Color { get; set; } = Colors.Grey.Medium;
 }
