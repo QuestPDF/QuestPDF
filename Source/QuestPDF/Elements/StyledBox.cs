@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Helpers;
@@ -14,6 +15,12 @@ namespace QuestPDF.Elements
         public float BorderRight { get; set; }
         public float BorderBottom { get; set; }
 
+        private bool HasBorder =>
+            BorderLeft > 0 || 
+            BorderTop > 0 || 
+            BorderRight > 0 || 
+            BorderBottom > 0;
+        
         private bool HasFullBorder =>
             BorderLeft > 0 && 
             BorderTop > 0 && 
@@ -35,6 +42,11 @@ namespace QuestPDF.Elements
             BorderRadiusTopRight > 0 || 
             BorderRadiusBottomLeft > 0 || 
             BorderRadiusBottomRight > 0;
+        
+        private bool HasUniformRoundedCorners =>
+            BorderRadiusTopLeft == BorderRadiusTopRight && 
+            BorderRadiusBottomLeft == BorderRadiusBottomRight && 
+            BorderRadiusTopLeft == BorderRadiusBottomLeft;
   
         public float? BorderAlignment { get; set; } // 0 = inset, 1 = outset
     
@@ -307,6 +319,40 @@ namespace QuestPDF.Elements
                     Y = Math.Max(0, input.BottomRightRadius.Y + bottom)
                 }
             };
+        }
+
+        internal IEnumerable<(string Type, string? Hint)> GetCompanionCustomContent()
+        {
+            // shadow
+            if (Shadow != null)
+                yield return ("Shadow", null);
+
+            // rounded corners
+            if (HasRoundedCorners)
+            {
+                if (HasUniformRoundedCorners)
+                    yield return ("Border", $"R={BorderRadiusTopLeft}");
+                else
+                    yield return ("Border", $"TL={BorderRadiusTopLeft}   TR={BorderRadiusTopRight}   BL={BorderRadiusBottomLeft}   BR={BorderRadiusBottomRight}");
+            }
+
+            // border
+            if (HasBorder)
+            {
+                var color = BorderGradientColors.Any() ? "gradient" : BorderColor.ToString();
+                
+                if (HasUniformBorder)
+                    yield return ("Border", $"A={BorderLeft}   C={color}");
+                else
+                    yield return ("Border", $"L={BorderLeft}   T={BorderTop}   R={BorderRight}   B={BorderBottom}   C={color}");
+            }
+
+            // background
+            if (BackgroundGradientColors.Length > 0)
+                yield return ("Background", $"Gradient with {BackgroundGradientColors.Length} colors");
+
+            else if (BackgroundColor.Hex != Colors.Transparent.Hex)
+                yield return ("Background", BackgroundColor);
         }
     }
 }

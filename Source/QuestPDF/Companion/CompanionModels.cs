@@ -35,7 +35,7 @@ namespace QuestPDF.Companion
                 public float Height { get; set; }
             }
             
-            internal sealed class DocumentHierarchyElement
+            internal sealed record DocumentHierarchyElement
             {
                 internal Element Element { get; set; }
                 
