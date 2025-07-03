@@ -22,13 +22,24 @@ namespace QuestPDF.Drawing.DocumentCanvases
         
         public byte[] RenderImage(int zoomLevel)
         {
+            // prepare canvas
             var scale = (float)Math.Pow(2, zoomLevel);
             
             using var bitmap = new SkBitmap((int)(Size.Width * scale), (int)(Size.Height * scale));
             using var canvas = SkCanvas.CreateFromBitmap(bitmap);
             canvas.Scale(scale, scale);
+            
+            // draw white background
+            using var backgroundPaint = new SkPaint();
+            backgroundPaint.SetSolidColor(Colors.White);
+            
+            var backgroundRect = new SkRect(0, 0, Size.Width, Size.Height);
+            canvas.DrawRectangle(backgroundRect, backgroundPaint);
+            
+            // draw content
             canvas.DrawPicture(Picture);
             
+            // export as image
             using var encodedBitmapData = bitmap.EncodeAsJpeg(90);
             return encodedBitmapData.ToBytes();
         }
