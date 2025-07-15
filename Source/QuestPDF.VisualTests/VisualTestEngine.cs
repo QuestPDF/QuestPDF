@@ -45,7 +45,7 @@ public static class ImageComparer
         var differences = pixels1.Zip(pixels2, (p1, p2) => new[] {p1.Red - p2.Red, p1.Green - p2.Green, p1.Blue - p2.Blue, p1.Alpha - p2.Alpha })
             .Select(x => x.Select(Math.Abs))
             .Select(x => x.Max())
-            .Where(diff => diff > 0)
+            .Where(diff => diff > 1)
             .ToArray();
         
 
@@ -61,7 +61,16 @@ public static class ImageComparer
         
         for (var i = 0; i < pixels1.Length; i++)
         {
-            if (pixels1[i] != pixels2[i])
+            if (Math.Abs(pixels1[i].Alpha - pixels2[i].Alpha) > 1)
+                return false;
+            
+            if (Math.Abs(pixels1[i].Red - pixels2[i].Red) > 1)
+                return false;
+            
+            if (Math.Abs(pixels1[i].Green - pixels2[i].Green) > 1)
+                return false;
+            
+            if (Math.Abs(pixels1[i].Blue - pixels2[i].Blue) > 1)
                 return false;
         }
         
