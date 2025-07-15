@@ -100,7 +100,8 @@ jobs:
 
 
       - name: Upload test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4    
+        if: always()
         with:
           name: questpdf-test-results-${{ matrix.runtime.name }}
           path: |
@@ -119,6 +120,7 @@ jobs:
 
   merge:
     runs-on: ubuntu-latest
+    if: always()
     needs: main
     steps:
       - name: Merge Artifacts
