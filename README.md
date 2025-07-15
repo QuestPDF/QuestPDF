@@ -172,7 +172,7 @@ Follow our detailed tutorial, and see how easy it is to generate a fully functio
 
 <br><br>
 
-## Cummunity QuestPDF
+## Community QuestPDF
 
 We are incredibly grateful to our .NET Community for their positive reviews and recommendations of the QuestPDF library. 
 Your support and feedback are invaluable and motivate us to keep improving and expanding this project. 
