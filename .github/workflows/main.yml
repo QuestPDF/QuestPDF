@@ -106,6 +106,7 @@ jobs:
           name: questpdf-test-results-${{ matrix.runtime.name }}
           path: |
             **/*.pdf
+            **/ActualOutput/**/*.png
 
         
       - name: Upload nuget artifacts
