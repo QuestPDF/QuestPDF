@@ -110,7 +110,7 @@ namespace QuestPDF.Elements.Text
                 var lineMetric = LineMetrics[lineIndex];
                 var newTotalHeight = totalHeight + lineMetric.Height;
                 
-                if (newTotalHeight > availableSpace.Height + Size.Epsilon)
+                if ((float)Math.Ceiling(newTotalHeight) > availableSpace.Height + Size.Epsilon)
                     break;
                 
                 totalHeight = newTotalHeight;
@@ -120,6 +120,8 @@ namespace QuestPDF.Elements.Text
             if (totalLines == 0)
                 return SpacePlan.Wrap("The available space is not sufficient to render even a single line of text.");
 
+            totalHeight = (float)Math.Ceiling(totalHeight);
+            
             var requiredArea = new Size(
                 Math.Min(MaximumWidth, availableSpace.Width),
                 Math.Min(totalHeight, availableSpace.Height));
