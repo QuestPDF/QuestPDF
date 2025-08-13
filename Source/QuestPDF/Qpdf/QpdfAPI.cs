@@ -39,6 +39,8 @@ static class QpdfAPI
         // check errors
         var errorMessage = error.ToString();
         
+        errorHandle.Free();
+        
         if (!string.IsNullOrEmpty(errorMessage))
             throw new Exception(errorMessage);
     }
