@@ -25,6 +25,8 @@ sealed class JobConfiguration
     [Name("linearize")] public string? Linearize { get; set; }
     [Name("newlineBeforeEndstream")] public string? NewlineBeforeEndstream { get; set; } = string.Empty;
     
+    [Name("keepFilesOpen")] public string? KeepFilesOpen { get; set; } = "n";
+    
     internal sealed class PageConfiguration
     {
         [Name("file")] public string File { get; set; }
