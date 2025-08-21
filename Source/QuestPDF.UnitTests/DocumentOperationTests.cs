@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using NUnit.Framework;
@@ -14,12 +15,6 @@ namespace QuestPDF.UnitTests;
 /// </summary>
 public class DocumentOperationTests
 {
-    public DocumentOperationTests()
-    {
-        if (RuntimeInformation.RuntimeIdentifier == "linux-musl-x64")
-            Assert.Ignore("The DocumentOperations functionality is not supported on Linux Musl, e.g. Alpine.");
-    }
-    
     [Test]
     public void TakePages()
     {
@@ -58,6 +53,35 @@ public class DocumentOperationTests
                 FilePath = "overlay-watermark.pdf"
             })
             .Save("operation-overlay.pdf");
+    }
+    
+    [Test]
+    public void OverlayStabilityTest()
+    {
+        GenerateSampleDocument("overlay-watermark.pdf", Colors.Green.Medium, 5);
+        
+        foreach (var i in Enumerable.Range(1, 1_000_000))
+        {
+            if (i % 1000 == 0)
+                Console.WriteLine($"Overlay stability test: {i} iterations completed.");
+            
+            var input = $"overlay-main-{i}.pdf";
+            var output = $"operation-overlay-{i}.pdf";
+            
+            GenerateSampleDocument(input, Colors.Red.Medium, 10);
+        
+            DocumentOperation
+                .LoadFile(input)
+                .OverlayFile(new DocumentOperation.LayerConfiguration
+                {
+                    FilePath = "overlay-watermark.pdf"
+                })
+                .Save(output);
+            
+            File.Delete(input);
+            File.Delete(output);
+        }
+
     }
     
     [Test]

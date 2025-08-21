@@ -8,12 +8,6 @@ namespace QuestPDF.DocumentationExamples;
 [TestFixture]
 public class DocumentOperationExamples
 {
-    public DocumentOperationExamples()
-    {
-        if (RuntimeInformation.RuntimeIdentifier == "linux-musl-x64")
-            Assert.Ignore("The DocumentOperations functionality is not supported on Linux Musl, e.g. Alpine.");
-    }
-    
     [Test]
     public void MergeFiles()
     {
