@@ -85,12 +85,7 @@ jobs:
           dotnet test QuestPDF.VisualTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
           dotnet test QuestPDF.DocumentationExamples --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
           dotnet test QuestPDF.ReportSample --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
-
-          if [ "${{ matrix.runtime.name }}" != "linux-musl-x64" ]; then
-            dotnet test QuestPDF.ZUGFeRD --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
-          else
-            echo "Skipping QuestPDF.ZUGFeRD tests on linux-musl-x64"
-          fi
+          dotnet test QuestPDF.ZUGFeRD --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
 
           dotnet build QuestPDF/QuestPDF.csproj --configuration Release --property WarningLevel=0 --property BUILD_PACKAGE=true
 
