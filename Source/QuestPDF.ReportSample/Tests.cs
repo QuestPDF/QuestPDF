@@ -48,6 +48,7 @@ namespace QuestPDF.ReportSample
         }
         
         [Test]
+        [Ignore("This test is for manual testing only.")]
         public void StabilityTesting()
         {
             Parallel.ForEach(Enumerable.Range(0, 1000), i =>
@@ -59,6 +60,7 @@ namespace QuestPDF.ReportSample
         }
         
         [Test]
+        [Ignore("This test is for manual testing only.")]
         public async Task CheckFinalizersStability()
         {
             Settings.EnableCaching = true;
