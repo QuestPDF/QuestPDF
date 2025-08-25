@@ -48,25 +48,13 @@ namespace QuestPDF.ReportSample
         }
         
         [Test]
-        [Ignore("This test is for manual testing only.")]
-        public void StabilityTesting()
-        {
-            Parallel.ForEach(Enumerable.Range(0, 1000), i =>
-            {
-                var model = DataSource.GetReport();
-                var report = new StandardReport(model);
-                report.GeneratePdf();
-            });
-        }
-        
-        [Test]
-        [Ignore("This test is for manual testing only.")]
+        [Description("This test is important, as it checks if all IDisposables are properly disposed, and there are no memory leaks.")]
         public async Task CheckFinalizersStability()
         {
             Settings.EnableCaching = true;
 
             Report.GeneratePdf();
-            Report.GenerateImages();
+            Report.GenerateImages(new ImageGenerationSettings { RasterDpi = 72 });
             Report.GenerateSvg();
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
