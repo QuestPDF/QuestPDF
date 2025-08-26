@@ -162,5 +162,10 @@ internal sealed class ProxyDrawingCanvas : IDrawingCanvas, IDisposable
         Target.DrawSection(sectionName);
     }
     
+    public void SetSemanticNodeId(int nodeId)
+    {
+        Target.SetSemanticNodeId(nodeId);
+    }
+    
     #endregion
 }

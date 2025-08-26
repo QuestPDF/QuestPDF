@@ -231,6 +231,11 @@ namespace QuestPDF.Drawing.DrawingCanvases
             CurrentCanvas.AnnotateDestination(sectionName);
         }
         
+        public void SetSemanticNodeId(int nodeId)
+        {
+            CurrentCanvas.SetSemanticNodeId(nodeId);
+        }
+        
         #endregion
     }
 }

@@ -28,8 +28,29 @@ namespace QuestPDF.Drawing
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
-            using var canvas = new PdfDocumentCanvas(stream, metadata, settings);
+            
+            using var semanticTree = GetSemanticTree(document);
+            
+            using var canvas = new PdfDocumentCanvas(stream, metadata, settings, semanticTree);
             RenderDocument(canvas, document, settings);
+
+            static SkPdfTag GetSemanticTree(IDocument document)
+            {
+                // TODO: optimize semantic tree generation
+                // this implementation creates entire document structure only for semantic tree generation,
+                // and then disposes everything, instead of reusing the same structure also for document rendering
+                
+                // TODO: better handle the Lazy element
+                // with this implementation, the entire document is materialized for semantic tree generation, and the Lazy element does not optimize the memory usage
+                // most likely, the Lazy element should be aware of semantic tree generation, or there should be an addition structure, e.g. SemanticLazy or even SemanticLazyProxy
+                
+                var container = new DocumentContainer();
+                document.Compose(container);
+            
+                var content = container.Compose();
+                content.PopulateSemanticTagIds();
+                return content.ExtractStructuralInformation();
+            }
         }
         
         internal static void GenerateXps(SkWriteStream stream, IDocument document)
@@ -149,6 +170,9 @@ namespace QuestPDF.Drawing
             var useOriginalImages = canvas is ImageDocumentCanvas;
 
             var content = ConfigureContent(document, settings, useOriginalImages);
+            
+            // TODO: this step may not be required if document structure is used for both: semantic tree generation and document rendering
+            content.PopulateSemanticTagIds();
             
             if (canvas is CompanionDocumentCanvas)
                 content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
@@ -541,6 +565,45 @@ namespace QuestPDF.Drawing
             {
                 foreach (var child in content.GetChildren())
                     ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
+            }
+        }
+
+        internal static void PopulateSemanticTagIds(this Element element)
+        {
+            var currentId = 1;
+            Traverse(element);  
+            
+            void Traverse(Element element)
+            {
+                if (element is SemanticTag semanticTag)
+                {
+                    semanticTag.Id = currentId;
+                    currentId++;
+                }
+
+                if (element is ContainerElement container)
+                {
+                    Traverse(container.Child);
+                    return;
+                }
+                
+                foreach (var child in element.GetChildren())
+                    Traverse(child);
+            }
+        }
+
+        internal static SkPdfTag ExtractStructuralInformation(this Element element)
+        {
+            var semanticTags = element.ExtractElementsOfType<SemanticTag>();
+            return GetSkiaTagFor(semanticTags.First());
+
+            static SkPdfTag GetSkiaTagFor(TreeNode<SemanticTag> treeNode)
+            {
+                var tagElement = treeNode.Value;
+                var result = SkPdfTag.Create(tagElement.Id, tagElement.TagType, tagElement.Alt, tagElement.Lang ?? "en-US");
+                var children = treeNode.Children.Select(GetSkiaTagFor).ToArray();
+                result.SetChildren(children);
+                return result;
             }
         }
     }

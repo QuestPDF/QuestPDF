@@ -46,5 +46,7 @@ namespace QuestPDF.UnitTests.TestEngine
         public void DrawHyperlink(string url, Size size) => throw new NotImplementedException();
         public void DrawSectionLink(string sectionName, Size size) => throw new NotImplementedException();
         public void DrawSection(string sectionName) => throw new NotImplementedException();
+        
+        public void SetSemanticNodeId(int nodeId) => throw new NotImplementedException();
     }
 }

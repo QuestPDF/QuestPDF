@@ -141,6 +141,11 @@ internal sealed class SkCanvas : IDisposable
         API.canvas_set_matrix9(Instance, matrix);
     }
     
+    public void SetSemanticNodeId(int nodeId)
+    {
+        API.canvas_set_semantic_node_id(Instance, nodeId);
+    }
+    
     ~SkCanvas()
     {
         this.WarnThatFinalizerIsReached();
@@ -235,5 +240,8 @@ internal sealed class SkCanvas : IDisposable
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void canvas_set_matrix9(IntPtr canvas, SkCanvasMatrix matrix);
+
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void canvas_set_semantic_node_id(IntPtr canvas, int nodeId);
     }
 }

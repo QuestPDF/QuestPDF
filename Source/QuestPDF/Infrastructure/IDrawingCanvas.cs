@@ -40,5 +40,7 @@ namespace QuestPDF.Infrastructure
         void DrawHyperlink(string url, Size size);
         void DrawSectionLink(string sectionName, Size size);
         void DrawSection(string sectionName);
+        
+        void SetSemanticNodeId(int nodeId);
     }
 }

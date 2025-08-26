@@ -13,12 +13,13 @@ namespace QuestPDF.Drawing.DocumentCanvases
         private SkCanvas? CurrentPageCanvas { get; set; }
         private ProxyDrawingCanvas DrawingCanvas { get; } = new();
         
-        public PdfDocumentCanvas(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
+        // TODO: is there a better way to pass semantic-related data? Skia requires it BEFORE content generation
+        public PdfDocumentCanvas(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings, SkPdfTag? pdfTag)
         {
-            Document = CreatePdf(stream, documentMetadata, documentSettings);
+            Document = CreatePdf(stream, documentMetadata, documentSettings, pdfTag);
         }
 
-        private static SkDocument CreatePdf(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
+        private static SkDocument CreatePdf(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings, SkPdfTag? pdfTag)
         {
             // do not extract to another method, as it will cause the SkText objects
             // to be disposed before the SkPdfDocument is created
@@ -45,7 +46,9 @@ namespace QuestPDF.Drawing.DocumentCanvases
                 
                 RasterDPI = documentSettings.ImageRasterDpi,
                 SupportPDFA = documentSettings.PdfA,
-                CompressDocument = documentSettings.CompressDocument
+                CompressDocument = documentSettings.CompressDocument,
+                
+                SemanticNodeRoot = pdfTag?.Instance ?? IntPtr.Zero
             };
             
             try
