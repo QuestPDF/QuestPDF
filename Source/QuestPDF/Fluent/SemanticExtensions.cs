@@ -5,12 +5,13 @@ namespace QuestPDF.Fluent;
 
 public static class SemanticExtensions
 {
-    private static IContainer SemanticTag(this IContainer container, string type, string? alt = null)
+    private static IContainer SemanticTag(this IContainer container, string type, string? alternativeText = null, string? language = null)
     {
         return container.Element(new Elements.SemanticTag
         {
             TagType = type, 
-            Alt = alt
+            Alt = alternativeText,
+            Lang = language
         });
     }
     
@@ -77,9 +78,9 @@ public static class SemanticExtensions
     /// <summary>
     /// 
     /// </summary>
-    public static IContainer SemanticLanguage(this IContainer container, string lang)
+    public static IContainer SemanticLanguage(this IContainer container, string language)
     {
-        return container.SemanticTag("Caption");
+        return container.SemanticTag("NonStruct", language: language);
     }
     
     #region Table of Contents
@@ -249,9 +250,9 @@ public static class SemanticExtensions
     /// A generic inline portion of text having no particular inherent characteristics.
     /// It can be used, for example, to delimit a range of text with a given set of styling attributes.
     /// </summary>
-    public static IContainer SemanticSpan(this IContainer container)
+    public static IContainer SemanticSpan(this IContainer container, string? alternativeText = null)
     {
-        return container.SemanticTag("Span");
+        return container.SemanticTag("Span", alternativeText);
     }
     
     /// <summary>

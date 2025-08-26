@@ -592,18 +592,31 @@ namespace QuestPDF.Drawing
             }
         }
 
-        internal static SkPdfTag ExtractStructuralInformation(this Element element)
+        internal static SkPdfTag ExtractStructuralInformation(this Element root)
         {
-            var semanticTags = element.ExtractElementsOfType<SemanticTag>();
-            return GetSkiaTagFor(semanticTags.First());
+            return GetSkiaTagFor(root).First();
 
-            static SkPdfTag GetSkiaTagFor(TreeNode<SemanticTag> treeNode)
+            static IEnumerable<SkPdfTag> GetSkiaTagFor(Element element)
             {
-                var tagElement = treeNode.Value;
-                var result = SkPdfTag.Create(tagElement.Id, tagElement.TagType, tagElement.Alt, tagElement.Lang ?? "en-US");
-                var children = treeNode.Children.Select(GetSkiaTagFor).ToArray();
-                result.SetChildren(children);
-                return result;
+                if (element is SemanticTag semanticTag)
+                {
+                    if (semanticTag.TagType == "Span")
+                        semanticTag.UpdateAlternativeText();
+                    
+                    var result = SkPdfTag.Create(semanticTag.Id, semanticTag.TagType, semanticTag.Alt, semanticTag.Lang);
+                    result.SetChildren(GetSkiaTagFor(semanticTag.Child).ToArray());
+                    yield return result;
+                }
+                else if (element is ContainerElement container)
+                {
+                    foreach (var child in GetSkiaTagFor(container.Child))
+                        yield return child;
+                }
+                else
+                {
+                    foreach (var child in element.GetChildren().SelectMany(GetSkiaTagFor))
+                        yield return child;
+                }
             }
         }
     }
