@@ -1,3 +1,5 @@
+2025.7.1:
+
 - Fixed a significant memory leak in document operations involving overlay or underlay,
 - Fixed a minor memory leak in general document operations (e.g., merge, save with password),
 - Updated the Skia dependency to M140,
