@@ -309,4 +309,17 @@ public static class SemanticExtensions
     
     // TODO: links?
     // TODO: ActualText?
+    
+    // TODO: special values for note ids?
+    // namespace NodeID {
+    //     static const constexpr int Nothing = 0;
+    //     static const constexpr int OtherArtifact = -1;
+    //     static const constexpr int PaginationArtifact = -2;
+    //     static const constexpr int PaginationHeaderArtifact = -3;
+    //     static const constexpr int PaginationFooterArtifact = -4;
+    //     static const constexpr int PaginationWatermarkArtifact = -5;
+    //     static const constexpr int LayoutArtifact = -6;
+    //     static const constexpr int PageArtifact = -7;
+    //     static const constexpr int BackgroundArtifact = -8;
+    // }
 }
