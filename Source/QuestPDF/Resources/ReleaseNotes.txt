@@ -1,1 +1,2 @@
+- Disabled standard ligatures by default, as they often interfere with text copying and may pose accessibility issues,
 - Performance has been improved when generating multiple text-heavy documents at the same time. The more concurrent operations and text elements involved, the more noticeable the benefit.
