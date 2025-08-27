@@ -32,7 +32,7 @@ namespace QuestPDF.Elements
             container
                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Page.ToString())
                 .ContentDirection(ContentDirection)
-                .DefaultTextStyle(DefaultTextStyle)
+                .DefaultTextStyle(DefaultTextStyle.DisableFontFeature(FontFeatures.StandardLigatures))
                 .Layers(layers =>
                 {
                     layers.Layer().ZIndex(int.MinValue).Background(BackgroundColor);
