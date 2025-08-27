@@ -1,6 +1,1 @@
-2025.7.1:
-
-- Fixed a significant memory leak in document operations involving overlay or underlay,
-- Fixed a minor memory leak in general document operations (e.g., merge, save with password),
-- Updated the Skia dependency to M140,
-- Removed unnecessary dependencies on Linux and macOS (OpenSSL, libjpeg-turbo) to improve compatibility across more platforms.
+- Performance has been improved when generating multiple text-heavy documents at the same time. The more concurrent operations and text elements involved, the more noticeable the benefit.
