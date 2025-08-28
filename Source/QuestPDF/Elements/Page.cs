@@ -31,14 +31,19 @@ namespace QuestPDF.Elements
         {
             container
                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Page.ToString())
+                .SemanticDocument()
                 .ContentDirection(ContentDirection)
                 .DefaultTextStyle(DefaultTextStyle.DisableFontFeature(FontFeatures.StandardLigatures))
                 .Layers(layers =>
                 {
-                    layers.Layer().ZIndex(int.MinValue).Background(BackgroundColor);
+                    layers.Layer()
+                        .ZIndex(int.MinValue)
+                        .ArtifactBackground()
+                        .Background(BackgroundColor);
                     
                     layers
                         .Layer()
+                        .ArtifactBackground()
                         .Repeat()
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Background.ToString())
                         .Element(Background);
@@ -61,6 +66,7 @@ namespace QuestPDF.Elements
                         {
                             decoration
                                 .Before()
+                                .ArtifactPaginationHeader()
                                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Header.ToString())
                                 .Element(Header);
 
@@ -73,12 +79,14 @@ namespace QuestPDF.Elements
 
                             decoration
                                 .After()
+                                .ArtifactPaginationFooter()
                                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Footer.ToString())
                                 .Element(Footer);
                         });
                     
                     layers
                         .Layer()
+                        .ArtifactPaginationWatermark()
                         .Repeat()
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Foreground.ToString())
                         .Element(Foreground);
