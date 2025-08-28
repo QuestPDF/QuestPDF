@@ -575,7 +575,7 @@ namespace QuestPDF.Drawing
             
             void Traverse(Element element)
             {
-                if (element is SemanticTag semanticTag)
+                if (element is SemanticTag { Id: 0 } semanticTag)
                 {
                     semanticTag.Id = currentId;
                     currentId++;

@@ -112,7 +112,7 @@ public static class SemanticExtensions
     #region Headers
     
     /// <summary>
-    /// (Heading) A label for a subdivision of a document's content. It should be the first child of the division that it heads.
+    /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
     /// </summary>
     public static IContainer SemanticHeader(this IContainer container, string title)
     {
@@ -280,17 +280,17 @@ public static class SemanticExtensions
     /// <summary>
     /// An item of graphical content.
     /// </summary>
-    public static IContainer SemanticFigure(this IContainer container)
+    public static IContainer SemanticFigure(this IContainer container, string alternativeText)
     {
-        return container.SemanticTag("Figure");
+        return container.SemanticTag("Figure", alternativeText: alternativeText);
     }
     
     /// <summary>
     /// An alias for a SemanticFigure.
     /// </summary>
-    public static IContainer SemanticImage(this IContainer container)
+    public static IContainer SemanticImage(this IContainer container, string alternativeText)
     {
-        return container.SemanticFigure();
+        return container.SemanticFigure(alternativeText);
     }
     
     /// <summary>
@@ -300,9 +300,9 @@ public static class SemanticExtensions
     /// No standard structure types are defined for identifying individual components within the formula.
     /// From a formatting standpoint, the formula shall be treated similarly to a figure.
     /// </summary>
-    public static IContainer SemanticFormula(this IContainer container)
+    public static IContainer SemanticFormula(this IContainer container, string alternativeText)
     {
-        return container.SemanticTag("Formula");
+        return container.SemanticTag("Formula", alternativeText: alternativeText);
     }
     
     #endregion
