@@ -44,6 +44,10 @@ namespace QuestPDF.Drawing
                 // with this implementation, the entire document is materialized for semantic tree generation, and the Lazy element does not optimize the memory usage
                 // most likely, the Lazy element should be aware of semantic tree generation, or there should be an addition structure, e.g. SemanticLazy or even SemanticLazyProxy
                 
+                // TODO: can this operation be handled during FreeCanvas drawing?
+                
+                // TODO: does caching operation via SkPicture support setting semantic node id?
+                
                 var container = new DocumentContainer();
                 document.Compose(container);
             
