@@ -1,0 +1,709 @@
+[
+  {
+    "term": "Variable",
+    "description": "A storage location paired with an associated symbolic name, which contains some known or unknown quantity of information referred to as a value.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Data Types",
+    "thirdLevelCategory": "Primitives"
+  },
+  {
+    "term": "Function",
+    "description": "A block of reusable code that performs a specific task and can be called by name.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Control Flow",
+    "thirdLevelCategory": "Subroutines"
+  },
+  {
+    "term": "If-Else Statement",
+    "description": "A conditional statement that executes a block of code if a specified condition is true, and another block if it is false.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Control Flow",
+    "thirdLevelCategory": "Conditionals"
+  },
+  {
+    "term": "For Loop",
+    "description": "A control flow statement for specifying iteration, which allows code to be executed repeatedly.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Control Flow",
+    "thirdLevelCategory": "Loops"
+  },
+  {
+    "term": "Integer",
+    "description": "A data type that represents a whole number, without a fractional component.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Data Types",
+    "thirdLevelCategory": "Primitives"
+  },
+  {
+    "term": "String",
+    "description": "A data type representing a sequence of characters.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Data Types",
+    "thirdLevelCategory": "Primitives"
+  },
+  {
+    "term": "Boolean",
+    "description": "A data type with only two possible values: true or false.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Data Types",
+    "thirdLevelCategory": "Primitives"
+  },
+  {
+    "term": "Array",
+    "description": "A data structure consisting of a collection of elements, each identified by at least one array index or key.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Data Structures",
+    "thirdLevelCategory": "Linear"
+  },
+  {
+    "term": "Object",
+    "description": "A data structure that contains data in the form of key-value pairs.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Data Types",
+    "thirdLevelCategory": "Composite"
+  },
+  {
+    "term": "Null",
+    "description": "A special value representing the intentional absence of any object value.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Data Types",
+    "thirdLevelCategory": "Primitives"
+  },
+  {
+    "term": "Class",
+    "description": "A blueprint for creating objects, providing initial values for state (member variables) and implementations of behavior (member functions).",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Object-Oriented",
+    "thirdLevelCategory": "Core Constructs"
+  },
+  {
+    "term": "Inheritance",
+    "description": "A mechanism where a new class derives properties and behavior from an existing class.",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Object-Oriented",
+    "thirdLevelCategory": "Principles"
+  },
+  {
+    "term": "Polymorphism",
+    "description": "The provision of a single interface to entities of different types, allowing objects to be treated as instances of their parent class.",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Object-Oriented",
+    "thirdLevelCategory": "Principles"
+  },
+  {
+    "term": "Encapsulation",
+    "description": "The bundling of data with the methods that operate on that data, or the restricting of direct access to some of an object's components.",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Object-Oriented",
+    "thirdLevelCategory": "Principles"
+  },
+  {
+    "term": "Abstraction",
+    "description": "The concept of hiding the complex reality while exposing only the necessary parts.",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Object-Oriented",
+    "thirdLevelCategory": "Principles"
+  },
+  {
+    "term": "Algorithm",
+    "description": "A finite sequence of well-defined, computer-implementable instructions to solve a class of problems.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Algorithms",
+    "thirdLevelCategory": "Fundamentals"
+  },
+  {
+    "term": "Linked List",
+    "description": "A linear collection of data elements whose order is not given by their physical placement in memory. Each element points to the next.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Data Structures",
+    "thirdLevelCategory": "Linear"
+  },
+  {
+    "term": "Stack",
+    "description": "A linear data structure that follows the Last-In, First-Out (LIFO) principle.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Data Structures",
+    "thirdLevelCategory": "Linear"
+  },
+  {
+    "term": "Queue",
+    "description": "A linear data structure that follows the First-In, First-Out (FIFO) principle.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Data Structures",
+    "thirdLevelCategory": "Linear"
+  },
+  {
+    "term": "Tree",
+    "description": "A hierarchical data structure with a root value and subtrees of children with a parent node, represented as a set of linked nodes.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Data Structures",
+    "thirdLevelCategory": "Non-Linear"
+  },
+  {
+    "term": "Graph",
+    "description": "A data structure consisting of a set of vertices (or nodes) and a set of edges that connect these vertices.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Data Structures",
+    "thirdLevelCategory": "Non-Linear"
+  },
+  {
+    "term": "Hash Table",
+    "description": "A data structure that implements an associative array abstract data type, a structure that can map keys to values.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Data Structures",
+    "thirdLevelCategory": "Key-Value"
+  },
+  {
+    "term": "Binary Search",
+    "description": "A search algorithm that finds the position of a target value within a sorted array.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Algorithms",
+    "thirdLevelCategory": "Searching"
+  },
+  {
+    "term": "Bubble Sort",
+    "description": "A simple sorting algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Algorithms",
+    "thirdLevelCategory": "Sorting"
+  },
+  {
+    "term": "Merge Sort",
+    "description": "An efficient, comparison-based, divide and conquer sorting algorithm.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Algorithms",
+    "thirdLevelCategory": "Sorting"
+  },
+  {
+    "term": "Big O Notation",
+    "description": "A mathematical notation that describes the limiting behavior of a function when the argument tends towards a particular value or infinity, used to classify algorithms according to their running time or space requirements.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Complexity",
+    "thirdLevelCategory": "Asymptotic Analysis"
+  },
+  {
+    "term": "Recursion",
+    "description": "A method of solving a problem where the solution depends on solutions to smaller instances of the same problem.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Control Flow",
+    "thirdLevelCategory": "Subroutines"
+  },
+  {
+    "term": "API (Application Programming Interface)",
+    "description": "A set of rules and protocols for building and interacting with software applications.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Architecture",
+    "thirdLevelCategory": "Integration"
+  },
+  {
+    "term": "REST (Representational State Transfer)",
+    "description": "An architectural style for designing networked applications, often used for creating web services.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Architecture",
+    "thirdLevelCategory": "Integration"
+  },
+  {
+    "term": "HTTP (Hypertext Transfer Protocol)",
+    "description": "The foundation of data communication for the World Wide Web.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Protocols",
+    "thirdLevelCategory": "Communication"
+  },
+  {
+    "term": "JSON (JavaScript Object Notation)",
+    "description": "A lightweight data-interchange format that is easy for humans to read and write and easy for machines to parse and generate.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Data Formats",
+    "thirdLevelCategory": "Serialization"
+  },
+  {
+    "term": "HTML (Hypertext Markup Language)",
+    "description": "The standard markup language for documents designed to be displayed in a web browser.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Frontend",
+    "thirdLevelCategory": "Markup"
+  },
+  {
+    "term": "CSS (Cascading Style Sheets)",
+    "description": "A style sheet language used for describing the presentation of a document written in a markup language like HTML.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Frontend",
+    "thirdLevelCategory": "Styling"
+  },
+  {
+    "term": "JavaScript",
+    "description": "A high-level, interpreted programming language that conforms to the ECMAScript specification, primarily used for web development.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Frontend",
+    "thirdLevelCategory": "Scripting"
+  },
+  {
+    "term": "DOM (Document Object Model)",
+    "description": "A programming interface for HTML and XML documents. It represents the page so that programs can change the document structure, style, and content.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Frontend",
+    "thirdLevelCategory": "APIs"
+  },
+  {
+    "term": "Frontend",
+    "description": "The part of a website or application that the user interacts with directly; also known as client-side.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "General Concepts",
+    "thirdLevelCategory": "Client-Side"
+  },
+  {
+    "term": "Backend",
+    "description": "The server-side of a website or application, responsible for storing and organizing data and ensuring everything on the client-side works.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "General Concepts",
+    "thirdLevelCategory": "Server-Side"
+  },
+  {
+    "term": "Database",
+    "description": "An organized collection of data, generally stored and accessed electronically from a computer system.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Data Storage",
+    "thirdLevelCategory": "Systems"
+  },
+  {
+    "term": "SQL (Structured Query Language)",
+    "description": "A domain-specific language used in programming and designed for managing data held in a relational database management system.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Data Storage",
+    "thirdLevelCategory": "Query Languages"
+  },
+  {
+    "term": "NoSQL",
+    "description": "A database that provides a mechanism for storage and retrieval of data that is modeled in means other than the tabular relations used in relational databases.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Data Storage",
+    "thirdLevelCategory": "Systems"
+  },
+  {
+    "term": "Git",
+    "description": "A distributed version-control system for tracking changes in source code during software development.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Version Control",
+    "thirdLevelCategory": "Systems"
+  },
+  {
+    "term": "Commit",
+    "description": "An operation in version control which saves the current state of changes to the local repository.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Version Control",
+    "thirdLevelCategory": "Operations"
+  },
+  {
+    "term": "Branch",
+    "description": "A parallel version of a repository in version control, allowing for independent development without affecting the main line.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Version Control",
+    "thirdLevelCategory": "Concepts"
+  },
+  {
+    "term": "Merge",
+    "description": "An operation in version control that integrates changes from different branches into a single branch.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Version Control",
+    "thirdLevelCategory": "Operations"
+  },
+  {
+    "term": "Repository",
+    "description": "A central location in which data is stored and managed, commonly used for source code.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Version Control",
+    "thirdLevelCategory": "Concepts"
+  },
+  {
+    "term": "Compiler",
+    "description": "A special program that processes statements written in a particular programming language and turns them into machine language or 'code' that a computer's processor uses.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Language Processors",
+    "thirdLevelCategory": "Translation"
+  },
+  {
+    "term": "Interpreter",
+    "description": "A computer program that directly executes instructions written in a programming or scripting language, without requiring them to have been previously compiled into a machine language program.",
+    "firstLevelCategory": "Tools &Technologies",
+    "secondLevelCategory": "Language Processors",
+    "thirdLevelCategory": "Execution"
+  },
+  {
+    "term": "IDE (Integrated Development Environment)",
+    "description": "A software application that provides comprehensive facilities to computer programmers for software development.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Development Tools",
+    "thirdLevelCategory": "Editors"
+  },
+  {
+    "term": "Debugger",
+    "description": "A computer program used to test and find bugs (errors) in other programs.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Development Tools",
+    "thirdLevelCategory": "Testing"
+  },
+  {
+    "term": "Library",
+    "description": "A collection of non-volatile resources used by computer programs, often for software development.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Code Reusability",
+    "thirdLevelCategory": "Collections"
+  },
+  {
+    "term": "Framework",
+    "description": "A pre-written, structured body of code that provides a standard way to build and deploy applications.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Code Reusability",
+    "thirdLevelCategory": "Scaffolding"
+  },
+  {
+    "term": "Agile",
+    "description": "A set of practices for software development under which requirements and solutions evolve through the collaborative effort of self-organizing cross-functional teams.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Methodologies",
+    "thirdLevelCategory": "Iterative"
+  },
+  {
+    "term": "Scrum",
+    "description": "An agile framework for managing knowledge work, with an emphasis on software development.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Methodologies",
+    "thirdLevelCategory": "Frameworks"
+  },
+  {
+    "term": "Waterfall Model",
+    "description": "A sequential design process in which progress is seen as flowing steadily downwards (like a waterfall) through the phases of conception, initiation, analysis, design, construction, testing, deployment and maintenance.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Methodologies",
+    "thirdLevelCategory": "Sequential"
+  },
+  {
+    "term": "Unit Testing",
+    "description": "A level of software testing where individual units or components of a software are tested.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Testing",
+    "thirdLevelCategory": "Levels"
+  },
+  {
+    "term": "Integration Testing",
+    "description": "A level of software testing where individual units are combined and tested as a group.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Testing",
+    "thirdLevelCategory": "Levels"
+  },
+  {
+    "term": "CI/CD (Continuous Integration/Continuous Deployment)",
+    "description": "The combined practices of continuous integration and either continuous delivery or continuous deployment, aimed at frequent and reliable software releases.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "DevOps",
+    "thirdLevelCategory": "Automation"
+  },
+  {
+    "term": "DevOps",
+    "description": "A set of practices that combines software development (Dev) and IT operations (Ops) to shorten the systems development life cycle and provide continuous delivery with high software quality.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "DevOps",
+    "thirdLevelCategory": "Culture"
+  },
+  {
+    "term": "Syntax",
+    "description": "The set of rules that defines the combinations of symbols that are considered to be correctly structured statements or expressions in a language.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Language Fundamentals",
+    "thirdLevelCategory": "Grammar"
+  },
+  {
+    "term": "Semantics",
+    "description": "The meaning of a programming language's statements.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Language Fundamentals",
+    "thirdLevelCategory": "Meaning"
+  },
+  {
+    "term": "Functional Programming",
+    "description": "A programming paradigm where programs are constructed by applying and composing functions.",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Functional",
+    "thirdLevelCategory": "Core Concepts"
+  },
+  {
+    "term": "Pure Function",
+    "description": "A function whose return value is only determined by its input values, without observable side effects.",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Functional",
+    "thirdLevelCategory": "Principles"
+  },
+  {
+    "term": "Immutability",
+    "description": "A principle where an object's state cannot be modified after it is created.",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Functional",
+    "thirdLevelCategory": "Principles"
+  },
+  {
+    "term": "Higher-Order Function",
+    "description": "A function that either takes one or more functions as arguments or returns a function as its result.",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Functional",
+    "thirdLevelCategory": "Core Concepts"
+  },
+  {
+    "term": "Asynchronous",
+    "description": "Operations that allow a program to start a potentially long-running task and still be able to be responsive to other events while that task runs.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Execution Model",
+    "thirdLevelCategory": "Concurrency"
+  },
+  {
+    "term": "Promise",
+    "description": "An object representing the eventual completion or failure of an asynchronous operation.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Execution Model",
+    "thirdLevelCategory": "Concurrency"
+  },
+  {
+    "term": "Thread",
+    "description": "The smallest sequence of programmed instructions that can be managed independently by a scheduler.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Execution Model",
+    "thirdLevelCategory": "Parallelism"
+  },
+  {
+    "term": "Garbage Collection",
+    "description": "A form of automatic memory management that attempts to reclaim memory occupied by objects that are no longer in use by the program.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Memory Management",
+    "thirdLevelCategory": "Automatic"
+  },
+  {
+    "term": "Pointer",
+    "description": "A variable whose value is the memory address of another variable.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Memory Management",
+    "thirdLevelCategory": "Manual"
+  },
+  {
+    "term": "SDK (Software Development Kit)",
+    "description": "A collection of software development tools in one installable package.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Development Tools",
+    "thirdLevelCategory": "Tooling"
+  },
+  {
+    "term": "Node.js",
+    "description": "A JavaScript runtime built on Chrome's V8 JavaScript engine, used for building server-side applications.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Backend",
+    "thirdLevelCategory": "Runtimes"
+  },
+  {
+    "term": "React",
+    "description": "A JavaScript library for building user interfaces, particularly for single-page applications.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Frontend",
+    "thirdLevelCategory": "Libraries"
+  },
+  {
+    "term": "Angular",
+    "description": "A platform and framework for building single-page client applications using HTML and TypeScript.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Frontend",
+    "thirdLevelCategory": "Frameworks"
+  },
+  {
+    "term": "Vue.js",
+    "description": "A progressive framework for building user interfaces.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Frontend",
+    "thirdLevelCategory": "Frameworks"
+  },
+  {
+    "term": "Docker",
+    "description": "A set of platform-as-a-service products that use OS-level virtualization to deliver software in packages called containers.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Deployment",
+    "thirdLevelCategory": "Containerization"
+  },
+  {
+    "term": "Kubernetes",
+    "description": "An open-source container-orchestration system for automating computer application deployment, scaling, and management.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Deployment",
+    "thirdLevelCategory": "Orchestration"
+  },
+  {
+    "term": "Microservices",
+    "description": "An architectural style that structures an application as a collection of loosely coupled services.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Architecture",
+    "thirdLevelCategory": "Design Patterns"
+  },
+  {
+    "term": "Monolithic Architecture",
+    "description": "An architectural style where an application is built as a single, indivisible unit.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Architecture",
+    "thirdLevelCategory": "Design Patterns"
+  },
+  {
+    "term": "Cookie",
+    "description": "A small piece of data sent from a website and stored on the user's computer by the user's web browser while the user is browsing.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Protocols",
+    "thirdLevelCategory": "State Management"
+  },
+  {
+    "term": "Session",
+    "description": "A way to store information (in variables) to be used across multiple pages on a server.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Protocols",
+    "thirdLevelCategory": "State Management"
+  },
+  {
+    "term": "Cache",
+    "description": "A hardware or software component that stores data so that future requests for that data can be served faster.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Performance",
+    "thirdLevelCategory": "Optimization"
+  },
+  {
+    "term": "Time Complexity",
+    "description": "The computational complexity that describes the amount of computer time it takes to run an algorithm.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Complexity",
+    "thirdLevelCategory": "Performance"
+  },
+  {
+    "term": "Space Complexity",
+    "description": "The amount of memory space required to solve an instance of the computational problem as a function of the input size.",
+    "firstLevelCategory": "Data Structures & Algorithms",
+    "secondLevelCategory": "Complexity",
+    "thirdLevelCategory": "Memory"
+  },
+  {
+    "term": "Procedural Programming",
+    "description": "A programming paradigm based upon the concept of procedure calls, where statements are structured into procedures (or subroutines).",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Procedural",
+    "thirdLevelCategory": "Core Concepts"
+  },
+  {
+    "term": "Operator",
+    "description": "A symbol that tells the compiler or interpreter to perform specific mathematical, relational, or logical operations.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Language Fundamentals",
+    "thirdLevelCategory": "Expressions"
+  },
+  {
+    "term": "Expression",
+    "description": "A combination of one or more constants, variables, operators, and functions that the programming language interprets and computes to produce another value.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Language Fundamentals",
+    "thirdLevelCategory": "Expressions"
+  },
+  {
+    "term": "Deployment",
+    "description": "The process of making a software system available for use.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Deployment",
+    "thirdLevelCategory": "Process"
+  },
+  {
+    "term": "Middleware",
+    "description": "Software that lies between an operating system and the applications running on it, enabling communication and data management.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Backend",
+    "thirdLevelCategory": "Architecture"
+  },
+  {
+    "term": "Endpoint",
+    "description": "One end of a communication channel. When an API interacts with another system, the touchpoints of this communication are considered endpoints.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Architecture",
+    "thirdLevelCategory": "Integration"
+  },
+  {
+    "term": "Type System",
+    "description": "A set of rules that assigns a property called type to the various constructs of a computer program.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Data Types",
+    "thirdLevelCategory": "Typing"
+  },
+  {
+    "term": "Static Typing",
+    "description": "Type checking is performed during compile-time.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Data Types",
+    "thirdLevelCategory": "Typing"
+  },
+  {
+    "term": "Dynamic Typing",
+    "description": "Type checking is performed at run-time.",
+    "firstLevelCategory": "Core Concepts",
+    "secondLevelCategory": "Data Types",
+    "thirdLevelCategory": "Typing"
+  },
+  {
+    "term": "Lambda Function",
+    "description": "An anonymous function that can be defined without being bound to an identifier.",
+    "firstLevelCategory": "Programming Paradigms",
+    "secondLevelCategory": "Functional",
+    "thirdLevelCategory": "Core Concepts"
+  },
+  {
+    "term": "Environment Variable",
+    "description": "A variable whose value is set outside the program, typically through functionality built into the operating system or microservice.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Configuration",
+    "thirdLevelCategory": "Runtime"
+  },
+  {
+    "term": "CLI (Command-Line Interface)",
+    "description": "A text-based user interface used to view and manage computer files.",
+    "firstLevelCategory": "Tools & Technologies",
+    "secondLevelCategory": "Interfaces",
+    "thirdLevelCategory": "Text-Based"
+  },
+  {
+    "term": "HTTPS",
+    "description": "An extension of the Hypertext Transfer Protocol for secure communication over a computer network.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Protocols",
+    "thirdLevelCategory": "Security"
+  },
+  {
+    "term": "Authentication",
+    "description": "The process of verifying the identity of a user or process.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Security",
+    "thirdLevelCategory": "Access Control"
+  },
+  {
+    "term": "Authorization",
+    "description": "The process of specifying access rights/privileges to resources.",
+    "firstLevelCategory": "Web Development",
+    "secondLevelCategory": "Security",
+    "thirdLevelCategory": "Access Control"
+  },
+  {
+    "term": "Regression Testing",
+    "description": "A type of software testing to confirm that a recent program or code change has not adversely affected existing features.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Testing",
+    "thirdLevelCategory": "Types"
+  },
+  {
+    "term": "Code Review",
+    "description": "A software quality assurance activity in which one or several humans check a program mainly by viewing and reading parts of its source code.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Quality Assurance",
+    "thirdLevelCategory": "Practices"
+  },
+  {
+    "term": "Refactoring",
+    "description": "The process of restructuring existing computer code—changing the factoring—without changing its external behavior.",
+    "firstLevelCategory": "Software Development Lifecycle",
+    "secondLevelCategory": "Maintenance",
+    "thirdLevelCategory": "Code Improvement"
+  }
+]
