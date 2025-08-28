@@ -600,9 +600,6 @@ namespace QuestPDF.Drawing
             {
                 if (element is SemanticTag semanticTag)
                 {
-                    if (semanticTag.TagType == "Span")
-                        semanticTag.UpdateAlternativeText();
-                    
                     var result = SkPdfTag.Create(semanticTag.Id, semanticTag.TagType, semanticTag.Alt, semanticTag.Lang);
                     result.SetChildren(GetSkiaTagFor(semanticTag.Child).ToArray());
                     yield return result;
