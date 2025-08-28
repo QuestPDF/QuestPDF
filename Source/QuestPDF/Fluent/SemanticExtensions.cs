@@ -1,7 +1,12 @@
 using System;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent;
+
+// TODO: is the Semantic* convention really needed? 
+// Is it possibly to simply introduce new APis such as Part, Article, Division, Caption, Header, etc. ?
+// Could some of semantic tags be applied automatically?
 
 public static class SemanticExtensions
 {
@@ -106,8 +111,6 @@ public static class SemanticExtensions
     }
     
     #endregion
-    
-    // and more
     
     #region Headers
     
@@ -307,19 +310,51 @@ public static class SemanticExtensions
     
     #endregion
     
+    public static IContainer Artifact(this IContainer container, int nodeId)
+    {
+        return container.SemanticTag("Code");
+    }
+    
+    public static IContainer ArtifactOther(this IContainer container)
+    {
+        return container.Artifact(SkSemanticNodeSpecialId.OtherArtifact);
+    }
+    
+    public static IContainer ArtifactPagination(this IContainer container)
+    {
+        return container.Artifact(SkSemanticNodeSpecialId.PaginationArtifact);
+    }
+    
+    public static IContainer ArtifactPaginationHeader(this IContainer container)
+    {
+        return container.Artifact(SkSemanticNodeSpecialId.PaginationHeaderArtifact);
+    }
+    
+    public static IContainer ArtifactPaginationFooter(this IContainer container)
+    {
+        return container.Artifact(SkSemanticNodeSpecialId.PaginationFooterArtifact);
+    }
+    
+    public static IContainer ArtifactPaginationWatermark(this IContainer container)
+    {
+        return container.Artifact(SkSemanticNodeSpecialId.PaginationWatermarkArtifact);
+    }
+    
+    public static IContainer ArtifactLayout(this IContainer container)
+    {
+        return container.Artifact(SkSemanticNodeSpecialId.LayoutArtifact);
+    }
+    
+    public static IContainer ArtifactPage(this IContainer container)
+    {
+        return container.Artifact(SkSemanticNodeSpecialId.PageArtifact);
+    }
+    
+    public static IContainer ArtifactBackground(this IContainer container)
+    {
+        return container.Artifact(SkSemanticNodeSpecialId.BackgroundArtifact);
+    }
+    
     // TODO: links?
     // TODO: ActualText?
-    
-    // TODO: special values for note ids?
-    // namespace NodeID {
-    //     static const constexpr int Nothing = 0;
-    //     static const constexpr int OtherArtifact = -1;
-    //     static const constexpr int PaginationArtifact = -2;
-    //     static const constexpr int PaginationHeaderArtifact = -3;
-    //     static const constexpr int PaginationFooterArtifact = -4;
-    //     static const constexpr int PaginationWatermarkArtifact = -5;
-    //     static const constexpr int LayoutArtifact = -6;
-    //     static const constexpr int PageArtifact = -7;
-    //     static const constexpr int BackgroundArtifact = -8;
-    // }
 }
