@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
@@ -10,6 +11,39 @@ namespace QuestPDF.Fluent
 {
     public static class GenerateExtensions
     {
+        static GenerateExtensions()
+        {
+            ClearGenerateAndShowFiles();
+        }
+        
+        #region Genearate And Show Configuration
+
+        private static readonly Random Random = new();
+        private static string GetGenerateAndShowPath = Path.GetTempPath();
+        private const string GenerateAndShowNamePrefix = "QuestPDF Preview";
+
+        private static void ClearGenerateAndShowFiles()
+        {
+            var legacyPreviewFiles = Directory
+                .GetFiles(GetGenerateAndShowPath, $"{GenerateAndShowNamePrefix} *")
+                .Where(x => DateTime.UtcNow - new FileInfo(x).LastAccessTimeUtc > TimeSpan.FromHours(1));
+            
+            foreach (var legacyPreviewFile in legacyPreviewFiles)
+            {
+                try
+                {
+                    if (File.Exists(legacyPreviewFile))
+                        File.Delete(legacyPreviewFile);
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+
+        #endregion
+        
         #region PDF
         
         /// <summary>
@@ -44,16 +78,13 @@ namespace QuestPDF.Fluent
             skiaStream.Flush();
         }
         
-        private static int GenerateAndShowCounter = 0;
-        
         /// <summary>
         /// Generates the document in PDF format, saves it in temporary file, and then opens it with the default application.
         /// </summary>
         public static void GeneratePdfAndShow(this IDocument document)
         {
-            GenerateAndShowCounter++;
+            var filePath = Path.Combine(GetGenerateAndShowPath, $"{GenerateAndShowNamePrefix} {Random.Next()}.pdf");
             
-            var filePath = Path.Combine(Path.GetTempPath(), $"QuestPDF Document {GenerateAndShowCounter}.pdf");
             document.GeneratePdf(filePath);
             Helpers.Helpers.OpenFileUsingDefaultProgram(filePath);
         }
@@ -114,9 +145,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public static void GenerateXpsAndShow(this IDocument document)
         {
-            GenerateAndShowCounter++;
-            
-            var filePath = Path.Combine(Path.GetTempPath(), $"QuestPDF Document {GenerateAndShowCounter}.xps");
+            var filePath = Path.Combine(GetGenerateAndShowPath, $"{GenerateAndShowNamePrefix} {Random.Next()}.xps");
             document.GenerateXps(filePath);
             Helpers.Helpers.OpenFileUsingDefaultProgram(filePath);
         }
