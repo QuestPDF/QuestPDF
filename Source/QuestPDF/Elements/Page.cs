@@ -37,12 +37,10 @@ namespace QuestPDF.Elements
                 {
                     layers.Layer()
                         .ZIndex(int.MinValue)
-                        .ArtifactBackground()
                         .Background(BackgroundColor);
                     
                     layers
                         .Layer()
-                        .ArtifactBackground()
                         .Repeat()
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Background.ToString())
                         .Element(Background);
@@ -85,7 +83,6 @@ namespace QuestPDF.Elements
                     
                     layers
                         .Layer()
-                        .ArtifactPaginationWatermark()
                         .Repeat()
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Foreground.ToString())
                         .Element(Foreground);
