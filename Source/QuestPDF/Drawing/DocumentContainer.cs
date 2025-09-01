@@ -22,7 +22,9 @@ namespace QuestPDF.Drawing
                 if (Pages.Count == 0)
                     return;
 
-                container = container.DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Document.ToString());
+                container = container
+                    .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Document.ToString())
+                    .SemanticDocument();
                 
                 if (Pages.Count == 1)
                 {
