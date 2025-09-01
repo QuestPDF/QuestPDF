@@ -566,7 +566,7 @@ namespace QuestPDF.Drawing
 
             static IEnumerable<SkPdfTag> GetSkiaTagFor(Element element)
             {
-                if (element is SemanticTag semanticTag)
+                if (element is SemanticTag semanticTag && semanticTag.Id > 0)
                 {
                     var result = SkPdfTag.Create(semanticTag.Id, semanticTag.TagType, semanticTag.Alt, semanticTag.Lang);
                     result.SetChildren(GetSkiaTagFor(semanticTag.Child).ToArray());
