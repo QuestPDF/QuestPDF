@@ -24,7 +24,7 @@ namespace QuestPDF.Drawing
 
                 container = container
                     .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Document.ToString())
-                    .SemanticPart();
+                    .SemanticDocument();
                 
                 if (Pages.Count == 1)
                 {
