@@ -3,7 +3,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal class LayoutArtifact : ContainerElement
+internal class ArtifactTag : ContainerElement
 {
     public int Id { get; set; }
     

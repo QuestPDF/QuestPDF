@@ -3,11 +3,11 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent;
 
-public static class LayoutArtifactExtensions
+public static class ArtifactExtensions
 {
     private static IContainer Artifact(this IContainer container, int nodeId)
     {
-        return container.Element(new Elements.LayoutArtifact
+        return container.Element(new Elements.ArtifactTag
         {
             Id = nodeId
         });
