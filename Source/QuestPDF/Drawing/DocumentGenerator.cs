@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using QuestPDF.Companion;
 using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Drawing.Exceptions;
@@ -28,33 +27,9 @@ namespace QuestPDF.Drawing
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
-            
-            using var semanticTree = GetSemanticTree(document);
-            
-            using var canvas = new PdfDocumentCanvas(stream, metadata, settings, semanticTree);
-            RenderDocument(canvas, document, settings);
 
-            static SkPdfTag GetSemanticTree(IDocument document)
-            {
-                // TODO: optimize semantic tree generation
-                // this implementation creates entire document structure only for semantic tree generation,
-                // and then disposes everything, instead of reusing the same structure also for document rendering
-                
-                // TODO: better handle the Lazy element
-                // with this implementation, the entire document is materialized for semantic tree generation, and the Lazy element does not optimize the memory usage
-                // most likely, the Lazy element should be aware of semantic tree generation, or there should be an addition structure, e.g. SemanticLazy or even SemanticLazyProxy
-                
-                // TODO: can this operation be handled during FreeCanvas drawing?
-                
-                // TODO: does caching operation via SkPicture support setting semantic node id?
-                
-                var container = new DocumentContainer();
-                document.Compose(container);
-            
-                var content = container.Compose();
-                content.PopulateSemanticTagIds();
-                return content.ExtractStructuralInformation();
-            }
+            using var canvas = new PdfDocumentCanvas(stream, metadata, settings);
+            RenderDocument(canvas, document, settings);
         }
         
         internal static void GenerateXps(SkWriteStream stream, IDocument document)
@@ -122,35 +97,34 @@ namespace QuestPDF.Drawing
 
         private static void RenderDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
         {
-            canvas.BeginDocument();
-        
-            if (document is MergedDocument mergedDocument)
-                RenderMergedDocument(canvas, mergedDocument, settings);
-        
-            else
-                RenderSingleDocument(canvas, document, settings);
-        
-            canvas.EndDocument();
-        }
-
-        private static void RenderSingleDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
-        {
+            // TODO: handle MergedDocument
+            
             var useOriginalImages = canvas is ImageDocumentCanvas;
 
             var content = ConfigureContent(document, settings, useOriginalImages);
-            
-            // TODO: this step may not be required if document structure is used for both: semantic tree generation and document rendering
-            content.PopulateSemanticTagIds();
             
             if (canvas is CompanionDocumentCanvas)
                 content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
             
             try
             {
+                var semanticTreeManager = new SemanticTreeManager();
+                content.InjectSemanticTreeManager(semanticTreeManager);
+                
                 var pageContext = new PageContext();
                 RenderPass(pageContext, new FreeDocumentCanvas(), content);
                 pageContext.ProceedToNextRenderingPhase();
+                
+                var semanticTree = semanticTreeManager.GetSemanticTree();
+                
+                if (semanticTree != null)
+                    canvas.SetSemanticTree(semanticTree);
+                
+                semanticTreeManager.Reset();
+                
+                canvas.BeginDocument();
                 RenderPass(pageContext, canvas, content);
+                canvas.EndDocument();
             
                 if (canvas is CompanionDocumentCanvas companionCanvas)
                     companionCanvas.Hierarchy = content.ExtractHierarchy();
@@ -158,62 +132,6 @@ namespace QuestPDF.Drawing
             finally
             {
                 content.ReleaseDisposableChildren();
-            }
-        }
-        
-        private static void RenderMergedDocument(IDocumentCanvas canvas, MergedDocument document, DocumentSettings settings)
-        {
-            var useOriginalImages = canvas is ImageDocumentCanvas;
-            
-            var documentParts = Enumerable
-                .Range(0, document.Documents.Count)
-                .Select(index => new
-                {
-                    DocumentId = index,
-                    Content = ConfigureContent(document.Documents[index], settings, useOriginalImages)
-                })
-                .ToList();
-            
-            try
-            {
-                if (document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous)
-                {
-                    var documentPageContext = new PageContext();
-
-                    foreach (var documentPart in documentParts)
-                    {
-                        documentPageContext.SetDocumentId(documentPart.DocumentId);
-                        RenderPass(documentPageContext, new FreeDocumentCanvas(), documentPart.Content);
-                    }
-                
-                    documentPageContext.ProceedToNextRenderingPhase();
-
-                    foreach (var documentPart in documentParts)
-                    {
-                        documentPageContext.SetDocumentId(documentPart.DocumentId);
-                        RenderPass(documentPageContext, canvas, documentPart.Content);
-                        documentPart.Content.ReleaseDisposableChildren();
-                    }
-                }
-                else
-                {
-                    foreach (var documentPart in documentParts)
-                    {
-                        var pageContext = new PageContext();
-                        pageContext.SetDocumentId(documentPart.DocumentId);
-                    
-                        RenderPass(pageContext, new FreeDocumentCanvas(), documentPart.Content);
-                        pageContext.ProceedToNextRenderingPhase();
-                        RenderPass(pageContext, canvas, documentPart.Content);
-                    
-                        documentPart.Content.ReleaseDisposableChildren();
-                    }
-                }
-            }
-            catch
-            {
-                documentParts.ForEach(x => x.Content.ReleaseDisposableChildren());
-                throw;
             }
         }
 
@@ -358,6 +276,24 @@ namespace QuestPDF.Drawing
             }
         }
 
+        internal static void InjectSemanticTreeManager(this Element content, SemanticTreeManager semanticTreeManager)
+        {
+            content.VisitChildren(x =>
+            {
+                if (x == null)
+                    return;
+                
+                if (x is SemanticTag semanticTag)
+                    semanticTag.SemanticTreeManager = semanticTreeManager;
+                
+                else if (x is Lazy lazy)
+                    lazy.SemanticTreeManager = semanticTreeManager;
+                
+                else if (x is DynamicHost dynamicHost)
+                    dynamicHost.SemanticTreeManager = semanticTreeManager;
+            });
+        }
+        
         internal static void InjectDependencies(this Element content, IPageContext pageContext, IDrawingCanvas canvas)
         {
             content.VisitChildren(x =>
@@ -533,55 +469,6 @@ namespace QuestPDF.Drawing
             {
                 foreach (var child in content.GetChildren())
                     ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
-            }
-        }
-
-        internal static void PopulateSemanticTagIds(this Element element)
-        {
-            var currentId = 1;
-            Traverse(element);  
-            
-            void Traverse(Element element)
-            {
-                if (element is SemanticTag { Id: 0 } semanticTag)
-                {
-                    semanticTag.Id = currentId;
-                    currentId++;
-                }
-
-                if (element is ContainerElement container)
-                {
-                    Traverse(container.Child);
-                    return;
-                }
-                
-                foreach (var child in element.GetChildren())
-                    Traverse(child);
-            }
-        }
-
-        internal static SkPdfTag ExtractStructuralInformation(this Element root)
-        {
-            return GetSkiaTagFor(root).First();
-
-            static IEnumerable<SkPdfTag> GetSkiaTagFor(Element element)
-            {
-                if (element is SemanticTag { Id: > 0 } semanticTag)
-                {
-                    var result = SkPdfTag.Create(semanticTag.Id, semanticTag.TagType, semanticTag.Alt, semanticTag.Lang);
-                    result.SetChildren(GetSkiaTagFor(semanticTag.Child).ToArray());
-                    yield return result;
-                }
-                else if (element is ContainerElement container)
-                {
-                    foreach (var child in GetSkiaTagFor(container.Child))
-                        yield return child;
-                }
-                else
-                {
-                    foreach (var child in element.GetChildren().SelectMany(GetSkiaTagFor))
-                        yield return child;
-                }
             }
         }
     }

@@ -9,20 +9,32 @@ namespace QuestPDF.Elements;
 internal class SemanticTag : ContainerElement
 {
     public SemanticTreeManager SemanticTreeManager { get; set; }
+    public SemanticTreeNode? SemanticTreeNode { get; set; }
 
-    public int Id { get; set; } = 0;
     public string TagType { get; set; }
     public string? Alt { get; set; }
     public string? Lang { get; set; }
-    
+
     internal override void Draw(Size availableSpace)
     {
-        if (Id == 0)
-            Id = SemanticTreeManager.GetNextNodeId();
-
-        SemanticTreeManager.AddNode(null);
-        Canvas.SetSemanticNodeId(Id);
+        if (SemanticTreeNode == null)
+        {
+            var id = SemanticTreeManager.GetNextNodeId();
+            
+            SemanticTreeNode = new SemanticTreeNode
+            {
+                NodeId = id,
+                Type = TagType,
+                Alt = Alt,
+                Lang = Lang
+            };
+            
+            SemanticTreeManager.AddNode(SemanticTreeNode);
+        }
+        
+        SemanticTreeManager.PushOnStack(SemanticTreeNode);
+        Canvas.SetSemanticNodeId(SemanticTreeNode.NodeId);
         Child?.Draw(availableSpace);
-        SemanticTreeManager.UndoNesting();
+        SemanticTreeManager.PopStack();
     }
 }

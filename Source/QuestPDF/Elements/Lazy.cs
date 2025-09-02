@@ -8,6 +8,8 @@ namespace QuestPDF.Elements;
 
 internal sealed class Lazy : ContainerElement, IContentDirectionAware, IStateful
 {
+    internal SemanticTreeManager SemanticTreeManager { get; set; }
+    
     public Action<IContainer> ContentSource { get; set; }
     public bool IsCacheable { get; set; }
 
@@ -61,6 +63,7 @@ internal sealed class Lazy : ContainerElement, IContentDirectionAware, IStateful
         container.ApplyDefaultImageConfiguration(ImageTargetDpi.Value, ImageCompressionQuality.Value, UseOriginalImage);
             
         container.InjectDependencies(PageContext, Canvas);
+        container.InjectSemanticTreeManager(SemanticTreeManager);
         container.VisitChildren(x => (x as IStateful)?.ResetState());
     }
     

@@ -72,7 +72,6 @@ public class SemanticExamples
                     
                     page.Content()
                         .PaddingVertical(24)
-                        .SemanticDocument()
                         .Column(column =>
                         {
                             foreach (var category1 in categories)

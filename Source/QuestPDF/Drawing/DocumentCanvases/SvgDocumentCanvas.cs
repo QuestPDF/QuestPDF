@@ -40,6 +40,11 @@ namespace QuestPDF.Drawing.DocumentCanvases
         
         #region IDocumentCanvas
         
+        public void SetSemanticTree(SemanticTreeNode semanticTree)
+        {
+            
+        }
+        
         public void BeginDocument()
         {
             
