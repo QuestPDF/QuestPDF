@@ -7,7 +7,7 @@ internal sealed class FreeDocumentCanvas : IDocumentCanvas
 {
     private FreeDrawingCanvas DrawingCanvas { get; } = new();
         
-    public void SetSemanticTree(SemanticTreeNode semanticTree)
+    public void SetSemanticTree(SemanticTreeNode? semanticTree)
     {
             
     }

@@ -116,11 +116,8 @@ namespace QuestPDF.Drawing
                 pageContext.ProceedToNextRenderingPhase();
                 
                 var semanticTree = semanticTreeManager.GetSemanticTree();
-                
-                if (semanticTree != null)
-                    canvas.SetSemanticTree(semanticTree);
-                
                 semanticTreeManager.Reset();
+                canvas.SetSemanticTree(semanticTree);
                 
                 canvas.BeginDocument();
                 RenderPass(pageContext, canvas, content);

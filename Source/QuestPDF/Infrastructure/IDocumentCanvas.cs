@@ -4,7 +4,7 @@ namespace QuestPDF.Infrastructure
 {
     internal interface IDocumentCanvas
     {
-        void SetSemanticTree(SemanticTreeNode semanticTree);
+        void SetSemanticTree(SemanticTreeNode? semanticTree);
         
         void BeginDocument();
         void EndDocument();

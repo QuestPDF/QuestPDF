@@ -92,8 +92,15 @@ namespace QuestPDF.Drawing.DocumentCanvases
         
         #region IDocumentCanvas
         
-        public void SetSemanticTree(SemanticTreeNode semanticTree)
+        public void SetSemanticTree(SemanticTreeNode? semanticTree)
         {
+            if (semanticTree == null)
+            {
+                SemanticTag?.Dispose();
+                SemanticTag = null;
+                return;
+            }
+            
             SemanticTag = Convert(semanticTree);
             
             static SkPdfTag Convert(SemanticTreeNode node)
