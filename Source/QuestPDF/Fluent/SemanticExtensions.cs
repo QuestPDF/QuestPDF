@@ -118,79 +118,74 @@ public static class SemanticExtensions
     #region Headers
     
     /// <summary>
-    /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
+    /// A label for a subdivision of a document's content.
+    /// It should be the first child of the division that it heads.
     /// </summary>
-    public static IContainer SemanticHeader(this IContainer container, string title)
+    public static IContainer SemanticHeader(this IContainer container)
     {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title cannot be null or empty.", nameof(title));
-
-        return container.SemanticTag("H", title);
+        return container.SemanticTag("H");
     }
     
-    private static IContainer SemanticHeader(this IContainer container, string title, int level)
+    private static IContainer SemanticHeader(this IContainer container, int level)
     {
-        if (string.IsNullOrWhiteSpace(title))
-            throw new ArgumentException("Title cannot be null or empty.", nameof(title));
-        
         if (level < 1 || level > 6)
             throw new ArgumentOutOfRangeException(nameof(level), "Header level must be between 1 and 6.");
 
-        return container.SemanticTag($"H{level}", title);
+        return container.SemanticTag($"H{level}");
     }
     
     /// <summary>
     /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
     /// A level 1 header - the highest level of heading.
     /// </summary>
-    public static IContainer SemanticHeader1(this IContainer container, string title)
+    public static IContainer SemanticHeader1(this IContainer container)
     {
-        return container.SemanticHeader(title, 1);
+        return container.SemanticHeader(1);
     }
     
     /// <summary>
     /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
     /// A level 2 header.
     /// </summary>
-    public static IContainer SemanticHeader2(this IContainer container, string title)
+    public static IContainer SemanticHeader2(this IContainer container)
     {
-        return container.SemanticHeader(title, 2);
+        return container.SemanticHeader(2);
     }
     
     /// <summary>
     /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
     /// A level 3 header.
     /// </summary>
-    public static IContainer SemanticHeader3(this IContainer container, string title)
+    public static IContainer SemanticHeader3(this IContainer container)
     {
-        return container.SemanticHeader(title, 3);
+        return container.SemanticHeader(3);
     }
     
     /// <summary>
     /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
     /// A level 4 header.
     /// </summary>
-    public static IContainer SemanticHeader4(this IContainer container, string title)
+    public static IContainer SemanticHeader4(this IContainer container)
     {
-        return container.SemanticHeader(title, 4);
+        return container.SemanticHeader(4);
     }
     
     /// <summary>
     /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
     /// A level 5 header.
     /// </summary>
-    public static IContainer SemanticHeader5(this IContainer container, string title)
+    public static IContainer SemanticHeader5(this IContainer container)
     {
-        return container.SemanticHeader(title, 5);
+        return container.SemanticHeader(5);
     }
     
     /// <summary>
     /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
     /// A level 6 header - the lowest level of heading.
     /// </summary>
-    public static IContainer SemanticHeader6(this IContainer container, string title)
+    public static IContainer SemanticHeader6(this IContainer container)
     {
-        return container.SemanticHeader(title, 6);
+        return container.SemanticHeader(6);
     }
     
     #endregion
