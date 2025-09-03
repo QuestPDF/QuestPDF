@@ -20,15 +20,10 @@ public static class SemanticExtensions
         });
     }
     
-    /// <summary>
-    /// A complete document.
-    /// This is the root element of any structure tree containing multiple parts or multiple articles.
-    /// </summary>
-    public static IContainer SemanticDocument(this IContainer container)
-    {
-        return container.SemanticTag("Document");
-    }
-    
+    // Structure type "Document" - implementation not needed
+    // The "Document" tag is required to be a root of the entire semantic tree
+    // It is already implemented as such in the SemanticTreeManager class
+
     /// <summary>
     /// A large-scale division of a document.
     /// This type of element is appropriate for grouping articles or sections.
@@ -78,6 +73,14 @@ public static class SemanticExtensions
     public static IContainer SemanticCaption(this IContainer container)
     {
         return container.SemanticTag("Caption");
+    }
+    
+    /// <summary>
+    /// A sequence of entries containing identifying text accompanied by reference elements that point out occurrences of the specified text in the main body of a document.
+    /// </summary>
+    public static IContainer SemanticIndex(this IContainer container, string language)
+    {
+        return container.SemanticTag("Index", language: language);
     }
     
     /// <summary>
@@ -340,6 +343,15 @@ public static class SemanticExtensions
     {
         return container.SemanticTag("Code");
     }
+
+    /// <summary>
+    /// Applies the semantic "Link" tag to the specified container.
+    /// This is used to signify that the content represents a link or hyperlink within a document.
+    /// </summary>
+    public static IContainer SemanticLink(this IContainer container)
+    {
+        return container.SemanticTag("Link");
+    }
     
     #endregion
     
@@ -374,7 +386,4 @@ public static class SemanticExtensions
     }
     
     #endregion
-    
-    // TODO: links?
-    // TODO: ActualText?
 }
