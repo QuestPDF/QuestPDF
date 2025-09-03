@@ -9,7 +9,7 @@ namespace QuestPDF.Drawing
 {
     internal sealed class DocumentContainer : IDocumentContainer
     {
-        internal List<IComponent> Pages { get; set; } = new List<IComponent>();
+        internal List<IComponent> Pages { get; set; } = [];
         
         internal Container Compose()
         {
@@ -24,7 +24,7 @@ namespace QuestPDF.Drawing
 
                 container = container
                     .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Document.ToString())
-                    .SemanticDocument();
+                    .SemanticPart();
                 
                 if (Pages.Count == 1)
                 {

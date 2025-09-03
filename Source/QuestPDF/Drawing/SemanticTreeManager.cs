@@ -17,6 +17,20 @@ class SemanticTreeManager
     private SemanticTreeNode? Root { get; set; }
     private Stack<SemanticTreeNode> Stack { get; set; } = [];
 
+    public SemanticTreeManager()
+    {
+        PopulateWithTopLevelNode();
+    }
+
+    private void PopulateWithTopLevelNode()
+    {
+        AddNode(new SemanticTreeNode
+        {
+            NodeId = GetNextNodeId(),
+            Type = "Document"
+        });
+    }
+    
     public int GetNextNodeId()
     {
         CurrentNodeId++;

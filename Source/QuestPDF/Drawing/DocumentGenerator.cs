@@ -97,7 +97,13 @@ namespace QuestPDF.Drawing
 
         private static void RenderDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
         {
-            // TODO: handle MergedDocument
+            if (document is MergedDocument mergedDocument)
+            {
+                RenderMergedDocument(canvas, mergedDocument, settings);
+                return;
+            }
+            
+            // TODO: handle Header nesting values
             
             var useOriginalImages = canvas is ImageDocumentCanvas;
 
@@ -129,6 +135,59 @@ namespace QuestPDF.Drawing
             finally
             {
                 content.ReleaseDisposableChildren();
+            }
+        }
+        
+        private static void RenderMergedDocument(IDocumentCanvas canvas, MergedDocument document, DocumentSettings settings)
+        {
+            var useOriginalImages = canvas is ImageDocumentCanvas;
+            
+            var sharedPageContent = new PageContext();
+            var useSharedPageContext = document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous;
+            
+            var documentParts = Enumerable
+                .Range(0, document.Documents.Count)
+                .Select(index => new
+                {
+                    DocumentId = index,
+                    Content = ConfigureContent(document.Documents[index], settings, useOriginalImages),
+                    PageContext = useSharedPageContext ? sharedPageContent : new PageContext()
+                })
+                .ToList();
+            
+            try
+            {
+                var semanticTreeManager = new SemanticTreeManager();
+
+                foreach (var documentPart in documentParts)
+                {
+                    documentPart.Content.InjectSemanticTreeManager(semanticTreeManager);
+                    documentPart.PageContext.SetDocumentId(documentPart.DocumentId);
+                }
+                
+                foreach (var documentPart in documentParts)
+                {
+                    RenderPass(documentPart.PageContext, new FreeDocumentCanvas(), documentPart.Content);
+                    documentPart.PageContext.ProceedToNextRenderingPhase();
+                }
+                
+                var semanticTree = semanticTreeManager.GetSemanticTree();
+                semanticTreeManager.Reset();
+                canvas.SetSemanticTree(semanticTree);
+                
+                canvas.BeginDocument();
+
+                foreach (var documentPart in documentParts)
+                {
+                    RenderPass(documentPart.PageContext, canvas, documentPart.Content);
+                    documentPart.Content.ReleaseDisposableChildren();
+                }
+                
+                canvas.EndDocument();
+            }
+            finally
+            {
+                documentParts.ForEach(x => x.Content.ReleaseDisposableChildren());
             }
         }
 
