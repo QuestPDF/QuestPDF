@@ -70,6 +70,8 @@ namespace QuestPDF.Fluent
     
     public sealed class TableDescriptor
     {
+        private bool EnableAutomatedSemanticTagging { get; set; } = false;
+        
         private Table HeaderTable { get; } = new();
         private Table ContentTable { get; } = new();
         private Table FooterTable { get; } = new();
@@ -103,6 +105,14 @@ namespace QuestPDF.Fluent
         public void ExtendLastCellsToTableBottom()
         {
             ContentTable.ExtendLastCellsToTableBottom = true;
+        }
+
+        /// <summary>
+        /// Enables automated application of semantic tags for the table, which enhances accessibility and improves the document's structure for assistive technologies.
+        /// </summary>
+        public void ApplySemanticTags()
+        {
+            EnableAutomatedSemanticTagging = true;
         }
         
         /// <summary>
@@ -149,28 +159,46 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
 
+            var hasHeader = HeaderTable.Cells.Any();
+            var hasFooter = FooterTable.Cells.Any();
+            
             ConfigureTable(HeaderTable);
             ConfigureTable(ContentTable);
             ConfigureTable(FooterTable);
             
             container
+                .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTable() : x)
                 .Decoration(decoration =>
                 {
-                    decoration.Before().Element(HeaderTable);
-                    decoration.Content().ShowIf(ContentTable.Cells.Any()).Element(ContentTable);
-                    decoration.After().Element(FooterTable);
+                    decoration
+                        .Before()
+                        .ShowIf(hasHeader)
+                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTableHeader() : x)
+                        .Element(HeaderTable);
+                    
+                    decoration
+                        .Content()
+                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTableBody() : x)
+                        .ShowIf(ContentTable.Cells.Any())
+                        .Element(ContentTable);
+                    
+                    decoration
+                        .After()
+                        .ShowIf(hasFooter)
+                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTableFooter() : x)
+                        .Element(FooterTable);
                 });
 
             return container;
-        }
-
-        private static void ConfigureTable(Table table)
-        {
-            if (!table.Columns.Any())
-                throw new DocumentComposeException($"Table should have at least one column. Please call the '{nameof(ColumnsDefinition)}' method to define columns.");
             
-            table.PlanCellPositions();
-            table.ValidateCellPositions();
+            static void ConfigureTable(Table table)
+            {
+                if (!table.Columns.Any())
+                    throw new DocumentComposeException($"Table should have at least one column. Please call the '{nameof(ColumnsDefinition)}' method to define columns.");
+            
+                table.PlanCellPositions();
+                table.ValidateCellPositions();
+            }
         }
     }
     
