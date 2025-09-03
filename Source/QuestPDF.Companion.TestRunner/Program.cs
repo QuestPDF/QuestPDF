@@ -8,50 +8,6 @@ using QuestPDF.ReportSample.Layouts;
 
 Settings.License = LicenseType.Professional;
 
-Document
-    .Create(container =>
-    {
-        container.Page(page =>
-        {
-            page.Content()
-                .Padding(1, Unit.Centimetre)
-                .SemanticDocument()
-                .SemanticPart()
-                .SemanticParagraph()
-                // .DefaultTextStyle(x => x.DisableFontFeature(FontFeatures.StandardLigatures))
-                .Column(d =>
-                {
-                    d.Item().SemanticLanguage("en-US").SemanticSpan().Text(text =>
-                    {
-                        text.Span("This is a simple document with a Polish translation - isn't it nice, huh?");
-                    });
-                    
-                    d.Item().SemanticLanguage("pl-PL").SemanticSpan().Text(text =>
-                    {
-                        text.Span("To jest przykład dokumentu zawierającego tłumaczenie w języku polskim");
-                    });
-                    
-                    // d.Item().SemanticHeader("Top-Level Header").Text("Top-Level Header");
-                    //
-                    // d.Item().SemanticPart().Column(p =>
-                    // {
-                    //     p.Item().SemanticHeader("Second-Level Header 1").Text("Second-Level Header 1");
-                    //     p.Item().SemanticParagraph().Text(Placeholders.LoremIpsum());
-                    // });
-                    //
-                    // d.Item().SemanticPart().Column(p =>
-                    // {
-                    //     p.Item().SemanticHeader("Second-Level Header 2").Text("Second-Level Header 2");
-                    //     p.Item().SemanticParagraph().Text(Placeholders.LoremIpsum());
-                    // });
-                });
-        });
-    })
-    .WithMetadata(new DocumentMetadata() { Title = "Dupa!", Language = "en-US" })
-    .GeneratePdfAndShow();
-
-return;
-
 //await RunGenericException();
 //await RunLayoutError();
 await RunSimpleDocument();
