@@ -20,7 +20,7 @@ namespace QuestPDF.Drawing
             void ComposeContainer(IContainer container)
             {
                 if (Pages.Count == 0)
-                    return;
+                    Pages.Add(new Page());
 
                 container = container
                     .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Document.ToString())
