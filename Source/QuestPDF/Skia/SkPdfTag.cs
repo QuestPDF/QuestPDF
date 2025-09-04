@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace QuestPDF.Skia;
 
@@ -39,6 +40,14 @@ internal sealed class SkPdfTag : IDisposable
         Marshal.FreeHGlobal(unmanagedArray);
     }
 
+    public void AddAttribute(string owner, string name, int value)
+    {
+        // for some reason, other marshaling approaches do not work 
+        var ownerBytes = Encoding.ASCII.GetBytes(owner + "\0");
+        var nameBytes = Encoding.ASCII.GetBytes(name + "\0");
+        API.pdf_structure_element_add_attribute_integer(Instance, ownerBytes, nameBytes, value);
+    }
+
     ~SkPdfTag()
     {
         this.WarnThatFinalizerIsReached();
@@ -69,6 +78,9 @@ internal sealed class SkPdfTag : IDisposable
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void pdf_structure_element_set_children(IntPtr element, IntPtr children, int count);
+        
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void pdf_structure_element_add_attribute_integer(IntPtr element, byte[] owner, byte[] name, int value);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void pdf_structure_element_delete(IntPtr element);

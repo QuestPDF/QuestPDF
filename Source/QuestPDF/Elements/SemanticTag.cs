@@ -9,7 +9,7 @@ namespace QuestPDF.Elements;
 internal class SemanticTag : ContainerElement
 {
     public SemanticTreeManager SemanticTreeManager { get; set; }
-    public SemanticTreeNode? SemanticTreeNode { get; set; }
+    public SemanticTreeNode? SemanticTreeNode { get; private set; }
 
     public string TagType { get; set; }
     public string? Alt { get; set; }

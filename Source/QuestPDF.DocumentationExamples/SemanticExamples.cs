@@ -69,16 +69,16 @@ public class SemanticExamples
                                 // please be sure to call the 'header' handler!
 
                                 header.Cell().RowSpan(2).Element(CellStyle).ExtendHorizontal().AlignLeft()
-                                    .SemanticParagraph().Text("Document type").Bold();
+                                    .Text("Document type").Bold();
 
-                                header.Cell().ColumnSpan(2).Element(CellStyle).SemanticParagraph().Text("Inches").Bold();
-                                header.Cell().ColumnSpan(2).Element(CellStyle).SemanticParagraph().Text("Points").Bold();
+                                header.Cell().ColumnSpan(2).Element(CellStyle).Text("Inches").Bold();
+                                header.Cell().ColumnSpan(2).Element(CellStyle).Text("Points").Bold();
 
-                                header.Cell().Element(CellStyle).SemanticParagraph().Text("Width");
-                                header.Cell().Element(CellStyle).SemanticParagraph().Text("Height");
+                                header.Cell().Element(CellStyle).Text("Width");
+                                header.Cell().Element(CellStyle).Text("Height");
 
-                                header.Cell().Element(CellStyle).SemanticParagraph().Text("Width");
-                                header.Cell().Element(CellStyle).SemanticParagraph().Text("Height");
+                                header.Cell().Element(CellStyle).Text("Width");
+                                header.Cell().Element(CellStyle).Text("Height");
 
                                 // you can extend existing styles by creating additional methods
                                 IContainer CellStyle(IContainer container) =>
@@ -87,15 +87,15 @@ public class SemanticExamples
 
                             foreach (var page in pageSizes)
                             {
-                                table.Cell().Element(CellStyle).ExtendHorizontal().AlignLeft().SemanticParagraph().Text(page.name);
+                                table.Cell().Element(CellStyle).ExtendHorizontal().AlignLeft().Text(page.name);
 
                                 // inches
-                                table.Cell().Element(CellStyle).SemanticParagraph().Text(page.width);
-                                table.Cell().Element(CellStyle).SemanticParagraph().Text(page.height);
+                                table.Cell().Element(CellStyle).Text(page.width);
+                                table.Cell().Element(CellStyle).Text(page.height);
 
                                 // points
-                                table.Cell().Element(CellStyle).SemanticParagraph().Text(page.width * inchesToPoints);
-                                table.Cell().Element(CellStyle).SemanticParagraph().Text(page.height * inchesToPoints);
+                                table.Cell().Element(CellStyle).Text(page.width * inchesToPoints);
+                                table.Cell().Element(CellStyle).Text(page.height * inchesToPoints);
 
                                 IContainer CellStyle(IContainer container) =>
                                     DefaultCellStyle(container, Colors.White).ShowOnce();

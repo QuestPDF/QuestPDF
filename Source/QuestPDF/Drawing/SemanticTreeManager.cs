@@ -9,6 +9,14 @@ class SemanticTreeNode
     public string? Alt { get; set; }
     public string? Lang { get; set; }
     public ICollection<SemanticTreeNode> Children { get; } = [];
+    public ICollection<Attribute> Attributes { get; } = [];
+
+    public class Attribute
+    {
+        public string Owner { get; set; }
+        public string Name { get; set; }
+        public object Value { get; set; }
+    }
 }
 
 class SemanticTreeManager

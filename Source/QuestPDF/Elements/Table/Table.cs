@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
@@ -380,9 +381,33 @@ namespace QuestPDF.Elements.Table
                         continue;
                     
                     semanticTag.RegisterCurrentSemanticNode();
+                    AssignCellAttributes(tableCell, semanticTag);
                 }
                 
                 SemanticTreeManager.PopStack();
+            }
+
+            void AssignCellAttributes(TableCell tableCell, SemanticTag semanticTag)
+            {
+                if (tableCell.ColumnSpan > 1)
+                {
+                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    {
+                        Owner = "Table",
+                        Name = "ColSpan",
+                        Value = tableCell.ColumnSpan
+                    });
+                }
+
+                if (tableCell.RowSpan > 1)
+                {
+                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    {
+                        Owner = "Table",
+                        Name = "RowSpan",
+                        Value = tableCell.RowSpan
+                    });
+                }
             }
         }
         
