@@ -110,6 +110,7 @@ namespace QuestPDF.Elements.Table
         internal override void Draw(Size availableSpace)
         {
             Initialize();
+            RegisterSemanticTree();
             
             if (IsRendered)
                 return;
@@ -352,6 +353,39 @@ namespace QuestPDF.Elements.Table
             CurrentRow = tableState.CurrentRow;
         }
     
+        #endregion
+        
+        #region Semantic
+        
+        internal SemanticTreeManager SemanticTreeManager { get; set; } = new();
+
+        private void RegisterSemanticTree()
+        {
+            foreach (var tableRow in Cells.GroupBy(x => x.Row))
+            {
+                var rowSemanticTreeNode = new SemanticTreeNode()
+                {
+                    NodeId = SemanticTreeManager.GetNextNodeId(), 
+                    Type = "TR"
+                };
+                
+                SemanticTreeManager.AddNode(rowSemanticTreeNode);
+                SemanticTreeManager.PushOnStack(rowSemanticTreeNode);
+                
+                foreach (var tableCell in tableRow.OrderBy(x => x.Column))
+                {
+                    var semanticTag = tableCell.Child as SemanticTag;
+                    
+                    if (semanticTag == null)
+                        continue;
+                    
+                    semanticTag.RegisterCurrentSemanticNode();
+                }
+                
+                SemanticTreeManager.PopStack();
+            }
+        }
+        
         #endregion
     }
 }

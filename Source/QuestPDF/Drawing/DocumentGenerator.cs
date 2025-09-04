@@ -6,6 +6,7 @@ using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
+using QuestPDF.Elements.Table;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Helpers;
@@ -347,6 +348,9 @@ namespace QuestPDF.Drawing
                 
                 else if (x is DynamicHost dynamicHost)
                     dynamicHost.SemanticTreeManager = semanticTreeManager;
+                
+                else if (x is Table table)
+                    table.SemanticTreeManager = semanticTreeManager;
             });
         }
         

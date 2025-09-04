@@ -59,6 +59,11 @@ class SemanticTreeManager
         Stack.Pop();
     }
     
+    public SemanticTreeNode PeekStack()
+    {
+        return Stack.Peek();
+    }
+    
     public void Reset()
     {
         CurrentNodeId = 0;

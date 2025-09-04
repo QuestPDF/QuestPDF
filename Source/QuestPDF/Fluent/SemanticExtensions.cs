@@ -305,7 +305,7 @@ public static class SemanticExtensions
     /// </summary>
     public static IContainer SemanticTableFooter(this IContainer container)
     {
-        return container.SemanticTag("TFood");
+        return container.SemanticTag("TFoot");
     }
     
     #endregion

@@ -162,7 +162,7 @@ namespace QuestPDF.Fluent
             var hasHeader = HeaderTable.Cells.Any();
             var hasFooter = FooterTable.Cells.Any();
             
-            ConfigureTable(HeaderTable);
+            ConfigureTable(HeaderTable, isHeader: true);
             ConfigureTable(ContentTable);
             ConfigureTable(FooterTable);
             
@@ -191,13 +191,25 @@ namespace QuestPDF.Fluent
 
             return container;
             
-            static void ConfigureTable(Table table)
+            void ConfigureTable(Table table, bool isHeader = false)
             {
                 if (!table.Columns.Any())
                     throw new DocumentComposeException($"Table should have at least one column. Please call the '{nameof(ColumnsDefinition)}' method to define columns.");
             
                 table.PlanCellPositions();
                 table.ValidateCellPositions();
+
+                if (EnableAutomatedSemanticTagging)
+                {
+                    foreach (var tableCell in table.Cells)
+                    {
+                        tableCell.CreateProxy(x => new SemanticTag()
+                        {
+                            Child = x,
+                            TagType = isHeader ? "TH" : "TD"
+                        });
+                    }
+                }
             }
         }
     }

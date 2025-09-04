@@ -17,29 +17,34 @@ internal class SemanticTag : ContainerElement
 
     internal override void Draw(Size availableSpace)
     {
-        if (TagType is "H" or "H1" or "H2" or "H3" or "H4" or "H5" or "H6")
-            UpdateHeaderText();
-        
-        if (SemanticTreeNode == null)
-        {
-            var id = SemanticTreeManager.GetNextNodeId();
-            
-            SemanticTreeNode = new SemanticTreeNode
-            {
-                NodeId = id,
-                Type = TagType,
-                Alt = Alt,
-                Lang = Lang
-            };
-            
-            SemanticTreeManager.AddNode(SemanticTreeNode);
-        }
+        RegisterCurrentSemanticNode();
         
         SemanticTreeManager.PushOnStack(SemanticTreeNode);
         Canvas.SetSemanticNodeId(SemanticTreeNode.NodeId);
         Child?.Draw(availableSpace);
         Canvas.SetSemanticNodeId(0);
         SemanticTreeManager.PopStack();
+    }
+
+    internal void RegisterCurrentSemanticNode()
+    {
+        if (SemanticTreeNode != null)
+            return;
+        
+        if (TagType is "H" or "H1" or "H2" or "H3" or "H4" or "H5" or "H6")
+            UpdateHeaderText();
+        
+        var id = SemanticTreeManager.GetNextNodeId();
+            
+        SemanticTreeNode = new SemanticTreeNode
+        {
+            NodeId = id,
+            Type = TagType,
+            Alt = Alt,
+            Lang = Lang
+        };
+            
+        SemanticTreeManager.AddNode(SemanticTreeNode);
     }
 
     private void UpdateHeaderText()
