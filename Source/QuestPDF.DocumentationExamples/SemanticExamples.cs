@@ -103,7 +103,7 @@ public class SemanticExamples
                         });
                 });
             })
-            .GeneratePdfAndShow();
+            .GeneratePdf();
     }
     
     
@@ -261,6 +261,6 @@ public class SemanticExamples
                 Title = "Programming Terms",
                 Language = "en-US"
             })
-            .GeneratePdfAndShow();
+            .GeneratePdf();
     }
 }
