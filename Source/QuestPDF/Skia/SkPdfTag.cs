@@ -83,13 +83,27 @@ internal sealed class SkPdfTag : IDisposable
     {
         if (Instance == IntPtr.Zero)
             return;
-        
-        foreach (var child in Children ?? [])
-            child.Instance = IntPtr.Zero;
+
+        // to dispose the entire tree, it is enough to invoke the pdf_structure_element_delete method on the root element
+        // root's children should be only marked as disposed
+        DisposeChildren(this);
         
         API.pdf_structure_element_delete(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
+        
+        static void DisposeChildren(SkPdfTag parent)
+        {
+            if (parent.Children == null)
+                return;
+
+            foreach (var child in parent.Children)
+            {
+                child.Instance = IntPtr.Zero;
+                GC.SuppressFinalize(child);
+                DisposeChildren(child);
+            }
+        }
     }
     
     private static class API
