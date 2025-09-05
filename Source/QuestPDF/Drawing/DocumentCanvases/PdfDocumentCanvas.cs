@@ -110,13 +110,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
                 result.SetChildren(children);
                 
                 foreach (var nodeAttribute in node.Attributes)
-                {
-                    if (nodeAttribute.Value is int intValue)
-                        result.AddAttribute(nodeAttribute.Owner, nodeAttribute.Name, intValue);
-
-                    else
-                        throw new NotSupportedException($"Attribute value of type '{nodeAttribute.Value.GetType()}' is not supported in PDF semantic tags implementation.");
-                }
+                    result.AddAttribute(nodeAttribute.Owner, nodeAttribute.Name, nodeAttribute.Value);
                 
                 return result;
             }

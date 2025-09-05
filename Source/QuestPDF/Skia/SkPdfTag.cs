@@ -40,12 +40,37 @@ internal sealed class SkPdfTag : IDisposable
         Marshal.FreeHGlobal(unmanagedArray);
     }
 
-    public void AddAttribute(string owner, string name, int value)
+    public void AddAttribute(string owner, string name, object value)
     {
         // for some reason, other marshaling approaches do not work 
         var ownerBytes = Encoding.ASCII.GetBytes(owner + "\0");
         var nameBytes = Encoding.ASCII.GetBytes(name + "\0");
-        API.pdf_structure_element_add_attribute_integer(Instance, ownerBytes, nameBytes, value);
+        
+        if (value is string textValue)
+        {
+            var valueBytes = Encoding.ASCII.GetBytes(textValue + "\0");
+            API.pdf_structure_element_add_attribute_text(Instance, ownerBytes, nameBytes, valueBytes);
+        }
+        else if (value is int intValue)
+        {
+            API.pdf_structure_element_add_attribute_integer(Instance, ownerBytes, nameBytes, intValue);
+        }
+        else if (value is float floatValue)
+        {
+            API.pdf_structure_element_add_attribute_float(Instance, ownerBytes, nameBytes, floatValue);
+        }
+        else if (value is float[] floatArray)
+        {
+            API.pdf_structure_element_add_attribute_float_array(Instance, ownerBytes, nameBytes, floatArray, floatArray.Length);
+        }
+        else if (value is int[] nodeIds)
+        {
+            API.pdf_structure_element_add_attribute_node_ids(Instance, ownerBytes, nameBytes, nodeIds, nodeIds.Length);
+        }
+        else
+        {
+            throw new ArgumentException($"Unsupported attribute value type: {value.GetType()}");
+        }
     }
 
     ~SkPdfTag()
@@ -80,7 +105,19 @@ internal sealed class SkPdfTag : IDisposable
         public static extern void pdf_structure_element_set_children(IntPtr element, IntPtr children, int count);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void pdf_structure_element_add_attribute_text(IntPtr element, byte[] owner, byte[] name, byte[] value);
+        
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void pdf_structure_element_add_attribute_integer(IntPtr element, byte[] owner, byte[] name, int value);
+        
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void pdf_structure_element_add_attribute_float(IntPtr element, byte[] owner, byte[] name, float value);
+        
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void pdf_structure_element_add_attribute_float_array(IntPtr element, byte[] owner, byte[] name, float[] array, int arrayLength);
+
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void pdf_structure_element_add_attribute_node_ids(IntPtr element, byte[] owner, byte[] name, int[] array, int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void pdf_structure_element_delete(IntPtr element);
