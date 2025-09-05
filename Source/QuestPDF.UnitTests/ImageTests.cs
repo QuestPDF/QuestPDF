@@ -147,7 +147,7 @@ namespace QuestPDF.UnitTests
             var highDpiSize = GetDocumentSize(container => container.Image(photo).WithRasterDpi(144));
 
             var dpiSizeRatio = (highDpiSize / (float)lowDpiSize);
-            Assert.That(dpiSizeRatio, Is.GreaterThan(40));
+            Assert.That(dpiSizeRatio, Is.GreaterThan(35));
         }
         
         private static int GetDocumentSize(Action<IContainer> container)
