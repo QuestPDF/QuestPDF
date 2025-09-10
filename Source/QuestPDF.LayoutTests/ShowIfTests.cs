@@ -7,16 +7,16 @@ public class ShowIfTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 100)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content.Decoration(decoration =>
                 {
                     decoration.Before().ShowIf(c => c.PageNumber % 2 == 0).Mock("before").Size(80, 20);
-                    decoration.Content().Mock("content").Size(70, 460);
+                    decoration.Content().Mock("content").ContinuousBlock(70, 460);
                     decoration.After().ShowIf(c => c.PageNumber % 3 == 0).Mock("after").Size(90, 30);
                 });
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()

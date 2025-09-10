@@ -1,122 +1,97 @@
-using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
-
 namespace QuestPDF.LayoutTests.TestEngine;
 
-internal class ExpectedDocumentLayoutDescriptor
+internal class ExpectedDocumentLayoutDescriptor(DrawingRecorder DrawingRecorder)
 {
-    public LayoutTestResult.DocumentLayout DocumentLayout { get; } = new(); 
+    private int CurrentPage { get; set; } = 1;
     
     public ExpectedPageLayoutDescriptor Page()
     {
-        var page = new LayoutTestResult.PageLayout();
-        DocumentLayout.Pages.Add(page);
-        return new ExpectedPageLayoutDescriptor(page);
-    }
-    
-    public void ExpectInfiniteLayoutException()
-    {
-        DocumentLayout.GeneratesInfiniteLayout = true;
+        return new ExpectedPageLayoutDescriptor(DrawingRecorder, CurrentPage++);
     }
 }
 
-internal class ExpectedPageLayoutDescriptor
+internal class ExpectedPageLayoutDescriptor(DrawingRecorder DrawingRecorder, int CurrentPageNumber)
 {
-    private LayoutTestResult.PageLayout PageLayout { get; }
-
-    public ExpectedPageLayoutDescriptor(LayoutTestResult.PageLayout pageLayout)
-    {
-        PageLayout = pageLayout;
-    }
-    
     public ExpectedPageLayoutDescriptor RequiredAreaSize(float width, float height)
     {
-        PageLayout.RequiredArea = new Size(width, height);
-        return this;
-    }
-    
-    public ExpectedPageLayoutDescriptor Content(Action<ExpectedPageContentDescriptor> content)
-    {
-        var pageContent = new ExpectedPageContentDescriptor();
-        content(pageContent);
+        DrawingRecorder.Record(new ElementDrawingEvent
+        {
+            ObserverId = "$document",
+            PageNumber = CurrentPageNumber,
+            Size = new Size(width, height)
+        });
         
-        PageLayout.Mocks = pageContent.MockPositions;
         return this;
     }
-}
-
-internal class ExpectedPageContentDescriptor
-{
-    public List<LayoutTestResult.MockLayoutPosition> MockPositions { get;} = new();
     
-    public ExpectedMockPositionDescriptor Mock(string mockId = MockFluent.DefaultMockId)
+    public void Content(Action<ExpectedPageContentDescriptor> content)
     {
-        var child = new LayoutTestResult.MockLayoutPosition { MockId = mockId };
-        MockPositions.Add(child);
-        return new ExpectedMockPositionDescriptor(child);
+        var pageContent = new ExpectedPageContentDescriptor(DrawingRecorder, CurrentPageNumber);
+        content(pageContent);
     }
 }
 
-internal class ExpectedMockPositionDescriptor
+internal class ExpectedPageContentDescriptor(DrawingRecorder drawingRecorder, int CurrentPageNumber)
 {
-    private LayoutTestResult.MockLayoutPosition MockLayoutPosition { get; }
-
-    public ExpectedMockPositionDescriptor(LayoutTestResult.MockLayoutPosition mockLayoutPosition)
+    public ExpectedMockPositionDescriptor Mock(string mockId = FluentExtensions.DefaultMockId)
     {
-        MockLayoutPosition = mockLayoutPosition;
+        var elementDrawingEvent = new ElementDrawingEvent
+        {
+            ObserverId = mockId,
+            PageNumber = CurrentPageNumber,
+        };
+        
+        drawingRecorder.Record(elementDrawingEvent);
+        return new ExpectedMockPositionDescriptor(elementDrawingEvent);
     }
+}
 
+internal class ExpectedMockPositionDescriptor(ElementDrawingEvent drawingEvent)
+{
     public ExpectedMockPositionDescriptor Position(float x, float y)
     {
-        MockLayoutPosition.Position = new Position(x, y);
+        drawingEvent.Position = new Position(x, y);
         return this;
     }
     
     public ExpectedMockPositionDescriptor Size(float width, float height)
     {
-        MockLayoutPosition.Size = new Size(width, height);
+        drawingEvent.Size = new Size(width, height);
         return this;
     }
 }
 
-internal static class MockFluent
+internal static class FluentExtensions
 {
     public const string DefaultMockId = "$mock";
     
-    public static MockDescriptor Mock(this IContainer element, string id = DefaultMockId)
+    public static IContainer Mock(this IContainer element, string id = DefaultMockId)
     {
-        var mock = new ElementMock
+        return element.Element(new ElementObserver
         {
-            MockId = id
-        };
-        
-        element.Element(mock);
-        return new MockDescriptor(mock);
+            ObserverId = id
+        });
     } 
-}
 
-internal class MockDescriptor
-{
-    private ElementMock Mock { get; }
-
-    public MockDescriptor(ElementMock mock)
+    public static IContainer ElementObserverSetter(this IContainer element, DrawingRecorder recorder)
     {
-        Mock = mock;
-    }
-
-    public MockDescriptor Size(float width, float height)
+        return element.Element(new ElementObserverSetter
+        {
+            Recorder = recorder
+        });
+    } 
+    
+    public static IContainer Size(this IContainer element, float width, float height)
     {
-        Mock.TotalWidth = width;
-        Mock.TotalHeight = height;
-
-        return this;
-    }
-}
-
-internal static class WrapFluent
-{
-    public static void Wrap(this IContainer element)
+        return element.Width(width).Height(height);
+    }     
+    
+    public static void ContinuousBlock(this IContainer element, float width, float height)
     {
-        element.Element(new WrapChild());
+        element.Element(new ContinuousBlock
+        {
+            TotalWidth = width, 
+            TotalHeight = height
+        });
     } 
 }

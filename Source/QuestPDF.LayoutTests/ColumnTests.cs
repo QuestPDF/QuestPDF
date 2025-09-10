@@ -7,19 +7,19 @@ public class ColumnTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 140)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content.Shrink().Column(column =>
                 {
                     column.Spacing(10);
                     
-                    column.Item().Mock("a").Size(50, 30);
-                    column.Item().Mock("b").Size(40, 20);
-                    column.Item().Mock("c").Size(70, 40);
-                    column.Item().Mock("d").Size(60, 60);
+                    column.Item().Mock("a").ContinuousBlock(50, 30);
+                    column.Item().Mock("b").ContinuousBlock(40, 20);
+                    column.Item().Mock("c").ContinuousBlock(70, 40);
+                    column.Item().Mock("d").ContinuousBlock(60, 60);
                 });
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()
@@ -47,15 +47,15 @@ public class ColumnTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 100)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content.Shrink().Column(column =>
                 {
                     column.Spacing(10);
-                    column.Item().Mock("a").Size(50, 30);
+                    column.Item().Mock("a").ContinuousBlock(50, 30);
                 });
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()
@@ -72,18 +72,18 @@ public class ColumnTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 100)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content.Shrink().Column(column =>
                 {
                     column.Spacing(10);
                     
-                    column.Item().Mock("a").Size(50, 30);
-                    column.Item().Mock("b").Size(50, 0);
-                    column.Item().Mock("c").Size(70, 20);
+                    column.Item().Mock("a").ContinuousBlock(50, 30);
+                    column.Item().Mock("b").ContinuousBlock(50, 0);
+                    column.Item().Mock("c").ContinuousBlock(70, 20);
                 });
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()
@@ -102,17 +102,17 @@ public class ColumnTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 100)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content.Shrink().Column(column =>
                 {
                     column.Spacing(0);
                     
-                    column.Item().Mock("a").Size(50, 30);
-                    column.Item().Mock("b").Size(40, 20);
+                    column.Item().Mock("a").ContinuousBlock(50, 30);
+                    column.Item().Mock("b").ContinuousBlock(40, 20);
                 });
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()
@@ -130,17 +130,17 @@ public class ColumnTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 80)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content.Shrink().Column(column =>
                 {
                     column.Spacing(5);
                     
-                    column.Item().Mock("a").Size(50, 40);
-                    column.Item().Mock("b").Size(60, 50);
+                    column.Item().Mock("a").ContinuousBlock(50, 40);
+                    column.Item().Mock("b").ContinuousBlock(60, 50);
                 });
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()

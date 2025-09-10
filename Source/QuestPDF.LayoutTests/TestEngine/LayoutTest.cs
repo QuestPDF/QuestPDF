@@ -1,77 +1,182 @@
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using QuestPDF.Elements;
-using QuestPDF.Fluent;
-using QuestPDF.Infrastructure;
+using QuestPDF.Helpers;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
-internal sealed class LayoutTest
+internal class LayoutTest
 {
     private string TestIdentifier { get; set; }
-    private LayoutTestResult TestResult { get; } = new LayoutTestResult();
+    private Size AvailableSpace { get; set; }
+    private DrawingRecorder ActualDrawingRecorder { get; } = new();
+    private DrawingRecorder ExpectedDrawingRecorder { get; } = new();
+    private IContainer? Content { get; set; }
   
     public static LayoutTest HavingSpaceOfSize(float width, float height, [CallerMemberName] string testIdentifier = "test")
     {
         var layoutTest = new LayoutTest
         {
             TestIdentifier = testIdentifier,
-            
-            TestResult =
-            {
-                PageSize = new Size(width, height)
-            }
+            AvailableSpace = new Size(width, height)
         };
 
         return layoutTest;
     }
 
-    public LayoutTest WithContent(Action<IContainer> handler)
+    public LayoutTest ForContent(Action<IContainer> handler)
     {
-        var container = new Container();
-        container.Element(handler);
-
-        TestResult.ActualLayout = LayoutTestExecutor.Execute(TestResult.PageSize, container);
+        if (Content != null)
+            throw new InvalidOperationException("Content has already been defined.");
+        
+        Content = new Container();
+        
+        Content
+            .Width(AvailableSpace.Width)
+            .Height(AvailableSpace.Height)
+            .ElementObserverSetter(ActualDrawingRecorder)
+            .Mock("$document")
+            .Element(handler);
         
         return this;
     }
 
-    public void ExpectedDrawResult(Action<ExpectedDocumentLayoutDescriptor> handler)
+    public void ExpectDrawResult(Action<ExpectedDocumentLayoutDescriptor> handler)
     {
-        var builder = new ExpectedDocumentLayoutDescriptor();
+        if (!ActualDrawingRecorder.GetDrawingEvents().Any())
+            PerformTest();
+        
+        var builder = new ExpectedDocumentLayoutDescriptor(ExpectedDrawingRecorder);
         handler(builder);
 
-        TestResult.ExpectedLayout = builder.DocumentLayout;
+        var actualDrawingEvents = ActualDrawingRecorder.GetDrawingEvents();
+        var expectedDrawingEvents = ExpectedDrawingRecorder.GetDrawingEvents();
 
-        try
+        if (CheckIfIdentical(actualDrawingEvents, expectedDrawingEvents))
         {
-            LayoutTestValidator.Validate(TestResult);
+            Assert.Pass();
         }
-        catch
+        else
         {
-            if (Settings.LayoutTestVisualizationStrategy != LayoutTestVisualizationStrategy.Never)
-                GenerateTestPreview();
+            DrawLog(actualDrawingEvents, expectedDrawingEvents);
+            Assert.Fail($"The drawing operations do not match the expected result. See the log above for details. Test identifier: '{TestIdentifier}'.");
+        }
+
+        static bool CheckIfIdentical(IReadOnlyCollection<ElementDrawingEvent> actual, IReadOnlyCollection<ElementDrawingEvent> expected)
+        {
+            if (actual.Count != expected.Count)
+                return false;
+
+            return actual.Zip(expected, Compare).All(x => x);
+        }
+
+        static bool Compare(ElementDrawingEvent? actual, ElementDrawingEvent? expected)
+        {
+            if (actual == null && expected == null)
+                return true;
+            
+            if (actual == null || expected == null)
+                return false;
+            
+            return actual.ObserverId == expected.ObserverId &&
+                   actual.PageNumber == expected.PageNumber &&
+                   Position.Equal(actual.Position, expected.Position) &&
+                   Size.Equal(actual.Size, expected.Size);
+        }
+
+        static void DrawLog(IReadOnlyCollection<ElementDrawingEvent> actualEvents, IReadOnlyCollection<ElementDrawingEvent> expectedEvents)
+        {
+            var identicalLines = actualEvents.Zip(expectedEvents, Compare).TakeWhile(x => x).Count();
+
+            if (identicalLines > 0)
+            {
+                TestContext.Out.WriteLine("IDENTICAL");
+                TestContext.Out.WriteLine(DrawHeader());
                 
-            throw;
+                foreach (var actualEvent in actualEvents.Take(identicalLines))
+                    TestContext.Out.WriteLine($"🟩\t{GetEventAsText(actualEvent)}");
+            }
+
+            if (expectedEvents.Count > identicalLines)
+            {
+                TestContext.Out.WriteLine();
+                TestContext.Out.WriteLine("EXPECTED");
+                TestContext.Out.WriteLine(DrawHeader());
+                
+                foreach (var expectedEvent in expectedEvents.Skip(identicalLines))
+                    TestContext.Out.WriteLine($"🟧\t{GetEventAsText(expectedEvent)}");   
+            }
+
+            if (actualEvents.Count > identicalLines)
+            {
+                TestContext.Out.WriteLine();
+                TestContext.Out.WriteLine("ACTUAL");
+                TestContext.Out.WriteLine(DrawHeader());
+                
+                foreach (var actualEvent in actualEvents.Skip(identicalLines))
+                    TestContext.Out.WriteLine($"🟥\t{GetEventAsText(actualEvent)}");    
+            }
         }
-        finally
+
+        static string DrawHeader()
         {
-            if (Settings.LayoutTestVisualizationStrategy == LayoutTestVisualizationStrategy.Always)
-                GenerateTestPreview();
+            var mock = "Mock".PadRight(12);
+            var page = "Page".PadRight(6);
+            var x = "X".PadRight(8);
+            var y = "Y".PadRight(8);
+            var width = "W".PadRight(10);
+            var height = "H";
+            
+            return $"\t{mock} {page} {x} {y} {width} {height}";      
+        }
+        
+        static string GetEventAsText(ElementDrawingEvent drawingEvent)
+        {
+            var observerId = drawingEvent.ObserverId.PadRight(12);
+            var pageNumber = $"{drawingEvent.PageNumber}".PadRight(6);
+            
+            var positionX = $"{drawingEvent.Position.X}".PadRight(8);
+            var positionY = $"{drawingEvent.Position.Y}".PadRight(8);
+            
+            var sizeWidth = $"{drawingEvent.Size.Width}".PadRight(10);
+            var sizeHeight = $"{drawingEvent.Size.Height}";
+            
+            return $"{observerId} {pageNumber} {positionX} {positionY} {sizeWidth} {sizeHeight}";       
         }
     }
 
-    private void GenerateTestPreview()
+    private void PerformTest()
     {
-        var path = Path.Combine(Path.GetTempPath(), $"{TestIdentifier}.pdf");
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(0, 0));
+                    page.MaxSize(new PageSize(Size.Infinity, Size.Infinity));
+                    page.Content().Element(Content);
+                });
+            })
+            .GenerateAndDiscard();
+    }
+
+    public LayoutTest VisualizeOutput()
+    {
+        if (Content == null)
+            throw new InvalidOperationException("Content has not been defined.");
         
-        if (File.Exists(path))
-            File.Delete(path);
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(0, 0));
+                    page.MaxSize(new PageSize(Size.Infinity, Size.Infinity));
+                    page.Content().Element(Content);
+                });
+            })
+            .GeneratePdfAndShow();
         
-        var stream = new FileStream(path, FileMode.CreateNew);
-        LayoutTestResultVisualization.Visualize(TestResult, stream);
-        stream.Dispose();
-        
-        Helpers.Helpers.OpenFileUsingDefaultProgram(path);
+        return this;
     }
 }

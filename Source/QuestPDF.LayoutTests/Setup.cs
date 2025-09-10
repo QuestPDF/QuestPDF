@@ -7,7 +7,6 @@
         public static void Configure()
         {
             QuestPDF.Settings.License = LicenseType.Community;
-            QuestPDF.LayoutTests.TestEngine.Settings.LayoutTestVisualizationStrategy = LayoutTestVisualizationStrategy.WhenFailure;
         }
     }
 }

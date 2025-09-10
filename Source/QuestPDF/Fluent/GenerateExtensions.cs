@@ -16,6 +16,11 @@ namespace QuestPDF.Fluent
             ClearGenerateAndShowFiles();
         }
         
+        internal static void GenerateAndDiscard(this IDocument document)
+        {
+            DocumentGenerator.GenerateAndDiscard(document);
+        }
+        
         #region Genearate And Show Configuration
 
         private static readonly Random Random = new();

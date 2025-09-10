@@ -1,28 +1,15 @@
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
-internal class MockDrawingCommand
+internal class ContinuousBlock : Element
 {
-    public string MockId { get; set; }
-    public int PageNumber { get; set; }
-    public Position Position { get; set; }
-    public Size Size { get; set; }
-}
-
-internal class ElementMock : Element
-{
-    public string MockId { get; set; }
-    
     public float TotalWidth { get; set; }
     public float TotalHeight { get; set; }
     
     private float HeightOffset { get; set; }
-
-    internal List<MockDrawingCommand> DrawingCommands { get; } = new();
     
     internal override SpacePlan Measure(Size availableSpace)
     {
@@ -53,16 +40,6 @@ internal class ElementMock : Element
         using var paint = new SkPaint();
         paint.SetSolidColor(Colors.Grey.Medium);
         Canvas.DrawRectangle(Position.Zero, size, paint);
-        
-        var matrix = Canvas.GetCurrentMatrix();
-        
-        DrawingCommands.Add(new MockDrawingCommand
-        {
-            MockId = MockId,
-            PageNumber = PageContext.CurrentPage,
-            Position = new Position(matrix.TranslateX / matrix.ScaleX, matrix.TranslateY / matrix.ScaleY),
-            Size = availableSpace
-        });
 
         if (HeightOffset > TotalHeight - Size.Epsilon)
             HeightOffset = 0;
