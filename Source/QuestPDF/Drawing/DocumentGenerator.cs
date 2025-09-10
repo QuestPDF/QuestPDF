@@ -63,6 +63,11 @@ namespace QuestPDF.Drawing
 
             return canvas.Images;
         }
+        
+        internal static void GenerateAndDiscard(IDocument document)
+        {
+            RenderDocument(new FreeDocumentCanvas(), document, DocumentSettings.Default);
+        }
 
         internal static void ValidateLicense()
         {

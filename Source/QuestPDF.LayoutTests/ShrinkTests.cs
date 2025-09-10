@@ -7,13 +7,13 @@ public class ShrinkTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 120)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content
                     .Shrink()
-                    .Mock().Size(60, 200);
+                    .Mock().ContinuousBlock(60, 200);
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()
@@ -38,13 +38,13 @@ public class ShrinkTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 120)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content
                     .ShrinkVertical()
-                    .Mock().Size(60, 200);
+                    .Mock().ContinuousBlock(60, 200);
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()
@@ -69,13 +69,13 @@ public class ShrinkTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 120)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content
                     .ShrinkHorizontal()
-                    .Mock().Size(60, 200);
+                    .Mock().ContinuousBlock(60, 200);
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()
@@ -100,14 +100,14 @@ public class ShrinkTests
     {
         LayoutTest
             .HavingSpaceOfSize(100, 120)
-            .WithContent(content =>
+            .ForContent(content =>
             {
                 content
                     .ContentFromRightToLeft()
                     .Shrink()
-                    .Mock().Size(60, 200);
+                    .Mock().ContinuousBlock(60, 200);
             })
-            .ExpectedDrawResult(document =>
+            .ExpectDrawResult(document =>
             {
                 document
                     .Page()
