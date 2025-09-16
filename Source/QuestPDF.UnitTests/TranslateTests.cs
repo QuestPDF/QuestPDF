@@ -15,6 +15,7 @@ namespace QuestPDF.UnitTests
         [TestCase(0, 15, "Y=15")]
         [TestCase(0, -20, "Y=-20")]
         [TestCase(30, -40, "X=30   Y=-40")]
+        [TestCase(1.2345f, -2.3456f, "X=1.2   Y=-2.3")]
         public void CompanionHint(float x, float y, string expected)
         {
             var container = EmptyContainer.Create();
