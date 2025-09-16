@@ -146,7 +146,7 @@ internal class LayoutTest
         }
     }
 
-    public void ExpectLayoutException()
+    public void ExpectLayoutException(string? reason = null)
     {
         try
         {
@@ -155,6 +155,7 @@ internal class LayoutTest
         }
         catch (DocumentLayoutException e)
         {
+            Assert.That(e.Message.Contains(reason));
             Assert.Pass($"The expected exception was thrown: {e.Message}");
         }
         catch
