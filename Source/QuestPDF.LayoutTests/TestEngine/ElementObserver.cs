@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using QuestPDF.Helpers;
+using QuestPDF.Skia;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 

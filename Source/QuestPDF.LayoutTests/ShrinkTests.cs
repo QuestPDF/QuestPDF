@@ -11,7 +11,7 @@ public class ShrinkTests
             {
                 content
                     .Shrink()
-                    .Mock().ContinuousBlock(60, 200);
+                    .Mock("a").ContinuousBlock(60, 200);
             })
             .ExpectDrawResult(document =>
             {
@@ -20,7 +20,7 @@ public class ShrinkTests
                     .RequiredAreaSize(60, 120)
                     .Content(page =>
                     {
-                        page.Mock().Position(0, 0).Size(60, 120);
+                        page.Mock("a").Position(0, 0).Size(60, 120);
                     });
                 
                 document
@@ -28,7 +28,7 @@ public class ShrinkTests
                     .RequiredAreaSize(60, 80)
                     .Content(page =>
                     {
-                        page.Mock().Position(0, 0).Size(60, 80);
+                        page.Mock("a").Position(0, 0).Size(60, 80);
                     });
             });
     }
@@ -42,7 +42,7 @@ public class ShrinkTests
             {
                 content
                     .ShrinkVertical()
-                    .Mock().ContinuousBlock(60, 200);
+                    .Mock("a").ContinuousBlock(60, 200);
             })
             .ExpectDrawResult(document =>
             {
@@ -51,7 +51,7 @@ public class ShrinkTests
                     .RequiredAreaSize(60, 120)
                     .Content(page =>
                     {
-                        page.Mock().Position(0, 0).Size(100, 120);
+                        page.Mock("a").Position(0, 0).Size(100, 120);
                     });
                 
                 document
@@ -59,7 +59,7 @@ public class ShrinkTests
                     .RequiredAreaSize(60, 80)
                     .Content(page =>
                     {
-                        page.Mock().Position(0, 0).Size(100, 80);
+                        page.Mock("a").Position(0, 0).Size(100, 80);
                     });
             });
     }
@@ -73,7 +73,7 @@ public class ShrinkTests
             {
                 content
                     .ShrinkHorizontal()
-                    .Mock().ContinuousBlock(60, 200);
+                    .Mock("a").ContinuousBlock(60, 200);
             })
             .ExpectDrawResult(document =>
             {
@@ -82,7 +82,7 @@ public class ShrinkTests
                     .RequiredAreaSize(60, 120)
                     .Content(page =>
                     {
-                        page.Mock().Position(0, 0).Size(60, 120);
+                        page.Mock("a").Position(0, 0).Size(60, 120);
                     });
                 
                 document
@@ -90,7 +90,7 @@ public class ShrinkTests
                     .RequiredAreaSize(60, 80)
                     .Content(page =>
                     {
-                        page.Mock().Position(0, 0).Size(60, 120);
+                        page.Mock("a").Position(0, 0).Size(60, 120);
                     });
             });
     }
@@ -105,7 +105,7 @@ public class ShrinkTests
                 content
                     .ContentFromRightToLeft()
                     .Shrink()
-                    .Mock().ContinuousBlock(60, 200);
+                    .Mock("a").ContinuousBlock(60, 200);
             })
             .ExpectDrawResult(document =>
             {
@@ -114,7 +114,7 @@ public class ShrinkTests
                     .RequiredAreaSize(60, 120)
                     .Content(page =>
                     {
-                        page.Mock().Position(40, 0).Size(60, 120);
+                        page.Mock("a").Position(40, 0).Size(60, 120);
                     });
                 
                 document
@@ -122,7 +122,7 @@ public class ShrinkTests
                     .RequiredAreaSize(60, 80)
                     .Content(page =>
                     {
-                        page.Mock().Position(40, 0).Size(60, 80);
+                        page.Mock("a").Position(40, 0).Size(60, 80);
                     });
             });
     }
