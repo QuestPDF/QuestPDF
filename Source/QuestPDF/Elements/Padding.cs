@@ -26,17 +26,17 @@ namespace QuestPDF.Elements
             if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return measure;
 
+            var newWidth = Math.Max(0, measure.Width + Left + Right);
+            var newHeight = Math.Max(0, measure.Height + Top + Bottom);
+            
             var newSize = new Size(
-                measure.Width + Left + Right,
-                measure.Height + Top + Bottom);
+                newWidth,
+                newHeight);
             
             if (measure.Type == SpacePlanType.PartialRender)
                 return SpacePlan.PartialRender(newSize);
             
-            if (measure.Type == SpacePlanType.FullRender)
-                return SpacePlan.FullRender(newSize);
-            
-            throw new NotSupportedException();
+            return SpacePlan.FullRender(newSize);
         }
 
         internal override void Draw(Size availableSpace)
