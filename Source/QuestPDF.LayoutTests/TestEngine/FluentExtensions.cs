@@ -1,3 +1,5 @@
+using QuestPDF.Helpers;
+
 namespace QuestPDF.LayoutTests.TestEngine;
 
 internal class ExpectedDocumentLayoutDescriptor(DrawingRecorder DrawingRecorder)
@@ -33,7 +35,7 @@ internal class ExpectedPageLayoutDescriptor(DrawingRecorder DrawingRecorder, int
 
 internal class ExpectedPageContentDescriptor(DrawingRecorder drawingRecorder, int CurrentPageNumber)
 {
-    public ExpectedMockPositionDescriptor Mock(string mockId = FluentExtensions.DefaultMockId)
+    public ExpectedMockPositionDescriptor Mock(string mockId)
     {
         var elementDrawingEvent = new ElementDrawingEvent
         {
@@ -65,7 +67,7 @@ internal static class FluentExtensions
 {
     public const string DefaultMockId = "$mock";
     
-    public static IContainer Mock(this IContainer element, string id = DefaultMockId)
+    public static IContainer Mock(this IContainer element, string id)
     {
         return element.Element(new ElementObserver
         {
@@ -86,9 +88,18 @@ internal static class FluentExtensions
         return element.Width(width).Height(height);
     }     
     
-    public static void ContinuousBlock(this IContainer element, float width, float height)
+    public static void ContinuousBlock(this IContainer element, float width = 1f, float height = 1f)
     {
         element.Element(new ContinuousBlock
+        {
+            TotalWidth = width, 
+            TotalHeight = height
+        });
+    } 
+    
+    public static void SolidBlock(this IContainer element, float width = 1f, float height = 1f)
+    {
+        element.Element(new SolidBlock
         {
             TotalWidth = width, 
             TotalHeight = height

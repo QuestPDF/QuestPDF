@@ -4,16 +4,14 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
-internal class ContinuousBlock : Element
+internal class ContinuousBlock : Element, IStateful
 {
     public float TotalWidth { get; set; }
     public float TotalHeight { get; set; }
-    
-    private float HeightOffset { get; set; }
-    
+
     internal override SpacePlan Measure(Size availableSpace)
     {
-        if (TotalWidth > availableSpace.Width)
+        if (TotalWidth > availableSpace.Width + Size.Epsilon)
             return SpacePlan.Wrap("The content requires more horizontal space than available.");
 
         if (availableSpace.Height < Size.Epsilon)
@@ -44,4 +42,19 @@ internal class ContinuousBlock : Element
         if (HeightOffset > TotalHeight - Size.Epsilon)
             HeightOffset = 0;
     }
+    
+    #region IStateful
+        
+    private float HeightOffset { get; set; }
+
+    public void ResetState(bool hardReset = false)
+    {
+        if (hardReset)
+            HeightOffset = 0;
+    }
+        
+    public object GetState() => HeightOffset;
+    public void SetState(object state) => HeightOffset = (float) state;
+    
+    #endregion
 }

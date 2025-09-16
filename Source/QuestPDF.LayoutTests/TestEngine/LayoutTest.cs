@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Text;
+using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
 
@@ -142,6 +143,23 @@ internal class LayoutTest
             var sizeHeight = $"{drawingEvent.Size.Height}";
             
             return $"{observerId} {pageNumber} {positionX} {positionY} {sizeWidth} {sizeHeight}";       
+        }
+    }
+
+    public void ExpectLayoutException()
+    {
+        try
+        {
+            QuestPDF.Settings.EnableDebugging = true;
+            PerformTest();
+        }
+        catch (DocumentLayoutException e)
+        {
+            Assert.Pass($"The expected exception was thrown: {e.Message}");
+        }
+        catch
+        {
+            Assert.Fail("Un expected exception was thrown.");
         }
     }
 
