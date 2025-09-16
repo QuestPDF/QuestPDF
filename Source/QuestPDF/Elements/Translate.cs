@@ -20,7 +20,7 @@ namespace QuestPDF.Elements
 
         internal override string? GetCompanionHint()
         {
-            return string.Join("   ", GetOptions().Where(x => x.value != 0).Select(x => $"{x.Label}={x.value}"));
+            return string.Join("   ", GetOptions().Where(x => x.value != 0).Select(x => $"{x.Label}={x.value:F1}"));
             
             IEnumerable<(string Label, float value)> GetOptions()
             {
