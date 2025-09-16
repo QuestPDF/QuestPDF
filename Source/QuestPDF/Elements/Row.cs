@@ -94,6 +94,9 @@ namespace QuestPDF.Elements
             if (!Items.Any())
                 return;
 
+            if (Items.All(x => x.IsRendered))
+                return;
+
             UpdateItemsWidth(availableSpace.Width);
             var renderingCommands = PlanLayout(availableSpace);
 
