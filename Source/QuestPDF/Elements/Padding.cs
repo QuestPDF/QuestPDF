@@ -57,7 +57,7 @@ namespace QuestPDF.Elements
         
         internal override string? GetCompanionHint()
         {
-            return string.Join("   ", GetOptions().Where(x => x.value != 0).Select(x => $"{x.Label}={x.value:F1}"));
+            return string.Join("   ", GetOptions().Where(x => x.value != 0).Select(x => $"{x.Label}={x.value:0.#}"));
             
             IEnumerable<(string Label, float value)> GetOptions()
             {
@@ -74,10 +74,10 @@ namespace QuestPDF.Elements
                     yield break;
                 }
                 
+                yield return ("L", Left);
                 yield return ("T", Top);
                 yield return ("R", Right);
                 yield return ("B", Bottom);
-                yield return ("L", Left);
             }
         }
     }
