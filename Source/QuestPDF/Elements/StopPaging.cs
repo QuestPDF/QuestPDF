@@ -19,5 +19,15 @@ namespace QuestPDF.Elements
                 _ => throw new ArgumentOutOfRangeException()
             };
         }
+        
+        internal override void Draw(Size availableSpace)
+        {
+            var measurement = base.Measure(availableSpace);
+            
+            if (measurement.Type is SpacePlanType.Wrap)
+                return;
+                
+            base.Draw(availableSpace);
+        }
     }
 }
