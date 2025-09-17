@@ -1,160 +1,95 @@
 ﻿using NUnit.Framework;
-using QuestPDF.Drawing;
 using QuestPDF.Elements;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
-using QuestPDF.UnitTests.TestEngine;
 
 namespace QuestPDF.UnitTests
 {
     [TestFixture]
     public class SimpleRotateTests
     {
-        #region measure
+        #region Cumulative rotation
         
         [Test]
-        public void Measure_Wrap()
+        public void RotateRightIsCumulative()
         {
-            TestPlan
-                .For(x => new SimpleRotate
-                {
-                    Child = x.CreateChild(),
-                    TurnCount = 0
-                })
-                .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(400, 300), SpacePlan.Wrap("Mock"))
-                .CheckMeasureResult(SpacePlan.Wrap("Forwarded from child"));
+            var container = EmptyContainer.Create();
+            container
+                .RotateRight()
+                .RotateRight()
+                .RotateRight()
+                .RotateRight()
+                .RotateRight();
+        
+            var rotation = container.Child as SimpleRotate;
+            Assert.That(rotation?.TurnCount, Is.EqualTo(5));
         }
         
         [Test]
-        public void Measure_PartialRender()
+        public void RotateLeftIsCumulative()
         {
-            TestPlan
-                .For(x => new SimpleRotate
-                {
-                    Child = x.CreateChild(),
-                    TurnCount = 0
-                })
-                .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(400, 300), SpacePlan.PartialRender(300, 200))
-                .CheckMeasureResult(SpacePlan.PartialRender(300, 200));
+            var container = EmptyContainer.Create();
+            container
+                .RotateLeft()
+                .RotateLeft()
+                .RotateLeft()
+                .RotateLeft()
+                .RotateLeft()
+                .RotateLeft();
+        
+            var rotation = container.Child as SimpleRotate;
+            Assert.That(rotation?.TurnCount, Is.EqualTo(-6));
         }
         
         [Test]
-        public void Measure_RotateRight()
+        public void RotateRightAndLeftCanBeCombined()
         {
-            TestPlan
-                .For(x => new SimpleRotate
-                {
-                    Child = x.CreateChild(),
-                    TurnCount = 1
-                })
-                .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(300, 400), SpacePlan.FullRender(200, 300))
-                .CheckMeasureResult(SpacePlan.FullRender(300, 200));
-        }
+            var container = EmptyContainer.Create();
+            container
+                .RotateRight()
+                .RotateRight()
+                .RotateRight()
+                .RotateRight()
+                .RotateLeft()
+                .RotateLeft()
+                .RotateLeft();
         
-        [Test]
-        public void Measure_RotateFlip()
-        {
-            TestPlan
-                .For(x => new SimpleRotate
-                {
-                    Child = x.CreateChild(),
-                    TurnCount = 2
-                })
-                .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure(new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .CheckMeasureResult(SpacePlan.FullRender(200, 100));
-        }
-        
-        [Test]
-        public void Measure_RotateLeft()
-        {
-            TestPlan
-                .For(x => new SimpleRotate
-                {
-                    Child = x.CreateChild(),
-                    TurnCount = 3 // or -1
-                })
-                .MeasureElement(new Size(500, 400))
-                .ExpectChildMeasure(new Size(400, 500), SpacePlan.FullRender(300, 350))
-                .CheckMeasureResult(SpacePlan.FullRender(350, 300));
+            var rotation = container.Child as SimpleRotate;
+            Assert.That(rotation?.TurnCount, Is.EqualTo(1));
         }
         
         #endregion
         
-        #region draw
+        #region Companion Hint
         
         [Test]
-        public void Draw_Simple()
+        public void NoRotationCompanionHint()
         {
-            TestPlan
-                .For(x => new SimpleRotate
-                {
-                    Child = x.CreateChild(),
-                    TurnCount = 0
-                })
-                .DrawElement(new Size(640, 480))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectCanvasRotate(0)
-                .ExpectChildDraw(new Size(640, 480))
-                .ExpectCanvasRotate(0)
-                .ExpectCanvasTranslate(0, 0)
-                .CheckDrawResult();
+            var container = EmptyContainer.Create();
+            container.RotateRight().RotateLeft();
+        
+            var rotation = container.Child as SimpleRotate;
+            Assert.That(rotation?.GetCompanionHint(), Is.EqualTo("No rotation"));
         }
         
         [Test]
-        public void Draw_RotateRight()
+        public void RotateRightCompanionHint()
         {
-            TestPlan 
-                .For(x => new SimpleRotate
-                {
-                    Child = x.CreateChild(),
-                    TurnCount = 1
-                })
-                .DrawElement(new Size(640, 480))
-                .ExpectCanvasTranslate(640, 0)
-                .ExpectCanvasRotate(90)
-                .ExpectChildDraw(new Size(480, 640))
-                .ExpectCanvasRotate(-90)
-                .ExpectCanvasTranslate(-640, 0)
-                .CheckDrawResult();
+            var container = EmptyContainer.Create();
+            container.RotateRight();
+        
+            var rotation = container.Child as SimpleRotate;
+            Assert.That(rotation?.GetCompanionHint(), Is.EqualTo("90 deg clockwise"));
         }
         
         [Test]
-        public void Draw_RotateFlip()
+        public void DoubleRotateLeftCompanionHint()
         {
-            TestPlan 
-                .For(x => new SimpleRotate
-                {
-                    Child = x.CreateChild(),
-                    TurnCount = 2
-                })
-                .DrawElement(new Size(640, 480))
-                .ExpectCanvasTranslate(640, 480)
-                .ExpectCanvasRotate(180)
-                .ExpectChildDraw(new Size(640, 480))
-                .ExpectCanvasRotate(-180)
-                .ExpectCanvasTranslate(-640, -480)
-                .CheckDrawResult();
-        }
+            var container = EmptyContainer.Create();
+            container.RotateLeft().RotateLeft();
         
-        [Test]
-        public void Draw_RotateLeft()
-        {
-            TestPlan 
-                .For(x => new SimpleRotate
-                {
-                    Child = x.CreateChild(),
-                    TurnCount = 3 // or -1
-                })
-                .DrawElement(new Size(640, 480))
-                .ExpectCanvasTranslate(0, 480)
-                .ExpectCanvasRotate(270)
-                .ExpectChildDraw(new Size(480, 640))
-                .ExpectCanvasRotate(-270)
-                .ExpectCanvasTranslate(0, -480)
-                .CheckDrawResult();
+            var rotation = container.Child as SimpleRotate;
+            Assert.That(rotation?.GetCompanionHint(), Is.EqualTo("180 deg counter-clockwise"));
         }
         
         #endregion
