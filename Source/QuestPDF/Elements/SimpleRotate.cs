@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
@@ -28,6 +29,7 @@ namespace QuestPDF.Elements
             if (childSpace.Type == SpacePlanType.PartialRender)
                 return SpacePlan.PartialRender(targetSpace);
 
+            // Stryker disable once: unreachable code
             throw new ArgumentException();
         }
         
@@ -50,7 +52,18 @@ namespace QuestPDF.Elements
             Canvas.Rotate(-rotate);
             Canvas.Translate(translate.Reverse());
         }
-        
-        internal override string? GetCompanionHint() => $"{NormalizedTurnCount * 90} deg clockwise";
+
+        internal override string? GetCompanionHint()
+        {
+            if (TurnCount == 0)
+                return "No rotation";
+
+            var degrees = Math.Abs(TurnCount) * 90;
+            
+            // Stryker disable once equality: TurnCount = 0 is handled above
+            var direction = TurnCount > 0 ? "clockwise" : "counter-clockwise"; 
+            
+            return $"{degrees} deg {direction}";
+        }
     }
 }
