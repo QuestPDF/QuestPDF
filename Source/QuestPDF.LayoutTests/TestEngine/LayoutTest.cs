@@ -146,7 +146,7 @@ internal class LayoutTest
         }
     }
 
-    public void ExpectLayoutException(string? reason = null)
+    public void ExpectLayoutException(string reason)
     {
         try
         {

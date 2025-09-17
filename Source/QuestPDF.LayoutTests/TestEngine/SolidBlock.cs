@@ -26,7 +26,7 @@ internal class SolidBlock : Element, IStateful
     internal override void Draw(Size availableSpace)
     {
         using var paint = new SkPaint();
-        paint.SetSolidColor(Colors.Grey.Medium);
+        paint.SetSolidColor(Placeholders.BackgroundColor());
         Canvas.DrawRectangle(Position.Zero, availableSpace, paint);
         
         IsRendered = true;
