@@ -26,6 +26,11 @@ internal class ElementObserver : ContainerElement
             Size = ObserverId == "$document" ? Child.Measure(availableSpace) : availableSpace
         });
         
+        var matrixBeforeDraw = Canvas.GetCurrentMatrix().ToMatrix4x4();
         base.Draw(availableSpace);
+        var matrixAfterDraw = Canvas.GetCurrentMatrix().ToMatrix4x4();
+        
+        if (matrixAfterDraw != matrixBeforeDraw)
+            throw new InvalidOperationException("Canvas state was not restored after drawing operation.");
     }
 }
