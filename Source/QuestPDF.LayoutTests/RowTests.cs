@@ -375,7 +375,7 @@ public class RowTests
                     row.ConstantItem(30).Height(50);
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The content requires more horizontal space than available.");
     }
     
     [Test]
@@ -392,7 +392,7 @@ public class RowTests
                     row.ConstantItem(10).Mock("a").SolidBlock(height: 40);
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The content requires more horizontal space than available.");
     }
     
     [Test]
@@ -411,7 +411,7 @@ public class RowTests
                     row.RelativeItem();
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("One of the items has a negative size, indicating insufficient horizontal space. Usually, constant items require more space than is available, potentially causing other content to overflow.");
     }
 
     #endregion
@@ -510,7 +510,7 @@ public class RowTests
                     row.ConstantItem(40).Height(200); // <-
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The available vertical space is less than the minimum height.");
     }
     
     #endregion
@@ -561,7 +561,7 @@ public class RowTests
                     row.ConstantItem(200);  // <-
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The content requires more horizontal space than available.");
     }
     
     [Test]
@@ -577,7 +577,7 @@ public class RowTests
                     row.ConstantItem(40).Width(200); // <-
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The available horizontal space is less than the minimum width.");
     }
     
     [Test]
@@ -594,7 +594,7 @@ public class RowTests
                     row.ConstantItem(40);
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The content requires more horizontal space than available.");
     }
     
     [Test]
@@ -610,7 +610,7 @@ public class RowTests
                     row.RelativeItem(3).Width(200); // <-
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The available horizontal space is less than the minimum width.");
     }
     
     [Test]
@@ -626,7 +626,7 @@ public class RowTests
                     row.AutoItem().Width(80);
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The content requires more horizontal space than available.");
     }
     
     [Test]
@@ -643,7 +643,7 @@ public class RowTests
                     row.AutoItem().Width(50);
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The content requires more horizontal space than available.");
     }
     
     [Test]
@@ -659,7 +659,7 @@ public class RowTests
                     row.AutoItem().Width(50);
                 });
             })
-            .ExpectLayoutException();
+            .ExpectLayoutException("The content requires more horizontal space than available.");
     }
     
     #endregion
