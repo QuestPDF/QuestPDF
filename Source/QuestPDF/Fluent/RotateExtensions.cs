@@ -43,10 +43,9 @@ namespace QuestPDF.Fluent
         /// <param name="angle">Rotation angle in degrees. A value of 360 degrees represents a full rotation.</param>
         public static IContainer Rotate(this IContainer element, float angle)
         {
-            return element.Element(new Rotate
-            {
-                Angle = angle
-            });
+            var scale = element as Rotate ?? new Rotate();
+            scale.Angle += angle;
+            return element.Element(scale);
         }
     }
 }
