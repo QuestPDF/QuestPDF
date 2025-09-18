@@ -1,30 +1,36 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using QuestPDF.Elements;
+using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
-using QuestPDF.UnitTests.TestEngine;
 
-namespace QuestPDF.UnitTests
+namespace QuestPDF.UnitTests;
+
+public class RotateTests
 {
-    [TestFixture]
-    public class RotateTests
+    [Test]
+    public void RotateIsCumulative()
     {
-        [Test]
-        public void Measure() => SimpleContainerTests.Measure<Rotate>();
-
-        [Test]
-        public void Draw()
-        {
-            TestPlan
-                .For(x => new Rotate
-                {
-                    Child = x.CreateChild(),
-                    Angle = 123
-                })
-                .DrawElement(new Size(400, 300))
-                .ExpectCanvasRotate(123)
-                .ExpectChildDraw(new Size(400, 300))
-                .ExpectCanvasRotate(-123)
-                .CheckDrawResult();
-        } 
+        var container = EmptyContainer.Create();
+        
+        container
+            .Rotate(45)
+            .Rotate(-15)
+            .Rotate(20);
+        
+        var rotation = container.Child as Rotate;
+        Assert.That(rotation?.Angle, Is.EqualTo(50));
+    }
+    
+    [TestCase(0, ExpectedResult = "No rotation")]
+    [TestCase(45, ExpectedResult = "45 deg clockwise")]
+    [TestCase(-75, ExpectedResult = "75 deg counter-clockwise")]
+    [TestCase(12.345f, ExpectedResult = "12.3 deg clockwise")]
+    public string RotateCompanionHint(float angle)
+    {
+        var container = EmptyContainer.Create();
+        container.Rotate(angle);
+        
+        var rotation = container.Child as Rotate;
+        return rotation?.GetCompanionHint();
     }
 }
