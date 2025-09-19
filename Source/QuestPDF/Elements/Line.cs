@@ -35,7 +35,7 @@ namespace QuestPDF.Elements
 
             if (Type == LineType.Vertical)
             {
-                if (availableSpace.Width + Size.Epsilon < Thickness)
+                if (Thickness.IsGreaterThan(availableSpace.Width))
                     return SpacePlan.Wrap("The line thickness is greater than the available horizontal space.");
 
                 return SpacePlan.FullRender(Thickness, 0);
@@ -43,12 +43,13 @@ namespace QuestPDF.Elements
             
             if (Type == LineType.Horizontal)
             {
-                if (availableSpace.Height + Size.Epsilon < Thickness)
+                if (Thickness.IsGreaterThan(availableSpace.Height))
                     return SpacePlan.Wrap("The line thickness is greater than the available vertical space.");
 
                 return SpacePlan.FullRender(0, Thickness);
             }
 
+            // Stryker disable once: unreachable code
             throw new NotSupportedException();
         }
 
@@ -96,7 +97,7 @@ namespace QuestPDF.Elements
         
         internal override string? GetCompanionHint()
         {
-            return $"{Type} {Thickness:F1} {Color.ToString()}";
+            return $"{Type} {Thickness:0.#}";
         }
     }
 }

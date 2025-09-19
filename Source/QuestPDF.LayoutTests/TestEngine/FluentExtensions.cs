@@ -61,6 +61,12 @@ internal class ExpectedMockPositionDescriptor(ElementDrawingEvent drawingEvent)
         drawingEvent.Size = new Size(width, height);
         return this;
     }
+    
+    public ExpectedMockPositionDescriptor State(object state)
+    {
+        drawingEvent.StateAfterDrawing = state;
+        return this;
+    }
 }
 
 internal static class FluentExtensions

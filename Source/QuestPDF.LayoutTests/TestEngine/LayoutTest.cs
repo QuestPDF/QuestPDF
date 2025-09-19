@@ -1,5 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Text;
+using NUnit.Framework.Constraints;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
@@ -14,6 +15,8 @@ internal class LayoutTest
     private DrawingRecorder ExpectedDrawingRecorder { get; } = new();
     private IContainer? Content { get; set; }
   
+    private static readonly NUnitEqualityComparer Comparer = new();
+
     public static LayoutTest HavingSpaceOfSize(float width, float height, [CallerMemberName] string testIdentifier = "test")
     {
         var layoutTest = new LayoutTest
@@ -79,10 +82,13 @@ internal class LayoutTest
             if (actual == null || expected == null)
                 return false;
             
+            var tolerance = Tolerance.Default;
+            
             return actual.ObserverId == expected.ObserverId &&
                    actual.PageNumber == expected.PageNumber &&
                    Position.Equal(actual.Position, expected.Position) &&
-                   Size.Equal(actual.Size, expected.Size);
+                   Size.Equal(actual.Size, expected.Size) &&
+                   (expected.StateAfterDrawing == null || Comparer.AreEqual(actual.StateAfterDrawing, expected.StateAfterDrawing, ref tolerance));
         }
 
         static void DrawLog(IReadOnlyCollection<ElementDrawingEvent> actualEvents, IReadOnlyCollection<ElementDrawingEvent> expectedEvents)
