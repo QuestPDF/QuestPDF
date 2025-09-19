@@ -39,7 +39,6 @@
         <InternalsVisibleTo Include="QuestPDF.UnitTests" />
         <InternalsVisibleTo Include="QuestPDF.LayoutTests" />
         <InternalsVisibleTo Include="QuestPDF.VisualTests" />
-        <InternalsVisibleTo Include="QuestPDF.ConformanceTests" />
     </ItemGroup>
 
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
@@ -75,8 +74,5 @@
         </None>
         
         <None Include="Resources\Description.md" Pack="true" PackagePath="README.md" />
-
-        <EmbeddedResource Include="Resources/MimeTypes.csv" />
-        <EmbeddedResource Include="Resources/LatinWords.txt" />
     </ItemGroup>
 </Project>
