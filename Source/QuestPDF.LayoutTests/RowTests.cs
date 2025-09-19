@@ -389,7 +389,7 @@ public class RowTests
                 {
                     row.Spacing(200);
                     
-                    row.ConstantItem(10).Mock("a").SolidBlock(height: 40);
+                    row.ConstantItem(10).SolidBlock(height: 40); // <-
                 });
             })
             .ExpectLayoutException("The content requires more horizontal space than available.");
@@ -725,6 +725,61 @@ public class RowTests
                     {
                         page.Mock("a").Position(0, 0).Size(50, 40);
                         page.Mock("d").Position(50, 0).Size(50, 40);
+                    });
+            });
+    }
+    
+    #endregion
+    
+    #region Stateful
+    
+    [Test]
+    public void CheckRenderingState()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(240, 100)
+            .ForContent(content =>
+            {
+                content.Shrink().Mock("a").Row(innerRow =>
+                {
+                    innerRow.RelativeItem().ContinuousBlock(50, 80);
+                    innerRow.RelativeItem().ContinuousBlock(50, 250);
+                    innerRow.RelativeItem().ContinuousBlock(50, 170);
+                    innerRow.RelativeItem().ContinuousBlock(50, 320);
+                });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(240, 100)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(240, 100).State(new[] { true, false, false, false });
+                    });
+                
+                document
+                    .Page()
+                    .RequiredAreaSize(240, 100)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(240, 100).State(new[] { true, false, true, false });
+                    });
+                
+                document
+                    .Page()
+                    .RequiredAreaSize(240, 100)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(240, 100).State(new[] { true, true, true, false });
+                    });
+                
+                document
+                    .Page()
+                    .RequiredAreaSize(240, 20)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(240, 20).State(new[] { true, true, true, true });
                     });
             });
     }
