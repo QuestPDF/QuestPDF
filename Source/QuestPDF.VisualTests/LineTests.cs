@@ -111,4 +111,48 @@ public class LineTests
                 .LineGradient([Colors.Red.Medium, Colors.Orange.Medium, Colors.Yellow.Medium]);
         });
     }
+    
+    #region IStateful
+    
+    [Test]
+    public void LineShouldRenderOnlyOnce()
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        {
+            container
+                .Height(400)
+                .Width(400)
+                .Row(row =>
+                {
+                    row.RelativeItem().LineHorizontal(10);
+                    row.RelativeItem().Column(column =>
+                    {
+                        column.Item().Height(300).Background(Colors.Blue.Lighten1);
+                        column.Item().Height(200).Background(Colors.Blue.Lighten3);
+                    });
+                });
+        });
+    }
+    
+    [Test]
+    public void LineShouldRerenderWhenCombinedWithRepeat()
+    {
+        VisualTest.PerformWithDefaultPageSettings(container =>
+        {
+            container
+                .Height(400)
+                .Width(400)
+                .Row(row =>
+                {
+                    row.RelativeItem().Repeat().LineHorizontal(10);
+                    row.RelativeItem().Column(column =>
+                    {
+                        column.Item().Height(300).Background(Colors.Blue.Lighten1);
+                        column.Item().Height(200).Background(Colors.Blue.Lighten3);
+                    });
+                });
+        });
+    }
+    
+    #endregion
 }

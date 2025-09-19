@@ -30,6 +30,7 @@ namespace QuestPDF.Elements
             if (IsRendered)
                 return SpacePlan.Empty();
             
+            // TODO: this code is defensive, taking into account conditions below, it is not needed
             if (availableSpace.IsNegative())
                 return SpacePlan.Wrap("The available space is negative.");
 
