@@ -8,6 +8,7 @@ internal class ElementDrawingEvent
     public int PageNumber { get; set; }
     public Position Position { get; set; }
     public Size Size { get; set; }
+    public object? StateAfterDrawing { get; set; }
 }
 
 internal class DrawingRecorder

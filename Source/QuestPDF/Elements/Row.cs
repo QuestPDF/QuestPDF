@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -21,12 +22,12 @@ namespace QuestPDF.Elements
         public RowItemType Type { get; set; }
         public float Size { get; set; }
 
-        public override string ToString()
+        internal override string? GetCompanionHint()
         {
             if (Type == RowItemType.Auto)
                 return "Auto";
             
-            return $"{Type}({Size})";
+            return $"{Type} {Size:0.#}";
         }
     }
 
@@ -47,12 +48,7 @@ namespace QuestPDF.Elements
         
         internal override IEnumerable<Element?> GetChildren()
         {
-            return Items.Select(x => x.Child);
-        }
-        
-        internal override void CreateProxy(Func<Element?, Element?> create)
-        {
-            Items.ForEach(x => x.Child = create(x.Child));
+            return Items;
         }
 
         internal override SpacePlan Measure(Size availableSpace)
@@ -65,7 +61,7 @@ namespace QuestPDF.Elements
             
             UpdateItemsWidth(availableSpace.Width);
             
-            if (Items.Any(x => x.Width < -Size.Epsilon))
+            if (Items.Any(x => x.Width.IsLessThan(0)))
                 return SpacePlan.Wrap("One of the items has a negative size, indicating insufficient horizontal space. Usually, constant items require more space than is available, potentially causing other content to overflow.");
             
             var renderingCommands = PlanLayout(availableSpace);
@@ -77,10 +73,10 @@ namespace QuestPDF.Elements
             var height = renderingCommands.Max(x => x.Size.Height);
             var size = new Size(width, height);
 
-            if (width > availableSpace.Width + Size.Epsilon)
+            if (width.IsGreaterThan(availableSpace.Width))
                 return SpacePlan.Wrap("The content requires more horizontal space than available.");
             
-            if (height > availableSpace.Height + Size.Epsilon)
+            if (height.IsGreaterThan(availableSpace.Height))
                 return SpacePlan.Wrap("The content requires more vertical space than available.");
             
             if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.PartialRender))
@@ -105,6 +101,7 @@ namespace QuestPDF.Elements
                 if (command.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                     command.RowItem.IsRendered = true;
                 
+                // TODO: investigate, as the final targetSize is still changed to use available vertical space
                 if (command.Measurement.Type is SpacePlanType.Wrap)
                     continue;
 
@@ -114,7 +111,7 @@ namespace QuestPDF.Elements
 
                 var targetSize = new Size(command.Size.Width, availableSpace.Height);
                     
-                if (targetSize.Width < -Size.Epsilon)
+                if (targetSize.Width.IsLessThan(0))
                     continue;
                 
                 Canvas.Translate(offset);
@@ -165,6 +162,7 @@ namespace QuestPDF.Elements
                 leftOffset += item.Width + Spacing;
             }
 
+            // TODO: investigate
             if (renderingCommands.Any(x => x.Measurement.Type == SpacePlanType.Wrap))
                 return renderingCommands;
             

@@ -15,14 +15,16 @@ internal class ElementObserver : ContainerElement
         Debug.Assert(DrawingRecorder != null);
         
         var matrix = Canvas.GetCurrentMatrix();
-        
-        DrawingRecorder?.Record(new ElementDrawingEvent
+
+        var drawingEvent = new ElementDrawingEvent
         {
             ObserverId = ObserverId,
             PageNumber = PageContext.CurrentPage,
             Position = new Position(matrix.TranslateX, matrix.TranslateY),
             Size = ObserverId == "$document" ? Child.Measure(availableSpace) : availableSpace
-        });
+        };
+        
+        DrawingRecorder?.Record(drawingEvent);
         
         var matrixBeforeDraw = Canvas.GetCurrentMatrix().ToMatrix4x4();
         base.Draw(availableSpace);
@@ -30,5 +32,7 @@ internal class ElementObserver : ContainerElement
         
         if (matrixAfterDraw != matrixBeforeDraw)
             throw new InvalidOperationException("Canvas state was not restored after drawing operation.");
+
+        drawingEvent.StateAfterDrawing = (Child as IStateful)?.GetState();
     }
 }

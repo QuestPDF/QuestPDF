@@ -79,6 +79,21 @@ namespace QuestPDF.Helpers
         {
             element.VisitChildren(x => (x as IDisposable)?.Dispose());
         }
+        
+        internal static bool IsGreaterThan(this float first, float second)
+        {
+            return first > second + Size.Epsilon;
+        }
+        
+        internal static bool IsLessThan(this float first, float second)
+        {
+            return first < second - Size.Epsilon;
+        }
+        
+        public static bool AreClose(double a, double b)
+        {
+            return Math.Abs(a - b) <= Size.Epsilon;
+        }
 
         internal static bool IsNegative(this Size size)
         {
