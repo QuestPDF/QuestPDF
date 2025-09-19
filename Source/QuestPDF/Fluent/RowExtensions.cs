@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
@@ -12,12 +13,12 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Adjusts horizontal spacing between items.
         /// </summary>
-        public void Spacing(float value, Unit unit = Unit.Point)
+        public void Spacing(float spacing, Unit unit = Unit.Point)
         {
-            if (value < 0)
-                throw new ArgumentOutOfRangeException(nameof(value), "The row spacing cannot be negative.");
+            if (spacing < 0)
+                throw new ArgumentOutOfRangeException(nameof(spacing), "The row spacing cannot be negative.");
             
-            Row.Spacing = value.ToPoints(unit);
+            Row.Spacing = spacing.ToPoints(unit);
         }
 
         private IContainer Item(RowItemType type, float size = 0)
@@ -29,16 +30,18 @@ namespace QuestPDF.Fluent
             };
             
             Row.Items.Add(item);
-            return item.DebugPointer(DebugPointerType.ElementStructure, item.ToString());
+            return item;
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the RelativeItem method.")]
+        [ExcludeFromCodeCoverage]
         public IContainer RelativeColumn(float size = 1)
         {
             return Item(RowItemType.Relative, size);
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the ConstantItem method.")]
+        [ExcludeFromCodeCoverage]
         public IContainer ConstantColumn(float size)
         {
             return Item(RowItemType.Constant, size);
@@ -54,8 +57,8 @@ namespace QuestPDF.Fluent
         /// <returns>The container of the newly added item.</returns>
         public IContainer RelativeItem(float size = 1)
         {
-            if (size < 0)
-                throw new ArgumentOutOfRangeException(nameof(size), "The relative item size cannot be negative.");
+            if (size <= 0)
+                throw new ArgumentOutOfRangeException(nameof(size), "The relative item size must be greater than zero.");
             
             return Item(RowItemType.Relative, size);
         }
