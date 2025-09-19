@@ -22,6 +22,9 @@ internal sealed class SkPaint : IDisposable
     
     public void SetLinearGradient(Position start, Position end, Color[] colors)
     {
+        if (colors.Length == 0)
+            throw new ArgumentException("At least one color must be provided to create a gradient.", nameof(colors));
+        
         var startPoint = new SkPoint(start.X, start.Y);
         var endPoint = new SkPoint(end.X, end.Y);
         
@@ -37,6 +40,12 @@ internal sealed class SkPaint : IDisposable
     
     public void SetDashedPathEffect(float[] intervals)
     {
+        if (intervals.Length == 0)
+            throw new ArgumentException("At least one interval must be provided to create a dashed path effect.", nameof(intervals));
+        
+        if (intervals.Length % 2 != 0)
+            throw new ArgumentException("The intervals array must contain an even number of elements.", nameof(intervals));
+        
         API.paint_set_dashed_path_effect(Instance, intervals.Length, intervals);
     }
     
