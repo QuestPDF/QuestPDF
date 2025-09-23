@@ -51,8 +51,10 @@ namespace QuestPDF.Drawing.DocumentCanvases
                 CreationDate = new SkDateTime(DocumentMetadata.CreationDate),
                 ModificationDate = new SkDateTime(DocumentMetadata.ModifiedDate),
                 
+                PDFA_Conformance = GetPDFAConformanceLevel(DocumentSettings.PDFA_Conformance),
+                PDFUA_Conformance = GetPDFUAConformanceLevel(DocumentSettings.PDFUA_Conformance),
+                
                 RasterDPI = DocumentSettings.ImageRasterDpi,
-                SupportPDFA = DocumentSettings.PdfA,
                 CompressDocument = DocumentSettings.CompressDocument,
                 
                 SemanticNodeRoot = SemanticTag?.Instance ?? IntPtr.Zero
@@ -66,6 +68,33 @@ namespace QuestPDF.Drawing.DocumentCanvases
             {
                 throw new InitializationException("PDF", exception);
             }
+        }
+
+        static Skia.PDFA_Conformance GetPDFAConformanceLevel(Infrastructure.PDFA_Conformance conformanceLevel)
+        {
+            return conformanceLevel switch
+            {
+                Infrastructure.PDFA_Conformance.None => Skia.PDFA_Conformance.None,
+                // Infrastructure.PDFA_Conformance.PDFA_1A => Skia.PDFA_Conformance.PDFA_1A,
+                // Infrastructure.PDFA_Conformance.PDFA_1B => Skia.PDFA_Conformance.PDFA_1B,
+                Infrastructure.PDFA_Conformance.PDFA_2A => Skia.PDFA_Conformance.PDFA_2A,
+                Infrastructure.PDFA_Conformance.PDFA_2B => Skia.PDFA_Conformance.PDFA_2B,
+                Infrastructure.PDFA_Conformance.PDFA_2U => Skia.PDFA_Conformance.PDFA_2U,
+                Infrastructure.PDFA_Conformance.PDFA_3A => Skia.PDFA_Conformance.PDFA_3A,
+                Infrastructure.PDFA_Conformance.PDFA_3B => Skia.PDFA_Conformance.PDFA_3B,
+                Infrastructure.PDFA_Conformance.PDFA_3U => Skia.PDFA_Conformance.PDFA_3U,
+                _ => throw new ArgumentOutOfRangeException(nameof(conformanceLevel), conformanceLevel, "Unsupported PDF/A conformance level")
+            };
+        }
+        
+        static Skia.PDFUA_Conformance GetPDFUAConformanceLevel(Infrastructure.PDFUA_Conformance conformanceLevel)
+        {
+            return conformanceLevel switch
+            {
+                Infrastructure.PDFUA_Conformance.None => Skia.PDFUA_Conformance.None,
+                Infrastructure.PDFUA_Conformance.PDFUA_1 => Skia.PDFUA_Conformance.PDFUA_1,
+                _ => throw new ArgumentOutOfRangeException(nameof(conformanceLevel), conformanceLevel, "Unsupported PDF/UA conformance level")
+            };
         }
         
         #region IDisposable

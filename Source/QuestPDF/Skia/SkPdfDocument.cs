@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Xml;
 
 namespace QuestPDF.Skia;
 
@@ -17,11 +18,32 @@ internal struct SkPdfDocumentMetadata
     public SkDateTime CreationDate;
     public SkDateTime ModificationDate;
 
-    [MarshalAs(UnmanagedType.I1)] public bool SupportPDFA;
+    public PDFA_Conformance PDFA_Conformance;
+    public PDFUA_Conformance PDFUA_Conformance;
+    
     [MarshalAs(UnmanagedType.I1)] public bool CompressDocument;
     public float RasterDPI;
 
     public IntPtr SemanticNodeRoot;
+}
+
+internal enum PDFA_Conformance
+{
+    None = 0,
+    PDFA_1A = 1,
+    PDFA_1B = 2,
+    PDFA_2A = 3,
+    PDFA_2B = 4,
+    PDFA_2U = 5,
+    PDFA_3A = 6,
+    PDFA_3B = 7,
+    PDFA_3U = 8
+}
+
+internal enum PDFUA_Conformance
+{
+    None = 0,
+    PDFUA_1 = 1
 }
 
 internal static class SkPdfDocument
