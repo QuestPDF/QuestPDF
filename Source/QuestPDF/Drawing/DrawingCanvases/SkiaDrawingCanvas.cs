@@ -216,14 +216,14 @@ namespace QuestPDF.Drawing.DrawingCanvases
             CurrentCanvas.ClipRoundedRectangle(clipArea);
         }
         
-        public void DrawHyperlink(string url, Size size)
+        public void DrawHyperlink(Size size, string url, string? description)
         {
-            CurrentCanvas.AnnotateUrl(size.Width, size.Height, url);
+            CurrentCanvas.AnnotateUrl(size.Width, size.Height, url, description);
         }
         
-        public void DrawSectionLink(string sectionName, Size size)
+        public void DrawSectionLink(Size size, string sectionName, string? description)
         {
-            CurrentCanvas.AnnotateDestinationLink(size.Width, size.Height, sectionName);
+            CurrentCanvas.AnnotateDestinationLink(size.Width, size.Height, sectionName, description);
         }
 
         public void DrawSection(string sectionName)

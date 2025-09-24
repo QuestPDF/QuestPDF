@@ -8,6 +8,7 @@ namespace QuestPDF.Elements
     {
         public ContentDirection ContentDirection { get; set; }
         public string Url { get; set; } = "https://www.questpdf.com";
+        public string? Description { get; set; }
         
         internal override void Draw(Size availableSpace)
         {
@@ -21,7 +22,7 @@ namespace QuestPDF.Elements
                 : new Position(availableSpace.Width - targetSize.Width, 0);
 
             Canvas.Translate(horizontalOffset);
-            Canvas.DrawHyperlink(Url, availableSpace);
+            Canvas.DrawHyperlink(availableSpace, Url, Description);
             Canvas.Translate(horizontalOffset.Reverse());
             
             base.Draw(availableSpace);

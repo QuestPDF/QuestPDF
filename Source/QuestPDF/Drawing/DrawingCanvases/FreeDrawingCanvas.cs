@@ -133,12 +133,12 @@ namespace QuestPDF.Drawing.DrawingCanvases
             
         }
         
-        public void DrawHyperlink(string url, Size size)
+        public void DrawHyperlink(Size size, string url, string? description)
         {
            
         }
 
-        public void DrawSectionLink(string sectionName, Size size)
+        public void DrawSectionLink(Size size, string sectionName, string? description)
         {
             
         }

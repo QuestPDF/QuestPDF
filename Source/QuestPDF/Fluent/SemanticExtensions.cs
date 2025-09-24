@@ -343,9 +343,9 @@ public static class SemanticExtensions
     /// Applies the semantic "Link" tag to the specified container.
     /// This is used to signify that the content represents a link or hyperlink within a document.
     /// </summary>
-    public static IContainer SemanticLink(this IContainer container)
+    public static IContainer SemanticLink(this IContainer container, string alternativeText)
     {
-        return container.SemanticTag("Link");
+        return container.SemanticTag("Link", alternativeText: alternativeText);
     }
     
     #endregion

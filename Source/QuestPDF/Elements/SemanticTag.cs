@@ -34,6 +34,9 @@ internal class SemanticTag : ContainerElement
         if (TagType is "H" or "H1" or "H2" or "H3" or "H4" or "H5" or "H6")
             UpdateHeaderText();
         
+        if (TagType is "Link")
+            UpdateInnerLink();
+        
         var id = SemanticTreeManager.GetNextNodeId();
             
         SemanticTreeNode = new SemanticTreeNode
@@ -71,6 +74,31 @@ internal class SemanticTag : ContainerElement
                 foreach (var child in element.GetChildren())
                     Traverse(builder, child);
             }
+        }
+    }
+    
+    private void UpdateInnerLink()
+    {
+        if (string.IsNullOrWhiteSpace(Alt))
+            return;
+        
+        var currentChild = Child;
+        
+        while (currentChild != null)
+        {
+            if (currentChild is Hyperlink hyperlink)
+            {
+                hyperlink.Description = Alt;
+                return;
+            }
+            
+            if (currentChild is SectionLink sectionLink)
+            {
+                sectionLink.Description = Alt;
+                return;
+            }
+            
+            currentChild = (currentChild as ContainerElement)?.Child;
         }
     }
 }
