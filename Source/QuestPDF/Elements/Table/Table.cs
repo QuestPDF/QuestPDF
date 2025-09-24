@@ -358,10 +358,21 @@ namespace QuestPDF.Elements.Table
         
         #region Semantic
         
+        internal bool EnableAutomatedSemanticTagging { get; set; }
+        internal bool IsSemanticTaggingApplied { get; set; }
         internal SemanticTreeManager SemanticTreeManager { get; set; } = new();
+        internal bool IsTableHeader { get; set; }
 
         private void RegisterSemanticTree()
         {
+            if (!EnableAutomatedSemanticTagging)
+                return;
+            
+            if (IsSemanticTaggingApplied)
+                return;
+            
+            IsSemanticTaggingApplied = true;
+            
             foreach (var tableRow in Cells.GroupBy(x => x.Row))
             {
                 var rowSemanticTreeNode = new SemanticTreeNode()
@@ -375,10 +386,20 @@ namespace QuestPDF.Elements.Table
                 
                 foreach (var tableCell in tableRow.OrderBy(x => x.Column))
                 {
-                    var semanticTag = tableCell.Child as SemanticTag;
-                    
-                    if (semanticTag == null)
+                    tableCell.CreateProxy(x => new SemanticTag
+                    {
+                        SemanticTreeManager = SemanticTreeManager,
+                        Canvas = Canvas,
+                        
+                        TagType = "TD",
+                        Child = x
+                    });
+
+                    if (tableCell.Child is not SemanticTag semanticTag)
                         continue;
+                    
+                    if (IsTableHeader || tableCell.IsSemanticHorizontalHeader)
+                        semanticTag.TagType = "TH";
                     
                     semanticTag.RegisterCurrentSemanticNode();
                     AssignCellAttributes(tableCell, semanticTag);
@@ -407,6 +428,27 @@ namespace QuestPDF.Elements.Table
                         Name = "RowSpan",
                         Value = tableCell.RowSpan
                     });
+                }
+
+                if (semanticTag.TagType == "TH")
+                {
+                    var scopeValue = (IsTableHeader, tableCell.IsSemanticHorizontalHeader) switch
+                    {
+                        (true, true) => "Both",
+                        (true, false) => "Column",
+                        (false, true) => "Row",
+                        (false, false) => null
+                    };
+
+                    if (scopeValue != null)
+                    {
+                        semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                        {
+                            Owner = "Table", 
+                            Name = "Scope", 
+                            Value = scopeValue
+                        });
+                    }
                 }
             }
         }

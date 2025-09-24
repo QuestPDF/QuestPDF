@@ -198,18 +198,9 @@ namespace QuestPDF.Fluent
             
                 table.PlanCellPositions();
                 table.ValidateCellPositions();
-
-                if (EnableAutomatedSemanticTagging)
-                {
-                    foreach (var tableCell in table.Cells)
-                    {
-                        tableCell.CreateProxy(x => new SemanticTag()
-                        {
-                            Child = x,
-                            TagType = isHeader ? "TH" : "TD"
-                        });
-                    }
-                }
+                
+                table.EnableAutomatedSemanticTagging = EnableAutomatedSemanticTagging;
+                table.IsTableHeader = isHeader;
             }
         }
     }
@@ -285,6 +276,18 @@ namespace QuestPDF.Fluent
         {
             if (tableCellContainer is TableCell tableCell)
                 tableCell.RowSpan = (int)value;
+
+            return tableCellContainer;
+        }
+
+        /// <summary>
+        /// Marks the specified table cell as a semantic horizontal header.
+        /// This allows assistive technologies to recognize the cell as a header, improving accessibility and semantic structure.
+        /// </summary>
+        public static ITableCellContainer AsSemanticHorizontalHeader(this ITableCellContainer tableCellContainer)
+        {
+            if (tableCellContainer is TableCell tableCell)
+                tableCell.IsSemanticHorizontalHeader = true;
 
             return tableCellContainer;
         }

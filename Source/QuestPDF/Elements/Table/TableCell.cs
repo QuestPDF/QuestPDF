@@ -12,6 +12,8 @@ namespace QuestPDF.Elements.Table
         
         public int ZIndex { get; set; }
         
+        public bool IsSemanticHorizontalHeader { get; set; }
+        
         public bool IsRendered { get; set; }
     }
 }
