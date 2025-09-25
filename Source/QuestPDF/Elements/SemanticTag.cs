@@ -22,7 +22,6 @@ internal class SemanticTag : ContainerElement
         SemanticTreeManager.PushOnStack(SemanticTreeNode);
         Canvas.SetSemanticNodeId(SemanticTreeNode.NodeId);
         Child?.Draw(availableSpace);
-        Canvas.SetSemanticNodeId(0);
         SemanticTreeManager.PopStack();
     }
 
