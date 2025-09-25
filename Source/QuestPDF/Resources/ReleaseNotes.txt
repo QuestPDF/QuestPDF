@@ -1,4 +1,11 @@
-- Disabled standard ligatures by default, as they often interfere with text copying and may pose accessibility issues,
-- Performance has been improved when generating multiple text-heavy documents at the same time. The more concurrent operations and text elements involved, the more noticeable the benefit,
-- Improved the developer experience by updating the behavior of the GeneratePdfAndShow method to always create a uniquely named file. It ensures that certain PDF viewers automatically refresh the preview,
-- Fix exception triggered when generating a PDF without defining a Page in the Fluent API.
+2025.12.0-alpha0:
+- Added initial support for semantic tagging and bookmarks.
+
+
+2025.12.0-alpha1:
+- Ported all changes from the 2025.7.2 release.
+- Added support for the following conformance standards: PDF/A-2b, PDF/A-2u, PDF/A-2a, PDF/A-3b, PDF/A-3u, PDF/A-3a, and PDF/UA-1.
+- Improved the semantic structure of links (both external hyperlinks and internal links to named destinations) for better compatibility with PDF/UA-1.
+- Corrected semantic tagging of decorative elements such as shadows, backgrounds, borders, and lines by marking them as artifacts.
+- Enhanced the semantic structure and accessibility of simple tables (without cells spanning multiple rows or columns) by automatically tagging header cells.
+- Introduced support for horizontal headers to further improve the semantic structure and accessibility of simple tables.
