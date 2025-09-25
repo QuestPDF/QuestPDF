@@ -80,6 +80,7 @@ namespace QuestPDF.Elements
                 : new Position(0, Thickness / 2);
             
             Canvas.Translate(offset);
+            Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
             Canvas.DrawLine(start, end, paint);
             Canvas.Translate(offset.Reverse());
             
