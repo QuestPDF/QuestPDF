@@ -1,4 +1,5 @@
-﻿using QuestPDF.Elements;
+﻿using System;
+using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Fluent
@@ -23,6 +24,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="scale.factorParam"]/*' />
         public static IContainer Scale(this IContainer element, float factor)
         {
+            if (factor == 0)
+                throw new ArgumentException("Vertical scale factor cannot be zero.", nameof(factor));
+            
             return element.ScaleValue(x: factor, y: factor);
         }
         
@@ -34,6 +38,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="scale.factorParam"]/*' />
         public static IContainer ScaleHorizontal(this IContainer element, float factor)
         {
+            if (factor == 0)
+                throw new ArgumentException("Vertical scale factor cannot be zero.", nameof(factor));
+            
             return element.ScaleValue(x: factor);
         }
         
@@ -45,6 +52,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="scale.factorParam"]/*' />
         public static IContainer ScaleVertical(this IContainer element, float factor)
         {
+            if (factor == 0)
+                throw new ArgumentException("Vertical scale factor cannot be zero.", nameof(factor));
+            
             return element.ScaleValue(y: factor);
         }
         
