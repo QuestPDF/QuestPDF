@@ -110,11 +110,7 @@ public static class VisualTestEngine
         var actualOutputPath = Path.Combine(ActualOutputDirectoryName, testCategory);
         var expectedOutputPath = Path.Combine(ExpectedOutputDirectoryName, testCategory);
         
-        if (!Directory.Exists(expectedOutputPath))
-            Assert.Inconclusive("Cannot find the expected output folder");
-        
         var testName = TestContext.CurrentContext.Test.Name;
-        var expectedOutputFileCount = Directory.EnumerateFiles(expectedOutputPath, $"{testName}*.png").Count();
         
         Directory.CreateDirectory(actualOutputPath);
 
@@ -128,6 +124,11 @@ public static class VisualTestEngine
             var actualImagePath = Path.Combine(actualOutputPath, GetFileName(i));
             File.WriteAllBytes(actualImagePath, actualImages[i]);
         }
+        
+        if (!Directory.Exists(expectedOutputPath))
+            Assert.Inconclusive("Cannot find the expected output folder");
+        
+        var expectedOutputFileCount = Directory.EnumerateFiles(expectedOutputPath, $"{testName}*.png").Count();
         
         if (actualImages.Count != expectedOutputFileCount)
             Assert.Fail($"Generated {actualImages.Count} images but expected {expectedOutputFileCount}");
