@@ -66,7 +66,7 @@ internal class SemanticTag : ContainerElement
             }
             else if (element is ContainerElement container)
             {
-                Traverse(builder, container);
+                Traverse(builder, container.Child);
             }
             else
             {
