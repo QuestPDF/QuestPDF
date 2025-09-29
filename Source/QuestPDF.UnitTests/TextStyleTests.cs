@@ -3,12 +3,120 @@ using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia.Text;
 
 namespace QuestPDF.UnitTests
 {
     [TestFixture]
     public class TextStyleTests
     {
+        #region Text Decoration
+        
+        [Test]
+        public void TextDecoration_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.HasStrikethrough, Is.False);
+            Assert.That(textStyle.HasUnderline, Is.False);
+            Assert.That(textStyle.HasOverline, Is.False);
+            Assert.That(textStyle.DecorationColor, Is.EqualTo(Colors.Black));
+            Assert.That(textStyle.DecorationThickness, Is.EqualTo(1f));
+            Assert.That(textStyle.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Solid));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_Strikethrough()
+        {
+            var textStyle = TextStyle.Default.Strikethrough();
+            Assert.That(textStyle.HasStrikethrough, Is.True);
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_StrikethroughDisabled()
+        {
+            var textStyle = TextStyle.Default.Strikethrough().Strikethrough(false);
+            Assert.That(textStyle.HasStrikethrough, Is.False);
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_Underline()
+        {
+            var textStyle = TextStyle.Default.Underline();
+            Assert.That(textStyle.HasUnderline, Is.True);
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_UnderlineDisabled()
+        {
+            var textStyle = TextStyle.Default.Underline().Underline(false);
+            Assert.That(textStyle.HasUnderline, Is.False);
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_Overline()
+        {
+            var textStyle = TextStyle.Default.Overline();
+            Assert.That(textStyle.HasOverline, Is.True);
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_OverlineDisabled()
+        {
+            var textStyle = TextStyle.Default.Overline().Overline(false);
+            Assert.That(textStyle.HasOverline, Is.False);
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_DecorationColor()
+        {
+            var textStyle = TextStyle.Default.DecorationColor(Colors.Red.Medium);
+            Assert.That(textStyle.DecorationColor, Is.EqualTo(Colors.Red.Medium));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_DecorationThickness()
+        {
+            var textStyle = TextStyle.Default.DecorationThickness(1.5f);
+            Assert.That(textStyle.DecorationThickness, Is.EqualTo(1.5f));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_DecorationSolid()
+        {
+            var textStyle = TextStyle.Default.DecorationSolid();
+            Assert.That(textStyle.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Solid));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_DecorationDouble()
+        {
+            var textStyle = TextStyle.Default.DecorationDouble();
+            Assert.That(textStyle.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Double));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_DecorationWavy()
+        {
+            var textStyle = TextStyle.Default.DecorationWavy();
+            Assert.That(textStyle.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Wavy));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_DecorationDotted()
+        {
+            var textStyle = TextStyle.Default.DecorationDotted();
+            Assert.That(textStyle.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Dotted));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDecoration_DecorationDashed()
+        {
+            var textStyle = TextStyle.Default.DecorationDashed();
+            Assert.That(textStyle.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Dashed));
+        }
+        
+        #endregion
+        
         #region Font Weight
         
         [Test]
