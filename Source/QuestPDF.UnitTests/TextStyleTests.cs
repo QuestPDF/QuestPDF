@@ -9,6 +9,119 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class TextStyleTests
     {
+        #region Font Weight
+        
+        [Test]
+        public void FontWeight_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.Normal));
+        }
+        
+        [Test]
+        public void SetsCorrectSetsCorrectFontWeight_Thin()
+        {
+            var textStyle = TextStyle.Default.Thin();
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.Thin));
+        }
+        
+        [Test]
+        public void SetsCorrectFontWeight_ExtraLight()
+        {
+            var textStyle = TextStyle.Default.ExtraLight();
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.ExtraLight));
+        }
+        
+        [Test]
+        public void SetsCorrectFontWeight_Light()
+        {
+            var textStyle = TextStyle.Default.Light();
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.Light));
+        }
+        
+        [Test]
+        public void SetsCorrectFontWeight_Normal()
+        {
+            var textStyle = TextStyle.Default.Bold().NormalWeight(); // first change from default, then normal
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.Normal));
+        }
+        
+        [Test]
+        public void SetsCorrectFontWeight_Medium()
+        {
+            var textStyle = TextStyle.Default.Medium();
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.Medium));
+        }
+        
+        [Test]
+        public void SetsCorrectFontWeight_SemiBold()
+        {
+            var textStyle = TextStyle.Default.SemiBold();
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.SemiBold));
+        }
+        
+        [Test]
+        public void SetsCorrectFontWeight_Bold()
+        {
+            var textStyle = TextStyle.Default.Bold();
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.Bold));
+        }
+        
+        [Test]
+        public void SetsCorrectFontWeight_ExtraBold()
+        {
+            var textStyle = TextStyle.Default.ExtraBold();
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.ExtraBold));
+        }
+        
+        [Test]
+        public void SetsCorrectFontWeight_Black()
+        {
+            var textStyle = TextStyle.Default.Black();
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.Black));
+        }
+        
+        [Test]
+        public void SetsCorrectFontWeight_ExtraBlack()
+        {
+            var textStyle = TextStyle.Default.ExtraBlack();
+            Assert.That(textStyle.FontWeight, Is.EqualTo(FontWeight.ExtraBlack));
+        }
+        
+        #endregion
+        
+        #region Text Position
+    
+        [Test]
+        public void TextPosition_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.FontPosition, Is.EqualTo(FontPosition.Normal));
+        }
+        
+        [Test]
+        public void SetsCorrectTextPosition_Subscript()
+        {
+            var textStyle = TextStyle.Default.Subscript();
+            Assert.That(textStyle.FontPosition, Is.EqualTo(FontPosition.Subscript));
+        }
+        
+        [Test]
+        public void SetsCorrectTextPosition_Normal()
+        {
+            var textStyle = TextStyle.Default.Subscript().NormalPosition(); // first change from default, then normal
+            Assert.That(textStyle.FontPosition, Is.EqualTo(FontPosition.Normal));
+        }
+        
+        [Test]
+        public void SetsCorrectTextPosition_Superscript()
+        {
+            var textStyle = TextStyle.Default.Superscript();
+            Assert.That(textStyle.FontPosition, Is.EqualTo(FontPosition.Superscript));
+        }
+    
+        #endregion
+        
         [Test]
         public void ApplyInheritedAndGlobalStyle()
         {
