@@ -134,6 +134,34 @@ public class TextSpanTests
     
     #endregion
     
+    #region Text Direction
+        
+    [Test]
+    public void SetsCorrectTextDirection_LeftToRight()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DirectionFromLeftToRight();
+        Assert.That(textBlockSpan.Style.Direction, Is.EqualTo(TextDirection.LeftToRight));
+    }
+        
+    [Test]
+    public void SetsCorrectTextDirection_RightToLeft()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DirectionFromRightToLeft();
+        Assert.That(textBlockSpan.Style.Direction, Is.EqualTo(TextDirection.RightToLeft));
+    }
+        
+    [Test]
+    public void SetsCorrectTextDirection_Auto()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DirectionFromRightToLeft().DirectionAuto();
+        Assert.That(textBlockSpan.Style.Direction, Is.EqualTo(TextDirection.Auto));
+    }
+        
+    #endregion
+    
     #region Font Features
     
     [Test]

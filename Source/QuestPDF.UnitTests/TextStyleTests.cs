@@ -122,6 +122,38 @@ namespace QuestPDF.UnitTests
     
         #endregion
         
+        #region Text Direction
+        
+        [Test]
+        public void TextDirection_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.Direction, Is.EqualTo(TextDirection.Auto));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDirection_LeftToRight()
+        {
+            var textStyle = TextStyle.Default.DirectionFromLeftToRight();
+            Assert.That(textStyle.Direction, Is.EqualTo(TextDirection.LeftToRight));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDirection_RightToLeft()
+        {
+            var textStyle = TextStyle.Default.DirectionFromRightToLeft();
+            Assert.That(textStyle.Direction, Is.EqualTo(TextDirection.RightToLeft));
+        }
+        
+        [Test]
+        public void SetsCorrectTextDirection_Auto()
+        {
+            var textStyle = TextStyle.Default.DirectionFromRightToLeft().DirectionAuto(); // first change from default, then auto
+            Assert.That(textStyle.Direction, Is.EqualTo(TextDirection.Auto));
+        }
+        
+        #endregion
+        
         #region Font Features
 
         [Test]
