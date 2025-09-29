@@ -6,6 +6,7 @@ using QuestPDF.Elements.Text.Items;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia.Text;
 
 namespace QuestPDF.UnitTests;
 
@@ -21,6 +22,114 @@ public class TextSpanTests
         
         return (descriptor, textBlockSpan);
     }
+    
+    #region Text Decoration
+
+    [Test]
+    public void SetsCorrectTextDecoration_Strikethrough()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.Strikethrough();
+        Assert.That(textBlockSpan.Style.HasStrikethrough, Is.EqualTo(true));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_StrikethroughDisabled()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.Strikethrough(false);
+        Assert.That(textBlockSpan.Style.HasStrikethrough, Is.EqualTo(false));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_Underline()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.Underline();
+        Assert.That(textBlockSpan.Style.HasUnderline, Is.EqualTo(true));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_UnderlineDisabled()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.Underline(false);
+        Assert.That(textBlockSpan.Style.HasUnderline, Is.EqualTo(false));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_Overline()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.Overline();
+        Assert.That(textBlockSpan.Style.HasOverline, Is.EqualTo(true));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_OverlineDisabled()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.Overline(false);
+        Assert.That(textBlockSpan.Style.HasOverline, Is.EqualTo(false));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_DecorationColor()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DecorationColor(Colors.Red.Medium);
+        Assert.That(textBlockSpan.Style.DecorationColor, Is.EqualTo(Colors.Red.Medium));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_DecorationThickness()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DecorationThickness(1.5f);
+        Assert.That(textBlockSpan.Style.DecorationThickness, Is.EqualTo(1.5f));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_DecorationSolid()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DecorationSolid();
+        Assert.That(textBlockSpan.Style.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Solid));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_DecorationDouble()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DecorationDouble();
+        Assert.That(textBlockSpan.Style.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Double));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_DecorationWavy()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DecorationWavy();
+        Assert.That(textBlockSpan.Style.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Wavy));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_DecorationDotted()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DecorationDotted();
+        Assert.That(textBlockSpan.Style.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Dotted));
+    }
+    
+    [Test]
+    public void SetsCorrectTextDecoration_DecorationDashed()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.DecorationDashed();
+        Assert.That(textBlockSpan.Style.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Dashed));
+    }
+    
+    #endregion
     
     #region Font Weight
 
