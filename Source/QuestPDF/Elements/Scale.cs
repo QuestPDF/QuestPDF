@@ -32,6 +32,7 @@ namespace QuestPDF.Elements
             if (measure.Type == SpacePlanType.FullRender)
                 return SpacePlan.FullRender(targetSize);
             
+            // Stryker disable once: unreachable code
             throw new ArgumentException();
         }
         
@@ -56,7 +57,7 @@ namespace QuestPDF.Elements
         
         internal override string? GetCompanionHint()
         {
-            return string.Join("   ", GetOptions().Where(x => x.value != 1).Select(x => $"{x.Label}={x.value}"));
+            return string.Join("   ", GetOptions().Where(x => x.value != 1).Select(x => $"{x.Label}={x.value:0.#}"));
             
             IEnumerable<(string Label, float value)> GetOptions()
             {
@@ -66,8 +67,8 @@ namespace QuestPDF.Elements
                     yield break;
                 }
                 
-                yield return ("X", ScaleX);
-                yield return ("Y", ScaleY);
+                yield return ("H", ScaleX);
+                yield return ("V", ScaleY);
             }
         }
     }
