@@ -36,6 +36,9 @@ namespace QuestPDF.Fluent
         /// <param name="colors">An array of <see cref="Color"/> representing the gradient colors.</param>
         public static IContainer BackgroundLinearGradient(this IContainer element, float angle, Color[] colors)
         {
+            if (colors == null || colors.Length == 0)
+                throw new ArgumentException("The background linear-gradient colors cannot be empty.", nameof(colors));
+            
             var border = element as StyledBox ?? new StyledBox();
             border.BackgroundGradientAngle = angle;
             border.BackgroundGradientColors = colors;
@@ -157,16 +160,16 @@ namespace QuestPDF.Fluent
             var styledBox = element as StyledBox ?? new StyledBox();
             
             if (topLeft < 0)
-                throw new ArgumentOutOfRangeException(nameof(topLeft), "The top-left border radius cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(topLeft), "The top-left corner radius cannot be negative.");
             
             if (topRight < 0)
-                throw new ArgumentOutOfRangeException(nameof(topRight), "The top-right border radius cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(topRight), "The top-right corner radius cannot be negative.");
             
             if (bottomRight < 0)
-                throw new ArgumentOutOfRangeException(nameof(bottomRight), "The bottom-right border radius cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(bottomRight), "The bottom-right corner radius cannot be negative.");
             
             if (bottomLeft < 0)
-                throw new ArgumentOutOfRangeException(nameof(bottomLeft), "The bottom-left border radius cannot be negative.");
+                throw new ArgumentOutOfRangeException(nameof(bottomLeft), "The bottom-left corner radius cannot be negative.");
             
             if (topLeft.HasValue)
                 styledBox.BorderRadiusTopLeft = topLeft.Value;
@@ -230,7 +233,7 @@ namespace QuestPDF.Fluent
         
         #endregion
         
-        #region Style
+        #region Border Style
         
         /// <summary>
         /// Adjusts color of the border element.
@@ -251,6 +254,9 @@ namespace QuestPDF.Fluent
         /// <param name="colors">An array of <see cref="Color"/> objects representing the gradient colors.</param>
         public static IContainer BorderLinearGradient(this IContainer element, float angle, Color[] colors)
         {
+            if (colors == null || colors.Length == 0)
+                throw new ArgumentException("The border linear-gradient colors cannot be empty.", nameof(colors));
+            
             var border = element as StyledBox ?? new StyledBox();
             border.BorderGradientAngle = angle;
             border.BorderGradientColors = colors;
@@ -303,6 +309,11 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static IContainer Shadow(this IContainer element, BoxShadowStyle style)
         {
+            if (style == null)
+                throw new ArgumentNullException(nameof(style), "The box shadow style cannot be null.");
+            
+            style.Validate();
+            
             var styledBox = element as StyledBox ?? new StyledBox();
             styledBox.Shadow = style;
             return element.Element(styledBox);

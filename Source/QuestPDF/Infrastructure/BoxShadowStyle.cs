@@ -1,3 +1,4 @@
+using System;
 using QuestPDF.Helpers;
 
 namespace QuestPDF.Infrastructure;
@@ -40,4 +41,10 @@ public sealed class BoxShadowStyle
     /// Gets or sets the color of the shadow.
     /// </summary>
     public Color Color { get; set; } = Colors.Grey.Medium;
+
+    internal void Validate()
+    {
+        if (Blur < 0)
+            throw new ArgumentException("Shadow blur radius cannot be negative.");
+    }
 }
