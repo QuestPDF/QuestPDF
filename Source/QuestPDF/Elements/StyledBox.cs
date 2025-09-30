@@ -62,7 +62,7 @@ namespace QuestPDF.Elements
         
         public BoxShadowStyle? Shadow { get; set; }
         
-        private void AdjustBorderAlignment()
+        internal void AdjustBorderAlignment()
         {
             if (BorderAlignment != null) 
                 return;
