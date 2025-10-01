@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace QuestPDF.Infrastructure
 {
@@ -57,6 +58,7 @@ namespace QuestPDF.Infrastructure
         #region Deprecated properties
         
         [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.DocumentLayoutExceptionThreshold static property.")]
+        [ExcludeFromCodeCoverage]
         public int DocumentLayoutExceptionThreshold
         {
             get => Settings.DocumentLayoutExceptionThreshold;
@@ -64,6 +66,7 @@ namespace QuestPDF.Infrastructure
         }
 
         [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.EnableCaching static property.")]
+        [ExcludeFromCodeCoverage]
         public bool ApplyCaching
         {
             get => Settings.EnableCaching;
@@ -71,6 +74,7 @@ namespace QuestPDF.Infrastructure
         }
         
         [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.EnableDebugging static property.")]
+        [ExcludeFromCodeCoverage]
         public bool ApplyDebugging
         {
             get => Settings.EnableDebugging;
@@ -78,12 +82,15 @@ namespace QuestPDF.Infrastructure
         }
         
         [Obsolete("This API has been moved since version 2023.5. Please use the QuestPDF.Infrastructure.DocumentSettings API.")]
+        [ExcludeFromCodeCoverage]
         public int? ImageQuality { get; set; }
         
         [Obsolete("This API has been moved since version 2023.5. Please use the QuestPDF.Infrastructure.DocumentSettings API.")]
+        [ExcludeFromCodeCoverage]
         public int? RasterDpi { get; set; }
         
         [Obsolete("This API has been moved since version 2023.5. Please use the QuestPDF.Infrastructure.DocumentSettings API.")]
+        [ExcludeFromCodeCoverage]
         public bool? PdfA { get; set; }
         
         #endregion

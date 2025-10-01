@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
@@ -149,7 +150,7 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Applies a default text style to all <see cref="TextExtensions.Text">Text</see> elements within the page set.
+        /// Applies a default text style to all <see cref="MediaTypeNames.Text">Text</see> elements within the page set.
         /// </summary>
         /// <remarks>
         /// Use this method to achieve consistent text styling across entire document.
@@ -193,6 +194,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the PageColor method.")]
+        [ExcludeFromCodeCoverage]
         public void Background(Color color)
         {
             PageColor(color);

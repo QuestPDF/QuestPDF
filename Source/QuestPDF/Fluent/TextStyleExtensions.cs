@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -9,6 +10,7 @@ namespace QuestPDF.Fluent
     public static class TextStyleExtensions
     {
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontColor method.")]
+        [ExcludeFromCodeCoverage]
         public static TextStyle Color(this TextStyle style, string value)
         {
             return style.FontColor(value);
@@ -31,6 +33,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontFamily method.")]
+        [ExcludeFromCodeCoverage]
         public static TextStyle FontType(this TextStyle style, string value)
         {
             return style.FontFamily(value);
@@ -46,6 +49,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontSize method.")]
+        [ExcludeFromCodeCoverage]
         public static TextStyle Size(this TextStyle style, float value)
         {
             return style.FontSize(value);
@@ -91,6 +95,7 @@ namespace QuestPDF.Fluent
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
         [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
+        [ExcludeFromCodeCoverage]
         public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)
         {
             return style;
@@ -279,6 +284,7 @@ namespace QuestPDF.Fluent
         #region Fallback
         
         [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
+        [ExcludeFromCodeCoverage]
         public static TextStyle Fallback(this TextStyle style, TextStyle? value = null)
         {
             var currentFontFamilies = style.FontFamilies ?? Array.Empty<string>();
@@ -294,6 +300,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
+        [ExcludeFromCodeCoverage]
         public static TextStyle Fallback(this TextStyle style, Func<TextStyle, TextStyle> handler)
         {
             return style.Fallback(handler(TextStyle.Default));

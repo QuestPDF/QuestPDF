@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
@@ -93,6 +94,7 @@ namespace QuestPDF.Fluent
         #region Obsolete
 
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
+        [ExcludeFromCodeCoverage]
         public IContainer Header()
         {
             var container = new Container();
@@ -101,12 +103,14 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
+        [ExcludeFromCodeCoverage]
         public void Header(Action<IContainer> handler)
         {
             handler?.Invoke(Header());
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
+        [ExcludeFromCodeCoverage]
         public IContainer Footer()
         {
             var container = new Container();
@@ -115,6 +119,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
+        [ExcludeFromCodeCoverage]
         public void Footer(Action<IContainer> handler)
         {
             handler?.Invoke(Footer());
