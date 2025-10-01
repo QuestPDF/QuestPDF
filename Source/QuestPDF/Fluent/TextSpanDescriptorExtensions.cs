@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -17,6 +18,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
+        [ExcludeFromCodeCoverage]
         public static T Fallback<T>(this T descriptor, TextStyle? value = null) where T : TextSpanDescriptor
         {
             descriptor.MutateTextStyle(TextStyleExtensions.Fallback, value);
@@ -24,6 +26,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
+        [ExcludeFromCodeCoverage]
         public static T Fallback<T>(this T descriptor, Func<TextStyle, TextStyle> handler) where T : TextSpanDescriptor
         {
             return descriptor.Fallback(handler(TextStyle.Default));
@@ -89,6 +92,7 @@ namespace QuestPDF.Fluent
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
         [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
+        [ExcludeFromCodeCoverage]
         public static T WrapAnywhere<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
             return descriptor;

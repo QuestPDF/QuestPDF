@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
@@ -55,12 +56,14 @@ namespace QuestPDF.Fluent
         #region Obsolete
 
         [Obsolete("This element has been renamed since version 2022.1. Please use the Shrink method.")]
+        [ExcludeFromCodeCoverage]
         public static IContainer Box(this IContainer element)
         {
             return element.Shrink();
         }
         
         [Obsolete("This element has been renamed since version 2023.11. Please use the Shrink method.")]
+        [ExcludeFromCodeCoverage]
         public static IContainer MinimalBox(this IContainer element)
         {
             return element.Shrink();

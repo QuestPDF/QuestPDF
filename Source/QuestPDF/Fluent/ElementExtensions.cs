@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Mime;
 using System.Runtime.CompilerServices;
 using QuestPDF.Drawing.Exceptions;
@@ -271,6 +272,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the Hyperlink method.")]
+        [ExcludeFromCodeCoverage]
         public static IContainer ExternalLink(this IContainer element, string url)
         {
             return element.Hyperlink(url);
@@ -290,6 +292,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the Section method.")]
+        [ExcludeFromCodeCoverage]
         public static IContainer Location(this IContainer element, string locationName)
         {
             return element.Section(locationName);
@@ -316,6 +319,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]
+        [ExcludeFromCodeCoverage]
         public static IContainer InternalLink(this IContainer element, string locationName)
         {
             return element.SectionLink(locationName);
@@ -524,6 +528,7 @@ namespace QuestPDF.Fluent
         public delegate void DrawOnCanvas(object canvas, Size availableSpace);
         
         [Obsolete(CanvasDeprecatedMessage)]
+        [ExcludeFromCodeCoverage]
         public static void Canvas(this IContainer element, DrawOnCanvas handler)
         {
             throw new NotImplementedException(CanvasDeprecatedMessage);

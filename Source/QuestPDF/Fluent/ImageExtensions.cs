@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
@@ -263,24 +264,28 @@ namespace QuestPDF.Fluent
         #region Obsolete
         
         [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that takes the GenerateDynamicImageDelegate as an argument.")]
+        [ExcludeFromCodeCoverage]
         public static void Image(this IContainer element, Func<Size, byte[]> imageSource)
         {
             element.Image((ImageSize x) => imageSource(new Size(x.Width, x.Height)));
         }
         
         [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that returns the ImageDescriptor object.")]
+        [ExcludeFromCodeCoverage]
         public static void Image(this IContainer parent, byte[] imageData, ImageScaling scaling)
         {
             parent.Image(imageData).ApplyScaling(scaling);
         }
         
         [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that returns the ImageDescriptor object.")]
+        [ExcludeFromCodeCoverage]
         public static void Image(this IContainer parent, string filePath, ImageScaling scaling)
         {
             parent.Image(filePath).ApplyScaling(scaling);
         }
         
         [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that returns the ImageDescriptor object.")]
+        [ExcludeFromCodeCoverage]
         public static void Image(this IContainer parent, Stream fileStream, ImageScaling scaling)
         {
             parent.Image(fileStream).ApplyScaling(scaling);

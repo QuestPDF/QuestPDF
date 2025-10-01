@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,6 +27,7 @@ namespace QuestPDF.Drawing
         }
         
         [Obsolete("Since version 2022.8 this method has been renamed. Please use the RegisterFontWithCustomName method.")]
+        [ExcludeFromCodeCoverage]
         public static void RegisterFontType(string fontName, Stream stream)
         {
             RegisterFontWithCustomName(fontName, stream);
