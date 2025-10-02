@@ -657,7 +657,7 @@ public class StyledBoxTests
         container.BorderAlignmentInside();
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderAlignment, Is.EqualTo(0));
+        Assert.That(styledBox?.BorderAlignment, Is.Zero);
     }
     
     [Test]

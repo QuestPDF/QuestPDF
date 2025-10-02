@@ -70,7 +70,7 @@ public class LineTests
         container.LineHorizontal(0);
         
         var line = container.Child as Line;
-        Assert.That(line?.Thickness, Is.EqualTo(0));
+        Assert.That(line?.Thickness, Is.Zero);
     }
     
     [Test]
@@ -246,11 +246,11 @@ public class LineTests
         
         var line = container.Child as Line;
         
-        Assert.That(line.GetState(), Is.EqualTo(false));
+        Assert.That(line.GetState(), Is.False);
         line.SetState(true);
-        Assert.That(line.GetState(), Is.EqualTo(true));
+        Assert.That(line.GetState(), Is.True);
         
         line.ResetState();
-        Assert.That(line.GetState(), Is.EqualTo(false));
+        Assert.That(line.GetState(), Is.False);
     }
 }
