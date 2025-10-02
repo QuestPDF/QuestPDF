@@ -95,9 +95,9 @@ namespace QuestPDF.UnitTests
             container.PaddingVertical(123);
         
             var rowContainer = container.Child as Padding;
-            Assert.That(rowContainer?.Left, Is.EqualTo(0));
+            Assert.That(rowContainer?.Left, Is.Zero);
             Assert.That(rowContainer?.Top, Is.EqualTo(123));
-            Assert.That(rowContainer?.Right, Is.EqualTo(0));
+            Assert.That(rowContainer?.Right, Is.Zero);
             Assert.That(rowContainer?.Bottom, Is.EqualTo(123));
         }
         
@@ -110,9 +110,9 @@ namespace QuestPDF.UnitTests
         
             var rowContainer = container.Child as Padding;
             Assert.That(rowContainer?.Left, Is.EqualTo(234));
-            Assert.That(rowContainer?.Top, Is.EqualTo(0));
+            Assert.That(rowContainer?.Top, Is.Zero);
             Assert.That(rowContainer?.Right, Is.EqualTo(234));
-            Assert.That(rowContainer?.Bottom, Is.EqualTo(0));
+            Assert.That(rowContainer?.Bottom, Is.Zero);
         }
         
         [Test]
