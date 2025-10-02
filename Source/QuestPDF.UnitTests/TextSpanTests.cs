@@ -23,6 +23,270 @@ public class TextSpanTests
         return (descriptor, textBlockSpan);
     }
     
+    #region Override Style
+    
+    [Test]
+    public void OverridesStyle()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+
+        var customStyle = TextStyle
+            .Default
+            .FontColor(Colors.Black)
+            .BackgroundColor(Colors.Transparent)
+            .Underline()
+            .DecorationColor(Colors.Red.Medium)
+            .DecorationWavy();
+
+        descriptor
+            .FontSize(30)
+            .FontColor(Colors.Blue.Darken4)
+            .BackgroundColor(Colors.Blue.Lighten5)
+            .Bold()
+            .Style(customStyle);
+        
+        Assert.That(textBlockSpan.Style.Size, Is.EqualTo(30));
+        Assert.That(textBlockSpan.Style.Color, Is.EqualTo(Colors.Black));
+        Assert.That(textBlockSpan.Style.BackgroundColor, Is.EqualTo(Colors.Transparent));
+        Assert.That(textBlockSpan.Style.HasUnderline, Is.True);
+        Assert.That(textBlockSpan.Style.DecorationColor, Is.EqualTo(Colors.Red.Medium));
+        Assert.That(textBlockSpan.Style.DecorationStyle, Is.EqualTo(TextStyleConfiguration.TextDecorationStyle.Wavy));
+        Assert.That(textBlockSpan.Style.FontWeight, Is.EqualTo(FontWeight.Bold));
+    }
+    
+    [Test]
+    public void OverridesStyle_AcceptsNull()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+
+        descriptor
+            .FontSize(30)
+            .FontColor(Colors.Blue.Darken4)
+            .BackgroundColor(Colors.Blue.Lighten5)
+            .Bold()
+            .Style(null);
+        
+        Assert.That(textBlockSpan.Style.Size, Is.EqualTo(30));
+        Assert.That(textBlockSpan.Style.Color, Is.EqualTo(Colors.Blue.Darken4));
+        Assert.That(textBlockSpan.Style.BackgroundColor, Is.EqualTo(Colors.Blue.Lighten5));
+        Assert.That(textBlockSpan.Style.FontWeight, Is.EqualTo(FontWeight.Bold));
+    }
+    
+    #endregion
+    
+    #region Font Color
+    
+    [Test]
+    public void SetsCorrectFontColor()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.FontColor(Colors.Blue.Medium);
+        Assert.That(textBlockSpan.Style.Color, Is.EqualTo(Colors.Blue.Medium));
+    }
+    
+    [Test]
+    public void FontColor_AlsoSetsDecorationColor()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.FontColor(Colors.Green.Darken2);
+        Assert.That(textBlockSpan.Style.DecorationColor, Is.EqualTo(Colors.Green.Darken2));
+    }
+    
+    #endregion
+    
+    #region Background Color
+    
+    [Test]
+    public void SetsCorrectBackgroundColor()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.BackgroundColor(Colors.Yellow.Lighten3);
+        Assert.That(textBlockSpan.Style.BackgroundColor, Is.EqualTo(Colors.Yellow.Lighten3));
+    }
+    
+    #endregion
+    
+    #region Font Family
+    
+    [Test]
+    public void SetsCorrectFontFamily_Single()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.FontFamily("Arial");
+        Assert.That(textBlockSpan.Style.FontFamilies, Is.EqualTo(new[] { "Arial" }));
+    }
+    
+    [Test]
+    public void SetsCorrectFontFamily_Multiple()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.FontFamily("Helvetica", "Arial", "sans-serif");
+        Assert.That(textBlockSpan.Style.FontFamilies, Is.EqualTo(new[] { "Helvetica", "Arial", "sans-serif" }));
+    }
+
+    [Test]
+    public void FontFamily_EmptyArray_ReturnsUnchanged()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.FontFamily([]);
+        Assert.That(textBlockSpan.Style.FontFamilies, Is.Null);
+    }
+    
+    [Test]
+    public void FontFamily_Null_ReturnsUnchanged()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.FontFamily(null);
+        Assert.That(textBlockSpan.Style.FontFamilies, Is.Null);
+    }
+    
+    #endregion
+    
+    #region Font Size
+    
+
+    [Test]
+    public void SetsCorrectFontSize()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.FontSize(18);
+        Assert.That(textBlockSpan.Style.Size, Is.EqualTo(18));
+    }
+    
+    [TestCase(-10)]
+    [TestCase(-5)]
+    [TestCase(-float.Epsilon)]
+    [TestCase(0)]
+    public void FontSize_MustBePositive(float fontSize)
+    {
+        var exception = Assert.Throws<ArgumentException>(() =>
+        {
+            var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+            descriptor.FontSize(fontSize);
+        });
+        
+        Assert.That(exception.Message, Is.EqualTo("Font size must be greater than 0."));
+    }
+
+    #endregion
+    
+    #region Line Height
+
+    [Test]
+    public void SetsCorrectLineHeight()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.LineHeight(1.5f);
+        Assert.That(textBlockSpan.Style.LineHeight, Is.EqualTo(1.5f));
+    }
+    
+    [Test]
+    public void LineHeight_Null_SetsToNormalLineHeight()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.LineHeight(null);
+        Assert.That(textBlockSpan.Style.LineHeight, Is.EqualTo(TextStyle.NormalLineHeightCalculatedFromFontMetrics));
+    }
+    
+    [TestCase(-5)]
+    [TestCase(-float.Epsilon)]
+    public void LineHeightMustBePositive(float lineHeight)
+    {
+        var exception = Assert.Throws<ArgumentException>(() =>
+        {
+            var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+            descriptor.LineHeight(lineHeight);
+        });
+        
+        Assert.That(exception.Message, Is.EqualTo("Line height must be greater than 0."));
+    }
+    
+    [Test]
+    public void LineHeight_AllowsZero()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.LineHeight(0);
+        Assert.That(textBlockSpan.Style.LineHeight, Is.Zero);
+    }
+    
+    #endregion
+    
+    #region Letter Spacing
+    
+    [Test]
+    public void SetsCorrectLetterSpacing_Positive()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.LetterSpacing(0.5f);
+        Assert.That(textBlockSpan.Style.LetterSpacing, Is.EqualTo(0.5f));
+    }
+    
+    [Test]
+    public void SetsCorrectLetterSpacing_Negative()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.LetterSpacing(-0.2f);
+        Assert.That(textBlockSpan.Style.LetterSpacing, Is.EqualTo(-0.2f));
+    }
+    
+    [Test]
+    public void LetterSpacing_DefaultParameterIsZero()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.LetterSpacing();
+        Assert.That(textBlockSpan.Style.LetterSpacing, Is.Zero);
+    }
+    
+    #endregion
+    
+    #region Word Spacing
+    
+    [Test]
+    public void SetsCorrectWordSpacing_Positive()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.WordSpacing(2.0f);
+        Assert.That(textBlockSpan.Style.WordSpacing, Is.EqualTo(2.0f));
+    }
+    
+    [Test]
+    public void SetsCorrectWordSpacing_Negative()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.WordSpacing(-1.0f);
+        Assert.That(textBlockSpan.Style.WordSpacing, Is.EqualTo(-1.0f));
+    }
+    
+    [Test]
+    public void WordSpacing_DefaultParameterIsZero()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.WordSpacing();
+        Assert.That(textBlockSpan.Style.WordSpacing, Is.Zero);
+    }
+    
+    #endregion
+    
+    #region Italic
+    
+    [Test]
+    public void SetsCorrectItalic_Enabled()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.Italic();
+        Assert.That(textBlockSpan.Style.IsItalic, Is.True);
+    }
+    
+    [Test]
+    public void SetsCorrectItalic_Disabled()
+    {
+        var (descriptor, textBlockSpan) = CreateTextBlockSpan();
+        descriptor.Italic().Italic(false);
+        Assert.That(textBlockSpan.Style.IsItalic, Is.False);
+    }
+    
+    #endregion
+    
     #region Text Decoration
 
     [Test]
@@ -30,7 +294,7 @@ public class TextSpanTests
     {
         var (descriptor, textBlockSpan) = CreateTextBlockSpan();
         descriptor.Strikethrough();
-        Assert.That(textBlockSpan.Style.HasStrikethrough, Is.EqualTo(true));
+        Assert.That(textBlockSpan.Style.HasStrikethrough, Is.True);
     }
     
     [Test]
@@ -38,7 +302,7 @@ public class TextSpanTests
     {
         var (descriptor, textBlockSpan) = CreateTextBlockSpan();
         descriptor.Strikethrough(false);
-        Assert.That(textBlockSpan.Style.HasStrikethrough, Is.EqualTo(false));
+        Assert.That(textBlockSpan.Style.HasStrikethrough, Is.False);
     }
     
     [Test]
@@ -46,7 +310,7 @@ public class TextSpanTests
     {
         var (descriptor, textBlockSpan) = CreateTextBlockSpan();
         descriptor.Underline();
-        Assert.That(textBlockSpan.Style.HasUnderline, Is.EqualTo(true));
+        Assert.That(textBlockSpan.Style.HasUnderline, Is.True);
     }
     
     [Test]
@@ -54,7 +318,7 @@ public class TextSpanTests
     {
         var (descriptor, textBlockSpan) = CreateTextBlockSpan();
         descriptor.Underline(false);
-        Assert.That(textBlockSpan.Style.HasUnderline, Is.EqualTo(false));
+        Assert.That(textBlockSpan.Style.HasUnderline, Is.False);
     }
     
     [Test]
@@ -62,7 +326,7 @@ public class TextSpanTests
     {
         var (descriptor, textBlockSpan) = CreateTextBlockSpan();
         descriptor.Overline();
-        Assert.That(textBlockSpan.Style.HasOverline, Is.EqualTo(true));
+        Assert.That(textBlockSpan.Style.HasOverline, Is.True);
     }
     
     [Test]
@@ -70,7 +334,7 @@ public class TextSpanTests
     {
         var (descriptor, textBlockSpan) = CreateTextBlockSpan();
         descriptor.Overline(false);
-        Assert.That(textBlockSpan.Style.HasOverline, Is.EqualTo(false));
+        Assert.That(textBlockSpan.Style.HasOverline, Is.False);
     }
     
     [Test]

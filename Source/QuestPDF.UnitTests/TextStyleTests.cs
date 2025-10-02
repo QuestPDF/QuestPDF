@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -10,6 +11,255 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class TextStyleTests
     {
+        #region Font Color
+        
+        [Test]
+        public void FontColor_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.Color, Is.EqualTo(Colors.Black));
+        }
+        
+        [Test]
+        public void SetsCorrectFontColor()
+        {
+            var textStyle = TextStyle.Default.FontColor(Colors.Blue.Medium);
+            Assert.That(textStyle.Color, Is.EqualTo(Colors.Blue.Medium));
+        }
+        
+        [Test]
+        public void FontColor_AlsoSetsDecorationColor()
+        {
+            var textStyle = TextStyle.Default.FontColor(Colors.Green.Darken2);
+            Assert.That(textStyle.DecorationColor, Is.EqualTo(Colors.Green.Darken2));
+        }
+        
+        #endregion
+        
+        #region Background Color
+        
+        [Test]
+        public void BackgroundColor_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.BackgroundColor, Is.EqualTo(Colors.Transparent));
+        }
+        
+        [Test]
+        public void SetsCorrectBackgroundColor()
+        {
+            var textStyle = TextStyle.Default.BackgroundColor(Colors.Yellow.Lighten3);
+            Assert.That(textStyle.BackgroundColor, Is.EqualTo(Colors.Yellow.Lighten3));
+        }
+        
+        #endregion
+        
+        #region Font Family
+        
+        [Test]
+        public void FontFamily_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.FontFamilies, Is.EqualTo(new[] { "Lato" }));
+        }
+        
+        [Test]
+        public void SetsCorrectFontFamily_Single()
+        {
+            var textStyle = TextStyle.Default.FontFamily("Arial");
+            Assert.That(textStyle.FontFamilies, Is.EqualTo(new[] { "Arial" }));
+        }
+        
+        [Test]
+        public void SetsCorrectFontFamily_Multiple()
+        {
+            var textStyle = TextStyle.Default.FontFamily("Helvetica", "Arial", "sans-serif");
+            Assert.That(textStyle.FontFamilies, Is.EqualTo(new[] { "Helvetica", "Arial", "sans-serif" }));
+        }
+
+        [Test]
+        public void FontFamily_EmptyArray_ReturnsUnchanged()
+        {
+            var textStyle = TextStyle.Default.FontFamily([]);
+            Assert.That(textStyle.FontFamilies, Is.Null);
+        }
+        
+        [Test]
+        public void FontFamily_Null_ReturnsUnchanged()
+        {
+            var textStyle = TextStyle.Default.FontFamily(null);
+            Assert.That(textStyle.FontFamilies, Is.Null);
+        }
+        
+        #endregion
+        
+        #region Font Size
+        
+        [Test]
+        public void FontSize_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.Size, Is.EqualTo(12));
+        }
+        
+        [Test]
+        public void SetsCorrectFontSize()
+        {
+            var textStyle = TextStyle.Default.FontSize(18);
+            Assert.That(textStyle.Size, Is.EqualTo(18));
+        }
+        
+        [TestCase(-10)]
+        [TestCase(-5)]
+        [TestCase(-float.Epsilon)]
+        [TestCase(0)]
+        public void FontSize_MustBePositive(float fontSize)
+        {
+            var exception = Assert.Throws<ArgumentException>(() =>
+            {
+                TextStyle.Default.FontSize(fontSize);
+            });
+            
+            Assert.That(exception.Message, Is.EqualTo("Font size must be greater than 0."));
+        }
+
+        #endregion
+        
+        #region Line Height
+        
+        [Test]
+        public void LineHeight_Default()
+        {
+            // special value: 0 = normal line height calculated from font metrics
+            
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.LineHeight, Is.Zero);
+        }
+        
+        [Test]
+        public void SetsCorrectLineHeight()
+        {
+            var textStyle = TextStyle.Default.LineHeight(1.5f);
+            Assert.That(textStyle.LineHeight, Is.EqualTo(1.5f));
+        }
+        
+        [Test]
+        public void LineHeight_Null_SetsToNormalLineHeight()
+        {
+            var textStyle = TextStyle.Default.LineHeight(2.0f).LineHeight(null);
+            Assert.That(textStyle.LineHeight, Is.EqualTo(TextStyle.NormalLineHeightCalculatedFromFontMetrics));
+        }
+        
+        [TestCase(-5)]
+        [TestCase(-float.Epsilon)]
+        public void LineHeightMustBePositive(float lineHeight)
+        {
+            var exception = Assert.Throws<ArgumentException>(() =>
+            {
+                TextStyle.Default.LineHeight(lineHeight);
+            });
+            
+            Assert.That(exception.Message, Is.EqualTo("Line height must be greater than 0."));
+        }
+        
+        [Test]
+        public void LineHeight_AllowsZero()
+        {
+            var textStyle = TextStyle.Default.LineHeight(0);
+            Assert.That(textStyle.LineHeight, Is.Zero);
+        }
+        
+        #endregion
+        
+        #region Letter Spacing
+        
+        [Test]
+        public void LetterSpacing_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.LetterSpacing, Is.Zero);
+        }
+        
+        [Test]
+        public void SetsCorrectLetterSpacing_Positive()
+        {
+            var textStyle = TextStyle.Default.LetterSpacing(0.5f);
+            Assert.That(textStyle.LetterSpacing, Is.EqualTo(0.5f));
+        }
+        
+        [Test]
+        public void SetsCorrectLetterSpacing_Negative()
+        {
+            var textStyle = TextStyle.Default.LetterSpacing(-0.2f);
+            Assert.That(textStyle.LetterSpacing, Is.EqualTo(-0.2f));
+        }
+        
+        [Test]
+        public void LetterSpacing_DefaultParameterIsZero()
+        {
+            var textStyle = TextStyle.Default.LetterSpacing();
+            Assert.That(textStyle.LetterSpacing, Is.Zero);
+        }
+        
+        #endregion
+        
+        #region Word Spacing
+        
+        [Test]
+        public void WordSpacing_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.WordSpacing, Is.Zero);
+        }
+        
+        [Test]
+        public void SetsCorrectWordSpacing_Positive()
+        {
+            var textStyle = TextStyle.Default.WordSpacing(2.0f);
+            Assert.That(textStyle.WordSpacing, Is.EqualTo(2.0f));
+        }
+        
+        [Test]
+        public void SetsCorrectWordSpacing_Negative()
+        {
+            var textStyle = TextStyle.Default.WordSpacing(-1.0f);
+            Assert.That(textStyle.WordSpacing, Is.EqualTo(-1.0f));
+        }
+        
+        [Test]
+        public void WordSpacing_DefaultParameterIsZero()
+        {
+            var textStyle = TextStyle.Default.WordSpacing();
+            Assert.That(textStyle.WordSpacing, Is.Zero);
+        }
+        
+        #endregion
+        
+        #region Italic
+        
+        [Test]
+        public void Italic_Default()
+        {
+            var textStyle = TextStyle.LibraryDefault;
+            Assert.That(textStyle.IsItalic, Is.False);
+        }
+        
+        [Test]
+        public void SetsCorrectItalic_Enabled()
+        {
+            var textStyle = TextStyle.Default.Italic();
+            Assert.That(textStyle.IsItalic, Is.True);
+        }
+        
+        [Test]
+        public void SetsCorrectItalic_Disabled()
+        {
+            var textStyle = TextStyle.Default.Italic().Italic(false);
+            Assert.That(textStyle.IsItalic, Is.False);
+        }
+        
+        #endregion
+        
         #region Text Decoration
         
         [Test]
@@ -322,6 +572,8 @@ namespace QuestPDF.UnitTests
         }
         
         #endregion
+        
+        // TODO: add tests for text style inheritance
         
         [Test]
         public void ApplyInheritedAndGlobalStyle()
