@@ -357,11 +357,20 @@ namespace QuestPDF.Elements.Table
         #endregion
         
         #region Semantic
+
+        internal enum TablePartType
+        {
+            Header,
+            Body,
+            Footer
+        }
         
         internal bool EnableAutomatedSemanticTagging { get; set; }
         internal bool IsSemanticTaggingApplied { get; set; }
         internal SemanticTreeManager SemanticTreeManager { get; set; } = new();
-        internal bool IsTableHeader { get; set; }
+
+        internal TablePartType PartType { get; set; }
+        public List<TableCell> HeaderCells { get; set; } = []; 
 
         private void RegisterSemanticTree()
         {
@@ -398,17 +407,21 @@ namespace QuestPDF.Elements.Table
                     if (tableCell.Child is not SemanticTag semanticTag)
                         continue;
                     
-                    if (IsTableHeader || tableCell.IsSemanticHorizontalHeader)
+                    if (PartType is TablePartType.Header || tableCell.IsSemanticHorizontalHeader)
                         semanticTag.TagType = "TH";
                     
                     semanticTag.RegisterCurrentSemanticNode();
-                    AssignCellAttributes(tableCell, semanticTag);
+                    tableCell.SemanticNodeId = semanticTag.SemanticTreeNode!.NodeId;
+                    
+                    AssignCellAttributesForColumnAndRowSpans(tableCell, semanticTag);
                 }
                 
                 SemanticTreeManager.PopStack();
             }
 
-            void AssignCellAttributes(TableCell tableCell, SemanticTag semanticTag)
+            AssignCellAttributesForHeaderCellRoles();
+            
+            static void AssignCellAttributesForColumnAndRowSpans(TableCell tableCell, SemanticTag semanticTag)
             {
                 if (tableCell.ColumnSpan > 1)
                 {
@@ -429,10 +442,43 @@ namespace QuestPDF.Elements.Table
                         Value = tableCell.RowSpan
                     });
                 }
+            }
 
-                if (semanticTag.TagType == "TH")
+            void AssignCellAttributesForHeaderCellRoles()
+            {
+                if (PartType is TablePartType.Footer)
+                    return;
+
+                if (DoesTableBodyRequireExtendedHeaderTagging())
                 {
-                    var scopeValue = (IsTableHeader, tableCell.IsSemanticHorizontalHeader) switch
+                    if (PartType is TablePartType.Body)
+                        AssignCellAttributesForHeaderCellRolesOfComplexTables();
+                }
+                else
+                {
+                    AssignCellAttributesForHeaderCellRolesOfSimpleTables();
+                }
+            }
+            
+            bool DoesTableBodyRequireExtendedHeaderTagging()
+            {
+                return ContainsSpanningCells(HeaderCells) || ContainsSpanningCells(Cells);
+                
+                static bool ContainsSpanningCells(IEnumerable<TableCell> cells) =>
+                    cells.Any(x => x.RowSpan > 1 || x.ColumnSpan > 1);
+            }
+            
+            void AssignCellAttributesForHeaderCellRolesOfSimpleTables()
+            {
+                foreach (var tableCell in Cells)
+                {
+                    if (tableCell.Child is not SemanticTag semanticTag)
+                        continue;
+
+                    if (semanticTag.TagType != "TH") 
+                        continue;
+                    
+                    var scopeValue = (PartType is TablePartType.Header, tableCell.IsSemanticHorizontalHeader) switch
                     {
                         (true, true) => "Both",
                         (true, false) => "Column",
@@ -449,6 +495,39 @@ namespace QuestPDF.Elements.Table
                             Value = scopeValue
                         });
                     }
+                }
+            }
+            
+            void AssignCellAttributesForHeaderCellRolesOfComplexTables()
+            {
+                var semanticHorizontalHeaders = Cells
+                    .Where(x => x.IsSemanticHorizontalHeader)
+                    .ToList();
+                
+                foreach (var tableCell in Cells)
+                {
+                    if (tableCell.Child is not SemanticTag semanticTag)
+                        continue;
+                    
+                    var relatedVerticalHeaders = HeaderCells
+                        .Where(x => x.Column <= tableCell.Column && tableCell.Column < x.Column + x.ColumnSpan)
+                        .Select(x => x.SemanticNodeId);
+                    
+                    // TODO: this lookup may cause performance issues
+                    var relatedHorizontalHeaders = semanticHorizontalHeaders
+                        .Where(x => x.Row <= tableCell.Row && tableCell.Row < x.Row + x.RowSpan)
+                        .Select(x => x.SemanticNodeId);
+                    
+                    semanticTag.SemanticTreeNode!.Attributes.Add(new SemanticTreeNode.Attribute
+                    {
+                        Owner = "Table",
+                        Name = "Headers",
+                        Value = relatedVerticalHeaders
+                            .Concat(relatedHorizontalHeaders)
+                            .Distinct()
+                            .OrderBy(x => x)
+                            .ToArray()
+                    });
                 }
             }
         }
