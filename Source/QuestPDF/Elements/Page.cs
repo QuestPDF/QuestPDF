@@ -43,6 +43,7 @@ namespace QuestPDF.Elements
                         .Layer()
                         .Repeat()
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Background.ToString())
+                        .ArtifactBackground()
                         .Element(Background);
                     
                     layers
