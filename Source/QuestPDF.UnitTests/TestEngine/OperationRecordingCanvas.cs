@@ -47,6 +47,7 @@ namespace QuestPDF.UnitTests.TestEngine
         public void DrawSectionLink(Size size, string sectionName, string? description) => throw new NotImplementedException();
         public void DrawSection(string sectionName) => throw new NotImplementedException();
         
+        public void MarkCurrentContentAsArtifact(bool isArtifact) => throw new NotImplementedException();
         public void SetSemanticNodeId(int nodeId) => throw new NotImplementedException();
     }
 }

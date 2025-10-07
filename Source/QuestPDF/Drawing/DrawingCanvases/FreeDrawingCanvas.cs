@@ -148,6 +148,11 @@ namespace QuestPDF.Drawing.DrawingCanvases
             
         }
         
+        public void MarkCurrentContentAsArtifact(bool isArtifact)
+        {
+            
+        }
+        
         public void SetSemanticNodeId(int nodeId)
         {
             

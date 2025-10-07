@@ -8,6 +8,13 @@ namespace QuestPDF.Fluent
     public sealed class DecorationDescriptor
     {
         internal Decoration Decoration { get; } = new Decoration();
+
+        private bool ApplyPageSpecificSemanticMeaningToggle { get; set; }
+        
+        internal void ApplyPageSpecificSemanticMeaning()
+        {
+            ApplyPageSpecificSemanticMeaningToggle = true;
+        }
         
         /// <summary>
         /// Returns a container for the section positioned before (above) the primary main content.
@@ -22,7 +29,11 @@ namespace QuestPDF.Fluent
 
             var container = new Container();
             Decoration.Before = container;
-            return container.DebugPointer(DebugPointerType.ElementStructure, "Before").Repeat();
+            
+            return container
+                .DebugPointer(DebugPointerType.ElementStructure, "Before")
+                .Repeat()
+                .MarkRepeatedContentAsArtifact(ApplyPageSpecificSemanticMeaningToggle ? MarkRepeatedContentAsArtifact.PaginationType.Header : MarkRepeatedContentAsArtifact.PaginationType.Other);
         }
         
         /// <summary>
@@ -76,7 +87,13 @@ namespace QuestPDF.Fluent
             
             var container = new Container();
             Decoration.After = container;
-            return container.DebugPointer(DebugPointerType.ElementStructure, "After").Repeat();
+            
+            return container
+                .DebugPointer(DebugPointerType.ElementStructure, "After")
+                .Repeat()
+                .Element(x => ApplyPageSpecificSemanticMeaningToggle
+                    ? x.ArtifactPaginationFooter() 
+                    : x.MarkRepeatedContentAsArtifact(MarkRepeatedContentAsArtifact.PaginationType.Other));
         }
         
         /// <summary>

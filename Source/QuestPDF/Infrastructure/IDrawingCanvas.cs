@@ -41,6 +41,7 @@ namespace QuestPDF.Infrastructure
         void DrawSectionLink(Size size, string sectionName, string? description);
         void DrawSection(string sectionName);
         
+        void MarkCurrentContentAsArtifact(bool isArtifact);
         void SetSemanticNodeId(int nodeId);
     }
 }

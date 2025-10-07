@@ -61,9 +61,10 @@ namespace QuestPDF.Elements
                 
                         .Decoration(decoration =>
                         {
+                            decoration.ApplyPageSpecificSemanticMeaning();
+                            
                             decoration
                                 .Before()
-                                .ArtifactPaginationHeader()
                                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Header.ToString())
                                 .Element(Header);
 
@@ -76,7 +77,6 @@ namespace QuestPDF.Elements
 
                             decoration
                                 .After()
-                                .ArtifactPaginationFooter()
                                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Footer.ToString())
                                 .Element(Footer);
                         });

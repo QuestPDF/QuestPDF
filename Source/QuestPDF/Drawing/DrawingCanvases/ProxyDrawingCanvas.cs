@@ -162,6 +162,11 @@ internal sealed class ProxyDrawingCanvas : IDrawingCanvas, IDisposable
         Target.DrawSection(sectionName);
     }
     
+    public void MarkCurrentContentAsArtifact(bool isArtifact)
+    {
+        Target.MarkCurrentContentAsArtifact(isArtifact);
+    }
+    
     public void SetSemanticNodeId(int nodeId)
     {
         Target.SetSemanticNodeId(nodeId);
