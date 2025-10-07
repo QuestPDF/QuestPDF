@@ -77,9 +77,9 @@ public sealed class MultiColumnDescriptor
         if (MultiColumn.Spacer is not Empty)
             throw new DocumentComposeException("The 'MultiColumn.Spacer' layer has already been defined. Please call this method only once.");
         
-        var container = new RepeatContent();
+        var container = new Container();
         MultiColumn.Spacer = container;
-        return container;
+        return container.ArtifactLayout().Repeat();
     }
 }
 
