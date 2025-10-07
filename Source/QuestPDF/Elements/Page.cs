@@ -85,6 +85,7 @@ namespace QuestPDF.Elements
                     layers
                         .Layer()
                         .Repeat()
+                        .ArtifactPaginationWatermark()
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Foreground.ToString())
                         .Element(Foreground);
                 });
