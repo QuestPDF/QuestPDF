@@ -173,6 +173,7 @@ namespace QuestPDF.Elements
             container.ApplyInheritedAndGlobalTexStyle(TextStyle);
             container.ApplyContentDirection(ContentDirection);
             container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality, UseOriginalImage);
+            container.ApplySemanticParagraphs();
             
             container.InjectDependencies(PageContext, Canvas);
             container.InjectSemanticTreeManager(SemanticTreeManager);

@@ -61,6 +61,7 @@ internal sealed class Lazy : ContainerElement, ISemanticAware, IContentDirection
         container.ApplyInheritedAndGlobalTexStyle(TextStyle);
         container.ApplyContentDirection(ContentDirection);
         container.ApplyDefaultImageConfiguration(ImageTargetDpi.Value, ImageCompressionQuality.Value, UseOriginalImage);
+        container.ApplySemanticParagraphs();
             
         container.InjectDependencies(PageContext, Canvas);
         container.InjectSemanticTreeManager(SemanticTreeManager);

@@ -207,6 +207,7 @@ namespace QuestPDF.Drawing
             content.ApplyInheritedAndGlobalTexStyle(TextStyle.Default);
             content.ApplyContentDirection(settings.ContentDirection);
             content.ApplyDefaultImageConfiguration(settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
+            content.ApplySemanticParagraphs();
 
             if (Settings.EnableCaching)
                 content.ApplyCaching();
@@ -534,9 +535,62 @@ namespace QuestPDF.Drawing
             }
         }
 
-        internal static void ApplySemanticParagraphs(this Element? content)
+        internal static void ApplySemanticParagraphs(this Element root)
         {
+            var textContextLevel = 0;
+            var isFooterContext = false;
             
+            Traverse(root);
+            
+            void Traverse(Element element)
+            {
+                if (element is SemanticTag semanticTag)
+                {
+                    var isTextSemanticTag = semanticTag.TagType is "H" or "H1" or "H2" or "H3" or "H4" or "H5" or "H6" or "P";
+
+                    if (isTextSemanticTag)
+                        textContextLevel++;
+                    
+                    Traverse(semanticTag.Child);
+                    
+                    if (isTextSemanticTag)
+                        textContextLevel--;
+                }
+                else if (element is DebugPointer { Type: DebugPointerType.DocumentStructure, Label: nameof(DocumentStructureTypes.Footer) } debugPointer)
+                {
+                    isFooterContext = true;
+                    Traverse(debugPointer.Child);
+                    isFooterContext = false;
+                }
+                else if (element is ContainerElement container)
+                {
+                    if (container.Child is TextBlock textBlock)
+                    {
+                        if (textContextLevel > 0)
+                            return;
+
+                        var textBlockContainsPageNumber = textBlock.Items.Any(x => x is TextBlockPageNumber);
+                        
+                        if (isFooterContext && textBlockContainsPageNumber)
+                            return;
+                        
+                        container.CreateProxy(x => new SemanticTag
+                        {
+                            Child = x,
+                            TagType = "P"
+                        });
+                    }
+                    else
+                    {
+                        Traverse(container.Child);
+                    }
+                }
+                else
+                {
+                    foreach (var child in element.GetChildren())
+                        Traverse(child);
+                }
+            }
         }
     }
 }
