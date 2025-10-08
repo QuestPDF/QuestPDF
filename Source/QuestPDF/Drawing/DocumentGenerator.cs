@@ -343,7 +343,16 @@ namespace QuestPDF.Drawing
             content.VisitChildren(x =>
             {
                 if (x is ISemanticAware semanticAware)
+                {
                     semanticAware.SemanticTreeManager = semanticTreeManager;
+                }
+                else if (x is TextBlock textBlock)
+                {
+                    foreach (var textBlockElement in textBlock.Items.OfType<TextBlockElement>())
+                    {
+                        textBlockElement.Element.InjectSemanticTreeManager(semanticTreeManager);
+                    }
+                }
             });
         }
         
