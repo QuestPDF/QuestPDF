@@ -32,7 +32,7 @@ namespace QuestPDF.Fluent
             
             return container
                 .DebugPointer(DebugPointerType.ElementStructure, "Before")
-                .Repeat();
+                .Element(x => ApplyPageSpecificSemanticMeaningToggle ? x.RepeatAsPageHeader() : x.Repeat());
         }
         
         /// <summary>
@@ -89,7 +89,7 @@ namespace QuestPDF.Fluent
 
             return container
                 .DebugPointer(DebugPointerType.ElementStructure, "After")
-                .Repeat();
+                .Element(x => ApplyPageSpecificSemanticMeaningToggle ? x.RepeatAsPageFooter() : x.Repeat());
         }
         
         /// <summary>

@@ -10,14 +10,14 @@ internal sealed class RepeatContent : ContainerElement, IStateful, ISemanticAwar
 {
     public SemanticTreeManager SemanticTreeManager { get; set; }
     
-    public enum RepeatContext
+    public enum RepeatContextType
     {
         PageHeader,
         PageFooter,
         Other
     }
     
-    public RepeatContext Type { get; set; } = RepeatContext.Other;
+    public RepeatContextType RepeatContext { get; set; } = RepeatContextType.Other;
     
     internal override void Draw(Size availableSpace)
     {
@@ -25,10 +25,10 @@ internal sealed class RepeatContent : ContainerElement, IStateful, ISemanticAwar
         
         if (IsFullyRendered)
         {
-            var paginationNodeId = Type switch
+            var paginationNodeId = RepeatContext switch
             {
-                RepeatContext.PageHeader => SkSemanticNodeSpecialId.PaginationHeaderArtifact,
-                RepeatContext.PageFooter => SkSemanticNodeSpecialId.PaginationFooterArtifact,
+                RepeatContextType.PageHeader => SkSemanticNodeSpecialId.PaginationHeaderArtifact,
+                RepeatContextType.PageFooter => SkSemanticNodeSpecialId.PaginationFooterArtifact,
                 _ => SkSemanticNodeSpecialId.PaginationArtifact
             };
         
