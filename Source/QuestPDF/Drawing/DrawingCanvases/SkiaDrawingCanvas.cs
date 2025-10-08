@@ -231,18 +231,19 @@ namespace QuestPDF.Drawing.DrawingCanvases
             CurrentCanvas.AnnotateDestination(sectionName);
         }
 
-        private bool IsCurrentContentArtifact { get; set; } = false;
+        private int ArtifactNestingDepth { get; set; } = 0;
 
         public void MarkCurrentContentAsArtifact(bool isArtifact)
         {
-            IsCurrentContentArtifact = isArtifact;
+            ArtifactNestingDepth += isArtifact ? 1 : -1;
         }
-        
+
         public void SetSemanticNodeId(int nodeId)
         {
-            var isContentNodeId = nodeId > 0; // artifact is less than 0, nothing is 0
+            var isInsideArtifact = ArtifactNestingDepth > 0;
+            var isArtifactNode = nodeId < 0;
             
-            if (IsCurrentContentArtifact && isContentNodeId)
+            if (isInsideArtifact && !isArtifactNode)
                 return;
             
             CurrentCanvas.SetSemanticNodeId(nodeId);

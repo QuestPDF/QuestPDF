@@ -6,7 +6,7 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal sealed class RepeatContent : ContainerElement, IStateful
+internal sealed class RepeatContent : ContainerElement, IStateful, ISemanticAware
 {
     public SemanticTreeManager SemanticTreeManager { get; set; }
     
@@ -25,8 +25,6 @@ internal sealed class RepeatContent : ContainerElement, IStateful
         
         if (IsFullyRendered)
         {
-            SemanticTreeManager.BeginArtifactContent();
-            
             var paginationNodeId = Type switch
             {
                 RepeatContext.PageHeader => SkSemanticNodeSpecialId.PaginationHeaderArtifact,
@@ -35,6 +33,7 @@ internal sealed class RepeatContent : ContainerElement, IStateful
             };
         
             Canvas.SetSemanticNodeId(paginationNodeId);
+            SemanticTreeManager.BeginArtifactContent();
         }
 
         var childMeasurement = Child?.Measure(availableSpace);

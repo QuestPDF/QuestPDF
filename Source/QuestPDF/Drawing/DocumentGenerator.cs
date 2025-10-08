@@ -342,20 +342,8 @@ namespace QuestPDF.Drawing
         {
             content.VisitChildren(x =>
             {
-                if (x == null)
-                    return;
-                
-                if (x is SemanticTag semanticTag)
-                    semanticTag.SemanticTreeManager = semanticTreeManager;
-                
-                else if (x is Lazy lazy)
-                    lazy.SemanticTreeManager = semanticTreeManager;
-                
-                else if (x is DynamicHost dynamicHost)
-                    dynamicHost.SemanticTreeManager = semanticTreeManager;
-                
-                else if (x is Table table)
-                    table.SemanticTreeManager = semanticTreeManager;
+                if (x is ISemanticAware semanticAware)
+                    semanticAware.SemanticTreeManager = semanticTreeManager;
             });
         }
         
@@ -535,6 +523,11 @@ namespace QuestPDF.Drawing
                 foreach (var child in content.GetChildren())
                     ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
             }
+        }
+
+        internal static void ApplySemanticParagraphs(this Element? content)
+        {
+            
         }
     }
 }

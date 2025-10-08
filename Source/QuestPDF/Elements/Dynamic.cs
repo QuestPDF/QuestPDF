@@ -7,9 +7,9 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class DynamicHost : Element, IStateful, IContentDirectionAware
+    internal sealed class DynamicHost : Element, IStateful, IContentDirectionAware, ISemanticAware
     {
-        internal SemanticTreeManager SemanticTreeManager { get; set; }
+        public SemanticTreeManager SemanticTreeManager { get; set; }
         
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }

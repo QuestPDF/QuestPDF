@@ -6,9 +6,9 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal sealed class Lazy : ContainerElement, IContentDirectionAware, IStateful
+internal sealed class Lazy : ContainerElement, ISemanticAware, IContentDirectionAware, IStateful
 {
-    internal SemanticTreeManager SemanticTreeManager { get; set; }
+    public SemanticTreeManager SemanticTreeManager { get; set; }
     
     public Action<IContainer> ContentSource { get; set; }
     public bool IsCacheable { get; set; }

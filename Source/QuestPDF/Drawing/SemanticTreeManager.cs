@@ -83,4 +83,25 @@ class SemanticTreeManager
     {
         return Root;
     }
+    
+    #region Artifacts
+    
+    private int ArtifactNestingLevel { get; set; } = 0;
+    
+    public void BeginArtifactContent()
+    {
+        ArtifactNestingLevel++;
+    }
+    
+    public void EndArtifactContent()
+    {
+        ArtifactNestingLevel--;
+    }
+    
+    public bool IsCurrentContentArtifact()
+    {
+        return ArtifactNestingLevel > 0;
+    }
+    
+    #endregion
 }

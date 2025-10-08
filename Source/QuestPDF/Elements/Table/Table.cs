@@ -7,7 +7,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
 {
-    internal sealed class Table : Element, IStateful, IContentDirectionAware
+    internal sealed class Table : Element, IStateful, IContentDirectionAware, ISemanticAware
     {
         // configuration
         public List<TableColumnDefinition> Columns { get; set; } = new();
@@ -366,14 +366,17 @@ namespace QuestPDF.Elements.Table
         }
         
         internal bool EnableAutomatedSemanticTagging { get; set; }
-        internal bool IsSemanticTaggingApplied { get; set; }
-        internal SemanticTreeManager SemanticTreeManager { get; set; } = new();
+        private bool IsSemanticTaggingApplied { get; set; }
+        public SemanticTreeManager SemanticTreeManager { get; set; } = new();
 
         internal TablePartType PartType { get; set; }
         public List<TableCell> HeaderCells { get; set; } = []; 
 
         private void RegisterSemanticTree()
         {
+            if (SemanticTreeManager.IsCurrentContentArtifact())
+                return;
+            
             if (!EnableAutomatedSemanticTagging)
                 return;
             

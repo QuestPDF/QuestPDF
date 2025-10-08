@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal class SemanticTag : ContainerElement
+internal class SemanticTag : ContainerElement, ISemanticAware
 {
     public SemanticTreeManager SemanticTreeManager { get; set; }
     public SemanticTreeNode? SemanticTreeNode { get; private set; }
@@ -18,6 +18,12 @@ internal class SemanticTag : ContainerElement
     internal override void Draw(Size availableSpace)
     {
         RegisterCurrentSemanticNode();
+
+        if (SemanticTreeManager.IsCurrentContentArtifact())
+        {
+            Child?.Draw(availableSpace);
+            return;
+        }
         
         SemanticTreeManager.PushOnStack(SemanticTreeNode);
         Canvas.SetSemanticNodeId(SemanticTreeNode.NodeId);

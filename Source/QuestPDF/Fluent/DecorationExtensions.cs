@@ -32,8 +32,7 @@ namespace QuestPDF.Fluent
             
             return container
                 .DebugPointer(DebugPointerType.ElementStructure, "Before")
-                .Repeat()
-                .MarkRepeatedContentAsArtifact(ApplyPageSpecificSemanticMeaningToggle ? MarkRepeatedContentAsArtifact.PaginationType.Header : MarkRepeatedContentAsArtifact.PaginationType.Other);
+                .Repeat();
         }
         
         /// <summary>
@@ -87,13 +86,10 @@ namespace QuestPDF.Fluent
             
             var container = new Container();
             Decoration.After = container;
-            
+
             return container
                 .DebugPointer(DebugPointerType.ElementStructure, "After")
-                .Repeat()
-                .Element(x => ApplyPageSpecificSemanticMeaningToggle
-                    ? x.ArtifactPaginationFooter() 
-                    : x.MarkRepeatedContentAsArtifact(MarkRepeatedContentAsArtifact.PaginationType.Other));
+                .Repeat();
         }
         
         /// <summary>
