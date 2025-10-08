@@ -2,21 +2,51 @@ using QuestPDF.Drawing;
 using QuestPDF.Elements.Text;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal sealed class RepeatContent : ContainerElement
+internal sealed class RepeatContent : ContainerElement, IStateful
 {
+    public SemanticTreeManager SemanticTreeManager { get; set; }
+    
+    public enum RepeatContext
+    {
+        PageHeader,
+        PageFooter,
+        Other
+    }
+    
+    public RepeatContext Type { get; set; } = RepeatContext.Other;
+    
     internal override void Draw(Size availableSpace)
     {
         OptimizeContentCacheBehavior();
         
+        if (IsFullyRendered)
+        {
+            SemanticTreeManager.BeginArtifactContent();
+            
+            var paginationNodeId = Type switch
+            {
+                RepeatContext.PageHeader => SkSemanticNodeSpecialId.PaginationHeaderArtifact,
+                RepeatContext.PageFooter => SkSemanticNodeSpecialId.PaginationFooterArtifact,
+                _ => SkSemanticNodeSpecialId.PaginationArtifact
+            };
+        
+            Canvas.SetSemanticNodeId(paginationNodeId);
+        }
+
         var childMeasurement = Child?.Measure(availableSpace);
         base.Draw(availableSpace);
+        
+        if (IsFullyRendered)
+            SemanticTreeManager.EndArtifactContent();
 
         if (childMeasurement?.Type == SpacePlanType.FullRender)
         {
             Child.VisitChildren(x => (x as IStateful)?.ResetState(false));
+            IsFullyRendered = true;
         }
     }
     
@@ -54,6 +84,21 @@ internal sealed class RepeatContent : ContainerElement
                 lazy.ClearCacheAfterFullRender = false;
         });
     }
+    
+    #endregion
+    
+    #region IStateful
+        
+    private bool IsFullyRendered { get; set; }
+
+    public void ResetState(bool hardReset = false)
+    {
+        if (hardReset)
+            IsFullyRendered = false;
+    }
+    
+    public object GetState() => IsFullyRendered;
+    public void SetState(object state) => IsFullyRendered = (bool) state;
     
     #endregion
 }
