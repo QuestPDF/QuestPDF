@@ -510,12 +510,12 @@ namespace QuestPDF.Elements.Table
                         continue;
                     
                     var relatedVerticalHeaders = HeaderCells
-                        .Where(x => x.Column <= tableCell.Column && tableCell.Column < x.Column + x.ColumnSpan)
+                        .Where(x => x.Column < tableCell.Column + tableCell.ColumnSpan && tableCell.Column < x.Column + x.ColumnSpan)
                         .Select(x => x.SemanticNodeId);
                     
                     // TODO: this lookup may cause performance issues
                     var relatedHorizontalHeaders = semanticHorizontalHeaders
-                        .Where(x => x.Row <= tableCell.Row && tableCell.Row < x.Row + x.RowSpan)
+                        .Where(x => x.Row < tableCell.Row + tableCell.RowSpan && tableCell.Row < x.Row + x.RowSpan)
                         .Select(x => x.SemanticNodeId);
                     
                     semanticTag.SemanticTreeNode!.Attributes.Add(new SemanticTreeNode.Attribute
