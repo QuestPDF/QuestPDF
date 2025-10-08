@@ -11,14 +11,6 @@ namespace QuestPDF.Fluent;
 
 public static class SemanticExtensions
 {
-    internal static IContainer MarkRepeatedContentAsArtifact(this IContainer container, MarkRepeatedContentAsArtifact.PaginationType type)
-    {
-        return container.Element(new Elements.MarkRepeatedContentAsArtifact()
-        {
-            Type = type
-        });
-    }
-    
     private static IContainer SemanticTag(this IContainer container, string type, string? alternativeText = null, string? language = null)
     {
         return container.Element(new Elements.SemanticTag
