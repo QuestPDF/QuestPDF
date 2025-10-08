@@ -522,11 +522,7 @@ namespace QuestPDF.Elements.Table
                     {
                         Owner = "Table",
                         Name = "Headers",
-                        Value = relatedVerticalHeaders
-                            .Concat(relatedHorizontalHeaders)
-                            .Distinct()
-                            .OrderBy(x => x)
-                            .ToArray()
+                        Value = relatedVerticalHeaders.Concat(relatedHorizontalHeaders).ToArray()
                     });
                 }
             }
