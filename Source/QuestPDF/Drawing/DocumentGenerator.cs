@@ -556,6 +556,10 @@ namespace QuestPDF.Drawing
                     if (isTextSemanticTag)
                         textContextLevel--;
                 }
+                else if (element is ArtifactTag artifactTag)
+                {
+                    // ignore all Text elements that are marked as artifacts
+                }
                 else if (element is DebugPointer { Type: DebugPointerType.DocumentStructure, Label: nameof(DocumentStructureTypes.Footer) } debugPointer)
                 {
                     isFooterContext = true;
