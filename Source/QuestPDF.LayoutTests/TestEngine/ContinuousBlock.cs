@@ -47,12 +47,7 @@ internal class ContinuousBlock : Element, IStateful
         
     private float HeightOffset { get; set; }
 
-    public void ResetState(bool hardReset = false)
-    {
-        if (hardReset)
-            HeightOffset = 0;
-    }
-        
+    public void ResetState(bool hardReset = false) => HeightOffset = 0;
     public object GetState() => HeightOffset;
     public void SetState(object state) => HeightOffset = (float) state;
     
