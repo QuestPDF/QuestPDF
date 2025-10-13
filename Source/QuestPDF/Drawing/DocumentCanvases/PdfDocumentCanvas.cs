@@ -111,7 +111,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
             CurrentPageCanvas?.Dispose();
             DrawingCanvas?.Dispose();
             
-            // don't dispose WriteStream - its lifetime is managed externally
+            // don't dispose SemanticTag - its lifetime is managed externally
             SemanticTag?.Dispose();
             
             GC.SuppressFinalize(this);
