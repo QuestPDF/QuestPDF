@@ -19,3 +19,9 @@
 - Fixed semantic handling of background and watermark page layers.
 - Fixed adding content to the semantic tag tree if it is part of the artifact.
 - Improved visual representation of SemanticTags and ArtifactTags in the Companion App.
+
+
+2025.12.0-alpha3:
+- Updated the Skia native dependency to version m142.
+- Added support for the following conformance standards: PDF/A-1a and PDF/A-1b.
+- Improved automated tagging by enabling it only when a relevant conformance standard is active.
