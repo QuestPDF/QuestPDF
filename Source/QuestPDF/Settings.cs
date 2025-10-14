@@ -62,6 +62,12 @@ namespace QuestPDF
         {
             Helpers.Helpers.ApplicationFilesPath
         };
+
+        /// <summary>
+        /// Gets or sets the file path used for temporary storage during the document generation process.
+        /// This path is used by various operations that require temporary files.
+        /// </summary>
+        public static string? TemporaryStoragePath { get; set; }
         
         static Settings()
         {
