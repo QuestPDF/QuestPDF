@@ -8,7 +8,7 @@ namespace QuestPDF.Elements;
 
 internal sealed class RepeatContent : ContainerElement, IStateful, ISemanticAware
 {
-    public SemanticTreeManager SemanticTreeManager { get; set; }
+    public SemanticTreeManager? SemanticTreeManager { get; set; }
     
     public enum RepeatContextType
     {
@@ -23,6 +23,15 @@ internal sealed class RepeatContent : ContainerElement, IStateful, ISemanticAwar
     {
         OptimizeContentCacheBehavior();
         
+        var childMeasurement = Child.Measure(availableSpace);
+
+        if (SemanticTreeManager == null)
+        {
+            base.Draw(availableSpace);
+            ResetChildrenIfNecessary();
+            return;      
+        }
+        
         if (IsFullyRendered)
         {
             var paginationNodeId = RepeatContext switch
@@ -35,15 +44,19 @@ internal sealed class RepeatContent : ContainerElement, IStateful, ISemanticAwar
             Canvas.SetSemanticNodeId(paginationNodeId);
             SemanticTreeManager.BeginArtifactContent();
         }
-
-        var childMeasurement = Child?.Measure(availableSpace);
+        
         base.Draw(availableSpace);
         
         if (IsFullyRendered)
             SemanticTreeManager.EndArtifactContent();
 
-        if (childMeasurement?.Type == SpacePlanType.FullRender)
+        ResetChildrenIfNecessary();
+
+        void ResetChildrenIfNecessary()
         {
+            if (childMeasurement.Type != SpacePlanType.FullRender) 
+                return;
+            
             Child.VisitChildren(x => (x as IStateful)?.ResetState(false));
             IsFullyRendered = true;
         }

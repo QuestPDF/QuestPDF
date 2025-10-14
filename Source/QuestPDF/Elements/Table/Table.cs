@@ -367,13 +367,16 @@ namespace QuestPDF.Elements.Table
         
         internal bool EnableAutomatedSemanticTagging { get; set; }
         private bool IsSemanticTaggingApplied { get; set; }
-        public SemanticTreeManager SemanticTreeManager { get; set; } = new();
+        public SemanticTreeManager? SemanticTreeManager { get; set; } = new();
 
         internal TablePartType PartType { get; set; }
         public List<TableCell> HeaderCells { get; set; } = []; 
 
         private void RegisterSemanticTree()
         {
+            if (SemanticTreeManager == null)
+                return;
+            
             if (SemanticTreeManager.IsCurrentContentArtifact())
                 return;
             

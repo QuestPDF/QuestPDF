@@ -9,7 +9,7 @@ namespace QuestPDF.Elements
 {
     internal sealed class DynamicHost : Element, IStateful, IContentDirectionAware, ISemanticAware
     {
-        public SemanticTreeManager SemanticTreeManager { get; set; }
+        public SemanticTreeManager? SemanticTreeManager { get; set; }
         
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
@@ -118,7 +118,7 @@ namespace QuestPDF.Elements
     {
         internal IPageContext PageContext { get; set; }
         internal IDrawingCanvas Canvas { get; set; }
-        internal SemanticTreeManager SemanticTreeManager { get; set; }
+        internal SemanticTreeManager? SemanticTreeManager { get; set; }
         
         internal TextStyle TextStyle { get; set; }
         internal ContentDirection ContentDirection { get; set; }
@@ -173,11 +173,14 @@ namespace QuestPDF.Elements
             container.ApplyInheritedAndGlobalTexStyle(TextStyle);
             container.ApplyContentDirection(ContentDirection);
             container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality, UseOriginalImage);
-            container.ApplySemanticParagraphs();
-            
             container.InjectDependencies(PageContext, Canvas);
-            container.InjectSemanticTreeManager(SemanticTreeManager);
             container.VisitChildren(x => (x as IStateful)?.ResetState());
+            
+            if (SemanticTreeManager != null)
+            {
+                container.InjectSemanticTreeManager(SemanticTreeManager);
+                container.ApplySemanticParagraphs();
+            }
 
             container.Size = container.Measure(Size.Max);
             

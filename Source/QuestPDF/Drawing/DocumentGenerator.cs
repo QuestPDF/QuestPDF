@@ -6,12 +6,13 @@ using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
-using QuestPDF.Elements.Table;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
+using PDFA_Conformance = QuestPDF.Infrastructure.PDFA_Conformance;
+using PDFUA_Conformance = QuestPDF.Infrastructure.PDFUA_Conformance;
 
 namespace QuestPDF.Drawing
 {
@@ -110,26 +111,20 @@ namespace QuestPDF.Drawing
             }
             
             // TODO: handle Header nesting values
-            
+            var semanticTreeManager = CreateSemanticTreeManager(settings);
             var useOriginalImages = canvas is ImageDocumentCanvas;
-
-            var content = ConfigureContent(document, settings, useOriginalImages);
+            var content = ConfigureContent(document, settings, semanticTreeManager, useOriginalImages);
             
             if (canvas is CompanionDocumentCanvas)
                 content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
             
             try
             {
-                var semanticTreeManager = new SemanticTreeManager();
-                content.InjectSemanticTreeManager(semanticTreeManager);
-                
                 var pageContext = new PageContext();
                 RenderPass(pageContext, new FreeDocumentCanvas(), content);
                 pageContext.ProceedToNextRenderingPhase();
-                
-                var semanticTree = semanticTreeManager.GetSemanticTree();
-                semanticTreeManager.Reset();
-                canvas.SetSemanticTree(semanticTree);
+
+                canvas.ConfigureWithSemanticTree(semanticTreeManager);
                 
                 canvas.BeginDocument();
                 RenderPass(pageContext, canvas, content);
@@ -150,36 +145,31 @@ namespace QuestPDF.Drawing
             
             var sharedPageContent = new PageContext();
             var useSharedPageContext = document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous;
+
+            var semanticTreeManager = CreateSemanticTreeManager(settings);
             
             var documentParts = Enumerable
                 .Range(0, document.Documents.Count)
                 .Select(index => new
                 {
                     DocumentId = index,
-                    Content = ConfigureContent(document.Documents[index], settings, useOriginalImages),
+                    Content = ConfigureContent(document.Documents[index], settings, semanticTreeManager, useOriginalImages),
                     PageContext = useSharedPageContext ? sharedPageContent : new PageContext()
                 })
                 .ToList();
             
             try
             {
-                var semanticTreeManager = new SemanticTreeManager();
-
                 foreach (var documentPart in documentParts)
-                {
-                    documentPart.Content.InjectSemanticTreeManager(semanticTreeManager);
                     documentPart.PageContext.SetDocumentId(documentPart.DocumentId);
-                }
                 
                 foreach (var documentPart in documentParts)
                 {
                     RenderPass(documentPart.PageContext, new FreeDocumentCanvas(), documentPart.Content);
                     documentPart.PageContext.ProceedToNextRenderingPhase();
                 }
-                
-                var semanticTree = semanticTreeManager.GetSemanticTree();
-                semanticTreeManager.Reset();
-                canvas.SetSemanticTree(semanticTree);
+
+                canvas.ConfigureWithSemanticTree(semanticTreeManager);
                 
                 canvas.BeginDocument();
 
@@ -197,7 +187,33 @@ namespace QuestPDF.Drawing
             }
         }
 
-        private static Container ConfigureContent(IDocument document, DocumentSettings settings, bool useOriginalImages)
+        private static SemanticTreeManager? CreateSemanticTreeManager(DocumentSettings settings)
+        {
+            return IsDocumentSemanticAware() ? new SemanticTreeManager() : null;
+
+            bool IsDocumentSemanticAware()
+            {
+                if (settings.PDFUA_Conformance is not PDFUA_Conformance.None)
+                    return true;
+                
+                if (settings.PDFA_Conformance is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_2A or PDFA_Conformance.PDFA_3A)
+                    return true;
+
+                return false;
+            }
+        }
+
+        private static void ConfigureWithSemanticTree(this IDocumentCanvas canvas, SemanticTreeManager? semanticTreeManager)
+        {
+            if (semanticTreeManager == null) 
+                return;
+            
+            var semanticTree = semanticTreeManager.GetSemanticTree();
+            semanticTreeManager.Reset();
+            canvas.SetSemanticTree(semanticTree);
+        }
+
+        private static Container ConfigureContent(IDocument document, DocumentSettings settings, SemanticTreeManager? semanticTreeManager, bool useOriginalImages)
         {
             var container = new DocumentContainer();
             document.Compose(container);
@@ -207,10 +223,15 @@ namespace QuestPDF.Drawing
             content.ApplyInheritedAndGlobalTexStyle(TextStyle.Default);
             content.ApplyContentDirection(settings.ContentDirection);
             content.ApplyDefaultImageConfiguration(settings.ImageRasterDpi, settings.ImageCompressionQuality, useOriginalImages);
-            content.ApplySemanticParagraphs();
 
             if (Settings.EnableCaching)
                 content.ApplyCaching();
+            
+            if (semanticTreeManager != null)
+            {
+                content.InjectSemanticTreeManager(semanticTreeManager);
+                content.ApplySemanticParagraphs();
+            }
             
             return content;
         }

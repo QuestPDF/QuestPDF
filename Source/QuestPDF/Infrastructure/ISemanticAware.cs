@@ -4,5 +4,5 @@ namespace QuestPDF.Infrastructure;
 
 internal interface ISemanticAware
 {
-    public SemanticTreeManager SemanticTreeManager { get; set; }
+    public SemanticTreeManager? SemanticTreeManager { get; set; }
 }
