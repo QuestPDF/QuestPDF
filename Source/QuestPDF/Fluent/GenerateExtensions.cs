@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
@@ -24,13 +25,12 @@ namespace QuestPDF.Fluent
         #region Genearate And Show Configuration
 
         private static readonly Random Random = new();
-        private static string GetGenerateAndShowPath = Path.GetTempPath();
         private const string GenerateAndShowNamePrefix = "QuestPDF Preview";
 
         private static void ClearGenerateAndShowFiles()
         {
             var legacyPreviewFiles = Directory
-                .GetFiles(GetGenerateAndShowPath, $"{GenerateAndShowNamePrefix} *")
+                .GetFiles(TemporaryStorage.GetPath(), $"{GenerateAndShowNamePrefix} *")
                 .Where(x => DateTime.UtcNow - new FileInfo(x).LastAccessTimeUtc > TimeSpan.FromHours(1));
             
             foreach (var legacyPreviewFile in legacyPreviewFiles)
@@ -88,7 +88,7 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static void GeneratePdfAndShow(this IDocument document)
         {
-            var filePath = Path.Combine(GetGenerateAndShowPath, $"{GenerateAndShowNamePrefix} {Random.Next()}.pdf");
+            var filePath = Path.Combine(TemporaryStorage.GetPath(), $"{GenerateAndShowNamePrefix} {Random.Next()}.pdf");
             
             document.GeneratePdf(filePath);
             Helpers.Helpers.OpenFileUsingDefaultProgram(filePath);
@@ -150,7 +150,7 @@ namespace QuestPDF.Fluent
         /// </remarks>
         public static void GenerateXpsAndShow(this IDocument document)
         {
-            var filePath = Path.Combine(GetGenerateAndShowPath, $"{GenerateAndShowNamePrefix} {Random.Next()}.xps");
+            var filePath = Path.Combine(TemporaryStorage.GetPath(), $"{GenerateAndShowNamePrefix} {Random.Next()}.xps");
             document.GenerateXps(filePath);
             Helpers.Helpers.OpenFileUsingDefaultProgram(filePath);
         }
