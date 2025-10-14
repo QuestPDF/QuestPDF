@@ -22,9 +22,7 @@ namespace QuestPDF.Drawing
                 if (Pages.Count == 0)
                     Pages.Add(new Page());
 
-                container = container
-                    .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Document.ToString())
-                    .SemanticDocument();
+                container = container.DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Document.ToString());
                 
                 if (Pages.Count == 1)
                 {
@@ -39,7 +37,7 @@ namespace QuestPDF.Drawing
                             .SelectMany(x => new List<Action>()
                             {
                                 () => column.Item().PageBreak(),
-                                () => column.Item().Component(x)
+                                () => column.Item().SemanticPart().Component(x)
                             })
                             .Skip(1)
                             .ToList()
