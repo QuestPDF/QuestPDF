@@ -18,23 +18,23 @@ jobs:
       fail-fast: false
       matrix:
         runtime: 
-        - name: win-x64
-          runs-on: windows-latest-xlarge
-        - name: win-x86
-          runs-on: windows-latest-xlarge
-        - name: linux-x64
+        # - name: win-x64
+        #   runs-on: windows-latest-xlarge
+        # - name: win-x86
+        #   runs-on: windows-latest-xlarge
+        # - name: linux-x64
           runs-on: ubuntu-latest-xlarge
           container: ubuntu:24.04
-        - name: linux-arm64
-          runs-on: ubuntu-latest-xlarge-arm64
-          container: ubuntu:24.04
-        - name: linux-musl-x64
-          runs-on: ubuntu-latest-xlarge
-          container: alpine:3.20
-        - name: osx-x64
-          runs-on: macos-latest-large
-        - name: osx-arm64
-          runs-on: macos-latest-xlarge
+        # - name: linux-arm64
+        #   runs-on: ubuntu-latest-xlarge-arm64
+        #   container: ubuntu:24.04
+        # - name: linux-musl-x64
+        #   runs-on: ubuntu-latest-xlarge
+        #   container: alpine:3.20
+        # - name: osx-x64
+        #   runs-on: macos-latest-large
+        # - name: osx-arm64
+        #   runs-on: macos-latest-xlarge
 
     steps:
       - name: Checkout sources
@@ -50,6 +50,10 @@ jobs:
 
           # required by actions/setup-dotnet
           apt install bash wget --yes
+
+          # required by conformance testing tools: veraPDF and mustang
+          apt install unzip default-jre --yes
+          java -version
 
 
       - name: Install Build Tools (Alpine)
@@ -70,6 +74,35 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
+
+
+      - name: Install veraPDF - PDF conformance testing tool
+        if: matrix.runtime.name == 'linux-x64'
+        run: |
+          mkdir -p ~/verapdf
+          cd ~/verapdf
+          
+          wget https://software.verapdf.org/rel/verapdf-greenfield-1.24.1.zip -O verapdf.zip
+          unzip verapdf.zip
+
+          echo 'export PATH="$PATH:$HOME/verapdf/verapdf-greenfield-1.24.1/bin"' >> ~/.bashrc
+          source ~/.bashrc
+
+          verapdf --version
+
+
+      - name: Install mustang - ZUGFeRD conformance testing tool
+        if: matrix.runtime.name == 'linux-x64'
+        run: |
+          mkdir -p ~/mustang
+          cd ~/mustang
+          
+          wget https://repo1.maven.org/maven2/org/mustangproject/Mustang-CLI/2.19.1/Mustang-CLI-2.19.1.jar -O mustang-cli.jar
+
+          echo 'alias mustang="java -jar ~/mustang/mustang-cli.jar"' >> ~/.bashrc
+          source ~/.bashrc
+
+          mustang --help
 
 
       - name: Build and test solution
