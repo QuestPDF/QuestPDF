@@ -79,7 +79,16 @@ jobs:
       - name: Install veraPDF - PDF conformance testing tool
         if: matrix.runtime.name == 'linux-x64'
         run: |
-          alias verapdf='docker run --rm -it -v "$(pwd):/data" verapdf/cli'
+          mkdir -p ~/verapdf
+          cd ~/verapdf
+          
+          wget -q https://software.verapdf.org/rel/verapdf-installer.zip
+          unzip -q verapdf-installer.zip
+          rm verapdf-installer.zip
+
+          echo 'alias verapdf="~/verapdf/verapdf"' >> ~/.bashrc
+          source ~/.bashrc
+          
           verapdf --version
 
 
