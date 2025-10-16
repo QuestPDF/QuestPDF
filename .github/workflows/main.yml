@@ -82,11 +82,11 @@ jobs:
           mkdir -p ~/verapdf
           cd ~/verapdf
           
-          wget https://software.verapdf.org/rel/verapdf-greenfield-1.24.1.zip -O verapdf.zip
-          unzip verapdf.zip
-
-          echo 'export PATH="$PATH:$HOME/verapdf/verapdf-greenfield-1.24.1/bin"' >> ~/.bashrc
-          source ~/.bashrc
+          wget -q http://downloads.verapdf.org/rel/verapdf-installer.zip
+          unzip -q verapdf-installer.zip
+          
+          cd verapdf-* && ./verapdf-install.sh -q || ./verapdf-install.sh
+          echo "$HOME/verapdf" >> $GITHUB_PATH
 
           verapdf --version
 
