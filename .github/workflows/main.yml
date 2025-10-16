@@ -49,7 +49,7 @@ jobs:
           apt upgrade --yes
 
           # required by actions/setup-dotnet
-          apt install bash wget --yes
+          apt install bash wget curl --yes
 
           # required by conformance testing tools: veraPDF and mustang
           apt install unzip default-jre --yes
