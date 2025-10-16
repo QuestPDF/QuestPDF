@@ -22,6 +22,7 @@
 
 
 2025.12.0-alpha3:
+- Ported all changes from the 2025.7.3 release.
 - Updated the Skia native dependency to version m142.
 - Added support for the following conformance standards: PDF/A-1a and PDF/A-1b.
 - Improved automated tagging by enabling it only when a relevant conformance standard is active.
