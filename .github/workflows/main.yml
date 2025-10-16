@@ -23,7 +23,7 @@ jobs:
         # - name: win-x86
         #   runs-on: windows-latest-xlarge
         # - name: linux-x64
-          runs-on: ubuntu-latest-xlarge
+        - runs-on: ubuntu-latest-xlarge
           container: ubuntu:24.04
         # - name: linux-arm64
         #   runs-on: ubuntu-latest-xlarge-arm64
