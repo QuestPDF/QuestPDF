@@ -229,8 +229,8 @@ namespace QuestPDF.Drawing
             
             if (semanticTreeManager != null)
             {
-                content.InjectSemanticTreeManager(semanticTreeManager);
                 content.ApplySemanticParagraphs();
+                content.InjectSemanticTreeManager(semanticTreeManager);
             }
             
             return content;
@@ -577,7 +577,7 @@ namespace QuestPDF.Drawing
                     if (isTextSemanticTag)
                         textContextLevel--;
                 }
-                else if (element is ArtifactTag artifactTag)
+                else if (element is ArtifactTag)
                 {
                     // ignore all Text elements that are marked as artifacts
                 }
