@@ -84,8 +84,12 @@ jobs:
           
           wget -q https://software.verapdf.org/rel/verapdf-installer.zip
           unzip -q verapdf-installer.zip
+          
+          rm verapdf-installer.zip
+          mv verapdf* verapdf 
 
-          echo 'alias verapdf="~/verapdf/verapdf"' >> ~/.bashrc
+          cd verapdf
+          ./verapdf-install -q
           verapdf --version
 
 
