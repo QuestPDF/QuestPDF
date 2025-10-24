@@ -70,8 +70,6 @@ public unsafe class Interop
     [UnmanagedCallersOnly(EntryPoint = "questpdf_document_create", CallConvs = new[] { typeof(CallConvCdecl) })]
     public static nint Document_Create(delegate* unmanaged[Cdecl]<nint, void> pageHandler) // returns opaque handle
     {
-        
-
         var thing = Document
             .Create(document =>
             {
@@ -152,14 +150,4 @@ public unsafe class Interop
     {
         Marshal.FreeHGlobal((IntPtr)ptr);
     }
-}
-
-[System.AttributeUsage(System.AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
-public sealed class AutoBuilderAttribute : System.Attribute { }
-
-[AutoBuilder]
-public partial class Order
-{
-    public string Id { get; set; } = "";
-    public int Quantity { get; set; }
 }
