@@ -68,16 +68,13 @@ public unsafe class Interop
     
     
     [UnmanagedCallersOnly(EntryPoint = "questpdf_document_create", CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static nint Document_Create(delegate* unmanaged[Cdecl]<nint, void> pageHandler) // returns opaque handle
+    public static nint Document_Create(delegate* unmanaged[Cdecl]<nint, void> documentContainerHandler) // returns opaque handle
     {
         var thing = Document
-            .Create(document =>
+            .Create(documentContainer =>
             {
-                document.Page(page =>
-                {
-                    var pagePointer = BoxHandle(page);
-                    pageHandler(pagePointer);
-                });
+                var pagePointer = BoxHandle(documentContainer);
+                documentContainerHandler(pagePointer);
             });
         
         return BoxHandle(thing);
@@ -112,33 +109,64 @@ public unsafe class Interop
     
     
     
+    [UnmanagedCallersOnly(EntryPoint = "questpdf_document_container_add_page", CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static void Document_ContainerAddPage(nint documentContainerPointer, delegate* unmanaged[Cdecl]<nint, void> descriptor) // returns opaque handle
+    {
+        var documentContainer = UnboxHandle<IDocumentContainer>(documentContainerPointer);
+        
+        documentContainer.Page(page =>
+        {
+            var pagePointer = BoxHandle(page);
+            descriptor(pagePointer);
+        });
+    }
+
+    [UnmanagedCallersOnly(EntryPoint = "questpdf_document_container_add_page_faster", CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static IntPtr Document_ContainerAddPage_Faster(nint documentContainerPointer) // returns opaque handle
+    {
+        var documentContainer = UnboxHandle<IDocumentContainer>(documentContainerPointer);
+        
+        IntPtr pagePointer = default;
+        
+        documentContainer.Page(page =>
+        {
+            pagePointer = BoxHandle(page);
+        });
+
+        return pagePointer;
+    }
+    
     
     
     
     
 
     [UnmanagedCallersOnly(EntryPoint = "questpdf_page_set_margin", CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static void Page_GeneratePdf(nint handle, int value)
+    public static void Page_SetMargins(nint handle, int value)
     {
         var thing = UnboxHandle<PageDescriptor>(handle);
         thing.Margin(value);
     }
 
     [UnmanagedCallersOnly(EntryPoint = "questpdf_page_set_content", CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static void Page_GeneratePdf(nint handle, byte* textPtr)
+    public static void Page_AddContent(nint handle, byte* textPtr)
     {
         var thing = UnboxHandle<PageDescriptor>(handle);
         var textFromOutside = Marshal.PtrToStringUTF8((IntPtr)textPtr) ?? "";
         
-        thing.Content().Text(text =>
-        {
-            text.DefaultTextStyle(x => x.FontSize(20));
-
-            text.Span("Hello World... from ");
-            text.Span(textFromOutside).FontColor(Colors.Blue.Darken1);
-            text.Span("!");
-        });
+        thing.Content().Width(200).Height(100).Background(Colors.Red.Lighten3);
+            
+        //     .Text(text =>
+        // {
+        //     text.DefaultTextStyle(x => x.FontSize(20));
+        //
+        //     text.Span("Hello World... from ");
+        //     text.Span(textFromOutside).FontColor(Colors.Blue.Darken1);
+        //     text.Span("!");
+        // });
     }
+    
+    
     
     
     

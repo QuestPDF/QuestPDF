@@ -19,6 +19,27 @@ public static class PublicApiAnalyzer
         return methods;
     }
 
+    /// <summary>
+    /// Collects all public methods from Fluent API classes (descriptors, configurations, handlers, etc.)
+    /// </summary>
+    public static List<IMethodSymbol> CollectFluentApiMethods(INamespaceSymbol rootNamespace)
+    {
+        var methods = new List<IMethodSymbol>();
+        CollectFluentApiMethodsRecursive(rootNamespace, methods);
+        return methods;
+    }
+
+    /// <summary>
+    /// Collects all interop-eligible methods: extension methods + fluent API class methods
+    /// </summary>
+    public static List<IMethodSymbol> CollectAllInteropMethods(INamespaceSymbol rootNamespace)
+    {
+        var methods = new List<IMethodSymbol>();
+        CollectExtensionMethodsRecursive(rootNamespace, methods);
+        CollectFluentApiMethodsRecursive(rootNamespace, methods);
+        return methods;
+    }
+
     private static void CollectExtensionMethodsRecursive(INamespaceSymbol ns, List<IMethodSymbol> methods)
     {
         foreach (var member in ns.GetMembers())
@@ -52,6 +73,78 @@ public static class PublicApiAnalyzer
         {
             CollectFromType(nestedType, methods);
         }
+    }
+
+    private static void CollectFluentApiMethodsRecursive(INamespaceSymbol ns, List<IMethodSymbol> methods)
+    {
+        foreach (var member in ns.GetMembers())
+        {
+            if (member is INamespaceSymbol childNs)
+            {
+                CollectFluentApiMethodsRecursive(childNs, methods);
+            }
+            else if (member is INamedTypeSymbol type)
+            {
+                CollectFluentApiMethodsFromType(type, methods);
+            }
+        }
+    }
+
+    private static void CollectFluentApiMethodsFromType(INamedTypeSymbol type, List<IMethodSymbol> methods)
+    {
+        if (type.DeclaredAccessibility != Accessibility.Public || type.IsImplicitlyDeclared)
+            return;
+
+        // Check if this is a Fluent API class (descriptors, configurations, handlers, etc.)
+        if (!IsFluentApiClass(type))
+            return;
+
+        foreach (var member in type.GetMembers())
+        {
+            // Collect public instance methods (not extension methods, not constructors, not property accessors)
+            if (member is IMethodSymbol { MethodKind: MethodKind.Ordinary, IsExtensionMethod: false, DeclaredAccessibility: Accessibility.Public, IsStatic: false } method 
+                && !method.IsImplicitlyDeclared)
+            {
+                methods.Add(method);
+            }
+        }
+
+        // Process nested types
+        foreach (var nestedType in type.GetTypeMembers())
+        {
+            CollectFluentApiMethodsFromType(nestedType, methods);
+        }
+    }
+
+    /// <summary>
+    /// Determines if a type is part of the Fluent API (descriptors, configurations, handlers, etc.)
+    /// </summary>
+    private static bool IsFluentApiClass(INamedTypeSymbol type)
+    {
+        var typeName = type.Name;
+        var namespaceName = type.ContainingNamespace?.ToDisplayString() ?? "";
+
+        // Check if it's in the Fluent namespace
+        if (namespaceName.Contains("QuestPDF.Fluent"))
+            return true;
+
+        // Check for common Fluent API naming patterns
+        if (typeName.EndsWith("Descriptor") || 
+            typeName.EndsWith("Configuration") || 
+            typeName.EndsWith("Handler") ||
+            typeName.EndsWith("Builder") ||
+            typeName.EndsWith("Settings"))
+            return true;
+
+        // Check if the type implements IContainer or IDocumentContainer
+        foreach (var iface in type.AllInterfaces)
+        {
+            var ifaceName = iface.ToDisplayString();
+            if (ifaceName.Contains("IContainer") || ifaceName.Contains("IDocumentContainer"))
+                return true;
+        }
+
+        return false;
     }
 
     /// <summary>

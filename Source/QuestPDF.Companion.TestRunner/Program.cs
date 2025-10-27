@@ -8,6 +8,35 @@ using QuestPDF.ReportSample.Layouts;
 
 Settings.License = LicenseType.Professional;
 
+var sw = System.Diagnostics.Stopwatch.StartNew();
+
+foreach (var i in Enumerable.Range(0, 1000))
+{
+    Document
+        .Create(document =>
+        {
+            foreach (var j in Enumerable.Range(0, 20))
+            {
+                document.Page(page =>
+                {
+                    page.Margin(50);
+
+                    page.Content().Text(text =>
+                    {
+                        text.Span("Hello world from ");
+                        text.Span(j.ToString()).FontColor(Colors.Red.Medium);
+                        text.Span(" iteration!");
+                    });
+                });
+            }
+        })
+        .GeneratePdf();
+}
+
+sw.Stop();
+Console.WriteLine($"Total time for 1000 documents: {sw.ElapsedMilliseconds} ms");
+return;
+
 //await RunGenericException();
 //await RunLayoutError();
 await RunSimpleDocument();

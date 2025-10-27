@@ -17,13 +17,44 @@ public static class PythonBindingsGenerator
     {
         var sb = new StringBuilder();
         
+        // Generate header and base classes
+        GeneratePythonHeader(sb);
+        
+        // Group methods by their containing type
+        var methodsByType = GroupMethodsByType(extensionMethods);
+        
+        // Generate the main library class
+        GenerateLibraryClass(sb, extensionMethods);
+        
+        // Generate Python wrapper classes for each C# type
+        GeneratePythonWrapperClasses(sb, methodsByType);
+        
+        // Comment out all lines with "//" to avoid C# compilation issues
+        return CommentOutPythonCode(sb.ToString());
+    }
+    
+    /// <summary>
+    /// Comments out all Python code lines with "//" prefix to avoid C# compilation issues
+    /// </summary>
+    private static string CommentOutPythonCode(string pythonCode)
+    {
+        var lines = pythonCode.Split(new[] { "\r\n", "\r", "\n" }, System.StringSplitOptions.None);
+        var commentedLines = lines.Select(line => "// " + line);
+        return string.Join("\n", commentedLines);
+    }
+    
+    private static void GeneratePythonHeader(StringBuilder sb)
+    {
         sb.AppendLine("# Auto-generated Python bindings for QuestPDF");
         sb.AppendLine("# This file provides ctypes-based wrapper for the QuestPDF interop layer");
         sb.AppendLine();
         sb.AppendLine("import ctypes");
         sb.AppendLine("import platform");
-        sb.AppendLine("from typing import Optional");
+        sb.AppendLine("from typing import Optional, TYPE_CHECKING");
         sb.AppendLine("from pathlib import Path");
+        sb.AppendLine();
+        sb.AppendLine("if TYPE_CHECKING:");
+        sb.AppendLine("    from typing import Any");
         sb.AppendLine();
         sb.AppendLine();
         sb.AppendLine("class QuestPDFException(Exception):");
@@ -31,6 +62,40 @@ public static class PythonBindingsGenerator
         sb.AppendLine("    pass");
         sb.AppendLine();
         sb.AppendLine();
+    }
+    
+    private static Dictionary<string, List<IMethodSymbol>> GroupMethodsByType(List<IMethodSymbol> methods)
+    {
+        var result = new Dictionary<string, List<IMethodSymbol>>();
+        
+        foreach (var method in methods)
+        {
+            if (!PublicApiAnalyzer.IsSupported(method))
+                continue;
+            
+            // For extension methods, use the first parameter type (the extended type)
+            // For instance methods, use the containing type
+            string typeName;
+            if (method.IsExtensionMethod)
+            {
+                typeName = method.Parameters[0].Type.Name;
+            }
+            else
+            {
+                typeName = method.ContainingType.Name;
+            }
+            
+            if (!result.ContainsKey(typeName))
+                result[typeName] = new List<IMethodSymbol>();
+            
+            result[typeName].Add(method);
+        }
+        
+        return result;
+    }
+    
+    private static void GenerateLibraryClass(StringBuilder sb, List<IMethodSymbol> extensionMethods)
+    {
         sb.AppendLine("class QuestPDFLibrary:");
         sb.AppendLine("    \"\"\"Wrapper for QuestPDF native library\"\"\"");
         sb.AppendLine("    ");
@@ -95,54 +160,72 @@ public static class PythonBindingsGenerator
         sb.AppendLine("        if handle != 0:");
         sb.AppendLine("            self._lib.questpdf_free_handle(handle)");
         sb.AppendLine();
+        sb.AppendLine();
+    }
+    
+    private static void GeneratePythonWrapperClasses(StringBuilder sb, Dictionary<string, List<IMethodSymbol>> methodsByType)
+    {
+        // Sort types alphabetically for consistent output
+        var sortedTypes = methodsByType.Keys.OrderBy(k => k).ToList();
         
-        // Generate Python wrapper methods
-        foreach (var method in extensionMethods)
+        foreach (var typeName in sortedTypes)
         {
-            if (!PublicApiAnalyzer.IsSupported(method))
-                continue;
-                
-            GeneratePythonWrapperMethod(sb, method);
+            var methods = methodsByType[typeName];
+            var pythonClassName = ToPythonClassName(typeName);
+            
+            sb.AppendLine($"class {pythonClassName}:");
+            sb.AppendLine($"    \"\"\"Python wrapper for {typeName}\"\"\"");
+            sb.AppendLine("    ");
+            sb.AppendLine("    def __init__(self, lib: QuestPDFLibrary, handle: int):");
+            sb.AppendLine("        self._lib = lib");
+            sb.AppendLine("        self._handle = handle");
+            sb.AppendLine("    ");
+            sb.AppendLine("    @property");
+            sb.AppendLine("    def handle(self) -> int:");
+            sb.AppendLine("        \"\"\"Get the underlying native handle\"\"\"");
+            sb.AppendLine("        return self._handle");
+            sb.AppendLine("    ");
+            sb.AppendLine("    def __del__(self):");
+            sb.AppendLine("        if hasattr(self, '_handle') and self._handle != 0:");
+            sb.AppendLine("            try:");
+            sb.AppendLine("                self._lib.free_handle(self._handle)");
+            sb.AppendLine("            except:");
+            sb.AppendLine("                pass  # Ignore errors during cleanup");
+            sb.AppendLine("    ");
+            sb.AppendLine("    def __enter__(self):");
+            sb.AppendLine("        return self");
+            sb.AppendLine("    ");
+            sb.AppendLine("    def __exit__(self, exc_type, exc_val, exc_tb):");
+            sb.AppendLine("        self._lib.free_handle(self._handle)");
+            sb.AppendLine("        self._handle = 0");
+            sb.AppendLine();
+            
+            // Generate methods for this class
+            foreach (var method in methods.OrderBy(m => m.Name))
+            {
+                GeneratePythonClassMethod(sb, method, pythonClassName);
+            }
+            
+            sb.AppendLine();
         }
-        
-        sb.AppendLine();
-        sb.AppendLine();
-        sb.AppendLine("class Handle:");
-        sb.AppendLine("    \"\"\"Wrapper for a managed object handle with automatic cleanup\"\"\"");
-        sb.AppendLine("    ");
-        sb.AppendLine("    def __init__(self, lib: QuestPDFLibrary, handle: int):");
-        sb.AppendLine("        self._lib = lib");
-        sb.AppendLine("        self._handle = handle");
-        sb.AppendLine("    ");
-        sb.AppendLine("    @property");
-        sb.AppendLine("    def value(self) -> int:");
-        sb.AppendLine("        return self._handle");
-        sb.AppendLine("    ");
-        sb.AppendLine("    def __del__(self):");
-        sb.AppendLine("        if hasattr(self, '_handle') and self._handle != 0:");
-        sb.AppendLine("            try:");
-        sb.AppendLine("                self._lib.free_handle(self._handle)");
-        sb.AppendLine("            except:");
-        sb.AppendLine("                pass  # Ignore errors during cleanup");
-        sb.AppendLine("    ");
-        sb.AppendLine("    def __enter__(self):");
-        sb.AppendLine("        return self");
-        sb.AppendLine("    ");
-        sb.AppendLine("    def __exit__(self, exc_type, exc_val, exc_tb):");
-        sb.AppendLine("        self._lib.free_handle(self._handle)");
-        sb.AppendLine("        self._handle = 0");
-        
-        return sb.ToString();
     }
     
     private static void GeneratePythonFunctionSetup(StringBuilder sb, IMethodSymbol method)
     {
         var entryPoint = CSharpInteropGenerator.GenerateEntryPointName(method);
+        var isInstanceMethod = !method.IsStatic && !method.IsExtensionMethod;
         
         sb.AppendLine($"        # {method.ContainingType.Name}.{method.Name}");
         sb.Append($"        self._lib.{entryPoint}.argtypes = [");
         
         var argTypes = new List<string>();
+        
+        // For instance methods, add 'this' parameter
+        if (isInstanceMethod)
+        {
+            argTypes.Add("ctypes.c_void_p");
+        }
+        
         foreach (var param in method.Parameters)
         {
             argTypes.Add(GetPythonCType(param.Type));
@@ -154,35 +237,48 @@ public static class PythonBindingsGenerator
         sb.AppendLine();
     }
     
-    private static void GeneratePythonWrapperMethod(StringBuilder sb, IMethodSymbol method)
+    private static void GeneratePythonClassMethod(StringBuilder sb, IMethodSymbol method, string pythonClassName)
     {
         var entryPoint = CSharpInteropGenerator.GenerateEntryPointName(method);
         var pythonName = ToPythonMethodName(method.Name);
+        var isExtensionMethod = method.IsExtensionMethod;
         
         // Build parameter list
         var parameters = new List<string> { "self" };
-        foreach (var param in method.Parameters)
+        
+        // For extension methods, skip the first parameter (the extended type - that's 'self')
+        var paramsToProcess = isExtensionMethod ? method.Parameters.Skip(1) : method.Parameters;
+        
+        foreach (var param in paramsToProcess)
         {
             var paramName = ToPythonParamName(param.Name);
-            var pythonType = GetPythonTypeHint(param.Type);
+            var pythonType = GetPythonTypeHint(param.Type, isParameter: true);
             parameters.Add($"{paramName}: {pythonType}");
         }
         
-        var returnTypeHint = GetPythonTypeHint(method.ReturnType);
+        var returnTypeHint = GetPythonTypeHint(method.ReturnType, isParameter: false);
         
-        sb.AppendLine($"    def {pythonName}({string.Join(", ", parameters)}) -> {returnTypeHint}:");
+        sb.AppendLine($"    def {pythonName}({string.Join(", ", parameters)}) -> '{returnTypeHint}':");
         sb.AppendLine($"        \"\"\"");
-        sb.AppendLine($"        {method.ContainingType.Name}.{method.Name}");
+        sb.AppendLine($"        {method.Name}");
+        if (!string.IsNullOrEmpty(method.GetDocumentationCommentXml()))
+        {
+            // Could extract summary from XML here if needed
+        }
         sb.AppendLine($"        \"\"\"");
         
         // Build argument list for the call
         var callArgs = new List<string>();
-        foreach (var param in method.Parameters)
+        
+        // Always pass 'self._handle' as the first argument (either for extension method or instance method)
+        callArgs.Add("self._handle");
+        
+        foreach (var param in paramsToProcess)
         {
             var paramName = ToPythonParamName(param.Name);
             if (PublicApiAnalyzer.IsReferenceType(param.Type))
             {
-                callArgs.Add($"{paramName}.value if isinstance({paramName}, Handle) else {paramName}");
+                callArgs.Add($"{paramName}.handle if hasattr({paramName}, 'handle') else {paramName}");
             }
             else
             {
@@ -192,16 +288,17 @@ public static class PythonBindingsGenerator
         
         if (method.ReturnsVoid)
         {
-            sb.AppendLine($"        self._lib.{entryPoint}({string.Join(", ", callArgs)})");
+            sb.AppendLine($"        self._lib._lib.{entryPoint}({string.Join(", ", callArgs)})");
         }
         else if (PublicApiAnalyzer.IsReferenceType(method.ReturnType))
         {
-            sb.AppendLine($"        result = self._lib.{entryPoint}({string.Join(", ", callArgs)})");
-            sb.AppendLine($"        return Handle(self, result)");
+            sb.AppendLine($"        result = self._lib._lib.{entryPoint}({string.Join(", ", callArgs)})");
+            var returnPythonClass = ToPythonClassName(method.ReturnType.Name);
+            sb.AppendLine($"        return {returnPythonClass}(self._lib, result)");
         }
         else
         {
-            sb.AppendLine($"        return self._lib.{entryPoint}({string.Join(", ", callArgs)})");
+            sb.AppendLine($"        return self._lib._lib.{entryPoint}({string.Join(", ", callArgs)})");
         }
         
         sb.AppendLine();
@@ -234,13 +331,16 @@ public static class PythonBindingsGenerator
         };
     }
     
-    private static string GetPythonTypeHint(ITypeSymbol type)
+    private static string GetPythonTypeHint(ITypeSymbol type, bool isParameter)
     {
         if (type.SpecialType == SpecialType.System_Void)
             return "None";
         
         if (PublicApiAnalyzer.IsReferenceType(type))
-            return "Handle";
+        {
+            // Return the appropriate Python class name for reference types
+            return ToPythonClassName(type.Name);
+        }
         
         return type.SpecialType switch
         {
@@ -259,6 +359,21 @@ public static class PythonBindingsGenerator
             SpecialType.System_UIntPtr => "int",
             _ => "int"
         };
+    }
+    
+    private static string ToPythonClassName(string csharpTypeName)
+    {
+        // Convert C# type name to Python class name
+        // Remove generic markers and sanitize
+        var cleanName = csharpTypeName
+            .Replace("`", "")
+            .Replace("<", "_")
+            .Replace(">", "_")
+            .Replace(",", "_")
+            .Trim('_');
+        
+        // Return as-is (PascalCase is acceptable in Python for class names)
+        return cleanName;
     }
     
     private static string ToPythonMethodName(string name)

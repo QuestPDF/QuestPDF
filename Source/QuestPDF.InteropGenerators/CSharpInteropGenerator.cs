@@ -77,14 +77,24 @@ public static class CSharpInteropGenerator
         }
         
         var methodName = GenerateMethodName(method);
-        var callTarget = $"{method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{method.Name}";
+        var isExtensionMethod = method.IsExtensionMethod;
+        var isInstanceMethod = !method.IsStatic && !isExtensionMethod;
         
         // Determine interop signature (reference types become nint handles)
         var interopReturnType = PublicApiAnalyzer.IsReferenceType(method.ReturnType) 
             ? "nint" 
             : method.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         
-        var interopParameters = string.Join(", ", method.Parameters.Select(p =>
+        // For instance methods, add 'this' parameter as first parameter
+        var interopParametersList = new List<string>();
+        
+        if (isInstanceMethod)
+        {
+            // Instance methods need the 'this' object as first parameter
+            interopParametersList.Add("nint @this");
+        }
+        
+        interopParametersList.AddRange(method.Parameters.Select(p =>
         {
             var paramType = PublicApiAnalyzer.IsReferenceType(p.Type) 
                 ? "nint" 
@@ -92,9 +102,18 @@ public static class CSharpInteropGenerator
             return $"{paramType} {p.Name}";
         }));
         
+        var interopParameters = string.Join(", ", interopParametersList);
+        
         sb.AppendLine($"    [UnmanagedCallersOnly(EntryPoint = \"{GenerateEntryPointName(method)}\", CallConvs = new[] {{ typeof(CallConvCdecl) }})]");
         sb.AppendLine($"    public static {interopReturnType} {methodName}({interopParameters})");
         sb.AppendLine("    {");
+        
+        // For instance methods, unbox the 'this' parameter
+        if (isInstanceMethod)
+        {
+            var containingType = method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            sb.AppendLine($"        var this_obj = UnboxHandle<{containingType}>(@this);");
+        }
         
         // Unbox reference type parameters
         foreach (var param in method.Parameters)
@@ -109,6 +128,17 @@ public static class CSharpInteropGenerator
         // Build argument list (use unboxed versions for reference types)
         var arguments = string.Join(", ", method.Parameters.Select(p => 
             PublicApiAnalyzer.IsReferenceType(p.Type) ? $"{p.Name}_obj" : p.Name));
+        
+        // Build the call target
+        string callTarget;
+        if (isInstanceMethod)
+        {
+            callTarget = $"this_obj.{method.Name}";
+        }
+        else
+        {
+            callTarget = $"{method.ContainingType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)}.{method.Name}";
+        }
         
         // Call the method and handle the result
         if (method.ReturnsVoid)
