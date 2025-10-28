@@ -1,9 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 using QuestPDF.Fluent;
-using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF;
@@ -16,7 +14,7 @@ public unsafe struct Buffer
 }
 
 
-public unsafe class Interop
+internal unsafe partial class Interop
 {
     static Interop()
     {
@@ -120,21 +118,6 @@ public unsafe class Interop
             descriptor(pagePointer);
         });
     }
-
-    [UnmanagedCallersOnly(EntryPoint = "questpdf_document_container_add_page_faster", CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static IntPtr Document_ContainerAddPage_Faster(nint documentContainerPointer) // returns opaque handle
-    {
-        var documentContainer = UnboxHandle<IDocumentContainer>(documentContainerPointer);
-        
-        IntPtr pagePointer = default;
-        
-        documentContainer.Page(page =>
-        {
-            pagePointer = BoxHandle(page);
-        });
-
-        return pagePointer;
-    }
     
     
     
@@ -149,25 +132,12 @@ public unsafe class Interop
     }
 
     [UnmanagedCallersOnly(EntryPoint = "questpdf_page_set_content", CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static void Page_AddContent(nint handle, byte* textPtr)
+    public static IntPtr Page_AddContent(nint handle)
     {
         var thing = UnboxHandle<PageDescriptor>(handle);
-        var textFromOutside = Marshal.PtrToStringUTF8((IntPtr)textPtr) ?? "";
-        
-        thing.Content().Width(200).Height(100).Background(Colors.Red.Lighten3);
-            
-        //     .Text(text =>
-        // {
-        //     text.DefaultTextStyle(x => x.FontSize(20));
-        //
-        //     text.Span("Hello World... from ");
-        //     text.Span(textFromOutside).FontColor(Colors.Blue.Darken1);
-        //     text.Span("!");
-        // });
+        var result = thing.Content();
+        return BoxHandle(result);
     }
-    
-    
-    
     
     
     

@@ -2,35 +2,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.CodeAnalysis;
+using Scriban;
 
 namespace QuestPDF.InteropGenerators;
 
 /// <summary>
-/// Generates Python ctypes bindings for interop
+/// Generates Python ctypes bindings for interop using Scriban templates
 /// </summary>
 public static class PythonBindingsGenerator
 {
     /// <summary>
     /// Generates the complete Python bindings code
     /// </summary>
+    private const string PythonTemplate = @"{{ header }}{{ library }}{{ wrappers }}";
+
     public static string GeneratePythonBindings(List<IMethodSymbol> extensionMethods)
     {
-        var sb = new StringBuilder();
-        
-        // Generate header and base classes
-        GeneratePythonHeader(sb);
-        
         // Group methods by their containing type
         var methodsByType = GroupMethodsByType(extensionMethods);
         
-        // Generate the main library class
-        GenerateLibraryClass(sb, extensionMethods);
+        // Build pieces using existing logic
+        var header = GeneratePythonHeaderText();
+        var library = GenerateLibraryClassText(extensionMethods);
+        var wrappers = GeneratePythonWrapperClassesText(methodsByType);
         
-        // Generate Python wrapper classes for each C# type
-        GeneratePythonWrapperClasses(sb, methodsByType);
+        // Render via Scriban
+        var template = Template.Parse(PythonTemplate);
+        var rendered = template.Render(new { header, library, wrappers });
         
         // Comment out all lines with "//" to avoid C# compilation issues
-        return CommentOutPythonCode(sb.ToString());
+        return CommentOutPythonCode(rendered);
     }
     
     /// <summary>
@@ -41,6 +42,27 @@ public static class PythonBindingsGenerator
         var lines = pythonCode.Split(new[] { "\r\n", "\r", "\n" }, System.StringSplitOptions.None);
         var commentedLines = lines.Select(line => "// " + line);
         return string.Join("\n", commentedLines);
+    }
+
+    private static string GeneratePythonHeaderText()
+    {
+        var sb = new StringBuilder();
+        GeneratePythonHeader(sb);
+        return sb.ToString();
+    }
+
+    private static string GenerateLibraryClassText(List<IMethodSymbol> extensionMethods)
+    {
+        var sb = new StringBuilder();
+        GenerateLibraryClass(sb, extensionMethods);
+        return sb.ToString();
+    }
+
+    private static string GeneratePythonWrapperClassesText(Dictionary<string, List<IMethodSymbol>> methodsByType)
+    {
+        var sb = new StringBuilder();
+        GeneratePythonWrapperClasses(sb, methodsByType);
+        return sb.ToString();
     }
     
     private static void GeneratePythonHeader(StringBuilder sb)
