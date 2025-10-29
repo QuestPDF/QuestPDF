@@ -74,7 +74,10 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         {
             if (element is TextBlock textBlock)
             {
-                builder.Append(textBlock.Text).Append(' ');
+                if (builder.Length > 0)
+                    builder.Append(' ');
+                
+                builder.Append(textBlock.Text);
             }
             else if (element is ContainerElement container)
             {
