@@ -108,7 +108,7 @@ internal class SemanticAwareDrawingCanvas : IDrawingCanvas
 
     public void DrawRectangle(Position vector, Size size, SkPaint paint)
     {
-        if (CurrentSemanticNodeId != SkSemanticNodeSpecialId.BackgroundArtifact)
+        if (CurrentSemanticNodeId is not (SkSemanticNodeSpecialId.BackgroundArtifact or SkSemanticNodeSpecialId.LayoutArtifact))
             Assert.Fail("Detected a rectangle drawing operation outside of layout artifact");
     }
 
