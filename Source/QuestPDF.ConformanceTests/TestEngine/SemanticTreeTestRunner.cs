@@ -58,3 +58,53 @@ internal static class SemanticTreeTestRunner
         }
     }
 }
+
+internal static class ExpectedSemanticTree
+{
+    public static SemanticTreeNode DocumentRoot(Action<SemanticTreeNode> configuration)
+    {
+        var root = new SemanticTreeNode
+        {
+            Type = "Document"
+        };
+        
+        configuration(root);
+        return root;
+    }
+
+    public static void Child(this SemanticTreeNode parent, string type, Action<SemanticTreeNode>? configuration = null)
+    {
+        var child = new SemanticTreeNode
+        {
+            Type = type
+        };
+
+        configuration?.Invoke(child);
+        parent.Children.Add(child);
+    }
+    
+    public static SemanticTreeNode Attribute(this SemanticTreeNode node, string owner, string name, string value)
+    {
+        var attribute = new SemanticTreeNode.Attribute
+        {
+            Owner = owner,
+            Name = name,
+            Value = value
+        };
+        
+        node.Attributes.Add(attribute);
+        return node;
+    }
+    
+    public static SemanticTreeNode Alt(this SemanticTreeNode node, string alt)
+    {
+        node.Alt = alt;
+        return node;
+    }
+    
+    public static SemanticTreeNode Lang(this SemanticTreeNode node, string lang)
+    {
+        node.Lang = lang;
+        return node;
+    }
+}
