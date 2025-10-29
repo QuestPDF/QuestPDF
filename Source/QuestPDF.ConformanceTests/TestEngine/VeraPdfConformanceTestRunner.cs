@@ -4,9 +4,9 @@ using System.Text.Json;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
-namespace QuestPDF.ConformanceTests;
+namespace QuestPDF.ConformanceTests.TestEngine;
 
-public static class ConformanceToolRunner
+public static class VeraPdfConformanceTestRunner
 {
     public class ValidationResult
     {
@@ -40,9 +40,8 @@ public static class ConformanceToolRunner
             return errorMessage.ToString();
         }
     }
-
     
-    public static void TestConformance(this IDocument document)
+    public static void TestConformanceWithVeraPdf(this IDocument document)
     {
         var filePath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid()}.pdf");
         document.GeneratePdf(filePath);

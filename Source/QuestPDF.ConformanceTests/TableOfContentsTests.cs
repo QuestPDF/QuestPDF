@@ -1,42 +1,14 @@
+using QuestPDF.ConformanceTests.TestEngine;
+using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ConformanceTests;
 
-[TestFixture]
-public class TableOfContentsTests
+internal class TableOfContentsTests : ConformanceTestBase
 {
-    [Test]
-    [Ignore("For manual testing purposes only")]
-    public void GenerateAndShow()
-    {
-        GetDocumentUnderTest().GeneratePdfAndShow();
-    }
-    
-    [Test, TestCaseSource(typeof(TestHelpers), nameof(TestHelpers.PDFA_ConformanceLevels))]
-    public void Test_PDFA(PDFA_Conformance conformance)
-    {
-        GetDocumentUnderTest()
-            .WithSettings(new DocumentSettings
-            {
-                PDFA_Conformance = conformance
-            })
-            .TestConformance();
-    }
-    
-    [Test, TestCaseSource(typeof(TestHelpers), nameof(TestHelpers.PDFUA_ConformanceLevels))]
-    public void Test_PDFUA(PDFUA_Conformance conformance)
-    {
-        GetDocumentUnderTest()
-            .WithSettings(new DocumentSettings
-            {
-                PDFUA_Conformance = conformance
-            })
-            .TestConformance();
-    }
-
-    private Document GetDocumentUnderTest()
+    protected override Document GetDocumentUnderTest()
     {
         return Document
             .Create(document =>
@@ -74,6 +46,11 @@ public class TableOfContentsTests
                 Title = "Conformance Test", 
                 Subject = "Table of Contents"
             });
+    }
+
+    protected override SemanticTreeNode? GetExpectedSemanticTree()
+    {
+        throw new NotImplementedException();
     }
 
     private void GenerateTableOfContentsSection(IContainer container)

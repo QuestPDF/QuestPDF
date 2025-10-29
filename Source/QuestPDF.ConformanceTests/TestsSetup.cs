@@ -1,12 +1,11 @@
-﻿using QuestPDF.Helpers;
+﻿using System.Runtime.CompilerServices;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ConformanceTests
 {
-    [SetUpFixture]
     public class TestsSetup
     {
-        [OneTimeSetUp]
+        [ModuleInitializer]
         public static void Setup()
         {
             QuestPDF.Settings.License = LicenseType.Community;

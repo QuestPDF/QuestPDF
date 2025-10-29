@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace QuestPDF.Drawing;
 
-class SemanticTreeNode
+internal class SemanticTreeNode
 {
     public int NodeId { get; set; }
     public string Type { get; set; } = "";

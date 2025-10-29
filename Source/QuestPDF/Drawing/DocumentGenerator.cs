@@ -102,7 +102,7 @@ namespace QuestPDF.Drawing
             return canvas.GetContent();
         }
 
-        private static void RenderDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
+        internal static void RenderDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
         {
             if (document is MergedDocument mergedDocument)
             {

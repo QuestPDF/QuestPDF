@@ -1,23 +1,13 @@
+using QuestPDF.ConformanceTests.TestEngine;
+using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ConformanceTests;
 
-public class ImageTests
+internal class ImageTests : ConformanceTestBase
 {
-    [Test]
-    [Ignore("For manual testing purposes only")]
-    public void GenerateAndShow()
-    {
-        GetDocumentUnderTest()
-            .WithSettings(new DocumentSettings
-            {
-                PDFUA_Conformance = PDFUA_Conformance.PDFUA_1
-            })
-            .GeneratePdfAndShow();
-    }
-
     [OneTimeSetUp]
     public void Setup()
     {
@@ -28,33 +18,11 @@ public class ImageTests
 
         ImageHelpers.ConvertImageIccColorSpaceProfileToVersion2(sourceImagePath, targetImagePath);
     }
-    
-    [Test, TestCaseSource(typeof(TestHelpers), nameof(TestHelpers.PDFA_ConformanceLevels))]
-    public void Test_PDFA(PDFA_Conformance conformance)
-    {
-        var useImageWithIcc2 = conformance is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_1B;
-        
-        GetDocumentUnderTest(useImageWithIcc2)
-            .WithSettings(new DocumentSettings
-            {
-                PDFA_Conformance = conformance
-            })
-            .TestConformance();
-    }
-    
-    [Test, TestCaseSource(typeof(TestHelpers), nameof(TestHelpers.PDFUA_ConformanceLevels))]
-    public void Test_PDFUA(PDFUA_Conformance conformance)
-    {
-        GetDocumentUnderTest()
-            .WithSettings(new DocumentSettings
-            {
-                PDFUA_Conformance = conformance
-            })
-            .TestConformance();
-    }
 
-    private Document GetDocumentUnderTest(bool useImageWithIcc2 = false)
+    protected override Document GetDocumentUnderTest()
     {
+        var useImageWithIcc2 = TestContext.CurrentContext.Test.Arguments.FirstOrDefault() is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_1B;
+        
         var imagePath = useImageWithIcc2 
             ? Path.Combine("Resources", "photo-icc2.jpeg") 
             : Path.Combine("Resources", "photo.jpeg");
@@ -97,5 +65,10 @@ public class ImageTests
                 Title = "Conformance Test", 
                 Subject = "Images"
             });
+    }
+
+    protected override SemanticTreeNode? GetExpectedSemanticTree()
+    {
+        throw new NotImplementedException();
     }
 }

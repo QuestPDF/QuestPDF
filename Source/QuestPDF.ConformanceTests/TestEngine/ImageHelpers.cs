@@ -1,6 +1,6 @@
 using ImageMagick;
 
-namespace QuestPDF.ConformanceTests;
+namespace QuestPDF.ConformanceTests.TestEngine;
 
 public static class ImageHelpers
 {
