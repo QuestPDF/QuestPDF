@@ -558,8 +558,6 @@ namespace QuestPDF.Drawing
 
         internal static void ApplySemanticParagraphs(this Element root)
         {
-            return;
-            
             var isFooterContext = false;
             
             Traverse(root);
