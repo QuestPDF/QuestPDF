@@ -8,7 +8,7 @@ internal class SemanticTreeNode
     public string Type { get; set; } = "";
     public string? Alt { get; set; }
     public string? Lang { get; set; }
-    public ICollection<SemanticTreeNode> Children { get; } = [];
+    public IList<SemanticTreeNode> Children { get; } = [];
     public ICollection<Attribute> Attributes { get; } = [];
 
     public class Attribute

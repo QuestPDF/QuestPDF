@@ -17,44 +17,81 @@ internal static class SemanticTreeTestRunner
         CompareSemanticTrees(canvas.SemanticTree, semanticTreeRootNode);
     }
 
-    private static void CompareSemanticTrees(SemanticTreeNode? actual, SemanticTreeNode? expected)
+    private static void CompareSemanticTrees(SemanticTreeNode? actualRoot, SemanticTreeNode? expectedRoot)
     {
-        if (expected == null && actual == null)
+        if (expectedRoot == null && actualRoot == null)
             return;
 
-        if (expected == null)
-            Assert.Fail($"Expected null but got node of type '{actual?.Type}'");
-
-        if (actual == null)
-            Assert.Fail($"Expected node of type '{expected.Type}' but got null");
-
-        Assert.That(actual.Type, Is.EqualTo(expected.Type), $"Node type mismatch");
-        Assert.That(actual.Alt, Is.EqualTo(expected.Alt), $"Alt mismatch for node type '{expected.Type}'");
-        Assert.That(actual.Lang, Is.EqualTo(expected.Lang), $"Lang mismatch for node type '{expected.Type}'");
-
-        CompareAttributes(actual.Attributes, expected.Attributes, expected.Type);
-
-        Assert.That(actual.Children.Count, Is.EqualTo(expected.Children.Count), $"Children count mismatch for node type '{expected.Type}'");
-
-        foreach (var (actualChild, expectedChild) in actual.Children.Zip(expected.Children))
-            CompareSemanticTrees(actualChild, expectedChild);
-        
-        static void CompareAttributes(ICollection<SemanticTreeNode.Attribute> actual, ICollection<SemanticTreeNode.Attribute> expected, string nodeType)
+        if (expectedRoot == null)
         {
-            Assert.That(actual.Count, Is.EqualTo(expected.Count), $"Attribute count mismatch for node type '{nodeType}'");
+            Assert.Fail($"Expected null but got node of type '{actualRoot?.Type}'");
+            return;
+        }
 
-            var actualList = actual.OrderBy(a => a.Owner).ThenBy(a => a.Name).ToList();
-            var expectedList = expected.OrderBy(a => a.Owner).ThenBy(a => a.Name).ToList();
+        if (actualRoot == null)
+        {
+            Assert.Fail($"Expected node of type '{expectedRoot.Type}' but got null");
+            return;
+        }
+        
+        var currentPath = new Stack<string>();
+        
+        try
+        {
+            Compare(actualRoot, expectedRoot);
+        }
+        catch
+        {
+            var pathText = string.Join(" -> ", currentPath.Reverse());
+            Console.WriteLine("Problem location");
+            Console.WriteLine(pathText);
 
-            for (var i = 0; i < expectedList.Count; i++)
+            throw;
+        }        
+
+        void Compare(SemanticTreeNode actual, SemanticTreeNode expected)
+        {
+            if (!currentPath.Any())
+                currentPath.Push(actual.Type);
+            
+            Assert.That(actual.Type, Is.EqualTo(expected.Type), "Type mismatch");
+            Assert.That(actual.Alt, Is.EqualTo(expected.Alt), "Alt mismatch");
+            Assert.That(actual.Lang, Is.EqualTo(expected.Lang), "Lang mismatch");
+
+            CompareAttributes();
+            CompareChildren();
+
+            void CompareChildren()
             {
-                var actualAttr = actualList[i];
-                var expectedAttr = expectedList[i];
-
-                Assert.That(actualAttr.Owner, Is.EqualTo(expectedAttr.Owner), $"Attribute owner mismatch for node type '{nodeType}'");
-                Assert.That(actualAttr.Name, Is.EqualTo(expectedAttr.Name), $"Attribute name mismatch for node type '{nodeType}'");
-                Assert.That(actualAttr.Value, Is.EqualTo(expectedAttr.Value), $"Attribute value mismatch for '{expectedAttr.Owner}:{expectedAttr.Name}' in node type '{nodeType}'");
+                Assert.That(actual.Children.Count, Is.EqualTo(expected.Children.Count), "Children count mismatch");
+                
+                var hasMultipleChildren = actual.Children.Count > 1;
+            
+                foreach (var (actualChild, expectedChild) in actual.Children.Zip(expected.Children))
+                {
+                    var prefix = hasMultipleChildren ? $"{actual.Children.IndexOf(actualChild)}:" : "";
+                    currentPath.Push(prefix + actualChild.Type);
+                
+                    Compare(actualChild, expectedChild);
+                
+                    currentPath.Pop();
+                }
             }
+            
+            void CompareAttributes()
+            {
+                Assert.That(actual.Attributes.Count, Is.EqualTo(expected.Attributes.Count), "Attribute count mismatch");
+
+                var actualList = actual.Attributes.OrderBy(a => a.Owner).ThenBy(a => a.Name);
+                var expectedList = expected.Attributes.OrderBy(a => a.Owner).ThenBy(a => a.Name);
+
+                foreach (var (actualAttribute, expectedAttribute) in actualList.Zip(expectedList))
+                {
+                    Assert.That(actualAttribute.Owner, Is.EqualTo(expectedAttribute.Owner), "Attribute owner mismatch");
+                    Assert.That(actualAttribute.Name, Is.EqualTo(expectedAttribute.Name), "Attribute name mismatch");
+                    Assert.That(actualAttribute.Value, Is.EqualTo(expectedAttribute.Value), $"Attribute value mismatch for '{expectedAttribute.Owner}:{expectedAttribute.Name}");
+                }
+            }   
         }
     }
 }
