@@ -54,6 +54,9 @@ internal static class SemanticTreeTestRunner
             if (!currentPath.Any())
                 currentPath.Push(actual.Type);
             
+            if (expected.NodeId != 0)
+                Assert.That(actual.NodeId, Is.EqualTo(expected.NodeId), "NodeId mismatch");
+            
             Assert.That(actual.Type, Is.EqualTo(expected.Type), "Type mismatch");
             Assert.That(actual.Alt, Is.EqualTo(expected.Alt), "Alt mismatch");
             Assert.That(actual.Lang, Is.EqualTo(expected.Lang), "Lang mismatch");
@@ -120,7 +123,13 @@ internal static class ExpectedSemanticTree
         parent.Children.Add(child);
     }
     
-    public static SemanticTreeNode Attribute(this SemanticTreeNode node, string owner, string name, string value)
+    public static SemanticTreeNode Id(this SemanticTreeNode node, int id)
+    {
+        node.NodeId = id;
+        return node;
+    }
+    
+    public static SemanticTreeNode Attribute(this SemanticTreeNode node, string owner, string name, object value)
     {
         var attribute = new SemanticTreeNode.Attribute
         {
