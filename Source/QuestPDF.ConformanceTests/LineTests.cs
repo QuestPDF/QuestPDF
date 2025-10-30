@@ -22,46 +22,64 @@ internal class LineTests : ConformanceTestBase
                         {
                             column.Spacing(25);
 
-                            column.Item().Text("Line tests");
+                            column.Item()
+                                .SemanticHeader1()
+                                .Text("Conformance Test: Line Elements")
+                                .FontSize(24)
+                                .Bold()
+                                .FontColor(Colors.Blue.Darken2);
 
                             column.Item()
-                                .LineHorizontal(6)
-                                .LineColor(Colors.Red.Medium);
-                            
+                                .Text("Line elements should be rendered but semantically treated as artifacts.");
+
                             column.Item()
-                                .LineHorizontal(6)
+                                .LineHorizontal(2)
+                                .LineColor(Colors.Red.Medium);
+
+                            column.Item()
+                                .Text(Placeholders.LoremIpsum());
+
+                            column.Item()
+                                .LineHorizontal(4)
                                 .LineColor(Colors.Green.Medium)
                                 .LineDashPattern([6, 6, 12, 6]);
-                            
+    
                             column.Item()
-                                .Height(150)
-                                .LineVertical(6)
-                                .LineGradient([ Colors.Blue.Lighten2, Colors.Blue.Darken2 ]);
+                                .SemanticDivision()
+                                .Background(Colors.Grey.Lighten3).Row(row =>
+                                {
+                                    row.RelativeItem()
+                                        .PaddingVertical(25)
+                                        .AlignRight()
+                                        .Text("Text on the left side");
+                                    
+                                    row.AutoItem()
+                                        .PaddingHorizontal(25)
+                                        .LineVertical(4)
+                                        .LineGradient([ Colors.Blue.Lighten2, Colors.Blue.Darken2 ]);
+                                    
+                                    row.RelativeItem()
+                                        .PaddingVertical(25)
+                                        .Text("Text on the right side");
+                                });
                         });
                 });
-            })
-            .WithMetadata(new DocumentMetadata
-            {
-                Language = "en-US",
-                Title = "Conformance Test", 
-                Subject = "Table of Contents"
             });
     }
     
     protected override SemanticTreeNode? GetExpectedSemanticTree()
     {
-        return new SemanticTreeNode
+        return ExpectedSemanticTree.DocumentRoot(root =>
         {
-            NodeId = 1,
-            Type = "Document",
-            Children =
+            root.Child("H1", h1 => h1.Alt("Conformance Test: Line Elements"));
+            
+            root.Child("P");
+            root.Child("P");
+            root.Child("Div", div =>
             {
-                new SemanticTreeNode
-                {
-                    NodeId = 2,
-                    Type = "P"
-                }
-            }
-        };
+                div.Child("P");
+                div.Child("P");
+            });
+        });
     }
 }
