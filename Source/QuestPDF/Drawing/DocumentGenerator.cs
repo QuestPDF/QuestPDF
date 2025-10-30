@@ -558,24 +558,17 @@ namespace QuestPDF.Drawing
 
         internal static void ApplySemanticParagraphs(this Element root)
         {
-            var textContextLevel = 0;
+            return;
+            
             var isFooterContext = false;
             
             Traverse(root);
             
             void Traverse(Element element)
             {
-                if (element is SemanticTag semanticTag)
+                if (element is SemanticTag { TagType: "H" or "H1" or "H2" or "H3" or "H4" or "H5" or "H6" or "P" or "Lbl" })
                 {
-                    var isTextSemanticTag = semanticTag.TagType is "H" or "H1" or "H2" or "H3" or "H4" or "H5" or "H6" or "P";
-
-                    if (isTextSemanticTag)
-                        textContextLevel++;
-                    
-                    Traverse(semanticTag.Child);
-                    
-                    if (isTextSemanticTag)
-                        textContextLevel--;
+                    return;
                 }
                 else if (element is ArtifactTag)
                 {
@@ -591,9 +584,6 @@ namespace QuestPDF.Drawing
                 {
                     if (container.Child is TextBlock textBlock)
                     {
-                        if (textContextLevel > 0)
-                            return;
-
                         var textBlockContainsPageNumber = textBlock.Items.Any(x => x is TextBlockPageNumber);
                         
                         if (isFooterContext && textBlockContainsPageNumber)
