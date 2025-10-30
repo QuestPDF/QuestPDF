@@ -26,6 +26,8 @@ internal class ImageTests : ConformanceTestBase
         var imagePath = useImageWithIcc2 
             ? Path.Combine("Resources", "photo-icc2.jpeg") 
             : Path.Combine("Resources", "photo.jpeg");
+
+        var imageData = File.ReadAllBytes(imagePath);
         
         return Document
             .Create(document =>
@@ -53,22 +55,25 @@ internal class ImageTests : ConformanceTestBase
                                 .SemanticImage("Sample image description")
                                 .Column(column =>
                                 {
-                                    column.Item().Width(300).Image(imagePath);
+                                    column.Item().Width(300).Image(imageData);
                                     column.Item().SemanticCaption().Text("Sample image caption");
                                 });
                         });
                 });
-            })
-            .WithMetadata(new DocumentMetadata
-            {
-                Language = "en-US",
-                Title = "Conformance Test", 
-                Subject = "Images"
             });
     }
 
     protected override SemanticTreeNode? GetExpectedSemanticTree()
     {
-        throw new NotImplementedException();
+        return ExpectedSemanticTree.DocumentRoot(root =>
+        {
+            root.Child("H1", h1 => h1.Alt("Conformance Test:\nImages"));
+
+            root.Child("Figure", figure =>
+            {
+                figure.Alt("Sample image description");
+                figure.Child("Caption");
+            });
+        });
     }
 }
