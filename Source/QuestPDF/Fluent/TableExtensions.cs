@@ -166,6 +166,9 @@ namespace QuestPDF.Fluent
             ConfigureTable(ContentTable, Table.TablePartType.Body);
             ConfigureTable(FooterTable, Table.TablePartType.Footer);
             
+            var tableRequiresAdvancedHeaderTagging = Table.DoesTableBodyRequireExtendedHeaderTagging(HeaderTable.Cells, ContentTable.Cells);
+            HeaderTable.TableRequiresAdvancedHeaderTagging = tableRequiresAdvancedHeaderTagging;
+            ContentTable.TableRequiresAdvancedHeaderTagging = tableRequiresAdvancedHeaderTagging;
             ContentTable.HeaderCells = HeaderTable.Cells;
             
             container
