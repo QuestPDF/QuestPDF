@@ -4,7 +4,7 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace QuestPDF.ConformanceTests;
+namespace QuestPDF.ConformanceTests.Table;
 
 internal class TableWithoutHeadersTests : ConformanceTestBase
 {
