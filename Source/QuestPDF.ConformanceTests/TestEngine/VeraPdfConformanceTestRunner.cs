@@ -19,6 +19,8 @@ public static class VeraPdfConformanceTestRunner
             public string Specification { get; set; }
             public string Clause { get; set; }
             public string Description { get; set; }
+            public string ErrorMessage { get; set; }
+            public string Context { get; set; }
         }
 
         public string GetErrorMessage()
@@ -34,6 +36,10 @@ public static class VeraPdfConformanceTestRunner
                 errorMessage.AppendLine($"\t{failedRule.Specification}");
                 errorMessage.AppendLine($"\t{failedRule.Clause}");
                 errorMessage.AppendLine($"\t{failedRule.Description}");
+                errorMessage.AppendLine();
+                errorMessage.AppendLine($"\t{failedRule.ErrorMessage}");
+                errorMessage.AppendLine();
+                errorMessage.AppendLine($"\t{failedRule.Context}");
                 errorMessage.AppendLine();
             }
 
@@ -98,13 +104,18 @@ public static class VeraPdfConformanceTestRunner
 
             foreach (var failedRule in failedRules.EnumerateArray())
             {
-                result.FailedRules.Add(new ValidationResult.FailedRule
+                foreach (var check in failedRule.GetProperty("checks").EnumerateArray())
                 {
-                    Profile = profileValidationResult.GetProperty("profileName").GetString().Split(" ").First(),
-                    Specification = failedRule.GetProperty("specification").GetString(),
-                    Clause = failedRule.GetProperty("clause").GetString(),
-                    Description = failedRule.GetProperty("description").GetString()
-                });
+                    result.FailedRules.Add(new ValidationResult.FailedRule
+                    {
+                        Profile = profileValidationResult.GetProperty("profileName").GetString().Split(" ").First(),
+                        Specification = failedRule.GetProperty("specification").GetString(),
+                        Clause = failedRule.GetProperty("clause").GetString(),
+                        Description = failedRule.GetProperty("description").GetString(),
+                        ErrorMessage = check.GetProperty("errorMessage").GetString(),
+                        Context = check.GetProperty("context").GetString()
+                    });
+                }
             }
         }
 
