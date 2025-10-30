@@ -53,7 +53,13 @@ internal abstract class ConformanceTestBase
     public void TestSemanticMeaning()
     {
         var expectedSemanticTree = GetExpectedSemanticTree();
-        GetDocumentUnderTest().TestSemanticTree(expectedSemanticTree);
+            
+        GetDocumentUnderTest()
+            .WithSettings(new DocumentSettings
+            {
+                PDFUA_Conformance = PDFUA_Conformance.PDFUA_1
+            })
+            .TestSemanticTree(expectedSemanticTree);
     }
 
     private DocumentMetadata GetMetadata()
