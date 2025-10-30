@@ -17,19 +17,13 @@ internal class SemanticTag : ContainerElement, ISemanticAware
 
     internal override void Draw(Size availableSpace)
     {
-        if (SemanticTreeManager == null)
+        if (SemanticTreeManager == null || SemanticTreeManager.IsCurrentContentArtifact())
         {
             Child?.Draw(availableSpace);
             return;       
         }
         
         RegisterCurrentSemanticNode();
-
-        if (SemanticTreeManager.IsCurrentContentArtifact())
-        {
-            Child?.Draw(availableSpace);
-            return;
-        }
         
         SemanticTreeManager.PushOnStack(SemanticTreeNode);
         Canvas.SetSemanticNodeId(SemanticTreeNode.NodeId);
