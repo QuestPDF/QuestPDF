@@ -1,5 +1,6 @@
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.ConformanceTests.TestEngine;
@@ -16,6 +17,7 @@ internal abstract class ConformanceTestBase
     public void GenerateAndShow()
     {
         GetDocumentUnderTest()
+            .WithMetadata(GetMetadata())
             .WithSettings(new DocumentSettings
             {
                 PDFA_Conformance = PDFA_Conformance.PDFA_3A
@@ -27,6 +29,7 @@ internal abstract class ConformanceTestBase
     public void Test_PDFA(PDFA_Conformance conformance)
     {
         GetDocumentUnderTest()
+            .WithMetadata(GetMetadata())
             .WithSettings(new DocumentSettings
             {
                 PDFA_Conformance = conformance
@@ -38,6 +41,7 @@ internal abstract class ConformanceTestBase
     public void Test_PDFUA(PDFUA_Conformance conformance)
     {
         GetDocumentUnderTest()
+            .WithMetadata(GetMetadata())
             .WithSettings(new DocumentSettings
             {
                 PDFUA_Conformance = conformance
@@ -50,6 +54,16 @@ internal abstract class ConformanceTestBase
     {
         var expectedSemanticTree = GetExpectedSemanticTree();
         GetDocumentUnderTest().TestSemanticTree(expectedSemanticTree);
+    }
+
+    private DocumentMetadata GetMetadata()
+    {
+        return new DocumentMetadata
+        {
+            Language = "en-US",
+            Title = "Conformance Test",
+            Subject = this.GetType().Name.Replace("Tests", string.Empty).PrettifyName()
+        };
     }
 
     protected abstract Document GetDocumentUnderTest();
