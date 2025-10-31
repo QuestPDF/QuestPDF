@@ -40,23 +40,22 @@ internal class ImageTests : ConformanceTestBase
                         .PaddingVertical(30)
                         .Column(column =>
                         {
+                            column.Spacing(25);
+
                             column.Item()
-                                .ExtendVertical()
-                                .AlignMiddle()
                                 .SemanticHeader1()
-                                .Text("Conformance Test:\nImages")
-                                .FontSize(36)
+                                .Text("Conformance Test: Images")
+                                .FontSize(24)
                                 .Bold()
                                 .FontColor(Colors.Blue.Darken2);
-
-                            column.Item().PageBreak();
-
+                            
                             column.Item()
+                                .Width(300)
                                 .SemanticImage("Sample image description")
                                 .Column(column =>
                                 {
-                                    column.Item().Width(300).Image(imageData);
-                                    column.Item().SemanticCaption().Text("Sample image caption");
+                                    column.Item().Image(imageData);
+                                    column.Item().AlignCenter().SemanticCaption().Text("Sample image caption");
                                 });
                         });
                 });
@@ -67,12 +66,12 @@ internal class ImageTests : ConformanceTestBase
     {
         return ExpectedSemanticTree.DocumentRoot(root =>
         {
-            root.Child("H1", h1 => h1.Alt("Conformance Test:\nImages"));
+            root.Child("H1", h1 => h1.Alt("Conformance Test: Images"));
 
             root.Child("Figure", figure =>
             {
                 figure.Alt("Sample image description");
-                figure.Child("Caption");
+                figure.Child("Caption", caption => caption.Child("P"));
             });
         });
     }
