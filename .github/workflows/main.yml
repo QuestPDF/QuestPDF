@@ -100,9 +100,9 @@ jobs:
           mkdir -p ~/mustang
           cd ~/mustang
           
-          wget https://repo1.maven.org/maven2/org/mustangproject/Mustang-CLI/2.19.1/Mustang-CLI-2.19.1.jar -O mustang-cli.jar
+          wget https://repo1.maven.org/maven2/org/mustangproject/Mustang-CLI/2.20.0/Mustang-CLI-2.20.0.jar -O mustang-cli.jar
 
-          echo 'alias mustang="java -jar ~/mustang/mustang-cli.jar"' >> ~/.bashrc
+          alias mustang3='java -jar ~/mustang/mustang-cli.jar'
           mustang --help
 
 
