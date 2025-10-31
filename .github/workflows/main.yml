@@ -102,7 +102,7 @@ jobs:
           
           wget https://repo1.maven.org/maven2/org/mustangproject/Mustang-CLI/2.20.0/Mustang-CLI-2.20.0.jar -O mustang-cli.jar
 
-          alias mustang3='java -jar ~/mustang/mustang-cli.jar'
+          alias mustang='java -jar ~/mustang/mustang-cli.jar'
           mustang --help
 
 
@@ -113,9 +113,6 @@ jobs:
           TEST_SHOW_RESULTS: false
           DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
         run: |
-          verapdf --version
-          mustang --help
-        
           dotnet build --configuration Release --property WarningLevel=0
           dotnet test QuestPDF.UnitTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
           dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
