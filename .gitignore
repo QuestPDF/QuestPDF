@@ -220,3 +220,7 @@ _Pvt_Extensions
 # Project Rider
 *.iml
 .idea
+
+# macOS
+.DS_Store
+**/.DS_Store
