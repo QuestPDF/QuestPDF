@@ -83,4 +83,47 @@ public class ColumnExamples
             })
             .GenerateImages(x => "column-spacing-custom.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
+    
+        
+    [Test]
+    public void DisableUniformItemsWidthExample()
+    {
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(400, 0));
+                    page.MaxSize(new PageSize(400, 1000));
+                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.Margin(25);
+                    page.PageColor(Colors.White);
+
+                    page.Content()
+                        .Column(column =>
+                        {
+                            column.Spacing(15);
+                            
+                            column.Item()
+                                .Element(LabelStyle)
+                                .Text("REST API");
+                            
+                            column.Item()
+                                .Element(LabelStyle)
+                                .Text("Garbage Collection");
+                            
+                            column.Item()
+                                .Element(LabelStyle)
+                                .Text("Object-Oriented Programming");
+                            
+                            static IContainer LabelStyle(IContainer container) => container
+                                .ShrinkHorizontal()
+                                .Background(Colors.Grey.Lighten3)
+                                .CornerRadius(15)
+                                .Padding(15);
+                        });
+                });
+            })
+            .GenerateImages(x => "column-uniform-width-disabled.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
+    }
 }
