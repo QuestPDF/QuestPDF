@@ -25,9 +25,6 @@ public static class VeraPdfConformanceTestRunner
 
         public string GetErrorMessage()
         {
-            if (!FailedRules.Any())
-                return string.Empty;
-        
             var errorMessage = new StringBuilder();
             
             foreach (var failedRule in FailedRules)
@@ -61,6 +58,17 @@ public static class VeraPdfConformanceTestRunner
         }
         
         File.Delete(filePath);
+    }
+    
+    public static void TestConformance(string filePath)
+    {
+        var result = RunVeraPDF(filePath);
+
+        if (!result.IsDocumentValid)
+        {
+            Console.WriteLine(result.GetErrorMessage());
+            Assert.Fail();
+        }
     }
     
     private static ValidationResult RunVeraPDF(string pdfFilePath)
