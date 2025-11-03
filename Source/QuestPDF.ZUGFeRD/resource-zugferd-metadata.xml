@@ -1,30 +1,17 @@
-<rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:about="">
-    <dc:title>
-        <rdf:Alt>
-            <rdf:li xml:lang="x-default">Au bon moulin: Facture FA-2017-0008 dated 2017-11-03</rdf:li>
-        </rdf:Alt>
-    </dc:title>
-    <dc:creator>
-        <rdf:Seq>
-            <rdf:li>Au bon moulin</rdf:li>
-        </rdf:Seq>
-    </dc:creator>
-    <dc:description>
-        <rdf:Alt>
-            <rdf:li xml:lang="x-default">Factur-X Facture FA-2017-0008 dated 2017-11-03 issued by Au
-                bon moulin
-            </rdf:li>
-        </rdf:Alt>
-    </dc:description>
+<rdf:Description xmlns:fx="urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#" rdf:about="">
+    <fx:ConformanceLevel>EN 16931</fx:ConformanceLevel>
+    <fx:DocumentType>INVOICE</fx:DocumentType>
+    <fx:DocumentFileName>factur-x.xml</fx:DocumentFileName>
+    <fx:Version>1.0</fx:Version>
 </rdf:Description>
-
 <rdf:Description xmlns:pdfaExtension="http://www.aiim.org/pdfa/ns/extension/"
+                 xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#"
                  xmlns:pdfaSchema="http://www.aiim.org/pdfa/ns/schema#"
-                 xmlns:pdfaProperty="http://www.aiim.org/pdfa/ns/property#" rdf:about="">
+                 rdf:about="">
 <pdfaExtension:schemas>
     <rdf:Bag>
         <rdf:li rdf:parseType="Resource">
-            <pdfaSchema:schema>Factur-X PDFA Extension Schema</pdfaSchema:schema>
+            <pdfaSchema:schema>ZUGFeRD PDFA Extension Schema</pdfaSchema:schema>
             <pdfaSchema:namespaceURI>urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#</pdfaSchema:namespaceURI>
             <pdfaSchema:prefix>fx</pdfaSchema:prefix>
             <pdfaSchema:property>
@@ -45,27 +32,17 @@
                         <pdfaProperty:name>Version</pdfaProperty:name>
                         <pdfaProperty:valueType>Text</pdfaProperty:valueType>
                         <pdfaProperty:category>external</pdfaProperty:category>
-                        <pdfaProperty:description>The actual version of the Factur-X XML schema
-                        </pdfaProperty:description>
+                        <pdfaProperty:description>The actual version of the ZUGFeRD XML schema</pdfaProperty:description>
                     </rdf:li>
                     <rdf:li rdf:parseType="Resource">
                         <pdfaProperty:name>ConformanceLevel</pdfaProperty:name>
                         <pdfaProperty:valueType>Text</pdfaProperty:valueType>
                         <pdfaProperty:category>external</pdfaProperty:category>
-                        <pdfaProperty:description>The conformance level of the embedded Factur-X
-                            data
-                        </pdfaProperty:description>
+                        <pdfaProperty:description>The selected ZUGFeRD profile completeness</pdfaProperty:description>
                     </rdf:li>
                 </rdf:Seq>
             </pdfaSchema:property>
         </rdf:li>
     </rdf:Bag>
 </pdfaExtension:schemas>
-</rdf:Description>
-
-<rdf:Description xmlns:fx="urn:factur-x:pdfa:CrossIndustryDocument:invoice:1p0#" rdf:about="">
-<fx:DocumentType>INVOICE</fx:DocumentType>
-<fx:DocumentFileName>factur-x.xml</fx:DocumentFileName>
-<fx:Version>1.0</fx:Version>
-<fx:ConformanceLevel>BASIC WL</fx:ConformanceLevel>
 </rdf:Description>

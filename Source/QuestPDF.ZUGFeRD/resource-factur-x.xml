@@ -1,86 +1,190 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<rsm:CrossIndustryInvoice xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100" xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100" xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100" xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<?xml version="1.0" encoding="UTF-8"?>
+
+<rsm:CrossIndustryInvoice xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100" xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100">
     <rsm:ExchangedDocumentContext>
         <ram:GuidelineSpecifiedDocumentContextParameter>
-            <ram:ID>urn:factur-x.eu:1p0:basicwl</ram:ID>
+            <ram:ID>urn:cen.eu:en16931:2017</ram:ID>
         </ram:GuidelineSpecifiedDocumentContextParameter>
     </rsm:ExchangedDocumentContext>
     <rsm:ExchangedDocument>
-        <ram:ID>FA-2017-0008</ram:ID>
+        <ram:ID>RE-20201121/508</ram:ID>
         <ram:TypeCode>380</ram:TypeCode>
         <ram:IssueDateTime>
-            <udt:DateTimeString format="102">20171103</udt:DateTimeString>
+            <udt:DateTimeString format="102">20201121</udt:DateTimeString>f
         </ram:IssueDateTime>
-        <ram:IncludedNote>
-            <ram:Content>Free shipping (amount &gt; 300 €)</ram:Content>
-        </ram:IncludedNote>
     </rsm:ExchangedDocument>
     <rsm:SupplyChainTradeTransaction>
+        <ram:IncludedSupplyChainTradeLineItem>
+            <ram:AssociatedDocumentLineDocument>
+                <ram:LineID>1</ram:LineID>
+            </ram:AssociatedDocumentLineDocument>
+            <ram:SpecifiedTradeProduct>
+                <ram:Name>Design (hours)</ram:Name>
+                <ram:Description>Of a sample invoice</ram:Description>
+            </ram:SpecifiedTradeProduct>
+            <ram:SpecifiedLineTradeAgreement>
+                <ram:GrossPriceProductTradePrice>
+                    <ram:ChargeAmount>160.0000</ram:ChargeAmount>
+                    <ram:BasisQuantity unitCode="HUR">1.0000</ram:BasisQuantity>
+                </ram:GrossPriceProductTradePrice>
+                <ram:NetPriceProductTradePrice>
+                    <ram:ChargeAmount>160.0000</ram:ChargeAmount>
+                    <ram:BasisQuantity unitCode="HUR">1.0000</ram:BasisQuantity>
+                </ram:NetPriceProductTradePrice>
+            </ram:SpecifiedLineTradeAgreement>
+            <ram:SpecifiedLineTradeDelivery>
+                <ram:BilledQuantity unitCode="HUR">1.0000</ram:BilledQuantity>
+            </ram:SpecifiedLineTradeDelivery>
+            <ram:SpecifiedLineTradeSettlement>
+                <ram:ApplicableTradeTax>
+                    <ram:TypeCode>VAT</ram:TypeCode>
+                    <ram:CategoryCode>S</ram:CategoryCode>
+                    <ram:RateApplicablePercent>7.00</ram:RateApplicablePercent>
+                </ram:ApplicableTradeTax>
+                <ram:SpecifiedTradeSettlementLineMonetarySummation>
+                    <ram:LineTotalAmount>160.00</ram:LineTotalAmount>
+                </ram:SpecifiedTradeSettlementLineMonetarySummation>
+            </ram:SpecifiedLineTradeSettlement>
+        </ram:IncludedSupplyChainTradeLineItem>
+        <ram:IncludedSupplyChainTradeLineItem>
+            <ram:AssociatedDocumentLineDocument>
+                <ram:LineID>2</ram:LineID>
+            </ram:AssociatedDocumentLineDocument>
+            <ram:SpecifiedTradeProduct>
+                <ram:Name>Ballons</ram:Name>
+                <ram:Description>various colors, ~2000ml</ram:Description>
+            </ram:SpecifiedTradeProduct>
+            <ram:SpecifiedLineTradeAgreement>
+                <ram:GrossPriceProductTradePrice>
+                    <ram:ChargeAmount>0.7900</ram:ChargeAmount>
+                    <ram:BasisQuantity unitCode="H87">1.0000</ram:BasisQuantity>
+                </ram:GrossPriceProductTradePrice>
+                <ram:NetPriceProductTradePrice>
+                    <ram:ChargeAmount>0.7900</ram:ChargeAmount>
+                    <ram:BasisQuantity unitCode="H87">1.0000</ram:BasisQuantity>
+                </ram:NetPriceProductTradePrice>
+            </ram:SpecifiedLineTradeAgreement>
+            <ram:SpecifiedLineTradeDelivery>
+                <ram:BilledQuantity unitCode="H87">400.0000</ram:BilledQuantity>
+            </ram:SpecifiedLineTradeDelivery>
+            <ram:SpecifiedLineTradeSettlement>
+                <ram:ApplicableTradeTax>
+                    <ram:TypeCode>VAT</ram:TypeCode>
+                    <ram:CategoryCode>S</ram:CategoryCode>
+                    <ram:RateApplicablePercent>19.00</ram:RateApplicablePercent>
+                </ram:ApplicableTradeTax>
+                <ram:SpecifiedTradeSettlementLineMonetarySummation>
+                    <ram:LineTotalAmount>316.00</ram:LineTotalAmount>
+                </ram:SpecifiedTradeSettlementLineMonetarySummation>
+            </ram:SpecifiedLineTradeSettlement>
+        </ram:IncludedSupplyChainTradeLineItem>
+        <ram:IncludedSupplyChainTradeLineItem>
+            <ram:AssociatedDocumentLineDocument>
+                <ram:LineID>3</ram:LineID>
+            </ram:AssociatedDocumentLineDocument>
+            <ram:SpecifiedTradeProduct>
+                <ram:Name>Hot air „heiße Luft“ (litres)</ram:Name>
+                <ram:Description/>
+            </ram:SpecifiedTradeProduct>
+            <ram:SpecifiedLineTradeAgreement>
+                <ram:GrossPriceProductTradePrice>
+                    <ram:ChargeAmount>0.0250</ram:ChargeAmount>
+                    <ram:BasisQuantity unitCode="LTR">1.0000</ram:BasisQuantity>
+                </ram:GrossPriceProductTradePrice>
+                <ram:NetPriceProductTradePrice>
+                    <ram:ChargeAmount>0.0250</ram:ChargeAmount>
+                    <ram:BasisQuantity unitCode="LTR">1.0000</ram:BasisQuantity>
+                </ram:NetPriceProductTradePrice>
+            </ram:SpecifiedLineTradeAgreement>
+            <ram:SpecifiedLineTradeDelivery>
+                <ram:BilledQuantity unitCode="LTR">800.0000</ram:BilledQuantity>
+            </ram:SpecifiedLineTradeDelivery>
+            <ram:SpecifiedLineTradeSettlement>
+                <ram:ApplicableTradeTax>
+                    <ram:TypeCode>VAT</ram:TypeCode>
+                    <ram:CategoryCode>S</ram:CategoryCode>
+                    <ram:RateApplicablePercent>19.00</ram:RateApplicablePercent>
+                </ram:ApplicableTradeTax>
+                <ram:SpecifiedTradeSettlementLineMonetarySummation>
+                    <ram:LineTotalAmount>20.00</ram:LineTotalAmount>
+                </ram:SpecifiedTradeSettlementLineMonetarySummation>
+            </ram:SpecifiedLineTradeSettlement>
+        </ram:IncludedSupplyChainTradeLineItem>
         <ram:ApplicableHeaderTradeAgreement>
+            <ram:BuyerReference>AB321</ram:BuyerReference>
             <ram:SellerTradeParty>
-                <ram:Name>Au bon moulin</ram:Name>
-                <ram:SpecifiedLegalOrganization>
-                    <ram:ID schemeID="0002">99999999800010</ram:ID>
-                </ram:SpecifiedLegalOrganization>
+                <ram:Name>Bei Spiel GmbH</ram:Name>
                 <ram:PostalTradeAddress>
-                    <ram:PostcodeCode>84340</ram:PostcodeCode>
-                    <ram:LineOne>1242 chemin de l'olive</ram:LineOne>
-                    <ram:CityName>Malaucène</ram:CityName>
-                    <ram:CountryID>FR</ram:CountryID>
+                    <ram:PostcodeCode>12345</ram:PostcodeCode>
+                    <ram:LineOne>Ecke 12</ram:LineOne>
+                    <ram:CityName>Stadthausen</ram:CityName>
+                    <ram:CountryID>DE</ram:CountryID>
                 </ram:PostalTradeAddress>
                 <ram:SpecifiedTaxRegistration>
-                    <ram:ID schemeID="VA">FR11999999998</ram:ID>
+                    <ram:ID schemeID="VA">DE136695976</ram:ID>
                 </ram:SpecifiedTaxRegistration>
             </ram:SellerTradeParty>
             <ram:BuyerTradeParty>
-                <ram:Name>Me gusta olive</ram:Name>
+                <ram:ID>2</ram:ID>
+                <ram:Name>Theodor Est</ram:Name>
                 <ram:PostalTradeAddress>
-                    <ram:PostcodeCode>41700</ram:PostcodeCode>
-                    <ram:LineOne>87 camino de la calor</ram:LineOne>
-                    <ram:CityName>Dos Hermanas</ram:CityName>
-                    <ram:CountryID>ES</ram:CountryID>
+                    <ram:PostcodeCode>88802</ram:PostcodeCode>
+                    <ram:LineOne>Bahnstr. 42</ram:LineOne>
+                    <ram:CityName>Spielkreis</ram:CityName>
+                    <ram:CountryID>DE</ram:CountryID>
                 </ram:PostalTradeAddress>
-                <ram:SpecifiedTaxRegistration>
-                    <ram:ID schemeID="VA">ESA12345674</ram:ID>
-                </ram:SpecifiedTaxRegistration>
             </ram:BuyerTradeParty>
-            <ram:BuyerOrderReferencedDocument>
-                <ram:IssuerAssignedID>COMPRA0832</ram:IssuerAssignedID>
-            </ram:BuyerOrderReferencedDocument>
-            <ram:ContractReferencedDocument>
-                <ram:IssuerAssignedID>FROLIVE2017</ram:IssuerAssignedID>
-            </ram:ContractReferencedDocument>
         </ram:ApplicableHeaderTradeAgreement>
-        <ram:ApplicableHeaderTradeDelivery/>
+        <ram:ApplicableHeaderTradeDelivery>
+            <ram:ActualDeliverySupplyChainEvent>
+                <ram:OccurrenceDateTime>
+                    <udt:DateTimeString format="102">20201110</udt:DateTimeString>
+                </ram:OccurrenceDateTime>
+            </ram:ActualDeliverySupplyChainEvent>
+        </ram:ApplicableHeaderTradeDelivery>
         <ram:ApplicableHeaderTradeSettlement>
-            <ram:PaymentReference>FA-2017-0008</ram:PaymentReference>
+            <ram:PaymentReference>RE-20201121/508</ram:PaymentReference>
             <ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode>
             <ram:SpecifiedTradeSettlementPaymentMeans>
-                <ram:TypeCode>30</ram:TypeCode>
+                <ram:TypeCode>42</ram:TypeCode>
+                <ram:Information>Bank transfer</ram:Information>
                 <ram:PayeePartyCreditorFinancialAccount>
-                    <ram:IBANID>FR2012421242124212421242124</ram:IBANID>
+                    <ram:IBANID>DE88200800000970375700</ram:IBANID>
+                    <ram:AccountName>Max Mustermann</ram:AccountName>
                 </ram:PayeePartyCreditorFinancialAccount>
+                <ram:PayeeSpecifiedCreditorFinancialInstitution>
+                    <ram:BICID>COBADEFFXXX</ram:BICID>
+                </ram:PayeeSpecifiedCreditorFinancialInstitution>
             </ram:SpecifiedTradeSettlementPaymentMeans>
             <ram:ApplicableTradeTax>
-                <ram:CalculatedAmount currencyID="EUR">0.00</ram:CalculatedAmount>
+                <ram:CalculatedAmount>11.20</ram:CalculatedAmount>
                 <ram:TypeCode>VAT</ram:TypeCode>
-                <ram:ExemptionReason>French VAT exemption according to articles 262 ter I (for products) and/or 283-2 (for services) of "CGI"</ram:ExemptionReason>
-                <ram:BasisAmount currencyID="EUR">2076.76</ram:BasisAmount>
-                <ram:CategoryCode>K</ram:CategoryCode>
-                <ram:RateApplicablePercent>0.00</ram:RateApplicablePercent>
+                <ram:BasisAmount>160.00</ram:BasisAmount>
+                <ram:CategoryCode>S</ram:CategoryCode>
+                <ram:RateApplicablePercent>7.00</ram:RateApplicablePercent>
+            </ram:ApplicableTradeTax>
+            <ram:ApplicableTradeTax>
+                <ram:CalculatedAmount>63.84</ram:CalculatedAmount>
+                <ram:TypeCode>VAT</ram:TypeCode>
+                <ram:BasisAmount>336.00</ram:BasisAmount>
+                <ram:CategoryCode>S</ram:CategoryCode>
+                <ram:RateApplicablePercent>19.00</ram:RateApplicablePercent>
             </ram:ApplicableTradeTax>
             <ram:SpecifiedTradePaymentTerms>
+                <ram:Description>Zahlbar ohne Abzug bis 12.12.2020</ram:Description>
                 <ram:DueDateDateTime>
-                    <udt:DateTimeString format="102">20171203</udt:DateTimeString>
+                    <udt:DateTimeString format="102">20201212</udt:DateTimeString>
                 </ram:DueDateDateTime>
             </ram:SpecifiedTradePaymentTerms>
             <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
-                <ram:LineTotalAmount currencyID="EUR">2076.76</ram:LineTotalAmount>
-                <ram:TaxBasisTotalAmount currencyID="EUR">2076.76</ram:TaxBasisTotalAmount>
-                <ram:TaxTotalAmount currencyID="EUR">0.00</ram:TaxTotalAmount>
-                <ram:GrandTotalAmount currencyID="EUR">2076.76</ram:GrandTotalAmount>
-                <ram:TotalPrepaidAmount currencyID="EUR">623.00</ram:TotalPrepaidAmount>
-                <ram:DuePayableAmount currencyID="EUR">1453.76</ram:DuePayableAmount>
+                <ram:LineTotalAmount>496.00</ram:LineTotalAmount>
+                <ram:ChargeTotalAmount>0.00</ram:ChargeTotalAmount>
+                <ram:AllowanceTotalAmount>0.00</ram:AllowanceTotalAmount>
+                <ram:TaxBasisTotalAmount>496.00</ram:TaxBasisTotalAmount>
+                <ram:TaxTotalAmount currencyID="EUR">75.04</ram:TaxTotalAmount>
+                <ram:GrandTotalAmount>571.04</ram:GrandTotalAmount>
+                <ram:TotalPrepaidAmount>0.00</ram:TotalPrepaidAmount>
+                <ram:DuePayableAmount>571.04</ram:DuePayableAmount>
             </ram:SpecifiedTradeSettlementHeaderMonetarySummation>
         </ram:ApplicableHeaderTradeSettlement>
     </rsm:SupplyChainTradeTransaction>
