@@ -100,4 +100,42 @@ public class RowExamples
             })
             .GenerateImages(x => "row-spacing-custom.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
+    
+    [Test]
+    public void DisableUniformItemsHeightExample()
+    {
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(700, 0));
+                    page.MaxSize(new PageSize(700, 1000));
+                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.Margin(25);
+                    page.PageColor(Colors.White);
+
+                    page.Content()
+                        .Row(row =>
+                        {
+                            row.Spacing(15);
+                            
+                            row.RelativeItem()
+                                .Element(LabelStyle)
+                                .Text("Programming is both a science and an art — it demands precision, creativity, and patience. At its core, it’s about understanding how to break down complex problems into small, logical steps that a computer can execute.");
+                            
+                            row.RelativeItem()
+                                .Element(LabelStyle)
+                                .Text("Programming is the art of turning ideas into logic, logic into code, and code into something that solves real problems.");
+                            
+                            static IContainer LabelStyle(IContainer container) => container
+                                .ShrinkVertical()
+                                .Background(Colors.Grey.Lighten3)
+                                .CornerRadius(15)
+                                .Padding(15);
+                        });
+                });
+            })
+            .GenerateImages(x => "row-uniform-height-enabled.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.High, RasterDpi = 144 });
+    }
 }
