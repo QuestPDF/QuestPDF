@@ -1,2 +1,1 @@
-- Fixed an issue that caused the PDF generation process to fail when the application lacked file access permissions to the default temporary folder.
-- Added support for specifying a custom temporary storage path through the QuestPDF.Settings.TemporaryStoragePath property.
+- Fixed the DocumentOperation.ExtendMetadata operation to preserve /Metadata tag attributes (/Subtype /XML) and improve compatibility with the Mustang validation tool for ZUGFeRD files.
