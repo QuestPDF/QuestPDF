@@ -29,7 +29,7 @@ public class Tests
                 Language = "en-US"
             })
             .WithSettings(new DocumentSettings { PdfA = true }) // PDF/A-3b
-            .GeneratePdf("invoice-bbb.pdf");
+            .GeneratePdf("invoice.pdf");
         
         DocumentOperation
             .LoadFile("invoice.pdf")
