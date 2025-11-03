@@ -34,8 +34,5 @@
         <None Include="Resources\**\*.*">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Update="Resources\photo.jpg">
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
     </ItemGroup>
 </Project>
