@@ -21,8 +21,15 @@ public class Tests
                     page.Content().Text("Your invoice content");
                 });
             })
-            .WithSettings(new DocumentSettings { PdfA = true }) // PDF/A-3b
-            .GeneratePdf("invoice.pdf");
+            .WithMetadata(new DocumentMetadata
+            {
+                Title = "Conformance Test: ZUGFeRD",
+                Author = "SampleCompany",
+                Subject = "ZUGFeRD Test Document",
+                Language = "en-US"
+            })
+            .WithSettings(new DocumentSettings { CompressDocument = false, PDFA_Conformance = PDFA_Conformance.PDFA_3B }) // PDF/A-3b
+            .GeneratePdf("invoice-bbb.pdf");
         
         DocumentOperation
             .LoadFile("invoice.pdf")
