@@ -28,7 +28,7 @@ public class Tests
                 Subject = "ZUGFeRD Test Document",
                 Language = "en-US"
             })
-            .WithSettings(new DocumentSettings { CompressDocument = false, PDFA_Conformance = PDFA_Conformance.PDFA_3B }) // PDF/A-3b
+            .WithSettings(new DocumentSettings { PdfA = true }) // PDF/A-3b
             .GeneratePdf("invoice-bbb.pdf");
         
         DocumentOperation
