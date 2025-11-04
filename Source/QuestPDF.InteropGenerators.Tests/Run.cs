@@ -18,7 +18,7 @@ internal static class Program
     private static readonly string ProjectName  = "QuestPDF"; // target project in the solution
     private static readonly string OutputDir    = Path.GetFullPath("./_generated");
     private const string Configuration = "Debug"; // or "Release"
-    // Optional: if you need a specific TFM, set: ["TargetFramework"] = "net8.0"
+    // Optional: if you need a specific TFM, set: ["TargetFramework"] = "net10.0"
 
     public static async Task Main()
     {
@@ -28,7 +28,7 @@ internal static class Program
         using var workspace = MSBuildWorkspace.Create(new Dictionary<string, string>
         {
             ["Configuration"] = Configuration,
-            ["TargetFramework"] = "net8.0"
+            ["TargetFramework"] = "net10.0"
         });
 
         workspace.WorkspaceFailed += (s, e) => Console.WriteLine($"[WorkspaceFailed] {e.Diagnostic.Kind}: {e.Diagnostic.Message}");
