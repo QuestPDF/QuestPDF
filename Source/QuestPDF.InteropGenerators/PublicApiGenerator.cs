@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Text;
@@ -17,32 +19,41 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(context.CompilationProvider, static (spc, compilation) =>
         {
             var content = NewGenerator.AnalyzeAndGenerate(compilation.Assembly.GlobalNamespace);
-            
-            var syntaxTree = CSharpSyntaxTree.ParseText(content);
-            var root = syntaxTree
-                .GetRoot()
-                .NormalizeWhitespace(elasticTrivia: true); // auto-indents and cleans up
 
-            var newCode = root.ToFullString();
+            var csharpBuilder = new StringBuilder();
+            var pythonBuilder = new StringBuilder();
+
+            var generators = new List<ISourceGenerator>
+            {
+                new EnumSourceGenerator("QuestPDF.Infrastructure.AspectRatioOption"),
+                new EnumSourceGenerator("QuestPDF.Infrastructure.ImageCompressionQuality"),
+                new EnumSourceGenerator("QuestPDF.Infrastructure.ImageFormat"),
+                new ContainerSourceGenerator() // Generate interop for IContainer extension methods
+            };
+
+            foreach (var generator in generators)
+            {
+                var csharpCodeFragment = generator.GenerateCSharpCode(compilation.Assembly.GlobalNamespace);
+                csharpBuilder.AppendLine(csharpCodeFragment);
+                
+                var pythonCodeFragment = generator.GeneratePythonCode(compilation.Assembly.GlobalNamespace);
+                pythonBuilder.AppendLine(pythonCodeFragment);
+            }
             
-            spc.AddSource("Interop.g.cs", newCode);
-            
-            
-            // // Step 1: Analyze the public API and collect all interop methods
-            // // This includes both extension methods AND public methods from Fluent API classes
-            // // (descriptors, configurations, handlers, etc.)
-            // var allMethods = PublicApiAnalyzer.CollectAllInteropMethods(compilation.Assembly.GlobalNamespace);
-            //
-            // // Step 2: Generate C# UnmanagedCallersOnly interop code
-            // var csharpInteropCode = CSharpInteropGenerator.GenerateInteropCode(allMethods);
-            // spc.AddSource("GeneratedInterop.g.cs", csharpInteropCode);
-            //
-            // // Step 3: Generate Python ctypes bindings
-            // // Python bindings strictly follow all C# interop functionalities
-            // var pythonBindingsCode = PythonBindingsGenerator.GeneratePythonBindings(allMethods);
-            // // Note: Python file is added as .txt so it appears in generated files
-            // // Extract and rename to .py for actual use
-            // spc.AddSource("GeneratedInterop.g.py.txt", pythonBindingsCode);
+            var csharpCode = csharpBuilder.ToString();
+            var pythonCode = pythonBuilder.ToString();
+
+            // Output C# interop code1
+            if (!string.IsNullOrWhiteSpace(csharpCode))
+            {
+                spc.AddSource("QuestPDF.Interop.g.cs", SourceText.From(csharpCode, System.Text.Encoding.UTF8));
+            }
+
+            // Output Python bindings code
+            if (!string.IsNullOrWhiteSpace(pythonCode))
+            {
+                //spc.AddSource("QuestPDF.Python.py", SourceText.From(pythonCode, System.Text.Encoding.UTF8));
+            }
         });
     }
 }

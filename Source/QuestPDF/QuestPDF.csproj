@@ -3,7 +3,7 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2025.7.3</Version>
+        <Version>2025.7.4</Version>
         <PackageDescription>Generate and edit PDF documents in your .NET applications using the open-source QuestPDF library and its C# Fluent API. Build invoices, reports and data exports with ease.</PackageDescription>
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
         <LangVersion>12</LangVersion>
@@ -25,14 +25,6 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>True</GenerateDocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-
-        <PublishAot>true</PublishAot>
-        <NativeLib>Shared</NativeLib>
-        <SelfContained>true</SelfContained>
-        <InvariantGlobalization>true</InvariantGlobalization>
-        <StripSymbols>true</StripSymbols>
-        <EnableRuntimeMarshalling>true</EnableRuntimeMarshalling>
-        <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(BUILD_PACKAGE)' == 'true'">
@@ -51,12 +43,6 @@
 
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    </ItemGroup>
-    
-    <ItemGroup>
-        <ProjectReference Include="..\QuestPDF.InteropGenerators\QuestPDF.InteropGenerators.csproj"
-                          OutputItemType="Analyzer"
-                          ReferenceOutputAssembly="false" />
     </ItemGroup>
     
     <ItemGroup>

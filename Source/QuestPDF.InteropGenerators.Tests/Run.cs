@@ -10,7 +10,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.MSBuild;
 
 // TODO: point to your generator type:
-using QuestPDF.InteropGenerators; // e.g., using QuestPDF.InteropGenerators;
+using QuestPDF.InteropGenerators;
+using ISourceGenerator = Microsoft.CodeAnalysis.ISourceGenerator; // e.g., using QuestPDF.InteropGenerators;
 
 internal static class Program
 {
@@ -20,7 +21,7 @@ internal static class Program
     private const string Configuration = "Debug"; // or "Release"
     // Optional: if you need a specific TFM, set: ["TargetFramework"] = "net10.0"
 
-    public static async Task Main()
+    public static async Task Main(string[] args)
     {
         if (!MSBuildLocator.IsRegistered)
             MSBuildLocator.RegisterDefaults();

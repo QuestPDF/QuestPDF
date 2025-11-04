@@ -1,6 +1,6 @@
 namespace QuestPDF.Infrastructure
 {
-    public enum VerticalAlignment
+    internal enum VerticalAlignment
     {
         Top,
         Middle,
