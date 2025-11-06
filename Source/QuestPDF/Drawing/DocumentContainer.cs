@@ -37,7 +37,7 @@ namespace QuestPDF.Drawing
                             .SelectMany(x => new List<Action>()
                             {
                                 () => column.Item().PageBreak(),
-                                () => column.Item().SemanticPart().Component(x)
+                                () => column.Item().SemanticTag("Part").Component(x)
                             })
                             .Skip(1)
                             .ToList()

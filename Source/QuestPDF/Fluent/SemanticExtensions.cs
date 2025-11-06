@@ -11,7 +11,7 @@ namespace QuestPDF.Fluent;
 
 public static class SemanticExtensions
 {
-    private static IContainer SemanticTag(this IContainer container, string type, string? alternativeText = null, string? language = null)
+    internal static IContainer SemanticTag(this IContainer container, string type, string? alternativeText = null, string? language = null)
     {
         return container.Element(new Elements.SemanticTag
         {
@@ -20,20 +20,7 @@ public static class SemanticExtensions
             Lang = language
         });
     }
-    
-    // Structure type "Document" - implementation not needed
-    // The "Document" tag is required to be a root of the entire semantic tree
-    // It is already implemented as such in the SemanticTreeManager class
 
-    /// <summary>
-    /// A large-scale division of a document.
-    /// This type of element is appropriate for grouping articles or sections.
-    /// </summary>
-    public static IContainer SemanticPart(this IContainer container)
-    {
-        return container.SemanticTag("Part");
-    }
-    
     /// <summary>
     /// A relatively self-contained body of text constituting a single narrative or exposition.
     /// Articles should be disjoint; that is, they should not contain other articles as constituent elements.
