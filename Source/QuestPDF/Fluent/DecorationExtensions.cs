@@ -33,7 +33,7 @@ namespace QuestPDF.Fluent
             
             return container
                 .DebugPointer(DebugPointerType.ElementStructure, "Before")
-                .Element(x => ApplyPageSpecificSemanticMeaningToggle ? x.RepeatAsPageHeader() : x.Repeat());
+                .NonTrackingElement(x => ApplyPageSpecificSemanticMeaningToggle ? x.RepeatAsPageHeader() : x.Repeat());
         }
         
         /// <summary>
@@ -90,7 +90,7 @@ namespace QuestPDF.Fluent
 
             return container
                 .DebugPointer(DebugPointerType.ElementStructure, "After")
-                .Element(x => ApplyPageSpecificSemanticMeaningToggle ? x.RepeatAsPageFooter() : x.Repeat());
+                .NonTrackingElement(x => ApplyPageSpecificSemanticMeaningToggle ? x.RepeatAsPageFooter() : x.Repeat());
         }
         
         /// <summary>
