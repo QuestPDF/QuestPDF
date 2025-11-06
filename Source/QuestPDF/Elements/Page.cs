@@ -62,8 +62,6 @@ namespace QuestPDF.Elements
                 
                         .Decoration(decoration =>
                         {
-                            decoration.ApplyPageSpecificSemanticMeaning();
-                            
                             decoration
                                 .Before()
                                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Header.ToString())

@@ -439,7 +439,7 @@ namespace QuestPDF.Fluent
             return element.Element(new RepeatContent());
         }
         
-        internal static IContainer RepeatAsPageHeader(this IContainer element)
+        internal static IContainer RepeatAsHeader(this IContainer element)
         {
             return element.Element(new RepeatContent
             {
@@ -447,7 +447,7 @@ namespace QuestPDF.Fluent
             });
         }
         
-        internal static IContainer RepeatAsPageFooter(this IContainer element)
+        internal static IContainer RepeatAsFooter(this IContainer element)
         {
             return element.Element(new RepeatContent
             {
