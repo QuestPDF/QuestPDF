@@ -5,10 +5,6 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent;
 
-// TODO: is the Semantic* convention really needed? 
-// Is it possibly to simply introduce new APis such as Part, Article, Division, Caption, Header, etc. ?
-// Could some of semantic tags be applied automatically?
-
 public static class SemanticExtensions
 {
     internal static IContainer SemanticTag(this IContainer container, string type, string? alternativeText = null, string? language = null)
@@ -22,8 +18,9 @@ public static class SemanticExtensions
     }
 
     /// <summary>
-    /// A relatively self-contained body of text constituting a single narrative or exposition.
-    /// Articles should be disjoint; that is, they should not contain other articles as constituent elements.
+    /// Marks a self-contained body of text that forms a single narrative or exposition,
+    /// such as a blog post, news story, or forum post.
+    /// As a best practice, articles should not be nested within each other.
     /// </summary>
     public static IContainer SemanticArticle(this IContainer container)
     {
@@ -31,8 +28,9 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A container for grouping related content elements.
-    /// For example, a section might contain a heading, several introductory paragraphs, and two or more other sections nested within it as subsections.
+    /// Applies a 'Section' tag, grouping a set of related content.
+    /// A section typically includes a heading (e.g., SemanticHeader2) and its corresponding content.
+    /// Sections can be nested to create a hierarchical document structure.
     /// </summary>
     public static IContainer SemanticSection(this IContainer container)
     {
@@ -40,7 +38,9 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A generic block-level element or group of elements.
+    /// Marks a generic block-level container for grouping elements.
+    /// It's often used when a more specific semantic tag (like 'Article' or 'Section') doesn't apply,
+    /// serving as a general-purpose 'div', similar to its HTML counterpart.
     /// </summary>
     public static IContainer SemanticDivision(this IContainer container)
     {
@@ -48,7 +48,8 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A portion of text consisting of one or more paragraphs attributed to someone other than the author of the surrounding text.
+    /// Designates a block of text that is a quotation, typically consisting of one or more paragraphs.
+    /// This is for block-level quotes, as opposed to <see cref="SemanticQuote"/> which is for inline text.
     /// </summary>
     public static IContainer SemanticBlockQuotation(this IContainer container)
     {
@@ -56,7 +57,8 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A brief portion of text describing a table or figure.
+    /// Identifies a brief portion of text that serves as a caption or description
+    /// for a table, figure, or image. It should be placed near the element it describes.
     /// </summary>
     public static IContainer SemanticCaption(this IContainer container)
     {
@@ -64,16 +66,19 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A sequence of entries containing identifying text accompanied by reference elements that point out occurrences of the specified text in the main body of a document.
+    /// Marks a section of the document as an index.
+    /// This container typically holds a sequence of entries and references.
     /// </summary>
-    public static IContainer SemanticIndex(this IContainer container, string language)
+    public static IContainer SemanticIndex(this IContainer container)
     {
-        return container.SemanticTag("Index", language: language);
+        return container.SemanticTag("Index");
     }
     
     /// <summary>
-    /// 
+    /// Applies a language attribute to a container, specifying the natural language (e.g., 'en-US', 'es-ES') of its content.
+    /// This is crucial for accessibility, enabling screen readers to use the correct pronunciation.
     /// </summary>
+    /// <param name="language">The ISO 639 language code (e.g., 'en-US' or 'fr-FR') for the content.</param>
     public static IContainer SemanticLanguage(this IContainer container, string language)
     {
         return container.SemanticTag("NonStruct", language: language);
@@ -82,11 +87,12 @@ public static class SemanticExtensions
     #region Table of Contents
     
     /// <summary>
-    /// <para>A list made up of table of contents item entries (SemanticTableOfContentsItem) and/or other nested table of contents entries (SemanticTableOfContents).</para>
-    /// <para>A SemanticTableOfContents entry that includes only SemanticTableOfContentsItem entries represents a flat hierarchy.</para>
-    /// <para>A SemanticTableOfContents entry that includes other nested SemanticTableOfContents entries (and possibly SemanticTableOfContentsItem entries) represents a more complex hierarchy.</para>
-    /// <para>Ideally, the hierarchy of a top-level SemanticTableOfContents entry reflects the structure of the main body of the document.</para>
-    /// <para>Lists of figures and tables, as well as bibliographies, can be treated as  tables of contents for purposes of the standard structure types.</para>
+    /// Marks a container as a Table of Contents (TOC).
+    /// <para>
+    /// A TOC should be composed of <see cref="SemanticTableOfContentsItem"/> elements.
+    /// TOCs can be nested to represent a hierarchical document structure.
+    /// </para>
+    /// <para>This tag can also be used for lists of figures, lists of tables, or bibliographies.</para>
     /// </summary>
     public static IContainer SemanticTableOfContents(this IContainer container)
     {
@@ -94,7 +100,8 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// An individual member of a table of contents.
+    /// Marks an individual item within a <see cref="SemanticTableOfContents"/>.
+    /// This typically represents a single entry in the list.
     /// </summary>
     public static IContainer SemanticTableOfContentsItem(this IContainer container)
     {
@@ -114,8 +121,8 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
-    /// A level 1 header - the highest level of heading.
+    /// Marks the content as a level 1 heading (H1), the highest level in the document hierarchy.
+    /// Headings are crucial for navigation and outlining the document's structure.
     /// </summary>
     public static IContainer SemanticHeader1(this IContainer container)
     {
@@ -123,8 +130,7 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
-    /// A level 2 header.
+    /// Marks the content as a level 2 heading (H2).
     /// </summary>
     public static IContainer SemanticHeader2(this IContainer container)
     {
@@ -132,8 +138,7 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
-    /// A level 3 header.
+    /// Marks the content as a level 3 heading (H3).
     /// </summary>
     public static IContainer SemanticHeader3(this IContainer container)
     {
@@ -141,8 +146,7 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
-    /// A level 4 header.
+    /// Marks the content as a level 4 heading (H4).
     /// </summary>
     public static IContainer SemanticHeader4(this IContainer container)
     {
@@ -150,8 +154,7 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
-    /// A level 5 header.
+    /// Marks the content as a level 5 heading (H5).
     /// </summary>
     public static IContainer SemanticHeader5(this IContainer container)
     {
@@ -159,8 +162,7 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A label for a subdivision of a document's content. It should be the first child of the division that it heads.
-    /// A level 6 header - the lowest level of heading.
+    /// Marks the content as a level 6 heading (H6), the lowest level in the document hierarchy.
     /// </summary>
     public static IContainer SemanticHeader6(this IContainer container)
     {
@@ -170,7 +172,8 @@ public static class SemanticExtensions
     #endregion
     
     /// <summary>
-    /// A low-level division of text.
+    /// Marks a container as a paragraph.
+    /// This is one of the most common block-level tags for organizing text content.
     /// </summary>
     public static IContainer SemanticParagraph(this IContainer container)
     {
@@ -180,8 +183,9 @@ public static class SemanticExtensions
     #region Lists
     
     /// <summary>
-    /// A sequence of items of like meaning and importance.
-    /// Its immediate children should be an optional SemanticCaption followed by one or more list items SemanticListItem.
+    /// Marks a container as a list.
+    /// Its direct children should be one or more <see cref="SemanticListItem"/> elements.
+    /// A <see cref="SemanticCaption"/> can also be included as an optional first child.
     /// </summary>
     public static IContainer SemanticList(this IContainer container)
     {
@@ -189,8 +193,8 @@ public static class SemanticExtensions
     }
 
     /// <summary>
-    /// An individual member of a list.
-    /// Its children may be one or more SemanticListLabel, SemanticListItemBody, or both.
+    /// Marks an individual item within a <see cref="SemanticList"/>.
+    /// Its children should typically be a <see cref="SemanticListLabel"/> (e.g., the bullet or number) and/or a <see cref="SemanticListItemBody"/> (the content).
     /// </summary>
     public static IContainer SemanticListItem(this IContainer container)
     {
@@ -198,11 +202,8 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// A name or number that distinguishes a given item from others in the same list or other group of like items.
-    /// 
-    /// <remarks>
-    /// In a dictionary list, for example, it contains the term being defined; in a bulleted or numbered list, it contains the bullet character or the number of the list item and associated punctuation.
-    /// </remarks>
+    /// Marks the label of a list item.
+    /// This container holds the bullet, number (e.g., '1.'), or term (in a definition list) that identifies the list item.
     /// </summary>
     public static IContainer SemanticListLabel(this IContainer container)
     {
@@ -210,11 +211,8 @@ public static class SemanticExtensions
     }
     
     /// <summary>
-    /// The descriptive content of a list item.
-    /// 
-    /// <remarks>
-    /// In a dictionary list, for example, it contains the definition of the term. It may contain more sophisticated content.
-    /// </remarks>
+    /// Marks the body or descriptive content of a <see cref="SemanticListItem"/>.
+    /// This contains the main text or content associated with the list item's label.
     /// </summary>
     public static IContainer SemanticListItemBody(this IContainer container)
     {
@@ -226,7 +224,8 @@ public static class SemanticExtensions
     #region Table
     
     /// <summary>
-    /// A two-dimensional layout of rectangular data cells, possibly having a complex substructure.
+    /// Marks a container as a table.
+    /// The library automatically automatically tags headers, rows, cells, etc.
     /// </summary>
     public static IContainer SemanticTable(this IContainer container)
     {
@@ -238,18 +237,18 @@ public static class SemanticExtensions
     #region Inline Elements
     
     /// <summary>
-    /// A generic inline portion of text having no particular inherent characteristics.
-    /// It can be used, for example, to delimit a range of text with a given set of styling attributes.
+    /// Marks a generic inline portion of text (Span).
+    /// This is useful for grouping inline elements or applying styling, similar to an HTML &lt;span&gt;.
     /// </summary>
+    /// <param name="alternativeText">Optional alternative text, often used to provide an expansion for an abbreviation or other supplementary information.</param>
     public static IContainer SemanticSpan(this IContainer container, string? alternativeText = null)
     {
         return container.SemanticTag("Span", alternativeText);
     }
     
     /// <summary>
-    /// An inline portion of text attributed to someone other than the author of the surrounding text.
-    /// The quoted text should be contained inline within a single paragraph.
-    /// This differs from the block-level element SemanticBlockQuotation, which consists of one or more complete paragraphs (or other elements presented as if they were complete paragraphs).
+    /// Marks an inline portion of text as a quote.
+    /// This differs from <see cref="SemanticBlockQuotation"/>, which is intended for block-level content (one or more paragraphs).
     /// </summary>
     public static IContainer SemanticQuote(this IContainer container)
     {
@@ -257,7 +256,7 @@ public static class SemanticExtensions
     }
 
     /// <summary>
-    /// A fragment of computer program text.
+    /// Marks a fragment of text as computer code.
     /// </summary>
     public static IContainer SemanticCode(this IContainer container)
     {
@@ -265,9 +264,9 @@ public static class SemanticExtensions
     }
 
     /// <summary>
-    /// Applies the semantic "Link" tag to the specified container.
-    /// This is used to signify that the content represents a link or hyperlink within a document.
+    /// Marks the content as a hyperlink (Link).
     /// </summary>
+    /// <param name="alternativeText">Alternative text describing the link's purpose or destination. This is essential for screen readers.</param>
     public static IContainer SemanticLink(this IContainer container, string alternativeText)
     {
         return container.SemanticTag("Link", alternativeText: alternativeText);
@@ -278,27 +277,26 @@ public static class SemanticExtensions
     #region Illustration Elements
     
     /// <summary>
-    /// An item of graphical content.
+    /// Marks a container as a figure, which is an item of graphical content like a chart, diagram, or photograph.
     /// </summary>
+    /// <param name="alternativeText">A textual description of the figure, read by screen readers. This is essential for accessibility.</param>
     public static IContainer SemanticFigure(this IContainer container, string alternativeText)
     {
         return container.SemanticTag("Figure", alternativeText: alternativeText);
     }
     
     /// <summary>
-    /// An alias for a SemanticFigure.
+    /// An alias for <see cref="SemanticFigure"/>. Marks the content as an image.
     /// </summary>
+    /// <param name="alternativeText">A textual description of the image, read by screen readers. This is essential for accessibility.</param>
     public static IContainer SemanticImage(this IContainer container, string alternativeText)
     {
         return container.SemanticFigure(alternativeText);
     }
     
     /// <summary>
-    /// A mathematical formula.
-    ///
-    /// This structure type is useful only for identifying an entire content element as a formula.
-    /// No standard structure types are defined for identifying individual components within the formula.
-    /// From a formatting standpoint, the formula shall be treated similarly to a figure.
+    /// Marks the content as a mathematical formula.
+    /// From a structural and accessibility standpoint, it is treated similarly to a figure.
     /// </summary>
     public static IContainer SemanticFormula(this IContainer container, string alternativeText)
     {
