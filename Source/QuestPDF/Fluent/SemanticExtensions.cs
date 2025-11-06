@@ -7,6 +7,23 @@ namespace QuestPDF.Fluent;
 
 public static class SemanticExtensions
 {
+    internal static IContainer Artifact(this IContainer container, int nodeId)
+    {
+        return container.Element(new Elements.ArtifactTag
+        {
+            Id = nodeId
+        });
+    }
+    
+    /// <summary>
+    /// Excludes the container content from the semantic tree.
+    /// Use for decorative elements, layout artifacts, or other non-structural content that shouldn't be part of the document's logical structure.
+    /// </summary>
+    public static IContainer SemanticIgnore(this IContainer container)
+    {
+        return container.Artifact(SkSemanticNodeSpecialId.OtherArtifact);
+    }
+    
     internal static IContainer SemanticTag(this IContainer container, string type, string? alternativeText = null, string? language = null)
     {
         return container.Element(new Elements.SemanticTag

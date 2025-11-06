@@ -106,7 +106,7 @@ internal class TableOfContentsTests : ConformanceTestBase
                                 foreach (var j in Enumerable.Range(1, i))
                                 {
                                     column.Item()
-                                        .ArtifactOther()
+                                        .SemanticIgnore()
                                         .Width(200)
                                         .Height(150)
                                         .CornerRadius(10)

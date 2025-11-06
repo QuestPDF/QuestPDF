@@ -2,6 +2,7 @@ using System;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent;
 
@@ -79,7 +80,10 @@ public sealed class MultiColumnDescriptor
         
         var container = new Container();
         MultiColumn.Spacer = container;
-        return container.ArtifactLayout().Repeat();
+        
+        return container
+            .Artifact(SkSemanticNodeSpecialId.LayoutArtifact)
+            .Repeat();
     }
 }
 

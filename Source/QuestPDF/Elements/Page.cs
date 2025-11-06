@@ -2,6 +2,7 @@ using System;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
@@ -43,7 +44,7 @@ namespace QuestPDF.Elements
                         .Layer()
                         .Repeat()
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Background.ToString())
-                        .ArtifactBackground()
+                        .Artifact(SkSemanticNodeSpecialId.BackgroundArtifact)
                         .Element(Background);
                     
                     layers
@@ -83,7 +84,7 @@ namespace QuestPDF.Elements
                     layers
                         .Layer()
                         .Repeat()
-                        .ArtifactPaginationWatermark()
+                        .Artifact(SkSemanticNodeSpecialId.PaginationWatermarkArtifact)
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Foreground.ToString())
                         .Element(Foreground);
                 });
