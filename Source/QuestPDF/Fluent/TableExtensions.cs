@@ -169,19 +169,19 @@ namespace QuestPDF.Fluent
                     decoration
                         .Before()
                         .ShowIf(hasHeader)
-                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTag("THead") : x)
+                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("THead") : x)
                         .Element(HeaderTable);
                     
                     decoration
                         .Content()
-                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TBody") : x)
+                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TBody") : x)
                         .ShowIf(ContentTable.Cells.Any())
                         .Element(ContentTable);
                     
                     decoration
                         .After()
                         .ShowIf(hasFooter)
-                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TFoot") : x)
+                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TFoot") : x)
                         .Element(FooterTable);
                 });
 
