@@ -70,7 +70,7 @@ namespace QuestPDF.Fluent
     
     public sealed class TableDescriptor
     {
-        private bool EnableAutomatedSemanticTagging { get; set; } = false;
+        internal bool EnableAutomatedSemanticTagging { get; set; } = false;
         
         private Table HeaderTable { get; } = new();
         private Table ContentTable { get; } = new();
@@ -105,14 +105,6 @@ namespace QuestPDF.Fluent
         public void ExtendLastCellsToTableBottom()
         {
             ContentTable.ExtendLastCellsToTableBottom = true;
-        }
-
-        /// <summary>
-        /// Enables automated application of semantic tags for the table, which enhances accessibility and improves the document's structure for assistive technologies.
-        /// </summary>
-        public void ApplySemanticTags()
-        {
-            EnableAutomatedSemanticTagging = true;
         }
         
         /// <summary>
@@ -172,25 +164,24 @@ namespace QuestPDF.Fluent
             ContentTable.HeaderCells = HeaderTable.Cells;
             
             container
-                .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTable() : x)
                 .Decoration(decoration =>
                 {
                     decoration
                         .Before()
                         .ShowIf(hasHeader)
-                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTableHeader() : x)
+                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTag("THead") : x)
                         .Element(HeaderTable);
                     
                     decoration
                         .Content()
-                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTableBody() : x)
+                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TBody") : x)
                         .ShowIf(ContentTable.Cells.Any())
                         .Element(ContentTable);
                     
                     decoration
                         .After()
                         .ShowIf(hasFooter)
-                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTableFooter() : x)
+                        .Element(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TFoot") : x)
                         .Element(FooterTable);
                 });
 
@@ -222,6 +213,7 @@ namespace QuestPDF.Fluent
         public static void Table(this IContainer element, Action<TableDescriptor> handler)
         {
             var descriptor = new TableDescriptor();
+            descriptor.EnableAutomatedSemanticTagging = element is SemanticTag { TagType: "Table" };
             handler(descriptor);
             element.Element(descriptor.CreateElement());
         }

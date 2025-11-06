@@ -24,10 +24,9 @@ public class SemanticExamples
                     page.Content()
                         .Border(1)
                         .BorderColor(Colors.Grey.Lighten1)
+                        .SemanticTable()
                         .Table(table =>
                         {
-                            table.ApplySemanticTags();
-                            
                             var pageSizes = new List<(string name, double width, double height)>()
                             {
                                 ("Letter (ANSI A)", 8.5f, 11),

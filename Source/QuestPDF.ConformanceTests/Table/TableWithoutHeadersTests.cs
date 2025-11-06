@@ -20,10 +20,9 @@ internal class TableWithoutHeadersTests : ConformanceTestBase
                     page.Content()
                         .Border(1)
                         .BorderColor(Colors.Grey.Darken1)
+                        .SemanticTable()
                         .Table(table =>
                         {
-                            table.ApplySemanticTags();
-
                             table.ColumnsDefinition(columns =>
                             {
                                 columns.RelativeColumn();

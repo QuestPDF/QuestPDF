@@ -227,64 +227,10 @@ public static class SemanticExtensions
     
     /// <summary>
     /// A two-dimensional layout of rectangular data cells, possibly having a complex substructure.
-    /// It contains either one or more table rows SemanticTableRow as children; or an optional table head SemanticTableHeader followed by one or more table body elements SemanticTableBody and an optional table footer SemanticTableFooter.
-    /// In addition, a table may have a SemanticCaption as its first or last child.
     /// </summary>
     public static IContainer SemanticTable(this IContainer container)
     {
         return container.SemanticTag("Table");
-    }
-    
-    /// <summary>
-    ///  A row of headings or data in a table. It may contain table header cells and table data cells (structure types TH and TD).
-    /// </summary>
-    public static IContainer SemanticTableRow(this IContainer container)
-    {
-        return container.SemanticTag("TR");
-    }
-    
-    /// <summary>
-    /// A table cell containing header text describing one or more rows or columns of the table.
-    /// </summary>
-    public static IContainer SemanticTableHeaderCell(this IContainer container)
-    {
-        return container.SemanticTag("TH");
-    }
-    
-    /// <summary>
-    /// A table cell containing data that is part of the table's content.
-    /// </summary>
-    public static IContainer SemanticTableDataCell(this IContainer container)
-    {
-        return container.SemanticTag("TD");
-    }
-    
-    /// <summary>
-    /// A group of rows that constitute the header of a table.
-    /// If the table is split across multiple pages, these rows may be redrawn at the top of each table fragment (although there is only one SemanticTableHeader element).
-    /// </summary>
-    public static IContainer SemanticTableHeader(this IContainer container)
-    {
-        return container.SemanticTag("THead");
-    }
-    
-    /// <summary>
-    /// A group of rows that constitute the main body portion of a table.
-    /// If the table is split across multiple pages, the body area may be broken apart on a row boundary.
-    /// A table may have multiple SemanticTableBody elements to allow for the drawing of a border or background for a set of rows.
-    /// </summary>
-    public static IContainer SemanticTableBody(this IContainer container)
-    {
-        return container.SemanticTag("TBody");
-    }
-
-    /// <summary>
-    /// A group of rows that constitute the footer of a table.
-    /// If the table is split across multiple pages, these rows may be redrawn at the bottom of each table fragment (although there is only one SemanticTableFooter element).
-    /// </summary>
-    public static IContainer SemanticTableFooter(this IContainer container)
-    {
-        return container.SemanticTag("TFoot");
     }
     
     #endregion

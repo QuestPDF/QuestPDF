@@ -21,10 +21,9 @@ internal class TableWithVerticalHeadersTests : ConformanceTestBase
                         .Shrink()
                         .Border(1)
                         .BorderColor(Colors.Grey.Darken1)
+                        .SemanticTable()
                         .Table(table =>
                         {
-                            table.ApplySemanticTags();
-
                             table.ColumnsDefinition(columns =>
                             {
                                 columns.RelativeColumn();
