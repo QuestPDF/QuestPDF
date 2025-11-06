@@ -105,15 +105,6 @@ public static class SemanticExtensions
     
     #region Headers
     
-    /// <summary>
-    /// A label for a subdivision of a document's content.
-    /// It should be the first child of the division that it heads.
-    /// </summary>
-    public static IContainer SemanticHeader(this IContainer container)
-    {
-        return container.SemanticTag("H");
-    }
-    
     private static IContainer SemanticHeader(this IContainer container, int level)
     {
         if (level < 1 || level > 6)
