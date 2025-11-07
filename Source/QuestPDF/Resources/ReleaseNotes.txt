@@ -27,3 +27,10 @@
 - Added experimental support for the following conformance standards: PDF/A-1a and PDF/A-1b.
 - Improved automated tagging, which is now enabled only when a relevant conformance standard is active.
 - Created a conformance test suite based on the VeraPDF project.
+
+
+2025.12.0-alpha4:
+- Simplified the Fluent API.
+- Made minor semantic adjustments.
+- Added a conformance test suite based on the Mustang project (for ZUGFeRD).
+- Performed code refactoring and cleanup.
