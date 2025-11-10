@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
@@ -44,7 +44,13 @@
     <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
         <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     </ItemGroup>
-    
+
+    <ItemGroup>
+        <ProjectReference Include="..\QuestPDF.InteropGenerators\QuestPDF.InteropGenerators.csproj"
+                          OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="false" />
+    </ItemGroup>
+
     <ItemGroup>
         <None Include="Resources\**\*.*">
             <Pack>true</Pack>
