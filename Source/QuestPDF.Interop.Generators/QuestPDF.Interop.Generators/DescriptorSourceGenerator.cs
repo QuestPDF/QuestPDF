@@ -29,7 +29,6 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
         
         var model = new
         {
-            ClassName = "PaddingInterop",
             Methods = member.GetMembers()
                 .OfType<IMethodSymbol>()
                 .Where(m => m.DeclaredAccessibility == Accessibility.Public)

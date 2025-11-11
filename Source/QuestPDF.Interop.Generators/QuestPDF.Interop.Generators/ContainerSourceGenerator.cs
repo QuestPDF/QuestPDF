@@ -28,7 +28,6 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
 
         var model = new
         {
-            ClassName = "PaddingInterop",
             Methods = member.GetMembers()
                 .OfType<IMethodSymbol>()
                 .Where(m => m.DeclaredAccessibility == Accessibility.Public && m.IsStatic && m.IsExtensionMethod)
