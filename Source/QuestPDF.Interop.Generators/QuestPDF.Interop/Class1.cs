@@ -21,10 +21,9 @@ internal unsafe partial class Interop
         Settings.License = LicenseType.Community;
     }
     
-    
     static IntPtr BoxHandle(object obj)
     {
-        var gch = GCHandle.Alloc(obj, GCHandleType.Normal);         // keep object alive
+        var gch = GCHandle.Alloc(obj, GCHandleType.Normal);
         return GCHandle.ToIntPtr(gch);
     }
 
@@ -40,6 +39,7 @@ internal unsafe partial class Interop
         var gch = GCHandle.FromIntPtr(handle);
         if (gch.IsAllocated) gch.Free();
     }
+
     
     
     

@@ -17,10 +17,7 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
     {
         context.RegisterSourceOutput(context.CompilationProvider, static (spc, compilation) =>
         {
-            var csharpBuilder = new StringBuilder();
-            var pythonBuilder = new StringBuilder();
-            
-            csharpBuilder.AppendLine($"// AUTO-GENERATED on {DateTime.Now}\n");
+            var mainTemplate = ScribanTemplateLoader.LoadTemplate("Main.cs");
             
             var generators = new List<IInteropSourceGenerator>
             {
@@ -29,26 +26,17 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
                 new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
                 new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
             };
-            
-            var sw = Stopwatch.StartNew();
-            
-            foreach (var generator in generators)
-            {
-                try
-                {
-                    var csharpCodeFragment = generator.GenerateCSharpCode(compilation);
-                    csharpBuilder.AppendLine(csharpCodeFragment);
-                }
-                catch (Exception e)
-                {
-                    csharpBuilder.AppendLine($"Error: {e}");
-                }
-            }
 
-            csharpBuilder.AppendLine($"// Generation completed in {sw.ElapsedMilliseconds} ms");
+            var csharpFragments = generators
+                .Select(x => x.GenerateCSharpCode(compilation));
             
-            // Output C# interop code1
-            spc.AddSource("QuestPDF.Interop.g.cs", csharpBuilder.ToString());
+            var csharpCode = mainTemplate.Render(new
+            {
+                GenerationDateTime = DateTime.Now,
+                Fragments = csharpFragments
+            });
+
+            spc.AddSource("QuestPDF.Interop.g.cs", csharpCode);
         });
     }
 }

@@ -36,13 +36,13 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
                 .ToList()
         };
 
-        return ScribanTemplateLoader.LoadTemplate("container.cs").Render(model);
+        return ScribanTemplateLoader.LoadTemplate("Container.cs").Render(model);
         
         static object MapMethod(IMethodSymbol method)
         {
             return new MethodTemplateModel
             {
-                NativeName = GetNativeMethodName(method),
+                NativeName = method.GetNativeMethodName(),
                 ManagedName = method.Name,
                 ApiName = method.Name,
                 MethodParameters = method.Parameters.Select(GetMethodParameter),
@@ -73,25 +73,7 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
     {
         return string.Empty;
     }
-    
 
-    
-    
-
-    private static string GetNativeMethodName(IMethodSymbol methodSymbol)
-    {
-        var targetType = methodSymbol.IsExtensionMethod 
-            ? methodSymbol.Parameters.First().Type 
-            : methodSymbol.ContainingType;
-
-        var isInterface = targetType.TypeKind == TypeKind.Interface;
-        var targetTypeName = isInterface ? targetType.Name.TrimStart('I') : targetType.Name; 
-        
-        return $"questpdf_{ToSnakeCase(targetTypeName)}_{ToSnakeCase(methodSymbol.Name)}_{methodSymbol.GetHashCode()}";
-    }
-    
-    
-    
     private static string GetInteropMethodParameterType(ITypeSymbol typeSymbol)
     {
         var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
