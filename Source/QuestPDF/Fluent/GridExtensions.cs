@@ -9,6 +9,11 @@ namespace QuestPDF.Fluent
     {
         internal Grid Grid { get; } = new Grid();
         
+        internal GridDescriptor()
+        {
+            
+        }
+        
         public void Spacing(float value, Unit unit = Unit.Point)
         {
             VerticalSpacing(value, unit);

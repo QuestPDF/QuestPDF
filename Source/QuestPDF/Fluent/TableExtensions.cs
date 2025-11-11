@@ -12,6 +12,11 @@ namespace QuestPDF.Fluent
     {
         internal List<TableColumnDefinition> Columns { get; } = new();
         
+        internal TableColumnsDefinitionDescriptor()
+        {
+            
+        }
+        
         /// <summary>
         /// Defines a column of constant size that occupies the specified horizontal space.
         /// </summary>

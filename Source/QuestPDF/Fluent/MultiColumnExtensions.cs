@@ -9,6 +9,11 @@ public sealed class MultiColumnDescriptor
 {
     internal MultiColumn MultiColumn { get; } = new MultiColumn();
         
+    internal MultiColumnDescriptor()
+    {
+            
+    }
+    
     /// <summary>
     /// Configures the horizontal spacing between adjacent columns in the layout.
     /// </summary>

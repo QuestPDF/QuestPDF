@@ -11,6 +11,11 @@ namespace QuestPDF.Fluent
     {
         private Elements.DynamicImage ImageElement { get; }
         
+        internal DynamicImageDescriptor()
+        {
+            
+        }
+        
         internal DynamicImageDescriptor(Elements.DynamicImage imageElement)
         {
             ImageElement = imageElement;
@@ -47,6 +52,7 @@ namespace QuestPDF.Fluent
         private AspectRatio AspectRatioElement { get; }
         private float ImageAspectRatio { get; }
 
+        
         internal ImageDescriptor(Elements.Image imageElement, Elements.AspectRatio aspectRatioElement)
         {
             ImageElement = imageElement;

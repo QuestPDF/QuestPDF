@@ -10,6 +10,11 @@ namespace QuestPDF.Fluent
     {
         internal Layers Layers { get; } = new Layers();
         
+        internal LayersDescriptor()
+        {
+            
+        }
+        
         private IContainer Layer(bool isPrimary)
         {
             var container = new Container();

@@ -8,6 +8,11 @@ namespace QuestPDF.Fluent
     {
         internal Inlined Inlined { get; } = new Inlined();
         
+        internal InlinedDescriptor()
+        {
+            
+        }
+        
         #region Spacing
         
         /// <summary>

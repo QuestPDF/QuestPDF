@@ -9,6 +9,11 @@ namespace QuestPDF.Fluent
     public sealed class DecorationDescriptor
     {
         internal Decoration Decoration { get; } = new Decoration();
+
+        internal DecorationDescriptor()
+        {
+            
+        }
         
         /// <summary>
         /// Returns a container for the section positioned before (above) the primary main content.
