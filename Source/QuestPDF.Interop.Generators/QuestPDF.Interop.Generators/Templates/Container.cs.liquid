@@ -5,15 +5,15 @@ public static {{ method.return_type }} {{ method.managed_name }}({{ method.metho
     var containerObject = UnboxHandle<IContainer>({{ method.target_object_parameter_name }});
     FreeHandle({{ method.target_object_parameter_name }});
 
-    {{ capture targetCall }}
-        containerObject.{{ method.api_name }}({{ method.target_method_parameters | array.join ", " }});
-    {{ end }}
+    {{- capture targetCall -}}
+    containerObject.{{ method.api_name }}({{ method.target_method_parameters | array.join ", " }})
+    {{- end -}}
 
-    {{ if method.return_type == "void" }}
-        {{ targetCall | string.strip }}
-    {{ else }}
-        var result = {{ targetCall | string.strip }}
-        return BoxHandle(result);
-    {{ end }}
+{{ if method.return_type == "void" -}}
+    {{ targetCall }};
+{{ else }}
+    var result = {{ targetCall }};
+    return BoxHandle(result);
+{{- end }}
 }
 {{ end }}
