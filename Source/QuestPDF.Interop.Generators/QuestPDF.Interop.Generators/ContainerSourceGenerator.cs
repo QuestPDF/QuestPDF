@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Scriban;
+using static QuestPDF.Interop.Generators.Helpers;
 
 namespace QuestPDF.Interop.Generators;
 
@@ -25,9 +25,7 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
     public string GenerateCSharpCode(Compilation compilation)
     {
         var member = compilation.GetTypeByMetadataName(targetNamespace);
-        
-        var templateString = LoadTemplate();
-        
+
         var model = new
         {
             ClassName = "PaddingInterop",
@@ -38,8 +36,7 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
                 .ToList()
         };
 
-        var template = Template.Parse(templateString);
-        return template.Render(model);
+        return ScribanTemplateLoader.LoadTemplate("container.cs").Render(model);
         
         static object MapMethod(IMethodSymbol method)
         {
@@ -70,17 +67,6 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
 
             return parameterSymbol.Name;
         }
-    }
-
-    private string LoadTemplate()
-    {
-        using var stream = this
-            .GetType()
-            .Assembly
-            .GetManifestResourceStream("QuestPDF.Interop.Generators.Templates.simple-extension-method.cs.liquid");
- 
-        using var streamReader = new StreamReader(stream);
-        return streamReader.ReadToEnd();
     }
     
     public string GeneratePythonCode(Compilation compilation)
@@ -150,19 +136,5 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
             _ when typeSymbol.TypeKind == TypeKind.Class || typeSymbol.TypeKind == TypeKind.Interface => "nint",
             _ => "nint" // Default for unknown types
         };
-    }
-    
-    
-    
-    
-    
-    private static readonly Regex SnakeCaseRegex = new Regex("(?<!^)([A-Z])", RegexOptions.Compiled);
-    
-    public static string ToSnakeCase(string input)
-    {
-        if (string.IsNullOrEmpty(input))
-            return input;
-
-        return SnakeCaseRegex.Replace(input, "_$1").ToLowerInvariant();
     }
 }

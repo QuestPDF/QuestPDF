@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Scriban;
+using static QuestPDF.Interop.Generators.Helpers;
 
 namespace QuestPDF.Interop.Generators;
 
@@ -26,8 +26,6 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
     {
         var member = compilation.GetTypeByMetadataName(targetNamespace);
         
-        var templateString = LoadTemplate();
-        
         var model = new
         {
             ClassName = "PaddingInterop",
@@ -38,8 +36,7 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
                 .ToList()
         };
 
-        var template = Template.Parse(templateString);
-        return template.Render(model);
+        return ScribanTemplateLoader.LoadTemplate("descriptor.cs").Render(model);
         
         static object MapMethod(IMethodSymbol method)
         {
@@ -72,17 +69,6 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
         }
     }
 
-    private string LoadTemplate()
-    {
-        using var stream = this
-            .GetType()
-            .Assembly
-            .GetManifestResourceStream("QuestPDF.Interop.Generators.Templates.descriptor.cs.liquid");
- 
-        using var streamReader = new StreamReader(stream);
-        return streamReader.ReadToEnd();
-    }
-    
     public string GeneratePythonCode(Compilation compilation)
     {
         return string.Empty;
@@ -156,13 +142,5 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
     
     
     
-    private static readonly Regex SnakeCaseRegex = new Regex("(?<!^)([A-Z])", RegexOptions.Compiled);
-    
-    public static string ToSnakeCase(string input)
-    {
-        if (string.IsNullOrEmpty(input))
-            return input;
 
-        return SnakeCaseRegex.Replace(input, "_$1").ToLowerInvariant();
-    }
 }

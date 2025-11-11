@@ -13,11 +13,6 @@ namespace QuestPDF.Interop.Generators;
 [Generator]
 public sealed class PublicApiGenerator : IIncrementalGenerator
 {
-    public PublicApiGenerator()
-    {
-        //LoadDependencies();
-    }
-    
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         context.RegisterSourceOutput(context.CompilationProvider, static (spc, compilation) =>
@@ -54,8 +49,6 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
             
             // Output C# interop code1
             spc.AddSource("QuestPDF.Interop.g.cs", csharpBuilder.ToString());
-
-            
         });
     }
 }
