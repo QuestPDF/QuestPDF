@@ -30,6 +30,9 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
             var generators = new List<IInteropSourceGenerator>
             {
                 new ContainerSourceGenerator("QuestPDF.Fluent.PaddingExtensions"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
             };
             
             var sw = Stopwatch.StartNew();
