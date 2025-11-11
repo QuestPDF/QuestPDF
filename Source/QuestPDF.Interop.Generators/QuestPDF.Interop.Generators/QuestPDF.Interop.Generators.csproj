@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
+
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <IsRoslynComponent>true</IsRoslynComponent>
+
+        <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+
+        <PackageScribanIncludeSource>true</PackageScribanIncludeSource>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Scriban" Version="6.5.0" IncludeAssets="Build" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0"/>
+        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4"/>
+        
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.0"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <EmbeddedResource Include="Templates\*.liquid">
+            <WithCulture>false</WithCulture>
+        </EmbeddedResource>
+    </ItemGroup>
+    
+    <ItemGroup>
+      <None Remove="Readme.md" />
+    </ItemGroup>
+    
+</Project>

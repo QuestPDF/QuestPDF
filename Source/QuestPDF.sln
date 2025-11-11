@@ -21,6 +21,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.DocumentationExamp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.VisualTests", "QuestPDF.VisualTests\QuestPDF.VisualTests.csproj", "{D7EB8ACD-4F99-439C-898F-EBFF0AFE367E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.Interop.Generators", "QuestPDF.Interop.Generators\QuestPDF.Interop.Generators\QuestPDF.Interop.Generators.csproj", "{A3283E4D-EFF3-4B6B-8087-9F292101BDAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.Interop", "QuestPDF.Interop.Generators\QuestPDF.Interop\QuestPDF.Interop.csproj", "{DBE06D92-8578-42ED-92D2-B053386CB5F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestPDF.Interop.Generators.Tests", "QuestPDF.Interop.Generators\QuestPDF.Interop.Generators.Tests\QuestPDF.Interop.Generators.Tests.csproj", "{91527B6C-E071-4E37-8947-E27B28148E0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,5 +65,17 @@ Global
 		{D7EB8ACD-4F99-439C-898F-EBFF0AFE367E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7EB8ACD-4F99-439C-898F-EBFF0AFE367E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7EB8ACD-4F99-439C-898F-EBFF0AFE367E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3283E4D-EFF3-4B6B-8087-9F292101BDAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3283E4D-EFF3-4B6B-8087-9F292101BDAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3283E4D-EFF3-4B6B-8087-9F292101BDAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3283E4D-EFF3-4B6B-8087-9F292101BDAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBE06D92-8578-42ED-92D2-B053386CB5F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBE06D92-8578-42ED-92D2-B053386CB5F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBE06D92-8578-42ED-92D2-B053386CB5F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBE06D92-8578-42ED-92D2-B053386CB5F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91527B6C-E071-4E37-8947-E27B28148E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91527B6C-E071-4E37-8947-E27B28148E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91527B6C-E071-4E37-8947-E27B28148E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91527B6C-E071-4E37-8947-E27B28148E0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
