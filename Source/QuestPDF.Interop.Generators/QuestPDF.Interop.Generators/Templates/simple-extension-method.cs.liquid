@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Interop2;
 
-internal unsafe partial class {{ className }}
+internal unsafe partial class {{ class_name }}
 {
     static IntPtr BoxHandle(object obj)
     {
@@ -29,11 +29,11 @@ internal unsafe partial class {{ className }}
     
     {{ for method in methods }}
     [UnmanagedCallersOnly(EntryPoint = "{{ method.native_name }}", CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static IntPtr {{ method.managed_name }}({{ method.parameters }})
+    public static IntPtr {{ method.managed_name }}({{ method.method_parameters | array.join ", " }})
     {
-        var containerObject = UnboxHandle<IContainer>(containerPointer);
-        FreeHandle(containerPointer);
-        var result = containerObject.{{ method.api_name }}(color);
+        var containerObject = UnboxHandle<IContainer>({{ method.target_object_parameter_name }});
+        FreeHandle({{ method.target_object_parameter_name }});
+        var result = containerObject.{{ method.api_name }}({{ method.target_method_parameters | array.join ", " }});
         return BoxHandle(result);
     }
     {{ end }}

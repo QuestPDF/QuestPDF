@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -24,10 +25,14 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
             var csharpBuilder = new StringBuilder();
             var pythonBuilder = new StringBuilder();
             
+            csharpBuilder.AppendLine($"// AUTO-GENERATED on {DateTime.Now}\n");
+            
             var generators = new List<IInteropSourceGenerator>
             {
                 new ContainerSourceGenerator("QuestPDF.Fluent.PaddingExtensions"),
             };
+            
+            var sw = Stopwatch.StartNew();
             
             foreach (var generator in generators)
             {
@@ -39,10 +44,11 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
                 catch (Exception e)
                 {
                     csharpBuilder.AppendLine($"Error: {e}");
-                    csharpBuilder.AppendLine(DateTime.Now.ToString());
                 }
             }
 
+            csharpBuilder.AppendLine($"// Generation completed in {sw.ElapsedMilliseconds} ms");
+            
             // Output C# interop code1
             spc.AddSource("QuestPDF.Interop.g.cs", csharpBuilder.ToString());
 
