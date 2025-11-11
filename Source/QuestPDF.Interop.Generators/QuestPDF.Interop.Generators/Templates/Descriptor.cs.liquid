@@ -2,7 +2,7 @@
 [UnmanagedCallersOnly(EntryPoint = "{{ method.native_name }}", CallConvs = new[] { typeof(CallConvCdecl) })]
 public static IntPtr {{ method.managed_name }}({{ method.method_parameters | array.join ", " }})
 {
-    var targetObject = UnboxHandle<IContainer>({{ method.target_object_parameter_name }});
+    var targetObject = UnboxHandle<{{ method.target_object_type }}>({{ method.target_object_parameter_name }});
     var result = targetObject.{{ method.api_name }}({{ method.target_method_parameters | array.join ", " }});
     return BoxHandle(result);
 }

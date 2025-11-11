@@ -27,4 +27,16 @@ internal static class Helpers
         
         return $"questpdf__{ToSnakeCase(targetTypeName)}__{ToSnakeCase(methodSymbol.Name)}__{methodSymbol.GetHashCode()}";
     }
+    
+    public static string GetManagedMethodName(this IMethodSymbol methodSymbol)
+    {
+        var targetType = methodSymbol.IsExtensionMethod 
+            ? methodSymbol.Parameters.First().Type 
+            : methodSymbol.ContainingType;
+
+        var isInterface = targetType.TypeKind == TypeKind.Interface;
+        var targetTypeName = isInterface ? targetType.Name.TrimStart('I') : targetType.Name; 
+        
+        return $"{targetTypeName}_{methodSymbol.Name}";
+    }
 }

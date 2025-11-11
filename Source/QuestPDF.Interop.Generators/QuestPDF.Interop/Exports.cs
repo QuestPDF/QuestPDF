@@ -14,9 +14,9 @@ public unsafe struct Buffer
 }
 
 
-internal unsafe partial class Interop
+internal unsafe partial class Exports
 {
-    static Interop()
+    static Exports()
     {
         Settings.License = LicenseType.Community;
     }

@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
-namespace QuestPDF.Interop2;
+namespace QuestPDF.Interop;
 
-internal unsafe partial class Interop
+internal unsafe partial class Exports
 {    
     {{ for fragment in fragments }}
-        {{ fragment }}
+    {{ fragment }}
     {{ end }}
 }

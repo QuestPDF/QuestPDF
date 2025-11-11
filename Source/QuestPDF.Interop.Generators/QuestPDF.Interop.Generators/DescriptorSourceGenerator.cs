@@ -17,6 +17,7 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
         public string ManagedName { get; set; }
         public string ApiName { get; set; }
         public IEnumerable<string> MethodParameters { get; set; }
+        public string TargetObjectType { get; set; }
         public string TargetObjectParameterName { get; set; }
         public IEnumerable<string> TargetMethodParameters { get; set; }
         public string ReturnType { get; set; }
@@ -43,9 +44,10 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
             return new MethodTemplateModel
             {
                 NativeName = method.GetNativeMethodName(),
-                ManagedName = method.Name,
+                ManagedName = method.GetManagedMethodName(),
                 ApiName = method.Name,
                 MethodParameters = method.Parameters.Select(GetMethodParameter).Prepend("nint target"),
+                TargetObjectType = method.ContainingType.Name,
                 TargetObjectParameterName = "target",
                 TargetMethodParameters = method.Parameters.Select(GetTargetMethodParameter),
                 ReturnType = method.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)

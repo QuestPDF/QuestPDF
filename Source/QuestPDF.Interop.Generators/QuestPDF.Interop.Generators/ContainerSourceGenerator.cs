@@ -43,7 +43,7 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
             return new MethodTemplateModel
             {
                 NativeName = method.GetNativeMethodName(),
-                ManagedName = method.Name,
+                ManagedName = method.GetManagedMethodName(),
                 ApiName = method.Name,
                 MethodParameters = method.Parameters.Select(GetMethodParameter),
                 TargetObjectParameterName = method.Parameters.First().Name,

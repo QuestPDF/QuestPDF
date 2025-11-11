@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
 
 namespace QuestPDF.Interop.Generators;
 
@@ -22,8 +17,9 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
             var generators = new List<IInteropSourceGenerator>
             {
                 new ContainerSourceGenerator("QuestPDF.Fluent.PaddingExtensions"),
+                //new ContainerSourceGenerator("QuestPDF.Fluent.ColumnExtensions"),
+                //new ContainerSourceGenerator("QuestPDF.Fluent.InlinedExtensions"),
                 new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
-                new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
                 new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
             };
 
@@ -32,7 +28,7 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
             
             var csharpCode = mainTemplate.Render(new
             {
-                GenerationDateTime = DateTime.Now,
+                GenerationDateTime = DateTime.Now.ToString(),
                 Fragments = csharpFragments
             });
 
