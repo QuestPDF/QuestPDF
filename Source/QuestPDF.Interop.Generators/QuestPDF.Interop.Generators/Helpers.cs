@@ -39,4 +39,15 @@ internal static class Helpers
         
         return $"{targetTypeName}_{methodSymbol.Name}";
     }
+    
+    public static string GetInteropResultType(this ITypeSymbol typeSymbol)
+    {
+        if (typeSymbol.TypeKind == TypeKind.Class)
+            return "nint";
+        
+        if (typeSymbol.TypeKind == TypeKind.Interface)
+            return "nint";
+        
+        return typeSymbol.ToString();
+    }
 }

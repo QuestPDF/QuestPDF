@@ -20,7 +20,7 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
         public string TargetObjectType { get; set; }
         public string TargetObjectParameterName { get; set; }
         public IEnumerable<string> TargetMethodParameters { get; set; }
-        public string ReturnType { get; set; }
+        public string? ReturnType { get; set; }
     }
     
     public string GenerateCSharpCode(Compilation compilation)
@@ -49,7 +49,7 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
                 TargetObjectType = method.ContainingType.Name,
                 TargetObjectParameterName = "target",
                 TargetMethodParameters = method.Parameters.Select(GetTargetMethodParameter),
-                ReturnType = method.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                ReturnType = method.ReturnType.GetInteropResultType()
             };
         }
 

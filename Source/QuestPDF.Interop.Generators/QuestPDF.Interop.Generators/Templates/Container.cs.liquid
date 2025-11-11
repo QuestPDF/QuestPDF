@@ -1,10 +1,19 @@
 {{ for method in methods }}
 [UnmanagedCallersOnly(EntryPoint = "{{ method.native_name }}", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr {{ method.managed_name }}({{ method.method_parameters | array.join ", " }})
+public static {{ method.return_type }} {{ method.managed_name }}({{ method.method_parameters | array.join ", " }})
 {
     var containerObject = UnboxHandle<IContainer>({{ method.target_object_parameter_name }});
     FreeHandle({{ method.target_object_parameter_name }});
-    var result = containerObject.{{ method.api_name }}({{ method.target_method_parameters | array.join ", " }});
-    return BoxHandle(result);
+
+    {{ capture targetCall }}
+        containerObject.{{ method.api_name }}({{ method.target_method_parameters | array.join ", " }});
+    {{ end }}
+
+    {{ if method.return_type == "void" }}
+        {{ targetCall | string.strip }}
+    {{ else }}
+        var result = {{ targetCall | string.strip }}
+        return BoxHandle(result);
+    {{ end }}
 }
 {{ end }}

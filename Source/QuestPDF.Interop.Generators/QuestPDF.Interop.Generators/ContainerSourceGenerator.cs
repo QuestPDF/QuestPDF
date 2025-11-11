@@ -19,7 +19,7 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
         public IEnumerable<string> MethodParameters { get; set; }
         public string TargetObjectParameterName { get; set; }
         public IEnumerable<string> TargetMethodParameters { get; set; }
-        public string ReturnType { get; set; }
+        public string? ReturnType { get; set; }
     }
     
     public string GenerateCSharpCode(Compilation compilation)
@@ -47,7 +47,7 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
                 MethodParameters = method.Parameters.Select(GetMethodParameter),
                 TargetObjectParameterName = method.Parameters.First().Name,
                 TargetMethodParameters = method.Parameters.Skip(1).Select(GetTargetMethodParameter),
-                ReturnType = method.ReturnType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                ReturnType = method.ReturnType.GetInteropResultType()
             };
         }
 
