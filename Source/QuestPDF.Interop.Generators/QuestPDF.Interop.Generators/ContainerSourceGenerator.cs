@@ -18,18 +18,21 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
         public IEnumerable<string> TargetMethodParameters { get; set; }
         public string? ReturnType { get; set; }
     }
+
+    private IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
+    {
+        return compilation
+            .GetTypeByMetadataName(targetNamespace)
+            .GetMembers()
+            .OfType<IMethodSymbol>()
+            .Where(m => m.DeclaredAccessibility == Accessibility.Public && m.IsStatic && m.IsExtensionMethod);
+    }
     
     public string GenerateCSharpCode(Compilation compilation)
     {
-        var member = compilation.GetTypeByMetadataName(targetNamespace);
-
         var model = new
         {
-            Methods = member.GetMembers()
-                .OfType<IMethodSymbol>()
-                .Where(m => m.DeclaredAccessibility == Accessibility.Public && m.IsStatic && m.IsExtensionMethod)
-                .Select(MapMethod)
-                .ToList()
+            Methods = GetTargetMethods(compilation).Select(MapMethod)
         };
 
         return ScribanTemplateLoader.LoadTemplate("Container.cs").Render(model);

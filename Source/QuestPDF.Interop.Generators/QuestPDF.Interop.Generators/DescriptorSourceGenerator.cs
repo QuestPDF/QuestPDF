@@ -20,17 +20,20 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
         public string? ReturnType { get; set; }
     }
     
+    private IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
+    {
+        return compilation
+            .GetTypeByMetadataName(targetNamespace)
+            .GetMembers()
+            .OfType<IMethodSymbol>()
+            .Where(m => m.DeclaredAccessibility == Accessibility.Public);
+    }
+    
     public string GenerateCSharpCode(Compilation compilation)
     {
-        var member = compilation.GetTypeByMetadataName(targetNamespace);
-        
         var model = new
         {
-            Methods = member.GetMembers()
-                .OfType<IMethodSymbol>()
-                .Where(m => m.DeclaredAccessibility == Accessibility.Public)
-                .Select(MapMethod)
-                .ToList()
+            Methods = GetTargetMethods(compilation).Select(MapMethod)
         };
 
         return ScribanTemplateLoader.LoadTemplate("Descriptor.cs").Render(model);
