@@ -31,12 +31,12 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
     
     public string GenerateCSharpCode(Compilation compilation)
     {
-        var model = new
-        {
-            Methods = GetTargetMethods(compilation).Select(MapMethod)
-        };
-
-        return ScribanTemplateLoader.LoadTemplate("Container.cs").Render(model);
+        return ScribanTemplateLoader
+            .LoadTemplate("Container.cs")
+            .Render(new
+            {
+                Methods = GetTargetMethods(compilation).Select(MapMethod)
+            });
         
         static object MapMethod(IMethodSymbol method)
         {
@@ -74,7 +74,12 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
     {
         var headers = GetTargetMethods(compilation)
             .Select(x => x.GetCHeaderDefinition());
-        
-        return string.Join("\n", headers);
+
+        return ScribanTemplateLoader
+            .LoadTemplate("Container.py")
+            .Render(new
+            {
+                Headers = headers
+            });
     }
 }

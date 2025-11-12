@@ -1,5 +1,184 @@
 # AUTO-GENERATED on {{ generation_date_time }}
 
+
+from cffi import FFI
+from typing import Callable, Optional, Tuple, Any, Self, Protocol
+
+
+QUESTPDF_CDEF = ""
+
+class QuestPDF:
+    def __init__(self):
+        self.lib = None
+
+questpdf = QuestPDF()
+
+
+
 {{ for fragment in fragments }}
 {{ fragment }}
 {{ end }}
+
+
+
+
+
+QUESTPDF_CDEF += r"""
+    typedef unsigned char uint8_t;    // keep only this typedef (or drop it and use 'unsigned char*')
+
+    typedef struct Buffer {
+        uint8_t* data;                // or: unsigned char* data;
+        size_t   length;
+    } Buffer;
+
+    typedef void (*documentContainerDescriptorCallback)(void* document_container);
+    typedef void (*pageDescriptorCallback)(void* page);
+
+    int  questpdf_sum(int a, int b);
+
+    void*  questpdf_document_create(documentContainerDescriptorCallback cb);
+    Buffer questpdf_document_generate_pdf(void* document);
+    void   questpdf_document_destroy(void* document);
+
+    void   questpdf_document_container_add_page(void* document_container, pageDescriptorCallback cb);
+
+
+    void   questpdf_page_set_margin(void* page, int margin);
+    void*   questpdf_page_set_content(void* page);
+    void*   questpdf_container_background(void* page, uint32_t color);
+
+    void   questpdf_free_bytes(void* ptr);
+"""
+
+class Container:
+	def __init__(self, container_pointer: "questpdf_ffi.CData"):
+		self.container_pointer = container_pointer
+
+	def align_left(self) -> Self:
+		result = questpdf.lib.questpdf_container_align_left(self.container_pointer)
+		return Container(result)
+
+	def background(self) -> Self:
+		result = questpdf.lib.questpdf_container_background(self.container_pointer, 0xAACCEE)
+		return Container(result)
+
+
+
+
+# class Container:
+#     def __init__(self, container_pointer: "ffi.CData"):
+#         self.container_pointer = container_pointer
+#
+#     def width(self, value: float, unit: Unit = Unit.POINT) -> Self:
+#         result = lib.questpdf_container_width(self.container_pointer, value, unit.value)
+#         return Container(result)
+#
+#     def height(self, value: float, unit: Unit = Unit.POINT) -> Self:
+#         result = lib.questpdf_container_height(self.container_pointer, value, unit.value)
+#         return Container(result)
+#
+#     def background(self, value: int) -> Self:
+#         result = lib.questpdf_container_background(self.container_pointer, value)
+#         return Container(result)
+#
+#     def text(self, content: str) -> None:
+#         content_bytes = content.encode("utf-8")
+#         lib.questpdf_container_text(self.container_pointer, content_bytes)
+
+
+
+
+
+class Page:
+    def __init__(self, page_ptr: "questpdf_ffi.CData"):
+        # page_ptr is a cdata 'void *'
+        self._page_ptr = page_ptr
+
+    def margin(self, margin: int) -> None:
+        questpdf.lib.questpdf_page_set_margin(self._page_ptr, int(margin))
+
+    def content(self) -> Container:
+        containerPointer = questpdf.lib.questpdf_page_set_content(self._page_ptr)
+        return Container(containerPointer)
+
+
+class DocumentContainer:
+    def __init__(self, document_container_pointer: "questpdf_ffi.CData"):
+        self.document_container_pointer = document_container_pointer
+        # Keep Python refs to callbacks alive for as long as this container lives
+        self._page_callbacks = []  # type: list["ffi.CData"]
+
+    def page(self, configurator: Callable[[Page], Any]) -> None:
+        @questpdf_ffi.callback("void(void*)")
+        def _internal_page_handler(page_pointer):
+            page_object = Page(page_pointer)
+            configurator(page_object)
+
+        # retain the callback to prevent it from being GC'ed
+        self._page_callbacks.append(_internal_page_handler)
+        questpdf.lib.questpdf_document_container_add_page(self.document_container_pointer, _internal_page_handler)
+
+
+
+class Document:
+    def __init__(self):
+        self._document_ptr: Optional["questpdf_ffi.CData"] = None
+        self._document_container_cb: Optional["questpdf_ffi.CData"] = None  # keep callback alive
+
+    @classmethod
+    def create(cls, configurator: Callable[[DocumentContainer], Any]) -> "Document":
+        inst = cls()
+
+        @questpdf_ffi.callback("void(void*)")
+        def _internal_container_handler(document_container_pointer):
+            document_container = DocumentContainer(document_container_pointer)
+            configurator(document_container)
+
+        inst._document_container_cb = _internal_container_handler
+        inst._document_ptr = questpdf.lib.questpdf_document_create(inst._document_container_cb)
+        return inst
+
+    def generate_pdf(self) -> bytes:
+        if self._document_ptr is None:
+            raise RuntimeError("Document not created. Call create() first.")
+
+        buf = questpdf.lib.questpdf_document_generate_pdf(self._document_ptr)  # returns Buffer by value
+        try:
+            # safer: copy to Python bytes, then free the native memory
+            return questpdf_ffi.buffer(buf.data, buf.length)[:]
+            # or: ffi.unpack(buf.data, buf.length)
+        finally:
+            questpdf.lib.questpdf_free_bytes(buf.data)
+
+    def save_to_file(self, filename: str) -> "Document":
+        pdf_bytes = self.generate_pdf()
+        with open(filename, "wb") as f:
+            f.write(pdf_bytes)
+        return self
+
+    def destroy(self) -> None:
+        if self._document_ptr is not None:
+            questpdf.lib.questpdf_document_destroy(self._document_ptr)
+            self._document_ptr = None
+            self._document_container_cb = None  # allow GC
+
+    def __enter__(self):
+        return self
+
+    def __del__(self):
+        # Make destruction idempotent and safe at interpreter shutdown
+        try:
+            self.destroy()
+        except Exception:
+            pass
+        return False
+
+
+
+
+questpdf_ffi = FFI()
+questpdf_ffi.cdef(QUESTPDF_CDEF)
+
+lib_path = os.path.abspath("./QuestPDF.Interop.dylib")
+questpdf.lib = questpdf_ffi.dlopen(lib_path)
+

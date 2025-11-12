@@ -27,11 +27,13 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
             var csharpFragments = generators
                 .Select(x => Try(() => x.GenerateCSharpCode(compilation)));
             
-            var csharpCode = ScribanTemplateLoader.LoadTemplate("Main.cs").Render(new
-            {
-                GenerationDateTime = DateTime.Now.ToString(),
-                Fragments = csharpFragments
-            });
+            var csharpCode = ScribanTemplateLoader
+                .LoadTemplate("Main.cs")
+                .Render(new
+                {
+                    GenerationDateTime = DateTime.Now.ToString(),
+                    Fragments = csharpFragments
+                });
 
             spc.AddSource("QuestPDF.Interop.g.cs", csharpCode);
             
@@ -39,11 +41,13 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
             var pythonFragments = generators
                 .Select(x => Try(() => x.GeneratePythonCode(compilation)));
             
-            var pythonCode = ScribanTemplateLoader.LoadTemplate("Main.py").Render(new
-            {
-                GenerationDateTime = DateTime.Now.ToString(),
-                Fragments = pythonFragments
-            });
+            var pythonCode = ScribanTemplateLoader
+                .LoadTemplate("Main.py")
+                .Render(new
+                {
+                    GenerationDateTime = DateTime.Now.ToString(),
+                    Fragments = pythonFragments
+                });
             
             spc.AddSource("QuestPDF.Interop.g.py", pythonCode);
         });

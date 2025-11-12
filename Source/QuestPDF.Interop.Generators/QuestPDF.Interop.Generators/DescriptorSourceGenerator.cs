@@ -31,12 +31,12 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
     
     public string GenerateCSharpCode(Compilation compilation)
     {
-        var model = new
-        {
-            Methods = GetTargetMethods(compilation).Select(MapMethod)
-        };
-
-        return ScribanTemplateLoader.LoadTemplate("Descriptor.cs").Render(model);
+        return ScribanTemplateLoader
+            .LoadTemplate("Descriptor.cs")
+            .Render(new
+            {
+                Methods = GetTargetMethods(compilation).Select(MapMethod)
+            });
         
         static object MapMethod(IMethodSymbol method)
         {
