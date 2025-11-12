@@ -11,13 +11,13 @@ internal class Helpers
         return GCHandle.ToIntPtr(gch);
     }
 
-    public static T UnboxHandle<T>(nint handle) where T : class
+    public static T UnboxHandle<T>(IntPtr handle) where T : class
     {
         var gch = GCHandle.FromIntPtr(handle);
         return (T)gch.Target!;
     }
 
-    public static void FreeHandle(nint handle)
+    public static void FreeHandle(IntPtr handle)
     {
         if (handle == 0) 
             return;

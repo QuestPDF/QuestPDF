@@ -43,10 +43,10 @@ internal static class Helpers
     public static string GetInteropResultType(this ITypeSymbol typeSymbol)
     {
         if (typeSymbol.TypeKind == TypeKind.Class)
-            return "nint";
+            return "IntPtr";
         
         if (typeSymbol.TypeKind == TypeKind.Interface)
-            return "nint";
+            return "IntPtr";
         
         return typeSymbol.ToString();
     }
@@ -59,10 +59,10 @@ internal static class Helpers
             return "int";
 
         if (typeSymbol.TypeKind == TypeKind.Class)
-            return "nint";
+            return "IntPtr";
         
         if (typeSymbol.TypeKind == TypeKind.Interface)
-            return "nint";
+            return "IntPtr";
         
         return typeName;
     }
@@ -71,6 +71,9 @@ internal static class Helpers
     {
         var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 
+        if (typeSymbol.SpecialType == SpecialType.System_Void)
+            return "void";
+        
         if (typeSymbol.TypeKind == TypeKind.Enum)
             return "int32_t";
         

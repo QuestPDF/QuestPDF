@@ -45,7 +45,7 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
                 NativeName = method.GetNativeMethodName(),
                 ManagedName = method.GetManagedMethodName(),
                 ApiName = method.Name,
-                MethodParameters = method.Parameters.Select(GetMethodParameter).Prepend("nint target"),
+                MethodParameters = method.Parameters.Select(GetMethodParameter).Prepend("IntPtr target"),
                 TargetObjectType = method.ContainingType.Name,
                 TargetObjectParameterName = "target",
                 TargetMethodParameters = method.Parameters.Select(GetTargetMethodParameter),
