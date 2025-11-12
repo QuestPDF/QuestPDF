@@ -3,7 +3,7 @@
   "profiles": {
     "DebugRoslynSourceGenerator": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "../QuestPDF.Interop.Generators.Sample/QuestPDF.Interop.Generators.Sample.csproj"
+      "targetProject": "../QuestPDF.Interop/QuestPDF.Interop.csproj"
     }
   }
 }
