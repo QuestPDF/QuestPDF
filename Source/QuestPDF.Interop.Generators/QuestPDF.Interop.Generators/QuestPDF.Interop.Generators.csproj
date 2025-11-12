@@ -33,9 +33,5 @@
             <WithCulture>false</WithCulture>
         </EmbeddedResource>
     </ItemGroup>
-    
-    <ItemGroup>
-      <None Remove="Readme.md" />
-    </ItemGroup>
-    
+
 </Project>

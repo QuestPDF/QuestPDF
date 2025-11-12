@@ -12,12 +12,4 @@
         <ProjectReference Include="..\QuestPDF.Interop.Generators\QuestPDF.Interop.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <None Remove="DDD.UbiquitousLanguageRegistry.txt"/>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Remove="Examples.cs" />
-    </ItemGroup>
-
 </Project>
