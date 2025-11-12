@@ -14,6 +14,7 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
         public string ManagedName { get; set; }
         public string ApiName { get; set; }
         public IEnumerable<string> MethodParameters { get; set; }
+        public string TargetObjectType { get; set; }
         public string TargetObjectParameterName { get; set; }
         public IEnumerable<string> TargetMethodParameters { get; set; }
         public string? ReturnType { get; set; }
@@ -45,6 +46,7 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
                 ManagedName = method.GetManagedMethodName(),
                 ApiName = method.Name,
                 MethodParameters = method.Parameters.Select(GetMethodParameter),
+                TargetObjectType = method.Parameters.First().Type.Name,
                 TargetObjectParameterName = method.Parameters.First().Name,
                 TargetMethodParameters = method.Parameters.Skip(1).Select(GetTargetMethodParameter),
                 ReturnType = method.ReturnType.GetInteropResultType()
