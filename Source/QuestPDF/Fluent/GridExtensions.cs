@@ -44,7 +44,7 @@ namespace QuestPDF.Fluent
             Grid.ColumnsCount = value;
         }
         
-        public void Alignment(HorizontalAlignment alignment)
+        internal void Alignment(HorizontalAlignment alignment)
         {
             Grid.Alignment = alignment;
         }
