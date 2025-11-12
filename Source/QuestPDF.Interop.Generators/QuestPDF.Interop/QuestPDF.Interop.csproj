@@ -5,6 +5,8 @@
         <Nullable>enable</Nullable>
         <RootNamespace>QuestPDF.Interop</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PublishAot>true</PublishAot>
+        <IsAotCompatible>true</IsAotCompatible>
     </PropertyGroup>
 
     <ItemGroup>
