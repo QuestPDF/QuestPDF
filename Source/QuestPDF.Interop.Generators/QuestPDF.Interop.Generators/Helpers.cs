@@ -8,7 +8,7 @@ internal static class Helpers
 {
     private static readonly Regex SnakeCaseRegex = new("(?<!^)([A-Z])", RegexOptions.Compiled);
     
-    public static string ToSnakeCase(string input)
+    public static string ToSnakeCase(this string input)
     {
         if (string.IsNullOrEmpty(input))
             return input;
@@ -25,7 +25,7 @@ internal static class Helpers
         var isInterface = targetType.TypeKind == TypeKind.Interface;
         var targetTypeName = isInterface ? targetType.Name.TrimStart('I') : targetType.Name; 
         
-        return $"questpdf__{ToSnakeCase(targetTypeName)}__{ToSnakeCase(methodSymbol.Name)}__{methodSymbol.GetHashCode()}";
+        return $"questpdf__{ToSnakeCase(targetTypeName)}__{ToSnakeCase(methodSymbol.Name)}";
     }
     
     public static string GetManagedMethodName(this IMethodSymbol methodSymbol)
@@ -103,6 +103,43 @@ internal static class Helpers
             _ when typeSymbol.TypeKind == TypeKind.Pointer => "nint",
             _ when typeSymbol.TypeKind == TypeKind.Class || typeSymbol.TypeKind == TypeKind.Interface => "nint",
             _ => "nint" // Default for unknown types
+        };
+    }
+    
+    public static string GetPythonParameterType(this ITypeSymbol typeSymbol)
+    {
+        var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+
+        if (typeSymbol.SpecialType == SpecialType.System_Void)
+            return "None";
+
+        if (typeSymbol.TypeKind == TypeKind.Enum)
+            return typeSymbol.Name;
+
+        if (typeSymbol.TypeKind == TypeKind.Class)
+            return typeSymbol.Name;
+
+        if (typeSymbol.TypeKind == TypeKind.Interface)
+            return typeSymbol.Name.TrimStart('I');
+
+        return typeName switch
+        {
+            "int" or "System.Int32" => "int",
+            "uint" or "System.UInt32" => "int",
+            "long" or "System.Int64" => "int",
+            "ulong" or "System.UInt64" => "int",
+            "short" or "System.Int16" => "int",
+            "ushort" or "System.UInt16" => "int",
+            "byte" or "System.Byte" => "int",
+            "sbyte" or "System.SByte" => "int",
+            "float" or "System.Single" => "float",
+            "double" or "System.Double" => "float",
+            "bool" or "System.Boolean" => "bool",
+            "char" or "System.Char" => "str",
+            "string" or "System.String" => "str",
+            "System.IntPtr" => "int",
+            "System.UIntPtr" => "int",
+            _ => "Any" // Default for unknown types
         };
     }
     

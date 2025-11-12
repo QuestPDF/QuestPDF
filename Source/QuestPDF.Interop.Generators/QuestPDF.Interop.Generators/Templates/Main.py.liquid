@@ -1,6 +1,7 @@
 # AUTO-GENERATED on {{ generation_date_time }}
 
 
+import os
 from cffi import FFI
 from typing import Callable, Optional, Tuple, Any, Self, Protocol
 
@@ -49,42 +50,6 @@ QUESTPDF_CDEF += r"""
 
     void   questpdf_free_bytes(void* ptr);
 """
-
-class Container:
-	def __init__(self, container_pointer: "questpdf_ffi.CData"):
-		self.container_pointer = container_pointer
-
-	def align_left(self) -> Self:
-		result = questpdf.lib.questpdf_container_align_left(self.container_pointer)
-		return Container(result)
-
-	def background(self) -> Self:
-		result = questpdf.lib.questpdf_container_background(self.container_pointer, 0xAACCEE)
-		return Container(result)
-
-
-
-
-# class Container:
-#     def __init__(self, container_pointer: "ffi.CData"):
-#         self.container_pointer = container_pointer
-#
-#     def width(self, value: float, unit: Unit = Unit.POINT) -> Self:
-#         result = lib.questpdf_container_width(self.container_pointer, value, unit.value)
-#         return Container(result)
-#
-#     def height(self, value: float, unit: Unit = Unit.POINT) -> Self:
-#         result = lib.questpdf_container_height(self.container_pointer, value, unit.value)
-#         return Container(result)
-#
-#     def background(self, value: int) -> Self:
-#         result = lib.questpdf_container_background(self.container_pointer, value)
-#         return Container(result)
-#
-#     def text(self, content: str) -> None:
-#         content_bytes = content.encode("utf-8")
-#         lib.questpdf_container_text(self.container_pointer, content_bytes)
-
 
 
 

@@ -3,3 +3,21 @@ QUESTPDF_CDEF += r"""
     {{ header }}
     {{ end }}
 """
+
+class Container:
+    def __init__(self, container_pointer):
+        self.container_pointer = container_pointer
+        
+    def align_left(self) -> Self:
+        result = questpdf.lib.questpdf_container_align_left(self.container_pointer)
+        return Container(result)
+
+    def background(self) -> Self:
+        result = questpdf.lib.questpdf_container_background(self.container_pointer, 0xAACCEE)
+        return Container(result)
+        
+{{ for method in methods }}
+    def {{ method.python_method_name }}(self, {{ method.python_method_parameters | array.join ", " }}) -> 'Container':
+        result = questpdf.lib.{{ method.interop_method_name }}(self.container_pointer, {{ method.interop_method_parameters | array.join ", " }})
+        return Container(result)
+{{ end }}

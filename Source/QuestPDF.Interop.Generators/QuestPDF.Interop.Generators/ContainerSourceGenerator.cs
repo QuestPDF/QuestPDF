@@ -79,7 +79,38 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
             .LoadTemplate("Container.py")
             .Render(new
             {
-                Headers = headers
+                Headers = headers,
+                Methods = GetTargetMethods(compilation).Select(MapMethod)
             });
+        
+        static object MapMethod(IMethodSymbol method)
+        {
+            return new
+            {
+                PythonMethodName = method.Name.ToSnakeCase(),
+                PythonMethodParameters = method.Parameters.Skip(1).Select(GetMethodParameter),
+                
+                InteropMethodName = method.GetNativeMethodName(),
+                InteropMethodParameters = method.Parameters.Skip(1).Select(GetInteropMethodParameter),
+                PythonMethodReturnType = "dupa"
+                
+                
+            };
+        }
+
+        static string GetMethodParameter(IParameterSymbol parameterSymbol)
+        {
+            return $"{parameterSymbol.Name.ToSnakeCase()}: {parameterSymbol.Type.GetPythonParameterType()}";
+        }
+        
+        static string GetInteropMethodParameter(IParameterSymbol parameterSymbol)
+        {
+            var parameterName = parameterSymbol.Name.ToSnakeCase();
+            
+            if (parameterSymbol.Type.TypeKind == TypeKind.Enum)
+                return $"{parameterName}.value";
+            
+            return parameterName;
+        }
     }
 }
