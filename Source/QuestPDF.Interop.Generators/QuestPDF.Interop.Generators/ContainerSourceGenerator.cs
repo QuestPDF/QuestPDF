@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
-using Scriban;
-using static QuestPDF.Interop.Generators.Helpers;
 
 namespace QuestPDF.Interop.Generators;
 
@@ -53,7 +50,7 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
 
         static string GetMethodParameter(IParameterSymbol parameterSymbol)
         {
-            return $"{GetInteropMethodParameterType(parameterSymbol.Type)} {parameterSymbol.Name}";
+            return $"{parameterSymbol.Type.GetInteropMethodParameterType()} {parameterSymbol.Name}";
         }
         
         static string GetTargetMethodParameter(IParameterSymbol parameterSymbol)
@@ -71,51 +68,5 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
     public string GeneratePythonCode(Compilation compilation)
     {
         return string.Empty;
-    }
-
-    private static string GetInteropMethodParameterType(ITypeSymbol typeSymbol)
-    {
-        var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-
-        if (typeSymbol.TypeKind == TypeKind.Enum)
-            return "int";
-
-        if (typeSymbol.TypeKind == TypeKind.Class)
-            return "nint";
-        
-        if (typeSymbol.TypeKind == TypeKind.Interface)
-            return "nint";
-        
-        return typeName;
-    }
-    
-    private static string GetNativeParameterType(ITypeSymbol typeSymbol)
-    {
-        var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-
-        if (typeSymbol.TypeKind == TypeKind.Enum)
-            return "int32_t";
-        
-        return typeName switch
-        {
-            "int" or "System.Int32" => "int32_t",
-            "uint" or "System.UInt32" => "uint32_t",
-            "long" or "System.Int64" => "int64_t",
-            "ulong" or "System.UInt64" => "uint64_t",
-            "short" or "System.Int16" => "int16_t",
-            "ushort" or "System.UInt16" => "uint16_t",
-            "byte" or "System.Byte" => "uint8_t",
-            "sbyte" or "System.SByte" => "int8_t",
-            "float" or "System.Single" => "float",
-            "double" or "System.Double" => "double",
-            "bool" or "System.Boolean" => "uint8_t",
-            "char" or "System.Char" => "uint16_t",
-            "string" or "System.String" => "const char*",
-            "System.IntPtr" => "nint",
-            "System.UIntPtr" => "nuint",
-            _ when typeSymbol.TypeKind == TypeKind.Pointer => "nint",
-            _ when typeSymbol.TypeKind == TypeKind.Class || typeSymbol.TypeKind == TypeKind.Interface => "nint",
-            _ => "nint" // Default for unknown types
-        };
     }
 }
