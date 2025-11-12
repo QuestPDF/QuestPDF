@@ -1,6 +1,6 @@
 namespace QuestPDF.Infrastructure
 {
-    public enum HorizontalAlignment
+    internal enum HorizontalAlignment
     {
         Left,
         Center,
