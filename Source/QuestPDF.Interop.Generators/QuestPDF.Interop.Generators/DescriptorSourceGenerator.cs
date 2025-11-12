@@ -72,6 +72,9 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
 
     public string GeneratePythonCode(Compilation compilation)
     {
-        return string.Empty;
+        var headers = GetTargetMethods(compilation)
+            .Select(x => x.GetCHeaderDefinition());
+        
+        return string.Join("\n", headers);
     }
 }

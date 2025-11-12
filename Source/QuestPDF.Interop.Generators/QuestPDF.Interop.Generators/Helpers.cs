@@ -77,6 +77,12 @@ internal static class Helpers
         if (typeSymbol.TypeKind == TypeKind.Enum)
             return "int32_t";
         
+        if (typeSymbol.TypeKind == TypeKind.Class)
+            return "void*";
+        
+        if (typeSymbol.TypeKind == TypeKind.Interface)
+            return "void*";
+        
         return typeName switch
         {
             "int" or "System.Int32" => "int32_t",
@@ -98,5 +104,22 @@ internal static class Helpers
             _ when typeSymbol.TypeKind == TypeKind.Class || typeSymbol.TypeKind == TypeKind.Interface => "nint",
             _ => "nint" // Default for unknown types
         };
+    }
+    
+    public static string GetCHeaderDefinition(this IMethodSymbol methodSymbol)
+    {
+        var resultType = methodSymbol.ReturnType.GetNativeParameterType();
+        var methodName = methodSymbol.GetNativeMethodName();
+
+        var parameters = methodSymbol
+            .Parameters
+            .Select(x => $"{GetNativeParameterType(x.Type)} {x.Name}");
+            
+        if (!methodSymbol.IsExtensionMethod)
+            parameters = parameters.Prepend("void* target");
+        
+        var parametersString = string.Join(", ", parameters);
+        
+        return $"{resultType} {methodName}({parametersString});";
     }
 }

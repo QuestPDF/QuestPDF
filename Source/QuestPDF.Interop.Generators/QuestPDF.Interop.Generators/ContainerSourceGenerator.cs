@@ -72,6 +72,9 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
     
     public string GeneratePythonCode(Compilation compilation)
     {
-        return string.Empty;
+        var headers = GetTargetMethods(compilation)
+            .Select(x => x.GetCHeaderDefinition());
+        
+        return string.Join("\n", headers);
     }
 }

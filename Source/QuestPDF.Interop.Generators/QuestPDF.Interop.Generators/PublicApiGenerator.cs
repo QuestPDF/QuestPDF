@@ -12,27 +12,52 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
     {
         context.RegisterSourceOutput(context.CompilationProvider, static (spc, compilation) =>
         {
-            var mainTemplate = ScribanTemplateLoader.LoadTemplate("Main.cs");
-            
             var generators = new List<IInteropSourceGenerator>
             {
+                new EnumSourceGenerator("QuestPDF.Infrastructure.Unit"),
+                
                 new ContainerSourceGenerator("QuestPDF.Fluent.PaddingExtensions"),
                 //new ContainerSourceGenerator("QuestPDF.Fluent.ColumnExtensions"),
                 //new ContainerSourceGenerator("QuestPDF.Fluent.InlinedExtensions"),
-                new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
-                new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
+                // new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
+                // new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
             };
 
+            // C# Generation
             var csharpFragments = generators
-                .Select(x => x.GenerateCSharpCode(compilation));
+                .Select(x => Try(() => x.GenerateCSharpCode(compilation)));
             
-            var csharpCode = mainTemplate.Render(new
+            var csharpCode = ScribanTemplateLoader.LoadTemplate("Main.cs").Render(new
             {
                 GenerationDateTime = DateTime.Now.ToString(),
                 Fragments = csharpFragments
             });
 
             spc.AddSource("QuestPDF.Interop.g.cs", csharpCode);
+            
+            // Python Generation
+            var pythonFragments = generators
+                .Select(x => Try(() => x.GeneratePythonCode(compilation)));
+            
+            var pythonCode = ScribanTemplateLoader.LoadTemplate("Main.py").Render(new
+            {
+                GenerationDateTime = DateTime.Now.ToString(),
+                Fragments = pythonFragments
+            });
+            
+            spc.AddSource("QuestPDF.Interop.g.py", pythonCode);
         });
+    }
+    
+    private static string Try(Func<string> action)
+    {
+        try
+        {
+            return action();
+        }
+        catch (Exception ex)
+        {
+            return $"// Generation error: {ex.Message}";
+        }
     }
 }

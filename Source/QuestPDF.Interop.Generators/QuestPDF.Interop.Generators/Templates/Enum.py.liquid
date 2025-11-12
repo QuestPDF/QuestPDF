@@ -1,0 +1,8 @@
+from enum import Enum
+
+{{ for enum in enums }}
+class {{ enum.name }}(Enum):
+{{- for member in enum.members }}
+    {{ member.name }} = {{ member.value }}
+{{- end }}
+{{ end }}
