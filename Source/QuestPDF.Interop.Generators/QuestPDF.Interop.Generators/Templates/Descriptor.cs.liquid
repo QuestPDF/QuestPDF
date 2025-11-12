@@ -5,13 +5,13 @@ public static {{ method.return_type }} {{ method.managed_name }}({{ method.metho
     var targetObject = UnboxHandle<{{ method.target_object_type }}>({{ method.target_object_parameter_name }});
     
     {{- capture targetCall -}}
-        targetObject.{{ method.api_name }}({{ method.target_method_parameters | array.join ", " }});
+        targetObject.{{ method.api_name }}({{ method.target_method_parameters | array.join ", " }})
     {{- end -}}
 
 {{ if method.return_type == "void" }}
-    {{ targetCall }}
+    {{ targetCall }};
 {{- else }}
-    var result = {{ targetCall }}
+    var result = {{ targetCall }};
     return BoxHandle(result);
 {{- end }}
 }
