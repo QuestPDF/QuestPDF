@@ -32,7 +32,7 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
     public string GenerateCSharpCode(Compilation compilation)
     {
         return ScribanTemplateLoader
-            .LoadTemplate("Descriptor.cs")
+            .LoadTemplate("NativeInteropMethod.cs")
             .Render(new
             {
                 Methods = GetTargetMethods(compilation).Select(MapMethod)
@@ -40,7 +40,7 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
         
         static object MapMethod(IMethodSymbol method)
         {
-            return new MethodTemplateModel
+            return new NativeInteropMethodTemplateModel
             {
                 NativeName = method.GetNativeMethodName(),
                 ManagedName = method.GetManagedMethodName(),
@@ -49,7 +49,8 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
                 TargetObjectType = method.ContainingType.Name,
                 TargetObjectParameterName = "target",
                 TargetMethodParameters = method.Parameters.Select(GetTargetMethodParameter),
-                ReturnType = method.ReturnType.GetInteropResultType()
+                ReturnType = method.ReturnType.GetInteropResultType(),
+                ShouldFreeTarget = true
             };
         }
 
