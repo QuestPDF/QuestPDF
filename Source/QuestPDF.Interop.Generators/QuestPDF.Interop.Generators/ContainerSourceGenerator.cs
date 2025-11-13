@@ -98,7 +98,31 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
 
         static string GetMethodParameter(IParameterSymbol parameterSymbol)
         {
-            return $"{parameterSymbol.Name.ToSnakeCase()}: {parameterSymbol.Type.GetPythonParameterType()}";
+            var result = $"{parameterSymbol.Name.ToSnakeCase()}: {parameterSymbol.Type.GetPythonParameterType()}";
+            
+            if (parameterSymbol.HasExplicitDefaultValue)
+            {
+                if (parameterSymbol.ExplicitDefaultValue == null)
+                {
+                    result += " = None";
+                }
+                else if (parameterSymbol.Type.TypeKind == TypeKind.Enum)
+                {
+                    var enumValueName = parameterSymbol.Type
+                        .GetMembers()
+                        .OfType<IFieldSymbol>()
+                        .First(x => x.HasConstantValue && x.ConstantValue.Equals(parameterSymbol.ExplicitDefaultValue))
+                        .Name;
+                    
+                    result += $" = {parameterSymbol.Type.Name}.{enumValueName}";
+                }
+                else
+                {
+                    result += $" = {parameterSymbol.ExplicitDefaultValue}";
+                }
+            }
+            
+            return result;
         }
         
         static string GetInteropMethodParameter(IParameterSymbol parameterSymbol)
