@@ -17,6 +17,7 @@ class Container:
         return Container(result)
         
 {{ for method in methods }}
+    {{ if method.deprecation_message }}@deprecated("{{ method.deprecation_message }}"){{ end }}
     def {{ method.python_method_name }}({{ method.python_method_parameters | array.join ", " }}) -> 'Container':
         result = questpdf.lib.{{ method.interop_method_name }}({{ method.interop_method_parameters | array.join ", " }})
         return Container(result)

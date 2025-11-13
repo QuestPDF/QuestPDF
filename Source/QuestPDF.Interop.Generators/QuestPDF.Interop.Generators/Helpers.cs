@@ -164,4 +164,13 @@ internal static class Helpers
         
         return $"{resultType} {methodName}({parametersString});";
     }
+
+    public static string? TryGetDeprecationMessage(this ISymbol symbol)
+    {
+        return symbol
+            .GetAttributes()
+            .FirstOrDefault(x => x.AttributeClass?.Name == "ObsoleteAttribute")
+            ?.ConstructorArguments
+            .FirstOrDefault().Value as string;
+    }
 }

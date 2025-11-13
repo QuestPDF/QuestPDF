@@ -90,9 +90,9 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
                 
                 InteropMethodName = method.GetNativeMethodName(),
                 InteropMethodParameters = method.Parameters.Skip(1).Select(GetInteropMethodParameter).Prepend("self.container_pointer"),
-                PythonMethodReturnType = "dupa"
+                PythonMethodReturnType = "not_used",
                 
-                
+                DeprecationMessage = method.TryGetDeprecationMessage()
             };
         }
 
