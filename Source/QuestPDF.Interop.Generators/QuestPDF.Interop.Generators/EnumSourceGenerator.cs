@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
-public class EnumSourceGenerator(string targetNamespace) : IInteropSourceGenerator
+public class EnumSourceGenerator() : IInteropSourceGenerator
 {
     public string GenerateCSharpCode(Compilation compilation)
     {

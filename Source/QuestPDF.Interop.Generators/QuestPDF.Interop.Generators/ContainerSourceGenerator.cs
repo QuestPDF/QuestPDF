@@ -4,10 +4,8 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
-internal class ContainerSourceGenerator(string targetNamespace) : IInteropSourceGenerator
+internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : IInteropSourceGenerator
 {
-    private string TargetNamespace { get; } = targetNamespace;
-
     class MethodTemplateModel
     {
         public string NativeName { get; set; }
@@ -22,9 +20,9 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
 
     private IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {
-        return compilation
-            .GetTypeByMetadataName(targetNamespace)
-            .GetMembers()
+        return TargetNamespaces
+            .Select(compilation.GetTypeByMetadataName)
+            .SelectMany(x => x.GetMembers())
             .OfType<IMethodSymbol>()
             .Where(m => m.DeclaredAccessibility == Accessibility.Public && m.IsStatic && m.IsExtensionMethod);
     }

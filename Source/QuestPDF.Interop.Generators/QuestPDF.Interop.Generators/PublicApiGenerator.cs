@@ -14,9 +14,14 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
         {
             var generators = new List<IInteropSourceGenerator>
             {
-                new EnumSourceGenerator("QuestPDF.Infrastructure.Unit"),
+                new EnumSourceGenerator(),
                 
-                new ContainerSourceGenerator("QuestPDF.Fluent.PaddingExtensions"),
+                new ContainerSourceGenerator([
+                    "QuestPDF.Fluent.PaddingExtensions",
+                    "QuestPDF.Fluent.ExtendExtensions",
+                    "QuestPDF.Fluent.ShrinkExtensions",
+                    "QuestPDF.Fluent.TranslateExtensions"
+                ]),
                 //new ContainerSourceGenerator("QuestPDF.Fluent.ColumnExtensions"),
                 //new ContainerSourceGenerator("QuestPDF.Fluent.InlinedExtensions"),
                 // new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
