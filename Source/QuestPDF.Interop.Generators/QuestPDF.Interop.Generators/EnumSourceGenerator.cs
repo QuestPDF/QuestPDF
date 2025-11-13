@@ -43,7 +43,7 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
                 .Where(x => x.HasConstantValue)
                 .Select(x => new EnumTemplateModel.EnumMember
                 {
-                    Name = x.Name, 
+                    Name = x.Name.ToPythonEnumMemberName(), 
                     Value = System.Convert.ToInt32(x.ConstantValue)
                 })
         };

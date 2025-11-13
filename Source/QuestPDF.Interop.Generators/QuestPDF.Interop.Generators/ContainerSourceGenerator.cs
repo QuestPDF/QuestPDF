@@ -114,7 +114,7 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
                         .First(x => x.HasConstantValue && x.ConstantValue.Equals(parameterSymbol.ExplicitDefaultValue))
                         .Name;
                     
-                    result += $" = {parameterSymbol.Type.Name}.{enumValueName}";
+                    result += $" = {parameterSymbol.Type.Name}.{enumValueName.ToPythonEnumMemberName()}";
                 }
                 else
                 {

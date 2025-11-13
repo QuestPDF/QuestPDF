@@ -16,6 +16,11 @@ internal static class Helpers
         return SnakeCaseRegex.Replace(input, "_$1").ToLowerInvariant();
     }
     
+    public static string ToPythonEnumMemberName(this string name)
+    {
+        return name.ToSnakeCase().ToUpper();
+    }
+    
     public static string GetNativeMethodName(this IMethodSymbol methodSymbol)
     {
         var targetType = methodSymbol.IsExtensionMethod 
