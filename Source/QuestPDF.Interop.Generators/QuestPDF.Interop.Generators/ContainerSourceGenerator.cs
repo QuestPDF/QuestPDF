@@ -88,10 +88,10 @@ internal class ContainerSourceGenerator(string targetNamespace) : IInteropSource
             return new
             {
                 PythonMethodName = method.Name.ToSnakeCase(),
-                PythonMethodParameters = method.Parameters.Skip(1).Select(GetMethodParameter),
+                PythonMethodParameters = method.Parameters.Skip(1).Select(GetMethodParameter).Prepend("self"),
                 
                 InteropMethodName = method.GetNativeMethodName(),
-                InteropMethodParameters = method.Parameters.Skip(1).Select(GetInteropMethodParameter),
+                InteropMethodParameters = method.Parameters.Skip(1).Select(GetInteropMethodParameter).Prepend("self.container_pointer"),
                 PythonMethodReturnType = "dupa"
                 
                 
