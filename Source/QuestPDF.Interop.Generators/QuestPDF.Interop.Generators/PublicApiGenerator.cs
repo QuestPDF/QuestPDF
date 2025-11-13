@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Microsoft.CodeAnalysis;
 
@@ -22,39 +23,28 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
                     "QuestPDF.Fluent.ShrinkExtensions",
                     "QuestPDF.Fluent.TranslateExtensions"
                 ]),
-                //new ContainerSourceGenerator("QuestPDF.Fluent.ColumnExtensions"),
-                //new ContainerSourceGenerator("QuestPDF.Fluent.InlinedExtensions"),
                 // new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
                 // new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
             };
+            
+            GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(compilation));
+            GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
+            
+            void GenerateCode(string sourceFileName, string templateName, Func<IInteropSourceGenerator, string> selector)
+            {
+                var codeFragments = generators
+                    .Select(x => Try(() => x.GenerateCSharpCode(compilation)));
+            
+                var csharpCode = ScribanTemplateLoader
+                    .LoadTemplate(templateName)
+                    .Render(new
+                    {
+                        GenerationDateTime = DateTime.Now.ToString(CultureInfo.InvariantCulture),
+                        Fragments = codeFragments
+                    });
 
-            // C# Generation
-            var csharpFragments = generators
-                .Select(x => Try(() => x.GenerateCSharpCode(compilation)));
-            
-            var csharpCode = ScribanTemplateLoader
-                .LoadTemplate("Main.cs")
-                .Render(new
-                {
-                    GenerationDateTime = DateTime.Now.ToString(),
-                    Fragments = csharpFragments
-                });
-
-            spc.AddSource("QuestPDF.Interop.g.cs", csharpCode);
-            
-            // Python Generation
-            var pythonFragments = generators
-                .Select(x => Try(() => x.GeneratePythonCode(compilation)));
-            
-            var pythonCode = ScribanTemplateLoader
-                .LoadTemplate("Main.py")
-                .Render(new
-                {
-                    GenerationDateTime = DateTime.Now.ToString(),
-                    Fragments = pythonFragments
-                });
-            
-            spc.AddSource("QuestPDF.Interop.g.py", pythonCode);
+                spc.AddSource(sourceFileName, csharpCode);
+            }
         });
     }
     
