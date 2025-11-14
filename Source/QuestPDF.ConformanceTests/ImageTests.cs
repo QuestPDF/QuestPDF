@@ -55,7 +55,7 @@ internal class ImageTests : ConformanceTestBase
                                 .Column(column =>
                                 {
                                     column.Item().Image(imageData);
-                                    column.Item().AlignCenter().SemanticCaption().Text("Sample image caption");
+                                    column.Item().PaddingTop(5).AlignCenter().SemanticCaption().Text("Sample image caption");
                                 });
                         });
                 });
