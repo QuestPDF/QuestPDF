@@ -3,15 +3,15 @@
 public static {{ method.return_type }} {{ method.managed_name }}({{ method.method_parameters | array.join ", " }})
 {
     var containerObject = UnboxHandle<{{ method.target_object_type }}>({{ method.target_object_parameter_name }});
-    {{ if method.should_free_target }} FreeHandle({{ method.target_object_parameter_name }});{{ end }}
+    {{ if method.should_free_target }}FreeHandle({{ method.target_object_parameter_name }});{{- end }}
 
     {{- capture targetCall -}}
     containerObject.{{ method.api_name }}({{ method.target_method_parameters | array.join ", " }})
     {{- end -}}
 
-{{ if method.return_type == "void" -}}
+{{ if method.return_type == "void" }}
     {{ targetCall }};
-{{ else }}
+{{- else }}
     var result = {{ targetCall }};
     return BoxHandle(result);
 {{- end }}
