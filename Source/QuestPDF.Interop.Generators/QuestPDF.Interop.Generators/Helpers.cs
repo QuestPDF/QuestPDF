@@ -137,11 +137,11 @@ internal static class Helpers
             "bool" or "System.Boolean" => "uint8_t",
             "char" or "System.Char" => "uint16_t",
             "string" or "System.String" => "const char*",
-            "System.IntPtr" => "nint",
-            "System.UIntPtr" => "nuint",
-            _ when typeSymbol.TypeKind == TypeKind.Pointer => "nint",
-            _ when typeSymbol.TypeKind == TypeKind.Class || typeSymbol.TypeKind == TypeKind.Interface => "nint",
-            _ => "nint" // Default for unknown types
+            "System.IntPtr" => "void*",
+            "System.UIntPtr" => "void*",
+            _ when typeSymbol.TypeKind == TypeKind.Pointer => "void*",
+            _ when typeSymbol.TypeKind == TypeKind.Class || typeSymbol.TypeKind == TypeKind.Interface => "void*",
+            _ => "void*" // Default for unknown types
         };
     }
     
@@ -215,6 +215,84 @@ internal static class Helpers
         };
     }
     
+    public static string GetCallbackTypedefName(this ITypeSymbol typeSymbol)
+    {
+        if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
+        {
+            var argumentTypes = actionSymbol.TypeArguments;
+            if (argumentTypes.Length == 0)
+                return "voidCallback";
+
+            var argumentNames = argumentTypes.Select(x =>
+            {
+                var typeName = x.TypeKind == TypeKind.Interface ? x.Name.TrimStart('I') : x.Name;
+                return typeName.ToSnakeCase();
+            });
+            return $"{string.Join("_", argumentNames)}_callback";
+        }
+
+        if (typeSymbol.IsFunc() && typeSymbol is INamedTypeSymbol funcSymbol)
+        {
+            var argumentTypes = funcSymbol.TypeArguments.Take(funcSymbol.TypeArguments.Length - 1);
+            var returnType = funcSymbol.TypeArguments.Last();
+
+            var argumentNames = argumentTypes.Select(x =>
+            {
+                var typeName = x.TypeKind == TypeKind.Interface ? x.Name.TrimStart('I') : x.Name;
+                return typeName.ToSnakeCase();
+            });
+
+            var returnTypeName = returnType.TypeKind == TypeKind.Interface
+                ? returnType.Name.TrimStart('I').ToSnakeCase()
+                : returnType.Name.ToSnakeCase();
+
+            return $"{string.Join("_", argumentNames)}_{returnTypeName}_func";
+        }
+
+        return "unknown_callback";
+    }
+
+    public static string GetCallbackTypedefDefinition(this ITypeSymbol typeSymbol)
+    {
+        var typedefName = typeSymbol.GetCallbackTypedefName();
+
+        if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
+        {
+            var parameters = actionSymbol
+                .TypeArguments
+                .Select(x => x.GetNativeParameterType());
+
+            var parametersString = string.Join(", ", parameters);
+            return $"typedef void (*{typedefName})({parametersString});";
+        }
+
+        if (typeSymbol.IsFunc() && typeSymbol is INamedTypeSymbol funcSymbol)
+        {
+            var parameters = funcSymbol
+                .TypeArguments
+                .Take(funcSymbol.TypeArguments.Length - 1)
+                .Select(x => x.GetNativeParameterType());
+
+            var returnType = funcSymbol.TypeArguments.Last().GetNativeParameterType();
+            var parametersString = string.Join(", ", parameters);
+            return $"typedef {returnType} (*{typedefName})({parametersString});";
+        }
+
+        return $"typedef void (*{typedefName})();";
+    }
+
+    public static IEnumerable<(string TypedefName, string TypedefDefinition)> GetCallbackTypedefs(this IEnumerable<IMethodSymbol> methods)
+    {
+        var callbackTypes = methods
+            .SelectMany(m => m.Parameters)
+            .Where(p => p.Type.IsAction() || p.Type.IsFunc())
+            .Select(p => p.Type)
+            .GroupBy(t => t.GetCallbackTypedefName())
+            .Select(g => g.First());
+
+        return callbackTypes.Select(t => (t.GetCallbackTypedefName(), t.GetCallbackTypedefDefinition()));
+    }
+
     public static string GetCHeaderDefinition(this IMethodSymbol methodSymbol)
     {
         var resultType = methodSymbol.ReturnType.GetNativeParameterType();
@@ -222,13 +300,20 @@ internal static class Helpers
 
         var parameters = methodSymbol
             .Parameters
-            .Select(x => $"{GetNativeParameterType(x.Type)} {x.Name}");
-            
+            .Select(x =>
+            {
+                // Use typedef name for callbacks instead of inline function pointer
+                if (x.Type.IsAction() || x.Type.IsFunc())
+                    return $"{x.Type.GetCallbackTypedefName()} {x.Name}";
+
+                return $"{GetNativeParameterType(x.Type)} {x.Name}";
+            });
+
         if (!methodSymbol.IsExtensionMethod)
             parameters = parameters.Prepend("void* target");
-        
+
         var parametersString = string.Join(", ", parameters);
-        
+
         return $"{resultType} {methodName}({parametersString});";
     }
 

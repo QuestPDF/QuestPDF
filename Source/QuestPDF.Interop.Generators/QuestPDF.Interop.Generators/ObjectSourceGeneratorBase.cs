@@ -100,16 +100,22 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     
     public string GeneratePythonCode(Compilation compilation)
     {
-        var headers = GetTargetMethods(compilation)
+        var targetMethods = GetTargetMethods(compilation).ToList();
+
+        var callbackTypedefs = targetMethods.GetCallbackTypedefs()
+            .Select(t => t.TypedefDefinition);
+
+        var headers = targetMethods
             .Select(x => x.GetCHeaderDefinition());
 
         return ScribanTemplateLoader
             .LoadTemplate("Object.py")
             .Render(new
             {
+                CallbackTypedefs = callbackTypedefs,
                 Headers = headers,
                 ClassName = GetTargetClassName(),
-                Methods = GetTargetMethods(compilation).Select(MapMethod)
+                Methods = targetMethods.Select(MapMethod)
             });
         
         static object MapMethod(IMethodSymbol method)
@@ -178,7 +184,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 
         static IEnumerable<object> GetCallbacks(IMethodSymbol methodSymbol)
         {
-            foreach (var parameterSymbol in methodSymbol.Parameters.Where(x => x.Type.IsAction()))
+            foreach (var parameterSymbol in methodSymbol.Parameters.Skip(1).Where(x => x.Type.IsAction()))
             {
                 var actionType = (INamedTypeSymbol)parameterSymbol.Type;
                 var callbackArgument = actionType.TypeArguments.FirstOrDefault();
@@ -194,7 +200,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 yield return new
                 {
                     PythonParameterName = pythonParameterName,
-                    CallbackArgumentTypeName = $"'{callbackArgumentTypeName}'",
+                    CallbackArgumentTypeName = callbackArgumentTypeName,
                     InternalCallbackName = $"_internal_{pythonParameterName}_handler"
                 };
             }

@@ -1,4 +1,8 @@
 QUESTPDF_CDEF += r"""
+    {{ for typedef in callback_typedefs }}
+    {{ typedef }}
+    {{ end }}
+
     {{ for header in headers }}
     {{ header }}
     {{ end }}
