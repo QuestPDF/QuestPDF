@@ -16,4 +16,6 @@ internal class DescriptorSourceGenerator(string targetNamespace) : ObjectSourceG
             .FilterSupportedMethods()
             .Where(m => m.DeclaredAccessibility == Accessibility.Public);
     }
+
+    protected override string GetTargetClassName() => targetNamespace.Split('.').Last();
 }

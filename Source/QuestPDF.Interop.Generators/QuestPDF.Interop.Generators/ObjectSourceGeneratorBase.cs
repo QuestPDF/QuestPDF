@@ -9,6 +9,7 @@ namespace QuestPDF.Interop.Generators;
 internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 {
     protected abstract IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation);
+    protected abstract string GetTargetClassName();
     
     public string GenerateCSharpCode(Compilation compilation)
     {
@@ -16,6 +17,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             .LoadTemplate("NativeInteropMethod.cs")
             .Render(new
             {
+                ClassName = GetTargetClassName(),
                 Methods = GetTargetMethods(compilation).Select(MapMethod)
             });
         
@@ -103,7 +105,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             .Select(x => x.GetCHeaderDefinition());
 
         return ScribanTemplateLoader
-            .LoadTemplate("Container.py")
+            .LoadTemplate("Object.py")
             .Render(new
             {
                 Headers = headers,

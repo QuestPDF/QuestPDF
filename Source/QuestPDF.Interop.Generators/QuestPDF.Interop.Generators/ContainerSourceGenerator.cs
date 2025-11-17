@@ -22,4 +22,6 @@ internal class ContainerSourceGenerator : ObjectSourceGeneratorBase
             .Where(x => x.DeclaredAccessibility == Accessibility.Public && x.IsStatic && x.IsExtensionMethod)
             .Where(x => x.Parameters.First().Type.Name.Contains("IContainer"));
     }
+
+    protected override string GetTargetClassName() => "Container";
 }

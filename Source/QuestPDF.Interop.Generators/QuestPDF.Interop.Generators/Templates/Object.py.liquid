@@ -4,18 +4,7 @@ QUESTPDF_CDEF += r"""
     {{ end }}
 """
 
-class Container:
-    def __init__(self, container_pointer):
-        self.container_pointer = container_pointer
-        
-    def align_left(self) -> Self:
-        result = questpdf.lib.questpdf_container_align_left(self.container_pointer)
-        return Container(result)
-
-    def background(self) -> Self:
-        result = questpdf.lib.questpdf_container_background(self.container_pointer, 0xAACCEE)
-        return Container(result)
-        
+class {{ class_name }}:
 {{ for method in methods }}
     {{ if method.deprecation_message }}@deprecated("{{ method.deprecation_message }}"){{ end }}
     def {{ method.python_method_name }}({{ method.python_method_parameters | array.join ", " }}) -> 'Container':
