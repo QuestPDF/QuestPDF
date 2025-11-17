@@ -218,9 +218,9 @@ internal static class Helpers
         };
     }
     
-    public static string GetCallbackTypedefName(this ITypeSymbol typeSymbol)
+    public static string GetCallbackTypedefName(this ITypeSymbol typeSymbol, IMethodSymbol containingMethod)
     {
-        var prefix = typeSymbol.ToDisplayString().GetDeterministicHash();
+        var prefix = containingMethod.ToDisplayString().GetDeterministicHash();
         
         if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
         {
@@ -257,9 +257,9 @@ internal static class Helpers
         return "unknown_callback";
     }
 
-    public static string GetCallbackTypedefDefinition(this ITypeSymbol typeSymbol)
+    public static string GetCallbackTypedefDefinition(this ITypeSymbol typeSymbol, IMethodSymbol containingMethod)
     {
-        var typedefName = typeSymbol.GetCallbackTypedefName();
+        var typedefName = typeSymbol.GetCallbackTypedefName(containingMethod);
 
         if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
         {
@@ -288,12 +288,23 @@ internal static class Helpers
 
     public static IEnumerable<(string TypedefName, string TypedefDefinition)> GetCallbackTypedefs(this IEnumerable<IMethodSymbol> methods)
     {
-        var callbackTypes = methods
-            .SelectMany(m => m.Parameters)
-            .Where(p => p.Type.IsAction() || p.Type.IsFunc())
-            .Select(p => p.Type);
+        foreach (var methodSymbol in methods)
+        {
+            var results = methodSymbol.Parameters
+                .Where(p => p.Type.IsAction() || p.Type.IsFunc())
+                .Select(p => p.Type)
+                .Select(p => (p.GetCallbackTypedefName(methodSymbol), p.GetCallbackTypedefDefinition(methodSymbol)));
 
-        return callbackTypes.Select(t => (t.GetCallbackTypedefName(), t.GetCallbackTypedefDefinition()));
+            foreach (var valueTuple in results)
+                yield return valueTuple;
+        }
+        
+        // var callbackTypes = methods
+        //     .SelectMany(m => m.Parameters)
+        //     .Where(p => p.Type.IsAction() || p.Type.IsFunc())
+        //     .Select(p => p.Type);
+        //
+        // return callbackTypes.Select(t => (t.GetCallbackTypedefName(), t.GetCallbackTypedefDefinition()));
     }
 
     public static string GetCHeaderDefinition(this IMethodSymbol methodSymbol)
@@ -307,7 +318,7 @@ internal static class Helpers
             {
                 // Use typedef name for callbacks instead of inline function pointer
                 if (x.Type.IsAction() || x.Type.IsFunc())
-                    return $"{x.Type.GetCallbackTypedefName()} {x.Name}";
+                    return $"{x.Type.GetCallbackTypedefName(methodSymbol)} {x.Name}";
 
                 return $"{GetNativeParameterType(x.Type)} {x.Name}";
             });
