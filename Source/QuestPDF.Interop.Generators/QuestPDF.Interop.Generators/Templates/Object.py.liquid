@@ -9,6 +9,9 @@ QUESTPDF_CDEF += r"""
 """
 
 class {{ class_name }}:
+    def __init__(self, target_pointer):
+        self.target_pointer = target_pointer
+
 {{ for method in methods }}
     {{ if method.deprecation_message }}@deprecated("{{ method.deprecation_message }}"){{ end }}
     def {{ method.python_method_name }}({{ method.python_method_parameters | array.join ", " }}) -> 'Container':

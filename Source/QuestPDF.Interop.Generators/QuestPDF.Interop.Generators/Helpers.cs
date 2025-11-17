@@ -95,6 +95,9 @@ internal static class Helpers
         if (typeSymbol.TypeKind == TypeKind.Enum)
             return "int32_t";
         
+        if (typeName.Contains("QuestPDF.Infrastructure.Color"))
+            return "uint32_t";
+        
         if (typeSymbol.TypeKind == TypeKind.Class)
             return "void*";
         
@@ -217,18 +220,20 @@ internal static class Helpers
     
     public static string GetCallbackTypedefName(this ITypeSymbol typeSymbol)
     {
+        var prefix = typeSymbol.ToDisplayString().GetDeterministicHash();
+        
         if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
         {
             var argumentTypes = actionSymbol.TypeArguments;
             if (argumentTypes.Length == 0)
-                return "voidCallback";
+                return $"voidCallback_{prefix}";
 
             var argumentNames = argumentTypes.Select(x =>
             {
                 var typeName = x.TypeKind == TypeKind.Interface ? x.Name.TrimStart('I') : x.Name;
                 return typeName.ToSnakeCase();
             });
-            return $"{string.Join("_", argumentNames)}_callback";
+            return $"{string.Join("_", argumentNames)}_callback_{prefix}";
         }
 
         if (typeSymbol.IsFunc() && typeSymbol is INamedTypeSymbol funcSymbol)
@@ -246,7 +251,7 @@ internal static class Helpers
                 ? returnType.Name.TrimStart('I').ToSnakeCase()
                 : returnType.Name.ToSnakeCase();
 
-            return $"{string.Join("_", argumentNames)}_{returnTypeName}_func";
+            return $"{string.Join("_", argumentNames)}_{returnTypeName}_func_{prefix}";
         }
 
         return "unknown_callback";
@@ -286,9 +291,7 @@ internal static class Helpers
         var callbackTypes = methods
             .SelectMany(m => m.Parameters)
             .Where(p => p.Type.IsAction() || p.Type.IsFunc())
-            .Select(p => p.Type)
-            .GroupBy(t => t.GetCallbackTypedefName())
-            .Select(g => g.First());
+            .Select(p => p.Type);
 
         return callbackTypes.Select(t => (t.GetCallbackTypedefName(), t.GetCallbackTypedefDefinition()));
     }

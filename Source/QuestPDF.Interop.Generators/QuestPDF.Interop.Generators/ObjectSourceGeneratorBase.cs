@@ -123,10 +123,10 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             return new
             {
                 PythonMethodName = method.Name.ToSnakeCase(),
-                PythonMethodParameters = method.Parameters.Skip(1).Select(GetMethodParameter).Prepend("self"),
+                PythonMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetMethodParameter).Prepend("self"),
                 
                 InteropMethodName = method.GetNativeMethodName(),
-                InteropMethodParameters = method.Parameters.Skip(1).Select(GetInteropMethodParameter).Prepend("self.container_pointer"),
+                InteropMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetInteropMethodParameter).Prepend("self.target_pointer"),
                 PythonMethodReturnType = "not_used",
                 
                 DeprecationMessage = method.TryGetDeprecationMessage(),
