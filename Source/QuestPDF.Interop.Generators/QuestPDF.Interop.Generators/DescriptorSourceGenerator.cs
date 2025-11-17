@@ -26,6 +26,7 @@ internal class DescriptorSourceGenerator(string targetNamespace) : IInteropSourc
             .GetTypeByMetadataName(targetNamespace)
             .GetMembers()
             .OfType<IMethodSymbol>()
+            .FilterSupportedMethods()
             .Where(m => m.DeclaredAccessibility == Accessibility.Public);
     }
     

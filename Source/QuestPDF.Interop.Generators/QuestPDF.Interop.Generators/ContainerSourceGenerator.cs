@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
@@ -69,6 +70,11 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
                 var genericTypesString = string.Join(", ", genericTypes);
                 return $"delegate* unmanaged[Cdecl]<{genericTypesString}> {parameterSymbol.Name}";
             }
+
+            if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
+            {
+                return $"IntPtr {parameterSymbol.Name}";
+            }
         
             return $"{parameterSymbol.Type.GetInteropMethodParameterType()} {parameterSymbol.Name}";
         }
@@ -88,6 +94,11 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
             {
                 var resultType = ((INamedTypeSymbol)parameterSymbol.Type).TypeArguments.Last();
                 return $"x => {{ var boxed = BoxHandle(x); var result = {parameterSymbol.Name}(boxed); FreeHandle(boxed); return UnboxHandle<{resultType.Name}>(result); }}";
+            }
+            
+            if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
+            {
+                return $"Marshal.PtrToStringAuto({parameterSymbol.Name})";
             }
 
             return parameterSymbol.Name;
@@ -146,7 +157,7 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
                 }
                 else
                 {
-                    result += $" = {parameterSymbol.ExplicitDefaultValue}";
+                    result += $" = {parameterSymbol.ExplicitDefaultValue ?? "None"}";
                 }
             }
             

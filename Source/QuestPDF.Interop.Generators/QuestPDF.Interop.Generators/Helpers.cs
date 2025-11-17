@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -154,11 +155,11 @@ internal static class Helpers
         if (typeSymbol.TypeKind == TypeKind.Enum)
             return typeSymbol.Name;
 
-        if (typeSymbol.TypeKind == TypeKind.Class)
-            return typeSymbol.Name;
+        if (typeSymbol.TypeKind == TypeKind.Class && typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.SpecialType != SpecialType.System_Object)
+            return $"'{typeSymbol.Name}'";
 
         if (typeSymbol.TypeKind == TypeKind.Interface)
-            return typeSymbol.Name.TrimStart('I');
+            return $"'{typeSymbol.Name.TrimStart('I')}'";
 
         return typeName switch
         {
@@ -256,7 +257,27 @@ internal static class Helpers
         return methodSymbols
             .Where(x => !x.IsGenericMethod)
             .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Array))
-            .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Delegate))
-            .Where(x => !x.Parameters.Any(p => p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::System.Predicate")));
+            // .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Delegate))
+            .Apply(Remove("global::System.Predicate"))
+            .Apply(Remove("BoxShadowStyle"))
+            .Apply(Remove("TextStyle"))
+            .Apply(Remove("IDynamic"))
+            .Apply(Remove("Image"))
+            .Apply(Remove("SvgImage"))
+            .Apply(Remove("Stream"))
+            //.Where(x => !x.Parameters.Skip(1).Any(p => p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("IContainer")))
+            .Where(x => !x.Parameters.Any(p => p.Type.SpecialType == SpecialType.System_Array))
+            .Where(x => !x.Parameters.Any(p => p.GetAttributes().Any()));
+
+        Func<IEnumerable<IMethodSymbol>, IEnumerable<IMethodSymbol>> Remove(string phrase)
+        {
+            return x => x.Where(x => !x.Parameters.Any(p => p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains(phrase)));
+        }
+    }
+    
+    // IEnumearable apply
+    public static IEnumerable<IMethodSymbol> Apply(this IEnumerable<IMethodSymbol> methodSymbols, Func<IEnumerable<IMethodSymbol>, IEnumerable<IMethodSymbol>> filter)
+    {
+        return filter(methodSymbols);
     }
 }
