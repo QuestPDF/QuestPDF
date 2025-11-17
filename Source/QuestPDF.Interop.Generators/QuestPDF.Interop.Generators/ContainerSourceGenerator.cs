@@ -14,6 +14,7 @@ internal class ContainerSourceGenerator : ObjectSourceGeneratorBase
             .GlobalNamespace
             .GetNamespaceMembers()
             .Where(x => x.Name.StartsWith("QuestPDF"))
+            .Where(x => !x.Name.Contains("DynamicComponentExtensions"))
             .SelectMany(x => x.GetMembersRecursively())
             .FilterSupportedTypes()
             .SelectMany(x => x.GetMembers())

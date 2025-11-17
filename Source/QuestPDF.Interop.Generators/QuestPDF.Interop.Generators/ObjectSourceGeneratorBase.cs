@@ -17,7 +17,6 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             .LoadTemplate("NativeInteropMethod.cs")
             .Render(new
             {
-                ClassName = GetTargetClassName(),
                 Methods = GetTargetMethods(compilation).Select(MapMethod)
             });
         
@@ -38,7 +37,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 TargetObjectParameterName = method.IsExtensionMethod ? method.Parameters.First().Name : "target",
                 TargetMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetTargetMethodParameter),
                 ReturnType = method.ReturnType.GetInteropResultType(),
-                ShouldFreeTarget = !method.IsExtensionMethod
+                ShouldFreeTarget = method.IsExtensionMethod
             };
         }
 
@@ -109,6 +108,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             .Render(new
             {
                 Headers = headers,
+                ClassName = GetTargetClassName(),
                 Methods = GetTargetMethods(compilation).Select(MapMethod)
             });
         
@@ -151,7 +151,12 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 }
                 else
                 {
-                    result += $" = {parameterSymbol.ExplicitDefaultValue ?? "None"}";
+                    var defaultValue = parameterSymbol.ExplicitDefaultValue;
+                    
+                    if (defaultValue is string)
+                        defaultValue = $"'{defaultValue}'";
+                    
+                    result += $" = {defaultValue ?? "None"}";
                 }
             }
             
@@ -161,10 +166,13 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         static string GetInteropMethodParameter(IParameterSymbol parameterSymbol)
         {
             var parameterName = parameterSymbol.Name.ToSnakeCase();
-            
+
             if (parameterSymbol.Type.TypeKind == TypeKind.Enum)
                 return $"{parameterName}.value";
-            
+
+            if (parameterSymbol.Type.IsAction())
+                return $"_internal_{parameterName}_handler";
+
             return parameterName;
         }
 
@@ -172,7 +180,23 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         {
             foreach (var parameterSymbol in methodSymbol.Parameters.Where(x => x.Type.IsAction()))
             {
-                yield break;
+                var actionType = (INamedTypeSymbol)parameterSymbol.Type;
+                var callbackArgument = actionType.TypeArguments.FirstOrDefault();
+
+                if (callbackArgument == null)
+                    continue;
+
+                var pythonParameterName = parameterSymbol.Name.ToSnakeCase();
+                var callbackArgumentTypeName = callbackArgument.TypeKind == TypeKind.Interface
+                    ? callbackArgument.Name.TrimStart('I')
+                    : callbackArgument.Name;
+
+                yield return new
+                {
+                    PythonParameterName = pythonParameterName,
+                    CallbackArgumentTypeName = $"'{callbackArgumentTypeName}'",
+                    InternalCallbackName = $"_internal_{pythonParameterName}_handler"
+                };
             }
         }
     }

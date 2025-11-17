@@ -155,11 +155,44 @@ internal static class Helpers
         if (typeSymbol.TypeKind == TypeKind.Enum)
             return typeSymbol.Name;
 
+        if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
+        {
+            var callbackArgument = actionSymbol.TypeArguments.FirstOrDefault();
+            if (callbackArgument != null)
+            {
+                var argumentTypeName = callbackArgument.TypeKind == TypeKind.Interface
+                    ? callbackArgument.Name.TrimStart('I')
+                    : callbackArgument.Name;
+                return $"Callable[['{argumentTypeName}'], None]";
+            }
+            return "Callable[[], None]";
+        }
+
+        if (typeSymbol.IsFunc() && typeSymbol is INamedTypeSymbol funcSymbol)
+        {
+            var arguments = funcSymbol.TypeArguments.Take(funcSymbol.TypeArguments.Length - 1);
+            var returnType = funcSymbol.TypeArguments.Last();
+
+            var argumentTypes = string.Join(", ", arguments.Select(arg =>
+            {
+                var argTypeName = arg.TypeKind == TypeKind.Interface
+                    ? arg.Name.TrimStart('I')
+                    : arg.Name;
+                return argTypeName;
+            }));
+
+            var returnTypeName = returnType.TypeKind == TypeKind.Interface
+                ? returnType.Name.TrimStart('I')
+                : returnType.Name;
+
+            return $"Callable[['{argumentTypes}'], '{returnTypeName}']";
+        }
+
         if (typeSymbol.TypeKind == TypeKind.Class && typeSymbol.SpecialType != SpecialType.System_String && typeSymbol.SpecialType != SpecialType.System_Object)
-            return $"'{typeSymbol.Name}'";
+            return typeSymbol.Name;
 
         if (typeSymbol.TypeKind == TypeKind.Interface)
-            return $"'{typeSymbol.Name.TrimStart('I')}'";
+            return typeSymbol.Name.TrimStart('I');
 
         return typeName switch
         {
@@ -257,7 +290,7 @@ internal static class Helpers
         return methodSymbols
             .Where(x => !x.IsGenericMethod)
             .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Array))
-            // .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Delegate))
+            .Where(x => !x.Parameters.Any(p => !p.Type.IsAction() && !p.Type.IsFunc() && p.Type.TypeKind == TypeKind.Delegate))
             .Apply(Remove("global::System.Predicate"))
             .Apply(Remove("BoxShadowStyle"))
             .Apply(Remove("TextStyle"))
@@ -265,7 +298,9 @@ internal static class Helpers
             .Apply(Remove("Image"))
             .Apply(Remove("SvgImage"))
             .Apply(Remove("Stream"))
-            //.Where(x => !x.Parameters.Skip(1).Any(p => p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("IContainer")))
+            .Apply(Remove("Size"))
+            .Apply(Remove("IDynamicElement"))
+            .Where(x => !(x.Parameters.Skip(1).FirstOrDefault()?.Type?.Name?.Contains("IContainer") ?? false))
             .Where(x => !x.Parameters.Any(p => p.Type.SpecialType == SpecialType.System_Array))
             .Where(x => !x.Parameters.Any(p => p.GetAttributes().Any()));
 

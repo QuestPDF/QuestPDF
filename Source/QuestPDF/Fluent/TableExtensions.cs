@@ -79,6 +79,11 @@ namespace QuestPDF.Fluent
         private Table ContentTable { get; } = new();
         private Table FooterTable { get; } = new();
 
+        internal TableDescriptor()
+        {
+            
+        }
+        
         /// <summary>
         /// Specifies the order and size of the table columns.
         /// <a href="https://www.questpdf.com/api-reference/table/basics.html#columns-definition">Learn more</a>

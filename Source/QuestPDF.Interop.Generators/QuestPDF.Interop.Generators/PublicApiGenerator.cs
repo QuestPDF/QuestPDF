@@ -17,6 +17,16 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
             {
                 new EnumSourceGenerator(),
                 new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.LayersDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.RowDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.GridDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.MultiColumnDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.TableDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.TableCellDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.TableColumnsDefinitionDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.TextDescriptor"),
                 new ContainerSourceGenerator()
             };
             
