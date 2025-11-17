@@ -16,15 +16,8 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
             var generators = new List<IInteropSourceGenerator>
             {
                 new EnumSourceGenerator(),
-                
-                new ContainerSourceGenerator([
-                    // "QuestPDF.Fluent.PaddingExtensions",
-                    // "QuestPDF.Fluent.ExtendExtensions",
-                    // "QuestPDF.Fluent.ShrinkExtensions",
-                    // "QuestPDF.Fluent.TranslateExtensions",
-                    "QuestPDF.Fluent.ColumnExtensions",
-                ]),
-                new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor")
+                new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
+                new ContainerSourceGenerator()
             };
             
             GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(compilation));
@@ -56,7 +49,7 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
         }
         catch (Exception ex)
         {
-            return $"// Generation error: {ex.Message}";
+            return $"// Generation error:\n\n{ex.Message}\n\n{ex.StackTrace}";
         }
     }
 }
