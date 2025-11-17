@@ -19,6 +19,15 @@ class Container:
 {{ for method in methods }}
     {{ if method.deprecation_message }}@deprecated("{{ method.deprecation_message }}"){{ end }}
     def {{ method.python_method_name }}({{ method.python_method_parameters | array.join ", " }}) -> 'Container':
+        
+{{ for callback in method.callbacks }}
+        {{ callback }}
+        @questpdf_ffi.callback("void(void*)")
+        def _internal_container_handler(document_container_pointer):
+            document_container = DocumentContainer(document_container_pointer)
+            configurator(document_container)
+{{ end }}            
+    
         result = questpdf.lib.{{ method.interop_method_name }}({{ method.interop_method_parameters | array.join ", " }})
         return Container(result)
 {{ end }}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -8,11 +9,17 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
 {
     private IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {
-        return TargetNamespaces
-            .Select(compilation.GetTypeByMetadataName)
+        return compilation
+            .GlobalNamespace
+            .GetNamespaceMembers()
+            .Where(x => x.Name.StartsWith("QuestPDF"))
+            .SelectMany(x => x.GetMembersRecursively())
+            .FilterSupportedTypes()
             .SelectMany(x => x.GetMembers())
             .OfType<IMethodSymbol>()
-            .Where(m => m.DeclaredAccessibility == Accessibility.Public && m.IsStatic && m.IsExtensionMethod);
+            .FilterSupportedMethods()
+            .Where(x => x.DeclaredAccessibility == Accessibility.Public && x.IsStatic && x.IsExtensionMethod)
+            .Where(x => x.Parameters.First().Type.Name.Contains("IContainer"));
     }
     
     public string GenerateCSharpCode(Compilation compilation)
@@ -42,6 +49,27 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
 
         static string GetMethodParameter(IParameterSymbol parameterSymbol)
         {
+            if (parameterSymbol.Type.IsAction() && parameterSymbol.Type is INamedTypeSymbol actionSymbol)
+            {
+                var genericTypes = actionSymbol
+                    .TypeArguments
+                    .Select(x => x.GetInteropMethodParameterType())
+                    .Append("void");
+                
+                var genericTypesString = string.Join(", ", genericTypes);
+                return $"delegate* unmanaged[Cdecl]<{genericTypesString}> {parameterSymbol.Name}";
+            }
+            
+            if (parameterSymbol.Type.IsFunc() && parameterSymbol.Type is INamedTypeSymbol funcSymbol)
+            {
+                var genericTypes = funcSymbol
+                    .TypeArguments
+                    .Select(x => x.GetInteropMethodParameterType());
+                
+                var genericTypesString = string.Join(", ", genericTypes);
+                return $"delegate* unmanaged[Cdecl]<{genericTypesString}> {parameterSymbol.Name}";
+            }
+        
             return $"{parameterSymbol.Type.GetInteropMethodParameterType()} {parameterSymbol.Name}";
         }
         
@@ -52,6 +80,15 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
             
             if (parameterSymbol.Type.Name == "QuestPDF.Infrastructure.Color")
                 return $"(QuestPDF.Infrastructure.Color){parameterSymbol.Name}";
+            
+            if (parameterSymbol.Type.IsAction())
+                return $"x => {{ var boxed = BoxHandle(x); {parameterSymbol.Name}(boxed); FreeHandle(boxed); }}";
+
+            if (parameterSymbol.Type.IsFunc())
+            {
+                var resultType = ((INamedTypeSymbol)parameterSymbol.Type).TypeArguments.Last();
+                return $"x => {{ var boxed = BoxHandle(x); var result = {parameterSymbol.Name}(boxed); FreeHandle(boxed); return UnboxHandle<{resultType.Name}>(result); }}";
+            }
 
             return parameterSymbol.Name;
         }
@@ -81,7 +118,9 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
                 InteropMethodParameters = method.Parameters.Skip(1).Select(GetInteropMethodParameter).Prepend("self.container_pointer"),
                 PythonMethodReturnType = "not_used",
                 
-                DeprecationMessage = method.TryGetDeprecationMessage()
+                DeprecationMessage = method.TryGetDeprecationMessage(),
+                
+                Callbacks = GetCallbacks(method)
             };
         }
 
@@ -122,6 +161,14 @@ internal class ContainerSourceGenerator(IEnumerable<string> TargetNamespaces) : 
                 return $"{parameterName}.value";
             
             return parameterName;
+        }
+
+        static IEnumerable<object> GetCallbacks(IMethodSymbol methodSymbol)
+        {
+            foreach (var parameterSymbol in methodSymbol.Parameters.Where(x => x.Type.IsAction()))
+            {
+                yield break;
+            }
         }
     }
 }

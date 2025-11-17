@@ -55,17 +55,7 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
             .GlobalNamespace
             .GetNamespaceMembers()
             .Where(x => x.Name.StartsWith("QuestPDF"))
-            .SelectMany(GetMembersRecursively)
+            .SelectMany(x => x.GetMembersRecursively())
             .Where(x => x.TypeKind == TypeKind.Enum && x.DeclaredAccessibility == Accessibility.Public);
-    }
-
-    private static IEnumerable<INamedTypeSymbol> GetMembersRecursively(INamespaceSymbol namespaceSymbol)
-    {
-        foreach (var typeSymbol in namespaceSymbol.GetTypeMembers())
-            yield return typeSymbol;
-
-        foreach (var nestedNamespace in namespaceSymbol.GetNamespaceMembers())
-            foreach (var enumModel in GetMembersRecursively(nestedNamespace))
-                yield return enumModel;
     }
 }

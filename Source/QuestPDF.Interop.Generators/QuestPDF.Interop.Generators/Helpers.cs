@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 
@@ -28,9 +30,18 @@ internal static class Helpers
             : methodSymbol.ContainingType;
 
         var isInterface = targetType.TypeKind == TypeKind.Interface;
-        var targetTypeName = isInterface ? targetType.Name.TrimStart('I') : targetType.Name; 
+        var targetTypeName = isInterface ? targetType.Name.TrimStart('I') : targetType.Name;
+        var hash = methodSymbol.ToDisplayString().GetDeterministicHash();
         
-        return $"questpdf__{ToSnakeCase(targetTypeName)}__{ToSnakeCase(methodSymbol.Name)}";
+        return $"questpdf__{ToSnakeCase(targetTypeName)}__{ToSnakeCase(methodSymbol.Name)}__{hash}";
+    }
+    
+    public static string GetDeterministicHash(this string input)
+    {
+        using var sha256 = SHA256.Create();
+        var bytes = System.Text.Encoding.UTF8.GetBytes(input);
+        var hashBytes = sha256.ComputeHash(bytes);
+        return string.Concat(hashBytes.Take(4).Select(b => b.ToString("x2")));
     }
     
     public static string GetManagedMethodName(this IMethodSymbol methodSymbol)
@@ -41,8 +52,9 @@ internal static class Helpers
 
         var isInterface = targetType.TypeKind == TypeKind.Interface;
         var targetTypeName = isInterface ? targetType.Name.TrimStart('I') : targetType.Name; 
+        var hash = methodSymbol.ToDisplayString().GetDeterministicHash();
         
-        return $"{targetTypeName}_{methodSymbol.Name}";
+        return $"{targetTypeName}_{methodSymbol.Name}_{hash}";
     }
     
     public static string GetInteropResultType(this ITypeSymbol typeSymbol)
@@ -87,6 +99,27 @@ internal static class Helpers
         
         if (typeSymbol.TypeKind == TypeKind.Interface)
             return "void*";
+        
+        if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
+        {
+            var genericTypes = actionSymbol
+                .TypeArguments
+                .Select(x => x.GetNativeParameterType())
+                .Append("void");
+            
+            var genericTypesString = string.Join(", ", genericTypes);
+            return $"delegate* unmanaged[Cdecl]<{genericTypesString}>";
+        }
+        
+        if (typeSymbol.IsFunc() && typeSymbol is INamedTypeSymbol funcSymbol)
+        {
+            var genericTypes = funcSymbol
+                .TypeArguments
+                .Select(x => x.GetNativeParameterType());
+            
+            var genericTypesString = string.Join(", ", genericTypes);
+            return $"delegate* unmanaged[Cdecl]<{genericTypesString}>";
+        }
         
         return typeName switch
         {
@@ -172,5 +205,58 @@ internal static class Helpers
             .FirstOrDefault(x => x.AttributeClass?.Name == "ObsoleteAttribute")
             ?.ConstructorArguments
             .FirstOrDefault().Value as string;
+    }
+    
+    public static bool IsAction(this ITypeSymbol typeSymbol)
+    {
+        return typeSymbol
+            .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+            .StartsWith("global::System.Action");
+    }
+    
+    public static bool IsFunc(this ITypeSymbol typeSymbol)
+    {
+        return typeSymbol
+            .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+            .StartsWith("global::System.Func");
+    }
+    
+    public static bool HasSimpleSingleActionCallback(this IMethodSymbol methodSymbol)
+    {
+        var parameters = methodSymbol
+            .Parameters
+            .AsEnumerable();
+
+        if (methodSymbol.IsExtensionMethod)
+            parameters = parameters.Skip(1);
+
+        if (parameters.Count() > 1)
+            return false;
+
+        return parameters.Single().Type.IsAction();
+    }
+    
+    public static IEnumerable<INamedTypeSymbol> GetMembersRecursively(this INamespaceSymbol namespaceSymbol)
+    {
+        foreach (var typeSymbol in namespaceSymbol.GetTypeMembers())
+            yield return typeSymbol;
+
+        foreach (var nestedNamespace in namespaceSymbol.GetNamespaceMembers())
+        foreach (var nestedMember in GetMembersRecursively(nestedNamespace))
+            yield return nestedMember;
+    }
+    
+    public static IEnumerable<INamedTypeSymbol> FilterSupportedTypes(this IEnumerable<INamedTypeSymbol> typeSymbols)
+    {
+        return typeSymbols.Where(x => !x.IsGenericType);
+    }
+    
+    public static IEnumerable<IMethodSymbol> FilterSupportedMethods(this IEnumerable<IMethodSymbol> methodSymbols)
+    {
+        return methodSymbols
+            .Where(x => !x.IsGenericMethod)
+            .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Array))
+            .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Delegate))
+            .Where(x => !x.Parameters.Any(p => p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).StartsWith("global::System.Predicate")));
     }
 }

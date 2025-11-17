@@ -18,22 +18,22 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
                 new EnumSourceGenerator(),
                 
                 new ContainerSourceGenerator([
-                    "QuestPDF.Fluent.PaddingExtensions",
-                    "QuestPDF.Fluent.ExtendExtensions",
-                    "QuestPDF.Fluent.ShrinkExtensions",
-                    "QuestPDF.Fluent.TranslateExtensions"
+                    // "QuestPDF.Fluent.PaddingExtensions",
+                    // "QuestPDF.Fluent.ExtendExtensions",
+                    // "QuestPDF.Fluent.ShrinkExtensions",
+                    // "QuestPDF.Fluent.TranslateExtensions",
+                    "QuestPDF.Fluent.ColumnExtensions",
                 ]),
-                // new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
-                // new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor")
             };
             
             GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(compilation));
-            GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
+            //GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
             
             void GenerateCode(string sourceFileName, string templateName, Func<IInteropSourceGenerator, string> selector)
             {
                 var codeFragments = generators
-                    .Select(x => Try(() => x.GenerateCSharpCode(compilation)));
+                    .Select(x => Try(() => selector(x)));
             
                 var csharpCode = ScribanTemplateLoader
                     .LoadTemplate(templateName)
