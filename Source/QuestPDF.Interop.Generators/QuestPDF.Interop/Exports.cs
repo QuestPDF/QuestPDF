@@ -40,7 +40,11 @@ internal unsafe partial class Exports
         if (gch.IsAllocated) gch.Free();
     }
 
-    
+    [ModuleInitializer]
+    internal static void Init()
+    {
+        // no-op; the presence of this method ensures the type is treated as reachable
+    }
     
     
     
@@ -60,8 +64,14 @@ internal unsafe partial class Exports
     
     
     
-    
-    
+    [UnmanagedCallersOnly(EntryPoint = "questpdf__text_descriptor__span__CCCCCCCC", CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static IntPtr TextDescriptor_Span_CCCCCCC(IntPtr target, IntPtr text)
+    {
+        var containerObject = UnboxHandle<TextDescriptor>(target);
+        
+        var result = containerObject.Span(Marshal.PtrToStringUni(text));
+        return BoxHandle(result);
+    }
     
     
     

@@ -91,7 +91,8 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             
             if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
             {
-                return $"Marshal.PtrToStringAuto({parameterSymbol.Name})";
+                return $"\"aaa\"";
+                return $"Marshal.PtrToStringUni({parameterSymbol.Name})";
             }
 
             return parameterSymbol.Name;
@@ -175,6 +176,9 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 
             if (parameterSymbol.Type.TypeKind == TypeKind.Enum)
                 return $"{parameterName}.value";
+            
+            if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
+                return $"questpdf_ffi.new(\"char[]\", {parameterName}.encode(\"utf-8\"))";
 
             if (parameterSymbol.Type.IsAction())
                 return $"_internal_{parameterName}_handler";

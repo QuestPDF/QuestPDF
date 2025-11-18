@@ -13,6 +13,8 @@
         <IncludeBuildOutput>false</IncludeBuildOutput>
 
         <PackageScribanIncludeSource>true</PackageScribanIncludeSource>
+
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
     </PropertyGroup>
 
     <ItemGroup>

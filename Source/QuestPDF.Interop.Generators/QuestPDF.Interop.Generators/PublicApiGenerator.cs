@@ -7,12 +7,13 @@ using Microsoft.CodeAnalysis;
 namespace QuestPDF.Interop.Generators;
 
 [Generator]
-public sealed class PublicApiGenerator : IIncrementalGenerator
+public sealed class PublicApiGenerator : ISourceGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context)
+    public void Initialize(GeneratorInitializationContext context) { }
+    
+    public void Execute(GeneratorExecutionContext context)
     {
-        context.RegisterSourceOutput(context.CompilationProvider, static (spc, compilation) =>
-        {
+
             var generators = new List<IInteropSourceGenerator>
             {
                 new EnumSourceGenerator(),
@@ -27,11 +28,12 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
                 new DescriptorSourceGenerator("QuestPDF.Fluent.TableCellDescriptor"),
                 new DescriptorSourceGenerator("QuestPDF.Fluent.TableColumnsDefinitionDescriptor"),
                 new DescriptorSourceGenerator("QuestPDF.Fluent.TextDescriptor"),
+                new DescriptorSourceGenerator("QuestPDF.Fluent.TextSpanDescriptor"),
                 new ContainerSourceGenerator()
             };
             
-            GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(compilation));
-            GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
+            GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(context.Compilation));
+            //GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
             
             void GenerateCode(string sourceFileName, string templateName, Func<IInteropSourceGenerator, string> selector)
             {
@@ -46,9 +48,8 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
                         Fragments = codeFragments
                     });
 
-                spc.AddSource(sourceFileName, csharpCode);
+                context.AddSource(sourceFileName, csharpCode);
             }
-        });
     }
     
     private static string Try(Func<string> action)

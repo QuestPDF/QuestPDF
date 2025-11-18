@@ -98,6 +98,9 @@ internal static class Helpers
         if (typeName.Contains("QuestPDF.Infrastructure.Color"))
             return "uint32_t";
         
+        if (typeSymbol.SpecialType == SpecialType.System_String)
+            return "const char*";
+        
         if (typeSymbol.TypeKind == TypeKind.Class)
             return "void*";
         

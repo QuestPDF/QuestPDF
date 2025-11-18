@@ -7,6 +7,12 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PublishAot>true</PublishAot>
         <IsAotCompatible>true</IsAotCompatible>
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <IsTrimmable>false</IsTrimmable>
+
+        <IlcGenerateMapFile>true</IlcGenerateMapFile>
+        <IlcGenerateCompleteTypeMetadata>true</IlcGenerateCompleteTypeMetadata>
+        <IlcVerbosity>5</IlcVerbosity>
     </PropertyGroup>
 
     <ItemGroup>

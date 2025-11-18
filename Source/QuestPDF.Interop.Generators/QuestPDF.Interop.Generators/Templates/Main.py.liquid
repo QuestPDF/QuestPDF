@@ -28,6 +28,8 @@ except ImportError:
         return decorator
     
 
+questpdf_ffi = FFI()
+
 QUESTPDF_CDEF = r"""
     typedef unsigned char      uint8_t;
     typedef signed char        int8_t;
@@ -171,7 +173,7 @@ class Document:
 
 
 
-questpdf_ffi = FFI()
+
 questpdf_ffi.cdef(QUESTPDF_CDEF)
 
 lib_path = os.path.abspath("./QuestPDF.Interop.dylib")
