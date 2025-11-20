@@ -1,4 +1,5 @@
-﻿using QuestPDF;
+﻿using System.Diagnostics;
+using QuestPDF;
 using QuestPDF.Companion;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -8,6 +9,52 @@ using QuestPDF.ReportSample.Layouts;
 
 Settings.License = LicenseType.Professional;
 
+Document
+    .Create(container =>
+    {
+        container.Page(page =>
+        {
+            page.Content()
+                .PaddingVertical(1, Unit.Centimetre)
+                .Column(x =>
+                {
+                    x.Spacing(20);
+
+                    x.Item().Text(Placeholders.LoremIpsum());
+                    x.Item().Hyperlink("questpdf.com").Image(Placeholders.Image(300, 200));
+                });
+        });
+    })
+    .GeneratePdf();
+
+var sw = Stopwatch.StartNew();
+
+foreach (var i in Enumerable.Range(0, 1000))
+{
+    Document
+        .Create(document =>
+        {
+            document.Page(page =>
+            {
+                page.Content().Padding(50).Column(column =>
+                {
+                    column.Spacing(10);
+                    
+                    foreach (var j in Enumerable.Range(0, 100))
+                    {
+                        column.Item().Text($"Hello world {j}!");
+                        column.Item().Width(100).Height(100).CornerRadius(j / 2).Background(Colors.Red.Medium);
+                    }
+                });
+            });
+        })
+        .GeneratePdf();
+}
+
+Console.WriteLine(sw.ElapsedMilliseconds);
+
+
+return;
 //await RunGenericException();
 //await RunLayoutError();
 await RunSimpleDocument();

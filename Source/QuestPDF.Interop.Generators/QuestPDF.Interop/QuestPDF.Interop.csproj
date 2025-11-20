@@ -6,18 +6,21 @@
         <RootNamespace>QuestPDF.Interop</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <PublishAot>true</PublishAot>
+        <NativeLib>Shared</NativeLib>
         <IsAotCompatible>true</IsAotCompatible>
+        <PublishTrimmed>true</PublishTrimmed>
+        
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
-        <IsTrimmable>false</IsTrimmable>
-
-        <IlcGenerateMapFile>true</IlcGenerateMapFile>
-        <IlcGenerateCompleteTypeMetadata>true</IlcGenerateCompleteTypeMetadata>
-        <IlcVerbosity>5</IlcVerbosity>
+        <EnableAotAnalyzer>true</EnableAotAnalyzer>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\QuestPDF\QuestPDF.csproj" />
         <ProjectReference Include="..\QuestPDF.Interop.Generators\QuestPDF.Interop.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <TrimmerRootDescriptor Include="ILLink.Descriptors.xml" />
     </ItemGroup>
 
 </Project>

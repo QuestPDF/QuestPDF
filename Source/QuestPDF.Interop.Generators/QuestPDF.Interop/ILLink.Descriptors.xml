@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+    <assembly fullname="QuestPDF.Native" preserve="all">
+        <type fullname="QuestPDF.Native.Exports" preserve="all" />
+    </assembly>
+</linker>

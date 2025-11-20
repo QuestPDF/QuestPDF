@@ -33,7 +33,7 @@ public sealed class PublicApiGenerator : ISourceGenerator
             };
             
             GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(context.Compilation));
-            //GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
+            //GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(context.Compilation));
             
             void GenerateCode(string sourceFileName, string templateName, Func<IInteropSourceGenerator, string> selector)
             {

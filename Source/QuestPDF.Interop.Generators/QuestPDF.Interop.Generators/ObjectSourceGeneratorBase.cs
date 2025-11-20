@@ -91,7 +91,6 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             
             if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
             {
-                return $"\"aaa\"";
                 return $"Marshal.PtrToStringUni({parameterSymbol.Name})";
             }
 
