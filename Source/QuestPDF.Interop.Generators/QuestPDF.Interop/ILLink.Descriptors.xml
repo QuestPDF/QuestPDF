@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <linker>
-    <assembly fullname="QuestPDF.Native" preserve="all">
-        <type fullname="QuestPDF.Native.Exports" preserve="all" />
+    <!-- Preserve all NativeAOT-exported interop methods.
+         The generated methods live in the QuestPDF.Interop assembly,
+         inside the partial type QuestPDF.Interop.Exports. -->
+    <assembly fullname="QuestPDF.Interop" preserve="all">
+        <type fullname="QuestPDF.Interop.Exports" preserve="all" />
     </assembly>
 </linker>
