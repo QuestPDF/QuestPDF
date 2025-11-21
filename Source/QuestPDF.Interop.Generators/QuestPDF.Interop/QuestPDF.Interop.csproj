@@ -19,6 +19,7 @@
 
         <IlcGenerateMapFile>true</IlcGenerateMapFile>
         <IlcGenerateCompleteTypeMetadata>true</IlcGenerateCompleteTypeMetadata>
+        <IlcExportUnmanagedEntrypoints>true</IlcExportUnmanagedEntrypoints>
         <IlcVerbosity>5</IlcVerbosity>
     </PropertyGroup>
 
