@@ -13,6 +13,13 @@
         
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         <EnableAotAnalyzer>true</EnableAotAnalyzer>
+
+        <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+        <IsTrimmable>false</IsTrimmable>
+
+        <IlcGenerateMapFile>true</IlcGenerateMapFile>
+        <IlcGenerateCompleteTypeMetadata>true</IlcGenerateCompleteTypeMetadata>
+        <IlcVerbosity>5</IlcVerbosity>
     </PropertyGroup>
 
     <ItemGroup>

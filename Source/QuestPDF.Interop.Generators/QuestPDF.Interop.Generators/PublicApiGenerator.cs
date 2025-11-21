@@ -7,11 +7,21 @@ using Microsoft.CodeAnalysis;
 namespace QuestPDF.Interop.Generators;
 
 [Generator]
-public sealed class PublicApiGenerator : ISourceGenerator
+public sealed class PublicApiGenerator : IIncrementalGenerator
 {
-    public void Initialize(GeneratorInitializationContext context) { }
+    public void Initialize(IncrementalGeneratorInitializationContext context)
+    {
+        // Create a provider that captures the compilation
+        var compilationProvider = context.CompilationProvider;
+        
+        // Register the source output
+        context.RegisterSourceOutput(compilationProvider, (sourceContext, compilation) =>
+        {
+            GenerateSource(sourceContext, compilation);
+        });
+    }
     
-    public void Execute(GeneratorExecutionContext context)
+    private static void GenerateSource(SourceProductionContext context, Compilation compilation)
     {
         var generators = new List<IInteropSourceGenerator>
         {
@@ -36,7 +46,7 @@ public sealed class PublicApiGenerator : ISourceGenerator
             new ContainerSourceGenerator()
         };
         
-        GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(context.Compilation));
+        GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(compilation));
         //GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
         
         void GenerateCode(string sourceFileName, string templateName, Func<IInteropSourceGenerator, string> selector)
