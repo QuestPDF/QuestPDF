@@ -9,7 +9,7 @@ namespace QuestPDF.Interop.Generators;
 internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 {
     protected abstract IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation);
-    protected abstract string GetTargetClassName();
+    protected abstract INamedTypeSymbol GetTargetType(Compilation compilation);
     
     public string GenerateCSharpCode(Compilation compilation)
     {
@@ -114,7 +114,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             {
                 CallbackTypedefs = callbackTypedefs,
                 Headers = headers,
-                ClassName = GetTargetClassName(),
+                ClassName = GetTargetType(compilation).Name.Split('.').Last(),
                 Methods = targetMethods.Select(MapMethod)
             });
         

@@ -417,4 +417,60 @@ internal static class Helpers
     {
         return filter(methodSymbols);
     }
+    
+    public static bool InheritsFromOrEquals(this ITypeSymbol type, ITypeSymbol baseType)
+    {
+        // Check for equality first (Roslyn requires SymbolEqualityComparer)
+        if (SymbolEqualityComparer.Default.Equals(type, baseType))
+        {
+            return true;
+        }
+
+        // Walk up the inheritance chain
+        var current = type.BaseType;
+        while (current != null)
+        {
+            if (SymbolEqualityComparer.Default.Equals(current, baseType))
+            {
+                return true;
+            }
+            current = current.BaseType;
+        }
+
+        // Note: If you need to check Interfaces, you must also check type.AllInterfaces
+        return type.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, baseType));
+    }
+    
+    public static bool IsExtensionFor(this IMethodSymbol method, ITypeSymbol targetType)
+    {
+        // 1. Basic check: Is it actually an extension method?
+        if (!method.IsExtensionMethod || method.Parameters.IsEmpty)
+        {
+            return false;
+        }
+
+        // 2. Get the type of the 'this' parameter (always the first one)
+        var thisParamType = method.Parameters[0].Type;
+
+        // 3. Handle Generic Parameters (e.g., public static void Foo<T>(this T item) where T : MyClass)
+        if (thisParamType is ITypeParameterSymbol typeParam)
+        {
+            // If the generic is unconstrained (extends Object), it technically extends *everything*.
+            // If you ONLY want methods specifically constrained to your class, return false here if constraints are empty.
+            if (!typeParam.ConstraintTypes.Any())
+            {
+                // Returns true because "this T" applies to "MyClass", 
+                // but change to false if you strictly want "where T : MyClass"
+                return true; 
+            }
+
+            // Check if any of the constraints imply the target type
+            return typeParam.ConstraintTypes.Any(constraint => targetType.InheritsFromOrEquals(constraint));
+        }
+
+        // 4. Handle Direct Types (e.g., public static void Foo(this MyClass item))
+        // We check if our TargetType inherits from (or is equal to) the parameter type.
+        // Note: Logic is reversed here. If method extends "BaseClass", "MyClass" is valid.
+        return targetType.InheritsFromOrEquals(thisParamType);
+    }
 }

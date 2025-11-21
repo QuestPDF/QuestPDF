@@ -24,5 +24,8 @@ internal class ContainerSourceGenerator : ObjectSourceGeneratorBase
             .Where(x => x.Parameters.First().Type.Name.Contains("IContainer"));
     }
 
-    protected override string GetTargetClassName() => "Container";
+    protected override INamedTypeSymbol GetTargetType(Compilation compilation)
+    {
+        return compilation.GetTypeByMetadataName("QuestPDF.Infrastructure.IContainer");
+    }
 }

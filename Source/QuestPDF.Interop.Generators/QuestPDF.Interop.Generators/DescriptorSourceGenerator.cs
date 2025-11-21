@@ -9,13 +9,35 @@ internal class DescriptorSourceGenerator(string targetNamespace) : ObjectSourceG
 {
     protected override IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {
-        return compilation
-            .GetTypeByMetadataName(targetNamespace)
+        var targetType = compilation
+            .GetTypeByMetadataName(targetNamespace);
+
+        var extensionMethods = compilation
+            .GlobalNamespace
+            .GetNamespaceMembers()
+            .Where(x => x.Name.StartsWith("QuestPDF"))
+            .SelectMany(x => x.GetMembersRecursively())
+            .FilterSupportedTypes()
+            .SelectMany(x => x.GetMembers())
+            .OfType<IMethodSymbol>()
+            .Where(x => x.DeclaredAccessibility == Accessibility.Public && x.IsStatic && x.IsExtensionMethod)
+            .ToList();
+        
+        var genericMethods = extensionMethods
+            .Where(m => m.IsExtensionFor(targetType))
+            .ToList();
+
+        var implicitMethods = targetType
             .GetMembers()
             .OfType<IMethodSymbol>()
             .FilterSupportedMethods()
             .Where(m => m.DeclaredAccessibility == Accessibility.Public);
+
+        return implicitMethods.Concat(genericMethods);
     }
 
-    protected override string GetTargetClassName() => targetNamespace.Split('.').Last();
+    protected override INamedTypeSymbol GetTargetType(Compilation compilation)
+    {
+        return compilation.GetTypeByMetadataName(targetNamespace);
+    }
 }
