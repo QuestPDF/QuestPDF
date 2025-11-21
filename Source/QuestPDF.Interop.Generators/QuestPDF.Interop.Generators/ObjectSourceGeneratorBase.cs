@@ -39,19 +39,19 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             
             return new NativeInteropMethodTemplateModel
             {
-                NativeName = method.GetNativeMethodName(GetTargetType(compilation).Name.Split('.').Last()),
-                ManagedName = method.GetManagedMethodName(),
+                NativeName = method.GetNativeMethodName(GetTargetClassName(compilation)),
+                ManagedName = method.GetManagedMethodName(GetTargetClassName(compilation)),
                 ApiName = method.Name,
                 MethodParameters = parameters,
-                TargetObjectType = method.IsExtensionMethod ? method.Parameters.First().Type.Name : method.ContainingType.Name,
+                TargetObjectType = GetTargetType(compilation).Name,
                 TargetObjectParameterName = method.IsExtensionMethod ? method.Parameters.First().Name : "target",
                 TargetMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetTargetMethodParameter),
-                ReturnType = method.ReturnType.GetInteropResultType(),
+                ReturnType = method.GetInteropResultType(),
                 ShouldFreeTarget = method.IsExtensionMethod
             };
         }
 
-        static string GetMethodParameter(IParameterSymbol parameterSymbol)
+        string GetMethodParameter(IParameterSymbol parameterSymbol)
         {
             if (parameterSymbol.Type.IsAction() && parameterSymbol.Type is INamedTypeSymbol actionSymbol)
             {
@@ -82,7 +82,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             return $"{parameterSymbol.Type.GetInteropMethodParameterType()} {parameterSymbol.Name}";
         }
         
-        static string GetTargetMethodParameter(IParameterSymbol parameterSymbol)
+        string GetTargetMethodParameter(IParameterSymbol parameterSymbol)
         {
             if (parameterSymbol.Type.TypeKind == TypeKind.Enum)
                 return $"({parameterSymbol.Type.ToDisplayString()}){parameterSymbol.Name}";
@@ -96,7 +96,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             if (parameterSymbol.Type.IsFunc())
             {
                 var resultType = ((INamedTypeSymbol)parameterSymbol.Type).TypeArguments.Last();
-                return $"x => {{ var boxed = BoxHandle(x); var result = {parameterSymbol.Name}(boxed); FreeHandle(boxed); return UnboxHandle<{resultType.Name}>(result); }}";
+                return $"x => {{ var boxed = BoxHandle(x); var result = {parameterSymbol.Name}(boxed); FreeHandle(boxed); return UnboxHandle<{GetTargetType(compilation).Name}>(result); }}";
             }
             
             if (parameterSymbol.Type.SpecialType == SpecialType.System_String)

@@ -24,16 +24,9 @@ internal static class Helpers
         return name.ToSnakeCase().ToUpper();
     }
     
-    public static string GetNativeMethodName(this IMethodSymbol methodSymbol, string? targetTypeName)
+    public static string GetNativeMethodName(this IMethodSymbol methodSymbol, string targetTypeName)
     {
-        var targetType = methodSymbol.IsExtensionMethod 
-            ? methodSymbol.Parameters.First().Type 
-            : methodSymbol.ContainingType;
-
-        var isInterface = targetType.TypeKind == TypeKind.Interface;
-        targetTypeName ??= isInterface ? targetType.Name.TrimStart('I') : targetType.Name;
         var hash = methodSymbol.ToDisplayString().GetDeterministicHash();
-        
         return $"questpdf__{ToSnakeCase(targetTypeName)}__{ToSnakeCase(methodSymbol.Name)}__{hash}";
     }
     
@@ -45,34 +38,31 @@ internal static class Helpers
         return string.Concat(hashBytes.Take(4).Select(b => b.ToString("x2")));
     }
     
-    public static string GetManagedMethodName(this IMethodSymbol methodSymbol)
+    public static string GetManagedMethodName(this IMethodSymbol methodSymbol, string targetTypeName)
     {
-        var targetType = methodSymbol.IsExtensionMethod 
-            ? methodSymbol.Parameters.First().Type 
-            : methodSymbol.ContainingType;
-
-        var isInterface = targetType.TypeKind == TypeKind.Interface;
-        var targetTypeName = isInterface ? targetType.Name.TrimStart('I') : targetType.Name; 
         var hash = methodSymbol.ToDisplayString().GetDeterministicHash();
-        
         return $"{targetTypeName}_{methodSymbol.Name}_{hash}";
     }
     
-    public static string GetInteropResultType(this ITypeSymbol typeSymbol)
+    public static string GetInteropResultType(this IMethodSymbol methodSymbol)
     {
-        if (typeSymbol.TypeKind == TypeKind.Class)
+        if (methodSymbol.IsGenericMethod && methodSymbol.ReturnType.TypeKind == TypeKind.TypeParameter)
             return "IntPtr";
         
-        if (typeSymbol.TypeKind == TypeKind.Interface)
+        if (methodSymbol.ReturnType.TypeKind == TypeKind.Class)
             return "IntPtr";
         
-        return typeSymbol.ToString();
+        if (methodSymbol.ReturnType.TypeKind == TypeKind.Interface)
+            return "IntPtr";
+        
+        return methodSymbol.ReturnType.ToString();
     }
     
     public static string GetInteropMethodParameterType(this ITypeSymbol typeSymbol)
     {
-        var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-
+        if (typeSymbol.TypeKind == TypeKind.TypeParameter)
+            return "IntPtr";
+        
         if (typeSymbol.TypeKind == TypeKind.Enum)
             return "int";
 
@@ -82,7 +72,7 @@ internal static class Helpers
         if (typeSymbol.TypeKind == TypeKind.Interface)
             return "IntPtr";
         
-        return typeName;
+        return typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
     }
     
     public static string GetNativeParameterType(this ITypeSymbol typeSymbol)
@@ -390,7 +380,7 @@ internal static class Helpers
     public static IEnumerable<IMethodSymbol> FilterSupportedMethods(this IEnumerable<IMethodSymbol> methodSymbols)
     {
         return methodSymbols
-            .Where(x => !x.IsGenericMethod)
+            .Where(x => !x.Name.Contains("Component"))
             .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Array))
             .Where(x => !x.Parameters.Any(p => !p.Type.IsAction() && !p.Type.IsFunc() && p.Type.TypeKind == TypeKind.Delegate))
             .Apply(Remove("global::System.Predicate"))

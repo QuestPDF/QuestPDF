@@ -30,10 +30,11 @@ internal class DescriptorSourceGenerator(string targetNamespace) : ObjectSourceG
         var implicitMethods = targetType
             .GetMembers()
             .OfType<IMethodSymbol>()
-            .FilterSupportedMethods()
             .Where(m => m.DeclaredAccessibility == Accessibility.Public);
 
-        return implicitMethods.Concat(genericMethods);
+        return implicitMethods
+            .Concat(genericMethods)
+            .FilterSupportedMethods();
     }
 
     protected override INamedTypeSymbol GetTargetType(Compilation compilation)
