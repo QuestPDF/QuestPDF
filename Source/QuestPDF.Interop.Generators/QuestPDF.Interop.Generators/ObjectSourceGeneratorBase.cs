@@ -10,7 +10,17 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 {
     protected abstract IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation);
     protected abstract INamedTypeSymbol GetTargetType(Compilation compilation);
-    
+
+    private string GetTargetClassName(Compilation compilation)
+    {
+        var targetType = GetTargetType(compilation);
+        
+        if (targetType.TypeKind == TypeKind.Interface)
+            return targetType.Name.TrimStart('I');
+        
+        return targetType.Name;
+    }
+
     public string GenerateCSharpCode(Compilation compilation)
     {
         return ScribanTemplateLoader
@@ -20,7 +30,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 Methods = GetTargetMethods(compilation).Select(MapMethod)
             });
         
-        static object MapMethod(IMethodSymbol method)
+        object MapMethod(IMethodSymbol method)
         {
             var parameters = method.Parameters.Select(GetMethodParameter);
             
@@ -29,7 +39,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             
             return new NativeInteropMethodTemplateModel
             {
-                NativeName = method.GetNativeMethodName(),
+                NativeName = method.GetNativeMethodName(GetTargetType(compilation).Name.Split('.').Last()),
                 ManagedName = method.GetManagedMethodName(),
                 ApiName = method.Name,
                 MethodParameters = parameters,
@@ -106,7 +116,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             .Select(t => t.TypedefDefinition);
 
         var headers = targetMethods
-            .Select(x => x.GetCHeaderDefinition());
+            .Select(x => x.GetCHeaderDefinition(GetTargetClassName(compilation)));
 
         return ScribanTemplateLoader
             .LoadTemplate("Object.py")
@@ -114,18 +124,18 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             {
                 CallbackTypedefs = callbackTypedefs,
                 Headers = headers,
-                ClassName = GetTargetType(compilation).Name.Split('.').Last(),
+                ClassName = GetTargetClassName(compilation),
                 Methods = targetMethods.Select(MapMethod)
             });
         
-        static object MapMethod(IMethodSymbol method)
+        object MapMethod(IMethodSymbol method)
         {
             return new
             {
                 PythonMethodName = method.Name.ToSnakeCase(),
                 PythonMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetMethodParameter).Prepend("self"),
                 
-                InteropMethodName = method.GetNativeMethodName(),
+                InteropMethodName = method.GetNativeMethodName(GetTargetClassName(compilation)),
                 InteropMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetInteropMethodParameter).Prepend("self.target_pointer"),
                 PythonMethodReturnType = "not_used",
                 

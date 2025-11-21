@@ -14,7 +14,7 @@ class {{ class_name }}:
 
 {{ for method in methods }}
     {{ if method.deprecation_message }}@deprecated("{{ method.deprecation_message }}"){{ end }}
-    def {{ method.python_method_name }}({{ method.python_method_parameters | array.join ", " }}) -> 'Container':
+    def {{ method.python_method_name }}({{ method.python_method_parameters | array.join ", " }}) -> '{{ python_method_return_type }}':
 {{ for callback in method.callbacks }}
         @questpdf_ffi.callback("void(void*)")
         def {{ callback.internal_callback_name }}({{ callback.python_parameter_name }}_pointer):
@@ -23,5 +23,5 @@ class {{ class_name }}:
 {{ end }}
 
         result = questpdf.lib.{{ method.interop_method_name }}({{ method.interop_method_parameters | array.join ", " }})
-        return Container(result)
+        return {{ python_method_return_type }}(result)
 {{ end }}

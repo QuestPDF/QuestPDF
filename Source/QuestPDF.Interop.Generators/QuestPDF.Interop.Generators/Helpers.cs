@@ -24,14 +24,14 @@ internal static class Helpers
         return name.ToSnakeCase().ToUpper();
     }
     
-    public static string GetNativeMethodName(this IMethodSymbol methodSymbol)
+    public static string GetNativeMethodName(this IMethodSymbol methodSymbol, string? targetTypeName)
     {
         var targetType = methodSymbol.IsExtensionMethod 
             ? methodSymbol.Parameters.First().Type 
             : methodSymbol.ContainingType;
 
         var isInterface = targetType.TypeKind == TypeKind.Interface;
-        var targetTypeName = isInterface ? targetType.Name.TrimStart('I') : targetType.Name;
+        targetTypeName ??= isInterface ? targetType.Name.TrimStart('I') : targetType.Name;
         var hash = methodSymbol.ToDisplayString().GetDeterministicHash();
         
         return $"questpdf__{ToSnakeCase(targetTypeName)}__{ToSnakeCase(methodSymbol.Name)}__{hash}";
@@ -310,10 +310,10 @@ internal static class Helpers
         // return callbackTypes.Select(t => (t.GetCallbackTypedefName(), t.GetCallbackTypedefDefinition()));
     }
 
-    public static string GetCHeaderDefinition(this IMethodSymbol methodSymbol)
+    public static string GetCHeaderDefinition(this IMethodSymbol methodSymbol, string targetTypeName)
     {
         var resultType = methodSymbol.ReturnType.GetNativeParameterType();
-        var methodName = methodSymbol.GetNativeMethodName();
+        var methodName = methodSymbol.GetNativeMethodName(targetTypeName);
 
         var parameters = methodSymbol
             .Parameters
