@@ -201,7 +201,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 return $"{parameterName}.value";
             
             if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
-                return $"questpdf_ffi.new(\"char[]\", {parameterName}.encode(\"utf-8\"))";
+                return $"questpdf_ffi.new(\"char[]\", {parameterName}.encode(\"utf-16\"))";
 
             if (parameterSymbol.Type.IsAction())
                 return $"_internal_{parameterName}_handler";
