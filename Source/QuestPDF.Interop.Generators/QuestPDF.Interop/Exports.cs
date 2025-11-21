@@ -14,7 +14,7 @@ public unsafe struct Buffer
 }
 
 
-internal unsafe partial class Exports
+public static unsafe partial class Exports
 {
     static Exports()
     {
