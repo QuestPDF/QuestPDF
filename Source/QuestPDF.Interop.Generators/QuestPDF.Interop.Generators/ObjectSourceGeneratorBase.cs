@@ -137,12 +137,26 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 
                 InteropMethodName = method.GetNativeMethodName(GetTargetClassName(compilation)),
                 InteropMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetInteropMethodParameter).Prepend("self.target_pointer"),
-                PythonMethodReturnType = "not_used",
+                PythonMethodReturnType = GetReturnType(),
                 
                 DeprecationMessage = method.TryGetDeprecationMessage(),
                 
                 Callbacks = GetCallbacks(method)
             };
+
+            string GetReturnType()
+            {
+                if (method.ReturnType.SpecialType == SpecialType.System_Void)
+                    return null;
+                
+                if (method.ReturnType.TypeKind == TypeKind.TypeParameter)
+                    return GetTargetClassName(compilation);
+                
+                if (method.ReturnType.TypeKind == TypeKind.Interface)
+                    return method.ReturnType.Name.TrimStart('I');
+                
+                return method.ReturnType.Name;
+            }
         }
 
         static string GetMethodParameter(IParameterSymbol parameterSymbol)

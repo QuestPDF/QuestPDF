@@ -9,6 +9,7 @@
         <NativeLib>Shared</NativeLib>
         <IsAotCompatible>true</IsAotCompatible>
         <PublishTrimmed>true</PublishTrimmed>
+        <TrimMode>partial</TrimMode>
         
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         <EnableAotAnalyzer>true</EnableAotAnalyzer>

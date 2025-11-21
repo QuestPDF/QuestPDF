@@ -30,11 +30,14 @@ public sealed class PublicApiGenerator : ISourceGenerator
             new DescriptorSourceGenerator("QuestPDF.Fluent.TextSpanDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.TextPageNumberDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.TextBlockDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.ImageDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.DynamicImageDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.SvgImageDescriptor"),
             new ContainerSourceGenerator()
         };
         
         GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(context.Compilation));
-        //GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(context.Compilation));
+        //GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
         
         void GenerateCode(string sourceFileName, string templateName, Func<IInteropSourceGenerator, string> selector)
         {
