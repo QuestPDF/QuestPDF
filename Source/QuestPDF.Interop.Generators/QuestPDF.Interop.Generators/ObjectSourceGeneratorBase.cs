@@ -177,7 +177,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                         .First(x => x.HasConstantValue && x.ConstantValue.Equals(parameterSymbol.ExplicitDefaultValue))
                         .Name;
                     
-                    result += $" = {parameterSymbol.Type.Name}.{enumValueName.ToPythonEnumMemberName()}";
+                    result += $" = {parameterSymbol.Type.Name}.{enumValueName.ToSnakeCase()}";
                 }
                 else
                 {

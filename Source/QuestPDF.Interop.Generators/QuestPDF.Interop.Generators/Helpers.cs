@@ -16,12 +16,20 @@ internal static class Helpers
         if (string.IsNullOrEmpty(input))
             return input;
 
-        return SnakeCaseRegex.Replace(input, "_$1").ToLowerInvariant();
-    }
-    
-    public static string ToPythonEnumMemberName(this string name)
-    {
-        return name.ToSnakeCase().ToUpper();
+        // Insert underscore between lowercase/digit and uppercase
+        var result = Regex.Replace(input, "([a-z0-9])([A-Z])", "$1_$2");
+        
+        // Insert underscore between letter and digit
+        result = Regex.Replace(result, "([a-zA-Z])([0-9])", "$1_$2");
+        
+        // Insert underscore between digit and letter
+        result = Regex.Replace(result, "([0-9])([a-zA-Z])", "$1_$2");
+        
+        // Insert underscore between consecutive uppercase letters followed by lowercase
+        result = Regex.Replace(result, "([A-Z])([A-Z][a-z])", "$1_$2");
+        
+        // Convert to lowercase
+        return result.ToLower();
     }
     
     public static string GetNativeMethodName(this IMethodSymbol methodSymbol, string targetTypeName)
