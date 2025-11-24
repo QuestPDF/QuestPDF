@@ -1,0 +1,30 @@
+class Color:
+    """
+    Represents a color in ARGB format.
+    Ported from QuestPDF.Infrastructure.Color.
+    """
+    def __init__(self, hex_val: int):
+        # Ensure it stays within 32-bit unsigned limit
+        self.hex = hex_val & 0xFFFFFFFF
+        
+    def __str__(self):
+        if self.alpha == 0xFF:
+            return f"#{self.red:02X}{self.green:02X}{self.blue:02X}"
+            
+        return f"#{self.alpha:02X}{self.red:02X}{self.green:02X}{self.blue:02X}"
+    
+    def __repr__(self):
+        return self.__str__()
+        
+
+class colors:
+{{ for color in basic_colors }}
+    {{ color.name }} = Color({{ color.value }})
+{{ end }}
+    
+{{ for group in color_groups }}
+    class {{ group.name }}:
+{{ for color in group.colors }}
+        {{ color.name }} = Color({{ color.value }})
+{{ end }}
+{{ end }}
