@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Reflection;
 using Scriban;
+using Scriban.Runtime;
 
 namespace QuestPDF.Interop.Generators;
 
@@ -16,6 +17,21 @@ internal static class ScribanTemplateLoader
             var templateString = LoadTemplateString(name);
             return Template.Parse(templateString);
         });
+    }
+    
+    public static string RenderTemplate(string templateName, object templateModel)
+    {
+        var template = LoadTemplate(templateName);
+
+        var context = new TemplateContext();
+        var globals = new ScriptObject();
+
+        globals.Import(typeof(ScribanFunctions));
+        globals.Import(templateModel);
+        
+        context.PushGlobal(globals);
+        
+        return template.Render(context);
     }
     
     private static string LoadTemplateString(string templateName)

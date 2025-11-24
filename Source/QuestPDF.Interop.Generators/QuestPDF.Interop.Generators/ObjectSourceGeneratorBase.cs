@@ -233,4 +233,14 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             }
         }
     }
+    
+    public string GenerateJavaCode(Compilation compilation)
+    {
+        return string.Empty;
+    }
+    
+    public string GenerateTypeScriptCode(Compilation compilation)
+    {
+        return string.Empty;
+    }
 }

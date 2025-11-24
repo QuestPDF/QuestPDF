@@ -17,14 +17,16 @@ class Color:
         return self.__str__()
         
 
+@dataclass(frozen=True)
 class colors:
 {{ for color in basic_colors }}
-    {{ color.name }} = Color({{ color.value }})
+    {{ color.name | snake_case }} = Color({{ color.value }})
 {{ end }}
     
 {{ for group in color_groups }}
-    class {{ group.name }}:
+    @dataclass(frozen=True)
+    class {{ group.name | snake_case }}:
 {{ for color in group.colors }}
-        {{ color.name }} = Color({{ color.value }})
+        {{ color.name | snake_case }} = Color({{ color.value }})
 {{ end }}
 {{ end }}

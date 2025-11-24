@@ -32,6 +32,16 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
         
         return ScribanTemplateLoader.LoadTemplate("Enum.py").Render(model);
     }
+    
+    public string GenerateJavaCode(Compilation compilation)
+    {
+        return string.Empty;
+    }
+    
+    public string GenerateTypeScriptCode(Compilation compilation)
+    {
+        return string.Empty;
+    }
 
     private static EnumTemplateModel Map(INamedTypeSymbol symbol)
     {

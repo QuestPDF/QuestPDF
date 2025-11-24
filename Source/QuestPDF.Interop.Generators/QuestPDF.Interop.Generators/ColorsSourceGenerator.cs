@@ -14,41 +14,82 @@ public class ColorsSourceGenerator : IInteropSourceGenerator
 
     public string GeneratePythonCode(Compilation compilation)
     {
-        var colorType = compilation.GetTypeByMetadataName("QuestPDF.Infrastructure.Color");
-        var colorClass = compilation.GetTypeByMetadataName("QuestPDF.Helpers.Colors");
+        var model = GetTemplateModel(compilation);
+        return ScribanTemplateLoader.RenderTemplate("Python.Colors", model);
+    }
 
-        var model = new
+    public string GenerateJavaCode(Compilation compilation)
+    {
+        var model = GetTemplateModel(compilation);
+        return ScribanTemplateLoader.RenderTemplate("Java.Colors", model);
+    }
+    
+    public string GenerateTypeScriptCode(Compilation compilation)
+    {
+        var model = GetTemplateModel(compilation);
+        return ScribanTemplateLoader.RenderTemplate("TypeScript.Colors", model);
+    }
+
+    #region Shared
+
+    class TemplateModel : ScribanFunctions
+    {
+        public IEnumerable<Color> BasicColors { get; set; }
+        public IEnumerable<ColorGroup> ColorGroups { get; set; }
+        
+        public class Color
         {
-            BasicColors = GetBasicColorsOf(colorClass),
-            ColorGroups = colorClass
+            public string Name { get; set; }
+            public string Value { get; set; }
+        }
+
+        public class ColorGroup
+        {
+            public string Name { get; set; }
+            public IEnumerable<Color> Colors { get; set; }
+        }
+    }
+
+    private TemplateModel GetTemplateModel(Compilation compilation)
+    {
+        var colorType = compilation.GetTypeByMetadataName("QuestPDF.Infrastructure.Color");
+        var colorClass = compilation.GetTypeByMetadataName("QuestPDF.Helpers.Colors")!;
+
+        return new TemplateModel
+        {
+            BasicColors = GetColorDefinitions(colorClass),
+            ColorGroups = GetColorGroups()
+        };
+
+        IEnumerable<TemplateModel.ColorGroup> GetColorGroups()
+        {
+            return colorClass
                 .GetTypeMembers()
                 .Where(t => t.TypeKind == TypeKind.Class)
-                .Select(t => new
+                .Select(t => new TemplateModel.ColorGroup
                 {
-                    Name = t.Name.ToSnakeCase(),
-                    Colors = GetBasicColorsOf(t)
-                })
-        };
-        
-        return ScribanTemplateLoader.LoadTemplate("Colors.py").Render(model);
+                    Name = t.Name, 
+                    Colors = GetColorDefinitions(t)
+                });
+        }
 
-        IEnumerable<object> GetBasicColorsOf(INamedTypeSymbol namedTypeSymbol)
+        IEnumerable<TemplateModel.Color> GetColorDefinitions(INamedTypeSymbol namedTypeSymbol)
         {
             return namedTypeSymbol
                 .GetMembers()
-                .Where(x => x.IsStatic && x is IFieldSymbol fieldSymbol && SymbolEqualityComparer.Default.Equals(fieldSymbol.Type, colorType))
-                .Select(x => new
+                .Where(x => x.IsStatic)
+                .OfType<IFieldSymbol>()
+                .Where(x => SymbolEqualityComparer.Default.Equals(x.Type, colorType))
+                .Select(x => new TemplateModel.Color
                 {
-                    Name = x.Name.ToSnakeCase(),
-                    Value = GetColorValue(x as IFieldSymbol)
+                    Name = x.Name,
+                    Value = GetColorValue(x)
                 });
         }
 
         static string GetColorValue(IFieldSymbol fieldSymbol)
         {
-            var syntaxRef = fieldSymbol.DeclaringSyntaxReferences.FirstOrDefault();
-            if (syntaxRef == null) return null;
-
+            var syntaxRef = fieldSymbol.DeclaringSyntaxReferences.Single();
             var syntaxNode = syntaxRef.GetSyntax();
             var declarator = syntaxNode as VariableDeclaratorSyntax;
     
@@ -58,4 +99,6 @@ public class ColorsSourceGenerator : IInteropSourceGenerator
             return creation.ArgumentList?.Arguments.Single().Expression.ToString();
         }
     }
+
+    #endregion
 }
