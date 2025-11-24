@@ -25,6 +25,7 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
     {
         var generators = new List<IInteropSourceGenerator>
         {
+            new ColorsSourceGenerator(),
             new EnumSourceGenerator(),
             new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
@@ -47,7 +48,7 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
         };
         
         //GenerateCode("QuestPDF.Interop.g.cs", "Main.cs", x => x.GenerateCSharpCode(compilation));
-        //GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
+        GenerateCode("QuestPDF.Interop.g.py", "Main.py", x => x.GeneratePythonCode(compilation));
         
         void GenerateCode(string sourceFileName, string templateName, Func<IInteropSourceGenerator, string> selector)
         {
