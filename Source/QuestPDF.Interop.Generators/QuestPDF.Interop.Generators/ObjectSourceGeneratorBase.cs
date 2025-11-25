@@ -209,7 +209,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 
         static IEnumerable<object> GetCallbacks(IMethodSymbol methodSymbol)
         {
-            foreach (var parameterSymbol in methodSymbol.Parameters.Skip(1).Where(x => x.Type.IsAction()))
+            foreach (var parameterSymbol in methodSymbol.Parameters.Skip(methodSymbol.IsExtensionMethod ? 1 : 0).Where(x => x.Type.IsAction()))
             {
                 var actionType = (INamedTypeSymbol)parameterSymbol.Type;
                 var callbackArgument = actionType.TypeArguments.FirstOrDefault();

@@ -22,16 +22,16 @@ public final class Color {
 public final class Colors {
     private Colors() {}
 
-{% for color in BasicColors %}
-    public static final Color {{ color.Name }} = new Color({{ color.Value }});
+{% for color in basicColors %}
+    public static final Color {{ color.name }} = new Color({{ color.value }});
 {% endfor %}
 
-{% for group in ColorGroups %}
-    public static final class {{ group.Name }} {
-        private {{ group.Name }}() {}
+{% for group in colorGroups %}
+    public static final class {{ group.name }} {
+        private {{ group.name }}() {}
 
-{% for color in group.Colors %}
-        public static final Color {{ color.Name }} = new Color({{ color.Value }});
+{% for color in group.colors %}
+        public static final Color {{ color.name }} = new Color({{ color.value }});
 {% endfor %}
     }
 {% endfor %}

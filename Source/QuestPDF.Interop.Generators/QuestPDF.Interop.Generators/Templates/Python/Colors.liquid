@@ -14,15 +14,15 @@ class Color:
         
 
 @dataclass(frozen=True)
-class colors:
-{% for color in basic_colors %} {{ color.Name }}
-    {{ Color.Name | snake_case }} = Color({{ Color.Value }})
+class Colors:
+{% for color in basicColors %}
+    {{ color.name | snakeCase }} = Color({{ color.value }})
 {% endfor %}
 
-{% for group in ColorGroups %}
+{% for group in colorGroups %}
     @dataclass(frozen=True)
-    class {{ group.Name | snake_case }}:
-{% for color in group.Colors %}
-        {{ color.Name | snake_case }} = Color({{ color.Value }})
+    class {{ group.name | snakeCase }}:
+{% for color in group.colors %}
+        {{ color.name | snakeCase }} = Color({{ color.value }})
 {% endfor %}
 {% endfor %}

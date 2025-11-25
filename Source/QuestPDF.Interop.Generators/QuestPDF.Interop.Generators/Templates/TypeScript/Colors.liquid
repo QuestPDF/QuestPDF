@@ -15,7 +15,7 @@ export const Colors = {
 {{ color.name }}: new Color({{ color.value }}),
 {% endfor %}
 {% for group in colorGroups %}
-    {{ group.Name }}: {
+    {{ group.name }}: {
 {% for color in group.colors %}
         {{ color.name }}: new Color({{ color.value }}),
 {% endfor %}

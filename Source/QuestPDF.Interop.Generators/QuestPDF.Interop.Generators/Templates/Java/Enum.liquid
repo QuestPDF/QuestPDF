@@ -1,12 +1,12 @@
-{% for enum in Enums %}
-public enum {{ enum.Name }} {
-{%- for member in enum.Members %}
-    {{ member.Name }}({{ member.Value }}){% unless forloop.last %},{% else %};{% endunless %}
+{% for enum in enums %}
+public enum {{ enum.name }} {
+{%- for member in enum.members %}
+    {{ member.name }}({{ member.value }}){% unless forloop.last %},{% else %};{% endunless %}
 {%- endfor %}
 
     private final int value;
 
-    {{ enum.Name }}(int value) {
+    {{ enum.name }}(int value) {
         this.value = value;
     }
 

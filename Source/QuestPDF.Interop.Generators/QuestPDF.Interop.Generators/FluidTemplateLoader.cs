@@ -20,7 +20,7 @@ internal static class FluidTemplateLoader
         Options.MemberAccessStrategy = new UnsafeMemberAccessStrategy();
         Options.MemberAccessStrategy.IgnoreCasing = true;
 
-        FluidFilters.RegisterSnakeCaseFilter(Options);
+        FluidFilters.RegisterFilters(Options);
         Parser = new FluidParser();
     }
 

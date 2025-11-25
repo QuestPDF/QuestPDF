@@ -15,24 +15,24 @@ public sealed class PublicApiGenerator
         {
             new ColorsSourceGenerator(),
             new EnumSourceGenerator(),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.LayersDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.LayersDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.RowDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.GridDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.MultiColumnDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.TableDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.TableCellDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.TableColumnsDefinitionDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.TextDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.TextSpanDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.TextPageNumberDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.TextBlockDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.ImageDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.DynamicImageDescriptor"),
-            // new DescriptorSourceGenerator("QuestPDF.Fluent.SvgImageDescriptor"),
-            // new ContainerSourceGenerator()
+            new DescriptorSourceGenerator("QuestPDF.Fluent.GridDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.MultiColumnDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.TableCellDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.TableColumnsDefinitionDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.TableDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.TextDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.TextSpanDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.TextPageNumberDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.TextBlockDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.ImageDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.DynamicImageDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.SvgImageDescriptor"),
+            new ContainerSourceGenerator()
         };
         
         GenerateCode("QuestPDF.Interop.g.cs", "CSharp.Main", x => x.GenerateCSharpCode(compilation));
@@ -51,6 +51,8 @@ public sealed class PublicApiGenerator
                     GenerationDateTime = DateTime.Now.ToString(CultureInfo.InvariantCulture),
                     Fragments = codeFragments.ToList()
                 });
+            
+            Directory.CreateDirectory("generated");
             
             var path = Path.Combine("generated", sourceFileName);
             

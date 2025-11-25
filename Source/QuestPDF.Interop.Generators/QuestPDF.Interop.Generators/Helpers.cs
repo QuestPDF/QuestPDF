@@ -9,27 +9,17 @@ namespace QuestPDF.Interop.Generators;
 
 internal static class Helpers
 {
-    private static readonly Regex SnakeCaseRegex = new("(?<!^)([A-Z])", RegexOptions.Compiled);
-    
     public static string ToSnakeCase(this string input)
     {
         if (string.IsNullOrEmpty(input))
             return input;
 
-        // Insert underscore between lowercase/digit and uppercase
-        var result = Regex.Replace(input, "([a-z0-9])([A-Z])", "$1_$2");
-        
-        // Insert underscore between letter and digit
-        result = Regex.Replace(result, "([a-zA-Z])([0-9])", "$1_$2");
-        
-        // Insert underscore between digit and letter
-        result = Regex.Replace(result, "([0-9])([a-zA-Z])", "$1_$2");
-        
-        // Insert underscore between consecutive uppercase letters followed by lowercase
-        result = Regex.Replace(result, "([A-Z])([A-Z][a-z])", "$1_$2");
-        
-        // Convert to lowercase
-        return result.ToLower();
+        var result = Regex.Replace(input, @"([a-z0-9])([A-Z])", "$1_$2");
+        result = Regex.Replace(result, @"([A-Z]+)([A-Z][a-z])", "$1_$2");
+        result = Regex.Replace(result, @"([a-zA-Z])(\d)", "$1_$2");
+        result = Regex.Replace(result, @"(\d)([a-zA-Z])", "$1_$2");
+
+        return result.ToLowerInvariant();
     }
     
     public static string GetNativeMethodName(this IMethodSymbol methodSymbol, string targetTypeName)
