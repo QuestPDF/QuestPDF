@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
         <LangVersion>latest</LangVersion>
@@ -12,19 +12,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Build" Version="18.0.2" ExcludeAssets="runtime" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.Build.Locator" Version="1.11.1" ExcludeAssets="runtime" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.Build" Version="18.0.2" ExcludeAssets="runtime" />
+        <PackageReference Include="Microsoft.Build.Framework" Version="18.0.2" ExcludeAssets="runtime" />
+        <PackageReference Include="Microsoft.Build.Utilities.Core" Version="18.0.2" ExcludeAssets="runtime" />
+        <PackageReference Include="Microsoft.Build.Locator" Version="1.11.1" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="5.0.0" />
         <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="5.0.0" />
-        <PackageReference Include="Scriban" Version="6.5.1" IncludeAssets="Build" />
-        <PackageReference Include="Microsoft.CSharp" Version="4.7.0"/>
-        <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
         
-        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.11.0">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
+        <PackageReference Include="Scriban" Version="6.5.2" IncludeAssets="Build" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0"/>
     </ItemGroup>
     
     <ItemGroup>
