@@ -11,14 +11,14 @@ export class Color {
 }
 
 export const Colors = {
-{{ for color in basic_colors }}
-{{ color.name }}: '{{ color.value }}',
-{{ end }}
-{{ for group in color_groups }}
-    {{ group.name }}: {
-{{ for color in group.colors }}
+{% for color in basicColors %}
+{{ color.name }}: new Color({{ color.value }}),
+{% endfor %}
+{% for group in colorGroups %}
+    {{ group.Name }}: {
+{% for color in group.colors %}
         {{ color.name }}: new Color({{ color.value }}),
-{{ end }}
+{% endfor %}
     },
-{{ end }}
+{% endfor %}
 } as const;

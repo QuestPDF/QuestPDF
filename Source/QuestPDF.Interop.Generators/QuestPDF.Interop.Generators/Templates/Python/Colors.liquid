@@ -1,8 +1,4 @@
 class Color:
-    """
-    Represents a color in ARGB format.
-    Ported from QuestPDF.Infrastructure.Color.
-    """
     def __init__(self, hex_val: int):
         # Ensure it stays within 32-bit unsigned limit
         self.hex = hex_val & 0xFFFFFFFF
@@ -19,14 +15,14 @@ class Color:
 
 @dataclass(frozen=True)
 class colors:
-{{ for color in basic_colors }}
-    {{ color.name | snake_case }} = Color({{ color.value }})
-{{ end }}
-    
-{{ for group in color_groups }}
+{% for color in basic_colors %} {{ color.Name }}
+    {{ Color.Name | snake_case }} = Color({{ Color.Value }})
+{% endfor %}
+
+{% for group in ColorGroups %}
     @dataclass(frozen=True)
-    class {{ group.name | snake_case }}:
-{{ for color in group.colors }}
-        {{ color.name | snake_case }} = Color({{ color.value }})
-{{ end }}
-{{ end }}
+    class {{ group.Name | snake_case }}:
+{% for color in group.Colors %}
+        {{ color.Name | snake_case }} = Color({{ color.Value }})
+{% endfor %}
+{% endfor %}

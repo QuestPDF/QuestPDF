@@ -1,8 +1,8 @@
 from enum import Enum
 
-{{ for enum in enums }}
+{% for enum in enums %}
 class {{ enum.name }}(Enum):
-{{- for member in enum.members }}
-    {{ member.name | snake_case }} = {{ member.value }}
-{{- end }}
-{{ end }}
+{% for member in enum.members %}
+    {{ member.name }} = {{ member.value }}
+{% endfor %}
+{% endfor %}

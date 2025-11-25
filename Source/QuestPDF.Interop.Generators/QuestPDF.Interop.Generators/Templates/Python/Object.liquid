@@ -1,27 +1,27 @@
 QUESTPDF_CDEF += r"""
-    {{ for typedef in callback_typedefs }}
+    {% for typedef in CallbackTypedefs %}
     {{ typedef }}
-    {{ end }}
+    {% endfor %}
 
-    {{ for header in headers }}
+    {% for header in Headers %}
     {{ header }}
-    {{ end }}
+    {% endfor %}
 """
 
-class {{ class_name }}:
+class {{ ClassName }}:
     def __init__(self, target_pointer):
         self.target_pointer = target_pointer
 
-{{ for method in methods }}
-    {{ if method.deprecation_message }}@deprecated("{{ method.deprecation_message }}"){{ end }}
-    def {{ method.python_method_name }}({{ method.python_method_parameters | array.join ", " }}) -> {{ if method.python_method_return_type }}'{{ method.python_method_return_type }}'{{ else}} None {{ end}}:
-{{ for callback in method.callbacks }}
+{% for method in Methods %}
+    {% if method.DeprecationMessage %}@deprecated("{{ method.DeprecationMessage }}"){% endif %}
+    def {{ method.PythonMethodName }}({{ method.PythonMethodParameters | array.join ", " }}) -> {% if method.PythonMethodReturnType %}'{{ method.PythonMethodReturnType }}'{% else %} None {% endif %}:
+{% for callback in method.Callbacks %}
         @questpdf_ffi.callback("void(void*)")
-        def {{ callback.internal_callback_name }}({{ callback.python_parameter_name }}_pointer):
-            {{ callback.python_parameter_name }}_object = {{ callback.callback_argument_type_name }}({{ callback.python_parameter_name }}_pointer)
-            {{ callback.python_parameter_name }}({{ callback.python_parameter_name }}_object)
-{{ end }}
+        def {{ callback.InternalCallbackName }}({{ callback.PythonParameterName }}_pointer):
+            {{ callback.PythonParameterName }}_object = {{ callback.CallbackArgumentTypeName }}({{ callback.PythonParameterName }}_pointer)
+            {{ callback.PythonParameterName }}({{ callback.PythonParameterName }}_object)
+{% endfor %}
 
-        result = questpdf.lib.{{ method.interop_method_name }}({{ method.interop_method_parameters | array.join ", " }})
-        {{ if method.python_method_return_type }}return {{ method.python_method_return_type }}(result){{ end }}
-{{ end }}
+        result = questpdf.lib.{{ method.InteropMethodName }}({{ method.InteropMethodParameters | array.join ", " }})
+        {% if method.PythonMethodReturnType %}return {{ method.PythonMethodReturnType }}(result){% endif %}
+{% endfor %}

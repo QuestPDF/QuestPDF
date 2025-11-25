@@ -1,4 +1,4 @@
-// AUTO-GENERATED on {{ generation_date_time }}
+// AUTO-GENERATED on {{ GenerationDateTime }}
 
 using System;
 using System.Runtime.CompilerServices;
@@ -10,8 +10,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace QuestPDF.Interop;
 
 public static unsafe partial class Exports
-{    
-    {{ for fragment in fragments }}
+{
+    {% for fragment in Fragments %}
     {{ fragment }}
-    {{ end }}
+    {% endfor %}
 }

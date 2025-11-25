@@ -1,4 +1,4 @@
-# AUTO-GENERATED on {{ generation_date_time }}
+# AUTO-GENERATED on {{ GenerationDateTime }}
 
 
 import os
@@ -51,9 +51,9 @@ questpdf = QuestPDF()
 
 
 
-{{ for fragment in fragments }}
+{% for fragment in Fragments %}
 {{ fragment }}
-{{ end }}
+{% endfor %}
 
 
 

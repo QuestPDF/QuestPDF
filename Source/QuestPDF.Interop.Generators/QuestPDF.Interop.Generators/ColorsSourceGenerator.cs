@@ -15,24 +15,24 @@ public class ColorsSourceGenerator : IInteropSourceGenerator
     public string GeneratePythonCode(Compilation compilation)
     {
         var model = GetTemplateModel(compilation);
-        return ScribanTemplateLoader.RenderTemplate("Python.Colors", model);
+        return FluidTemplateLoader.RenderTemplate("Python.Colors", model);
     }
 
     public string GenerateJavaCode(Compilation compilation)
     {
         var model = GetTemplateModel(compilation);
-        return ScribanTemplateLoader.RenderTemplate("Java.Colors", model);
+        return FluidTemplateLoader.RenderTemplate("Java.Colors", model);
     }
-    
+
     public string GenerateTypeScriptCode(Compilation compilation)
     {
         var model = GetTemplateModel(compilation);
-        return ScribanTemplateLoader.RenderTemplate("TypeScript.Colors", model);
+        return FluidTemplateLoader.RenderTemplate("TypeScript.Colors", model);
     }
 
     #region Shared
 
-    class TemplateModel
+    public class TemplateModel
     {
         public IEnumerable<Color> BasicColors { get; set; }
         public IEnumerable<ColorGroup> ColorGroups { get; set; }

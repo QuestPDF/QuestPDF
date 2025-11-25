@@ -23,9 +23,8 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 
     public string GenerateCSharpCode(Compilation compilation)
     {
-        return ScribanTemplateLoader
-            .LoadTemplate("NativeInteropMethod.cs")
-            .Render(new
+        return FluidTemplateLoader
+            .RenderTemplate("NativeInteropMethod.cs", new
             {
                 Methods = GetTargetMethods(compilation).Select(MapMethod)
             });
@@ -118,9 +117,8 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         var headers = targetMethods
             .Select(x => x.GetCHeaderDefinition(GetTargetClassName(compilation)));
 
-        return ScribanTemplateLoader
-            .LoadTemplate("Object.py")
-            .Render(new
+        return FluidTemplateLoader
+            .RenderTemplate("Object.py", new
             {
                 CallbackTypedefs = callbackTypedefs,
                 Headers = headers,

@@ -45,12 +45,11 @@ public sealed class PublicApiGenerator
             var codeFragments = generators
                 .Select(x => Try(() => selector(x)));
                 
-            var finalCode = ScribanTemplateLoader
-                .LoadTemplate(templateName)
-                .Render(new
+            var finalCode = FluidTemplateLoader
+                .RenderTemplate(templateName, new
                 {
                     GenerationDateTime = DateTime.Now.ToString(CultureInfo.InvariantCulture),
-                    Fragments = codeFragments
+                    Fragments = codeFragments.ToList()
                 });
             
             var path = Path.Combine("generated", sourceFileName);
