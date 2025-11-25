@@ -45,7 +45,7 @@ public sealed class PublicApiGenerator
             var codeFragments = generators
                 .Select(x => Try(() => selector(x)));
                 
-            var finalCode = FluidTemplateLoader
+            var finalCode = TemplateManager
                 .RenderTemplate(templateName, new
                 {
                     GenerationDateTime = DateTime.Now.ToString(CultureInfo.InvariantCulture),

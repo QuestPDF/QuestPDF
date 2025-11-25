@@ -3,28 +3,28 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Reflection;
 using Fluid;
+using Fluid.Values;
 
 namespace QuestPDF.Interop.Generators;
 
-internal static class FluidTemplateLoader
+internal static class TemplateManager
 {
     private static readonly ConcurrentDictionary<string, IFluidTemplate> TemplateCache = new();
     private static readonly FluidParser Parser;
     private static readonly TemplateOptions Options;
 
-    static FluidTemplateLoader()
+    static TemplateManager()
     {
         Options = new TemplateOptions();
 
-        // Configure Fluid to allow accessing all object properties
         Options.MemberAccessStrategy = new UnsafeMemberAccessStrategy();
         Options.MemberAccessStrategy.IgnoreCasing = true;
+        Options.Filters.AddFilter("snakeCase", (input, _, _) => new StringValue(input.ToStringValue().ToSnakeCase()));
 
-        FluidFilters.RegisterFilters(Options);
         Parser = new FluidParser();
     }
 
-    public static IFluidTemplate LoadTemplate(string templateName)
+    private static IFluidTemplate LoadTemplate(string templateName)
     {
         return TemplateCache.GetOrAdd(templateName, static name =>
         {

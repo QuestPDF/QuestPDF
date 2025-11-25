@@ -14,19 +14,19 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
     public string GeneratePythonCode(Compilation compilation)
     {
         var model = GetTemplateModel(compilation);
-        return FluidTemplateLoader.RenderTemplate("Python.Enum", model);
+        return TemplateManager.RenderTemplate("Python.Enum", model);
     }
 
     public string GenerateJavaCode(Compilation compilation)
     {
         var model = GetTemplateModel(compilation);
-        return FluidTemplateLoader.RenderTemplate("Java.Enum", model);
+        return TemplateManager.RenderTemplate("Java.Enum", model);
     }
 
     public string GenerateTypeScriptCode(Compilation compilation)
     {
         var model = GetTemplateModel(compilation);
-        return FluidTemplateLoader.RenderTemplate("TypeScript.Enum", model);
+        return TemplateManager.RenderTemplate("TypeScript.Enum", model);
     }
     
     #region Shared
