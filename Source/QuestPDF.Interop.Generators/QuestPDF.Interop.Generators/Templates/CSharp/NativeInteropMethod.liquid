@@ -1,15 +1,15 @@
-{% for method in Methods %}
-[UnmanagedCallersOnly(EntryPoint = "{{ method.NativeName }}", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static {{ method.ReturnType }} {{ method.ManagedName }}({{ method.MethodParameters | array.join ", " }})
+{% for method in methods %}
+[UnmanagedCallersOnly(EntryPoint = "{{ method.nativeName }}", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static {{ method.returnType }} {{ method.managedName }}({{ method.methodParameters | join: ", " }})
 {
-    var containerObject = UnboxHandle<{{ method.TargetObjectType }}>({{ method.TargetObjectParameterName }});
-    {% if method.ShouldFreeTarget %}FreeHandle({{ method.TargetObjectParameterName }});{%- endif %}
+    var containerObject = UnboxHandle<{{ method.targetObjectType }}>({{ method.targetObjectParameterName }});
+    {% if method.shouldFreeTarget %}FreeHandle({{ method.targetObjectParameterName }});{%- endif %}
 
     {%- capture targetCall -%}
-    containerObject.{{ method.ApiName }}({{ method.TargetMethodParameters | array.join ", " }})
+    containerObject.{{ method.apiName }}({{ method.targetMethodParameters | join: ", " }})
     {%- endcapture -%}
 
-{% if method.ReturnType == "void" %}
+{% if method.returnType == "void" %}
     {{ targetCall }};
 {%- else %}
     var result = {{ targetCall }};
