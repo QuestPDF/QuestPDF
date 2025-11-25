@@ -1,0 +1,17 @@
+{{ for enum in enums }}
+public enum {{ enum.name }} {
+{{- for member in enum.members }}
+    {{ member.name }}({{ member.value }}){{ if !for.last }},{{ else }};{{ end }}
+{{- end }}
+
+    private final int value;
+
+    {{ enum.name }}(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
+}
+{{ end }}

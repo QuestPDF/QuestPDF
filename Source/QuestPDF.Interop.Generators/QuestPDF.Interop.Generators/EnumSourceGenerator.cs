@@ -10,12 +10,37 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
     {
         return string.Empty;
     }
-
-    class EnumTemplateModel
+    
+    public string GeneratePythonCode(Compilation compilation)
     {
-        public string Name { get; set; }
-        public IEnumerable<EnumMember> Members { get; set; }
-
+        var model = GetTemplateModel(compilation);
+        return ScribanTemplateLoader.RenderTemplate("Python.Enum", model);
+    }
+    
+    public string GenerateJavaCode(Compilation compilation)
+    {
+        var model = GetTemplateModel(compilation);
+        return ScribanTemplateLoader.RenderTemplate("Java.Enum", model);
+    }
+    
+    public string GenerateTypeScriptCode(Compilation compilation)
+    {
+        var model = GetTemplateModel(compilation);
+        return ScribanTemplateLoader.RenderTemplate("TypeScript.Enum", model);
+    }
+    
+    #region Shared
+    
+    class TemplateModel
+    {
+        public IEnumerable<Enum> Enums { get; set; }
+        
+        public class Enum
+        {
+            public string Name { get; set; }
+            public IEnumerable<EnumMember> Members { get; set; }
+        }
+        
         public class EnumMember
         {
             public string Name { get; set; }
@@ -23,49 +48,45 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
         }
     }
 
-    public string GeneratePythonCode(Compilation compilation)
+    private TemplateModel GetTemplateModel(Compilation compilation)
     {
-        var model = new
+        return new TemplateModel
         {
             Enums = GetAllPublicEnumsFromCompilation(compilation).Select(Map)
         };
-        
-        return ScribanTemplateLoader.LoadTemplate("Enum.py").Render(model);
-    }
-    
-    public string GenerateJavaCode(Compilation compilation)
-    {
-        return string.Empty;
-    }
-    
-    public string GenerateTypeScriptCode(Compilation compilation)
-    {
-        return string.Empty;
     }
 
-    private static EnumTemplateModel Map(INamedTypeSymbol symbol)
+    private static TemplateModel.Enum Map(INamedTypeSymbol symbol)
     {
-        return new EnumTemplateModel
+        return new TemplateModel.Enum
         {
             Name = symbol.Name,
-            Members = symbol.GetMembers()
-                .OfType<IFieldSymbol>()
-                .Where(x => x.HasConstantValue)
-                .Select(x => new EnumTemplateModel.EnumMember
-                {
-                    Name = x.Name.ToSnakeCase(), 
-                    Value = System.Convert.ToInt32(x.ConstantValue)
-                })
+            Members = GetEnumMembers(symbol)
         };
     }
     
-    private IEnumerable<INamedTypeSymbol> GetAllPublicEnumsFromCompilation(Compilation compilation)
+    private static IEnumerable<INamedTypeSymbol> GetAllPublicEnumsFromCompilation(Compilation compilation)
     {
         return compilation
             .GlobalNamespace
             .GetNamespaceMembers()
             .Where(x => x.Name.StartsWith("QuestPDF"))
             .SelectMany(x => x.GetMembersRecursively())
-            .Where(x => x.TypeKind == TypeKind.Enum && x.DeclaredAccessibility == Accessibility.Public);
+            .Where(x => x.TypeKind == TypeKind.Enum)
+            .Where(x => x.DeclaredAccessibility == Accessibility.Public);
     }
+
+    private static IEnumerable<TemplateModel.EnumMember> GetEnumMembers(INamedTypeSymbol symbol)
+    {
+        return symbol.GetMembers()
+            .OfType<IFieldSymbol>()
+            .Where(x => x.HasConstantValue)
+            .Select(x => new TemplateModel.EnumMember
+            {
+                Name = x.Name, 
+                Value = System.Convert.ToInt32(x.ConstantValue)
+            });
+    }
+    
+    #endregion
 }

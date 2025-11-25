@@ -32,7 +32,7 @@ public class ColorsSourceGenerator : IInteropSourceGenerator
 
     #region Shared
 
-    class TemplateModel : ScribanFunctions
+    class TemplateModel
     {
         public IEnumerable<Color> BasicColors { get; set; }
         public IEnumerable<ColorGroup> ColorGroups { get; set; }

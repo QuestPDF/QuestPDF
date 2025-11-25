@@ -1,59 +1,24 @@
-public final class Color {
-    /**
-     * Represents a color in ARGB format.
-     * Ported from QuestPDF.Infrastructure.Color.
-     */
-    private final int hex;
+export class Color {
+  public readonly hex: number;
 
-    public Color(int hexVal) {
-        // Stored as 32-bit int; bit operations treat it as unsigned
-        this.hex = hexVal;
-    }
+  constructor(hexVal: number) {
+    this.hex = hexVal >>> 0;
+  }
 
-    public int getHex() {
-        return hex;
-    }
-
-    public int getAlpha() {
-        return (hex >>> 24) & 0xFF;
-    }
-
-    public int getRed() {
-        return (hex >>> 16) & 0xFF;
-    }
-
-    public int getGreen() {
-        return (hex >>> 8) & 0xFF;
-    }
-
-    public int getBlue() {
-        return hex & 0xFF;
-    }
-
-    @Override
-    public String toString() {
-        if (getAlpha() == 0xFF) {
-            return String.format("#%02X%02X%02X", getRed(), getGreen(), getBlue());
-        }
-
-        return String.format("#%02X%02X%02X%02X", getAlpha(), getRed(), getGreen(), getBlue());
-    }
+  toString(): string {
+    return `#${this.hex.toString(16).padStart(8, '0')}`;
+  }
 }
 
-public final class Colors {
-    private Colors() {}
-
+export const Colors = {
 {{ for color in basic_colors }}
-    public static final Color {{ color.name }} = new Color({{ color.value }});
+{{ color.name }}: '{{ color.value }}',
 {{ end }}
-
 {{ for group in color_groups }}
-    public static final class {{ group.name }} {
-        private {{ group.name }}() {}
-
+    {{ group.name }}: {
 {{ for color in group.colors }}
-        public static final Color {{ color.name }} = new Color({{ color.value }});
+        {{ color.name }}: new Color({{ color.value }}),
 {{ end }}
-    }
+    },
 {{ end }}
-}
+} as const;

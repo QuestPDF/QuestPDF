@@ -14,7 +14,7 @@ public sealed class PublicApiGenerator
         var generators = new List<IInteropSourceGenerator>
         {
             new ColorsSourceGenerator(),
-            // new EnumSourceGenerator(),
+            new EnumSourceGenerator(),
             // new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
             // new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
             // new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
@@ -53,7 +53,7 @@ public sealed class PublicApiGenerator
                     Fragments = codeFragments
                 });
             
-            var path = Path.Combine("Generated", sourceFileName);
+            var path = Path.Combine("generated", sourceFileName);
             
             if (File.Exists(path))
                 File.Delete(path);

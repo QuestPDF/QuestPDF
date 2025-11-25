@@ -1,0 +1,7 @@
+{{ for enum in enums }}
+enum {{ enum.name }} {
+{{- for member in enum.members }}
+    {{ member.name }} = {{ member.value }}{{ if !for.last }},{{ end }}
+{{- end }}
+}
+{{ end }}
