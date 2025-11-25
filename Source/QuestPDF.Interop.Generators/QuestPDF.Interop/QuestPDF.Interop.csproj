@@ -25,7 +25,6 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\QuestPDF\QuestPDF.csproj" />
-        <ProjectReference Include="..\QuestPDF.Interop.Generators\QuestPDF.Interop.Generators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 
     <ItemGroup>

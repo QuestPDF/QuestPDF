@@ -7,19 +7,9 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
-[Generator]
-public sealed class PublicApiGenerator : IIncrementalGenerator
+public sealed class PublicApiGenerator
 {
-    public void Initialize(IncrementalGeneratorInitializationContext context)
-    {
-        // Create a provider that captures the compilation
-        var compilationProvider = context.CompilationProvider;
-        
-        // Register the source output
-        context.RegisterSourceOutput(compilationProvider, GenerateSource);
-    }
-    
-    private static void GenerateSource(SourceProductionContext context, Compilation compilation)
+    public static void GenerateSource(Compilation compilation)
     {
         var generators = new List<IInteropSourceGenerator>
         {
@@ -62,8 +52,13 @@ public sealed class PublicApiGenerator : IIncrementalGenerator
                     GenerationDateTime = DateTime.Now.ToString(CultureInfo.InvariantCulture),
                     Fragments = codeFragments
                 });
-
-            context.AddSource(sourceFileName, finalCode);
+            
+            var path = Path.Combine("Generated", sourceFileName);
+            
+            if (File.Exists(path))
+                File.Delete(path);
+            
+            File.WriteAllText(path, finalCode);
         }
     }
     
