@@ -1,3 +1,60 @@
-// TypeScript Object class: {{ className }}
-// TODO: Implement TypeScript koffi bindings for {{ className }}
+// ============================================================================
+// {{ className }} - Native Function Declarations
+// ============================================================================
 
+{% for typedef in callbackTypedefs %}
+// {{ typedef }}
+{% endfor %}
+
+const {{ className }}NativeFunctions = {
+{% for method in methods %}
+  {{ method.nativeMethodName }}: null as ((...args: any[]) => any) | null,
+{% endfor %}
+};
+
+function init{{ className }}Functions(lib: koffi.IKoffiLib): void {
+{% for method in methods %}
+  {{ className }}NativeFunctions.{{ method.nativeMethodName }} = lib.func('{{ method.cSignature }}');
+{% endfor %}
+}
+
+// Register initialization
+const {{ className | camelCase }}InitCallbacks: Array<() => void> = [];
+{{ className | camelCase }}InitCallbacks.push((lib) => init{{ className }}Functions(lib));
+
+// ============================================================================
+// {{ className }} Class
+// ============================================================================
+
+export class {{ className }} {
+  private readonly _ptr: koffi.Pointer;
+  private readonly _callbacks: koffi.IKoffiRegisteredCallback[] = [];
+
+  constructor(ptr: koffi.Pointer) {
+    this._ptr = ptr;
+  }
+
+  get pointer(): koffi.Pointer {
+    return this._ptr;
+  }
+
+{% for method in methods %}
+  {% if method.deprecationMessage %}/** @deprecated {{ method.deprecationMessage }} */
+  {% endif %}{{ method.tsMethodName }}({{ method.tsParameters }}): {{ method.tsReturnType }} {
+{% for callback in method.callbacks %}
+    const {{ callback.parameterName }}Proto = koffi.proto('void {{ callback.parameterName }}Callback(void* ptr)');
+    const {{ callback.parameterName }}Cb = koffi.register((ptr: koffi.Pointer) => {
+      const obj = new {{ callback.argumentTypeName }}(ptr);
+      {{ callback.parameterName }}(obj);
+    }, koffi.pointer({{ callback.parameterName }}Proto));
+    this._callbacks.push({{ callback.parameterName }}Cb);
+{% endfor %}
+
+    const result = {{ className }}NativeFunctions.{{ method.nativeMethodName }}!({{ method.nativeCallArgs }});
+{% if method.tsReturnType != 'void' %}
+    return new {{ method.returnClassName }}(result);
+{% endif %}
+  }
+
+{% endfor %}
+}

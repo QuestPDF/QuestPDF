@@ -16,6 +16,9 @@ public class TypeScriptLanguageProvider : ILanguageProvider
     public string EnumTemplateName => "TypeScript.Enum";
     public string ColorsTemplateName => "TypeScript.Colors";
 
+    // Store current class name for TypeParameter resolution
+    private string _currentClassName;
+
     public string ConvertName(string csharpName, NameContext context)
     {
         return context switch
@@ -50,13 +53,63 @@ public class TypeScriptLanguageProvider : ILanguageProvider
             InteropTypeKind.Enum => type.ShortName,
             InteropTypeKind.Class => type.ShortName,
             InteropTypeKind.Interface => type.ShortName.TrimStart('I'),
-            InteropTypeKind.TypeParameter => "unknown",
+            InteropTypeKind.TypeParameter => _currentClassName ?? "unknown",
             InteropTypeKind.Color => "Color",
             InteropTypeKind.Action => FormatFunctionType(type, isFunc: false),
             InteropTypeKind.Func => FormatFunctionType(type, isFunc: true),
             InteropTypeKind.Unknown => "unknown",
             _ => "unknown"
         };
+    }
+
+    /// <summary>
+    /// Gets the koffi-compatible C type for FFI declarations.
+    /// </summary>
+    public string GetKoffiType(InteropTypeModel type)
+    {
+        return type.Kind switch
+        {
+            InteropTypeKind.Void => "void",
+            InteropTypeKind.Boolean => "uint8_t",
+            InteropTypeKind.Integer => GetKoffiIntegerType(type),
+            InteropTypeKind.Float => GetKoffiFloatType(type),
+            InteropTypeKind.String => "const char*",
+            InteropTypeKind.Enum => "int32_t",
+            InteropTypeKind.Class => "void*",
+            InteropTypeKind.Interface => "void*",
+            InteropTypeKind.TypeParameter => "void*",
+            InteropTypeKind.Color => "uint32_t",
+            InteropTypeKind.Action => "void*", // Callback pointer
+            InteropTypeKind.Func => "void*", // Callback pointer
+            InteropTypeKind.Unknown => "void*",
+            _ => "void*"
+        };
+    }
+
+    private string GetKoffiIntegerType(InteropTypeModel type)
+    {
+        var typeName = type.OriginalTypeName ?? "";
+        if (typeName.Contains("Int64") || typeName.Contains("long"))
+            return "int64_t";
+        if (typeName.Contains("UInt64") || typeName.Contains("ulong"))
+            return "uint64_t";
+        if (typeName.Contains("Int16") || typeName.Contains("short"))
+            return "int16_t";
+        if (typeName.Contains("UInt16") || typeName.Contains("ushort"))
+            return "uint16_t";
+        if (typeName.Contains("Byte"))
+            return "uint8_t";
+        if (typeName.Contains("SByte"))
+            return "int8_t";
+        if (typeName.Contains("UInt32") || typeName.Contains("uint"))
+            return "uint32_t";
+        return "int32_t";
+    }
+
+    private string GetKoffiFloatType(InteropTypeModel type)
+    {
+        var typeName = type.OriginalTypeName ?? "";
+        return typeName.Contains("Double") || typeName.Contains("double") ? "double" : "float";
     }
 
     private string FormatFunctionType(InteropTypeModel type, bool isFunc)
@@ -111,35 +164,60 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         {
             InteropTypeKind.Enum => variableName,
             InteropTypeKind.String => variableName,
-            InteropTypeKind.Action => $"{variableName}Callback",
-            InteropTypeKind.Func => $"{variableName}Callback",
+            InteropTypeKind.Action => $"{variableName}Cb",
+            InteropTypeKind.Func => $"{variableName}Cb",
+            InteropTypeKind.Class => $"{variableName}.pointer",
+            InteropTypeKind.Interface => $"{variableName}.pointer",
             _ => variableName
         };
     }
 
     public object BuildClassTemplateModel(InteropClassModel classModel)
     {
+        _currentClassName = classModel.GeneratedClassName;
+
         return new
         {
             ClassName = classModel.GeneratedClassName,
+            CallbackTypedefs = classModel.CallbackTypedefs,
             Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList()
         };
     }
 
     private object BuildMethodTemplateModel(InteropMethodModel method)
     {
+        // Build TypeScript parameter string
+        var tsParams = method.Parameters.Select(p =>
+        {
+            var name = ConvertName(p.OriginalName, NameContext.Parameter);
+            var type = GetTargetType(p.Type);
+            var defaultVal = p.HasDefaultValue ? FormatDefaultValue(p) : null;
+            return defaultVal != null ? $"{name}: {type} = {defaultVal}" : $"{name}: {type}";
+        });
+        var tsParametersStr = string.Join(", ", tsParams);
+
+        // Build native call arguments
+        var nativeArgs = new List<string> { "this._ptr" };
+        nativeArgs.AddRange(method.Parameters.Select(p =>
+            GetInteropValue(p, ConvertName(p.OriginalName, NameContext.Parameter))));
+        var nativeCallArgsStr = string.Join(", ", nativeArgs);
+
+        // Build C signature for koffi.func()
+        var cSignature = BuildCSignature(method);
+
+        // Determine return type and class name
+        var tsReturnType = GetReturnTypeName(method);
+        var returnClassName = tsReturnType != "void" ? tsReturnType : null;
+
         return new
         {
             TsMethodName = ConvertName(method.OriginalName, NameContext.Method),
             NativeMethodName = method.NativeEntryPoint,
-            Parameters = method.Parameters.Select(p => new
-            {
-                Name = ConvertName(p.OriginalName, NameContext.Parameter),
-                Type = GetTargetType(p.Type),
-                HasDefault = p.HasDefaultValue,
-                DefaultValue = FormatDefaultValue(p)
-            }).ToList(),
-            ReturnType = GetTargetType(method.ReturnType),
+            TsParameters = tsParametersStr,
+            TsReturnType = tsReturnType,
+            ReturnClassName = returnClassName,
+            CSignature = cSignature,
+            NativeCallArgs = nativeCallArgsStr,
             DeprecationMessage = method.DeprecationMessage,
             Callbacks = method.Callbacks.Select(c => new
             {
@@ -147,6 +225,33 @@ public class TypeScriptLanguageProvider : ILanguageProvider
                 ArgumentTypeName = c.ArgumentTypeName
             }).ToList()
         };
+    }
+
+    private string GetReturnTypeName(InteropMethodModel method)
+    {
+        if (method.ReturnType.Kind == InteropTypeKind.Void)
+            return "void";
+
+        if (method.ReturnType.Kind == InteropTypeKind.TypeParameter)
+            return _currentClassName;
+
+        return GetTargetType(method.ReturnType);
+    }
+
+    private string BuildCSignature(InteropMethodModel method)
+    {
+        var returnType = GetKoffiType(method.ReturnType);
+        var methodName = method.NativeEntryPoint;
+
+        // Build parameters: first is always void* target
+        var parameters = new List<string> { "void* target" };
+        parameters.AddRange(method.Parameters.Select(p =>
+        {
+            var koffiType = GetKoffiType(p.Type);
+            return $"{koffiType} {p.OriginalName}";
+        }));
+
+        return $"{returnType} {methodName}({string.Join(", ", parameters)})";
     }
 
     public object BuildEnumTemplateModel(object enums)

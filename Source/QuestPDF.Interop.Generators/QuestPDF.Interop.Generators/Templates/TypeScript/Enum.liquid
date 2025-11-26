@@ -1,7 +1,8 @@
 {% for enum in enums %}
-enum {{ enum.name }} {
+export enum {{ enum.name }} {
 {%- for member in enum.members %}
-    {{ member.name }} = {{ member.value }},
+  {{ member.name }} = {{ member.value }},
 {%- endfor %}
 }
+
 {% endfor %}

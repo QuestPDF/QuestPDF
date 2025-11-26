@@ -1,5 +1,228 @@
 // AUTO-GENERATED on {{ generationDateTime }}
+// QuestPDF TypeScript Bindings using koffi
+
+import koffi from 'koffi';
+import * as path from 'path';
+import * as fs from 'fs';
+
+// ============================================================================
+// Native Library Loading
+// ============================================================================
+
+let lib: koffi.IKoffiLib | null = null;
+
+function getLibraryPath(): string {
+  const platform = process.platform;
+  const arch = process.arch;
+
+  let libName: string;
+  if (platform === 'win32') {
+    libName = 'QuestPDF.Interop.dll';
+  } else if (platform === 'darwin') {
+    libName = 'QuestPDF.Interop.dylib';
+  } else {
+    libName = 'libQuestPDF.Interop.so';
+  }
+
+  // Try multiple locations
+  const searchPaths = [
+    path.join(__dirname, libName),
+    path.join(__dirname, '..', libName),
+    path.join(process.cwd(), libName),
+  ];
+
+  for (const searchPath of searchPaths) {
+    if (fs.existsSync(searchPath)) {
+      return searchPath;
+    }
+  }
+
+  return libName; // Let koffi try to find it
+}
+
+// ============================================================================
+// Type Definitions
+// ============================================================================
+
+// Buffer struct for receiving byte arrays from native code
+const BufferStruct = koffi.struct('Buffer', {
+  data: 'void*',
+  length: 'size_t',
+});
+
+// Callback types
+const DocumentContainerCallback = koffi.proto('void documentContainerCallback(void* container)');
+const PageDescriptorCallback = koffi.proto('void pageDescriptorCallback(void* page)');
+const VoidPtrCallback = koffi.proto('void voidPtrCallback(void* ptr)');
+
+// ============================================================================
+// Enums
+// ============================================================================
 
 {% for fragment in fragments %}
 {{ fragment }}
 {% endfor %}
+
+// ============================================================================
+// Native Function Declarations (Manual)
+// ============================================================================
+
+interface QuestPDFLib {
+  questpdf_sum(a: number, b: number): number;
+  questpdf_document_create(cb: koffi.IKoffiRegisteredCallback): koffi.Pointer;
+  questpdf_document_generate_pdf(document: koffi.Pointer): { data: koffi.Pointer; length: number };
+  questpdf_document_destroy(document: koffi.Pointer): void;
+  questpdf_document_container_add_page(container: koffi.Pointer, cb: koffi.IKoffiRegisteredCallback): void;
+  questpdf_page_set_margin(page: koffi.Pointer, margin: number): void;
+  questpdf_page_set_content(page: koffi.Pointer): koffi.Pointer;
+  questpdf_container_background(container: koffi.Pointer, color: number): koffi.Pointer;
+  questpdf_free_bytes(ptr: koffi.Pointer): void;
+  [key: string]: (...args: any[]) => any;
+}
+
+let questpdfLib: QuestPDFLib | null = null;
+
+// ============================================================================
+// Library Initialization
+// ============================================================================
+
+export function initializeQuestPDF(libraryPath?: string): void {
+  if (lib !== null) {
+    return; // Already initialized
+  }
+
+  const libPath = libraryPath ?? getLibraryPath();
+  lib = koffi.load(libPath);
+
+  // Define manual functions
+  questpdfLib = {
+    questpdf_sum: lib.func('int questpdf_sum(int a, int b)'),
+    questpdf_document_create: lib.func('void* questpdf_document_create(documentContainerCallback cb)'),
+    questpdf_document_generate_pdf: lib.func('Buffer questpdf_document_generate_pdf(void* document)'),
+    questpdf_document_destroy: lib.func('void questpdf_document_destroy(void* document)'),
+    questpdf_document_container_add_page: lib.func('void questpdf_document_container_add_page(void* container, pageDescriptorCallback cb)'),
+    questpdf_page_set_margin: lib.func('void questpdf_page_set_margin(void* page, int margin)'),
+    questpdf_page_set_content: lib.func('void* questpdf_page_set_content(void* page)'),
+    questpdf_container_background: lib.func('void* questpdf_container_background(void* container, uint32_t color)'),
+    questpdf_free_bytes: lib.func('void questpdf_free_bytes(void* ptr)'),
+  };
+}
+
+export function getLib(): QuestPDFLib {
+  if (questpdfLib === null) {
+    throw new Error('QuestPDF library not initialized. Call initializeQuestPDF() first.');
+  }
+  return questpdfLib;
+}
+
+export function getNativeLib(): koffi.IKoffiLib {
+  if (lib === null) {
+    throw new Error('QuestPDF library not initialized. Call initializeQuestPDF() first.');
+  }
+  return lib;
+}
+
+// ============================================================================
+// Helper Classes
+// ============================================================================
+
+export class Page {
+  private readonly _ptr: koffi.Pointer;
+
+  constructor(ptr: koffi.Pointer) {
+    this._ptr = ptr;
+  }
+
+  get pointer(): koffi.Pointer {
+    return this._ptr;
+  }
+
+  margin(margin: number): void {
+    getLib().questpdf_page_set_margin(this._ptr, margin);
+  }
+
+  content(): Container {
+    const ptr = getLib().questpdf_page_set_content(this._ptr);
+    return new Container(ptr);
+  }
+}
+
+export class DocumentContainer {
+  private readonly _ptr: koffi.Pointer;
+  private readonly _callbacks: koffi.IKoffiRegisteredCallback[] = [];
+
+  constructor(ptr: koffi.Pointer) {
+    this._ptr = ptr;
+  }
+
+  get pointer(): koffi.Pointer {
+    return this._ptr;
+  }
+
+  page(configurator: (page: Page) => void): void {
+    const callback = koffi.register((pagePtr: koffi.Pointer) => {
+      const page = new Page(pagePtr);
+      configurator(page);
+    }, koffi.pointer(PageDescriptorCallback));
+
+    this._callbacks.push(callback);
+    getLib().questpdf_document_container_add_page(this._ptr, callback);
+  }
+}
+
+export class Document {
+  private _ptr: koffi.Pointer | null = null;
+  private _containerCallback: koffi.IKoffiRegisteredCallback | null = null;
+
+  private constructor() {}
+
+  static create(configurator: (container: DocumentContainer) => void): Document {
+    const doc = new Document();
+
+    doc._containerCallback = koffi.register((containerPtr: koffi.Pointer) => {
+      const container = new DocumentContainer(containerPtr);
+      configurator(container);
+    }, koffi.pointer(DocumentContainerCallback));
+
+    doc._ptr = getLib().questpdf_document_create(doc._containerCallback);
+    return doc;
+  }
+
+  generatePdf(): Buffer {
+    if (this._ptr === null) {
+      throw new Error('Document not created');
+    }
+
+    const result = getLib().questpdf_document_generate_pdf(this._ptr);
+    try {
+      // Copy data to a Node.js Buffer
+      const data = koffi.decode(result.data, 'uint8_t', result.length);
+      return Buffer.from(data);
+    } finally {
+      getLib().questpdf_free_bytes(result.data);
+    }
+  }
+
+  saveToFile(filename: string): Document {
+    const pdfBytes = this.generatePdf();
+    fs.writeFileSync(filename, pdfBytes);
+    return this;
+  }
+
+  destroy(): void {
+    if (this._ptr !== null) {
+      getLib().questpdf_document_destroy(this._ptr);
+      this._ptr = null;
+    }
+    if (this._containerCallback !== null) {
+      koffi.unregister(this._containerCallback);
+      this._containerCallback = null;
+    }
+  }
+}
+
+// ============================================================================
+// Exports
+// ============================================================================
+
+export { koffi };
