@@ -6,35 +6,34 @@
 // {{ typedef }}
 {% endfor %}
 
-const {{ className }}NativeFunctions = {
+const {{ className }}NativeFunctions: Record<string, ((...args: any[]) => any) | null> = {
 {% for method in methods %}
-  {{ method.nativeMethodName }}: null as ((...args: any[]) => any) | null,
+  '{{ method.nativeMethodName }}': null,
 {% endfor %}
 };
 
 function init{{ className }}Functions(lib: koffi.IKoffiLib): void {
 {% for method in methods %}
-  {{ className }}NativeFunctions.{{ method.nativeMethodName }} = lib.func('{{ method.cSignature }}');
+  {{ className }}NativeFunctions['{{ method.nativeMethodName }}'] = lib.func('{{ method.cSignature }}');
 {% endfor %}
 }
 
-// Register initialization
-const {{ className | camelCase }}InitCallbacks: Array<() => void> = [];
-{{ className | camelCase }}InitCallbacks.push((lib) => init{{ className }}Functions(lib));
+// Register initialization with the global initializers
+classInitializers.push((lib: koffi.IKoffiLib) => init{{ className }}Functions(lib));
 
 // ============================================================================
 // {{ className }} Class
 // ============================================================================
 
 export class {{ className }} {
-  private readonly _ptr: koffi.Pointer;
+  private readonly _ptr: NativePointer;
   private readonly _callbacks: koffi.IKoffiRegisteredCallback[] = [];
 
-  constructor(ptr: koffi.Pointer) {
+  constructor(ptr: NativePointer) {
     this._ptr = ptr;
   }
 
-  get pointer(): koffi.Pointer {
+  get pointer(): NativePointer {
     return this._ptr;
   }
 
@@ -42,15 +41,17 @@ export class {{ className }} {
   {% if method.deprecationMessage %}/** @deprecated {{ method.deprecationMessage }} */
   {% endif %}{{ method.tsMethodName }}({{ method.tsParameters }}): {{ method.tsReturnType }} {
 {% for callback in method.callbacks %}
-    const {{ callback.parameterName }}Proto = koffi.proto('void {{ callback.parameterName }}Callback(void* ptr)');
-    const {{ callback.parameterName }}Cb = koffi.register((ptr: koffi.Pointer) => {
+    // Create callback type and register handler
+    const {{ callback.parameterName }}CallbackType_{{ method.uniqueId }} = koffi.proto('void {{ callback.parameterName }}Cb_{{ method.uniqueId }}(void* ptr)');
+    const {{ callback.parameterName }}CallbackPtr_{{ method.uniqueId }} = koffi.pointer({{ callback.parameterName }}CallbackType_{{ method.uniqueId }});
+    const {{ callback.parameterName }}Cb = koffi.register((ptr: NativePointer) => {
       const obj = new {{ callback.argumentTypeName }}(ptr);
       {{ callback.parameterName }}(obj);
-    }, koffi.pointer({{ callback.parameterName }}Proto));
+    }, {{ callback.parameterName }}CallbackPtr_{{ method.uniqueId }});
     this._callbacks.push({{ callback.parameterName }}Cb);
 {% endfor %}
 
-    const result = {{ className }}NativeFunctions.{{ method.nativeMethodName }}!({{ method.nativeCallArgs }});
+    const result = {{ className }}NativeFunctions['{{ method.nativeMethodName }}']!({{ method.nativeCallArgs }});
 {% if method.tsReturnType != 'void' %}
     return new {{ method.returnClassName }}(result);
 {% endif %}

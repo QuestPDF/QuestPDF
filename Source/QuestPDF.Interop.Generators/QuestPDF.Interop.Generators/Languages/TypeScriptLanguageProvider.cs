@@ -64,6 +64,8 @@ public class TypeScriptLanguageProvider : ILanguageProvider
 
     /// <summary>
     /// Gets the koffi-compatible C type for FFI declarations.
+    /// Note: koffi doesn't support callback type names in signature strings,
+    /// so all callbacks are declared as void* pointers.
     /// </summary>
     public string GetKoffiType(InteropTypeModel type)
     {
@@ -73,14 +75,14 @@ public class TypeScriptLanguageProvider : ILanguageProvider
             InteropTypeKind.Boolean => "uint8_t",
             InteropTypeKind.Integer => GetKoffiIntegerType(type),
             InteropTypeKind.Float => GetKoffiFloatType(type),
-            InteropTypeKind.String => "const char*",
+            InteropTypeKind.String => "str16", // UTF-16 encoded strings for .NET compatibility
             InteropTypeKind.Enum => "int32_t",
             InteropTypeKind.Class => "void*",
             InteropTypeKind.Interface => "void*",
             InteropTypeKind.TypeParameter => "void*",
             InteropTypeKind.Color => "uint32_t",
-            InteropTypeKind.Action => "void*", // Callback pointer
-            InteropTypeKind.Func => "void*", // Callback pointer
+            InteropTypeKind.Action => "void*", // Callback pointer - koffi handles conversion
+            InteropTypeKind.Func => "void*", // Callback pointer - koffi handles conversion
             InteropTypeKind.Unknown => "void*",
             _ => "void*"
         };
@@ -176,15 +178,36 @@ public class TypeScriptLanguageProvider : ILanguageProvider
     {
         _currentClassName = classModel.GeneratedClassName;
 
+        // Track method name occurrences to handle overloads
+        var methodNameCounts = new Dictionary<string, int>();
+        var methodModels = new List<object>();
+
+        foreach (var method in classModel.Methods)
+        {
+            var baseName = ConvertName(method.OriginalName, NameContext.Method);
+
+            // Track occurrences of this method name
+            if (!methodNameCounts.TryGetValue(baseName, out var count))
+            {
+                count = 0;
+            }
+            methodNameCounts[baseName] = count + 1;
+
+            // Generate unique method name for overloads
+            var tsMethodName = count == 0 ? baseName : $"{baseName}_{count}";
+
+            methodModels.Add(BuildMethodTemplateModel(method, tsMethodName));
+        }
+
         return new
         {
             ClassName = classModel.GeneratedClassName,
             CallbackTypedefs = classModel.CallbackTypedefs,
-            Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList()
+            Methods = methodModels
         };
     }
 
-    private object BuildMethodTemplateModel(InteropMethodModel method)
+    private object BuildMethodTemplateModel(InteropMethodModel method, string tsMethodName)
     {
         // Build TypeScript parameter string
         var tsParams = method.Parameters.Select(p =>
@@ -209,15 +232,19 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         var tsReturnType = GetReturnTypeName(method);
         var returnClassName = tsReturnType != "void" ? tsReturnType : null;
 
+        // Extract unique ID from native entry point (the hash at the end)
+        var uniqueId = ExtractUniqueId(method.NativeEntryPoint);
+
         return new
         {
-            TsMethodName = ConvertName(method.OriginalName, NameContext.Method),
+            TsMethodName = tsMethodName,
             NativeMethodName = method.NativeEntryPoint,
             TsParameters = tsParametersStr,
             TsReturnType = tsReturnType,
             ReturnClassName = returnClassName,
             CSignature = cSignature,
             NativeCallArgs = nativeCallArgsStr,
+            UniqueId = uniqueId,
             DeprecationMessage = method.DeprecationMessage,
             Callbacks = method.Callbacks.Select(c => new
             {
@@ -225,6 +252,17 @@ public class TypeScriptLanguageProvider : ILanguageProvider
                 ArgumentTypeName = c.ArgumentTypeName
             }).ToList()
         };
+    }
+
+    private static string ExtractUniqueId(string nativeEntryPoint)
+    {
+        // Native entry points end with a hash like "__a1b2c3d4"
+        var lastUnderscore = nativeEntryPoint.LastIndexOf("__");
+        if (lastUnderscore >= 0 && lastUnderscore < nativeEntryPoint.Length - 2)
+        {
+            return nativeEntryPoint.Substring(lastUnderscore + 2);
+        }
+        return nativeEntryPoint.GetHashCode().ToString("x8");
     }
 
     private string GetReturnTypeName(InteropMethodModel method)
