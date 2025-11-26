@@ -9,18 +9,14 @@
         <NativeLib>Shared</NativeLib>
         <IsAotCompatible>true</IsAotCompatible>
         <PublishTrimmed>true</PublishTrimmed>
-        <TrimMode>partial</TrimMode>
+        <TrimMode>link</TrimMode>
+        <TrimmerRemoveSymbols>true</TrimmerRemoveSymbols>
         
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         <EnableAotAnalyzer>true</EnableAotAnalyzer>
 
         <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
         <IsTrimmable>false</IsTrimmable>
-
-        <IlcGenerateMapFile>true</IlcGenerateMapFile>
-        <IlcGenerateCompleteTypeMetadata>true</IlcGenerateCompleteTypeMetadata>
-        <IlcExportUnmanagedEntrypoints>true</IlcExportUnmanagedEntrypoints>
-        <IlcVerbosity>5</IlcVerbosity>
     </PropertyGroup>
 
     <ItemGroup>
