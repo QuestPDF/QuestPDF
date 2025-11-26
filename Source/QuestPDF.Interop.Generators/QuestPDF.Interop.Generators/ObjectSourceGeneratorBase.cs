@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
+using QuestPDF.Interop.Generators.Languages;
+using QuestPDF.Interop.Generators.Models;
 
 namespace QuestPDF.Interop.Generators;
 
@@ -14,11 +16,22 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     private string GetTargetClassName(Compilation compilation)
     {
         var targetType = GetTargetType(compilation);
-        
+
         if (targetType.TypeKind == TypeKind.Interface)
             return targetType.Name.TrimStart('I');
-        
+
         return targetType.Name;
+    }
+
+    /// <summary>
+    /// Builds a language-agnostic class model from the compilation.
+    /// This model can be reused across all target languages.
+    /// </summary>
+    protected InteropClassModel BuildClassModel(Compilation compilation)
+    {
+        var targetType = GetTargetType(compilation);
+        var methods = GetTargetMethods(compilation);
+        return InteropModelBuilder.BuildClassModel(targetType, methods);
     }
 
     public string GenerateCSharpCode(Compilation compilation)
@@ -109,136 +122,28 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     
     public string GeneratePythonCode(Compilation compilation)
     {
-        var targetMethods = GetTargetMethods(compilation).ToList();
+        var classModel = BuildClassModel(compilation);
+        var provider = LanguageProviderRegistry.Python;
+        var templateModel = provider.BuildClassTemplateModel(classModel);
 
-        var callbackTypedefs = targetMethods.GetCallbackTypedefs()
-            .Select(t => t.TypedefDefinition);
-
-        var headers = targetMethods
-            .Select(x => x.GetCHeaderDefinition(GetTargetClassName(compilation)));
-
-        return TemplateManager
-            .RenderTemplate("Python.Object", new
-            {
-                CallbackTypedefs = callbackTypedefs,
-                Headers = headers,
-                ClassName = GetTargetClassName(compilation),
-                Methods = targetMethods.Select(MapMethod)
-            });
-        
-        object MapMethod(IMethodSymbol method)
-        {
-            return new
-            {
-                PythonMethodName = method.Name.ToSnakeCase(),
-                PythonMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetMethodParameter).Prepend("self"),
-                
-                InteropMethodName = method.GetNativeMethodName(GetTargetClassName(compilation)),
-                InteropMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetInteropMethodParameter).Prepend("self.target_pointer"),
-                PythonMethodReturnType = GetReturnType(),
-                
-                DeprecationMessage = method.TryGetDeprecationMessage(),
-                
-                Callbacks = GetCallbacks(method)
-            };
-
-            string GetReturnType()
-            {
-                if (method.ReturnType.SpecialType == SpecialType.System_Void)
-                    return null;
-                
-                if (method.ReturnType.TypeKind == TypeKind.TypeParameter)
-                    return GetTargetClassName(compilation);
-                
-                if (method.ReturnType.TypeKind == TypeKind.Interface)
-                    return method.ReturnType.Name.TrimStart('I');
-                
-                return method.ReturnType.Name;
-            }
-        }
-
-        static string GetMethodParameter(IParameterSymbol parameterSymbol)
-        {
-            var result = $"{parameterSymbol.Name.ToSnakeCase()}: {parameterSymbol.Type.GetPythonParameterType()}";
-            
-            if (parameterSymbol.HasExplicitDefaultValue)
-            {
-                if (parameterSymbol.ExplicitDefaultValue == null)
-                {
-                    result += " = None";
-                }
-                else if (parameterSymbol.Type.TypeKind == TypeKind.Enum)
-                {
-                    var enumValueName = parameterSymbol.Type
-                        .GetMembers()
-                        .OfType<IFieldSymbol>()
-                        .First(x => x.HasConstantValue && x.ConstantValue.Equals(parameterSymbol.ExplicitDefaultValue))
-                        .Name;
-                    
-                    result += $" = {parameterSymbol.Type.Name}.{enumValueName.ToSnakeCase()}";
-                }
-                else
-                {
-                    var defaultValue = parameterSymbol.ExplicitDefaultValue;
-                    
-                    if (defaultValue is string)
-                        defaultValue = $"'{defaultValue}'";
-                    
-                    result += $" = {defaultValue ?? "None"}";
-                }
-            }
-            
-            return result;
-        }
-        
-        static string GetInteropMethodParameter(IParameterSymbol parameterSymbol)
-        {
-            var parameterName = parameterSymbol.Name.ToSnakeCase();
-
-            if (parameterSymbol.Type.TypeKind == TypeKind.Enum)
-                return $"{parameterName}.value";
-            
-            if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
-                return $"questpdf_ffi.new(\"char[]\", {parameterName}.encode(\"utf-16\"))";
-
-            if (parameterSymbol.Type.IsAction())
-                return $"_internal_{parameterName}_handler";
-
-            return parameterName;
-        }
-
-        static IEnumerable<object> GetCallbacks(IMethodSymbol methodSymbol)
-        {
-            foreach (var parameterSymbol in methodSymbol.Parameters.Skip(methodSymbol.IsExtensionMethod ? 1 : 0).Where(x => x.Type.IsAction()))
-            {
-                var actionType = (INamedTypeSymbol)parameterSymbol.Type;
-                var callbackArgument = actionType.TypeArguments.FirstOrDefault();
-
-                if (callbackArgument == null)
-                    continue;
-
-                var pythonParameterName = parameterSymbol.Name.ToSnakeCase();
-                var callbackArgumentTypeName = callbackArgument.TypeKind == TypeKind.Interface
-                    ? callbackArgument.Name.TrimStart('I')
-                    : callbackArgument.Name;
-
-                yield return new
-                {
-                    PythonParameterName = pythonParameterName,
-                    CallbackArgumentTypeName = callbackArgumentTypeName,
-                    InternalCallbackName = $"_internal_{pythonParameterName}_handler"
-                };
-            }
-        }
+        return TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
     }
-    
+
     public string GenerateJavaCode(Compilation compilation)
     {
-        return string.Empty;
+        var classModel = BuildClassModel(compilation);
+        var provider = LanguageProviderRegistry.Java;
+        var templateModel = provider.BuildClassTemplateModel(classModel);
+
+        return TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
     }
-    
+
     public string GenerateTypeScriptCode(Compilation compilation)
     {
-        return string.Empty;
+        var classModel = BuildClassModel(compilation);
+        var provider = LanguageProviderRegistry.TypeScript;
+        var templateModel = provider.BuildClassTemplateModel(classModel);
+
+        return TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
     }
 }

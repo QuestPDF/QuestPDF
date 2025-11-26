@@ -9,6 +9,22 @@ public final class Color {
         return hex;
     }
 
+    public int getAlpha() {
+        return (hex >>> 24) & 0xFF;
+    }
+
+    public int getRed() {
+        return (hex >>> 16) & 0xFF;
+    }
+
+    public int getGreen() {
+        return (hex >>> 8) & 0xFF;
+    }
+
+    public int getBlue() {
+        return hex & 0xFF;
+    }
+
     @Override
     public String toString() {
         if (getAlpha() == 0xFF) {
@@ -23,15 +39,15 @@ public final class Colors {
     private Colors() {}
 
 {% for color in basicColors %}
-    public static final Color {{ color.name }} = new Color({{ color.value }});
+    public static final Color {{ color.name | screamingSnakeCase }} = new Color({{ color.value }});
 {% endfor %}
 
 {% for group in colorGroups %}
-    public static final class {{ group.name }} {
-        private {{ group.name }}() {}
+    public static final class {{ group.name | pascalCase }} {
+        private {{ group.name | pascalCase }}() {}
 
 {% for color in group.colors %}
-        public static final Color {{ color.name }} = new Color({{ color.value }});
+        public static final Color {{ color.name | screamingSnakeCase }} = new Color({{ color.value }});
 {% endfor %}
     }
 {% endfor %}

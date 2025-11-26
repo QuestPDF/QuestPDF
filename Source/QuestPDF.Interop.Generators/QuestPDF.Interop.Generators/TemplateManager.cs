@@ -19,9 +19,30 @@ internal static class TemplateManager
 
         Options.MemberAccessStrategy = new UnsafeMemberAccessStrategy();
         Options.MemberAccessStrategy.IgnoreCasing = true;
+
+        // Naming convention filters
         Options.Filters.AddFilter("snakeCase", (input, _, _) => new StringValue(input.ToStringValue().ToSnakeCase()));
+        Options.Filters.AddFilter("camelCase", (input, _, _) => new StringValue(ToCamelCase(input.ToStringValue())));
+        Options.Filters.AddFilter("pascalCase", (input, _, _) => new StringValue(ToPascalCase(input.ToStringValue())));
+        Options.Filters.AddFilter("screamingSnakeCase", (input, _, _) => new StringValue(input.ToStringValue().ToSnakeCase().ToUpperInvariant()));
 
         Parser = new FluidParser();
+    }
+
+    private static string ToCamelCase(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        return char.ToLowerInvariant(input[0]) + input.Substring(1);
+    }
+
+    private static string ToPascalCase(string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        return char.ToUpperInvariant(input[0]) + input.Substring(1);
     }
 
     private static IFluidTemplate LoadTemplate(string templateName)

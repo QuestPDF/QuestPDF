@@ -1,7 +1,7 @@
 {% for enum in enums %}
 public enum {{ enum.name }} {
 {%- for member in enum.members %}
-    {{ member.name }}({{ member.value }}){% unless forloop.last %},{% else %};{% endunless %}
+    {{ member.name | screamingSnakeCase }}({{ member.value }}){% unless forloop.last %},{% else %};{% endunless %}
 {%- endfor %}
 
     private final int value;

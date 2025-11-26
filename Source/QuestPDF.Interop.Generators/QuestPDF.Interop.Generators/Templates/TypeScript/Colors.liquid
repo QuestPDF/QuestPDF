@@ -5,20 +5,39 @@ export class Color {
     this.hex = hexVal >>> 0;
   }
 
+  get alpha(): number {
+    return (this.hex >>> 24) & 0xFF;
+  }
+
+  get red(): number {
+    return (this.hex >>> 16) & 0xFF;
+  }
+
+  get green(): number {
+    return (this.hex >>> 8) & 0xFF;
+  }
+
+  get blue(): number {
+    return this.hex & 0xFF;
+  }
+
   toString(): string {
-    return `#${this.hex.toString(16).padStart(8, '0')}`;
+    if (this.alpha === 0xFF) {
+      return `#${this.red.toString(16).padStart(2, '0')}${this.green.toString(16).padStart(2, '0')}${this.blue.toString(16).padStart(2, '0')}`.toUpperCase();
+    }
+    return `#${this.alpha.toString(16).padStart(2, '0')}${this.red.toString(16).padStart(2, '0')}${this.green.toString(16).padStart(2, '0')}${this.blue.toString(16).padStart(2, '0')}`.toUpperCase();
   }
 }
 
 export const Colors = {
 {% for color in basicColors %}
-{{ color.name }}: new Color({{ color.value }}),
+  {{ color.name | camelCase }}: new Color({{ color.value }}),
 {% endfor %}
 {% for group in colorGroups %}
-    {{ group.name }}: {
+  {{ group.name | camelCase }}: {
 {% for color in group.colors %}
-        {{ color.name }}: new Color({{ color.value }}),
+    {{ color.name | camelCase }}: new Color({{ color.value }}),
 {% endfor %}
-    },
+  },
 {% endfor %}
 } as const;

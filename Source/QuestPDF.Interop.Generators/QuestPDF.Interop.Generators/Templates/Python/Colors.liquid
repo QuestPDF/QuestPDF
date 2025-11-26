@@ -2,13 +2,29 @@ class Color:
     def __init__(self, hex_val: int):
         # Ensure it stays within 32-bit unsigned limit
         self.hex = hex_val & 0xFFFFFFFF
-        
+
+    @property
+    def alpha(self) -> int:
+        return (self.hex >> 24) & 0xFF
+
+    @property
+    def red(self) -> int:
+        return (self.hex >> 16) & 0xFF
+
+    @property
+    def green(self) -> int:
+        return (self.hex >> 8) & 0xFF
+
+    @property
+    def blue(self) -> int:
+        return self.hex & 0xFF
+
     def __str__(self):
         if self.alpha == 0xFF:
             return f"#{self.red:02X}{self.green:02X}{self.blue:02X}"
-            
+
         return f"#{self.alpha:02X}{self.red:02X}{self.green:02X}{self.blue:02X}"
-    
+
     def __repr__(self):
         return self.__str__()
         

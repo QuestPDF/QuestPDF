@@ -11,17 +11,21 @@ QUESTPDF_CDEF += r"""
 class {{ className }}:
     def __init__(self, target_pointer):
         self.target_pointer = target_pointer
+        self._callbacks = []  # prevent GC of callbacks during native calls
 
 {% for method in methods %}
     {% if method.deprecationMessage %}@deprecated("{{ method.deprecationMessage }}"){% endif %}
-    def {{ method.pythonMethodName }}({{ method.pythonMethodParameters | join: ", " }}) -> {% if method.pythonMethodReturnType %}'{{ method.pythonMethodReturnType }}'{% else %} None {% endif %}:
+    def {{ method.pythonMethodName }}({{ method.pythonMethodParameters | join: ", " }}) -> {% if method.pythonMethodReturnType %}'{{ method.pythonMethodReturnType }}'{% else %}None{% endif %}:
 {% for callback in method.callbacks %}
         @questpdf_ffi.callback("void(void*)")
         def {{ callback.internalCallbackName }}({{ callback.pythonParameterName }}_pointer):
             {{ callback.pythonParameterName }}_object = {{ callback.callbackArgumentTypeName }}({{ callback.pythonParameterName }}_pointer)
             {{ callback.pythonParameterName }}({{ callback.pythonParameterName }}_object)
+
+        self._callbacks.append({{ callback.internalCallbackName }})
 {% endfor %}
 
         result = questpdf.lib.{{ method.interopMethodName }}({{ method.interopMethodParameters | join: ", " }})
-        {% if method.pythonMethodReturnType %}return {{ method.pythonMethodReturnType }}(result){% endif %}
+{% if method.pythonMethodReturnType %}        return {{ method.pythonMethodReturnType }}(result)
+{% endif %}
 {% endfor %}
