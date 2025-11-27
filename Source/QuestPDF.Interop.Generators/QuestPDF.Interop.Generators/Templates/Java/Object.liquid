@@ -1,3 +1,115 @@
-// Java Object class: {{ className }}
-// TODO: Implement Java JNA bindings for {{ className }}
+// ============================================================================
+// {{ className }} - Native Function Interface
+// ============================================================================
 
+/**
+ * JNA interface for {{ className }} native methods.
+ */
+interface {{ className }}Native extends Library {
+{% for method in methods %}
+    {{ method.jnaReturnType }} {{ method.nativeMethodName }}(Pointer target{% for param in method.parameters %}, {{ param.jnaType }} {{ param.name }}{% endfor %});
+{% endfor %}
+}
+
+// ============================================================================
+// {{ className }} Callback Interfaces
+// ============================================================================
+
+{% for callback in callbackInterfaces %}
+/**
+ * Callback interface for {{ callback.argumentTypeName }} configuration.
+ */
+interface {{ callback.interfaceName }} extends Callback {
+    void invoke(Pointer ptr);
+}
+
+{% endfor %}
+// ============================================================================
+// {{ className }} Class
+// ============================================================================
+
+/**
+ * {{ className }} wrapper for the native QuestPDF {{ className }}.
+ */
+class {{ className }} {
+    private static {{ className }}Native nativeLib = null;
+    private static final Object initLock = new Object();
+
+    private final Pointer ptr;
+    private final List<Callback> callbacks = new ArrayList<>();
+
+    {{ className }}(Pointer ptr) {
+        this.ptr = ptr;
+        ensureInitialized();
+    }
+
+    public Pointer getPointer() {
+        return ptr;
+    }
+
+    private static void ensureInitialized() {
+        if (nativeLib == null) {
+            synchronized (initLock) {
+                if (nativeLib == null) {
+                    nativeLib = Native.load(getLibraryPath(), {{ className }}Native.class);
+                }
+            }
+        }
+    }
+
+    private static String getLibraryPath() {
+        String os = System.getProperty("os.name").toLowerCase();
+        String libName;
+
+        if (os.contains("win")) {
+            libName = "QuestPDF.Interop.dll";
+        } else if (os.contains("mac")) {
+            libName = "QuestPDF.Interop.dylib";
+        } else {
+            libName = "libQuestPDF.Interop.so";
+        }
+
+        String[] searchPaths = {
+            libName,
+            "./" + libName,
+            "../" + libName,
+            System.getProperty("user.dir") + "/" + libName
+        };
+
+        for (String path : searchPaths) {
+            File file = new File(path);
+            if (file.exists()) {
+                return file.getAbsolutePath();
+            }
+        }
+
+        return libName;
+    }
+
+{% for method in methods %}
+    {% if method.deprecationMessage %}/**
+     * @deprecated {{ method.deprecationMessage }}
+     */
+    @Deprecated
+    {% endif %}public {{ method.javaReturnType }} {{ method.originalName }}({{ method.javaParameters }}) {
+{% for callback in method.callbacks %}
+        // Create callback for {{ callback.parameterName }}
+        {{ callback.callbackInterfaceName }} {{ callback.parameterName }}Callback = argPtr -> {
+            {{ callback.argumentTypeName }} obj = new {{ callback.argumentTypeName }}(argPtr);
+            {{ callback.parameterName }}.accept(obj);
+        };
+        this.callbacks.add({{ callback.parameterName }}Callback);
+
+{% endfor %}
+{% if method.javaReturnType == 'void' %}
+        nativeLib.{{ method.nativeMethodName }}({{ method.nativeCallArgs }});
+{% elsif method.returnsPointer %}
+        Pointer result = nativeLib.{{ method.nativeMethodName }}({{ method.nativeCallArgs }});
+        return new {{ method.returnClassName }}(result);
+{% else %}
+        return nativeLib.{{ method.nativeMethodName }}({{ method.nativeCallArgs }});
+{% endif %}
+    }
+
+{% endfor %}
+}

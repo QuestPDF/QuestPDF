@@ -1,4 +1,318 @@
 // AUTO-GENERATED on {{ generationDateTime }}
+// QuestPDF Java Bindings using JNA (Java Native Access)
+
+package com.questpdf.interop;
+
+import com.sun.jna.*;
+import com.sun.jna.ptr.*;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+// ============================================================================
+// Native Buffer Structure
+// ============================================================================
+
+/**
+ * Native buffer structure for receiving byte arrays from native code.
+ */
+class NativeBuffer extends Structure {
+    public Pointer data;
+    public NativeLong length;
+
+    public NativeBuffer() {
+        super();
+    }
+
+    public NativeBuffer(Pointer p) {
+        super(p);
+        read();
+    }
+
+    @Override
+    protected List<String> getFieldOrder() {
+        return List.of("data", "length");
+    }
+
+    public static class ByValue extends NativeBuffer implements Structure.ByValue {}
+}
+
+// ============================================================================
+// Native Library Interface
+// ============================================================================
+
+/**
+ * JNA interface for the QuestPDF native library.
+ */
+interface QuestPDFNative extends Library {
+    // Test function
+    int questpdf_sum(int a, int b);
+
+    // Document lifecycle
+    Pointer questpdf_document_create(Callback cb);
+    NativeBuffer.ByValue questpdf_document_generate_pdf(Pointer document);
+    void questpdf_document_destroy(Pointer document);
+
+    // Document container
+    void questpdf_document_container_add_page(Pointer container, Callback cb);
+
+    // Page descriptor
+    void questpdf_page_set_margin(Pointer page, int margin);
+    Pointer questpdf_page_set_content(Pointer page);
+
+    // Container
+    Pointer questpdf_container_background(Pointer container, int color);
+
+    // Memory management
+    void questpdf_free_bytes(Pointer ptr);
+}
+
+// ============================================================================
+// Library Loading
+// ============================================================================
+
+/**
+ * QuestPDF library manager for loading and accessing the native library.
+ */
+public final class QuestPDF {
+    private static QuestPDFNative lib = null;
+    private static final Object lock = new Object();
+
+    private QuestPDF() {}
+
+    /**
+     * Gets the native library instance, loading it if necessary.
+     */
+    public static QuestPDFNative getLib() {
+        if (lib == null) {
+            synchronized (lock) {
+                if (lib == null) {
+                    throw new IllegalStateException("QuestPDF library not initialized. Call initialize() first.");
+                }
+            }
+        }
+        return lib;
+    }
+
+    /**
+     * Initializes the QuestPDF library with automatic platform detection.
+     */
+    public static void initialize() {
+        initialize(null);
+    }
+
+    /**
+     * Initializes the QuestPDF library with a specific library path.
+     * @param libraryPath Path to the native library, or null for auto-detection.
+     */
+    public static void initialize(String libraryPath) {
+        synchronized (lock) {
+            if (lib != null) {
+                return; // Already initialized
+            }
+
+            String libPath = libraryPath != null ? libraryPath : getDefaultLibraryPath();
+            lib = Native.load(libPath, QuestPDFNative.class);
+        }
+    }
+
+    private static String getDefaultLibraryPath() {
+        String os = System.getProperty("os.name").toLowerCase();
+        String libName;
+
+        if (os.contains("win")) {
+            libName = "QuestPDF.Interop.dll";
+        } else if (os.contains("mac")) {
+            libName = "QuestPDF.Interop.dylib";
+        } else {
+            libName = "libQuestPDF.Interop.so";
+        }
+
+        // Try multiple locations
+        String[] searchPaths = {
+            libName,
+            "./" + libName,
+            "../" + libName,
+            System.getProperty("user.dir") + "/" + libName
+        };
+
+        for (String path : searchPaths) {
+            File file = new File(path);
+            if (file.exists()) {
+                return file.getAbsolutePath();
+            }
+        }
+
+        // Fall back to library name only, let JNA resolve it
+        return libName;
+    }
+}
+
+// ============================================================================
+// Callback Interfaces
+// ============================================================================
+
+/**
+ * Callback interface for document container configuration.
+ */
+interface DocumentContainerCallback extends Callback {
+    void invoke(Pointer containerPtr);
+}
+
+/**
+ * Callback interface for page configuration.
+ */
+interface PageCallback extends Callback {
+    void invoke(Pointer pagePtr);
+}
+
+/**
+ * Generic callback interface for void pointer arguments.
+ */
+interface VoidPtrCallback extends Callback {
+    void invoke(Pointer ptr);
+}
+
+// ============================================================================
+// Core Classes
+// ============================================================================
+
+/**
+ * Represents a page in a QuestPDF document.
+ */
+class Page {
+    private final Pointer ptr;
+
+    Page(Pointer ptr) {
+        this.ptr = ptr;
+    }
+
+    public Pointer getPointer() {
+        return ptr;
+    }
+
+    /**
+     * Sets the margin for this page.
+     */
+    public void margin(int margin) {
+        QuestPDF.getLib().questpdf_page_set_margin(this.ptr, margin);
+    }
+
+    /**
+     * Gets the content container for this page.
+     */
+    public Container content() {
+        Pointer result = QuestPDF.getLib().questpdf_page_set_content(this.ptr);
+        return new Container(result);
+    }
+}
+
+/**
+ * Represents a document container for adding pages.
+ */
+class DocumentContainer {
+    private final Pointer ptr;
+    private final List<Callback> callbacks = new ArrayList<>();
+
+    DocumentContainer(Pointer ptr) {
+        this.ptr = ptr;
+    }
+
+    public Pointer getPointer() {
+        return ptr;
+    }
+
+    /**
+     * Adds a page to the document.
+     */
+    public void page(Consumer<Page> configurator) {
+        PageCallback callback = pagePtr -> {
+            Page page = new Page(pagePtr);
+            configurator.accept(page);
+        };
+
+        // Keep callback reference to prevent GC
+        callbacks.add(callback);
+        QuestPDF.getLib().questpdf_document_container_add_page(this.ptr, callback);
+    }
+}
+
+/**
+ * Represents a QuestPDF document.
+ */
+class Document {
+    private Pointer ptr = null;
+    private DocumentContainerCallback containerCallback = null;
+
+    private Document() {}
+
+    /**
+     * Creates a new document with the given configuration.
+     */
+    public static Document create(Consumer<DocumentContainer> configurator) {
+        Document doc = new Document();
+
+        doc.containerCallback = containerPtr -> {
+            DocumentContainer container = new DocumentContainer(containerPtr);
+            configurator.accept(container);
+        };
+
+        doc.ptr = QuestPDF.getLib().questpdf_document_create(doc.containerCallback);
+        return doc;
+    }
+
+    /**
+     * Generates the PDF as a byte array.
+     */
+    public byte[] generatePdf() {
+        if (ptr == null) {
+            throw new IllegalStateException("Document not created. Use Document.create() first.");
+        }
+
+        NativeBuffer.ByValue buffer = QuestPDF.getLib().questpdf_document_generate_pdf(this.ptr);
+        try {
+            int length = buffer.length.intValue();
+            byte[] data = buffer.data.getByteArray(0, length);
+            return data;
+        } finally {
+            QuestPDF.getLib().questpdf_free_bytes(buffer.data);
+        }
+    }
+
+    /**
+     * Saves the PDF to a file.
+     */
+    public Document saveToFile(String filename) throws IOException {
+        byte[] pdfBytes = generatePdf();
+        try (FileOutputStream fos = new FileOutputStream(filename)) {
+            fos.write(pdfBytes);
+        }
+        return this;
+    }
+
+    /**
+     * Destroys the document and frees native resources.
+     */
+    public void destroy() {
+        if (ptr != null) {
+            QuestPDF.getLib().questpdf_document_destroy(ptr);
+            ptr = null;
+            containerCallback = null;
+        }
+    }
+}
+
+// ============================================================================
+// Generated Code
+// ============================================================================
 
 {% for fragment in fragments %}
 {{ fragment }}
