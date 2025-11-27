@@ -52,4 +52,27 @@ public class InteropMethodModel
     /// C-style function signature header for FFI declarations.
     /// </summary>
     public string CHeaderSignature { get; set; }
+
+    // =========================================================================
+    // Overload handling properties (set during preprocessing)
+    // =========================================================================
+
+    /// <summary>
+    /// Whether this method is part of an overload group (multiple methods with the same name).
+    /// </summary>
+    public bool IsOverload { get; set; }
+
+    /// <summary>
+    /// For overloaded methods, this contains the unique disambiguated name
+    /// (e.g., "SetMargin_Float" or "SetMargin_Float_Float").
+    /// For non-overloaded methods, this equals OriginalName.
+    /// </summary>
+    public string DisambiguatedName { get; set; }
+
+    /// <summary>
+    /// A suffix describing the parameter types, used for disambiguation
+    /// (e.g., "_Float_String" or "_Action").
+    /// Empty for non-overloaded methods.
+    /// </summary>
+    public string OverloadSuffix { get; set; }
 }

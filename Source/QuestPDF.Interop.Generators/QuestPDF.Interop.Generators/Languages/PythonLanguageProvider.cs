@@ -134,15 +134,22 @@ public class PythonLanguageProvider : ILanguageProvider
         interopParams.AddRange(method.Parameters.Select(p =>
             GetInteropValue(p, ConvertName(p.OriginalName, NameContext.Parameter))));
 
+        // Use disambiguated name for overloads (makes them private with _prefix in template)
+        var methodName = method.IsOverload
+            ? "_" + ConvertName(method.DisambiguatedName, NameContext.Method)
+            : ConvertName(method.OriginalName, NameContext.Method);
+
         return new
         {
-            PythonMethodName = ConvertName(method.OriginalName, NameContext.Method),
+            PythonMethodName = methodName,
             PythonMethodParameters = parameters,
             InteropMethodName = method.NativeEntryPoint,
             InteropMethodParameters = interopParams,
             PythonMethodReturnType = GetReturnTypeName(method),
             DeprecationMessage = method.DeprecationMessage,
-            Callbacks = method.Callbacks.Select(BuildCallbackTemplateModel).ToList()
+            Callbacks = method.Callbacks.Select(BuildCallbackTemplateModel).ToList(),
+            IsOverload = method.IsOverload,
+            OriginalName = ConvertName(method.OriginalName, NameContext.Method)
         };
     }
 

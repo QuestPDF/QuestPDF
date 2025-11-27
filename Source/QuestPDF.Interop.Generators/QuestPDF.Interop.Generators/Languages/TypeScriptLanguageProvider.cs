@@ -178,36 +178,15 @@ public class TypeScriptLanguageProvider : ILanguageProvider
     {
         _currentClassName = classModel.GeneratedClassName;
 
-        // Track method name occurrences to handle overloads
-        var methodNameCounts = new Dictionary<string, int>();
-        var methodModels = new List<object>();
-
-        foreach (var method in classModel.Methods)
-        {
-            var baseName = ConvertName(method.OriginalName, NameContext.Method);
-
-            // Track occurrences of this method name
-            if (!methodNameCounts.TryGetValue(baseName, out var count))
-            {
-                count = 0;
-            }
-            methodNameCounts[baseName] = count + 1;
-
-            // Generate unique method name for overloads
-            var tsMethodName = count == 0 ? baseName : $"{baseName}_{count}";
-
-            methodModels.Add(BuildMethodTemplateModel(method, tsMethodName));
-        }
-
         return new
         {
             ClassName = classModel.GeneratedClassName,
             CallbackTypedefs = classModel.CallbackTypedefs,
-            Methods = methodModels
+            Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList()
         };
     }
 
-    private object BuildMethodTemplateModel(InteropMethodModel method, string tsMethodName)
+    private object BuildMethodTemplateModel(InteropMethodModel method)
     {
         // Build TypeScript parameter string
         var tsParams = method.Parameters.Select(p =>
@@ -235,9 +214,14 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         // Extract unique ID from native entry point (the hash at the end)
         var uniqueId = ExtractUniqueId(method.NativeEntryPoint);
 
+        // Use disambiguated name for overloads (makes them private with _prefix)
+        var methodName = method.IsOverload
+            ? ConvertName(method.DisambiguatedName, NameContext.Method)
+            : ConvertName(method.OriginalName, NameContext.Method);
+
         return new
         {
-            TsMethodName = tsMethodName,
+            TsMethodName = methodName,
             NativeMethodName = method.NativeEntryPoint,
             TsParameters = tsParametersStr,
             TsReturnType = tsReturnType,
@@ -250,7 +234,9 @@ public class TypeScriptLanguageProvider : ILanguageProvider
             {
                 ParameterName = ConvertName(c.ParameterName, NameContext.Parameter),
                 ArgumentTypeName = c.ArgumentTypeName
-            }).ToList()
+            }).ToList(),
+            IsOverload = method.IsOverload,
+            OriginalName = ConvertName(method.OriginalName, NameContext.Method)
         };
     }
 

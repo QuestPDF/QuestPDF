@@ -12,6 +12,8 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 {
     protected abstract IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation);
     protected abstract INamedTypeSymbol GetTargetType(Compilation compilation);
+    
+    public string ExtensionTemplateName { get; set; }
 
     private string GetTargetClassName(Compilation compilation)
     {
@@ -126,7 +128,10 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         var provider = LanguageProviderRegistry.Python;
         var templateModel = provider.BuildClassTemplateModel(classModel);
 
-        return TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var extensionCode = RenderExtensionTemplate("Python", templateModel);
+
+        return mainCode + extensionCode;
     }
 
     public string GenerateJavaCode(Compilation compilation)
@@ -135,7 +140,10 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         var provider = LanguageProviderRegistry.Java;
         var templateModel = provider.BuildClassTemplateModel(classModel);
 
-        return TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var extensionCode = RenderExtensionTemplate("Java", templateModel);
+
+        return mainCode + extensionCode;
     }
 
     public string GenerateTypeScriptCode(Compilation compilation)
@@ -144,6 +152,21 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         var provider = LanguageProviderRegistry.TypeScript;
         var templateModel = provider.BuildClassTemplateModel(classModel);
 
-        return TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var extensionCode = RenderExtensionTemplate("TypeScript", templateModel);
+
+        return mainCode + extensionCode;
+    }
+
+    /// <summary>
+    /// Renders the extension template for a specific language if it exists.
+    /// </summary>
+    private string RenderExtensionTemplate(string language, object templateModel)
+    {
+        if (string.IsNullOrEmpty(ExtensionTemplateName))
+            return string.Empty;
+
+        var extensionTemplateName = $"{language}.{ExtensionTemplateName}";
+        return TemplateManager.RenderTemplateIfExists(extensionTemplateName, templateModel);
     }
 }

@@ -1,0 +1,10 @@
+text(content: string): TextBlockDescriptor;
+text(content: (arg0: TextDescriptor) => void): void;
+text(content: string | ((arg0: TextDescriptor) => void)): TextBlockDescriptor | void {
+if (content instanceof Function) {
+this.text_1(content);
+}
+else {
+return this.text_3(content);
+}
+}

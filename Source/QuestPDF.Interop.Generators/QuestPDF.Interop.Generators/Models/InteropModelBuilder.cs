@@ -19,6 +19,9 @@ internal static class InteropModelBuilder
         var methodsList = methods.ToList();
         var methodModels = methodsList.Select(m => BuildMethodModel(m, targetType)).ToList();
 
+        // Preprocess: detect and mark overloaded methods
+        PreprocessOverloads(methodModels);
+
         var callbackTypedefs = methodsList
             .GetCallbackTypedefs()
             .Select(t => t.TypedefDefinition)
@@ -42,6 +45,102 @@ internal static class InteropModelBuilder
             CallbackTypedefs = callbackTypedefs,
             CHeaderSignatures = cHeaders
         };
+    }
+
+    /// <summary>
+    /// Preprocesses method models to detect and mark overloaded methods.
+    /// For overloaded methods, sets IsOverload=true and generates a disambiguated name.
+    /// </summary>
+    private static void PreprocessOverloads(List<InteropMethodModel> methods)
+    {
+        // Group methods by their original name
+        var methodGroups = methods.GroupBy(m => m.OriginalName).ToList();
+
+        foreach (var group in methodGroups)
+        {
+            var groupMethods = group.ToList();
+
+            if (groupMethods.Count == 1)
+            {
+                // Single method - no overload
+                var method = groupMethods[0];
+                method.IsOverload = false;
+                method.OverloadSuffix = string.Empty;
+                method.DisambiguatedName = method.OriginalName;
+            }
+            else
+            {
+                // Multiple methods with same name - mark as overloads
+                foreach (var method in groupMethods)
+                {
+                    method.IsOverload = true;
+                   // method.OverloadSuffix = index.ToString();
+                    method.DisambiguatedName = method.OriginalName + method.OverloadSuffix;
+                }
+
+                // Check for suffix collisions and resolve them
+                ResolveOverloadSuffixCollisions(groupMethods);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Generates a suffix based on parameter types for method disambiguation.
+    /// </summary>
+    private static string GenerateOverloadSuffix(InteropMethodModel method)
+    {
+        if (method.Parameters.Count == 0)
+            return "_NoArgs";
+
+        var parts = method.Parameters.Select(GetTypeShortName);
+        return "_" + string.Join("_", parts);
+    }
+
+    /// <summary>
+    /// Gets a short name for a type suitable for use in method name suffixes.
+    /// </summary>
+    private static string GetTypeShortName(InteropParameterModel parameter)
+    {
+        var type = parameter.Type;
+
+        return type.Kind switch
+        {
+            InteropTypeKind.Void => "Void",
+            InteropTypeKind.Boolean => "Bool",
+            InteropTypeKind.Integer => "Int",
+            InteropTypeKind.Float => "Float",
+            InteropTypeKind.String => "String",
+            InteropTypeKind.Enum => type.ShortName,
+            InteropTypeKind.Class => type.ShortName,
+            InteropTypeKind.Interface => type.ShortName.TrimStart('I'),
+            InteropTypeKind.Action => "Action",
+            InteropTypeKind.Func => "Func",
+            InteropTypeKind.TypeParameter => "T",
+            InteropTypeKind.Color => "Color",
+            _ => "Unknown"
+        };
+    }
+
+    /// <summary>
+    /// Resolves suffix collisions by appending a numeric index if needed.
+    /// </summary>
+    private static void ResolveOverloadSuffixCollisions(List<InteropMethodModel> methods)
+    {
+        var suffixGroups = methods.GroupBy(m => m.OverloadSuffix).ToList();
+
+        foreach (var suffixGroup in suffixGroups)
+        {
+            var collisions = suffixGroup.ToList();
+            if (collisions.Count > 1)
+            {
+                // Collision detected - append index
+                for (int i = 0; i < collisions.Count; i++)
+                {
+                    collisions[i].OverloadSuffix += $"_{i + 1}";
+                    collisions[i].DisambiguatedName = collisions[i].OriginalName + collisions[i].OverloadSuffix;
+                }
+            }
+        }
     }
 
     /// <summary>

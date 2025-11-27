@@ -33,6 +33,9 @@ public sealed class PublicApiGenerator
             new DescriptorSourceGenerator("QuestPDF.Fluent.DynamicImageDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.SvgImageDescriptor"),
             new ContainerSourceGenerator()
+            {
+                ExtensionTemplateName = "Container"
+            }
         };
         
         GenerateCode("QuestPDF.Interop.g.cs", "CSharp.Main", x => x.GenerateCSharpCode(compilation));
