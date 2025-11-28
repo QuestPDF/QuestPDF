@@ -19,13 +19,33 @@ public class KotlinLanguageProvider : ILanguageProvider
     // Store current class name for TypeParameter resolution
     private string _currentClassName;
 
+    /// <summary>
+    /// Maps C# type names to Kotlin-safe equivalents.
+    /// This handles reserved keywords and naming conflicts.
+    /// </summary>
+    private static readonly Dictionary<string, string> TypeNameMappings = new()
+    {
+        // "Unit" is a reserved keyword in Kotlin (equivalent to void)
+        ["Unit"] = "LengthUnit"
+    };
+
+    /// <summary>
+    /// Converts a C# type name to a Kotlin-safe type name.
+    /// </summary>
+    public static string ConvertTypeName(string csharpTypeName)
+    {
+        return TypeNameMappings.TryGetValue(csharpTypeName, out var kotlinName)
+            ? kotlinName
+            : csharpTypeName;
+    }
+
     public string ConvertName(string csharpName, NameContext context)
     {
         return context switch
         {
             NameContext.Method => ToCamelCase(csharpName),
             NameContext.Parameter => ToCamelCase(csharpName),
-            NameContext.EnumValue => csharpName.ToSnakeCase().ToUpperInvariant(), // SCREAMING_SNAKE_CASE
+            NameContext.EnumValue => csharpName, // UpperCamelCase (PascalCase)
             NameContext.Property => ToCamelCase(csharpName),
             NameContext.Constant => csharpName.ToSnakeCase().ToUpperInvariant(),
             NameContext.Class => csharpName, // Keep PascalCase
@@ -50,7 +70,7 @@ public class KotlinLanguageProvider : ILanguageProvider
             InteropTypeKind.Integer => GetKotlinIntegerType(type),
             InteropTypeKind.Float => GetKotlinFloatType(type),
             InteropTypeKind.String => "String",
-            InteropTypeKind.Enum => type.ShortName,
+            InteropTypeKind.Enum => ConvertTypeName(type.ShortName),
             InteropTypeKind.Class => type.ShortName,
             InteropTypeKind.Interface => type.ShortName.TrimStart('I'),
             InteropTypeKind.TypeParameter => _currentClassName ?? "Any",
@@ -155,7 +175,7 @@ public class KotlinLanguageProvider : ILanguageProvider
             return "null";
 
         if (parameter.Type.Kind == InteropTypeKind.Enum && parameter.DefaultEnumMemberName != null)
-            return $"{parameter.Type.ShortName}.{parameter.DefaultEnumMemberName.ToSnakeCase().ToUpperInvariant()}";
+            return $"{ConvertTypeName(parameter.Type.ShortName)}.{parameter.DefaultEnumMemberName}";
 
         if (parameter.DefaultValue is bool boolValue)
             return boolValue ? "true" : "false";

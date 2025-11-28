@@ -50,14 +50,6 @@ interface PointerCallback : Callback {
  * JNA interface for the QuestPDF native library.
  */
 interface QuestPDFNative : Library {
-    companion object {
-        // Library options for proper callback handling
-        val OPTIONS: Map<String, Any> = Collections.singletonMap(
-            Library.OPTION_CALLING_CONVENTION,
-            Function.C_CONVENTION
-        )
-    }
-
     // Test function
     fun questpdf_sum(a: Int, b: Int): Int
 
@@ -118,7 +110,7 @@ object QuestPDF {
             if (lib != null) return
 
             val libPath = libraryPath ?: getDefaultLibraryPath()
-            lib = Native.load(libPath, QuestPDFNative::class.java, QuestPDFNative.OPTIONS)
+            lib = Native.load(libPath, QuestPDFNative::class.java)
         }
     }
 

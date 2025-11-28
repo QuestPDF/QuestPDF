@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
+using QuestPDF.Interop.Generators.Languages;
 
 namespace QuestPDF.Interop.Generators;
 
@@ -31,7 +32,7 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
 
     public string GenerateKotlinCode(Compilation compilation)
     {
-        var model = GetTemplateModel(compilation);
+        var model = GetKotlinTemplateModel(compilation);
         return TemplateManager.RenderTemplate("Kotlin.Enum", model);
     }
 
@@ -59,6 +60,24 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
         return new TemplateModel
         {
             Enums = GetAllPublicEnumsFromCompilation(compilation).Select(Map)
+        };
+    }
+
+    private TemplateModel GetKotlinTemplateModel(Compilation compilation)
+    {
+        return new TemplateModel
+        {
+            Enums = GetAllPublicEnumsFromCompilation(compilation).Select(MapForKotlin)
+        };
+    }
+
+    private static TemplateModel.Enum MapForKotlin(INamedTypeSymbol symbol)
+    {
+        return new TemplateModel.Enum
+        {
+            // Apply Kotlin type name conversions (e.g., Unit -> LengthUnit)
+            Name = KotlinLanguageProvider.ConvertTypeName(symbol.Name),
+            Members = GetEnumMembers(symbol)
         };
     }
 

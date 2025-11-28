@@ -6,13 +6,6 @@
  * JNA interface for {{ className }} native methods.
  */
 private interface {{ className }}Native : Library {
-    companion object {
-        val OPTIONS: Map<String, Any> = java.util.Collections.singletonMap(
-            Library.OPTION_CALLING_CONVENTION,
-            Function.C_CONVENTION
-        )
-    }
-
 {% for method in methods %}
     fun {{ method.nativeMethodName }}(target: Pointer{% for param in method.parameters %}, {{ param.name }}: {{ param.jnaType }}{% endfor %}): {{ method.jnaReturnType }}
 {% endfor %}
@@ -51,7 +44,7 @@ class {{ className }} internal constructor(val pointer: Pointer) {
 
             synchronized(initLock) {
                 if (nativeLib != null) return
-                nativeLib = Native.load(getLibraryPath(), {{ className }}Native::class.java, {{ className }}Native.OPTIONS)
+                nativeLib = Native.load(getLibraryPath(), {{ className }}Native::class.java)
             }
         }
 
