@@ -6,18 +6,13 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
-    public interface ILine
-    {
-        
-    }
-    
     internal enum LineType
     {
         Vertical,
         Horizontal
     }
 
-    internal sealed class Line : Element, ILine, IStateful
+    internal sealed class Line : Element, IStateful
     {
         public LineType Type { get; set; } = LineType.Vertical;
         public Color Color { get; set; } = Colors.Black;
