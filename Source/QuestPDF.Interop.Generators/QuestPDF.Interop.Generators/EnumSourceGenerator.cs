@@ -17,13 +17,7 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
         var model = GetTemplateModel(compilation);
         return TemplateManager.RenderTemplate("Python.Enum", model);
     }
-
-    public string GenerateJavaCode(Compilation compilation)
-    {
-        var model = GetTemplateModel(compilation);
-        return TemplateManager.RenderTemplate("Java.Enum", model);
-    }
-
+    
     public string GenerateTypeScriptCode(Compilation compilation)
     {
         var model = GetTemplateModel(compilation);

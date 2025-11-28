@@ -134,18 +134,6 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         return mainCode + extensionCode;
     }
 
-    public string GenerateJavaCode(Compilation compilation)
-    {
-        var classModel = BuildClassModel(compilation);
-        var provider = LanguageProviderRegistry.Java;
-        var templateModel = provider.BuildClassTemplateModel(classModel);
-
-        var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
-        var extensionCode = RenderExtensionTemplate("Java", templateModel);
-
-        return mainCode + extensionCode;
-    }
-
     public string GenerateTypeScriptCode(Compilation compilation)
     {
         var classModel = BuildClassModel(compilation);

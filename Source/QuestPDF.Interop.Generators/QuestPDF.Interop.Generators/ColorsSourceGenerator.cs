@@ -18,12 +18,6 @@ public class ColorsSourceGenerator : IInteropSourceGenerator
         return TemplateManager.RenderTemplate("Python.Colors", model);
     }
 
-    public string GenerateJavaCode(Compilation compilation)
-    {
-        var model = GetTemplateModel(compilation);
-        return TemplateManager.RenderTemplate("Java.Colors", model);
-    }
-
     public string GenerateTypeScriptCode(Compilation compilation)
     {
         var model = GetTemplateModel(compilation);

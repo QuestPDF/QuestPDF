@@ -44,7 +44,7 @@ class {{ className }} internal constructor(val pointer: Pointer) {
 
             synchronized(initLock) {
                 if (nativeLib != null) return
-                nativeLib = Native.load(getLibraryPath(), {{ className }}Native::class.java)
+                nativeLib = Native.load(getLibraryPath(), {{ className }}Native::class.java, jnaOptions)
             }
         }
 

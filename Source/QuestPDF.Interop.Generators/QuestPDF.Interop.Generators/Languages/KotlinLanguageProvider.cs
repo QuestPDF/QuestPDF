@@ -93,7 +93,7 @@ public class KotlinLanguageProvider : ILanguageProvider
             InteropTypeKind.Boolean => "Byte", // JNA uses byte for C bool
             InteropTypeKind.Integer => GetJnaIntegerType(type),
             InteropTypeKind.Float => GetJnaFloatType(type),
-            InteropTypeKind.String => "WString", // UTF-16 for .NET compatibility
+            InteropTypeKind.String => "String.utf16", // UTF-8 (const char*) for native interop
             InteropTypeKind.Enum => "Int",
             InteropTypeKind.Class => "Pointer",
             InteropTypeKind.Interface => "Pointer",
@@ -199,7 +199,7 @@ public class KotlinLanguageProvider : ILanguageProvider
         return parameter.Type.Kind switch
         {
             InteropTypeKind.Enum => $"{variableName}.value",
-            InteropTypeKind.String => $"WString({variableName})",
+            InteropTypeKind.String => variableName,
             InteropTypeKind.Boolean => $"(if ({variableName}) 1.toByte() else 0.toByte())",
             InteropTypeKind.Color => $"{variableName}.hex",
             InteropTypeKind.Action => $"{variableName}Callback",

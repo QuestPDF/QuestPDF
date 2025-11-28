@@ -10,6 +10,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.Collections
 
+var jnaOptions = Collections.singletonMap(Library.OPTION_STRING_ENCODING, "UTF-16LE");
+
 // ============================================================================
 // Native Buffer Structure
 // ============================================================================
@@ -110,7 +112,7 @@ object QuestPDF {
             if (lib != null) return
 
             val libPath = libraryPath ?: getDefaultLibraryPath()
-            lib = Native.load(libPath, QuestPDFNative::class.java)
+            lib = Native.load(libPath, QuestPDFNative::class.java, jnaOptions)
         }
     }
 

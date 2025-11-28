@@ -11,7 +11,6 @@ public static class LanguageProviderRegistry
     private static readonly Dictionary<string, ILanguageProvider> Providers = new()
     {
         ["Python"] = new PythonLanguageProvider(),
-        ["Java"] = new JavaLanguageProvider(),
         ["TypeScript"] = new TypeScriptLanguageProvider(),
         ["Kotlin"] = new KotlinLanguageProvider()
     };
