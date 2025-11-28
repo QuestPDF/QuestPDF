@@ -93,12 +93,12 @@ public class KotlinLanguageProvider : ILanguageProvider
             InteropTypeKind.Boolean => "Byte", // JNA uses byte for C bool
             InteropTypeKind.Integer => GetJnaIntegerType(type),
             InteropTypeKind.Float => GetJnaFloatType(type),
-            InteropTypeKind.String => "String.utf16", // UTF-8 (const char*) for native interop
+            InteropTypeKind.String => "String",
             InteropTypeKind.Enum => "Int",
             InteropTypeKind.Class => "Pointer",
             InteropTypeKind.Interface => "Pointer",
             InteropTypeKind.TypeParameter => "Pointer",
-            InteropTypeKind.Color => "UInt", // ARGB packed as int
+            InteropTypeKind.Color => "Int", // ARGB packed as int (use Int to avoid Kotlin inline class name mangling)
             InteropTypeKind.Action => "Callback", // Callback pointer
             InteropTypeKind.Func => "Callback", // Callback pointer
             InteropTypeKind.Unknown => "Pointer",
@@ -201,7 +201,7 @@ public class KotlinLanguageProvider : ILanguageProvider
             InteropTypeKind.Enum => $"{variableName}.value",
             InteropTypeKind.String => variableName,
             InteropTypeKind.Boolean => $"(if ({variableName}) 1.toByte() else 0.toByte())",
-            InteropTypeKind.Color => $"{variableName}.hex",
+            InteropTypeKind.Color => $"{variableName}.hex.toInt()", // Convert UInt to Int to avoid inline class name mangling
             InteropTypeKind.Action => $"{variableName}Callback",
             InteropTypeKind.Func => $"{variableName}Callback",
             InteropTypeKind.Class => $"{variableName}.pointer",

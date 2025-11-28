@@ -11,13 +11,13 @@ value class Color(val hex: UInt) {
  */
 object Colors {
 {% for color in basicColors %}
-    val {{ color.name | screamingSnakeCase }} = Color({{ color.value }}u)
+    val {{ color.name | pascalCase }} = Color({{ color.value }}u)
 {% endfor %}
 
 {% for group in colorGroups %}
     object {{ group.name | pascalCase }} {
 {% for color in group.colors %}
-        val {{ color.name | screamingSnakeCase }} = Color({{ color.value }}u)
+        val {{ color.name | pascalCase }} = Color({{ color.value }}u)
 {% endfor %}
     }
 
