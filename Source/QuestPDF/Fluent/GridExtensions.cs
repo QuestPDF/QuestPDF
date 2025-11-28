@@ -8,6 +8,11 @@ namespace QuestPDF.Fluent
     public sealed class GridDescriptor
     {
         internal Grid Grid { get; } = new Grid();
+
+        internal GridDescriptor()
+        {
+            
+        }
         
         internal GridDescriptor()
         {

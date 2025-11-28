@@ -8,6 +8,11 @@ namespace QuestPDF.Fluent;
 public sealed class MultiColumnDescriptor
 {
     internal MultiColumn MultiColumn { get; } = new MultiColumn();
+
+    internal MultiColumnDescriptor()
+    {
+        
+    }
         
     internal MultiColumnDescriptor()
     {
