@@ -285,6 +285,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="param.url"]/*' />
         public static IContainer Hyperlink(this IContainer element, string url)
         {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new ArgumentException("The URL cannot be null or whitespace.", nameof(url));
+            
             return element.Element(new Hyperlink
             {
                 Url = url
@@ -310,6 +313,9 @@ namespace QuestPDF.Fluent
         /// <param name="sectionName">An internal text key representing the section. It should be unique and won't appear in the final document.</param>
         public static IContainer Section(this IContainer element, string sectionName)
         {
+            if (string.IsNullOrWhiteSpace(sectionName))
+                throw new ArgumentException("The section name cannot be null or whitespace.", nameof(sectionName));
+            
             return element
                 .DebugPointer(DebugPointerType.Section, sectionName)
                 .Element(new Section
@@ -332,6 +338,9 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="param.sectionName"]/*' />
         public static IContainer SectionLink(this IContainer element, string sectionName)
         {
+            if (string.IsNullOrWhiteSpace(sectionName))
+                throw new ArgumentException("The section name cannot be null or whitespace.", nameof(sectionName));
+            
             return element.Element(new SectionLink
             {
                 SectionName = sectionName
