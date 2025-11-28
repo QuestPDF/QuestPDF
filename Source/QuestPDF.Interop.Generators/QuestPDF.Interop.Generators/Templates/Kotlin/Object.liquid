@@ -1,0 +1,118 @@
+// ============================================================================
+// {{ className }} - Native Function Interface
+// ============================================================================
+
+/**
+ * JNA interface for {{ className }} native methods.
+ */
+private interface {{ className }}Native : Library {
+    companion object {
+        val OPTIONS: Map<String, Any> = java.util.Collections.singletonMap(
+            Library.OPTION_CALLING_CONVENTION,
+            Function.C_CONVENTION
+        )
+    }
+
+{% for method in methods %}
+    fun {{ method.nativeMethodName }}(target: Pointer{% for param in method.parameters %}, {{ param.name }}: {{ param.jnaType }}{% endfor %}): {{ method.jnaReturnType }}
+{% endfor %}
+}
+
+// ============================================================================
+// {{ className }} Callback Interfaces
+// ============================================================================
+
+{% for callback in callbackInterfaces %}
+/**
+ * Callback interface for {{ callback.argumentTypeName }} configuration.
+ */
+interface {{ callback.interfaceName }} : Callback {
+    fun callback(ptr: Pointer)
+}
+
+{% endfor %}
+// ============================================================================
+// {{ className }} Class
+// ============================================================================
+
+/**
+ * {{ className }} wrapper for the native QuestPDF {{ className }}.
+ */
+class {{ className }} internal constructor(val pointer: Pointer) {
+    private val callbacks = mutableListOf<Callback>()
+
+    companion object {
+        @Volatile
+        private var nativeLib: {{ className }}Native? = null
+        private val initLock = Any()
+
+        private fun ensureInitialized() {
+            if (nativeLib != null) return
+
+            synchronized(initLock) {
+                if (nativeLib != null) return
+                nativeLib = Native.load(getLibraryPath(), {{ className }}Native::class.java, {{ className }}Native.OPTIONS)
+            }
+        }
+
+        private fun getLibraryPath(): String {
+            val os = System.getProperty("os.name").lowercase()
+            val libName = when {
+                "win" in os -> "QuestPDF.Interop.dll"
+                "mac" in os -> "QuestPDF.Interop.dylib"
+                else -> "libQuestPDF.Interop.so"
+            }
+
+            val searchPaths = listOf(
+                libName,
+                "./$libName",
+                "../$libName",
+                "${System.getProperty("user.dir")}/$libName"
+            )
+
+            for (path in searchPaths) {
+                val file = java.io.File(path)
+                if (file.exists()) {
+                    return file.absolutePath
+                }
+            }
+
+            return libName
+        }
+
+        private fun lib(): {{ className }}Native {
+            ensureInitialized()
+            return nativeLib!!
+        }
+    }
+
+    init {
+        ensureInitialized()
+    }
+
+{% for method in methods %}
+    {% if method.deprecationMessage %}@Deprecated("{{ method.deprecationMessage }}")
+    {% endif %}fun {{ method.originalName }}({{ method.kotlinParameters }}){% if method.kotlinReturnType != 'Unit' %}: {{ method.kotlinReturnType }}{% endif %} {
+{% for callback in method.callbacks %}
+        // Create callback for {{ callback.parameterName }}
+        val {{ callback.parameterName }}Callback = object : {{ callback.callbackInterfaceName }} {
+            override fun callback(ptr: Pointer) {
+                val obj = {{ callback.argumentTypeName }}(ptr)
+                {{ callback.parameterName }}(obj)
+            }
+        }
+        callbacks.add({{ callback.parameterName }}Callback)
+
+{% endfor %}
+{% if method.kotlinReturnType == 'Unit' %}
+        lib().{{ method.nativeMethodName }}({{ method.nativeCallArgs }})
+{% elsif method.returnsPointer %}
+        val result = lib().{{ method.nativeMethodName }}({{ method.nativeCallArgs }})
+        return {{ method.returnClassName }}(result)
+{% else %}
+        return lib().{{ method.nativeMethodName }}({{ method.nativeCallArgs }})
+{% endif %}
+    }
+
+{% endfor %}
+}

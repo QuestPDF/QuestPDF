@@ -12,7 +12,8 @@ public static class LanguageProviderRegistry
     {
         ["Python"] = new PythonLanguageProvider(),
         ["Java"] = new JavaLanguageProvider(),
-        ["TypeScript"] = new TypeScriptLanguageProvider()
+        ["TypeScript"] = new TypeScriptLanguageProvider(),
+        ["Kotlin"] = new KotlinLanguageProvider()
     };
 
     /// <summary>
@@ -29,6 +30,11 @@ public static class LanguageProviderRegistry
     /// Gets the TypeScript language provider.
     /// </summary>
     public static ILanguageProvider TypeScript => Providers["TypeScript"];
+
+    /// <summary>
+    /// Gets the Kotlin language provider.
+    /// </summary>
+    public static ILanguageProvider Kotlin => Providers["Kotlin"];
 
     /// <summary>
     /// Gets a language provider by name.

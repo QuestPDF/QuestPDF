@@ -158,6 +158,18 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         return mainCode + extensionCode;
     }
 
+    public string GenerateKotlinCode(Compilation compilation)
+    {
+        var classModel = BuildClassModel(compilation);
+        var provider = LanguageProviderRegistry.Kotlin;
+        var templateModel = provider.BuildClassTemplateModel(classModel);
+
+        var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var extensionCode = RenderExtensionTemplate("Kotlin", templateModel);
+
+        return mainCode + extensionCode;
+    }
+
     /// <summary>
     /// Renders the extension template for a specific language if it exists.
     /// </summary>

@@ -30,6 +30,12 @@ public class ColorsSourceGenerator : IInteropSourceGenerator
         return TemplateManager.RenderTemplate("TypeScript.Colors", model);
     }
 
+    public string GenerateKotlinCode(Compilation compilation)
+    {
+        var model = GetTemplateModel(compilation);
+        return TemplateManager.RenderTemplate("Kotlin.Colors", model);
+    }
+
     #region Shared
 
     public class TemplateModel

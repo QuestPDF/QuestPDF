@@ -8,4 +8,5 @@ public interface IInteropSourceGenerator
     string GeneratePythonCode(Compilation compilation);
     string GenerateJavaCode(Compilation compilation);
     string GenerateTypeScriptCode(Compilation compilation);
+    string GenerateKotlinCode(Compilation compilation);
 }

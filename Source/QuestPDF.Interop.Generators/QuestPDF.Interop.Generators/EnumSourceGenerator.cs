@@ -28,7 +28,13 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
         var model = GetTemplateModel(compilation);
         return TemplateManager.RenderTemplate("TypeScript.Enum", model);
     }
-    
+
+    public string GenerateKotlinCode(Compilation compilation)
+    {
+        var model = GetTemplateModel(compilation);
+        return TemplateManager.RenderTemplate("Kotlin.Enum", model);
+    }
+
     #region Shared
     
     class TemplateModel

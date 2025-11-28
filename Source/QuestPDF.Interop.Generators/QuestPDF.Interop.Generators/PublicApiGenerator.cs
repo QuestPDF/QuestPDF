@@ -42,6 +42,7 @@ public sealed class PublicApiGenerator
         GenerateCode("QuestPDF.Interop.g.py", "Python.Main", x => x.GeneratePythonCode(compilation));
         GenerateCode("QuestPDF.Interop.g.java", "Java.Main", x => x.GenerateJavaCode(compilation));
         GenerateCode("QuestPDF.Interop.g.ts", "TypeScript.Main", x => x.GenerateTypeScriptCode(compilation));
+        GenerateCode("QuestPDF.Interop.g.kt", "Kotlin.Main", x => x.GenerateKotlinCode(compilation));
         
         void GenerateCode(string sourceFileName, string templateName, Func<IInteropSourceGenerator, string> selector)
         {
