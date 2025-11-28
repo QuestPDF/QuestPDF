@@ -12,6 +12,11 @@ namespace QuestPDF.Fluent
     {
         internal List<TableColumnDefinition> Columns { get; } = new();
         
+        internal TableColumnsDefinitionDescriptor()
+        {
+            
+        }
+        
         /// <summary>
         /// Defines a column of constant size that occupies the specified horizontal space.
         /// </summary>
@@ -74,6 +79,11 @@ namespace QuestPDF.Fluent
         private Table ContentTable { get; } = new();
         private Table FooterTable { get; } = new();
 
+        internal TableDescriptor()
+        {
+            
+        }
+        
         /// <summary>
         /// Specifies the order and size of the table columns.
         /// <a href="https://www.questpdf.com/api-reference/table/basics.html#columns-definition">Learn more</a>

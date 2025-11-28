@@ -149,6 +149,11 @@ namespace QuestPDF.Fluent
         private TextStyle? DefaultStyle { get; set; }
 
         internal const string DefaultLineClampEllipsis = "…";
+
+        internal TextDescriptor()
+        {
+            
+        }
         
         /// <summary>
         /// Applies a consistent text style for the whole content within this <see cref="TextExtensions.Text">Text</see> element.

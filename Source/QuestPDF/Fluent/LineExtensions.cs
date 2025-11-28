@@ -8,6 +8,11 @@ namespace QuestPDF.Fluent
     public class LineDescriptor
     {
         internal Line Line { get; } = new Line();
+
+        internal LineDescriptor()
+        {
+            
+        }
         
         /// <summary>
         /// Specifies the color for the line.
