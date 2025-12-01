@@ -43,22 +43,14 @@ public class KotlinLanguageProvider : ILanguageProvider
     {
         return context switch
         {
-            NameContext.Method => ToCamelCase(csharpName),
-            NameContext.Parameter => ToCamelCase(csharpName),
+            NameContext.Method => csharpName.ToCamelCase(),
+            NameContext.Parameter => csharpName.ToCamelCase(),
             NameContext.EnumValue => csharpName, // UpperCamelCase (PascalCase)
-            NameContext.Property => ToCamelCase(csharpName),
+            NameContext.Property => csharpName.ToCamelCase(),
             NameContext.Constant => csharpName.ToSnakeCase().ToUpperInvariant(),
             NameContext.Class => csharpName, // Keep PascalCase
             _ => csharpName
         };
-    }
-
-    private static string ToCamelCase(string pascalCase)
-    {
-        if (string.IsNullOrEmpty(pascalCase))
-            return pascalCase;
-
-        return char.ToLowerInvariant(pascalCase[0]) + pascalCase.Substring(1);
     }
 
     public string GetTargetType(InteropTypeModel type)
@@ -266,7 +258,7 @@ public class KotlinLanguageProvider : ILanguageProvider
         var returnClassName = kotlinReturnType != "Unit" ? kotlinReturnType : null;
 
         // Extract unique ID from native entry point
-        var uniqueId = ExtractUniqueId(method.NativeEntryPoint);
+        var uniqueId = method.NativeEntryPoint.ExtractNativeMethodHash();
 
         // Use disambiguated name for overloads
         var methodName = method.IsOverload
@@ -308,16 +300,6 @@ public class KotlinLanguageProvider : ILanguageProvider
             ReturnsPointer = method.ReturnType.Kind is InteropTypeKind.Class or InteropTypeKind.Interface or InteropTypeKind.TypeParameter,
             HasCallbacks = method.Callbacks.Any()
         };
-    }
-
-    private static string ExtractUniqueId(string nativeEntryPoint)
-    {
-        var lastUnderscore = nativeEntryPoint.LastIndexOf("__");
-        if (lastUnderscore >= 0 && lastUnderscore < nativeEntryPoint.Length - 2)
-        {
-            return nativeEntryPoint.Substring(lastUnderscore + 2);
-        }
-        return nativeEntryPoint.GetHashCode().ToString("x8");
     }
 
     private string GetReturnTypeName(InteropMethodModel method)

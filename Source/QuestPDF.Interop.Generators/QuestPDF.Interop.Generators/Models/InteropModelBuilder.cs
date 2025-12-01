@@ -70,11 +70,11 @@ internal static class InteropModelBuilder
             }
             else
             {
-                // Multiple methods with same name - mark as overloads
+                // Multiple methods with same name - mark as overloads and generate suffixes
                 foreach (var method in groupMethods)
                 {
                     method.IsOverload = true;
-                   // method.OverloadSuffix = index.ToString();
+                    method.OverloadSuffix = GenerateOverloadSuffix(method);
                     method.DisambiguatedName = method.OriginalName + method.OverloadSuffix;
                 }
 

@@ -21,11 +21,6 @@ public static class LanguageProviderRegistry
     public static ILanguageProvider Python => Providers["Python"];
 
     /// <summary>
-    /// Gets the Java language provider.
-    /// </summary>
-    public static ILanguageProvider Java => Providers["Java"];
-
-    /// <summary>
     /// Gets the TypeScript language provider.
     /// </summary>
     public static ILanguageProvider TypeScript => Providers["TypeScript"];

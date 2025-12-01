@@ -21,6 +21,28 @@ internal static partial class Helpers
 
         return result.ToLowerInvariant();
     }
+
+    public static string ToCamelCase(this string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        return char.ToLowerInvariant(input[0]) + input.Substring(1);
+    }
+
+    /// <summary>
+    /// Extracts the unique hash suffix from a native entry point name.
+    /// Native entry points end with a hash like "__a1b2c3d4".
+    /// </summary>
+    public static string ExtractNativeMethodHash(this string nativeEntryPoint)
+    {
+        var lastUnderscore = nativeEntryPoint.LastIndexOf("__");
+        if (lastUnderscore >= 0 && lastUnderscore < nativeEntryPoint.Length - 2)
+        {
+            return nativeEntryPoint.Substring(lastUnderscore + 2);
+        }
+        return nativeEntryPoint.GetHashCode().ToString("x8");
+    }
     
     public static string GetNativeMethodName(this IMethodSymbol methodSymbol, string targetTypeName)
     {
@@ -289,13 +311,6 @@ internal static partial class Helpers
             foreach (var valueTuple in results)
                 yield return valueTuple;
         }
-        
-        // var callbackTypes = methods
-        //     .SelectMany(m => m.Parameters)
-        //     .Where(p => p.Type.IsAction() || p.Type.IsFunc())
-        //     .Select(p => p.Type);
-        //
-        // return callbackTypes.Select(t => (t.GetCallbackTypedefName(), t.GetCallbackTypedefDefinition()));
     }
 
     public static string GetCHeaderDefinition(this IMethodSymbol methodSymbol, string targetTypeName)
@@ -433,7 +448,10 @@ internal static partial class Helpers
         }
     }
     
-    // IEnumearable apply
+    /// <summary>
+    /// Applies a filter function to the method collection.
+    /// Useful for building fluent filter chains.
+    /// </summary>
     public static IEnumerable<IMethodSymbol> Apply(this IEnumerable<IMethodSymbol> methodSymbols, Func<IEnumerable<IMethodSymbol>, IEnumerable<IMethodSymbol>> filter)
     {
         return filter(methodSymbols);

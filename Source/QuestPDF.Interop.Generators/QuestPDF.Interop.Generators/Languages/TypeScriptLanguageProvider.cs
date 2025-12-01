@@ -23,22 +23,14 @@ public class TypeScriptLanguageProvider : ILanguageProvider
     {
         return context switch
         {
-            NameContext.Method => ToCamelCase(csharpName),
-            NameContext.Parameter => ToCamelCase(csharpName),
+            NameContext.Method => csharpName.ToCamelCase(),
+            NameContext.Parameter => csharpName.ToCamelCase(),
             NameContext.EnumValue => csharpName, // Keep PascalCase for enum values in TypeScript
-            NameContext.Property => ToCamelCase(csharpName),
+            NameContext.Property => csharpName.ToCamelCase(),
             NameContext.Constant => csharpName.ToSnakeCase().ToUpperInvariant(),
             NameContext.Class => csharpName, // Keep PascalCase
             _ => csharpName
         };
-    }
-
-    private static string ToCamelCase(string pascalCase)
-    {
-        if (string.IsNullOrEmpty(pascalCase))
-            return pascalCase;
-
-        return char.ToLowerInvariant(pascalCase[0]) + pascalCase.Substring(1);
     }
 
     public string GetTargetType(InteropTypeModel type)
@@ -212,7 +204,7 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         var returnClassName = tsReturnType != "void" ? tsReturnType : null;
 
         // Extract unique ID from native entry point (the hash at the end)
-        var uniqueId = ExtractUniqueId(method.NativeEntryPoint);
+        var uniqueId = method.NativeEntryPoint.ExtractNativeMethodHash();
 
         // Use disambiguated name for overloads (makes them private with _prefix)
         var methodName = method.IsOverload
@@ -238,17 +230,6 @@ public class TypeScriptLanguageProvider : ILanguageProvider
             IsOverload = method.IsOverload,
             OriginalName = ConvertName(method.OriginalName, NameContext.Method)
         };
-    }
-
-    private static string ExtractUniqueId(string nativeEntryPoint)
-    {
-        // Native entry points end with a hash like "__a1b2c3d4"
-        var lastUnderscore = nativeEntryPoint.LastIndexOf("__");
-        if (lastUnderscore >= 0 && lastUnderscore < nativeEntryPoint.Length - 2)
-        {
-            return nativeEntryPoint.Substring(lastUnderscore + 2);
-        }
-        return nativeEntryPoint.GetHashCode().ToString("x8");
     }
 
     private string GetReturnTypeName(InteropMethodModel method)
