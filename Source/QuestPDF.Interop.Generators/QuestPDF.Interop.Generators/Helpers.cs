@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
-internal static class Helpers
+internal static partial class Helpers
 {
     public static string ToSnakeCase(this string input)
     {
@@ -378,6 +378,7 @@ internal static class Helpers
     public static IEnumerable<IMethodSymbol> FilterSupportedMethods(this IEnumerable<IMethodSymbol> methodSymbols)
     {
         return methodSymbols
+            .ExcludeOldObsoleteMethods()
             .Where(x => !x.Name.Contains("Component"))
             .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Array))
             .Where(x => !x.Parameters.Any(p => !p.Type.IsAction() && !p.Type.IsFunc() && p.Type.TypeKind == TypeKind.Delegate))
@@ -397,6 +398,38 @@ internal static class Helpers
         Func<IEnumerable<IMethodSymbol>, IEnumerable<IMethodSymbol>> Remove(string phrase)
         {
             return x => x.Where(x => !x.Parameters.Any(p => p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains(phrase)));
+        }
+    }
+    
+    public static IEnumerable<IMethodSymbol> ExcludeOldObsoleteMethods(this IEnumerable<IMethodSymbol> methodSymbols)
+    {
+        var oldVersion = new Version(2025, 0);
+        
+        return methodSymbols.Where(x => !IsOldObsolete(x));
+
+        bool IsOldObsolete(IMethodSymbol method)
+        {
+            var obsoleteAttribute = method
+                .GetAttributes()
+                .FirstOrDefault(attr => attr.AttributeClass?.Name == nameof(ObsoleteAttribute));
+            
+            if (obsoleteAttribute == null)
+                return false;
+            
+            var deprecationMessage = obsoleteAttribute
+                .ConstructorArguments
+                .FirstOrDefault().Value as string;
+
+            var parser = GetVersionParser().Match(deprecationMessage ?? string.Empty);
+            
+            if (!parser.Success)
+                return false;
+            
+            var yearVersion = parser.Groups["year"].Value;
+            var monthVersion = parser.Groups["month"].Value;
+            
+            var currentVersion = new Version(int.Parse(yearVersion), int.Parse(monthVersion));
+            return currentVersion < oldVersion;
         }
     }
     
@@ -461,4 +494,7 @@ internal static class Helpers
         // Note: Logic is reversed here. If method extends "BaseClass", "MyClass" is valid.
         return targetType.InheritsFromOrEquals(thisParamType);
     }
+
+    [GeneratedRegex(@"(?<year>20\d{2})\.(?<month>0?[1-9]|1[0-2])")]
+    private static partial Regex GetVersionParser();
 }
