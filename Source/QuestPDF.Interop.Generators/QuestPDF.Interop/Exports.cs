@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 
@@ -40,9 +41,43 @@ public static unsafe partial class Exports
         if (gch.IsAllocated) gch.Free();
     }
     
+    static Buffer HandleBuffer(byte[] byteArray)
+    {
+        nuint len = (nuint)byteArray.Length;
+        byte* ptr = (byte*)NativeMemory.Alloc(len); // caller must free
+
+        // Copy managed -> unmanaged
+        fixed (byte* src = byteArray)
+        {
+            global::System.Buffer.MemoryCopy(src, ptr, len, len);
+        }
+
+        return new Buffer { data = ptr, length = len };
+    }
     
+    static IntPtr HandleText(string text)
+    {
+        if (text == null) 
+            return IntPtr.Zero;
+
+        var length = Encoding.UTF8.GetByteCount(text);
+        var nativeArray = Marshal.AllocHGlobal(length + 1);
+        
+        fixed (char* pText = text)
+        {
+            var ptr = (byte*)nativeArray;
+            Encoding.UTF8.GetBytes(pText, text.Length, ptr, length);
+        }
+        
+        Marshal.WriteByte(nativeArray, length, 0); // null termination
+        
+        return nativeArray;
+    }
     
-    
+    static T NoTransformation<T>(T obj)
+    {
+        return obj;
+    }    
     
     
     [UnmanagedCallersOnly(EntryPoint = "questpdf_sum", CallConvs = new[] { typeof(CallConvCdecl) })]

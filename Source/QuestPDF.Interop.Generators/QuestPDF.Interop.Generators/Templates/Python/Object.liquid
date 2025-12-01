@@ -15,6 +15,7 @@ class {{ className }}:
 
 {% for method in methods %}
     {% if method.deprecationMessage %}@deprecated("{{ method.deprecationMessage }}"){% endif %}
+    {% if method.isStaticMethod %}@staticmethod{% endif %}
     def {{ method.pythonMethodName }}({{ method.pythonMethodParameters | join: ", " }}) -> {% if method.pythonMethodReturnType %}'{{ method.pythonMethodReturnType }}'{% else %}None{% endif %}:
 {% for callback in method.callbacks %}
         @questpdf_ffi.callback("void(void*)")

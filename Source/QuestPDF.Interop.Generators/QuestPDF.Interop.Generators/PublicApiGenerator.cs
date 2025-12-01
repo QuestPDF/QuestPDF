@@ -15,6 +15,8 @@ public sealed class PublicApiGenerator
         {
             new ColorsSourceGenerator(),
             new EnumSourceGenerator(),
+            new SimpleSourceGenerator("QuestPDF.Helpers.FontFeatures"),
+            new SimpleSourceGenerator("QuestPDF.Helpers.Placeholders"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.LineDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),

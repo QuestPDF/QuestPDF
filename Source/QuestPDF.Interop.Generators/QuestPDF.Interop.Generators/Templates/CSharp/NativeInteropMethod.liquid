@@ -2,18 +2,18 @@
 [UnmanagedCallersOnly(EntryPoint = "{{ method.nativeName }}", CallConvs = new[] { typeof(CallConvCdecl) })]
 public static {{ method.returnType }} {{ method.managedName }}({{ method.methodParameters | join: ", " }})
 {
-    var containerObject = UnboxHandle<{{ method.targetObjectType }}>({{ method.targetObjectParameterName }});
+    {% if method.isStaticMethod == false %}var {{ method.targetObjectName }} = UnboxHandle<{{ method.targetObjectType }}>({{ method.targetObjectParameterName }});{% endif %}
     {% if method.shouldFreeTarget %}FreeHandle({{ method.targetObjectParameterName }});{%- endif %}
 
     {%- capture targetCall -%}
-    containerObject.{{ method.apiName }}({{ method.targetMethodParameters | join: ", " }})
+        {{ method.targetObjectName }}.{{ method.apiName }}({{ method.targetMethodParameters | join: ", " }})
     {%- endcapture -%}
 
 {% if method.returnType == "void" %}
     {{ targetCall }};
 {%- else %}
     var result = {{ targetCall }};
-    return BoxHandle(result);
+    return {{ method.resultTransformFunction }}(result);
 {%- endif %}
 }
 {% endfor %}

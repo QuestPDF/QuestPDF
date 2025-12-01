@@ -26,7 +26,9 @@ internal static class TemplateManager
         Options.Filters.AddFilter("pascalCase", (input, _, _) => new StringValue(ToPascalCase(input.ToStringValue())));
         Options.Filters.AddFilter("screamingSnakeCase", (input, _, _) => new StringValue(input.ToStringValue().ToSnakeCase().ToUpperInvariant()));
 
-        Parser = new FluidParser();
+        var parserOptions = new FluidParserOptions { AllowFunctions = true };
+        
+        Parser = new FluidParser(parserOptions);
     }
 
     private static string ToCamelCase(string input)

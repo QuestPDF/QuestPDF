@@ -38,8 +38,8 @@ export class {{ className }} {
   }
 
 {% for method in methods %}
-  {% if method.deprecationMessage %}/** @deprecated {{ method.deprecationMessage }} */
-  {% endif %}{% if method.isOverload %}private {% endif %}{{ method.tsMethodName }}({{ method.tsParameters }}): {{ method.tsReturnType }} {
+  {% if method.deprecationMessage %}/** @deprecated {{ method.deprecationMessage }} */{% endif %}
+    {% if method.isStaticMethod %}static {% endif %}{% if method.isOverload %}private {% endif %}{{ method.tsMethodName }}({{ method.tsParameters }}): {{ method.tsReturnType }} {
 {% for callback in method.callbacks %}
     // Create callback type and register handler
     const {{ callback.parameterName }}CallbackType_{{ method.uniqueId }} = koffi.proto('void {{ callback.parameterName }}Cb_{{ method.uniqueId }}(void* ptr)');

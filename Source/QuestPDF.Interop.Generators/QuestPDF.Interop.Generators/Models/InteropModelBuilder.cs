@@ -40,6 +40,7 @@ internal static class InteropModelBuilder
         {
             OriginalTypeName = targetType.Name,
             GeneratedClassName = generatedClassName,
+            IsStaticClass = targetType.IsStatic,
             IsInterface = targetType.TypeKind == TypeKind.Interface,
             Methods = methodModels,
             CallbackTypedefs = callbackTypedefs,
@@ -164,6 +165,7 @@ internal static class InteropModelBuilder
             OriginalName = method.Name,
             NativeEntryPoint = method.GetNativeMethodName(generatedClassName),
             ManagedMethodName = method.GetManagedMethodName(generatedClassName),
+            IsStaticMethod = method.IsStatic && !method.IsExtensionMethod,
             IsExtensionMethod = method.IsExtensionMethod,
             DeprecationMessage = method.TryGetDeprecationMessage(),
             ReturnType = BuildTypeModel(method.ReturnType, method),

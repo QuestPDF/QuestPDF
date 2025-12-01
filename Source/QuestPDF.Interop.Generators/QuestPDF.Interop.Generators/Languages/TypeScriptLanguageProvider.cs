@@ -191,7 +191,11 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         var tsParametersStr = string.Join(", ", tsParams);
 
         // Build native call arguments
-        var nativeArgs = new List<string> { "this._ptr" };
+        var nativeArgs = new List<string>();
+
+        if (!method.IsStaticMethod)
+            nativeArgs.Add("this._ptr");
+
         nativeArgs.AddRange(method.Parameters.Select(p =>
             GetInteropValue(p, ConvertName(p.OriginalName, NameContext.Parameter))));
         var nativeCallArgsStr = string.Join(", ", nativeArgs);
@@ -222,6 +226,7 @@ public class TypeScriptLanguageProvider : ILanguageProvider
             NativeCallArgs = nativeCallArgsStr,
             UniqueId = uniqueId,
             DeprecationMessage = method.DeprecationMessage,
+            IsStaticMethod = method.IsStaticMethod,
             Callbacks = method.Callbacks.Select(c => new
             {
                 ParameterName = ConvertName(c.ParameterName, NameContext.Parameter),
@@ -248,8 +253,12 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         var returnType = GetKoffiType(method.ReturnType);
         var methodName = method.NativeEntryPoint;
 
-        // Build parameters: first is always void* target
-        var parameters = new List<string> { "void* target" };
+        // Build parameters: first is void* target for instance methods
+        var parameters = new List<string>();
+
+        if (!method.IsStaticMethod)
+            parameters.Add("void* target");
+
         parameters.AddRange(method.Parameters.Select(p =>
         {
             var koffiType = GetKoffiType(p.Type);

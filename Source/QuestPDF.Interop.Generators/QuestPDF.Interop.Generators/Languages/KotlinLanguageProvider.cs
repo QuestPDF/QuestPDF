@@ -242,7 +242,11 @@ public class KotlinLanguageProvider : ILanguageProvider
             p.DefaultValue != null ? $"{p.Name}: {p.Type} = {p.DefaultValue}" : $"{p.Name}: {p.Type}"));
 
         // Build native call arguments
-        var nativeArgs = new List<string> { "pointer" };
+        var nativeArgs = new List<string>();
+
+        if (!method.IsStaticMethod)
+            nativeArgs.Add("pointer");
+
         nativeArgs.AddRange(method.Parameters.Select(p =>
             GetInteropValue(p, ConvertName(p.OriginalName, NameContext.Parameter))));
         var nativeCallArgsStr = string.Join(", ", nativeArgs);
@@ -277,6 +281,7 @@ public class KotlinLanguageProvider : ILanguageProvider
             NativeCallArgs = nativeCallArgsStr,
             UniqueId = uniqueId,
             DeprecationMessage = method.DeprecationMessage,
+            IsStaticMethod = method.IsStaticMethod,
             Callbacks = method.Callbacks.Select(c => new
             {
                 ParameterName = ConvertName(c.ParameterName, NameContext.Parameter),
@@ -318,8 +323,12 @@ public class KotlinLanguageProvider : ILanguageProvider
         var returnType = GetJnaType(method.ReturnType);
         var methodName = method.NativeEntryPoint;
 
-        // Build parameters: first is always Pointer target
-        var parameters = new List<string> { "target: Pointer" };
+        // Build parameters: first is Pointer target for instance methods
+        var parameters = new List<string>();
+
+        if (!method.IsStaticMethod)
+            parameters.Add("target: Pointer");
+
         parameters.AddRange(method.Parameters.Select(p =>
         {
             var jnaType = GetJnaType(p.Type);

@@ -18,6 +18,8 @@ public class InteropClassModel
     /// </summary>
     public string GeneratedClassName { get; set; }
 
+    public bool IsStaticClass { get; set; }
+    
     /// <summary>
     /// Whether the original type is an interface.
     /// </summary>

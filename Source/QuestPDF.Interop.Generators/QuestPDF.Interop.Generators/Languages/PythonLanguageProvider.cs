@@ -127,10 +127,18 @@ public class PythonLanguageProvider : ILanguageProvider
 
     private object BuildMethodTemplateModel(InteropMethodModel method)
     {
-        var parameters = new List<string> { "self" };
+        var parameters = new List<string>();
+        
+        if (!method.IsStaticMethod)
+            parameters.Add("self");
+        
         parameters.AddRange(method.Parameters.Select(FormatParameter));
 
-        var interopParams = new List<string> { "self.target_pointer" };
+        var interopParams = new List<string>();
+        
+        if (!method.IsStaticMethod)
+            interopParams.Add("self.target_pointer");
+        
         interopParams.AddRange(method.Parameters.Select(p =>
             GetInteropValue(p, ConvertName(p.OriginalName, NameContext.Parameter))));
 
@@ -143,6 +151,7 @@ public class PythonLanguageProvider : ILanguageProvider
         {
             PythonMethodName = methodName,
             PythonMethodParameters = parameters,
+            IsStaticMethod = method.IsStaticMethod,
             InteropMethodName = method.NativeEntryPoint,
             InteropMethodParameters = interopParams,
             PythonMethodReturnType = GetReturnTypeName(method),

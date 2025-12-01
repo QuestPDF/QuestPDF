@@ -23,6 +23,8 @@ public class InteropMethodModel
     /// </summary>
     public string ManagedMethodName { get; set; }
 
+    public bool IsStaticMethod { get; set; }
+    
     /// <summary>
     /// Whether this method is an extension method.
     /// </summary>

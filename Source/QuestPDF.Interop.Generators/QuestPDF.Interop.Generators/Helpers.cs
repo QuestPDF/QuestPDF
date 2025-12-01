@@ -66,6 +66,9 @@ internal static partial class Helpers
     
     public static string GetInteropResultType(this IMethodSymbol methodSymbol)
     {
+        if (methodSymbol.ReturnType.ToDisplayString().Contains("QuestPDF.Infrastructure.Color"))
+            return "uint";
+
         if (methodSymbol.IsGenericMethod && methodSymbol.ReturnType.TypeKind == TypeKind.TypeParameter)
             return "IntPtr";
         
@@ -75,7 +78,35 @@ internal static partial class Helpers
         if (methodSymbol.ReturnType.TypeKind == TypeKind.Interface)
             return "IntPtr";
         
+        if (methodSymbol.ReturnType.ToDisplayString() == "byte[]")
+            return "Buffer";
+        
         return methodSymbol.ReturnType.ToString();
+    }
+    
+    public static string GetCSharpResultTransformFunction(this IMethodSymbol methodSymbol)
+    {
+        if (methodSymbol.ReturnType.ToDisplayString().Contains("QuestPDF.Infrastructure.Color"))
+            return "NoTransformation";
+        
+        // byte[]
+        if (methodSymbol.ReturnType.ToDisplayString() == "byte[]")
+            return "HandleBuffer";
+        
+        // string
+        if (methodSymbol.ReturnType.SpecialType == SpecialType.System_String)
+            return "HandleText";
+        
+        if (methodSymbol.ReturnType.TypeKind == TypeKind.Class)
+            return "BoxHandle";
+        
+        if (methodSymbol.ReturnType.TypeKind == TypeKind.Interface)
+            return "BoxHandle";
+        
+        if (methodSymbol.IsGenericMethod && methodSymbol.ReturnType.TypeKind == TypeKind.TypeParameter)
+            return "BoxHandle";
+        
+        return "NoTransformation";
     }
     
     public static string GetInteropMethodParameterType(this ITypeSymbol typeSymbol)

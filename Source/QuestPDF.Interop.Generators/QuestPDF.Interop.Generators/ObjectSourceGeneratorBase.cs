@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using QuestPDF.Interop.Generators.Languages;
 using QuestPDF.Interop.Generators.Models;
@@ -46,7 +47,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         {
             var parameters = method.Parameters.Select(GetMethodParameter);
             
-            if (!method.IsExtensionMethod)
+            if (!method.IsExtensionMethod && !method.IsStatic)
                 parameters = parameters.Prepend("IntPtr target");
             
             return new NativeInteropMethodTemplateModel
@@ -55,10 +56,13 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 ManagedName = method.GetManagedMethodName(GetTargetClassName(compilation)),
                 ApiName = method.Name,
                 MethodParameters = parameters,
+                IsStaticMethod = (method.IsStatic && !method.IsExtensionMethod),
+                TargetObjectName = (method.IsStatic && !method.IsExtensionMethod) ? GetTargetType(compilation).Name : "targetObject",
                 TargetObjectType = GetTargetType(compilation).Name,
                 TargetObjectParameterName = method.IsExtensionMethod ? method.Parameters.First().Name : "target",
                 TargetMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetTargetMethodParameter),
                 ReturnType = method.GetInteropResultType(),
+                ResultTransformFunction = method.GetCSharpResultTransformFunction(),
                 ShouldFreeTarget = method.IsExtensionMethod
             };
         }
@@ -113,7 +117,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             
             if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
             {
-                return $"Marshal.PtrToStringUni({parameterSymbol.Name})";
+                return $"Marshal.PtrToStringUTF8({parameterSymbol.Name})";
             }
 
             return parameterSymbol.Name;
