@@ -13,11 +13,6 @@ public sealed class MultiColumnDescriptor
     {
         
     }
-        
-    internal MultiColumnDescriptor()
-    {
-            
-    }
     
     /// <summary>
     /// Configures the horizontal spacing between adjacent columns in the layout.

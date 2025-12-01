@@ -160,11 +160,6 @@ namespace QuestPDF.Fluent
             
         }
         
-        internal TextDescriptor()
-        {
-            
-        }
-        
         /// <summary>
         /// Applies a consistent text style for the whole content within this <see cref="TextExtensions.Text">Text</see> element.
         /// </summary>

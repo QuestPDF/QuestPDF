@@ -14,11 +14,6 @@ namespace QuestPDF.Fluent
             
         }
         
-        internal GridDescriptor()
-        {
-            
-        }
-        
         public void Spacing(float value, Unit unit = Unit.Point)
         {
             VerticalSpacing(value, unit);

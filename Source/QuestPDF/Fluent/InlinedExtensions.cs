@@ -12,12 +12,7 @@ namespace QuestPDF.Fluent
         {
             
         }
-        
-        internal InlinedDescriptor()
-        {
-            
-        }
-        
+
         #region Spacing
         
         /// <summary>
