@@ -17,11 +17,6 @@ public unsafe struct Buffer
 
 public static unsafe partial class Exports
 {
-    static Exports()
-    {
-        Settings.License = LicenseType.Community;
-    }
-    
     static IntPtr BoxHandle(object obj)
     {
         var gch = GCHandle.Alloc(obj, GCHandleType.Normal);

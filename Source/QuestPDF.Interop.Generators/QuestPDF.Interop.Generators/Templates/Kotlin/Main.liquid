@@ -12,6 +12,45 @@ import java.util.Collections
 
 var jnaOptions = Collections.singletonMap(Library.OPTION_STRING_ENCODING, "UTF-16LE");
 
+private class QuestLibrary {
+    companion object {
+        private val initLock = Any()
+
+        private fun getLibraryPath(): String {
+            val os = System.getProperty("os.name").lowercase()
+            val libName = when {
+                "win" in os -> "QuestPDF.Interop.dll"
+                "mac" in os -> "QuestPDF.Interop.dylib"
+                else -> "libQuestPDF.Interop.so"
+            }
+
+            val searchPaths = listOf(
+                libName,
+                "./$libName",
+                "../$libName",
+                "${System.getProperty("user.dir")}/$libName"
+            )
+
+            for (path in searchPaths) {
+                val file = java.io.File(path)
+                if (file.exists()) {
+                    return file.absolutePath
+                }
+            }
+
+            return libName
+        }
+
+        fun <T : Library> getLibrary(interfaceClass : Class<T>): T {
+            synchronized(initLock) {
+                return Native.load(getLibraryPath(), interfaceClass, jnaOptions)
+            }
+        }
+    }
+}
+        
+        
+
 // ============================================================================
 // Native Buffer Structure
 // ============================================================================

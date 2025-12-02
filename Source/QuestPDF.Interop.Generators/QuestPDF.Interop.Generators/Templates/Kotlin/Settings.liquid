@@ -1,0 +1,53 @@
+interface SettingsLibrary : Library {
+    companion object {
+        val INSTANCE: SettingsLibrary = QuestLibrary.getLibrary(SettingsLibrary::class.java)
+    }
+
+    fun questpdf__settings__license(value: Int): Unit;
+    fun questpdf__settings__enable_debugging(value: Boolean): Unit;
+    fun questpdf__settings__enable_caching(value: Boolean): Unit;
+    fun questpdf__settings__check_if_all_text_glyphs_are_available(value: Boolean): Unit;
+    fun questpdf__settings__use_environment_fonts(value: Boolean): Unit;
+    fun questpdf__settings__temporary_storage_path(value: String): Unit;
+    fun questpdf__settings__font_discovery_paths(delimitedList: String): Unit;
+}
+
+class Settings {
+    companion object {
+        var license : LicenseType? = null
+            set(value) {
+                if (value == null) return;
+                SettingsLibrary.INSTANCE.questpdf__settings__license(value.value)
+            }
+
+        var enableDebugging = false
+            set(value) {
+                SettingsLibrary.INSTANCE.questpdf__settings__enable_debugging(value)
+            }
+
+        var enableCaching = false
+            set(value) {
+                SettingsLibrary.INSTANCE.questpdf__settings__enable_caching(value)
+            }
+
+        var checkIfAllTextGlyphsAreAvailable = false
+            set(value) {
+                SettingsLibrary.INSTANCE.questpdf__settings__check_if_all_text_glyphs_are_available(value)
+            }
+
+        var useEnvironmentFonts = false
+            set(value) {
+                SettingsLibrary.INSTANCE.questpdf__settings__use_environment_fonts(value)
+            }
+
+        var temporaryStoragePath = ""
+            set(value) {
+                SettingsLibrary.INSTANCE.questpdf__settings__temporary_storage_path(value)
+            }
+
+        var fontDiscoveryPaths : Array<String> = arrayOf()
+            set(value) {
+                SettingsLibrary.INSTANCE.questpdf__settings__font_discovery_paths(value.joinToString("__questpdf__"))
+            }
+    }
+}

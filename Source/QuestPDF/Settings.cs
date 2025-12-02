@@ -58,7 +58,7 @@ namespace QuestPDF
         /// <para>By default, this collection contains the application files path.</para>
         /// <para>You can add additional paths to this collection to include more directories for automatic font registration.</para>
         /// </remarks>
-        public static ICollection<string> FontDiscoveryPaths { get; } = new List<string>()
+        public static ICollection<string> FontDiscoveryPaths { get; set; } = new List<string>()
         {
             Helpers.Helpers.ApplicationFilesPath
         };

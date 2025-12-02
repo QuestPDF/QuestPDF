@@ -61,56 +61,16 @@ class {{ className }} internal constructor(val pointer: Pointer) {
     private val callbacks = mutableListOf<Callback>()
 
     companion object {
-        @Volatile
-        private var nativeLib: {{ className }}Native? = null
+        private var nativeLib: {{ className }}Native? = QuestLibrary.getLibrary({{ className }}Native::class.java)
         private val initLock = Any()
 
-        private fun ensureInitialized() {
-            if (nativeLib != null) return
-
-            synchronized(initLock) {
-                if (nativeLib != null) return
-                nativeLib = Native.load(getLibraryPath(), {{ className }}Native::class.java, jnaOptions)
-            }
-        }
-
-        private fun getLibraryPath(): String {
-            val os = System.getProperty("os.name").lowercase()
-            val libName = when {
-                "win" in os -> "QuestPDF.Interop.dll"
-                "mac" in os -> "QuestPDF.Interop.dylib"
-                else -> "libQuestPDF.Interop.so"
-            }
-
-            val searchPaths = listOf(
-                libName,
-                "./$libName",
-                "../$libName",
-                "${System.getProperty("user.dir")}/$libName"
-            )
-
-            for (path in searchPaths) {
-                val file = java.io.File(path)
-                if (file.exists()) {
-                    return file.absolutePath
-                }
-            }
-
-            return libName
-        }
-
         private fun lib(): {{ className }}Native {
-            ensureInitialized()
             return nativeLib!!
         }
 
     {% for method in methods %}
         {% if method.isStaticMethod %} {{ renderMethodDefinition(method) }} {% endif %}
     {% endfor %}
-    }
-
-    init {
-        ensureInitialized()
     }
     
 {% for method in methods %}
