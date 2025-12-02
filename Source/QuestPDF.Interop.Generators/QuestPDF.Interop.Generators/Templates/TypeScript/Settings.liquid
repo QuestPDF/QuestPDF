@@ -1,0 +1,62 @@
+interface SettingsNativeFunctions {
+  questpdf__settings__license(value: number): void;
+  questpdf__settings__enable_debugging(value: boolean): void;
+  questpdf__settings__enable_caching(value: boolean): void;
+  questpdf__settings__check_if_all_text_glyphs_are_available(value: boolean): void;
+  questpdf__settings__use_environment_fonts(value: boolean): void;
+  questpdf__settings__temporary_storage_path(value: string): void;
+  questpdf__settings__font_discovery_paths(delimitedList: string): void;
+}
+
+let settingsLib: SettingsNativeFunctions | null = null;
+
+classInitializers.push((lib: koffi.IKoffiLib) => {
+  settingsLib = {
+    questpdf__settings__license: lib.func('void questpdf__settings__license(int value)'),
+    questpdf__settings__enable_debugging: lib.func('void questpdf__settings__enable_debugging(bool value)'),
+    questpdf__settings__enable_caching: lib.func('void questpdf__settings__enable_caching(bool value)'),
+    questpdf__settings__check_if_all_text_glyphs_are_available: lib.func('void questpdf__settings__check_if_all_text_glyphs_are_available(bool value)'),
+    questpdf__settings__use_environment_fonts: lib.func('void questpdf__settings__use_environment_fonts(bool value)'),
+    questpdf__settings__temporary_storage_path: lib.func('void questpdf__settings__temporary_storage_path(const char* value)'),
+    questpdf__settings__font_discovery_paths: lib.func('void questpdf__settings__font_discovery_paths(const char* delimitedList)'),
+  };
+});
+
+function getSettingsLib(): SettingsNativeFunctions {
+  if (settingsLib === null) {
+    throw new Error('QuestPDF library not initialized. Call initializeQuestPDF() first.');
+  }
+  return settingsLib;
+}
+
+export class Settings {
+  static set license(value: LicenseType | null) {
+    if (value === null) return;
+
+    getSettingsLib().questpdf__settings__license(value);
+  }
+
+  static set enableDebugging(value: boolean) {
+    getSettingsLib().questpdf__settings__enable_debugging(value);
+  }
+
+  static set enableCaching(value: boolean) {
+    getSettingsLib().questpdf__settings__enable_caching(value);
+  }
+
+  static set checkIfAllTextGlyphsAreAvailable(value: boolean) {
+    getSettingsLib().questpdf__settings__check_if_all_text_glyphs_are_available(value);
+  }
+
+  static set useEnvironmentFonts(value: boolean) {
+    getSettingsLib().questpdf__settings__use_environment_fonts(value);
+  }
+
+  static set temporaryStoragePath(value: string) {
+    getSettingsLib().questpdf__settings__temporary_storage_path(value);
+  }
+
+  static set fontDiscoveryPaths(value: string[]) {
+    getSettingsLib().questpdf__settings__font_discovery_paths(value.join('__questpdf__'));
+  }
+}

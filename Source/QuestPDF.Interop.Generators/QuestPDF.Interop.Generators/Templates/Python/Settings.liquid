@@ -1,0 +1,43 @@
+QUESTPDF_CDEF += r"""
+    void questpdf__settings__license(int value);
+    void questpdf__settings__enable_debugging(bool value);
+    void questpdf__settings__enable_caching(bool value);
+    void questpdf__settings__check_if_all_text_glyphs_are_available(bool value);
+    void questpdf__settings__use_environment_fonts(bool value);
+    void questpdf__settings__temporary_storage_path(const char* value);
+    void questpdf__settings__font_discovery_paths(const char* delimited_list);
+"""
+
+
+class Settings:
+    @classmethod
+    def set_license(cls, value: LicenseType | None) -> None:
+        if value is None:
+            return
+
+        questpdf.lib.questpdf__settings__license(value.value)
+
+    @classmethod
+    def set_enable_debugging(cls, value: bool) -> None:
+        questpdf.lib.questpdf__settings__enable_debugging(value)
+
+    @classmethod
+    def set_enable_caching(cls, value: bool) -> None:
+        questpdf.lib.questpdf__settings__enable_caching(value)
+
+    @classmethod
+    def set_check_if_all_text_glyphs_are_available(cls, value: bool) -> None:
+        questpdf.lib.questpdf__settings__check_if_all_text_glyphs_are_available(value)
+
+    @classmethod
+    def set_use_environment_fonts(cls, value: bool) -> None:
+        questpdf.lib.questpdf__settings__use_environment_fonts(value)
+
+    @classmethod
+    def set_temporary_storage_path(cls, value: str) -> None:
+        questpdf.lib.questpdf__settings__temporary_storage_path(value.encode('utf-8'))
+
+    @classmethod
+    def set_font_discovery_paths(cls, value: list[str]) -> None:
+        delimited = "__questpdf__".join(value)
+        questpdf.lib.questpdf__settings__font_discovery_paths(delimited.encode('utf-8'))
