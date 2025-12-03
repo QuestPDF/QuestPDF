@@ -18,6 +18,10 @@ public sealed class PublicApiGenerator
             new PlainSourceLoader("Settings"),
             new SimpleSourceGenerator("QuestPDF.Helpers.FontFeatures"),
             new SimpleSourceGenerator("QuestPDF.Helpers.Placeholders"),
+            new SimpleSourceGenerator("QuestPDF.Drawing.FontManager")
+            {
+                ExcludeMembers = [ "RegisterFontFromEmbeddedResource" ]
+            },
             new DescriptorSourceGenerator("QuestPDF.Fluent.LineDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
