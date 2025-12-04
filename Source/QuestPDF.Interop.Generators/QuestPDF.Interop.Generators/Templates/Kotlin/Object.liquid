@@ -35,6 +35,8 @@ private interface {{ className }}Native : Library {
 {% for method in methods %}
     fun {{ method.nativeMethodName }}({% unless method.isStaticMethod %}target: Pointer{% for param in method.parameters %}, {{ param.name }}: {{ param.jnaType }}{% endfor %}{% else %}{% for param in method.parameters %}{% if forloop.first == false %}, {% endif %}{{ param.name }}: {{ param.jnaType }}{% endfor %}{% endunless %}): {{ method.jnaReturnType }}
 {% endfor %}
+
+{{ customInit }}
 }
 
 // ============================================================================
@@ -76,4 +78,6 @@ class {{ className }} internal constructor(val pointer: Pointer) {
 {% for method in methods %}
 {% unless method.isStaticMethod %} {{ renderMethodDefinition(method) }} {% endunless %}
 {% endfor %}
+
+    {{ customClass }}
 }

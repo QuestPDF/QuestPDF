@@ -6,6 +6,8 @@ QUESTPDF_CDEF += r"""
     {% for header in Headers %}
     {{ header }}
     {% endfor %}
+
+{{ customInit }}
 """
 
 class {{ className }}:
@@ -30,3 +32,5 @@ class {{ className }}:
 {% if method.pythonMethodReturnType %}        return {{ method.pythonMethodReturnType }}(result)
 {% endif %}
 {% endfor %}
+
+{{ customClass }}

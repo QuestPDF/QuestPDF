@@ -99,10 +99,13 @@ public class PythonLanguageProvider : ILanguageProvider
 
     public string GetInteropValue(InteropParameterModel parameter, string variableName)
     {
+        if (parameter.Type.InteropType.Contains("QuestPDF.Infrastructure.Color"))
+            return $"{variableName}.hex";
+        
         return parameter.Type.Kind switch
         {
             InteropTypeKind.Enum => $"{variableName}.value",
-            InteropTypeKind.String => $"questpdf_ffi.new(\"char[]\", {variableName}.encode(\"utf-16\"))",
+            InteropTypeKind.String => $"questpdf_ffi.new(\"char[]\", {variableName}.encode(\"utf-8\"))",
             InteropTypeKind.Action => $"_internal_{variableName}_handler",
             InteropTypeKind.Func => $"_internal_{variableName}_handler",
             _ => variableName
@@ -112,7 +115,7 @@ public class PythonLanguageProvider : ILanguageProvider
     // Store the current class name for resolving TypeParameter return types
     private string _currentClassName;
 
-    public object BuildClassTemplateModel(InteropClassModel classModel)
+    public object BuildClassTemplateModel(InteropClassModel classModel, string customInit, string customClass)
     {
         _currentClassName = classModel.GeneratedClassName;
 
@@ -121,7 +124,9 @@ public class PythonLanguageProvider : ILanguageProvider
             CallbackTypedefs = classModel.CallbackTypedefs,
             Headers = classModel.CHeaderSignatures,
             ClassName = classModel.GeneratedClassName,
-            Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList()
+            Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
+            CustomInit = customInit,
+            CustomClass = customClass
         };
     }
 

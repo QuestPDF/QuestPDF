@@ -6,16 +6,14 @@
 // {{ typedef }}
 {% endfor %}
 
-const {{ className }}NativeFunctions: Record<string, ((...args: any[]) => any) | null> = {
-{% for method in methods %}
-  '{{ method.nativeMethodName }}': null,
-{% endfor %}
-};
+const {{ className }}NativeFunctions: Record<string, ((...args: any[]) => any) | null> = {};
 
 function init{{ className }}Functions(lib: koffi.IKoffiLib): void {
 {% for method in methods %}
   {{ className }}NativeFunctions['{{ method.nativeMethodName }}'] = lib.func('{{ method.cSignature }}');
 {% endfor %}
+
+{{ customInit }}
 }
 
 // Register initialization with the global initializers
@@ -58,4 +56,6 @@ export class {{ className }} {
   }
 
 {% endfor %}
+
+{{ customClass }}
 }

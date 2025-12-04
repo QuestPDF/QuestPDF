@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using QuestPDF.Interop.Generators.Languages;
@@ -11,8 +13,6 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 {
     protected abstract IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation);
     protected abstract INamedTypeSymbol GetTargetType(Compilation compilation);
-    
-    public string ExtensionTemplateName { get; set; }
 
     private string GetTargetClassName(Compilation compilation)
     {
@@ -63,7 +63,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 TargetMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetTargetMethodParameter),
                 ReturnType = method.GetInteropResultType(),
                 ResultTransformFunction = method.GetCSharpResultTransformFunction(),
-                ShouldFreeTarget = method.IsExtensionMethod
+                ShouldFreeTarget = method.IsExtensionMethod,
             };
         }
 
@@ -128,47 +128,54 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     {
         var classModel = BuildClassModel(compilation);
         var provider = LanguageProviderRegistry.Python;
-        var templateModel = provider.BuildClassTemplateModel(classModel);
-
+        
+        var customInit = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Init");
+        var customClass = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Class");
+        
+        var templateModel = provider.BuildClassTemplateModel(classModel, customInit, customClass);
         var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
-        var extensionCode = RenderExtensionTemplate("Python", templateModel);
 
-        return mainCode + extensionCode;
+        return mainCode;
     }
 
     public string GenerateTypeScriptCode(Compilation compilation)
     {
         var classModel = BuildClassModel(compilation);
         var provider = LanguageProviderRegistry.TypeScript;
-        var templateModel = provider.BuildClassTemplateModel(classModel);
-
+        
+        var customInit = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Init");
+        var customClass = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Class");
+        
+        var templateModel = provider.BuildClassTemplateModel(classModel, customInit, customClass);
         var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
-        var extensionCode = RenderExtensionTemplate("TypeScript", templateModel);
 
-        return mainCode + extensionCode;
+        return mainCode;
     }
 
     public string GenerateKotlinCode(Compilation compilation)
     {
         var classModel = BuildClassModel(compilation);
         var provider = LanguageProviderRegistry.Kotlin;
-        var templateModel = provider.BuildClassTemplateModel(classModel);
-
+        
+        var customInit = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Init");
+        var customClass = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Class");
+        
+        var templateModel = provider.BuildClassTemplateModel(classModel, customInit, customClass);
         var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
-        var extensionCode = RenderExtensionTemplate("Kotlin", templateModel);
 
-        return mainCode + extensionCode;
+        return mainCode;
     }
-
-    /// <summary>
-    /// Renders the extension template for a specific language if it exists.
-    /// </summary>
-    private string RenderExtensionTemplate(string language, object templateModel)
+    
+    private string TryLoadingCustomContent(string id)
     {
-        if (string.IsNullOrEmpty(ExtensionTemplateName))
+        using var stream = Assembly
+            .GetExecutingAssembly()
+            .GetManifestResourceStream($"QuestPDF.Interop.Generators.Templates.{id}.liquid");
+        
+        if (stream == null)
             return string.Empty;
 
-        var extensionTemplateName = $"{language}.{ExtensionTemplateName}";
-        return TemplateManager.RenderTemplateIfExists(extensionTemplateName, templateModel);
+        using var streamReader = new StreamReader(stream);
+        return streamReader.ReadToEnd();
     }
 }

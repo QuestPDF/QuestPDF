@@ -154,6 +154,9 @@ public class TypeScriptLanguageProvider : ILanguageProvider
 
     public string GetInteropValue(InteropParameterModel parameter, string variableName)
     {
+        if (parameter.Type.InteropType.Contains("QuestPDF.Infrastructure.Color"))
+            return $"{variableName}.hex";
+        
         return parameter.Type.Kind switch
         {
             InteropTypeKind.Enum => variableName,
@@ -166,7 +169,7 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         };
     }
 
-    public object BuildClassTemplateModel(InteropClassModel classModel)
+    public object BuildClassTemplateModel(InteropClassModel classModel, string customInit, string customClass)
     {
         _currentClassName = classModel.GeneratedClassName;
 
@@ -174,7 +177,9 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         {
             ClassName = classModel.GeneratedClassName,
             CallbackTypedefs = classModel.CallbackTypedefs,
-            Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList()
+            Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
+            CustomInit = customInit,
+            CustomClass = customClass
         };
     }
 

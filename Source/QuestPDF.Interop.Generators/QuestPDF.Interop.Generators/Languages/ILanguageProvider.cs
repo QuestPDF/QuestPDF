@@ -62,7 +62,7 @@ public interface ILanguageProvider
     /// <summary>
     /// Builds a language-specific template model for a class.
     /// </summary>
-    object BuildClassTemplateModel(InteropClassModel classModel);
+    object BuildClassTemplateModel(InteropClassModel classModel, string customInit, string customClass);
 
     /// <summary>
     /// Builds a language-specific template model for enums.
