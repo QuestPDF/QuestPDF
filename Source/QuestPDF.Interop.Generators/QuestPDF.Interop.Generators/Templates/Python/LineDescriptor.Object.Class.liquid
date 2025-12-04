@@ -1,0 +1,10 @@
+    def line_dash_pattern(self, pattern: list[float], unit: Unit = Unit.point) -> 'LineDescriptor':
+        pattern_ffi = questpdf_ffi.new("float[]", pattern)
+        result = questpdf.lib.questpdf__line_descriptor__line_dash_pattern(self.target_pointer, pattern_ffi, len(pattern_ffi), unit.value)
+        return LineDescriptor(result)
+    
+    def line_gradient(self, colors: list[Color]) -> 'LineDescriptor':
+        colors_hex = [color.hex for color in colors]
+        colors_ffi = questpdf_ffi.new("uint32_t[]", colors_hex)
+        result = questpdf.lib.questpdf__line_descriptor__line_gradient(self.target_pointer, colors_ffi, len(colors_ffi))
+        return LineDescriptor(result)

@@ -1,0 +1,10 @@
+fun lineDashPattern(pattern: Collection<Float>, unit: LengthUnit = LengthUnit.Point): LineDescriptor {
+    val result = lib().questpdf__line_descriptor__line_dash_pattern(pointer, pattern.toFloatArray(), pattern.size, unit.value)
+    return LineDescriptor(result)
+}
+
+fun lineGradient(colors: Collection<Color>): LineDescriptor {
+    val colorsFfi = colors.map { it.hex.toInt() }.toIntArray()    
+    val result = lib().questpdf__line_descriptor__line_gradient(pointer, colorsFfi, colorsFfi.size)
+    return LineDescriptor(result)
+}

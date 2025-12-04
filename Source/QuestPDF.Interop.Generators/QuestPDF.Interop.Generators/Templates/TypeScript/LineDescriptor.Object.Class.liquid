@@ -1,0 +1,11 @@
+lineDashPattern(pattern: number[], unit: Unit = Unit.Point): LineDescriptor {
+    const arr = new Float32Array(pattern);
+    const result = LineDescriptorNativeFunctions['questpdf__line_descriptor__line_dash_pattern']!(this._ptr, arr, arr.length, unit);
+    return new LineDescriptor(result);
+}
+
+lineGradient(colors: Color[]): LineDescriptor {
+    const arr = new Uint32Array(colors.map(x => x.hex));
+    const result = LineDescriptorNativeFunctions['questpdf__line_descriptor__line_gradient']!(this._ptr, arr, arr.length);
+    return new LineDescriptor(result);
+}
