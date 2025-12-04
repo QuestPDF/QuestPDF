@@ -1,0 +1,11 @@
+backgroundLinearGradient(angle: number, colors: Color[]): Container {
+    const arr = new Uint32Array(colors.map(x => x.hex));
+    const result = ContainerNativeFunctions['questpdf__container__background_linear_gradient']!(this._ptr, angle, arr, arr.length);
+    return new Container(result);
+}
+
+borderLinearGradient(angle: number, colors: Color[]): Container {
+    const arr = new Uint32Array(colors.map(x => x.hex));
+    const result = ContainerNativeFunctions['questpdf__container__border_linear_gradient']!(this._ptr, angle, arr, arr.length);
+    return new Container(result);
+}

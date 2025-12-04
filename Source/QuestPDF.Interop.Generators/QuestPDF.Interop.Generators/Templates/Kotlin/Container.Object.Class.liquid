@@ -1,0 +1,11 @@
+fun backgroundLinearGradient(angle: Float, colors: Collection<Color>): Container {
+    val colorsFfi = colors.map { it.hex.toInt() }.toIntArray()
+    val result = lib().questpdf__container__background_linear_gradient(pointer, angle, colorsFfi, colorsFfi.size)
+    return Container(result)
+}
+    
+fun borderLinearGradient(angle: Float, colors: Collection<Color>): Container {
+    val colorsFfi = colors.map { it.hex.toInt() }.toIntArray()
+    val result = lib().questpdf__container__border_linear_gradient(pointer, angle, colorsFfi, colorsFfi.size)
+    return Container(result)
+}

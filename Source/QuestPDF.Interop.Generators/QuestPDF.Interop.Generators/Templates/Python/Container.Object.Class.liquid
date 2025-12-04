@@ -1,0 +1,11 @@
+    def background_linear_gradient(self, angle: float, colors: list[Color]) -> 'Container':
+        colors_hex = [color.hex for color in colors]
+        colors_ffi = questpdf_ffi.new("uint32_t[]", colors_hex)
+        result = questpdf.lib.questpdf__container__background_linear_gradient(self.target_pointer, angle, colors_ffi, len(colors_ffi))
+        return Container(result)
+    
+    def border_linear_gradient(self, angle: float, colors: list[Color]) -> 'Container':
+        colors_hex = [color.hex for color in colors]
+        colors_ffi = questpdf_ffi.new("uint32_t[]", colors_hex)
+        result = questpdf.lib.questpdf__container__border_linear_gradient(self.target_pointer, angle, colors_ffi, len(colors_ffi))
+        return Container(result)
