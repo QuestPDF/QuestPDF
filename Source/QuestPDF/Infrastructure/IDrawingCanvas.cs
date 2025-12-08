@@ -37,8 +37,10 @@ namespace QuestPDF.Infrastructure
         void ClipRectangle(SkRect clipArea);
         void ClipRoundedRectangle(SkRoundedRect clipArea);
         
-        void DrawHyperlink(string url, Size size);
-        void DrawSectionLink(string sectionName, Size size);
+        void DrawHyperlink(Size size, string url, string? description);
+        void DrawSectionLink(Size size, string sectionName, string? description);
         void DrawSection(string sectionName);
+        
+        void SetSemanticNodeId(int nodeId);
     }
 }

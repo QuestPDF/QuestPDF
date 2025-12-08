@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using QuestPDF.Companion;
 using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Drawing.Exceptions;
@@ -12,6 +11,8 @@ using QuestPDF.Elements.Text.Items;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
+using PDFA_Conformance = QuestPDF.Infrastructure.PDFA_Conformance;
+using PDFUA_Conformance = QuestPDF.Infrastructure.PDFUA_Conformance;
 
 namespace QuestPDF.Drawing
 {
@@ -28,6 +29,7 @@ namespace QuestPDF.Drawing
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
+
             using var canvas = new PdfDocumentCanvas(stream, metadata, settings);
             RenderDocument(canvas, document, settings);
         }
@@ -100,24 +102,17 @@ namespace QuestPDF.Drawing
             return canvas.GetContent();
         }
 
-        private static void RenderDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
+        internal static void RenderDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
         {
-            canvas.BeginDocument();
-        
             if (document is MergedDocument mergedDocument)
+            {
                 RenderMergedDocument(canvas, mergedDocument, settings);
-        
-            else
-                RenderSingleDocument(canvas, document, settings);
-        
-            canvas.EndDocument();
-        }
-
-        private static void RenderSingleDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
-        {
+                return;
+            }
+            
+            var semanticTreeManager = CreateSemanticTreeManager(settings);
             var useOriginalImages = canvas is ImageDocumentCanvas;
-
-            var content = ConfigureContent(document, settings, useOriginalImages);
+            var content = ConfigureContent(document, settings, semanticTreeManager, useOriginalImages);
             
             if (canvas is CompanionDocumentCanvas)
                 content.VisitChildren(x => x.CreateProxy(y => new LayoutProxy(y)));
@@ -127,7 +122,12 @@ namespace QuestPDF.Drawing
                 var pageContext = new PageContext();
                 RenderPass(pageContext, new FreeDocumentCanvas(), content);
                 pageContext.ProceedToNextRenderingPhase();
+
+                canvas.ConfigureWithSemanticTree(semanticTreeManager);
+                
+                canvas.BeginDocument();
                 RenderPass(pageContext, canvas, content);
+                canvas.EndDocument();
             
                 if (canvas is CompanionDocumentCanvas companionCanvas)
                     companionCanvas.Hierarchy = content.ExtractHierarchy();
@@ -142,59 +142,77 @@ namespace QuestPDF.Drawing
         {
             var useOriginalImages = canvas is ImageDocumentCanvas;
             
+            var sharedPageContent = new PageContext();
+            var useSharedPageContext = document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous;
+
+            var semanticTreeManager = CreateSemanticTreeManager(settings);
+            
             var documentParts = Enumerable
                 .Range(0, document.Documents.Count)
                 .Select(index => new
                 {
                     DocumentId = index,
-                    Content = ConfigureContent(document.Documents[index], settings, useOriginalImages)
+                    Content = ConfigureContent(document.Documents[index], settings, semanticTreeManager, useOriginalImages),
+                    PageContext = useSharedPageContext ? sharedPageContent : new PageContext()
                 })
                 .ToList();
             
             try
             {
-                if (document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous)
-                {
-                    var documentPageContext = new PageContext();
-
-                    foreach (var documentPart in documentParts)
-                    {
-                        documentPageContext.SetDocumentId(documentPart.DocumentId);
-                        RenderPass(documentPageContext, new FreeDocumentCanvas(), documentPart.Content);
-                    }
+                foreach (var documentPart in documentParts)
+                    documentPart.PageContext.SetDocumentId(documentPart.DocumentId);
                 
-                    documentPageContext.ProceedToNextRenderingPhase();
-
-                    foreach (var documentPart in documentParts)
-                    {
-                        documentPageContext.SetDocumentId(documentPart.DocumentId);
-                        RenderPass(documentPageContext, canvas, documentPart.Content);
-                        documentPart.Content.ReleaseDisposableChildren();
-                    }
-                }
-                else
+                foreach (var documentPart in documentParts)
                 {
-                    foreach (var documentPart in documentParts)
-                    {
-                        var pageContext = new PageContext();
-                        pageContext.SetDocumentId(documentPart.DocumentId);
-                    
-                        RenderPass(pageContext, new FreeDocumentCanvas(), documentPart.Content);
-                        pageContext.ProceedToNextRenderingPhase();
-                        RenderPass(pageContext, canvas, documentPart.Content);
-                    
-                        documentPart.Content.ReleaseDisposableChildren();
-                    }
+                    RenderPass(documentPart.PageContext, new FreeDocumentCanvas(), documentPart.Content);
+                    documentPart.PageContext.ProceedToNextRenderingPhase();
                 }
+
+                canvas.ConfigureWithSemanticTree(semanticTreeManager);
+                
+                canvas.BeginDocument();
+
+                foreach (var documentPart in documentParts)
+                {
+                    RenderPass(documentPart.PageContext, canvas, documentPart.Content);
+                    documentPart.Content.ReleaseDisposableChildren();
+                }
+                
+                canvas.EndDocument();
             }
-            catch
+            finally
             {
                 documentParts.ForEach(x => x.Content.ReleaseDisposableChildren());
-                throw;
             }
         }
 
-        private static Container ConfigureContent(IDocument document, DocumentSettings settings, bool useOriginalImages)
+        private static SemanticTreeManager? CreateSemanticTreeManager(DocumentSettings settings)
+        {
+            return IsDocumentSemanticAware() ? new SemanticTreeManager() : null;
+
+            bool IsDocumentSemanticAware()
+            {
+                if (settings.PDFUA_Conformance is not PDFUA_Conformance.None)
+                    return true;
+                
+                if (settings.PDFA_Conformance is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_2A or PDFA_Conformance.PDFA_3A)
+                    return true;
+
+                return false;
+            }
+        }
+
+        private static void ConfigureWithSemanticTree(this IDocumentCanvas canvas, SemanticTreeManager? semanticTreeManager)
+        {
+            if (semanticTreeManager == null) 
+                return;
+            
+            var semanticTree = semanticTreeManager.GetSemanticTree();
+            semanticTreeManager.Reset();
+            canvas.SetSemanticTree(semanticTree);
+        }
+
+        private static Container ConfigureContent(IDocument document, DocumentSettings settings, SemanticTreeManager? semanticTreeManager, bool useOriginalImages)
         {
             var container = new DocumentContainer();
             document.Compose(container);
@@ -207,6 +225,12 @@ namespace QuestPDF.Drawing
 
             if (Settings.EnableCaching)
                 content.ApplyCaching();
+            
+            if (semanticTreeManager != null)
+            {
+                content.ApplySemanticParagraphs();
+                content.InjectSemanticTreeManager(semanticTreeManager);
+            }
             
             return content;
         }
@@ -335,6 +359,24 @@ namespace QuestPDF.Drawing
             }
         }
 
+        internal static void InjectSemanticTreeManager(this Element content, SemanticTreeManager semanticTreeManager)
+        {
+            content.VisitChildren(x =>
+            {
+                if (x is ISemanticAware semanticAware)
+                {
+                    semanticAware.SemanticTreeManager = semanticTreeManager;
+                }
+                else if (x is TextBlock textBlock)
+                {
+                    foreach (var textBlockElement in textBlock.Items.OfType<TextBlockElement>())
+                    {
+                        textBlockElement.Element.InjectSemanticTreeManager(semanticTreeManager);
+                    }
+                }
+            });
+        }
+        
         internal static void InjectDependencies(this Element content, IPageContext pageContext, IDrawingCanvas canvas)
         {
             content.VisitChildren(x =>
@@ -510,6 +552,56 @@ namespace QuestPDF.Drawing
             {
                 foreach (var child in content.GetChildren())
                     ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
+            }
+        }
+
+        internal static void ApplySemanticParagraphs(this Element root)
+        {
+            var isFooterContext = false;
+            
+            Traverse(root);
+            
+            void Traverse(Element element)
+            {
+                if (element is SemanticTag { TagType: "H" or "H1" or "H2" or "H3" or "H4" or "H5" or "H6" or "P" or "Lbl" })
+                {
+                    return;
+                }
+                else if (element is ArtifactTag)
+                {
+                    // ignore all Text elements that are marked as artifacts
+                }
+                else if (element is DebugPointer { Type: DebugPointerType.DocumentStructure, Label: nameof(DocumentStructureTypes.Footer) } debugPointer)
+                {
+                    isFooterContext = true;
+                    Traverse(debugPointer.Child);
+                    isFooterContext = false;
+                }
+                else if (element is ContainerElement container)
+                {
+                    if (container.Child is TextBlock textBlock)
+                    {
+                        var textBlockContainsPageNumber = textBlock.Items.Any(x => x is TextBlockPageNumber);
+                        
+                        if (isFooterContext && textBlockContainsPageNumber)
+                            return;
+                        
+                        container.CreateProxy(x => new SemanticTag
+                        {
+                            Child = x,
+                            TagType = "P"
+                        });
+                    }
+                    else
+                    {
+                        Traverse(container.Child);
+                    }
+                }
+                else
+                {
+                    foreach (var child in element.GetChildren())
+                        Traverse(child);
+                }
             }
         }
     }

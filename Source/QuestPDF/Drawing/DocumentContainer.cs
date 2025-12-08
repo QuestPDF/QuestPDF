@@ -9,7 +9,7 @@ namespace QuestPDF.Drawing
 {
     internal sealed class DocumentContainer : IDocumentContainer
     {
-        internal List<IComponent> Pages { get; set; } = new List<IComponent>();
+        internal List<IComponent> Pages { get; set; } = [];
         
         internal Container Compose()
         {
@@ -37,7 +37,7 @@ namespace QuestPDF.Drawing
                             .SelectMany(x => new List<Action>()
                             {
                                 () => column.Item().PageBreak(),
-                                () => column.Item().Component(x)
+                                () => column.Item().SemanticTag("Part").Component(x)
                             })
                             .Skip(1)
                             .ToList()

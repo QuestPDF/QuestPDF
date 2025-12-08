@@ -216,19 +216,37 @@ namespace QuestPDF.Drawing.DrawingCanvases
             CurrentCanvas.ClipRoundedRectangle(clipArea);
         }
         
-        public void DrawHyperlink(string url, Size size)
+        public void DrawHyperlink(Size size, string url, string? description)
         {
-            CurrentCanvas.AnnotateUrl(size.Width, size.Height, url);
+            CurrentCanvas.AnnotateUrl(size.Width, size.Height, url, description);
         }
         
-        public void DrawSectionLink(string sectionName, Size size)
+        public void DrawSectionLink(Size size, string sectionName, string? description)
         {
-            CurrentCanvas.AnnotateDestinationLink(size.Width, size.Height, sectionName);
+            CurrentCanvas.AnnotateDestinationLink(size.Width, size.Height, sectionName, description);
         }
 
         public void DrawSection(string sectionName)
         {
             CurrentCanvas.AnnotateDestination(sectionName);
+        }
+
+        private int ArtifactNestingDepth { get; set; } = 0;
+
+        public void MarkCurrentContentAsArtifact(bool isArtifact)
+        {
+            ArtifactNestingDepth += isArtifact ? 1 : -1;
+        }
+
+        public void SetSemanticNodeId(int nodeId)
+        {
+            var isInsideArtifact = ArtifactNestingDepth > 0;
+            var isArtifactNode = nodeId < 0;
+            
+            if (isInsideArtifact && !isArtifactNode)
+                return;
+            
+            CurrentCanvas.SetSemanticNodeId(nodeId);
         }
         
         #endregion

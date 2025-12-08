@@ -2,6 +2,7 @@ using System;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
@@ -35,12 +36,15 @@ namespace QuestPDF.Elements
                 .DefaultTextStyle(DefaultTextStyle.DisableFontFeature(FontFeatures.StandardLigatures))
                 .Layers(layers =>
                 {
-                    layers.Layer().ZIndex(int.MinValue).Background(BackgroundColor);
+                    layers.Layer()
+                        .ZIndex(int.MinValue)
+                        .Background(BackgroundColor);
                     
                     layers
                         .Layer()
                         .Repeat()
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Background.ToString())
+                        .Artifact(SkSemanticNodeSpecialId.BackgroundArtifact)
                         .Element(Background);
                     
                     layers
@@ -80,6 +84,7 @@ namespace QuestPDF.Elements
                     layers
                         .Layer()
                         .Repeat()
+                        .Artifact(SkSemanticNodeSpecialId.PaginationWatermarkArtifact)
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Foreground.ToString())
                         .Element(Foreground);
                 });

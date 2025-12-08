@@ -240,7 +240,7 @@ namespace QuestPDF.Elements.Text
                             continue;
                         
                         Canvas.Translate(offset);
-                        Canvas.DrawHyperlink(hyperlink.Url, new Size(position.Width, position.Height));
+                        Canvas.DrawHyperlink(new Size(position.Width, position.Height), hyperlink.Url, hyperlink.Text);
                         Canvas.Translate(offset.Reverse());
                     }
                 }
@@ -261,7 +261,7 @@ namespace QuestPDF.Elements.Text
                             continue;
                         
                         Canvas.Translate(offset);
-                        Canvas.DrawSectionLink(targetName, new Size(position.Width, position.Height));
+                        Canvas.DrawSectionLink(new Size(position.Width, position.Height), targetName, sectionLink.Text);
                         Canvas.Translate(offset.Reverse());
                     }
                 }

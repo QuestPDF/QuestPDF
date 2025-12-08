@@ -75,6 +75,8 @@ namespace QuestPDF.Fluent
     
     public sealed class TableDescriptor
     {
+        internal bool EnableAutomatedSemanticTagging { get; set; } = false;
+        
         private Table HeaderTable { get; } = new();
         private Table ContentTable { get; } = new();
         private Table FooterTable { get; } = new();
@@ -159,28 +161,53 @@ namespace QuestPDF.Fluent
         {
             var container = new Container();
 
-            ConfigureTable(HeaderTable);
-            ConfigureTable(ContentTable);
-            ConfigureTable(FooterTable);
+            var hasHeader = HeaderTable.Cells.Any();
+            var hasFooter = FooterTable.Cells.Any();
+            
+            ConfigureTable(HeaderTable, Table.TablePartType.Header);
+            ConfigureTable(ContentTable, Table.TablePartType.Body);
+            ConfigureTable(FooterTable, Table.TablePartType.Footer);
+            
+            var tableRequiresAdvancedHeaderTagging = Table.DoesTableBodyRequireExtendedHeaderTagging(HeaderTable.Cells, ContentTable.Cells);
+            HeaderTable.TableRequiresAdvancedHeaderTagging = tableRequiresAdvancedHeaderTagging;
+            ContentTable.TableRequiresAdvancedHeaderTagging = tableRequiresAdvancedHeaderTagging;
+            ContentTable.HeaderCells = HeaderTable.Cells;
             
             container
                 .Decoration(decoration =>
                 {
-                    decoration.Before().Element(HeaderTable);
-                    decoration.Content().ShowIf(ContentTable.Cells.Any()).Element(ContentTable);
-                    decoration.After().Element(FooterTable);
+                    decoration
+                        .Before()
+                        .ShowIf(hasHeader)
+                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("THead") : x)
+                        .Element(HeaderTable);
+                    
+                    decoration
+                        .Content()
+                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TBody") : x)
+                        .ShowIf(ContentTable.Cells.Any())
+                        .Element(ContentTable);
+                    
+                    decoration
+                        .After()
+                        .ShowIf(hasFooter)
+                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TFoot") : x)
+                        .Element(FooterTable);
                 });
 
             return container;
-        }
-
-        private static void ConfigureTable(Table table)
-        {
-            if (!table.Columns.Any())
-                throw new DocumentComposeException($"Table should have at least one column. Please call the '{nameof(ColumnsDefinition)}' method to define columns.");
             
-            table.PlanCellPositions();
-            table.ValidateCellPositions();
+            void ConfigureTable(Table table, Table.TablePartType tablePartType)
+            {
+                if (!table.Columns.Any())
+                    throw new DocumentComposeException($"Table should have at least one column. Please call the '{nameof(ColumnsDefinition)}' method to define columns.");
+            
+                table.PlanCellPositions();
+                table.ValidateCellPositions();
+                
+                table.EnableAutomatedSemanticTagging = EnableAutomatedSemanticTagging;
+                table.PartType = tablePartType;
+            }
         }
     }
     
@@ -196,6 +223,7 @@ namespace QuestPDF.Fluent
         public static void Table(this IContainer element, Action<TableDescriptor> handler)
         {
             var descriptor = new TableDescriptor();
+            descriptor.EnableAutomatedSemanticTagging = element is SemanticTag { TagType: "Table" };
             handler(descriptor);
             element.Element(descriptor.CreateElement());
         }
@@ -255,6 +283,18 @@ namespace QuestPDF.Fluent
         {
             if (tableCellContainer is TableCell tableCell)
                 tableCell.RowSpan = (int)value;
+
+            return tableCellContainer;
+        }
+
+        /// <summary>
+        /// Marks the specified table cell as a semantic horizontal header.
+        /// This allows assistive technologies to recognize the cell as a header, improving accessibility and semantic structure.
+        /// </summary>
+        public static ITableCellContainer AsSemanticHorizontalHeader(this ITableCellContainer tableCellContainer)
+        {
+            if (tableCellContainer is TableCell tableCell)
+                tableCell.IsSemanticHorizontalHeader = true;
 
             return tableCellContainer;
         }

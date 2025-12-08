@@ -1,16 +1,30 @@
-﻿namespace QuestPDF.Infrastructure
+﻿using System;
+
+namespace QuestPDF.Infrastructure
 {
     public sealed class DocumentSettings
     {
         public const int DefaultRasterDpi = 72;
-        
-        /// <summary>
-        /// Gets or sets a value indicating whether or not make the document PDF/A-3b conformant.
-        /// If true, include XMP metadata, a document UUID, and sRGB output intent information.
-        /// This adds length to the document and makes it non-reproducable, but are necessary features for PDF/A-3b conformance.
-        /// </summary>
-        public bool PdfA { get; set; } = false;
 
+        [Obsolete("Please use the ConformanceLevel property instead.")]
+        public bool PdfA
+        {
+            get => PDFA_Conformance != PDFA_Conformance.None;
+            set => PDFA_Conformance = value ? PDFA_Conformance.PDFA_3B : PDFA_Conformance.None;
+        }
+
+        /// <summary>
+        /// Gets or sets the PDF/A conformance level for the document.
+        /// This property determines the adherence of the generated PDF to specific archival standards.
+        /// </summary>
+        public PDFA_Conformance PDFA_Conformance { get; set; } = PDFA_Conformance.None;
+
+        /// <summary>
+        /// Gets or sets the conformance level for PDF/UA (Universal Accessibility) compliance.
+        /// Warning: this setting makes the document non-reproducable.
+        /// </summary>
+        public PDFUA_Conformance PDFUA_Conformance { get; set; } = PDFUA_Conformance.None;
+        
         /// <summary>
         /// Gets or sets a value indicating whether the generated document should be additionally compressed. May greatly reduce file size with a small increase in generation time.
         /// </summary>
@@ -39,5 +53,24 @@
         public ContentDirection ContentDirection { get; set; } = ContentDirection.LeftToRight;
         
         public static DocumentSettings Default => new DocumentSettings();
+    }
+    
+    public enum PDFA_Conformance
+    {
+        None = 0,
+        PDFA_1A = 1,
+        PDFA_1B = 2,
+        PDFA_2A = 3,
+        PDFA_2B = 4,
+        PDFA_2U = 5,
+        PDFA_3A = 6,
+        PDFA_3B = 7,
+        PDFA_3U = 8
+    }
+    
+    public enum PDFUA_Conformance
+    {
+        None = 0,
+        PDFUA_1 = 1
     }
 }

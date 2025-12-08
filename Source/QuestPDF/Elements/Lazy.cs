@@ -6,8 +6,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal sealed class Lazy : ContainerElement, IContentDirectionAware, IStateful
+internal sealed class Lazy : ContainerElement, ISemanticAware, IContentDirectionAware, IStateful
 {
+    public SemanticTreeManager? SemanticTreeManager { get; set; }
+    
     public Action<IContainer> ContentSource { get; set; }
     public bool IsCacheable { get; set; }
 
@@ -59,9 +61,14 @@ internal sealed class Lazy : ContainerElement, IContentDirectionAware, IStateful
         container.ApplyInheritedAndGlobalTexStyle(TextStyle);
         container.ApplyContentDirection(ContentDirection);
         container.ApplyDefaultImageConfiguration(ImageTargetDpi.Value, ImageCompressionQuality.Value, UseOriginalImage);
-            
         container.InjectDependencies(PageContext, Canvas);
         container.VisitChildren(x => (x as IStateful)?.ResetState());
+
+        if (SemanticTreeManager != null)
+        {
+            container.InjectSemanticTreeManager(SemanticTreeManager);
+            container.ApplySemanticParagraphs();
+        }
     }
     
     #region IStateful

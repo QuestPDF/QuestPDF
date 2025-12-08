@@ -2,6 +2,7 @@ using System;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent;
 
@@ -82,9 +83,12 @@ public sealed class MultiColumnDescriptor
         if (MultiColumn.Spacer is not Empty)
             throw new DocumentComposeException("The 'MultiColumn.Spacer' layer has already been defined. Please call this method only once.");
         
-        var container = new RepeatContent();
+        var container = new Container();
         MultiColumn.Spacer = container;
-        return container;
+        
+        return container
+            .Artifact(SkSemanticNodeSpecialId.LayoutArtifact)
+            .Repeat();
     }
 }
 

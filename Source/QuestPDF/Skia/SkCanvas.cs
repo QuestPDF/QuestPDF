@@ -116,9 +116,9 @@ internal sealed class SkCanvas : IDisposable
         API.canvas_clip_rounded_rectangle(Instance, rect);
     }
     
-    public void AnnotateUrl(float width, float height, string url)
+    public void AnnotateUrl(float width, float height, string url, string? description)
     {
-        API.canvas_annotate_url(Instance, width, height, url);
+        API.canvas_annotate_url(Instance, width, height, url, description);
     }
     
     public void AnnotateDestination(string destinationName)
@@ -126,9 +126,9 @@ internal sealed class SkCanvas : IDisposable
         API.canvas_annotate_destination(Instance, destinationName);
     }
     
-    public void AnnotateDestinationLink(float width, float height, string destinationName)
+    public void AnnotateDestinationLink(float width, float height, string destinationName, string? description)
     {
-        API.canvas_annotate_destination_link(Instance, width, height, destinationName);
+        API.canvas_annotate_destination_link(Instance, width, height, destinationName, description);
     }
     
     public SkCanvasMatrix GetCurrentMatrix()
@@ -139,6 +139,11 @@ internal sealed class SkCanvas : IDisposable
     public void SetCurrentMatrix(SkCanvasMatrix matrix)
     {
         API.canvas_set_matrix9(Instance, matrix);
+    }
+    
+    public void SetSemanticNodeId(int nodeId)
+    {
+        API.canvas_set_semantic_node_id(Instance, nodeId);
     }
     
     ~SkCanvas()
@@ -222,18 +227,31 @@ internal sealed class SkCanvas : IDisposable
         public static extern void canvas_clip_rounded_rectangle(IntPtr canvas, SkRoundedRect rect);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_annotate_url(IntPtr canvas, float width, float height, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string url);
+        public static extern void canvas_annotate_url(
+            IntPtr canvas, 
+            float width, 
+            float height, 
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string url,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string? description);
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void canvas_annotate_destination(IntPtr canvas, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string destinationName);
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_annotate_destination_link(IntPtr canvas, float width, float height, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string destinationName);
+        public static extern void canvas_annotate_destination_link(
+            IntPtr canvas, 
+            float width,
+            float height, 
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string destinationName,
+            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string? description);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern SkCanvasMatrix canvas_get_matrix9(IntPtr canvas);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void canvas_set_matrix9(IntPtr canvas, SkCanvasMatrix matrix);
+
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void canvas_set_semantic_node_id(IntPtr canvas, int nodeId);
     }
 }

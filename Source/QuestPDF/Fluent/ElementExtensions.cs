@@ -448,6 +448,22 @@ namespace QuestPDF.Fluent
             return element.Element(new RepeatContent());
         }
         
+        internal static IContainer RepeatAsHeader(this IContainer element)
+        {
+            return element.Element(new RepeatContent
+            {
+                RepeatContext = RepeatContent.RepeatContextType.PageHeader
+            });
+        }
+        
+        internal static IContainer RepeatAsFooter(this IContainer element)
+        {
+            return element.Element(new RepeatContent
+            {
+                RepeatContext = RepeatContent.RepeatContextType.PageFooter
+            });
+        }
+        
         /// <summary>
         /// <para>
         /// Delays the creation of document content and reduces its lifetime, significantly lowering memory usage in large documents containing thousands of pages. 

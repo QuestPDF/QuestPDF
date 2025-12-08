@@ -28,7 +28,10 @@ namespace QuestPDF.Fluent
 
             var container = new Container();
             Decoration.Before = container;
-            return container.DebugPointer(DebugPointerType.ElementStructure, "Before").Repeat();
+            
+            return container
+                .DebugPointer(DebugPointerType.ElementStructure, "Before")
+                .RepeatAsHeader();
         }
         
         /// <summary>
@@ -82,7 +85,10 @@ namespace QuestPDF.Fluent
             
             var container = new Container();
             Decoration.After = container;
-            return container.DebugPointer(DebugPointerType.ElementStructure, "After").Repeat();
+
+            return container
+                .DebugPointer(DebugPointerType.ElementStructure, "After")
+                .RepeatAsFooter();
         }
         
         /// <summary>

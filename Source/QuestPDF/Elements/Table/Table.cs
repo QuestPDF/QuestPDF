@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
 {
-    internal sealed class Table : Element, IStateful, IContentDirectionAware
+    internal sealed class Table : Element, IStateful, IContentDirectionAware, ISemanticAware
     {
         // configuration
         public List<TableColumnDefinition> Columns { get; set; } = new();
@@ -110,6 +111,7 @@ namespace QuestPDF.Elements.Table
         internal override void Draw(Size availableSpace)
         {
             Initialize();
+            RegisterSemanticTree();
             
             if (IsRendered)
                 return;
@@ -352,6 +354,206 @@ namespace QuestPDF.Elements.Table
             CurrentRow = tableState.CurrentRow;
         }
     
+        #endregion
+        
+        #region Semantic
+
+        internal enum TablePartType
+        {
+            Header,
+            Body,
+            Footer
+        }
+        
+        internal bool EnableAutomatedSemanticTagging { get; set; }
+        private bool IsSemanticTaggingApplied { get; set; }
+        public SemanticTreeManager? SemanticTreeManager { get; set; } = new();
+
+        internal bool TableRequiresAdvancedHeaderTagging { get; set; }
+        internal TablePartType PartType { get; set; }
+        public List<TableCell> HeaderCells { get; set; } = []; 
+
+        private void RegisterSemanticTree()
+        {
+            if (SemanticTreeManager == null)
+                return;
+            
+            if (SemanticTreeManager.IsCurrentContentArtifact())
+                return;
+            
+            if (!EnableAutomatedSemanticTagging)
+                return;
+            
+            if (IsSemanticTaggingApplied)
+                return;
+            
+            IsSemanticTaggingApplied = true;
+            
+            foreach (var tableRow in Cells.GroupBy(x => x.Row))
+            {
+                var rowSemanticTreeNode = new SemanticTreeNode()
+                {
+                    NodeId = SemanticTreeManager.GetNextNodeId(), 
+                    Type = "TR"
+                };
+                
+                SemanticTreeManager.AddNode(rowSemanticTreeNode);
+                SemanticTreeManager.PushOnStack(rowSemanticTreeNode);
+                
+                foreach (var tableCell in tableRow.OrderBy(x => x.Column))
+                {
+                    tableCell.CreateProxy(x => new SemanticTag
+                    {
+                        SemanticTreeManager = SemanticTreeManager,
+                        Canvas = Canvas,
+                        
+                        TagType = "TD",
+                        Child = x
+                    });
+
+                    if (tableCell.Child is not SemanticTag semanticTag)
+                        continue;
+                    
+                    if (PartType is TablePartType.Header || tableCell.IsSemanticHorizontalHeader)
+                        semanticTag.TagType = "TH";
+                    
+                    semanticTag.RegisterCurrentSemanticNode();
+                    tableCell.SemanticNodeId = semanticTag.SemanticTreeNode!.NodeId;
+                    
+                    AssignCellAttributesForColumnAndRowSpans(tableCell, semanticTag);
+                }
+                
+                SemanticTreeManager.PopStack();
+            }
+
+            AssignCellAttributesForHeaderCellRoles();
+            
+            static void AssignCellAttributesForColumnAndRowSpans(TableCell tableCell, SemanticTag semanticTag)
+            {
+                if (tableCell.ColumnSpan > 1)
+                {
+                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    {
+                        Owner = "Table",
+                        Name = "ColSpan",
+                        Value = tableCell.ColumnSpan
+                    });
+                }
+
+                if (tableCell.RowSpan > 1)
+                {
+                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    {
+                        Owner = "Table",
+                        Name = "RowSpan",
+                        Value = tableCell.RowSpan
+                    });
+                }
+            }
+
+            void AssignCellAttributesForHeaderCellRoles()
+            {
+                if (PartType is TablePartType.Footer)
+                    return;
+
+                if (TableRequiresAdvancedHeaderTagging)
+                {
+                    AssignCellAttributesForHeaderCellRolesOfComplexTables();
+                }
+                else
+                {
+                    AssignCellAttributesForHeaderCellRolesOfSimpleTables();
+                }
+            }
+            
+            void AssignCellAttributesForHeaderCellRolesOfSimpleTables()
+            {
+                foreach (var tableCell in Cells)
+                {
+                    if (tableCell.Child is not SemanticTag semanticTag)
+                        continue;
+
+                    if (semanticTag.TagType != "TH") 
+                        continue;
+                    
+                    var scopeValue = (PartType is TablePartType.Header, tableCell.IsSemanticHorizontalHeader) switch
+                    {
+                        (true, true) => "Both",
+                        (true, false) => "Column",
+                        (false, true) => "Row",
+                        (false, false) => null
+                    };
+
+                    if (scopeValue == null)
+                        continue;
+                    
+                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    {
+                        Owner = "Table", 
+                        Name = "Scope", 
+                        Value = scopeValue
+                    });
+                }
+            }
+            
+            void AssignCellAttributesForHeaderCellRolesOfComplexTables()
+            {
+                var semanticHorizontalHeaders = Cells
+                    .Where(x => x.IsSemanticHorizontalHeader)
+                    .ToList();
+                
+                foreach (var tableCell in Cells)
+                {
+                    if (tableCell.Child is not SemanticTag semanticTag)
+                        continue;
+                    
+                    var relatedHeaders = GetRelatedHeadersFor(tableCell).ToArray();
+                    
+                    if (!relatedHeaders.Any())
+                        continue;
+                    
+                    semanticTag.SemanticTreeNode!.Attributes.Add(new SemanticTreeNode.Attribute
+                    {
+                        Owner = "Table",
+                        Name = "Headers",
+                        Value = relatedHeaders
+                    });
+                }
+
+                IEnumerable<int> GetRelatedHeadersFor(TableCell cell)
+                {
+                    var isHeader = PartType == TablePartType.Header;
+                    
+                    var headerCells = (isHeader ? Cells : HeaderCells).AsEnumerable();
+                    
+                    if (isHeader)
+                        headerCells = headerCells.Where(x => x.Row < cell.Row);
+                    
+                    var relatedVerticalHeaders = headerCells
+                        .Where(x => x.Column < cell.Column + cell.ColumnSpan && cell.Column < x.Column + x.ColumnSpan)
+                        .Select(x => x.SemanticNodeId);
+                    
+                    if (isHeader)
+                        return relatedVerticalHeaders; 
+                    
+                    var relatedHorizontalHeaders = semanticHorizontalHeaders
+                        .Where(x => x.Column < cell.Column)
+                        .Where(x => x.Row < cell.Row + cell.RowSpan && cell.Row < x.Row + x.RowSpan)
+                        .Select(x => x.SemanticNodeId);
+                        
+                    return relatedVerticalHeaders.Concat(relatedHorizontalHeaders);
+                }
+            }
+        }
+        
+        public static bool DoesTableBodyRequireExtendedHeaderTagging(ICollection<TableCell> headerCells, ICollection<TableCell> bodyCells)
+        {
+            return ContainsSpanningCells(headerCells) || ContainsSpanningCells(bodyCells);
+                
+            static bool ContainsSpanningCells(IEnumerable<TableCell> cells) =>
+                cells.Any(x => x.RowSpan > 1 || x.ColumnSpan > 1);
+        }
+        
         #endregion
     }
 }

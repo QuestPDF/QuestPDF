@@ -51,6 +51,10 @@ jobs:
           # required by actions/setup-dotnet
           apt install bash wget --yes
 
+          # required by conformance testing tools: veraPDF and mustang
+          apt install unzip default-jre --yes
+          java -version
+
 
       - name: Install Build Tools (Alpine)
         if: matrix.runtime.name == 'linux-musl-x64'
@@ -70,6 +74,36 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.0.x'
+
+
+      - name: Install veraPDF - PDF conformance testing tool
+        if: matrix.runtime.name == 'linux-x64'
+        run: |
+          mkdir -p ~/verapdf
+          cd ~/verapdf
+          
+          wget -q https://software.verapdf.org/rel/verapdf-installer.zip
+          unzip -q verapdf-installer.zip
+          
+          rm verapdf-installer.zip
+          mv verapdf* verapdf 
+
+          cd verapdf
+          printf "1\n\nO\n1\nY\nY\nN\n1\nY\n\n" | ./verapdf-install
+          alias verapdf='/root/verapdf/verapdf'
+          verapdf --version
+
+
+      - name: Install mustang - ZUGFeRD conformance testing tool
+        if: matrix.runtime.name == 'linux-x64'
+        run: |
+          mkdir -p ~/mustang
+          cd ~/mustang
+          
+          wget https://repo1.maven.org/maven2/org/mustangproject/Mustang-CLI/2.20.0/Mustang-CLI-2.20.0.jar -O mustang-cli.jar
+
+          alias mustang='java -jar ~/mustang/mustang-cli.jar'
+          mustang --help
 
 
       - name: Build and test solution

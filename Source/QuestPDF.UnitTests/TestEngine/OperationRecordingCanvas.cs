@@ -43,8 +43,11 @@ namespace QuestPDF.UnitTests.TestEngine
         public void ClipRectangle(SkRect clipArea) => throw new NotImplementedException();
         public void ClipRoundedRectangle(SkRoundedRect clipArea) => throw new NotImplementedException();
         
-        public void DrawHyperlink(string url, Size size) => throw new NotImplementedException();
-        public void DrawSectionLink(string sectionName, Size size) => throw new NotImplementedException();
+        public void DrawHyperlink(Size size, string url, string? description) => throw new NotImplementedException();
+        public void DrawSectionLink(Size size, string sectionName, string? description) => throw new NotImplementedException();
         public void DrawSection(string sectionName) => throw new NotImplementedException();
+        
+        public void MarkCurrentContentAsArtifact(bool isArtifact) => throw new NotImplementedException();
+        public void SetSemanticNodeId(int nodeId) => throw new NotImplementedException();
     }
 }

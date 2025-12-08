@@ -36,12 +36,7 @@ internal class SolidBlock : Element, IStateful
         
     private bool IsRendered { get; set; }
 
-    public void ResetState(bool hardReset = false)
-    {
-        if (hardReset)
-            IsRendered = false;
-    }
-        
+    public void ResetState(bool hardReset = false) => IsRendered = false;
     public object GetState() => IsRendered;
     public void SetState(object state) => IsRendered = (bool) state;
     

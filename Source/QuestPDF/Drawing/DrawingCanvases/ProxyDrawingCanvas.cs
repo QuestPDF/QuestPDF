@@ -147,19 +147,24 @@ internal sealed class ProxyDrawingCanvas : IDrawingCanvas, IDisposable
         Target.ClipRoundedRectangle(clipArea);
     }
 
-    public void DrawHyperlink(string url, Size size)
+    public void DrawHyperlink(Size size, string url, string? description)
     {
-        Target.DrawHyperlink(url, size);
+        Target.DrawHyperlink(size, url, description);
     }
 
-    public void DrawSectionLink(string sectionName, Size size)
+    public void DrawSectionLink(Size size, string sectionName, string? description)
     {
-        Target.DrawSectionLink(sectionName, size);
+        Target.DrawSectionLink(size, sectionName, description);
     }
 
     public void DrawSection(string sectionName)
     {
         Target.DrawSection(sectionName);
+    }
+    
+    public void SetSemanticNodeId(int nodeId)
+    {
+        Target.SetSemanticNodeId(nodeId);
     }
     
     #endregion

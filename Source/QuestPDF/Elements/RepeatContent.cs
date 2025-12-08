@@ -2,21 +2,63 @@ using QuestPDF.Drawing;
 using QuestPDF.Elements.Text;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Elements;
 
-internal sealed class RepeatContent : ContainerElement
+internal sealed class RepeatContent : ContainerElement, IStateful, ISemanticAware
 {
+    public SemanticTreeManager? SemanticTreeManager { get; set; }
+    
+    public enum RepeatContextType
+    {
+        PageHeader,
+        PageFooter,
+        Other
+    }
+    
+    public RepeatContextType RepeatContext { get; set; } = RepeatContextType.Other;
+    
     internal override void Draw(Size availableSpace)
     {
         OptimizeContentCacheBehavior();
         
-        var childMeasurement = Child?.Measure(availableSpace);
-        base.Draw(availableSpace);
+        var childMeasurement = Child.Measure(availableSpace);
 
-        if (childMeasurement?.Type == SpacePlanType.FullRender)
+        if (SemanticTreeManager == null)
         {
+            base.Draw(availableSpace);
+            ResetChildrenIfNecessary();
+            return;      
+        }
+        
+        if (IsFullyRendered)
+        {
+            var paginationNodeId = RepeatContext switch
+            {
+                RepeatContextType.PageHeader => SkSemanticNodeSpecialId.PaginationHeaderArtifact,
+                RepeatContextType.PageFooter => SkSemanticNodeSpecialId.PaginationFooterArtifact,
+                _ => SkSemanticNodeSpecialId.PaginationArtifact
+            };
+        
+            Canvas.SetSemanticNodeId(paginationNodeId);
+            SemanticTreeManager.BeginArtifactContent();
+        }
+        
+        base.Draw(availableSpace);
+        
+        if (IsFullyRendered)
+            SemanticTreeManager.EndArtifactContent();
+
+        ResetChildrenIfNecessary();
+
+        void ResetChildrenIfNecessary()
+        {
+            if (childMeasurement.Type != SpacePlanType.FullRender) 
+                return;
+            
             Child.VisitChildren(x => (x as IStateful)?.ResetState(false));
+            IsFullyRendered = true;
         }
     }
     
@@ -54,6 +96,21 @@ internal sealed class RepeatContent : ContainerElement
                 lazy.ClearCacheAfterFullRender = false;
         });
     }
+    
+    #endregion
+    
+    #region IStateful
+        
+    private bool IsFullyRendered { get; set; }
+
+    public void ResetState(bool hardReset = false)
+    {
+        if (hardReset)
+            IsFullyRendered = false;
+    }
+    
+    public object GetState() => IsFullyRendered;
+    public void SetState(object state) => IsFullyRendered = (bool) state;
     
     #endregion
 }

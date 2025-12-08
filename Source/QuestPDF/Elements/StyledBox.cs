@@ -89,13 +89,18 @@ namespace QuestPDF.Elements
             {
                 // optimization: draw a simple rectangle with border
                 if (backgroundPaint != null)
+                {
+                    Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
                     Canvas.DrawRectangle(Position.Zero, availableSpace, backgroundPaint);
+                }
                 
                 base.Draw(availableSpace);
                 
                 if (borderPaint != null)
                 {
                     borderPaint.SetStroke(BorderLeft);
+                    
+                    Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
                     Canvas.DrawRectangle(Position.Zero, availableSpace, borderPaint);
                 }
                 
@@ -118,6 +123,7 @@ namespace QuestPDF.Elements
                     Color = Shadow.Color
                 };
                 
+                Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
                 Canvas.DrawShadow(shadowRect, canvasShadow);
             }
 
@@ -128,7 +134,10 @@ namespace QuestPDF.Elements
             }
 
             if (backgroundPaint != null)
+            {
+                Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
                 Canvas.DrawRectangle(Position.Zero, availableSpace, backgroundPaint);
+            }
             
             base.Draw(availableSpace);
             
@@ -136,7 +145,10 @@ namespace QuestPDF.Elements
                 Canvas.Restore();
 
             if (borderPaint != null)
+            {
+                Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
                 Canvas.DrawComplexBorder(borderInnerRect, borderOuterRect, borderPaint);
+            }
         }
 
         private (Position start, Position end) GetLinearGradientPositions(Size availableSpace, float angle)
