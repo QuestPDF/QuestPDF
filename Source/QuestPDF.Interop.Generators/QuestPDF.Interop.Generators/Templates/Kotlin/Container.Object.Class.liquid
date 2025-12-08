@@ -9,3 +9,8 @@ fun borderLinearGradient(angle: Float, colors: Collection<Color>): Container {
     val result = lib().questpdf__container__border_linear_gradient(pointer, angle, colorsFfi, colorsFfi.size)
     return Container(result)
 }
+        
+fun shadow(blur: Float = 0f, color: Color = Colors.Black, offsetX: Float = 0f, offsetY: Float = 0f, spread: Float = 0f): Container {
+    val result = lib().questpdf__container__shadow(pointer, blur, color.hex.toInt(), offsetX, offsetY, spread)
+    return Container(result)
+}

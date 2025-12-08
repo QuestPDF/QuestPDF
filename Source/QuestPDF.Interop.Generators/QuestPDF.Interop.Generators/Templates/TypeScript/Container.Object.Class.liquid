@@ -9,3 +9,8 @@ borderLinearGradient(angle: number, colors: Color[]): Container {
     const result = ContainerNativeFunctions['questpdf__container__border_linear_gradient']!(this._ptr, angle, arr, arr.length);
     return new Container(result);
 }
+
+shadow({ blur = 0, color = Colors.black, offsetX = 0, offsetY = 0, spread = 0 }: { blur?: number, color?: Color, offsetX?: number, offsetY?: number, spread?: number }): Container {
+    const result = ContainerNativeFunctions['questpdf__container__shadow']!(this._ptr, blur, color.hex, offsetX, offsetY, spread);
+    return new Container(result);
+}

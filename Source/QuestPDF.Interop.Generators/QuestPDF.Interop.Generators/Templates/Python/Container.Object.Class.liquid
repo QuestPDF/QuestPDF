@@ -9,3 +9,7 @@
         colors_ffi = questpdf_ffi.new("uint32_t[]", colors_hex)
         result = questpdf.lib.questpdf__container__border_linear_gradient(self.target_pointer, angle, colors_ffi, len(colors_ffi))
         return Container(result)
+
+    def shadow(self, *, blur: float = 0, color: Color = Colors.black, offset_x: float = 0, offset_y: float = 0, spread: float = 0) -> 'Container':
+        result = questpdf.lib.questpdf__container__shadow(self.target_pointer, blur, color.hex, offset_x, offset_y, spread)
+        return Container(result)

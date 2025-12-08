@@ -12,6 +12,7 @@ public unsafe partial class Exports
     public static IntPtr Container_BackgroundLinearGradient(IntPtr target, float angle, uint* colors, int colorsLength)
     {
         var targetObject = UnboxHandle<IContainer>(target);
+        FreeHandle(target);
 
         var colorArray = new Color[colorsLength];
         
@@ -26,6 +27,7 @@ public unsafe partial class Exports
     public static IntPtr Container_BorderLinearGradient(IntPtr target, float angle, uint* colors, int colorsLength)
     {
         var targetObject = UnboxHandle<IContainer>(target);
+        FreeHandle(target);
     
         var colorArray = new Color[colorsLength];
         
@@ -33,6 +35,24 @@ public unsafe partial class Exports
             colorArray[i] = colors[i];
         
         var result = targetObject.BorderLinearGradient(angle, colorArray);
+        return BoxHandle(result);
+    }
+    
+    [UnmanagedCallersOnly(EntryPoint = "questpdf__container__shadow", CallConvs = new[] { typeof(CallConvCdecl) })]
+    public static IntPtr Container_Shadow(IntPtr target, float blur, uint color, float offsetX, float offsetY, float spread)
+    {
+        var targetObject = UnboxHandle<IContainer>(target);
+        FreeHandle(target);
+        
+        var result = targetObject.Shadow(new BoxShadowStyle()
+        {
+            Blur = blur,
+            Color = color,
+            OffsetX = offsetX,
+            OffsetY = offsetY,
+            Spread = spread
+        });
+        
         return BoxHandle(result);
     }
 }
