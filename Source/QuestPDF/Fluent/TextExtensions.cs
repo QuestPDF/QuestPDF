@@ -6,7 +6,6 @@ using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Infrastructure;
-using static System.String;
 
 namespace QuestPDF.Fluent
 {
@@ -149,6 +148,11 @@ namespace QuestPDF.Fluent
         private TextStyle? DefaultStyle { get; set; }
 
         internal const string DefaultLineClampEllipsis = "…";
+
+        internal TextDescriptor()
+        {
+            
+        }
         
         /// <summary>
         /// Applies a consistent text style for the whole content within this <see cref="TextExtensions.Text">Text</see> element.
@@ -355,8 +359,8 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public TextSpanDescriptor SectionLink(string? text, string sectionName)
         {
-            if (IsNullOrEmpty(sectionName))
-                throw new ArgumentException("Section name cannot be null or empty", nameof(sectionName));
+            if (string.IsNullOrWhiteSpace(sectionName))
+                throw new ArgumentException("Section name cannot be null or whitespace.", nameof(sectionName));
 
             if (text == null)
                 return new TextSpanDescriptor(new TextBlockSpan());
@@ -385,8 +389,8 @@ namespace QuestPDF.Fluent
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.returns.spanDescriptor"]/*' />
         public TextSpanDescriptor Hyperlink(string? text, string url)
         {
-            if (IsNullOrEmpty(url))
-                throw new ArgumentException("Url cannot be null or empty", nameof(url));
+            if (string.IsNullOrWhiteSpace(url))
+                throw new ArgumentException("Url cannot be null or whitespace.", nameof(url));
 
             if (text == null)
                 return new TextSpanDescriptor(new TextBlockSpan());

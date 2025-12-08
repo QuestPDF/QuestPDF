@@ -12,6 +12,11 @@ namespace QuestPDF.Fluent
     {
         internal Page Page { get; } = new Page();
 
+        internal PageDescriptor()
+        {
+            
+        }
+        
         #region Size
         
         /// <summary>

@@ -9,6 +9,11 @@ namespace QuestPDF.Fluent
     {
         internal Column Column { get; } = new();
 
+        internal ColumnDescriptor()
+        {
+            
+        }
+
         /// <summary>
         /// Adjusts vertical spacing between items.
         /// </summary>

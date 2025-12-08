@@ -110,7 +110,6 @@ namespace QuestPDF.Drawing
                 return;
             }
             
-            // TODO: handle Header nesting values
             var semanticTreeManager = CreateSemanticTreeManager(settings);
             var useOriginalImages = canvas is ImageDocumentCanvas;
             var content = ConfigureContent(document, settings, semanticTreeManager, useOriginalImages);

@@ -10,6 +10,11 @@ namespace QuestPDF.Fluent
     {
         internal Row Row { get; } = new();
 
+        internal RowDescriptor()
+        {
+            
+        }
+        
         /// <summary>
         /// Adjusts horizontal spacing between items.
         /// </summary>
