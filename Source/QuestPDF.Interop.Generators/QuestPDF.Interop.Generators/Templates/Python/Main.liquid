@@ -87,29 +87,16 @@ QUESTPDF_CDEF += r"""
 
 
 
-class Page:
-    def __init__(self, page_ptr: "questpdf_ffi.CData"):
-        # page_ptr is a cdata 'void *'
-        self._page_ptr = page_ptr
-
-    def margin(self, margin: int) -> None:
-        questpdf.lib.questpdf_page_set_margin(self._page_ptr, int(margin))
-
-    def content(self) -> Container:
-        containerPointer = questpdf.lib.questpdf_page_set_content(self._page_ptr)
-        return Container(containerPointer)
-
-
 class DocumentContainer:
     def __init__(self, document_container_pointer: "questpdf_ffi.CData"):
         self.document_container_pointer = document_container_pointer
         # Keep Python refs to callbacks alive for as long as this container lives
         self._page_callbacks = []  # type: list["ffi.CData"]
 
-    def page(self, configurator: Callable[[Page], Any]) -> None:
+    def page(self, configurator: Callable[[PageDescriptor], Any]) -> None:
         @questpdf_ffi.callback("void(void*)")
         def _internal_page_handler(page_pointer):
-            page_object = Page(page_pointer)
+            page_object = PageDescriptor(page_pointer)
             configurator(page_object)
 
         # retain the callback to prevent it from being GC'ed

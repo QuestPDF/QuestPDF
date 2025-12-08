@@ -148,27 +148,6 @@ export function getNativeLib(): koffi.IKoffiLib {
 // Helper Classes
 // ============================================================================
 
-export class Page {
-  private readonly _ptr: NativePointer;
-
-  constructor(ptr: NativePointer) {
-    this._ptr = ptr;
-  }
-
-  get pointer(): NativePointer {
-    return this._ptr;
-  }
-
-  margin(margin: number): void {
-    getLib().questpdf_page_set_margin(this._ptr, margin);
-  }
-
-  content(): Container {
-    const ptr = getLib().questpdf_page_set_content(this._ptr);
-    return new Container(ptr);
-  }
-}
-
 export class DocumentContainer {
   private readonly _ptr: NativePointer;
   private readonly _callbacks: koffi.IKoffiRegisteredCallback[] = [];
@@ -181,9 +160,9 @@ export class DocumentContainer {
     return this._ptr;
   }
 
-  page(configurator: (page: Page) => void): void {
+  page(configurator: (page: PageDescriptor) => void): void {
     const callback = koffi.register((pagePtr: NativePointer) => {
-      const page = new Page(pagePtr);
+      const page = new PageDescriptor(pagePtr);
       configurator(page);
     }, PageDescriptorCallbackPtr);
 

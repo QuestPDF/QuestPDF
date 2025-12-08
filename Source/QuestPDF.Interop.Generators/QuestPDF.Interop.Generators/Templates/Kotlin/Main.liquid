@@ -196,31 +196,6 @@ object QuestPDF {
     }
 }
 
-// ============================================================================
-// Core Classes
-// ============================================================================
-
-/**
- * Represents a page in a QuestPDF document.
- */
-class Page internal constructor(val pointer: Pointer) {
-
-    /**
-     * Sets the margin for this page.
-     */
-    fun margin(margin: Int) {
-        QuestPDF.getLib().questpdf_page_set_margin(pointer, margin)
-    }
-
-    /**
-     * Gets the content container for this page.
-     */
-    fun content(): Container {
-        val result = QuestPDF.getLib().questpdf_page_set_content(pointer)
-        return Container(result)
-    }
-}
-
 /**
  * Represents a document container for adding pages.
  */
@@ -231,10 +206,10 @@ class DocumentContainer internal constructor(val pointer: Pointer) {
     /**
      * Adds a page to the document.
      */
-    fun page(configurator: (Page) -> Unit) {
+    fun page(configurator: (PageDescriptor) -> Unit) {
         val callback = object : PointerCallback {
             override fun callback(ptr: Pointer) {
-                val page = Page(ptr)
+                val page = PageDescriptor(ptr)
                 configurator(page)
             }
         }
