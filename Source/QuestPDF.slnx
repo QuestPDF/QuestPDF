@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/Configuration/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="QuestPDF.Companion.TestRunner/QuestPDF.Companion.TestRunner.csproj" />
+  <Project Path="QuestPDF.ConformanceTests/QuestPDF.ConformanceTests.csproj" />
+  <Project Path="QuestPDF.DocumentationExamples/QuestPDF.DocumentationExamples.csproj" />
+  <Project Path="QuestPDF.LayoutTests/QuestPDF.LayoutTests.csproj" />
+  <Project Path="QuestPDF.ReportSample/QuestPDF.ReportSample.csproj" />
+  <Project Path="QuestPDF.UnitTests/QuestPDF.UnitTests.csproj" />
+  <Project Path="QuestPDF.VisualTests/QuestPDF.VisualTests.csproj" />
+  <Project Path="QuestPDF.ZUGFeRD/QuestPDF.ZUGFeRD.csproj" />
+  <Project Path="QuestPDF/QuestPDF.csproj" />
+</Solution>
