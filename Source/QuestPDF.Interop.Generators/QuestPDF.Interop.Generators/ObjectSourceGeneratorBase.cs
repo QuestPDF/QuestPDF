@@ -50,7 +50,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         
         object MapMethod(IMethodSymbol method)
         {
-            var parameters = method.Parameters.Select(GetMethodParameter);
+            var parameters = method.Parameters.SelectMany(GetMethodParameter);
             
             if (!method.IsExtensionMethod && !method.IsStatic)
                 parameters = parameters.Prepend("IntPtr target");
@@ -65,14 +65,14 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 TargetObjectName = (method.IsStatic && !method.IsExtensionMethod) ? GetTargetType(compilation).Name : "targetObject",
                 TargetObjectType = GetTargetType(compilation).Name,
                 TargetObjectParameterName = method.IsExtensionMethod ? method.Parameters.First().Name : "target",
-                TargetMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).Select(GetTargetMethodParameter),
+                TargetMethodParameters = method.Parameters.Skip(method.IsExtensionMethod ? 1 : 0).SelectMany(GetTargetMethodParameter),
                 ReturnType = method.GetInteropResultType(),
                 ResultTransformFunction = method.GetCSharpResultTransformFunction(),
                 ShouldFreeTarget = method.IsExtensionMethod,
             };
         }
 
-        string GetMethodParameter(IParameterSymbol parameterSymbol)
+        IEnumerable<string> GetMethodParameter(IParameterSymbol parameterSymbol)
         {
             if (parameterSymbol.Type.IsAction() && parameterSymbol.Type is INamedTypeSymbol actionSymbol)
             {
@@ -82,50 +82,82 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                     .Append("void");
                 
                 var genericTypesString = string.Join(", ", genericTypes);
-                return $"delegate* unmanaged[Cdecl]<{genericTypesString}> {parameterSymbol.Name}";
+                yield return $"delegate* unmanaged[Cdecl]<{genericTypesString}> {parameterSymbol.Name}";
             }
-            
-            if (parameterSymbol.Type.IsFunc() && parameterSymbol.Type is INamedTypeSymbol funcSymbol)
+            else if (parameterSymbol.Type.IsFunc() && parameterSymbol.Type is INamedTypeSymbol funcSymbol)
             {
                 var genericTypes = funcSymbol
                     .TypeArguments
                     .Select(x => x.GetInteropMethodParameterType());
                 
                 var genericTypesString = string.Join(", ", genericTypes);
-                return $"delegate* unmanaged[Cdecl]<{genericTypesString}> {parameterSymbol.Name}";
+                yield return $"delegate* unmanaged[Cdecl]<{genericTypesString}> {parameterSymbol.Name}";
             }
-
-            if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
+            else if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
             {
-                return $"IntPtr {parameterSymbol.Name}";
+                yield return $"IntPtr {parameterSymbol.Name}";
             }
-        
-            return $"{parameterSymbol.Type.GetInteropMethodParameterType()} {parameterSymbol.Name}";
+            else if (parameterSymbol.Type.ToDisplayString() == "QuestPDF.Helpers.PageSize")
+            {
+                yield return $"float {parameterSymbol.Name}_width";
+                yield return $"float {parameterSymbol.Name}_height";
+            }
+            else if (parameterSymbol.Type.ToDisplayString() == "QuestPDF.Helpers.Size")
+            {
+                yield return $"float {parameterSymbol.Name}_width";
+                yield return $"float {parameterSymbol.Name}_height";
+            }
+            else
+            {
+                yield return $"{parameterSymbol.Type.GetInteropMethodParameterType()} {parameterSymbol.Name}";
+            }
         }
         
-        string GetTargetMethodParameter(IParameterSymbol parameterSymbol)
+        IEnumerable<string> GetTargetMethodParameter(IParameterSymbol parameterSymbol)
         {
+            var imageType = typeof(QuestPDF.Infrastructure.Image);
+            var svgImageType = typeof(QuestPDF.Infrastructure.SvgImage);
+            
             if (parameterSymbol.Type.TypeKind == TypeKind.Enum)
-                return $"({parameterSymbol.Type.ToDisplayString()}){parameterSymbol.Name}";
-            
-            if (parameterSymbol.Type.Name == "QuestPDF.Infrastructure.Color")
-                return $"(QuestPDF.Infrastructure.Color){parameterSymbol.Name}";
-            
-            if (parameterSymbol.Type.IsAction())
-                return $"x => {{ var boxed = BoxHandle(x); {parameterSymbol.Name}(boxed); FreeHandle(boxed); }}";
-
-            if (parameterSymbol.Type.IsFunc())
             {
-                var resultType = ((INamedTypeSymbol)parameterSymbol.Type).TypeArguments.Last();
-                return $"x => {{ var boxed = BoxHandle(x); var result = {parameterSymbol.Name}(boxed); FreeHandle(boxed); return UnboxHandle<{GetTargetType(compilation).Name}>(result); }}";
+                yield return $"({parameterSymbol.Type.ToDisplayString()}){parameterSymbol.Name}";   
             }
-            
-            if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
+            else if (parameterSymbol.Type.Name == "QuestPDF.Infrastructure.Color")
             {
-                return $"Marshal.PtrToStringUTF8({parameterSymbol.Name})";
+                yield return $"(QuestPDF.Infrastructure.Color){parameterSymbol.Name}";
             }
-
-            return parameterSymbol.Name;
+            else if (parameterSymbol.Type.IsAction())
+            {
+                yield return $"x => {{ var boxed = BoxHandle(x); {parameterSymbol.Name}(boxed); FreeHandle(boxed); }}";   
+            }
+            else if (parameterSymbol.Type.IsFunc())
+            {
+                yield return $"x => {{ var boxed = BoxHandle(x); var result = {parameterSymbol.Name}(boxed); FreeHandle(boxed); return UnboxHandle<{GetTargetType(compilation).Name}>(result); }}";
+            }
+            else if (parameterSymbol.Type.SpecialType == SpecialType.System_String)
+            {
+                yield return $"Marshal.PtrToStringUTF8({parameterSymbol.Name})";
+            }
+            else if (parameterSymbol.Type.ToDisplayString() == "QuestPDF.Helpers.PageSize")
+            {
+                yield return $"new PageSize({parameterSymbol.Name}_width, {parameterSymbol.Name}_height)";
+            }
+            else if (parameterSymbol.Type.ToDisplayString() == "QuestPDF.Helpers.Size")
+            {
+                yield return $"new Size({parameterSymbol.Name}_width, {parameterSymbol.Name}_height)";
+            }
+            else if (parameterSymbol.Type.ToDisplayString() == imageType.FullName)
+            {
+                yield return $"UnboxHandle<{imageType.FullName}>({parameterSymbol.Name})";
+            }
+            else if (parameterSymbol.Type.ToDisplayString() == svgImageType.FullName)
+            {
+                yield return $"UnboxHandle<{svgImageType.FullName}>({parameterSymbol.Name})";
+            }
+            else
+            {
+                yield return parameterSymbol.Name;
+            }
         }
     }
     
