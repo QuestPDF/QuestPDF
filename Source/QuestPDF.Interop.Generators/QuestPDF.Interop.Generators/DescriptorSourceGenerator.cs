@@ -8,6 +8,7 @@ namespace QuestPDF.Interop.Generators;
 internal class DescriptorSourceGenerator(Type targetType) : ObjectSourceGeneratorBase
 {
     public ICollection<string> ExcludeMembers { get; set; } = Array.Empty<string>();
+    public bool IncludeInheritedExtensionMethods { get; set; } = false;
     
     protected override IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {
@@ -34,7 +35,7 @@ internal class DescriptorSourceGenerator(Type targetType) : ObjectSourceGenerato
             .Where(m => m.DeclaredAccessibility == Accessibility.Public);
 
         return implicitMethods
-            .Concat(genericMethods)
+            .Concat(IncludeInheritedExtensionMethods ? genericMethods : [])
             .Where(x => !ExcludeMembers.Any(x.Name.Contains))
             .FilterSupportedMethods();
     }

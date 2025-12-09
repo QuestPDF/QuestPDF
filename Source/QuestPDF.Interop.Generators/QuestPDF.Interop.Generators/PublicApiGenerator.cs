@@ -12,6 +12,19 @@ public sealed class PublicApiGenerator
 {
     public static void GenerateSource(Compilation compilation)
     {
+        var listOfAvailableMethods = compilation
+            .GlobalNamespace
+            .GetNamespaceMembers()
+            .Where(x => x.Name.StartsWith("QuestPDF"))
+            .SelectMany(x => x.GetMembersRecursively())
+            .Where(x => x.DeclaredAccessibility == Accessibility.Public)
+            .SelectMany(x => x.GetMembers())
+            .OfType<IMethodSymbol>()
+            .ExcludeOldObsoleteMethods()
+            .Where(x => x.DeclaredAccessibility == Accessibility.Public)
+            .Select(x => x.ToDisplayString())
+            .ToList();
+        
         var generators = new List<IInteropSourceGenerator>
         {
             new ColorsSourceGenerator(),
@@ -37,7 +50,7 @@ public sealed class PublicApiGenerator
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.RowDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.GridDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.MultiColumnDescriptor)),
-            new DescriptorSourceGenerator(typeof(QuestPDF.Elements.Table.ITableCellContainer))
+            new TableCellDescriptorSourceGenerator()
             {
                 InheritFrom = "Container"
             },
@@ -45,9 +58,18 @@ public sealed class PublicApiGenerator
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TableColumnsDefinitionDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TableDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TextDescriptor)),
-            new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TextSpanDescriptor)),
-            new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TextPageNumberDescriptor)),
-            new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TextBlockDescriptor)),
+            new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TextSpanDescriptor))
+            {
+                IncludeInheritedExtensionMethods = true
+            },
+            new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TextPageNumberDescriptor))
+            {
+                IncludeInheritedExtensionMethods = true
+            },
+            new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TextBlockDescriptor))
+            {
+                IncludeInheritedExtensionMethods = true
+            },
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.ImageDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.DynamicImageDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.SvgImageDescriptor)),
@@ -56,7 +78,9 @@ public sealed class PublicApiGenerator
             {
                 ExcludeMembers = [
                     "BackgroundLinearGradient",
-                    "BorderLinearGradient"
+                    "BorderLinearGradient",
+                    "QuestPDF.Fluent.ImageExtensions.Image(QuestPDF.Infrastructure.IContainer, System.Func<QuestPDF.Infrastructure.ImageSize, byte[]>)",
+                    "QuestPDF.Fluent.SvgExtensions.Svg(QuestPDF.Infrastructure.IContainer, System.Func<QuestPDF.Infrastructure.Size, string>)"
                 ]
             }
         };
