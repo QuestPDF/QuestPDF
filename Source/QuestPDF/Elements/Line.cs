@@ -94,7 +94,7 @@ namespace QuestPDF.Elements
         
         internal override string? GetCompanionHint()
         {
-            return $"{Type} {Thickness:0.#}";
+            return $"{Type} {Thickness.FormatAsCompanionNumber()}";
         }
     }
 }

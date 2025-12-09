@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -195,6 +196,11 @@ namespace QuestPDF.Helpers
                 // different naming schema: SVG pixel = PDF point
                 return points * PointToPixel;
             }
+        }
+
+        public static string FormatAsCompanionNumber(this float value)
+        {
+            return value.ToString("0.#", CultureInfo.InvariantCulture);
         }
     }
 }

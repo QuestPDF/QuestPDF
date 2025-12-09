@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -57,7 +58,7 @@ namespace QuestPDF.Elements
         
         internal override string? GetCompanionHint()
         {
-            return string.Join("   ", GetOptions().Where(x => x.value != 1).Select(x => $"{x.Label}={x.value:0.#}"));
+            return string.Join("   ", GetOptions().Where(x => x.value != 1).Select(x => $"{x.Label}={x.value.FormatAsCompanionNumber()}"));
             
             IEnumerable<(string Label, float value)> GetOptions()
             {

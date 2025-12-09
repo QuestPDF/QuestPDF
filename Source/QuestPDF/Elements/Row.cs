@@ -27,7 +27,7 @@ namespace QuestPDF.Elements
             if (Type == RowItemType.Auto)
                 return "Auto";
             
-            return $"{Type} {Size:0.#}";
+            return $"{Type} {Size.FormatAsCompanionNumber()}";
         }
     }
 

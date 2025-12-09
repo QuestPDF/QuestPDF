@@ -1,4 +1,5 @@
 ﻿using System;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
@@ -24,7 +25,7 @@ namespace QuestPDF.Elements
             // Stryker disable once equality: TurnCount = 0 is handled above
             var direction = Angle > 0 ? "clockwise" : "counter-clockwise"; 
             
-            return $"{degrees:0.#} deg {direction}";
+            return $"{degrees.FormatAsCompanionNumber()} deg {direction}";
         }
     }
 }
