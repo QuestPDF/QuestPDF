@@ -10,8 +10,6 @@ internal class StyledBoxTests : ConformanceTestBase
 {
     protected override Document GetDocumentUnderTest()
     {
-        var avoidTransparency = TestContext.CurrentContext.Test.Arguments.FirstOrDefault() is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_1B;
-        
         return Document
             .Create(document =>
             {
@@ -51,7 +49,7 @@ internal class StyledBoxTests : ConformanceTestBase
                                 {
                                     OffsetX = 5,
                                     OffsetY = 5,
-                                    Blur = avoidTransparency ? 0 : 10,
+                                    Blur = 10,
                                     Spread = 5,
                                     Color = Colors.Grey.Medium
                                 })
