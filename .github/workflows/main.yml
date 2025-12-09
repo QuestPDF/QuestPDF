@@ -118,6 +118,7 @@ jobs:
           dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
           dotnet test QuestPDF.VisualTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
           dotnet test QuestPDF.DocumentationExamples --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
+          dotnet test QuestPDF.ConformanceTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
           dotnet test QuestPDF.ReportSample --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
           dotnet test QuestPDF.ZUGFeRD --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
 
