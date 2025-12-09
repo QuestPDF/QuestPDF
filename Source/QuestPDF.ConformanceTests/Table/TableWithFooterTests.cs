@@ -85,23 +85,20 @@ internal class TableWithFooterTests : ConformanceTestBase
                     }
                 });
                 
-                table.Child("TFoot", footer =>
+                table.Child("TFoot", tfoot =>
                 {
-                    footer.Child("TR", tfoot =>
+                    tfoot.Child("TR", row =>
                     {
-                        tfoot.Child("TR", row =>
-                        {
-                            row.Child("TD", td => td.Child("P"));
-                            row.Child("TD", td => td.Child("P"));
-                            row.Child("TD", td => td.Child("P"));
-                        });
+                        row.Child("TD", td => td.Child("P"));
+                        row.Child("TD", td => td.Child("P"));
+                        row.Child("TD", td => td.Child("P"));
+                    });
                         
-                        tfoot.Child("TR", row =>
-                        {
-                            row.Child("TD", td => td.Child("P"));
-                            row.Child("TD", td => td.Child("P"));
-                            row.Child("TD", td => td.Child("P"));
-                        });
+                    tfoot.Child("TR", row =>
+                    {
+                        row.Child("TD", td => td.Child("P"));
+                        row.Child("TD", td => td.Child("P"));
+                        row.Child("TD", td => td.Child("P"));
                     });
                 });
             });
