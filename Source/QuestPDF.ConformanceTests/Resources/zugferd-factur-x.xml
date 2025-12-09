@@ -10,7 +10,7 @@
         <ram:ID>RE-20201121/508</ram:ID>
         <ram:TypeCode>380</ram:TypeCode>
         <ram:IssueDateTime>
-            <udt:DateTimeString format="102">20201121</udt:DateTimeString>f
+            <udt:DateTimeString format="102">20201121</udt:DateTimeString>
         </ram:IssueDateTime>
     </rsm:ExchangedDocument>
     <rsm:SupplyChainTradeTransaction>
