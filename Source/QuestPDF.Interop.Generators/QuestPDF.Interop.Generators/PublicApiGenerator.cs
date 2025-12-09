@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -16,13 +17,19 @@ public sealed class PublicApiGenerator
             new ColorsSourceGenerator(),
             new EnumSourceGenerator(),
             new PlainSourceLoader("Settings"),
+            new PlainSourceLoader("PageSizes"),
             new SimpleSourceGenerator("QuestPDF.Helpers.FontFeatures"),
             new SimpleSourceGenerator("QuestPDF.Helpers.Placeholders"),
             new SimpleSourceGenerator("QuestPDF.Drawing.FontManager")
             {
                 ExcludeMembers = [ "RegisterFontFromEmbeddedResource" ]
             },
-            new DescriptorSourceGenerator("QuestPDF.Fluent.LineDescriptor"),
+            new SimpleSourceGenerator("QuestPDF.Infrastructure.Image"),
+            new SimpleSourceGenerator("QuestPDF.Infrastructure.SvgImage"),
+            new DescriptorSourceGenerator("QuestPDF.Fluent.LineDescriptor")
+            {
+                ExcludeMembers = [ "LineDashPattern", "LineGradient" ]
+            },
             new DescriptorSourceGenerator("QuestPDF.Fluent.ColumnDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.DecorationDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.InlinedDescriptor"),
@@ -30,6 +37,10 @@ public sealed class PublicApiGenerator
             new DescriptorSourceGenerator("QuestPDF.Fluent.RowDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.GridDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.MultiColumnDescriptor"),
+            new DescriptorSourceGenerator("QuestPDF.Elements.Table.ITableCellContainer")
+            {
+                InheritFrom = "Container"
+            },
             new DescriptorSourceGenerator("QuestPDF.Fluent.TableCellDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.TableColumnsDefinitionDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.TableDescriptor"),
@@ -42,6 +53,12 @@ public sealed class PublicApiGenerator
             new DescriptorSourceGenerator("QuestPDF.Fluent.SvgImageDescriptor"),
             new DescriptorSourceGenerator("QuestPDF.Fluent.PageDescriptor"),
             new ContainerSourceGenerator()
+            {
+                ExcludeMembers = [
+                    "BackgroundLinearGradient",
+                    "BorderLinearGradient"
+                ]
+            }
         };
         
         GenerateCode("QuestPDF.Interop.g.cs", "CSharp.Main", x => x.GenerateCSharpCode(compilation));
@@ -80,6 +97,7 @@ public sealed class PublicApiGenerator
         }
         catch (Exception ex)
         {
+            throw;
             return $"// Generation error:\n\n{ex.Message}\n\n{ex.StackTrace}";
         }
     }

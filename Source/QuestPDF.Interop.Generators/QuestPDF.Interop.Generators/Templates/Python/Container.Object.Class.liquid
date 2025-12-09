@@ -13,3 +13,72 @@
     def shadow(self, *, blur: float = 0, color: Color = Colors.black, offset_x: float = 0, offset_y: float = 0, spread: float = 0) -> 'Container':
         result = questpdf.lib.questpdf__container__shadow(self.target_pointer, blur, color.hex, offset_x, offset_y, spread)
         return Container(result)
+
+
+    @overload
+    def text(self, source: str) -> 'TextBlockDescriptor': ...
+
+    @overload
+    def text(self, source: Callable[['TextDescriptor'], list[Any]]) -> None: ...
+
+    def text(self, source: Union[str, Callable[['TextDescriptor'], list[Any]]]) -> Optional['TextBlockDescriptor']:
+        if isinstance(source, str):
+            return self._text_string(source)
+    
+        elif callable(source):
+            return self._text_action(source)
+    
+        else:
+            raise TypeError(f"Expected str or Callable, got {type(source)}")
+    
+
+    @overload
+    def svg(self, source: str) -> 'SvgImageDescriptor': ...
+    
+    @overload
+    def svg(self, source: SvgImage) -> 'SvgImageDescriptor': ...
+    
+    @overload
+    def svg(self, source: Callable[['Size'], str]) -> None: ...
+    
+    def svg(self, source: Union[str, SvgImage, Callable[['Size'], str]]) -> Optional['SvgImageDescriptor']:
+        if isinstance(source, str):
+            return self._svg_string(source)
+    
+        elif isinstance(source, SvgImage):
+            return self._svg_svg_image(source)
+    
+        elif callable(source):
+            return self._svg_func(source)
+    
+        else:
+            raise TypeError(f"Expected str, SvgImage, or Callable, got {type(source)}")
+
+
+    @overload
+    def image(self, source: str) -> 'ImageDescriptor': ...
+    
+    @overload
+    def image(self, source: bytes) -> 'ImageDescriptor': ...
+    
+    @overload
+    def image(self, source: Image) -> 'ImageDescriptor': ...
+    
+    @overload
+    def image(self, source: Callable[['Size'], str]) -> 'DynamicImageDescriptor': ...
+    
+    def image(self, source: Union[str, bytes, 'Image', Callable[['Size'], str]]) -> Union['ImageDescriptor', 'DynamicImageDescriptor']:
+        if isinstance(source, str):
+            return self._image_string(source)
+
+        if isinstance(source, bytes):
+            return self._image_bytes(source)
+
+        elif isinstance(source, Image):
+            return self._image_image(source)
+    
+        elif callable(source):
+            return self._image_func(source)
+    
+        else:
+            raise TypeError(f"Expected str, bytes, Image, or Callable, got {type(source)}")

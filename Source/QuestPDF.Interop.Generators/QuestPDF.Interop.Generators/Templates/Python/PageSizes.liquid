@@ -1,0 +1,109 @@
+def to_points(value: float, unit: Unit) -> float:
+    return value
+
+class PageSize:
+    """
+    Defines the physical dimensions (width and height) of a page.
+    
+    Commonly used page sizes are available in the PageSizes class.
+    Change page orientation with the portrait() and landscape() methods.
+    """
+    
+    width: float
+    height: float
+
+    def __init__(self, width: float, height: float, unit: Unit = Unit.point) -> None:
+        """Create a PageSize with dimensions in the specified unit."""
+        if width < 0:
+            raise ValueError("Page width must be greater than 0.")
+
+        if height < 0:
+            raise ValueError("Page height must be greater than 0.")
+
+        self.width = to_points(width, unit)
+        self.height = to_points(height, unit)
+    
+    def portrait(self) -> 'PageSize':
+        """Sets page size to portrait orientation, making width smaller than height."""
+        return PageSize(
+            width=min(self.width, self.height),
+            height=max(self.width, self.height)
+        )
+    
+    def landscape(self) -> 'PageSize':
+        """Sets page size to landscape orientation, making width bigger than height."""
+        return PageSize(
+            width=max(self.width, self.height),
+            height=min(self.width, self.height)
+        )
+
+
+class PageSizes:
+    """
+    Contains predefined, common and standard page sizes,
+    such as A4 with dimensions of 595 points in width and 842 points in height.
+    """
+    
+    POINTS_PER_INCH: int = 72
+    
+    # ISO A Series
+    A0 = PageSize(2384, 3370)
+    A1 = PageSize(1684, 2384)
+    A2 = PageSize(1191, 1684)
+    A3 = PageSize(842, 1191)
+    A4 = PageSize(595, 842)
+    A5 = PageSize(420, 595)
+    A6 = PageSize(298, 420)
+    A7 = PageSize(210, 298)
+    A8 = PageSize(147, 210)
+    A9 = PageSize(105, 147)
+    A10 = PageSize(74, 105)
+
+    # ISO B Series
+    B0 = PageSize(2835, 4008)
+    B1 = PageSize(2004, 2835)
+    B2 = PageSize(1417, 2004)
+    B3 = PageSize(1001, 1417)
+    B4 = PageSize(709, 1001)
+    B5 = PageSize(499, 709)
+    B6 = PageSize(354, 499)
+    B7 = PageSize(249, 354)
+    B8 = PageSize(176, 249)
+    B9 = PageSize(125, 176)
+    B10 = PageSize(88, 125)
+
+    # ISO C Series (Envelopes)
+    C0 = PageSize(2599, 3677)
+    C1 = PageSize(1837, 2599)
+    C2 = PageSize(1298, 1837)
+    C3 = PageSize(918, 1298)
+    C4 = PageSize(649, 918)
+    C5 = PageSize(459, 649)
+    C6 = PageSize(323, 459)
+    C7 = PageSize(230, 323)
+    C8 = PageSize(162, 230)
+    C9 = PageSize(113, 162)
+    C10 = PageSize(79, 113)
+
+    # Envelopes
+    ENV_10 = PageSize(297, 684)
+    ENV_C4 = PageSize(649, 918)
+    ENV_DL = PageSize(312, 624)
+
+    # North American
+    POSTCARD = PageSize(284, 419)
+    EXECUTIVE = PageSize(522, 756)
+    LETTER = PageSize(612, 792)
+    LEGAL = PageSize(612, 1008)
+    LEDGER = PageSize(792, 1224)
+    TABLOID = PageSize(1224, 792)
+
+    # Architectural
+    ARCH_A = PageSize(648, 864)
+    ARCH_B = PageSize(864, 1296)
+    ARCH_C = PageSize(1296, 1728)
+    ARCH_D = PageSize(1728, 2592)
+    ARCH_E = PageSize(2592, 3456)
+    ARCH_E1 = PageSize(2160, 3024)
+    ARCH_E2 = PageSize(1872, 2736)
+    ARCH_E3 = PageSize(1944, 2808)

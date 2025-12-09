@@ -1,4 +1,4 @@
-// AUTO-GENERATED on 12/04/2025 06:04:22
+// AUTO-GENERATED on 12/09/2025 09:01:58
 
 using System;
 using System.Runtime.CompilerServices;
@@ -7,11 +7,14 @@ using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using QuestPDF.Helpers;
 using System.Diagnostics.CodeAnalysis;
+using QuestPDF.Elements.Table;
 
 namespace QuestPDF.Interop;
 
 public static unsafe partial class Exports
 {
+    
+    
     
     
     
@@ -231,10 +234,55 @@ public static Buffer Placeholders_Image_a8827df6(int width, int height)
     return HandleBuffer(result);
 }
 
+[UnmanagedCallersOnly(EntryPoint = "questpdf__placeholders__image__2891dd9e", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static Buffer Placeholders_Image_2891dd9e(global::QuestPDF.Infrastructure.ImageSize size)
+{
+    
+    
+    var result = Placeholders.Image(size);
+    return HandleBuffer(result);
+}
+
 
 
     
     
+
+
+    
+
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__image__from_file__d83c4447", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr Image_FromFile_d83c4447(IntPtr filePath)
+{
+    
+    
+    var result = Image.FromFile(Marshal.PtrToStringUTF8(filePath));
+    return BoxHandle(result);
+}
+
+
+
+    
+    
+[UnmanagedCallersOnly(EntryPoint = "questpdf__svg_image__from_file__79e2c64d", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr SvgImage_FromFile_79e2c64d(IntPtr filePath)
+{
+    
+    
+    var result = SvgImage.FromFile(Marshal.PtrToStringUTF8(filePath));
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__svg_image__from_text__82b4cf0f", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr SvgImage_FromText_82b4cf0f(IntPtr svg)
+{
+    
+    
+    var result = SvgImage.FromText(Marshal.PtrToStringUTF8(svg));
+    return BoxHandle(result);
+}
+
 
 
     
@@ -598,6 +646,863 @@ public static IntPtr MultiColumnDescriptor_Spacer_9d6eea5d(IntPtr target)
     var targetObject = UnboxHandle<MultiColumnDescriptor>(target);
     
     var result = targetObject.Spacer();
+    return BoxHandle(result);
+}
+
+
+
+    
+    
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__align_left__68bfdc67", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_AlignLeft_68bfdc67(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.AlignLeft();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__align_center__4fb1e0d1", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_AlignCenter_4fb1e0d1(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.AlignCenter();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__align_right__a1c1a1bf", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_AlignRight_a1c1a1bf(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.AlignRight();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__align_top__f275ca95", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_AlignTop_f275ca95(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.AlignTop();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__align_middle__95fef9e8", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_AlignMiddle_95fef9e8(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.AlignMiddle();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__align_bottom__d33d0520", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_AlignBottom_d33d0520(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.AlignBottom();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__column__24d6ceed", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_Column_24d6ceed(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> handler)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.Column(x => { var boxed = BoxHandle(x); handler(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__width__a346e20f", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Width_a346e20f(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Width(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__min_width__c00f1915", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_MinWidth_c00f1915(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.MinWidth(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__max_width__7e85a057", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_MaxWidth_7e85a057(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.MaxWidth(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__height__36ac3a02", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Height_36ac3a02(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Height(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__min_height__58cc06b0", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_MinHeight_58cc06b0(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.MinHeight(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__max_height__0b76e199", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_MaxHeight_0b76e199(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.MaxHeight(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__content_from_left_to_right__191523c1", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ContentFromLeftToRight_191523c1(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ContentFromLeftToRight();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__content_from_right_to_left__a31dbd9d", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ContentFromRightToLeft_a31dbd9d(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ContentFromRightToLeft();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__debug_area__a69b9c65", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_DebugArea_a69b9c65(IntPtr parent, IntPtr text, global::QuestPDF.Infrastructure.Color? color)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(parent);
+    FreeHandle(parent);
+    var result = targetObject.DebugArea(Marshal.PtrToStringUTF8(text), color);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__debug_pointer__9d669879", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_DebugPointer_9d669879(IntPtr parent, IntPtr label)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(parent);
+    FreeHandle(parent);
+    var result = targetObject.DebugPointer(Marshal.PtrToStringUTF8(label));
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__decoration__0b39c58e", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_Decoration_0b39c58e(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> handler)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.Decoration(x => { var boxed = BoxHandle(x); handler(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__aspect_ratio__fd5bc0dc", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_AspectRatio_fd5bc0dc(IntPtr element, float ratio, int option)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.AspectRatio(ratio, (QuestPDF.Infrastructure.AspectRatioOption)option);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__placeholder__a560192f", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_Placeholder_a560192f(IntPtr element, IntPtr text)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.Placeholder(Marshal.PtrToStringUTF8(text));
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__show_once__c6224013", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ShowOnce_c6224013(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ShowOnce();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__skip_once__b3d4c7bf", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_SkipOnce_b3d4c7bf(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.SkipOnce();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__show_entire__16629c88", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ShowEntire_16629c88(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ShowEntire();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__ensure_space__0cbedd6a", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_EnsureSpace_0cbedd6a(IntPtr element, float minHeight)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.EnsureSpace(minHeight);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__prevent_page_break__2e3cab6a", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_PreventPageBreak_2e3cab6a(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.PreventPageBreak();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__page_break__4287fb55", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_PageBreak_4287fb55(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.PageBreak();
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__container__be126adc", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Container_be126adc(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Container();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__hyperlink__40aee55c", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Hyperlink_40aee55c(IntPtr element, IntPtr url)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Hyperlink(Marshal.PtrToStringUTF8(url));
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__section__b2687119", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Section_b2687119(IntPtr element, IntPtr sectionName)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Section(Marshal.PtrToStringUTF8(sectionName));
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__section_link__d27b4828", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_SectionLink_d27b4828(IntPtr element, IntPtr sectionName)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.SectionLink(Marshal.PtrToStringUTF8(sectionName));
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__show_if__da52e306", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ShowIf_da52e306(IntPtr element, bool condition)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ShowIf(condition);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__unconstrained__a43107f6", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Unconstrained_a43107f6(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Unconstrained();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__stop_paging__81b05f34", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_StopPaging_81b05f34(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.StopPaging();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__scale_to_fit__bb0b4e57", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ScaleToFit_bb0b4e57(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ScaleToFit();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__repeat__e198bc84", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Repeat_e198bc84(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Repeat();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__lazy__971e7b54", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_Lazy_971e7b54(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> contentBuilder)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.Lazy(x => { var boxed = BoxHandle(x); contentBuilder(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__lazy_with_cache__a33b5f9b", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_LazyWithCache_a33b5f9b(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> contentBuilder)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.LazyWithCache(x => { var boxed = BoxHandle(x); contentBuilder(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__z_index__9cd9a32e", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ZIndex_9cd9a32e(IntPtr element, int indexValue)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ZIndex(indexValue);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__capture_content_position__845fb313", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_CaptureContentPosition_845fb313(IntPtr element, IntPtr id)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.CaptureContentPosition(Marshal.PtrToStringUTF8(id));
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__extend__291e835a", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Extend_291e835a(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Extend();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__extend_vertical__e63e1d72", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ExtendVertical_e63e1d72(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ExtendVertical();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__extend_horizontal__c6d6d128", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ExtendHorizontal_c6d6d128(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ExtendHorizontal();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__image__9155d14a", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Image_9155d14a(IntPtr parent, IntPtr filePath)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(parent);
+    FreeHandle(parent);
+    var result = targetObject.Image(Marshal.PtrToStringUTF8(filePath));
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__inlined__33b27c8d", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_Inlined_33b27c8d(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> handler)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.Inlined(x => { var boxed = BoxHandle(x); handler(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__layers__03ce5bdd", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_Layers_03ce5bdd(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> handler)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.Layers(x => { var boxed = BoxHandle(x); handler(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__line_vertical__ab97b857", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_LineVertical_ab97b857(IntPtr element, float thickness, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.LineVertical(thickness, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__line_horizontal__a6f7f11f", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_LineHorizontal_a6f7f11f(IntPtr element, float thickness, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.LineHorizontal(thickness, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__multi_column__193479d6", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_MultiColumn_193479d6(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> handler)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.MultiColumn(x => { var boxed = BoxHandle(x); handler(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__padding__5daecb7e", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Padding_5daecb7e(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Padding(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__padding_horizontal__7a6b255d", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_PaddingHorizontal_7a6b255d(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.PaddingHorizontal(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__padding_vertical__91122aaa", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_PaddingVertical_91122aaa(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.PaddingVertical(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__padding_top__de3b7b3b", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_PaddingTop_de3b7b3b(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.PaddingTop(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__padding_bottom__74ad0a7b", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_PaddingBottom_74ad0a7b(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.PaddingBottom(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__padding_left__103ee738", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_PaddingLeft_103ee738(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.PaddingLeft(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__padding_right__89d1cf61", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_PaddingRight_89d1cf61(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.PaddingRight(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__rotate_left__c5193e66", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_RotateLeft_c5193e66(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.RotateLeft();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__rotate_right__004c9c52", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_RotateRight_004c9c52(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.RotateRight();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__rotate__c33f62ac", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Rotate_c33f62ac(IntPtr element, float angle)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Rotate(angle);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__row__39fce557", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_Row_39fce557(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> handler)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.Row(x => { var boxed = BoxHandle(x); handler(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__scale__05521931", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Scale_05521931(IntPtr element, float factor)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Scale(factor);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__scale_horizontal__14d1a9be", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ScaleHorizontal_14d1a9be(IntPtr element, float factor)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ScaleHorizontal(factor);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__scale_vertical__5bc8a8a5", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ScaleVertical_5bc8a8a5(IntPtr element, float factor)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ScaleVertical(factor);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__flip_horizontal__744e4fe9", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_FlipHorizontal_744e4fe9(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.FlipHorizontal();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__flip_vertical__a91487f3", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_FlipVertical_a91487f3(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.FlipVertical();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__flip_over__ce1ff345", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_FlipOver_ce1ff345(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.FlipOver();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__shrink__4221b85b", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Shrink_4221b85b(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Shrink();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__shrink_vertical__e5042c3c", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ShrinkVertical_e5042c3c(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ShrinkVertical();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__shrink_horizontal__588cfd0f", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ShrinkHorizontal_588cfd0f(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.ShrinkHorizontal();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border__a6712928", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Border_a6712928(IntPtr element, float all, global::QuestPDF.Infrastructure.Color color)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Border(all, color);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__background__68f98b81", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Background_68f98b81(IntPtr element, global::QuestPDF.Infrastructure.Color color)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Background(color);
+    return BoxHandle(result);
+}
+
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border__17f3b5e4", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Border_17f3b5e4(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.Border(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_vertical__7922384b", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderVertical_7922384b(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderVertical(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_horizontal__34913f34", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderHorizontal_34913f34(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderHorizontal(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_left__803ed1e6", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderLeft_803ed1e6(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderLeft(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_right__de8ca6bf", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderRight_de8ca6bf(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderRight(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_top__c469b91f", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderTop_c469b91f(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderTop(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_bottom__59b8a019", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderBottom_59b8a019(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderBottom(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__corner_radius__bf7cb39f", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_CornerRadius_bf7cb39f(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.CornerRadius(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__corner_radius_top_left__41d08c72", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_CornerRadiusTopLeft_41d08c72(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.CornerRadiusTopLeft(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__corner_radius_top_right__1497678a", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_CornerRadiusTopRight_1497678a(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.CornerRadiusTopRight(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__corner_radius_bottom_left__3a8d234a", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_CornerRadiusBottomLeft_3a8d234a(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.CornerRadiusBottomLeft(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__corner_radius_bottom_right__b07c1d8d", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_CornerRadiusBottomRight_b07c1d8d(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.CornerRadiusBottomRight(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_color__2a24bda0", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderColor_2a24bda0(IntPtr element, global::QuestPDF.Infrastructure.Color color)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderColor(color);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_alignment_outside__ce5e63fa", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderAlignmentOutside_ce5e63fa(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderAlignmentOutside();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_alignment_middle__66a27445", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderAlignmentMiddle_66a27445(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderAlignmentMiddle();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__border_alignment_inside__8cef56b1", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_BorderAlignmentInside_8cef56b1(IntPtr element)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.BorderAlignmentInside();
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__svg__f547d46e", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Svg_f547d46e(IntPtr container, IntPtr svg)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(container);
+    FreeHandle(container);
+    var result = targetObject.Svg(Marshal.PtrToStringUTF8(svg));
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__table__d49da987", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_Table_d49da987(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> handler)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.Table(x => { var boxed = BoxHandle(x); handler(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__column__384372f0", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Column_384372f0(IntPtr tableCellContainer, uint value)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
+    FreeHandle(tableCellContainer);
+    var result = targetObject.Column(value);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__column_span__629b3552", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ColumnSpan_629b3552(IntPtr tableCellContainer, uint value)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
+    FreeHandle(tableCellContainer);
+    var result = targetObject.ColumnSpan(value);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__row__7ddb9999", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Row_7ddb9999(IntPtr tableCellContainer, uint value)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
+    FreeHandle(tableCellContainer);
+    var result = targetObject.Row(value);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__row_span__e9016d30", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_RowSpan_e9016d30(IntPtr tableCellContainer, uint value)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
+    FreeHandle(tableCellContainer);
+    var result = targetObject.RowSpan(value);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__text__357e362f", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static void TableCellContainer_Text_357e362f(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> content)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    targetObject.Text(x => { var boxed = BoxHandle(x); content(boxed); FreeHandle(boxed); });
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__text__3f6b5b07", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Text_3f6b5b07(IntPtr container, IntPtr text)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(container);
+    FreeHandle(container);
+    var result = targetObject.Text(Marshal.PtrToStringUTF8(text));
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__translate_x__351baebe", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_TranslateX_351baebe(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.TranslateX(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__translate_y__d99602db", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_TranslateY_d99602db(IntPtr element, float value, int unit)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(element);
+    FreeHandle(element);
+    var result = targetObject.TranslateY(value, (QuestPDF.Infrastructure.Unit)unit);
     return BoxHandle(result);
 }
 
@@ -1931,6 +2836,15 @@ public static IntPtr ImageDescriptor_WithRasterDpi_78f617ee(IntPtr target, int d
     return BoxHandle(result);
 }
 
+[UnmanagedCallersOnly(EntryPoint = "questpdf__image_descriptor__with_compression_quality__1665a445", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr ImageDescriptor_WithCompressionQuality_1665a445(IntPtr target, int quality)
+{
+    var targetObject = UnboxHandle<ImageDescriptor>(target);
+    
+    var result = targetObject.WithCompressionQuality((QuestPDF.Infrastructure.ImageCompressionQuality)quality);
+    return BoxHandle(result);
+}
+
 [UnmanagedCallersOnly(EntryPoint = "questpdf__image_descriptor__fit_width__7b9aa4d6", CallConvs = new[] { typeof(CallConvCdecl) })]
 public static IntPtr ImageDescriptor_FitWidth_7b9aa4d6(IntPtr target)
 {
@@ -1989,6 +2903,15 @@ public static IntPtr DynamicImageDescriptor_WithRasterDpi_a72018d5(IntPtr target
     return BoxHandle(result);
 }
 
+[UnmanagedCallersOnly(EntryPoint = "questpdf__dynamic_image_descriptor__with_compression_quality__94465629", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr DynamicImageDescriptor_WithCompressionQuality_94465629(IntPtr target, int quality)
+{
+    var targetObject = UnboxHandle<DynamicImageDescriptor>(target);
+    
+    var result = targetObject.WithCompressionQuality((QuestPDF.Infrastructure.ImageCompressionQuality)quality);
+    return BoxHandle(result);
+}
+
 
 
     
@@ -2039,6 +2962,7 @@ public static void PageDescriptor_ContinuousSize_ae1c9536(IntPtr target, float w
     
     targetObject.ContinuousSize(width, (QuestPDF.Infrastructure.Unit)unit);
 }
+
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__page_descriptor__margin_left__4c6b8a4c", CallConvs = new[] { typeof(CallConvCdecl) })]
 public static void PageDescriptor_MarginLeft_4c6b8a4c(IntPtr target, float value, int unit)
@@ -2541,6 +3465,7 @@ public static IntPtr Container_ExtendHorizontal_c6d6d128(IntPtr element)
     return BoxHandle(result);
 }
 
+
 [UnmanagedCallersOnly(EntryPoint = "questpdf__container__image__9155d14a", CallConvs = new[] { typeof(CallConvCdecl) })]
 public static IntPtr Container_Image_9155d14a(IntPtr parent, IntPtr filePath)
 {
@@ -2549,6 +3474,7 @@ public static IntPtr Container_Image_9155d14a(IntPtr parent, IntPtr filePath)
     var result = targetObject.Image(Marshal.PtrToStringUTF8(filePath));
     return BoxHandle(result);
 }
+
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__container__inlined__33b27c8d", CallConvs = new[] { typeof(CallConvCdecl) })]
 public static void Container_Inlined_33b27c8d(IntPtr element, delegate* unmanaged[Cdecl]<IntPtr, void> handler)

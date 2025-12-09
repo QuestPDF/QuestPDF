@@ -39,6 +39,9 @@ public class PythonLanguageProvider : ILanguageProvider
             InteropTypeKind.Integer => "int",
             InteropTypeKind.Float => "float",
             InteropTypeKind.String => "str",
+            InteropTypeKind.ByteArray => "bytes",
+            InteropTypeKind.Size => "Size",
+            InteropTypeKind.ImageSize => "ImageSize",
             InteropTypeKind.Enum => type.ShortName,
             InteropTypeKind.Class => type.ShortName,
             InteropTypeKind.Interface => type.ShortName.TrimStart('I'),
@@ -74,6 +77,19 @@ public class PythonLanguageProvider : ILanguageProvider
     {
         if (type.Kind == InteropTypeKind.Interface)
             return type.ShortName.TrimStart('I');
+        
+        if (type.Kind == InteropTypeKind.ByteArray)
+            return "bytes";
+        
+        if (type.Kind == InteropTypeKind.ImageSize)
+            return "ImageSize";
+        
+        if (type.Kind == InteropTypeKind.Size)
+            return "Size";
+        
+        if (type.Kind == InteropTypeKind.String)
+            return "str";
+        
         return type.ShortName;
     }
 
@@ -122,6 +138,7 @@ public class PythonLanguageProvider : ILanguageProvider
         return new
         {
             CallbackTypedefs = classModel.CallbackTypedefs,
+            InheritFrom = classModel.InheritFrom,
             Headers = classModel.CHeaderSignatures,
             ClassName = classModel.GeneratedClassName,
             Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
@@ -160,6 +177,7 @@ public class PythonLanguageProvider : ILanguageProvider
             InteropMethodName = method.NativeEntryPoint,
             InteropMethodParameters = interopParams,
             PythonMethodReturnType = GetReturnTypeName(method),
+            PythonReturnConversionMethod = GetReturnConversionMethod(method),
             DeprecationMessage = method.DeprecationMessage,
             Callbacks = method.Callbacks.Select(BuildCallbackTemplateModel).ToList(),
             IsOverload = method.IsOverload,
@@ -190,6 +208,25 @@ public class PythonLanguageProvider : ILanguageProvider
 
         return GetTargetType(method.ReturnType);
     }
+    
+    private string GetReturnConversionMethod(InteropMethodModel method)
+    {
+        if (method.ReturnType.Kind == InteropTypeKind.Void)
+            return null;
+
+        if (method.ReturnType.Kind == InteropTypeKind.String)
+            return "decode_text_as_utf_8";
+        
+        // For TypeParameter (generic methods returning T), use the containing class name
+        if (method.ReturnType.Kind == InteropTypeKind.TypeParameter)
+            return _currentClassName;
+        
+        if (method.ReturnType.Kind == InteropTypeKind.ByteArray)
+            return "questpdf_ffi.string";
+
+        return GetTargetType(method.ReturnType);
+    }
+
 
     private object BuildCallbackTemplateModel(InteropCallbackModel callback)
     {

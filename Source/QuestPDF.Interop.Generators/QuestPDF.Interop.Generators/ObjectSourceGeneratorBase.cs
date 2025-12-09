@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace QuestPDF.Interop.Generators;
 
 internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 {
+    public string? InheritFrom { get; set; }
+    
     protected abstract IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation);
     protected abstract INamedTypeSymbol GetTargetType(Compilation compilation);
 
@@ -32,7 +35,9 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     {
         var targetType = GetTargetType(compilation);
         var methods = GetTargetMethods(compilation);
-        return InteropModelBuilder.BuildClassModel(targetType, methods);
+        var result = InteropModelBuilder.BuildClassModel(targetType, methods);
+        result.InheritFrom = InheritFrom;
+        return result;
     }
 
     public string GenerateCSharpCode(Compilation compilation)

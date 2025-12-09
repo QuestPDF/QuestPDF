@@ -360,7 +360,7 @@ internal static partial class Helpers
                 return $"{GetNativeParameterType(x.Type)} {x.Name}";
             });
 
-        if (!methodSymbol.IsExtensionMethod)
+        if (!methodSymbol.IsExtensionMethod && !methodSymbol.IsStatic)
             parameters = parameters.Prepend("void* target");
 
         var parametersString = string.Join(", ", parameters);
@@ -426,19 +426,15 @@ internal static partial class Helpers
         return methodSymbols
             .ExcludeOldObsoleteMethods()
             .Where(x => !x.Name.Contains("Component"))
-            .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Array))
             .Where(x => !x.Parameters.Any(p => !p.Type.IsAction() && !p.Type.IsFunc() && p.Type.TypeKind == TypeKind.Delegate))
             .Apply(Remove("global::System.Predicate"))
             .Apply(Remove("BoxShadowStyle"))
             .Apply(Remove("TextStyle"))
             .Apply(Remove("IDynamic"))
-            .Apply(Remove("Image"))
-            .Apply(Remove("SvgImage"))
             .Apply(Remove("Stream"))
-            .Apply(Remove("Size"))
             .Apply(Remove("IDynamicElement"))
+            .Where(x => x.Name != "Dispose")
             .Where(x => !(x.Parameters.Skip(1).FirstOrDefault()?.Type?.Name?.Contains("IContainer") ?? false))
-            .Where(x => !x.Parameters.Any(p => p.Type.SpecialType == SpecialType.System_Array))
             .Where(x => !x.Parameters.Any(p => p.GetAttributes().Any()));
 
         Func<IEnumerable<IMethodSymbol>, IEnumerable<IMethodSymbol>> Remove(string phrase)

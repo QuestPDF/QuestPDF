@@ -63,5 +63,8 @@ public enum InteropTypeKind
     Func,
     TypeParameter,
     Color,
+    ByteArray,
+    Size,
+    ImageSize,
     Unknown
 }

@@ -11,7 +11,7 @@ namespace QuestPDF.Elements;
 
 internal sealed class DynamicSvgImage : Element, IStateful, IDisposable
 {
-    public GenerateDynamicSvgDelegate SvgSource { get; set; }
+    public Func<Size, string> SvgSource { get; set; }
 
     private List<(Size Size, SkSvgImage? Image)> Cache { get; } = new(1);
     

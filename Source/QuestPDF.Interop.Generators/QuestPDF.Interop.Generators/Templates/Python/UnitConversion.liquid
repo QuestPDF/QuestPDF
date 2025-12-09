@@ -1,0 +1,17 @@
+_INCH_TO_CENTIMETRE: float = 2.54
+_INCH_TO_POINTS: float = 72.0
+
+_UNIT_CONVERSION_FACTORS: dict[Unit, float] = {
+Unit.POINT: 1.0,
+Unit.METER: 100.0 / _INCH_TO_CENTIMETRE * _INCH_TO_POINTS,
+Unit.CENTIMETRE: 1.0 / _INCH_TO_CENTIMETRE * _INCH_TO_POINTS,
+Unit.MILLIMETRE: 0.1 / _INCH_TO_CENTIMETRE * _INCH_TO_POINTS,
+Unit.FEET: 12.0 * _INCH_TO_POINTS,
+Unit.INCH: _INCH_TO_POINTS,
+Unit.MIL: _INCH_TO_POINTS / 1000.0,
+}
+
+
+def to_points(value: float, unit: Unit) -> float:
+"""Converts a value from the specified unit to points."""
+return value * _CONVERSION_FACTORS[unit]

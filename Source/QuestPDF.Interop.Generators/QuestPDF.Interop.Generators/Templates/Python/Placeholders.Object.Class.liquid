@@ -1,0 +1,18 @@
+    @overload
+    @staticmethod
+    def image(width: int, height: int) -> 'bytes': ...
+
+    @overload
+    @staticmethod
+    def image(size: ImageSize) -> 'bytes': ...
+
+    @staticmethod
+    def image(*args) -> 'bytes':
+        if isinstance(args[0], int):
+            return Placeholders._image_int_int(args[0], args[1])
+
+        elif isinstance(args[0], ImageSize):
+            return Placeholders._image_image_size(args[0])
+
+        else:
+            raise TypeError(f"Expected (int, int) or ImageSize, got {type(args[0])}")

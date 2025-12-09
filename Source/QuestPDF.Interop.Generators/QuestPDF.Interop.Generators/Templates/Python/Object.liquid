@@ -29,8 +29,7 @@ class {{ className }}:
 {% endfor %}
 
         result = questpdf.lib.{{ method.interopMethodName }}({{ method.interopMethodParameters | join: ", " }})
-{% if method.pythonMethodReturnType %}        return {{ method.pythonMethodReturnType }}(result)
-{% endif %}
+        {% if method.pythonReturnConversionMethod %}return {{ method.pythonReturnConversionMethod }}(result){% endif %}
 {% endfor %}
 
 {{ customClass }}

@@ -176,6 +176,7 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         return new
         {
             ClassName = classModel.GeneratedClassName,
+            InheritFrom = classModel.InheritFrom,
             CallbackTypedefs = classModel.CallbackTypedefs,
             Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
             CustomInit = customInit,

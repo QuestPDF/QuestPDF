@@ -3,7 +3,7 @@
 
 import os
 from cffi import FFI
-from typing import Callable, Optional, Tuple, Any, Self, Protocol
+from typing import Callable, Optional, Tuple, Any, Self, Protocol, overload, Union
 
 from dataclasses import dataclass
 
@@ -49,6 +49,20 @@ class QuestPDF:
 
 questpdf = QuestPDF()
 
+
+def decode_text_as_utf_8(value) -> str:
+    return questpdf_ffi.string(value).decode("utf-8")
+
+
+def decode_byte_array(value) -> str:
+    return questpdf_ffi.string(value)
+
+
+class Size:
+    None
+
+class ImageSize:
+    None
 
 
 {% for fragment in fragments %}

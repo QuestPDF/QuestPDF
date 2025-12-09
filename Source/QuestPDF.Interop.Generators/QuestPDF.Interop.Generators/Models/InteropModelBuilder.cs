@@ -118,6 +118,9 @@ internal static class InteropModelBuilder
             InteropTypeKind.Func => "Func",
             InteropTypeKind.TypeParameter => "T",
             InteropTypeKind.Color => "Color",
+            InteropTypeKind.ByteArray => "Bytes",
+            InteropTypeKind.Size => "Size",
+            InteropTypeKind.ImageSize => "ImageSize",
             _ => "Unknown"
         };
     }
@@ -317,7 +320,16 @@ internal static class InteropModelBuilder
 
         if (type.TypeKind == TypeKind.Class)
             return InteropTypeKind.Class;
-
+        
+        if (type.ToDisplayString() == "byte[]")
+            return InteropTypeKind.ByteArray;
+        
+        if (type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("QuestPDF.Infrastructure.ImageSize"))
+            return InteropTypeKind.ImageSize;
+        
+        if (type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("QuestPDF.Infrastructure.Size"))
+            return InteropTypeKind.Size;
+        
         // Check for numeric types
         var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         if (IsIntegerType(typeName))

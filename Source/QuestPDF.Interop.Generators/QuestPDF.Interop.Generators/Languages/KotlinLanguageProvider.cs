@@ -220,6 +220,7 @@ public class KotlinLanguageProvider : ILanguageProvider
         return new
         {
             ClassName = classModel.GeneratedClassName,
+            InheritFrom = classModel.InheritFrom,
             Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
             CallbackInterfaces = callbackInterfaces,
             CallbackTypedefs = classModel.CallbackTypedefs,

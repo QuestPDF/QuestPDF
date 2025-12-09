@@ -7,13 +7,6 @@ using SvgImage = QuestPDF.Infrastructure.SvgImage;
 
 namespace QuestPDF.Fluent;
 
-/// <summary>
-/// Generates an SVG image based on the given resolution.
-/// </summary>
-/// <param name="size">Desired resolution of the image in pixels.</param>
-/// <returns>An SVG format compatible text.</returns>
-public delegate string? GenerateDynamicSvgDelegate(Size size);
-
 public sealed class SvgImageDescriptor
 {
     private Elements.SvgImage ImageElement { get; }
@@ -127,7 +120,7 @@ public static class SvgExtensions
     /// <param name="dynamicSvgSource">
     /// A delegate that requests an image of desired size.
     /// </param>
-    public static void Svg(this IContainer element, GenerateDynamicSvgDelegate dynamicSvgSource)
+    public static void Svg(this IContainer element, Func<Size, string> dynamicSvgSource)
     {
         var dynamicImage = new DynamicSvgImage
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -6,10 +7,11 @@ namespace QuestPDF.Interop.Generators;
 
 internal class DescriptorSourceGenerator(string targetNamespace) : ObjectSourceGeneratorBase
 {
+    public ICollection<string> ExcludeMembers { get; set; } = Array.Empty<string>();
+    
     protected override IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {
-        var targetType = compilation
-            .GetTypeByMetadataName(targetNamespace);
+        var targetType = GetTargetType(compilation);
 
         var extensionMethods = compilation
             .GlobalNamespace
@@ -33,6 +35,7 @@ internal class DescriptorSourceGenerator(string targetNamespace) : ObjectSourceG
 
         return implicitMethods
             .Concat(genericMethods)
+            .Where(x => !ExcludeMembers.Any(x.Name.Contains))
             .FilterSupportedMethods();
     }
 

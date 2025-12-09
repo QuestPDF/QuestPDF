@@ -24,6 +24,8 @@ public class InteropClassModel
     /// Whether the original type is an interface.
     /// </summary>
     public bool IsInterface { get; set; }
+    
+    public string? InheritFrom { get; set; }
 
     /// <summary>
     /// All methods to be exposed for this class.
