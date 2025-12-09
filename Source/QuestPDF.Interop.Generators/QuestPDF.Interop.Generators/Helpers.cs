@@ -425,6 +425,7 @@ internal static partial class Helpers
     {
         return methodSymbols
             .ExcludeOldObsoleteMethods()
+            .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Array))
             .Where(x => !x.Name.Contains("Component"))
             .Where(x => !x.Parameters.Any(p => !p.Type.IsAction() && !p.Type.IsFunc() && p.Type.TypeKind == TypeKind.Delegate))
             .Apply(Remove("global::System.Predicate"))
