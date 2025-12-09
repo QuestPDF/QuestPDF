@@ -5,14 +5,14 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
-internal class SimpleSourceGenerator(string targetNamespace) : ObjectSourceGeneratorBase
+internal class SimpleSourceGenerator(Type targetType) : ObjectSourceGeneratorBase
 {
     public ICollection<string> ExcludeMembers { get; set; } = Array.Empty<string>();
     
     protected override IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {
         return compilation
-            .GetTypeByMetadataName(targetNamespace)
+            .GetTypeByMetadataName(targetType.FullName)
             .GetMembers()
             .OfType<IMethodSymbol>()
             .Where(x => !ExcludeMembers.Any(x.Name.Contains))
@@ -23,6 +23,6 @@ internal class SimpleSourceGenerator(string targetNamespace) : ObjectSourceGener
 
     protected override INamedTypeSymbol GetTargetType(Compilation compilation)
     {
-        return compilation.GetTypeByMetadataName(targetNamespace);
+        return compilation.GetTypeByMetadataName(targetType.FullName);
     }
 }

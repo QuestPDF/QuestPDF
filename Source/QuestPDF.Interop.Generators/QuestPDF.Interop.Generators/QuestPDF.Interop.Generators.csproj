@@ -28,5 +28,9 @@
             <WithCulture>false</WithCulture>
         </EmbeddedResource>
     </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\QuestPDF\QuestPDF.csproj" />
+    </ItemGroup>
 
 </Project>

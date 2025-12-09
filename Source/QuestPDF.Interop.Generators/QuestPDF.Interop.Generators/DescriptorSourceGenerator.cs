@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
-internal class DescriptorSourceGenerator(string targetNamespace) : ObjectSourceGeneratorBase
+internal class DescriptorSourceGenerator(Type targetType) : ObjectSourceGeneratorBase
 {
     public ICollection<string> ExcludeMembers { get; set; } = Array.Empty<string>();
     
@@ -41,6 +41,6 @@ internal class DescriptorSourceGenerator(string targetNamespace) : ObjectSourceG
 
     protected override INamedTypeSymbol GetTargetType(Compilation compilation)
     {
-        return compilation.GetTypeByMetadataName(targetNamespace);
+        return compilation.GetTypeByMetadataName(targetType.FullName);
     }
 }
