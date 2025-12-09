@@ -194,8 +194,9 @@ namespace QuestPDF.Drawing
             {
                 if (settings.PDFUA_Conformance is not PDFUA_Conformance.None)
                     return true;
-                
-                if (settings.PDFA_Conformance is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_2A or PDFA_Conformance.PDFA_3A)
+
+                //if (settings.PDFA_Conformance is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_2A or PDFA_Conformance.PDFA_3A)
+                if (settings.PDFA_Conformance is PDFA_Conformance.PDFA_2A or PDFA_Conformance.PDFA_3A)
                     return true;
 
                 return false;

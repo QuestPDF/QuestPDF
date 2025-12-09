@@ -75,8 +75,8 @@ namespace QuestPDF.Drawing.DocumentCanvases
             return conformanceLevel switch
             {
                 Infrastructure.PDFA_Conformance.None => Skia.PDFA_Conformance.None,
-                Infrastructure.PDFA_Conformance.PDFA_1A => Skia.PDFA_Conformance.PDFA_1A,
-                Infrastructure.PDFA_Conformance.PDFA_1B => Skia.PDFA_Conformance.PDFA_1B,
+                // Infrastructure.PDFA_Conformance.PDFA_1A => Skia.PDFA_Conformance.PDFA_1A,
+                // Infrastructure.PDFA_Conformance.PDFA_1B => Skia.PDFA_Conformance.PDFA_1B,
                 Infrastructure.PDFA_Conformance.PDFA_2A => Skia.PDFA_Conformance.PDFA_2A,
                 Infrastructure.PDFA_Conformance.PDFA_2B => Skia.PDFA_Conformance.PDFA_2B,
                 Infrastructure.PDFA_Conformance.PDFA_2U => Skia.PDFA_Conformance.PDFA_2U,
