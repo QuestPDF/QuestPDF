@@ -165,11 +165,12 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     {
         var classModel = BuildClassModel(compilation);
         var provider = LanguageProviderRegistry.Python;
-        
+
+        var customDefinitions = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Defs");
         var customInit = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Init");
         var customClass = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Class");
         
-        var templateModel = provider.BuildClassTemplateModel(classModel, customInit, customClass);
+        var templateModel = provider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
         var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
 
         return mainCode;
@@ -180,10 +181,11 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         var classModel = BuildClassModel(compilation);
         var provider = LanguageProviderRegistry.TypeScript;
         
+        var customDefinitions = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Defs");
         var customInit = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Init");
         var customClass = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Class");
         
-        var templateModel = provider.BuildClassTemplateModel(classModel, customInit, customClass);
+        var templateModel = provider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
         var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
 
         return mainCode;
@@ -194,10 +196,11 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         var classModel = BuildClassModel(compilation);
         var provider = LanguageProviderRegistry.Kotlin;
         
+        var customDefinitions = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Defs");
         var customInit = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Init");
         var customClass = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Class");
         
-        var templateModel = provider.BuildClassTemplateModel(classModel, customInit, customClass);
+        var templateModel = provider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
         var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
 
         return mainCode;

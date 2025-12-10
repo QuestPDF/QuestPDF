@@ -1,3 +1,4 @@
+
 QUESTPDF_CDEF += r"""
     {% for typedef in CallbackTypedefs %}
     {{ typedef }}
@@ -10,7 +11,9 @@ QUESTPDF_CDEF += r"""
 {{ customInit }}
 """
 
-class {{ className }}:
+{{ customDefinitions }}
+
+class {{ className }}{% if inheritFrom %}({{ inheritFrom }}){% endif %}:
     def __init__(self, target_pointer):
         self.target_pointer = target_pointer
         self._callbacks = []  # prevent GC of callbacks during native calls

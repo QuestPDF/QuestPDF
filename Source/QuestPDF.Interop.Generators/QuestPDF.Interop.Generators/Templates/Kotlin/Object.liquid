@@ -28,6 +28,8 @@ fun {{ method.originalName }}({{ method.kotlinParameters }}){% if method.kotlinR
 // {{ className }} - Native Function Interface
 // ============================================================================
 
+{{ customDefinitions }}
+
 /**
  * JNA interface for {{ className }} native methods.
  */

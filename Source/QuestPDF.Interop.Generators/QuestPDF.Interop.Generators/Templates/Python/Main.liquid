@@ -65,6 +65,13 @@ class ImageSize:
     None
 
 
+QUESTPDF_CDEF += r"""
+    typedef struct Buffer {
+        uint8_t* data;                // or: unsigned char* data;
+        size_t   length;
+    } Buffer;
+"""
+
 {% for fragment in fragments %}
 {{ fragment }}
 {% endfor %}
@@ -74,11 +81,6 @@ class ImageSize:
 
 
 QUESTPDF_CDEF += r"""
-    typedef struct Buffer {
-        uint8_t* data;                // or: unsigned char* data;
-        size_t   length;
-    } Buffer;
-
     typedef void (*documentContainerDescriptorCallback)(void* document_container);
     typedef void (*pageDescriptorCallback)(void* page);
 

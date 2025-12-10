@@ -57,7 +57,7 @@ public class PythonLanguageProvider : ILanguageProvider
     private string FormatCallableType(InteropTypeModel type, bool isFunc)
     {
         if (type.TypeArguments == null || type.TypeArguments.Length == 0)
-            return isFunc ? "Callable[[], Any]" : "Callable[[], None]";
+            return "Callable[[], Any]"; // both Action and Func expect Any to mitigate problems with multi-line lambdas
 
         if (isFunc)
         {
@@ -69,7 +69,7 @@ public class PythonLanguageProvider : ILanguageProvider
         else
         {
             var args = type.TypeArguments.Select(t => $"'{GetTargetTypeForCallable(t)}'");
-            return $"Callable[[{string.Join(", ", args)}], None]";
+            return $"Callable[[{string.Join(", ", args)}], Any]";
         }
     }
 
@@ -131,7 +131,7 @@ public class PythonLanguageProvider : ILanguageProvider
     // Store the current class name for resolving TypeParameter return types
     private string _currentClassName;
 
-    public object BuildClassTemplateModel(InteropClassModel classModel, string customInit, string customClass)
+    public object BuildClassTemplateModel(InteropClassModel classModel, string customDefinitions, string customInit, string customClass)
     {
         _currentClassName = classModel.GeneratedClassName;
 
@@ -142,6 +142,7 @@ public class PythonLanguageProvider : ILanguageProvider
             Headers = classModel.CHeaderSignatures,
             ClassName = classModel.GeneratedClassName,
             Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
+            CustomDefinitions = customDefinitions,
             CustomInit = customInit,
             CustomClass = customClass
         };

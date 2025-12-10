@@ -50,6 +50,16 @@ public static unsafe partial class Exports
         return new Buffer { data = ptr, length = len };
     }
     
+    static byte[] HandleBuffer(Buffer buffer)
+    {
+        var result = new byte[buffer.length];
+        
+        fixed (byte* ptr = result)
+            global::System.Buffer.MemoryCopy(buffer.data, ptr, result.Length, result.Length);
+        
+        return result;
+    }
+    
     static IntPtr HandleText(string text)
     {
         if (text == null) 

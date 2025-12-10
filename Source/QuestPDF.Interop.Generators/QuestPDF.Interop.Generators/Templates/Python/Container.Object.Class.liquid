@@ -31,6 +31,16 @@
         else:
             raise TypeError(f"Expected str or Callable, got {type(source)}")
     
+    def _svg_func(self, source: Callable[[DynamicSvgPayload], str]) -> None:
+        @questpdf_ffi.callback("char*(DynamicSvgSourcePayload)")
+        def native_callback(c_payload):
+            payload = DynamicSvgPayload(c_payload)
+            result_str = source(payload)
+            return questpdf_ffi.new("char[]", result_str.encode('utf-8'))
+
+        self._callbacks.append(native_callback)
+
+        questpdf.lib.questpdf__container__svg_dynamic(self.target_pointer, native_callback)
 
     @overload
     def svg(self, source: str) -> 'SvgImageDescriptor': ...
@@ -39,9 +49,9 @@
     def svg(self, source: SvgImage) -> 'SvgImageDescriptor': ...
     
     @overload
-    def svg(self, source: Callable[['Size'], str]) -> None: ...
+    def svg(self, source: Callable[['DynamicSvgPayload'], str]) -> None: ...
     
-    def svg(self, source: Union[str, SvgImage, Callable[['Size'], str]]) -> Optional['SvgImageDescriptor']:
+    def svg(self, source: Union[str, SvgImage, Callable[['DynamicSvgPayload'], str]]) -> Optional['SvgImageDescriptor']:
         if isinstance(source, str):
             return self._svg_string(source)
     
@@ -55,6 +65,36 @@
             raise TypeError(f"Expected str, SvgImage, or Callable, got {type(source)}")
 
 
+
+    def _image_bytes(self, data: bytes) -> 'ImageDescriptor':
+        buffer = questpdf_ffi.new("Buffer*")
+        buffer.data = questpdf_ffi.from_buffer("uint8_t[]", data)
+        buffer.length = len(data)
+
+        result = questpdf.lib.questpdf__container__image_bytes(self.target_pointer, buffer[0])
+        return ImageDescriptor(result)
+
+    def _image_func(self, source: Callable[[DynamicImagePayload], bytes]) -> 'ImageDescriptor':
+        @questpdf_ffi.callback("Buffer(DynamicImageSourcePayload)")
+        def native_callback(c_payload):
+            payload = DynamicImagePayload(c_payload)
+            result_bytes = source(payload)
+
+            data_ptr = questpdf_ffi.new("uint8_t[]", result_bytes)
+
+            buffer = questpdf_ffi.new("Buffer*")
+            buffer.data = data_ptr
+            buffer.length = len(result_bytes)
+            return buffer[0]
+
+        # Store callback reference to prevent garbage collection
+        self._callbacks.append(native_callback)
+
+        result = questpdf.lib.questpdf__container__image_dynamic(self.target_pointer, native_callback)
+        return ImageDescriptor(result)
+
+    
+
     @overload
     def image(self, source: str) -> 'ImageDescriptor': ...
     
@@ -67,7 +107,7 @@
     @overload
     def image(self, source: Callable[['Size'], str]) -> 'DynamicImageDescriptor': ...
     
-    def image(self, source: Union[str, bytes, 'Image', Callable[['Size'], str]]) -> Union['ImageDescriptor', 'DynamicImageDescriptor']:
+    def image(self, source: Union[str, bytes, 'Image', Callable[['DynamicImagePayload'], bytes]]) -> Union['ImageDescriptor', 'DynamicImageDescriptor']:
         if isinstance(source, str):
             return self._image_string(source)
 

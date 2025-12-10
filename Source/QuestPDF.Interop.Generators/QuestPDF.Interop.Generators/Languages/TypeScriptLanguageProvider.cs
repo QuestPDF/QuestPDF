@@ -169,7 +169,7 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         };
     }
 
-    public object BuildClassTemplateModel(InteropClassModel classModel, string customInit, string customClass)
+    public object BuildClassTemplateModel(InteropClassModel classModel, string customDefinitions, string customInit, string customClass)
     {
         _currentClassName = classModel.GeneratedClassName;
 
@@ -179,6 +179,7 @@ public class TypeScriptLanguageProvider : ILanguageProvider
             InheritFrom = classModel.InheritFrom,
             CallbackTypedefs = classModel.CallbackTypedefs,
             Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
+            CustomDefinitions = customDefinitions,
             CustomInit = customInit,
             CustomClass = customClass
         };

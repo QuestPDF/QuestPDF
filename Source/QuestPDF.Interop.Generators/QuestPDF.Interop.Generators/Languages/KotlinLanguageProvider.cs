@@ -202,7 +202,7 @@ public class KotlinLanguageProvider : ILanguageProvider
         };
     }
 
-    public object BuildClassTemplateModel(InteropClassModel classModel, string customInit, string customClass)
+    public object BuildClassTemplateModel(InteropClassModel classModel, string customDefinitions, string customInit, string customClass)
     {
         _currentClassName = classModel.GeneratedClassName;
 
@@ -225,6 +225,7 @@ public class KotlinLanguageProvider : ILanguageProvider
             CallbackInterfaces = callbackInterfaces,
             CallbackTypedefs = classModel.CallbackTypedefs,
             Headers = classModel.CHeaderSignatures,
+            CustomDefinitions = customDefinitions,
             CustomInit = customInit,
             CustomClass = customClass
         };

@@ -1,3 +1,21 @@
     void* questpdf__container__background_linear_gradient(void* target, float angle, uint32_t* colors, int colorsLength);
     void* questpdf__container__border_linear_gradient(void* target, float angle, uint32_t* colors, int colorsLength);
     void* questpdf__container__shadow(void* target, float blur, uint32_t color, float offsetX, float offsetY, float spread);
+
+    typedef struct {
+        float AvailableSpaceWidth;
+        float AvailableSpaceHeight;
+        int ImageSizeWidth;
+        int ImageSizeHeight;
+        int Dpi;
+    } DynamicImageSourcePayload;
+
+    typedef struct {
+        float Width;
+        float Height;
+    } DynamicSvgSourcePayload;
+
+    void* questpdf__container__image_bytes(void* target, Buffer data);
+    void* questpdf__container__image_dynamic(void* target, Buffer (*source)(DynamicImageSourcePayload));
+    void questpdf__container__svg_dynamic(void* target, char* (*source)(DynamicSvgSourcePayload));
+    

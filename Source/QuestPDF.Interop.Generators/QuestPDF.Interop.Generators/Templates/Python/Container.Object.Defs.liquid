@@ -1,0 +1,17 @@
+class DynamicImagePayload:
+    __slots__ = ('available_space_width', 'available_space_height', 'image_size_width', 'image_size_height', 'dpi')
+
+    def __init__(self, c_payload):
+        self.available_space_width: float = c_payload.AvailableSpaceWidth
+        self.available_space_height: float = c_payload.AvailableSpaceHeight
+        self.image_size_width: int = c_payload.ImageSizeWidth
+        self.image_size_height: int = c_payload.ImageSizeHeight
+        self.dpi: int = c_payload.Dpi
+
+
+class DynamicSvgPayload:
+    __slots__ = ('width', 'height')
+    
+    def __init__(self, c_payload):
+        self.width: float = c_payload.Width
+        self.height: float = c_payload.Height

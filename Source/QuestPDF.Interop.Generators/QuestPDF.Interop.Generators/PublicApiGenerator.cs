@@ -21,6 +21,7 @@ public sealed class PublicApiGenerator
             .SelectMany(x => x.GetMembers())
             .OfType<IMethodSymbol>()
             .ExcludeOldObsoleteMethods()
+            .Where(x => x.MethodKind is not (MethodKind.PropertyGet or MethodKind.PropertySet))
             .Where(x => x.DeclaredAccessibility == Accessibility.Public)
             .Select(x => x.ToDisplayString())
             .ToList();
@@ -50,10 +51,6 @@ public sealed class PublicApiGenerator
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.RowDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.GridDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.MultiColumnDescriptor)),
-            new TableCellDescriptorSourceGenerator()
-            {
-                InheritFrom = "Container"
-            },
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TableCellDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TableColumnsDefinitionDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.TableDescriptor)),
@@ -82,7 +79,11 @@ public sealed class PublicApiGenerator
                     "QuestPDF.Fluent.ImageExtensions.Image(QuestPDF.Infrastructure.IContainer, System.Func<QuestPDF.Infrastructure.ImageSize, byte[]>)",
                     "QuestPDF.Fluent.SvgExtensions.Svg(QuestPDF.Infrastructure.IContainer, System.Func<QuestPDF.Infrastructure.Size, string>)"
                 ]
-            }
+            },
+            new TableCellDescriptorSourceGenerator()
+            {
+                InheritFrom = "Container"
+            },
         };
         
         GenerateCode("QuestPDF.Interop.g.cs", "CSharp.Main", x => x.GenerateCSharpCode(compilation));
