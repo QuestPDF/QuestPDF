@@ -33,7 +33,7 @@ internal class HyperlinkTests : ConformanceTestBase
                             
                             column.Item()
                                 .SemanticLink("Link to the QuestPDF website")
-                                .Hyperlink("https://questpdf.com")
+                                .Hyperlink("https://www.questpdf.com")
                                 .Text("QuestPDF website")
                                 .Underline()
                                 .FontColor(Colors.Blue.Darken2);
