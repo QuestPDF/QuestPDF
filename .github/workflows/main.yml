@@ -73,7 +73,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '8.0.x'
 
 
       - name: Install veraPDF - PDF conformance testing tool
@@ -114,21 +114,21 @@ jobs:
           DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
         run: |
           dotnet build --configuration Release --property WarningLevel=0
-          dotnet test QuestPDF.UnitTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
-          dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
-          dotnet test QuestPDF.VisualTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
-          dotnet test QuestPDF.DocumentationExamples --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
-          dotnet test QuestPDF.ReportSample --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
-          dotnet test QuestPDF.ZUGFeRD --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
+          dotnet test QuestPDF.UnitTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
+          dotnet test QuestPDF.LayoutTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
+          dotnet test QuestPDF.VisualTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
+          dotnet test QuestPDF.DocumentationExamples --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
+          dotnet test QuestPDF.ReportSample --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
+          dotnet test QuestPDF.ZUGFeRD --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
 
           
           if [ "${{ matrix.runtime.name }}" == "linux-x64" ]; then
-            dotnet test QuestPDF.ConformanceTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net10.0
+            dotnet test QuestPDF.ConformanceTests --configuration Release --runtime ${{ matrix.runtime.name }} --framework net8.0
           fi
 
           dotnet build QuestPDF/QuestPDF.csproj --configuration Release --property WarningLevel=0 --property BUILD_PACKAGE=true
 
-          TEST_EXECUTION_PATH='QuestPDF.ReportSample/bin/Release/net10.0/${{ matrix.runtime.name }}'
+          TEST_EXECUTION_PATH='QuestPDF.ReportSample/bin/Release/net8.0/${{ matrix.runtime.name }}'
           mkdir -p testOutput/${{ matrix.runtime.name }} 
           cp -r $TEST_EXECUTION_PATH/report.pdf testOutput/${{ matrix.runtime.name }} 
 
