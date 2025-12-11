@@ -40,7 +40,7 @@ internal class SemanticTag : ContainerElement, ISemanticAware
             UpdateHeaderText();
         
         if (TagType is "Link")
-            UpdateInnerLink();
+            UpdateDescriptionOfInnerLink();
         
         var id = SemanticTreeManager.GetNextNodeId();
             
@@ -85,7 +85,7 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         }
     }
     
-    private void UpdateInnerLink()
+    private void UpdateDescriptionOfInnerLink()
     {
         if (string.IsNullOrWhiteSpace(Alt))
             return;

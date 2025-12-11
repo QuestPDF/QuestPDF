@@ -4,14 +4,22 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class Hyperlink : ContainerElement, IContentDirectionAware
+    internal sealed class Hyperlink : ContainerElement, IContentDirectionAware, ISemanticAware
     {
+        public SemanticTreeManager? SemanticTreeManager { get; set; }
+        
         public ContentDirection ContentDirection { get; set; }
         public string Url { get; set; } = "https://www.questpdf.com";
         public string? Description { get; set; }
         
         internal override void Draw(Size availableSpace)
         {
+            if (SemanticTreeManager?.IsCurrentContentArtifact() ?? false)
+            {
+                base.Draw(availableSpace);
+                return;
+            }
+            
             var targetSize = base.Measure(availableSpace);
 
             if (targetSize.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
