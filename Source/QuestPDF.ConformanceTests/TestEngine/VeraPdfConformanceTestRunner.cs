@@ -77,12 +77,16 @@ public static class VeraPdfConformanceTestRunner
             throw new FileNotFoundException($"PDF file not found: {pdfFilePath}");
         
         var arguments = $"--format json \"{pdfFilePath}\"";
+        var executablePath = Environment.GetEnvironmentVariable("VERAPDF_EXECUTABLE_PATH");
+        
+        if (string.IsNullOrEmpty(executablePath))
+            throw new Exception("The location path of the VeraPDF executable is not set. Set the VERAPDF_EXECUTABLE_PATH environment variable to the path of the VeraPDF executable.");
 
         var process = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = "verapdf",
+                FileName = executablePath,
                 Arguments = arguments,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
