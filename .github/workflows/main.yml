@@ -73,7 +73,7 @@ jobs:
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
 
       - name: Install veraPDF - PDF conformance testing tool
@@ -110,7 +110,8 @@ jobs:
         shell: bash
         working-directory: ./Source
         env:
-          TEST_SHOW_RESULTS: false
+          VERAPDF_EXECUTABLE_PATH: '/root/verapdf/verapdf'
+          MUSTANG_EXECUTABLE_PATH: '~/mustang/mustang-cli.jar'
           DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
         run: |
           dotnet build --configuration Release --property WarningLevel=0
