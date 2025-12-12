@@ -25,7 +25,7 @@ internal sealed class LayoutProxy : ElementProxy
         
         base.Draw(availableSpace);
 
-        if (Canvas is FreeDrawingCanvas)
+        if (Canvas is DiscardDrawingCanvas)
             return;
         
         var matrix = Canvas.GetCurrentMatrix();

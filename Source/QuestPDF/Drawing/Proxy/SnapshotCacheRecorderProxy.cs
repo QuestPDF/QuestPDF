@@ -51,7 +51,7 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
         if (MeasureCache.TryGetValue(cacheItem, out var measurement))
             return measurement;
 
-        RecorderCanvas.Target = new FreeDrawingCanvas();
+        RecorderCanvas.Target = new DiscardDrawingCanvas();
         var result = base.Measure(availableSpace);
         RecorderCanvas.Target = null;
         

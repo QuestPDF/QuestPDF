@@ -1,4 +1,7 @@
 using System.Diagnostics;
+using QuestPDF.Drawing.DrawingCanvases;
+using QuestPDF.Drawing.Proxy;
+using QuestPDF.Elements;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
@@ -24,7 +27,8 @@ internal class ElementObserver : ContainerElement
             Size = ObserverId == "$document" ? Child.Measure(availableSpace) : availableSpace
         };
         
-        DrawingRecorder?.Record(drawingEvent);
+        if (!IsDiscardDrawingCanvas())
+            DrawingRecorder?.Record(drawingEvent);
         
         var matrixBeforeDraw = Canvas.GetCurrentMatrix().ToMatrix4x4();
         base.Draw(availableSpace);
@@ -33,6 +37,40 @@ internal class ElementObserver : ContainerElement
         if (matrixAfterDraw != matrixBeforeDraw)
             throw new InvalidOperationException("Canvas state was not restored after drawing operation.");
 
-        drawingEvent.StateAfterDrawing = (Child as IStateful)?.GetState();
+        drawingEvent.StateAfterDrawing = (GetRealChild() as IStateful)?.GetState();
+    }
+
+    private Element GetRealChild()
+    {
+        var result = Child;
+
+        while (true)
+        {
+            if (result is ElementProxy proxy)
+            {
+                result = proxy.Child;
+                continue;
+            }
+
+            if (result is DebugPointer debugPointer)
+            {
+                result = debugPointer.Child;
+                continue;
+            }
+            
+            break;
+        }
+        
+        return result;
+    }
+
+    private bool IsDiscardDrawingCanvas()
+    {
+        var canvasUnderTest = Canvas;
+
+        while (canvasUnderTest is ProxyDrawingCanvas proxy)
+            canvasUnderTest = proxy.Target;
+
+        return canvasUnderTest is DiscardDrawingCanvas;
     }
 }

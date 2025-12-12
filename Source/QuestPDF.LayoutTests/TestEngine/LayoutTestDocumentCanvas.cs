@@ -1,11 +1,10 @@
-using QuestPDF.Drawing.DrawingCanvases;
-using QuestPDF.Infrastructure;
+using QuestPDF.Drawing;
 
-namespace QuestPDF.Drawing.DocumentCanvases;
+namespace QuestPDF.LayoutTests.TestEngine;
 
-internal sealed class FreeDocumentCanvas : IDocumentCanvas
+internal sealed class LayoutTestDocumentCanvas : IDocumentCanvas
 {
-    private DiscardDrawingCanvas DrawingCanvas { get; } = new();
+    private LayoutTestDrawingCanvas DrawingCanvas { get; } = new();
         
     public void SetSemanticTree(SemanticTreeNode? semanticTree)
     {

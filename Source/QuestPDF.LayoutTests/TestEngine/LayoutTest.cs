@@ -182,7 +182,7 @@ internal class LayoutTest
                     page.Content().Element(Content);
                 });
             })
-            .GenerateAndDiscard();
+            .Generate(new LayoutTestDocumentCanvas());
     }
 
     public LayoutTest VisualizeOutput()

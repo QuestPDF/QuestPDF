@@ -106,7 +106,7 @@ internal sealed class MultiColumn : Element, IContentDirectionAware, IDisposable
         if (Content.Canvas != ChildrenCanvas)
             Content.InjectDependencies(PageContext, ChildrenCanvas);
         
-        ChildrenCanvas.Target = new FreeDrawingCanvas();
+        ChildrenCanvas.Target = new DiscardDrawingCanvas();
         
         return FindPerfectSpace();
 

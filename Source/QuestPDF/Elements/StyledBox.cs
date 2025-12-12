@@ -76,7 +76,7 @@ namespace QuestPDF.Elements
             AdjustBorderAlignment();
 
             // optimization: do not perform expensive calls
-            if (Canvas is FreeDrawingCanvas)
+            if (Canvas is DiscardDrawingCanvas)
             {
                 base.Draw(availableSpace);
                 return;

@@ -7,7 +7,7 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Drawing.DrawingCanvases
 {
-    internal sealed class FreeDrawingCanvas : IDrawingCanvas
+    internal sealed class DiscardDrawingCanvas : IDrawingCanvas
     {
         private Stack<Matrix4x4> MatrixStack { get; } = new();
         private Matrix4x4 CurrentMatrix { get; set; } = Matrix4x4.Identity;

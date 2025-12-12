@@ -31,6 +31,9 @@ namespace QuestPDF.Elements
         {
             if (IsRendered)
                 return SpacePlan.Empty();
+            
+            if (availableSpace.IsCloseToZero())
+                return SpacePlan.PartialRender(Size.Zero);
 
             var context = CreateContext(availableSpace);
             var result = ComposeContent(context, acceptNewState: false);
@@ -96,6 +99,12 @@ namespace QuestPDF.Elements
         }
         
         #region IStateful
+
+        public struct DynamicState
+        {
+            public bool IsRendered;
+            public object ChildState;
+        }
         
         private bool IsRendered { get; set; }
     
@@ -105,8 +114,22 @@ namespace QuestPDF.Elements
             Child.SetState(InitialComponentState);
         }
 
-        public object GetState() => IsRendered;
-        public void SetState(object state) => IsRendered = (bool) state;
+        public object GetState()
+        {
+            return new DynamicState  
+            {
+                IsRendered = IsRendered,
+                ChildState = Child.GetState()
+            };
+        }
+
+        public void SetState(object state)
+        {
+            var dynamicState = (DynamicState) state;
+            
+            IsRendered = dynamicState.IsRendered;
+            Child.SetState(dynamicState.ChildState);
+        }
     
         #endregion
     }
