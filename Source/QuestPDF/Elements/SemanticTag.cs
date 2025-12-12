@@ -109,4 +109,16 @@ internal class SemanticTag : ContainerElement, ISemanticAware
             currentChild = (currentChild as ContainerElement)?.Child;
         }
     }
+
+    internal override string? GetCompanionHint()
+    {
+        var result = TagType;
+        
+        if (!string.IsNullOrWhiteSpace(Alt))
+            result += $" ({Alt})";
+        
+        return result;
+    }
+    
+    internal override string? GetCompanionSearchableContent() => TagType;
 }
