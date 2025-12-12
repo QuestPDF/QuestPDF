@@ -1,36 +1,20 @@
-2025.12.0-alpha0:
-- Added initial support for semantic tagging and bookmarks.
-
-
-2025.12.0-alpha1:
-- Ported all changes from the 2025.7.2 release.
+Features:
+- Added support for the .NET 10 SDK.
+- Added support for semantic tagging.
+- Added support for bookmarks via header-level semantic tags.
 - Added support for the following conformance standards: PDF/A-2b, PDF/A-2u, PDF/A-2a, PDF/A-3b, PDF/A-3u, PDF/A-3a, and PDF/UA-1.
-- Improved the semantic structure of links (both external hyperlinks and internal links to named destinations) for better compatibility with PDF/UA-1.
-- Corrected semantic tagging of decorative elements such as shadows, backgrounds, borders, and lines by marking them as artifacts.
-- Enhanced the semantic structure and accessibility of simple tables (without cells spanning multiple rows or columns) by automatically tagging header cells.
-- Introduced support for horizontal headers to further improve the semantic structure and accessibility of simple tables.
 
+Future-proofing:
+- Introduced automated standard conformance testing using veraPDF.
+- Introduced automated ZUGFeRD conformance testing using Mustang.
 
-2025.12.0-alpha2:
-- Added semantic auto-tagging for paragraphs.
-- Enhanced auto-tagging feature for tables by supporting more complex cases where cells are spanning multiple rows or columns.
-- Adjusted semantic meaning of MultiColumn spacer to be an artifact.
-- Adjusted semantic meaning of contents that repeats on pages by marking the first occurrence as content, and repetitions as artifacts. This change applies to the Repeat, Decoration and Page Header/Footer elements.
-- Fixed semantic handling of background and watermark page layers.
-- Fixed adding content to the semantic tag tree if it is part of the artifact.
-- Improved visual representation of SemanticTags and ArtifactTags in the Companion App.
+Bug fixes:
+- Fixed a bug where row-span calculation logic in the Table component could cause infinite document generation.
+- Fixed an issue where Dynamic components rendered incorrect content when placed inside a MultiColumn layout.
+- Fixed missing input parameter validation for Hyperlink, Section, and SectionLink methods.
+- Fixed an issue where Hyperlinks in the page footer broke accessibility conformance.
 
-
-2025.12.0-alpha3:
-- Ported all changes from the 2025.7.3 release.
+Maintenance:
 - Updated the Skia native dependency to version m142.
-- Added experimental support for the following conformance standards: PDF/A-1a and PDF/A-1b.
-- Improved automated tagging, which is now enabled only when a relevant conformance standard is active.
-- Created a conformance test suite based on the VeraPDF project.
-
-
-2025.12.0-alpha4:
-- Simplified the Fluent API.
-- Made minor semantic adjustments.
-- Added a conformance test suite based on the Mustang project (for ZUGFeRD).
-- Performed code refactoring and cleanup.
+- Increased test coverage and test quality.
+- General code cleanup.
