@@ -72,8 +72,17 @@ jobs:
 
       - name: Setup dotnet
         uses: actions/setup-dotnet@v5
+        if: matrix.runtime.name != 'win-x86'
         with:
           dotnet-version: '10.0.x'
+
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v5
+        if: matrix.runtime.name == 'win-x86'
+        with:
+          dotnet-version: '10.0.x'
+          architecture: 'x86'
 
 
       - name: Install veraPDF - PDF conformance testing tool
