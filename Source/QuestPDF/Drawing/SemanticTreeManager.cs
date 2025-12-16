@@ -21,6 +21,13 @@ internal class SemanticTreeNode
 
 class SemanticTreeManager
 {
+    private static readonly HashSet<string> NonStandardStructureTypes =
+    [
+        "TBody",
+        "THead",
+        "TFoot"
+    ];
+
     private int CurrentNodeId { get; set; }
     private SemanticTreeNode? Root { get; set; }
     private Stack<SemanticTreeNode> Stack { get; set; } = [];
@@ -38,13 +45,13 @@ class SemanticTreeManager
             Type = "Document"
         });
     }
-    
+
     public int GetNextNodeId()
     {
         CurrentNodeId++;
         return CurrentNodeId;
     }
-    
+
     public void AddNode(SemanticTreeNode node)
     {
         if (Root == null)
@@ -53,25 +60,25 @@ class SemanticTreeManager
             Stack.Push(node);
             return;
         }
-        
+
         Stack.Peek()?.Children.Add(node);
     }
-    
+
     public void PushOnStack(SemanticTreeNode node)
     {
         Stack.Push(node);
     }
-    
+
     public void PopStack()
     {
         Stack.Pop();
     }
-    
+
     public SemanticTreeNode PeekStack()
     {
         return Stack.Peek();
     }
-    
+
     public void Reset()
     {
         CurrentNodeId = 0;
@@ -83,25 +90,62 @@ class SemanticTreeManager
     {
         return Root;
     }
-    
+
+    public void RemoveNonStandardStructureTypes()
+    {
+        if (Root == null)
+            return;
+
+        PruneStructuralNodes(Root);
+    }
+
+    private static void PruneStructuralNodes(SemanticTreeNode parent)
+    {
+        for (var i = 0; i < parent.Children.Count; i++)
+        {
+            var child = parent.Children[i];
+
+            PruneStructuralNodes(child);
+
+            if (!NonStandardStructureTypes.Contains(child.Type))
+                continue;
+
+            parent.Children.RemoveAt(i);
+
+            if (child.Children.Count > 0)
+            {
+                for (var j = 0; j < child.Children.Count; j++)
+                {
+                    parent.Children.Insert(i + j, child.Children[j]);
+                }
+
+                i += child.Children.Count - 1;
+            }
+            else
+            {
+                i--;
+            }
+        }
+    }
+
     #region Artifacts
-    
+
     private int ArtifactNestingLevel { get; set; } = 0;
-    
+
     public void BeginArtifactContent()
     {
         ArtifactNestingLevel++;
     }
-    
+
     public void EndArtifactContent()
     {
         ArtifactNestingLevel--;
     }
-    
+
     public bool IsCurrentContentArtifact()
     {
         return ArtifactNestingLevel > 0;
     }
-    
+
     #endregion
 }

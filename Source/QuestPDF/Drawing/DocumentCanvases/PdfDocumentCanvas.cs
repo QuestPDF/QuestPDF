@@ -14,11 +14,11 @@ namespace QuestPDF.Drawing.DocumentCanvases
         private DocumentMetadata DocumentMetadata { get; }
         private DocumentSettings DocumentSettings { get; }
         private SkPdfTag? SemanticTag { get; set; }
-        
+
         private SkDocument? Document { get; set; }
         private SkCanvas? CurrentPageCanvas { get; set; }
         private ProxyDrawingCanvas DrawingCanvas { get; } = new();
-        
+
         public PdfDocumentCanvas(SkWriteStream stream, DocumentMetadata documentMetadata, DocumentSettings documentSettings)
         {
             WriteStream = stream;
@@ -37,7 +37,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
             using var creator = new SkText(DocumentMetadata.Creator);
             using var producer = new SkText(DocumentMetadata.Producer);
             using var language = new SkText(DocumentMetadata.Language);
-            
+
             var internalMetadata = new SkPdfDocumentMetadata
             {
                 Title = title,
@@ -47,19 +47,19 @@ namespace QuestPDF.Drawing.DocumentCanvases
                 Creator = creator,
                 Producer = producer,
                 Language = language,
-                
+
                 CreationDate = new SkDateTime(DocumentMetadata.CreationDate),
                 ModificationDate = new SkDateTime(DocumentMetadata.ModifiedDate),
-                
+
                 PDFA_Conformance = GetPDFAConformanceLevel(DocumentSettings.PDFA_Conformance),
                 PDFUA_Conformance = GetPDFUAConformanceLevel(DocumentSettings.PDFUA_Conformance),
-                
+
                 RasterDPI = DocumentSettings.ImageRasterDpi,
                 CompressDocument = DocumentSettings.CompressDocument,
-                
+
                 SemanticNodeRoot = SemanticTag?.Instance ?? IntPtr.Zero
             };
-            
+
             try
             {
                 return SkPdfDocument.Create(WriteStream, internalMetadata);
@@ -75,8 +75,8 @@ namespace QuestPDF.Drawing.DocumentCanvases
             return conformanceLevel switch
             {
                 Infrastructure.PDFA_Conformance.None => Skia.PDFA_Conformance.None,
-                // Infrastructure.PDFA_Conformance.PDFA_1A => Skia.PDFA_Conformance.PDFA_1A,
-                // Infrastructure.PDFA_Conformance.PDFA_1B => Skia.PDFA_Conformance.PDFA_1B,
+                Infrastructure.PDFA_Conformance.PDFA_1A => Skia.PDFA_Conformance.PDFA_1A,
+                Infrastructure.PDFA_Conformance.PDFA_1B => Skia.PDFA_Conformance.PDFA_1B,
                 Infrastructure.PDFA_Conformance.PDFA_2A => Skia.PDFA_Conformance.PDFA_2A,
                 Infrastructure.PDFA_Conformance.PDFA_2B => Skia.PDFA_Conformance.PDFA_2B,
                 Infrastructure.PDFA_Conformance.PDFA_2U => Skia.PDFA_Conformance.PDFA_2U,
@@ -86,7 +86,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
                 _ => throw new ArgumentOutOfRangeException(nameof(conformanceLevel), conformanceLevel, "Unsupported PDF/A conformance level")
             };
         }
-        
+
         static Skia.PDFUA_Conformance GetPDFUAConformanceLevel(Infrastructure.PDFUA_Conformance conformanceLevel)
         {
             return conformanceLevel switch
@@ -96,31 +96,31 @@ namespace QuestPDF.Drawing.DocumentCanvases
                 _ => throw new ArgumentOutOfRangeException(nameof(conformanceLevel), conformanceLevel, "Unsupported PDF/UA conformance level")
             };
         }
-        
+
         #region IDisposable
-        
+
         ~PdfDocumentCanvas()
         {
             this.WarnThatFinalizerIsReached();
             Dispose();
         }
-        
+
         public void Dispose()
         {
             Document?.Dispose();
             CurrentPageCanvas?.Dispose();
             DrawingCanvas?.Dispose();
             SemanticTag?.Dispose();
-            
+
             // don't dispose WriteStream - its lifetime is managed externally
-            
+
             GC.SuppressFinalize(this);
         }
-        
+
         #endregion
-        
+
         #region IDocumentCanvas
-        
+
         public void SetSemanticTree(SemanticTreeNode? semanticTree)
         {
             if (semanticTree == null)
@@ -129,22 +129,22 @@ namespace QuestPDF.Drawing.DocumentCanvases
                 SemanticTag = null;
                 return;
             }
-            
+
             SemanticTag = Convert(semanticTree);
-            
+
             static SkPdfTag Convert(SemanticTreeNode node)
             {
                 var result = SkPdfTag.Create(node.NodeId, node.Type, node.Alt, node.Lang);
                 var children = node.Children.Select(Convert).ToArray();
                 result.SetChildren(children);
-                
+
                 foreach (var nodeAttribute in node.Attributes)
                     result.AddAttribute(nodeAttribute.Owner, nodeAttribute.Name, nodeAttribute.Value);
-                
+
                 return result;
             }
         }
-        
+
         public void BeginDocument()
         {
             Document ??= CreatePdf();
@@ -159,7 +159,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
         public void BeginPage(Size size)
         {
             CurrentPageCanvas = Document?.BeginPage(size.Width, size.Height);
-            
+
             DrawingCanvas.Target = new SkiaDrawingCanvas(size.Width, size.Height);
             DrawingCanvas.SetZIndex(0);
         }
@@ -167,22 +167,22 @@ namespace QuestPDF.Drawing.DocumentCanvases
         public void EndPage()
         {
             Debug.Assert(CurrentPageCanvas != null);
-            
+
             using var documentPageSnapshot = DrawingCanvas.GetSnapshot();
             documentPageSnapshot.DrawOnSkCanvas(CurrentPageCanvas);
-            
+
             CurrentPageCanvas.Save();
             CurrentPageCanvas.Dispose();
             CurrentPageCanvas = null;
-            
+
             Document.EndPage();
         }
-        
+
         public IDrawingCanvas GetDrawingCanvas()
         {
             return DrawingCanvas;
         }
-        
+
         #endregion
     }
 }
