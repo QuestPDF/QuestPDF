@@ -24,12 +24,12 @@ namespace QuestPDF.Infrastructure
         /// Warning: this setting makes the document non-reproducable.
         /// </summary>
         public PDFUA_Conformance PDFUA_Conformance { get; set; } = PDFUA_Conformance.None;
-        
+
         /// <summary>
         /// Gets or sets a value indicating whether the generated document should be additionally compressed. May greatly reduce file size with a small increase in generation time.
         /// </summary>
         public bool CompressDocument { get; set; } = true;
-        
+
         /// <summary>
         /// Encoding quality controls the trade-off between size and quality.
         /// When the image is opaque, it will be encoded using the JPEG format with the selected quality setting.
@@ -49,17 +49,17 @@ namespace QuestPDF.Infrastructure
         /// Default value is 288.
         /// </summary>
         public int ImageRasterDpi { get; set; } = DefaultRasterDpi * 4;
- 
+
         public ContentDirection ContentDirection { get; set; } = ContentDirection.LeftToRight;
-        
+
         public static DocumentSettings Default => new DocumentSettings();
     }
-    
+
     public enum PDFA_Conformance
     {
         None = 0,
-        // PDFA_1A = 1,
-        // PDFA_1B = 2,
+        PDFA_1A = 1,
+        PDFA_1B = 2,
         PDFA_2A = 3,
         PDFA_2B = 4,
         PDFA_2U = 5,
@@ -67,7 +67,7 @@ namespace QuestPDF.Infrastructure
         PDFA_3B = 7,
         PDFA_3U = 8
     }
-    
+
     public enum PDFUA_Conformance
     {
         None = 0,
