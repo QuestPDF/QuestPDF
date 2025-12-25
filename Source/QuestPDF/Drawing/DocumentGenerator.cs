@@ -156,20 +156,21 @@ namespace QuestPDF.Drawing
             try
             {
                 foreach (var documentPart in documentParts)
-                    documentPart.PageContext.SetDocumentId(documentPart.DocumentId);
-                
-                foreach (var documentPart in documentParts)
                 {
+                    documentPart.PageContext.SetDocumentId(documentPart.DocumentId);
                     RenderPass(documentPart.PageContext, semanticDocumentCanvas, documentPart.Content);
-                    documentPart.PageContext.ProceedToNextRenderingPhase();
                 }
 
+                foreach (var documentPart in documentParts)
+                    documentPart.PageContext.ProceedToNextRenderingPhase();
+                
                 canvas.ConfigureWithSemanticTree(semanticTreeManager);
                 
                 canvas.BeginDocument();
 
                 foreach (var documentPart in documentParts)
                 {
+                    documentPart.PageContext.SetDocumentId(documentPart.DocumentId);
                     RenderPass(documentPart.PageContext, canvas, documentPart.Content);
                     documentPart.Content.ReleaseDisposableChildren();
                 }
