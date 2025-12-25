@@ -1,7 +1,9 @@
 using System;
 using System.Text;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Elements.Text;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
@@ -17,7 +19,12 @@ internal class SemanticTag : ContainerElement, ISemanticAware
 
     internal override void Draw(Size availableSpace)
     {
-        if (SemanticTreeManager == null || SemanticTreeManager.IsCurrentContentArtifact())
+        var shouldIgnoreSemanticMeaning =
+            Canvas.IsDiscardDrawingCanvas() ||
+            SemanticTreeManager == null ||
+            SemanticTreeManager.IsCurrentContentArtifact();
+        
+        if (shouldIgnoreSemanticMeaning)
         {
             Child?.Draw(availableSpace);
             return;       

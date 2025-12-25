@@ -1,6 +1,7 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using NUnit.Framework.Constraints;
+using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Helpers;
@@ -182,7 +183,7 @@ internal class LayoutTest
                     page.Content().Element(Content);
                 });
             })
-            .Generate(new LayoutTestDocumentCanvas());
+            .Generate(new DiscardDocumentCanvas());
     }
 
     public LayoutTest VisualizeOutput()

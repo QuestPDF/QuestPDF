@@ -2,6 +2,7 @@ using System.Diagnostics;
 using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
+using QuestPDF.Helpers;
 
 namespace QuestPDF.LayoutTests.TestEngine;
 
@@ -27,7 +28,7 @@ internal class ElementObserver : ContainerElement
             Size = ObserverId == "$document" ? Child.Measure(availableSpace) : availableSpace
         };
         
-        if (!IsDiscardDrawingCanvas())
+        if (!Canvas.IsDiscardDrawingCanvas())
             DrawingRecorder?.Record(drawingEvent);
         
         var matrixBeforeDraw = Canvas.GetCurrentMatrix().ToMatrix4x4();
@@ -62,15 +63,5 @@ internal class ElementObserver : ContainerElement
         }
         
         return result;
-    }
-
-    private bool IsDiscardDrawingCanvas()
-    {
-        var canvasUnderTest = Canvas;
-
-        while (canvasUnderTest is ProxyDrawingCanvas proxy)
-            canvasUnderTest = proxy.Target;
-
-        return canvasUnderTest is DiscardDrawingCanvas;
     }
 }

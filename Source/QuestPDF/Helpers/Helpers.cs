@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using static QuestPDF.Skia.SkSvgImageSize.Unit;
@@ -201,6 +202,16 @@ namespace QuestPDF.Helpers
         public static string FormatAsCompanionNumber(this float value)
         {
             return value.ToString("0.#", CultureInfo.InvariantCulture);
+        }
+        
+        public static bool IsDiscardDrawingCanvas(this IDrawingCanvas canvas)
+        {
+            var canvasUnderTest = canvas;
+
+            while (canvasUnderTest is ProxyDrawingCanvas proxy)
+                canvasUnderTest = proxy.Target;
+
+            return canvasUnderTest is DiscardDrawingCanvas;
         }
     }
 }

@@ -115,7 +115,7 @@ namespace QuestPDF.Drawing
             try
             {
                 var pageContext = new PageContext();
-                RenderPass(pageContext, new FreeDocumentCanvas(), content);
+                RenderPass(pageContext, new SemanticDocumentCanvas(), content);
                 pageContext.ProceedToNextRenderingPhase();
 
                 canvas.ConfigureWithSemanticTree(semanticTreeManager);
@@ -141,6 +141,7 @@ namespace QuestPDF.Drawing
             var useSharedPageContext = document.PageNumberStrategy == MergedDocumentPageNumberStrategy.Continuous;
 
             var semanticTreeManager = CreateSemanticTreeManager(settings);
+            var semanticDocumentCanvas = new SemanticDocumentCanvas();
             
             var documentParts = Enumerable
                 .Range(0, document.Documents.Count)
@@ -159,7 +160,7 @@ namespace QuestPDF.Drawing
                 
                 foreach (var documentPart in documentParts)
                 {
-                    RenderPass(documentPart.PageContext, new FreeDocumentCanvas(), documentPart.Content);
+                    RenderPass(documentPart.PageContext, semanticDocumentCanvas, documentPart.Content);
                     documentPart.PageContext.ProceedToNextRenderingPhase();
                 }
 
