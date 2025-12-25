@@ -98,4 +98,62 @@ public class TableTests
                     });
             });
     }
+    
+    [Test]
+    public void RowSpan_CornerCase3()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(200, 400)
+            .ForContent(content =>
+            {
+                content
+                    .Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn();
+                        });
+
+                        table.Cell()
+                            .Column(1)
+                            .Row(1)
+                            .RowSpan(3)
+                            .Column(column =>
+                            {
+                                foreach (var i in Enumerable.Range(1, 5))
+                                {
+                                    column.Item().Width(200).Height(200).Mock($"{i}");
+                                }
+                            });
+                    });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(200, 400)
+                    .Content(page =>
+                    {
+                        page.Mock("1").Position(0, 0).Size(200, 200);
+                        page.Mock("2").Position(0, 200).Size(200, 200);
+                    });
+                
+                document
+                    .Page()
+                    .RequiredAreaSize(200, 400)
+                    .Content(page =>
+                    {
+                        page.Mock("3").Position(0, 0).Size(200, 200);
+                        page.Mock("4").Position(0, 200).Size(200, 200);
+                    });
+                
+                document
+                    .Page()
+                    .RequiredAreaSize(200, 200)
+                    .Content(page =>
+                    {
+                        page.Mock("5").Position(0, 0).Size(200, 200);
+                    });
+            });
+    }
 }

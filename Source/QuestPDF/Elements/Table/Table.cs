@@ -19,7 +19,7 @@ namespace QuestPDF.Elements.Table
         // cache
         private bool CacheInitialized { get; set; }
         private bool HasRelativeColumns { get; set; }
-        private int StartingRowsCount { get; set; }
+        private int LastRowIndex { get; set; }
         private int RowsCount { get; set; }
         private int MaxRow { get; set; }
         private int MaxRowSpan { get; set; }
@@ -29,7 +29,7 @@ namespace QuestPDF.Elements.Table
         // inner table: list of all cells that ends at the corresponding row
         private TableCell[][] CellsCache { get; set; }
         
-        private bool IsRendered => CurrentRow > StartingRowsCount;
+        private bool IsRendered => CurrentRow > LastRowIndex;
         
         internal override IEnumerable<Element?> GetChildren()
         {
@@ -42,7 +42,7 @@ namespace QuestPDF.Elements.Table
                 return;
 
             HasRelativeColumns = Columns.Any(x => x.RelativeSize > 0);
-            StartingRowsCount = Cells.Select(x => x.Row).DefaultIfEmpty(0).Max();
+            LastRowIndex = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
             RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
             Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
             BuildCache();
@@ -103,7 +103,7 @@ namespace QuestPDF.Elements.Table
             if (tableSize.Width > availableSpace.Width + Size.Epsilon)
                 return SpacePlan.Wrap("The content requires more horizontal space than available.");
 
-            return CalculateCurrentRow(renderingCommands) > StartingRowsCount 
+            return CalculateCurrentRow(renderingCommands) > LastRowIndex 
                 ? SpacePlan.FullRender(tableSize) 
                 : SpacePlan.PartialRender(tableSize);
         }
