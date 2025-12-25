@@ -1,20 +1,3 @@
-Features:
-- Added support for the .NET 10 SDK.
-- Added support for semantic tagging.
-- Added support for bookmarks via header-level semantic tags.
-- Added support for the following conformance standards: PDF/A-2b, PDF/A-2u, PDF/A-2a, PDF/A-3b, PDF/A-3u, PDF/A-3a, and PDF/UA-1.
-
-Future-proofing:
-- Introduced automated standard conformance testing using veraPDF.
-- Introduced automated ZUGFeRD conformance testing using Mustang.
-
-Bug fixes:
-- Fixed a bug where row-span calculation logic in the Table component could cause infinite document generation.
-- Fixed an issue where Dynamic components rendered incorrect content when placed inside a MultiColumn layout.
-- Fixed missing input parameter validation for Hyperlink, Section, and SectionLink methods.
-- Fixed an issue where Hyperlinks in the page footer broke accessibility conformance.
-
-Maintenance:
-- Updated the Skia native dependency to version m142.
-- Increased test coverage and test quality.
-- General code cleanup.
+- Fixed an issue where merged documents rendered incorrectly for the second and subsequent documents.
+- Fixed an issue where the Table layout could fail to render all items in certain row-span scenarios.
+- Fixed semantic tagging in advanced layouts (e.g., MultiColumn) and refactored canvas-related code.
