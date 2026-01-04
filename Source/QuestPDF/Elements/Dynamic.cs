@@ -75,9 +75,16 @@ namespace QuestPDF.Elements
             context.DisposeCreatedElements();
             content.ReleaseDisposableChildren();
             
-            // Restore the semantic state after drawing
-            if (SemanticTreeManager != null && previousState != null)
-                SemanticTreeManager.RestoreState(previousState);
+            // Update the captured state to reflect the node IDs allocated during this draw
+            // This ensures that subsequent Draw() calls continue from where this one left off
+            if (SemanticTreeManager != null && CapturedSemanticState != null)
+            {
+                CapturedSemanticState = SemanticTreeManager.CaptureState();
+                
+                // Restore to the state before this Draw() call to not affect other elements
+                if (previousState != null)
+                    SemanticTreeManager.RestoreState(previousState);
+            }
             
             if (!composeResult.HasMoreContent)
                 IsRendered = true;
