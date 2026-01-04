@@ -86,17 +86,11 @@ class SemanticTreeManager
     
     #region State Capture/Restore
     
-    internal class SemanticManagerState
-    {
-        public int CurrentNodeId { get; set; }
-    }
+    internal record SemanticManagerState(int CurrentNodeId);
     
     public SemanticManagerState CaptureState()
     {
-        return new SemanticManagerState
-        {
-            CurrentNodeId = CurrentNodeId
-        };
+        return new SemanticManagerState(CurrentNodeId);
     }
     
     public void RestoreState(SemanticManagerState state)
