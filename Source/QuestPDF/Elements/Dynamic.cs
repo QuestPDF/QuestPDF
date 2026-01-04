@@ -13,6 +13,7 @@ namespace QuestPDF.Elements
         
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
+        private SemanticTreeManager.SemanticManagerState? CapturedSemanticState { get; set; }
 
         internal TextStyle TextStyle { get; set; } = TextStyle.Default;
         public ContentDirection ContentDirection { get; set; }
@@ -35,6 +36,10 @@ namespace QuestPDF.Elements
             if (availableSpace.IsCloseToZero())
                 return SpacePlan.PartialRender(Size.Zero);
 
+            // Capture the semantic state before measuring
+            if (SemanticTreeManager != null && CapturedSemanticState == null)
+                CapturedSemanticState = SemanticTreeManager.CaptureState();
+
             var context = CreateContext(availableSpace);
             var result = ComposeContent(context, acceptNewState: false);
             var content = result.Content as Element ?? Empty.Instance;
@@ -53,6 +58,15 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            // Temporarily restore the semantic state for drawing
+            SemanticTreeManager.SemanticManagerState? previousState = null;
+            
+            if (SemanticTreeManager != null && CapturedSemanticState != null)
+            {
+                previousState = SemanticTreeManager.CaptureState();
+                SemanticTreeManager.RestoreState(CapturedSemanticState);
+            }
+
             var context = CreateContext(availableSpace);
             var composeResult = ComposeContent(context, acceptNewState: true);
             var content = composeResult.Content as Element; 
@@ -60,6 +74,17 @@ namespace QuestPDF.Elements
             
             context.DisposeCreatedElements();
             content.ReleaseDisposableChildren();
+            
+            // Update the captured state to reflect the node IDs allocated during this draw
+            // This ensures that subsequent Draw() calls continue from where this one left off
+            if (SemanticTreeManager != null && CapturedSemanticState != null)
+            {
+                CapturedSemanticState = SemanticTreeManager.CaptureState();
+                
+                // Restore to the state before this Draw() call to not affect other elements
+                if (previousState != null)
+                    SemanticTreeManager.RestoreState(previousState);
+            }
             
             if (!composeResult.HasMoreContent)
                 IsRendered = true;
@@ -112,6 +137,7 @@ namespace QuestPDF.Elements
         {
             IsRendered = false;
             Child.SetState(InitialComponentState);
+            CapturedSemanticState = null;
         }
 
         public object GetState()

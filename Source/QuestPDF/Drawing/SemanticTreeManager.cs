@@ -84,6 +84,22 @@ class SemanticTreeManager
         return Root;
     }
     
+    #region State Capture/Restore
+    
+    internal record SemanticManagerState(int CurrentNodeId);
+    
+    public SemanticManagerState CaptureState()
+    {
+        return new SemanticManagerState(CurrentNodeId);
+    }
+    
+    public void RestoreState(SemanticManagerState state)
+    {
+        CurrentNodeId = state.CurrentNodeId;
+    }
+    
+    #endregion
+    
     #region Artifacts
     
     private int ArtifactNestingLevel { get; set; } = 0;
