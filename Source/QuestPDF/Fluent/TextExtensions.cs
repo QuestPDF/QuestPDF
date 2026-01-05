@@ -78,6 +78,11 @@ namespace QuestPDF.Fluent
             Alignment = HorizontalAlignment.Right;
         }
 
+        public void AlignJustify()
+        {
+            Alignment = HorizontalAlignment.Justify;
+        }
+
         public void ParagraphSpacing(float value, Unit unit = Unit.Point)
         {
             Spacing = value.ToPoints(unit);

@@ -17,6 +17,11 @@ namespace QuestPDF.Elements.Text.Calculation
         public int EndIndex { get; set; }
         public int NextIndex { get; set; }
         public int TotalIndex { get; set; }
+        
+        /// <summary>
+        /// Number of space characters in this text segment (used for justify calculation).
+        /// </summary>
+        public int SpaceCount { get; set; }
 
         public bool IsLast => EndIndex == TotalIndex;
     }

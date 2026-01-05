@@ -102,13 +102,22 @@ namespace QuestPDF.Elements.Text
                 return;
             
             var topOffset = 0f;
+            var isLastLine = false;
 
-            foreach (var line in lines)
+            for (var lineIndex = 0; lineIndex < lines.Count; lineIndex++)
             {
-                var leftOffset = GetAlignmentOffset(line.Width);
+                var line = lines[lineIndex];
+                isLastLine = lineIndex == lines.Count - 1;
+                
+                var leftOffset = GetAlignmentOffset(line.Width, isLastLine);
+                var wordSpacing = GetWordSpacing(line, isLastLine);
 
                 foreach (var item in line.Elements.Where(x => x.Measurement.Width > 0.0))
                 {
+                    // Calculate the actual width including word spacing for this element
+                    var elementWordSpacingWidth = wordSpacing * item.Measurement.SpaceCount;
+                    var actualWidth = item.Measurement.Width + elementWordSpacingWidth;
+                    
                     var textDrawingRequest = new TextDrawingRequest
                     {
                         Canvas = Canvas,
@@ -117,19 +126,20 @@ namespace QuestPDF.Elements.Text
                         StartIndex = item.Measurement.StartIndex,
                         EndIndex = item.Measurement.EndIndex,
                         
-                        TextSize = new Size(item.Measurement.Width, line.LineHeight),
-                        TotalAscent = line.Ascent
+                        TextSize = new Size(actualWidth, line.LineHeight),
+                        TotalAscent = line.Ascent,
+                        WordSpacing = wordSpacing
                     };
                 
                     var canvasOffset = ContentDirection == ContentDirection.LeftToRight
                         ? new Position(leftOffset, topOffset - line.Ascent)
-                        : new Position(availableSpace.Width - leftOffset - item.Measurement.Width, topOffset - line.Ascent);
+                        : new Position(availableSpace.Width - leftOffset - actualWidth, topOffset - line.Ascent);
                     
                     Canvas.Translate(canvasOffset);
                     item.Item.Draw(textDrawingRequest);
                     Canvas.Translate(canvasOffset.Reverse());
                     
-                    leftOffset += item.Measurement.Width;
+                    leftOffset += actualWidth;
                 }
                 
                 topOffset += line.LineHeight;
@@ -149,17 +159,38 @@ namespace QuestPDF.Elements.Text
             if (!RenderingQueue.Any())
                 ResetState();
             
-            float GetAlignmentOffset(float lineWidth)
+            float GetAlignmentOffset(float lineWidth, bool isLast)
             {
                 var emptySpace = availableSpace.Width - lineWidth;
 
-                return Alignment switch
+                // For justify alignment, treat last line as left-aligned
+                var effectiveAlignment = (Alignment == HorizontalAlignment.Justify && isLast) 
+                    ? HorizontalAlignment.Left 
+                    : Alignment;
+
+                return effectiveAlignment switch
                 {
                     HorizontalAlignment.Left => ContentDirection == ContentDirection.LeftToRight ? 0 : emptySpace,
                     HorizontalAlignment.Center => emptySpace / 2,
                     HorizontalAlignment.Right => ContentDirection == ContentDirection.LeftToRight ? emptySpace : 0,
+                    HorizontalAlignment.Justify => 0, // Justify starts from left edge
                     _ => 0
                 };
+            }
+            
+            float GetWordSpacing(TextLine line, bool isLast)
+            {
+                if (Alignment != HorizontalAlignment.Justify || isLast)
+                    return 0;
+                
+                // Count total spaces in all elements of the line
+                var totalSpaces = line.Elements.Sum(x => x.Measurement.SpaceCount);
+                
+                if (totalSpaces <= 0)
+                    return 0;
+                
+                var emptySpace = availableSpace.Width - line.Width;
+                return emptySpace / totalSpaces;
             }
         }
 
