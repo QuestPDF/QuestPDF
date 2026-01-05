@@ -188,7 +188,7 @@ namespace QuestPDF.Drawing
             };
         }
         
-        public DrawTextCommand? PositionText(int startIndex, int endIndex, TextStyle textStyle)
+        public DrawTextCommand? PositionText(int startIndex, int endIndex, TextStyle textStyle, float wordSpacing = 0)
         {
             if (Glyphs.Length == 0)
                 return null;
@@ -201,13 +201,35 @@ namespace QuestPDF.Drawing
             var positionedRunBuffer = skTextBlobBuilder.AllocatePositionedRun(textStyle.ToFont(), endIndex - startIndex + 1);
             var glyphSpan = positionedRunBuffer.GetGlyphSpan();
             var positionSpan = positionedRunBuffer.GetPositionSpan();
+            
+            // Get space codepoint for word spacing
+            var spaceCodepoint = textStyle.ToFont().Typeface.GetGlyphs(" ")[0];
+            var accumulatedSpacing = 0f;
                 
             for (var sourceIndex = startIndex; sourceIndex <= endIndex; sourceIndex++)
             {
                 var runIndex = sourceIndex - startIndex;
+                var glyph = this[sourceIndex];
                 
-                glyphSpan[runIndex] = this[sourceIndex].Codepoint;
-                positionSpan[runIndex] = this[sourceIndex].Position;
+                glyphSpan[runIndex] = glyph.Codepoint;
+                
+                // Apply accumulated word spacing to position
+                var position = glyph.Position;
+                if (Direction == Direction.LeftToRight)
+                {
+                    position.X += accumulatedSpacing;
+                }
+                else
+                {
+                    position.X -= accumulatedSpacing;
+                }
+                positionSpan[runIndex] = position;
+                
+                // Add word spacing after each space character
+                if (glyph.Codepoint == spaceCodepoint && wordSpacing > 0)
+                {
+                    accumulatedSpacing += wordSpacing;
+                }
             }
 
             var firstVisualCharacterIndex = Direction == Direction.LeftToRight

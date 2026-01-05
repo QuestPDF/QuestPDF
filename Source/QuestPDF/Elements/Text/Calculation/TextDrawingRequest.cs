@@ -13,5 +13,10 @@ namespace QuestPDF.Elements.Text.Calculation
         
         public float TotalAscent { get; set; }
         public Size TextSize { get; set; }
+        
+        /// <summary>
+        /// Additional spacing to add after each space character for text justification.
+        /// </summary>
+        public float WordSpacing { get; set; }
     }
 }

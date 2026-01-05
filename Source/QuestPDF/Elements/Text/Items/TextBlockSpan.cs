@@ -75,7 +75,8 @@ namespace QuestPDF.Elements.Text.Items
                     
                     LineHeight = Style.LineHeight ?? 1,
                     Ascent = fontMetrics.Ascent,
-                    Descent = fontMetrics.Descent
+                    Descent = fontMetrics.Descent,
+                    SpaceCount = 0
                 };
             }
             
@@ -94,6 +95,14 @@ namespace QuestPDF.Elements.Text.Items
             // measure final text
             var width = TextShapingResult.MeasureWidth(startIndex, wrappedText.Value.endIndex);
             
+            // count spaces for justify calculation
+            var spaceCount = 0;
+            for (var i = startIndex; i <= wrappedText.Value.endIndex; i++)
+            {
+                if (TextShapingResult[i].Codepoint == SpaceCodepoint)
+                    spaceCount++;
+            }
+            
             return new TextMeasurementResult
             {
                 Width = width,
@@ -106,7 +115,8 @@ namespace QuestPDF.Elements.Text.Items
                 StartIndex = startIndex,
                 EndIndex = wrappedText.Value.endIndex,
                 NextIndex = wrappedText.Value.nextIndex,
-                TotalIndex = TextShapingResult.Length - 1
+                TotalIndex = TextShapingResult.Length - 1,
+                SpaceCount = spaceCount
             };
         }
         
@@ -154,7 +164,7 @@ namespace QuestPDF.Elements.Text.Items
 
             var glyphOffsetY = GetGlyphOffset();
             
-            var textDrawingCommand = TextShapingResult.PositionText(request.StartIndex, request.EndIndex, Style);
+            var textDrawingCommand = TextShapingResult.PositionText(request.StartIndex, request.EndIndex, Style, request.WordSpacing);
 
             if (Style.BackgroundColor != Colors.Transparent)
                 request.Canvas.DrawRectangle(new Position(0, request.TotalAscent), new Size(request.TextSize.Width, request.TextSize.Height), Style.BackgroundColor);
