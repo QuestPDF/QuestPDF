@@ -87,7 +87,7 @@ Document.Create(container =>
 
 The code above produces the following PDF document:
 
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/79c62304-b895-431e-b012-8e9a39ff7db9" />
+<img width="300" alt="image" src="https://github.com/user-attachments/assets/46784e17-e8be-41d2-87f4-d6322c3b5e52" />
 
 [![Quick Start Tutorial](https://img.shields.io/badge/read-tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/quick-start.html)
 
@@ -199,10 +199,11 @@ Accelerate development with live document preview and hot-reload capability. See
 - Identify, understand and solve layout errors
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/39d4c08c-6a78-4743-8837-208c0c1718fd">
-  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="600">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/9d9d9f39-c786-4cee-b1cb-0abbee773281">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/5fce5867-ccc4-4212-a922-be62ea52e534">
+  <img src="https://github.com/user-attachments/assets/5fce5867-ccc4-4212-a922-be62ea52e534" width="600">
 </picture>
+
 
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)]([https://www.questpdf.com/companion/features.html](https://www.questpdf.com/companion/usage.html))
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/features-666666?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
@@ -324,7 +325,7 @@ Follow our detailed tutorial and see how easy it is to generate a fully function
 - Production-ready code
 - Best practices included
 
-<img width="300" alt="Example Invoice" src="https://github.com/user-attachments/assets/881008ed-136d-4661-926a-7ad5431e95a1" />
+<img width="300" alt="Example Invoice" src="https://github.com/user-attachments/assets/dd268fe2-e558-4b9a-944d-b2f41ce52940" />
 
 [![Read Real-world Invoice Tutorial](https://img.shields.io/badge/read%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/invoice-tutorial.html)
 
@@ -339,11 +340,11 @@ Thank you for helping us grow and reach more developers!
 
 ### Nick Chapsas: The Easiest Way to Create PDFs in .NET
 
-[![Nick Chapsas The Easiest Way to Create PDFs in .NET](https://img.youtube.com/vi/_M0IgtGWnvE/0.jpg)](https://www.youtube.com/watch?v=_M0IgtGWnvE)
+[![Nick Chapsas The Easiest Way to Create PDFs in .NET](https://github.com/user-attachments/assets/5c7fc84b-65d6-4ec2-9cc2-b2acbc9764d0)](https://www.youtube.com/watch?v=_M0IgtGWnvE)
 
 ### JetBrains: OSS Power-Ups: QuestPDF
 
-[![JetBrains OSS Power-Ups: QuestPDF](https://img.youtube.com/vi/-iYvZvpLX0g/0.jpg)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
+[![JetBrains OSS Power-Ups: QuestPDF](https://github.com/user-attachments/assets/3519b532-c2aa-430e-ab1b-f40edd3fa120)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
 
 <br>
 <br>
