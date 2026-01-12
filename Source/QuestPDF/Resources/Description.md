@@ -4,28 +4,30 @@ QuestPDF is a production-ready library that lets you design documents the way yo
 Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices, and exports using the language and tools you already love.
 
 [![GitHub Stars and Stargazers](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge&label=GitHub%20Stars&logo=github&color=FFEB3B&logoColor=white)](https://github.com/QuestPDF/QuestPDF)
+
 [![Nuget package download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge&label=NuGet%20downloads&logo=nuget&color=0277BD&logoColor=white)](https://www.nuget.org/packages/QuestPDF/)
+
 [![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20and%20commercial-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/license.html)
 
 ---
 
 [Home Page](https://www.questpdf.com)
-&nbsp;&nbsp;•&nbsp;&nbsp;
+
 [Quick Start](https://www.questpdf.com/quick-start.html)
-&nbsp;&nbsp;•&nbsp;&nbsp;
+
 [Real-world Invoice Tutorial](https://www.questpdf.com/invoice-tutorial.html)
-&nbsp;&nbsp;•&nbsp;&nbsp;
+
 [Features Overview](https://www.questpdf.com/features-overview.html)
-&nbsp;&nbsp;•&nbsp;&nbsp;
+
 [License](https://www.questpdf.com/license/)
-&nbsp;&nbsp;•&nbsp;&nbsp;
+
 [NuGet](https://www.nuget.org/packages/QuestPDF)
 
 ---
 
 ## 🚀 Quick start
 
-Learn how easy it is to design, implement and generate PDF documents using QuestPDF. <br>
+Learn how easy it is to design, implement and generate PDF documents using QuestPDF.
 Effortlessly create documents of all types such as invoices and reports.
 
 ```c#
@@ -73,12 +75,10 @@ Document.Create(container =>
 
 The code above produces the following PDF document:
 
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/46784e17-e8be-41d2-87f4-d6322c3b5e52" />
+![Preview of a PDF document showing the Hello World example](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/f6b28c965e26fe43630316f589339db465c8197e/docs/public/nuget/hello-world.png)
 
 [![Quick Start Tutorial](https://img.shields.io/badge/read-tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/quick-start.html)
 
-> TIP:
-> 
 > The library is free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue.
 > Read more about licensing [here](https://www.questpdf.com/license/)
 
@@ -153,10 +153,6 @@ void ComposeItem(IContainer container, OrderItem item)
 }
 ```
 
-<br>
-<br>
-
-
 
 ## Companion App
 
@@ -167,13 +163,10 @@ Accelerate development with live document preview and hot-reload capability. See
 - Debug runtime exceptions with stack traces and code snippets
 - Identify, understand and solve layout errors
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/39d4c08c-6a78-4743-8837-208c0c1718fd">
-  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="600">
-</picture>
+![Screenshot showing the QuestPDF Companion App](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/f6b28c965e26fe43630316f589339db465c8197e/docs/public/nuget/companion-light.png)
 
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)]([https://www.questpdf.com/companion/features.html](https://www.questpdf.com/companion/usage.html))
+
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/features-666666?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
 
 
@@ -269,11 +262,10 @@ A model that benefits everyone. Commercial licensing provides businesses with le
 - All features included in every tier without restrictions
 - Predictable pricing: no per-seat, per-server, or usage fees
 
-> TIP:
-> 
-> Free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue.
+> The library is free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue.
 
 [![QuestPDF Pricing](https://img.shields.io/badge/view%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/license.html)
+
 [![QuestPDF License Terms](https://img.shields.io/badge/license%20terms-666666?style=for-the-badge)](https://www.questpdf.com/license/guide.html)
 
 
@@ -286,7 +278,7 @@ Follow our detailed tutorial and see how easy it is to generate a fully function
 - Production-ready code
 - Best practices included
 
-<img width="300" alt="Example Invoice" src="https://github.com/user-attachments/assets/dd268fe2-e558-4b9a-944d-b2f41ce52940" />
+![Preview of a PDF document being an output of the Real-World Invoice tutorial](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/f6b28c965e26fe43630316f589339db465c8197e/docs/public/nuget/invoice.jpg)
 
 [![Read Real-world Invoice Tutorial](https://img.shields.io/badge/read%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/invoice-tutorial.html)
 
@@ -299,8 +291,8 @@ Thank you for helping us grow and reach more developers!
 
 ### Nick Chapsas: The Easiest Way to Create PDFs in .NET
 
-[![Nick Chapsas The Easiest Way to Create PDFs in .NET](https://github.com/user-attachments/assets/5c7fc84b-65d6-4ec2-9cc2-b2acbc9764d0)](https://www.youtube.com/watch?v=_M0IgtGWnvE)
+[![Nick Chapsas The Easiest Way to Create PDFs in .NET](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/f6b28c965e26fe43630316f589339db465c8197e/docs/public/nuget/youtube-nick-chapsas.jpg)](https://www.youtube.com/watch?v=_M0IgtGWnvE)
 
 ### JetBrains: OSS Power-Ups: QuestPDF
 
-[![JetBrains OSS Power-Ups: QuestPDF](https://github.com/user-attachments/assets/3519b532-c2aa-430e-ab1b-f40edd3fa120)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
+[![JetBrains OSS Power-Ups: QuestPDF](https://raw.githubusercontent.com/QuestPDF/QuestPDF-Documentation/f6b28c965e26fe43630316f589339db465c8197e/docs/public/nuget/youtube-jetbrains.jpg)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
