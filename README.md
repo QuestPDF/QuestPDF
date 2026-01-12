@@ -199,11 +199,10 @@ Accelerate development with live document preview and hot-reload capability. See
 - Identify, understand and solve layout errors
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/9d9d9f39-c786-4cee-b1cb-0abbee773281">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/5fce5867-ccc4-4212-a922-be62ea52e534">
-  <img src="https://github.com/user-attachments/assets/5fce5867-ccc4-4212-a922-be62ea52e534" width="600">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/39d4c08c-6a78-4743-8837-208c0c1718fd">
+  <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="600">
 </picture>
-
 
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)]([https://www.questpdf.com/companion/features.html](https://www.questpdf.com/companion/usage.html))
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/features-666666?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
