@@ -7,7 +7,7 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 <br>
 [![Nuget package download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge&label=NuGet%20downloads&logo=nuget&color=0277BD&logoColor=white)](https://www.nuget.org/packages/QuestPDF/)
 <br>
-[![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20MIT%20and%20professional-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/license.html)
+[![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20and%20commercial-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/license.html)
 
 <hr>
 
@@ -20,6 +20,8 @@ Important links:
 [Real-world Invoice Tutorial](https://www.questpdf.com/invoice-tutorial.html)
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [Features Overview](https://www.questpdf.com/features-overview.html)
+&nbsp;&nbsp;•&nbsp;&nbsp;
+[License](https://www.questpdf.com/license/)
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [NuGet](https://www.nuget.org/packages/QuestPDF)
 
@@ -77,7 +79,7 @@ The code above produces the following PDF document:
 
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/79c62304-b895-431e-b012-8e9a39ff7db9" />
 
-[![Learn about QuestPDF Companion App](https://img.shields.io/badge/read-tutorial-0288D1?style=for-the-badge)]([https://www.questpdf.com/features-overview.html)
+[![Quick Start Tutorial](https://img.shields.io/badge/read-tutorial-0288D1?style=for-the-badge)]([https://www.questpdf.com/features-overview.html)
 
 <br>
 <hr>
@@ -90,10 +92,10 @@ From layout and styling to production features, QuestPDF gives you the flexibili
 - Page attributes (header, footer, background, watermark, margin),
 - Text (font style, paragraph style, page numbers),
 - Styled containers (background, border, rounded corners, colors and gradients, shadows),
-- Line (vertical and horizontal, colors and gradients, dash pattern)
+- Lines (vertical and horizontal, colors and gradients, dash pattern)
 - Images (PNG, JPG, WEBP, SVG),
-- Table,
-- List,
+- Tables,
+- Lists,
 - Layers,
 - Alignment,
 - Size Controls,
@@ -104,17 +106,7 @@ From layout and styling to production features, QuestPDF gives you the flexibili
 - Integrations (maps, charts, barcodes, QR codes),
 - and more...
 
-[![Learn about QuestPDF Companion App](https://img.shields.io/badge/explore%20all%20features-0288D1?style=for-the-badge)](https://www.questpdf.com/features-overview.html)
-
-<br>
-<hr>
-<br>
-
-## Please help by giving a star ⭐
-
-GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! 
-
-<img src="https://github.com/user-attachments/assets/722c5331-1bf0-4909-9be1-be3056bb4131" width="700" />
+[![All QuestPDF Features](https://img.shields.io/badge/explore%20all%20features-0288D1?style=for-the-badge)](https://www.questpdf.com/features-overview.html)
 
 <br>
 <hr>
@@ -303,7 +295,7 @@ Follow our detailed tutorial and see how easy it is to generate a fully function
 
 <img width="300" alt="Example Invoice" src="https://github.com/user-attachments/assets/881008ed-136d-4661-926a-7ad5431e95a1" />
 
-[![Read getting started tutorial](https://img.shields.io/badge/read%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/invoice-tutorial.html)
+[![Read Real-world Invoice Tutorial](https://img.shields.io/badge/read%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/invoice-tutorial.html)
 
 <br>
 <hr>
@@ -319,19 +311,18 @@ Thank you for helping us grow and reach more developers!
 
 [![Nick Chapsas The Easiest Way to Create PDFs in .NET](https://img.youtube.com/vi/_M0IgtGWnvE/0.jpg)](https://www.youtube.com/watch?v=_M0IgtGWnvE)
 
-### Claudio Bernasconi: QuestPDF - The BEST PDF Generator for .NET?!
-
-[![Claudio Bernasconi QuestPDF - The BEST PDF Generator for .NET?!](https://img.youtube.com/vi/T89A_7dz1P8/0.jpg)](https://www.youtube.com/watch?v=T89A_7dz1P8)
-
 ### JetBrains: OSS Power-Ups: QuestPDF
 
 [![JetBrains OSS Power-Ups: QuestPDF](https://img.youtube.com/vi/-iYvZvpLX0g/0.jpg)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
 
-### Programming with Felipe Gavilan: Generating PDFs with C# - Very Easy (two examples)
+<br>
+<hr>
+<br>
 
-[![Felipe Gavilan Generating PDFs with C# - Very Easy (two examples)](https://img.youtube.com/vi/bhR4Cmg16gs/0.jpg)](https://www.youtube.com/watch?v=bhR4Cmg16gs)
+## Please help by giving a star ⭐
 
-### Learning materials
+GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! 
 
-- `PDF Generation using QuestPDF in ASP.NET Core` written by [Olufemi Oyedepo]([olufemioyedepo](https://github.com/olufemioyedepo)): [Part 1](https://medium.com/@olufemioyedepo/pdf-generation-using-questpdf-in-asp-net-core-part-1-5ef9a63d462a) [Part 2](https://medium.com/@olufemioyedepo/pdf-generation-using-questpdf-in-asp-net-core-part-2-aadec120c31a)
+<img src="https://github.com/user-attachments/assets/418f9fac-cb4b-40c1-bc2e-0ab6717d9fdd" width="700" />
+
 
