@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing;
 
@@ -104,4 +106,66 @@ class SemanticTreeManager
     }
     
     #endregion
+    
+    #region State
+
+    public class StateSnapshot
+    {
+        internal int CurrentNodeId { get; init; }
+    }
+    
+    public StateSnapshot GetState()
+    {
+        return new StateSnapshot
+        {
+            CurrentNodeId = CurrentNodeId
+        };
+    }
+    
+    public void SetState(StateSnapshot state)
+    {
+        CurrentNodeId = state.CurrentNodeId;
+    }
+    
+    #endregion
+}
+
+class SemanticTreeSnapshots(SemanticTreeManager? semanticTreeManager, IPageContext pageContext)
+{
+    private IList<SemanticTreeManager.StateSnapshot> Snapshots { get; } = [];
+
+    public SemanticTreeSnapshotScope? StartSemanticStateScope(int index)
+    {
+        if (semanticTreeManager == null)
+            return null;
+        
+        var originalSemanticState = semanticTreeManager.GetState();
+        
+        if (index >= Snapshots.Count)
+        {
+            Snapshots.Add(originalSemanticState);
+        }
+        else
+        {
+            var snapshot = Snapshots[index];
+            semanticTreeManager.SetState(snapshot);
+        }
+        
+        return new SemanticTreeSnapshotScope(() =>
+        {
+            if (pageContext.IsInitialRenderingPhase)
+                return;
+                
+            semanticTreeManager.SetState(originalSemanticState);
+        });
+    }
+
+    public class SemanticTreeSnapshotScope(Action resetState) : IDisposable
+    {
+        public void Dispose()
+        {
+            resetState();
+            GC.SuppressFinalize(this);
+        }
+    }
 }

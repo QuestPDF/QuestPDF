@@ -1,6 +1,5 @@
 using System;
 using QuestPDF.Drawing;
-using QuestPDF.Drawing.Proxy;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -9,6 +8,7 @@ namespace QuestPDF.Elements;
 internal sealed class Lazy : ContainerElement, ISemanticAware, IContentDirectionAware, IStateful
 {
     public SemanticTreeManager? SemanticTreeManager { get; set; }
+    private SemanticTreeSnapshots? SemanticTreeSnapshots { get; set; }
     
     public Action<IContainer> ContentSource { get; set; }
     public bool IsCacheable { get; set; }
@@ -36,10 +36,14 @@ internal sealed class Lazy : ContainerElement, ISemanticAware, IContentDirection
         if (IsRendered)
             return;
         
+        SemanticTreeSnapshots ??= new SemanticTreeSnapshots(SemanticTreeManager, PageContext);
+        using var scope = SemanticTreeSnapshots.StartSemanticStateScope(RenderCount);
+        
         PopulateContent();
         
         var isFullyRendered = Child?.Measure(availableSpace).Type == SpacePlanType.FullRender;
         Child?.Draw(availableSpace);
+        RenderCount++;
         
         if (isFullyRendered && ClearCacheAfterFullRender)
         {
@@ -58,31 +62,55 @@ internal sealed class Lazy : ContainerElement, ISemanticAware, IContentDirection
         Child = container;
         ContentSource(container);
         
+        if (SemanticTreeManager != null)
+        {
+            container.ApplySemanticParagraphs();
+            container.InjectSemanticTreeManager(SemanticTreeManager);
+        }
+        
         container.ApplyInheritedAndGlobalTexStyle(TextStyle);
         container.ApplyContentDirection(ContentDirection);
         container.ApplyDefaultImageConfiguration(ImageTargetDpi.Value, ImageCompressionQuality.Value, UseOriginalImage);
         container.InjectDependencies(PageContext, Canvas);
         container.VisitChildren(x => (x as IStateful)?.ResetState());
-
-        if (SemanticTreeManager != null)
-        {
-            container.InjectSemanticTreeManager(SemanticTreeManager);
-            container.ApplySemanticParagraphs();
-        }
     }
     
     #region IStateful
         
+    public struct LazyState
+    {
+        public int RenderCount;
+        public bool IsRendered;
+    }
+
+    private int RenderCount { get; set; } 
     private bool IsRendered { get; set; }
 
     public void ResetState(bool hardReset = false)
     {
         if (hardReset)
+        {
             IsRendered = false;
+            RenderCount = 0;
+        }
     }
+
+    public object GetState()
+    {
+        return new LazyState
+        {
+            RenderCount = RenderCount,
+            IsRendered = IsRendered
+        };
+    }
+
+    public void SetState(object state)
+    {
+        var lazyState = (LazyState) state;
         
-    public object GetState() => IsRendered;
-    public void SetState(object state) => IsRendered = (bool) state;
+        RenderCount = lazyState.RenderCount;
+        IsRendered = lazyState.IsRendered;
+    }
     
     #endregion
 }
