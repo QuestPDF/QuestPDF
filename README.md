@@ -197,7 +197,8 @@ Accelerate development with live document preview and hot-reload capability. See
   <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="600">
 </picture>
 
-[![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/companion/usage.html)
+[![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)]([https://www.questpdf.com/companion/features.html](https://www.questpdf.com/companion/usage.html))
+[![Learn about QuestPDF Companion App](https://img.shields.io/badge/features-666666?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
 
 <br>
 <hr>
