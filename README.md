@@ -24,6 +24,24 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 [NuGet](https://www.nuget.org/packages/QuestPDF)
 
 <hr>
+<br>
+
+## Installation
+
+QuestPDF is available as a NuGet package. You can install it through your IDE by searching for phrase `QuestPDF`. If you are not familiar how to do that, please refer to the following guides: 
+- [Visual Studio](https://learn.microsoft.com/en-us/nuget/consume-packages/install-use-packages-visual-studio)
+- [Visual Code](https://code.visualstudio.com/docs/csharp/package-management)
+- [JetBrains Rider](https://www.jetbrains.com/help/rider/Using_NuGet.html)
+
+Or use the following command in your terminal:
+
+```bash
+dotnet add package QuestPDF
+```
+
+<br>
+<hr>
+<br>
 
 ## 🚀 Quick start
 
@@ -117,9 +135,7 @@ From layout and styling to production features, QuestPDF gives you the flexibili
 - Hyperlinks,
 - Z-index,
 
-And more ...
-
-[![All QuestPDF Features](https://img.shields.io/badge/explore%20all%20features-0288D1?style=for-the-badge)](https://www.questpdf.com/features-overview.html)
+[![Explore All QuestPDF Features](https://img.shields.io/badge/explore%20all%20features-0288D1?style=for-the-badge)](https://www.questpdf.com/features-overview.html)
 
 <br>
 <hr>
@@ -189,7 +205,7 @@ Accelerate development with live document preview and hot-reload capability. See
 
 ## Enterprise-grade foundations
 
-A robust layout engine engineered for high performance, complete data privacy, and seamless integration into your infrastructure.
+- **Predictable Development** — Eliminate CSS debugging, browser quirks, and layout surprises common with HTML-to-PDF tools. What you code is what you get.
 
 - **Source-available** - Entire QuestPDF source code is available for review and customization, ensuring transparency and compliance with your organization's requirements.
 
