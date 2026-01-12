@@ -10,7 +10,7 @@
         <Deterministic>true</Deterministic>
         <EnablePackageValidation>true</EnablePackageValidation>
         <PackageIcon>Logo.png</PackageIcon>
-        <PackageIconUrl>https://www.questpdf.com/images/package-logo.png</PackageIconUrl>
+        <PackageIconUrl>https://www.questpdf.com/logo.webp</PackageIconUrl>
         <PackageProjectUrl>https://www.questpdf.com/</PackageProjectUrl>
         <PackageLicenseFile>PackageLicense.md</PackageLicenseFile>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
