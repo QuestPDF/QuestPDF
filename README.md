@@ -184,29 +184,19 @@ Accelerate development with live document preview and hot-reload capability. See
 
 ## Enterprise-grade foundations
 
-### Source-available
+A robust layout engine engineered for high performance, complete data privacy, and seamless integration into your infrastructure.
 
-Entire QuestPDF source code is available for review and customization, ensuring transparency and compliance with your organization's requirements.
+- **Source-available** - Entire QuestPDF source code is available for review and customization, ensuring transparency and compliance with your organization's requirements.
 
-### Complete Data Privacy
+- **Complete Data Privacy** - QuestPDF runs entirely within your infrastructure with no external API calls, internet requirement, or background data collection. As a company, we do not access, collect, store, or process your private data.
 
-QuestPDF runs entirely within your infrastructure with no external API calls, internet requirement, or background data collection. As a company, we do not access, collect, store, or process your private data.
+- **Comprehensive Layout Engine** - A powerful layout engine built specifically for PDF generation. Gain full control over document structure, precise content positioning, and automatic pagination.
 
-### Comprehensive Layout Engine
+- **Advanced Language Support** - Create multilingual documents with full RTL language support, advanced text shaping, and bi-directional layout handling.
 
-A powerful layout engine built specifically for PDF generation. Gain full control over document structure, precise content positioning, and automatic pagination.
+- **High Performance** - Generate thousands of pages per second while maintaining minimal CPU and memory usage. Perfect for high-throughput enterprise applications.
 
-### Advanced Language Support
-
-Create multilingual documents with full RTL language support, advanced text shaping, and bi-directional layout handling.
-
-### High Performance
-
-Generate thousands of pages per second while maintaining minimal CPU and memory usage. Perfect for high-throughput enterprise applications.
-
-### Optimized File Size
-
-Drastically reduce file sizes without compromising quality. Benefit from automatic font subsetting, optimal image compression, and efficient file compression.
+- **Optimized File Size** - Drastically reduce file sizes without compromising quality. Benefit from automatic font subsetting, optimal image compression, and efficient file compression.
 
 <br>
 <hr>
@@ -268,11 +258,17 @@ Deploy on any major operating system and integrate seamlessly with your favorite
 
 Generate PDF documents that meet the strictest archival and accessibility requirements. Every build is automatically validated using the open-source veraPDF and Mustang tools.
 
-| Platform | Support | Tags |
-|----------|---------|---|
-| **PDF/A** | Archival: ISO 19005 standard for long-term document preservation, ensuring your PDFs remain readable and visually identical for decades without external dependencies. | PDF/A-2b, PDF/A-2u, PDF/A-2a, PDF/A-3b, PDF/A-3u, PDF/A-3a |
-| **PDF/UA** | Accessibility: ISO 14289 standard for universal accessibility with full support for screen readers and assistive technologies, ensuring your PDFs are usable by people with disabilities. | PDF/UA-1 |
-| **EN 16931** | E-Invoicing: European standard for electronic invoicing. Embed structured invoice data (XML) within PDF documents for automated processing. | ZUGFeRD, Factur-X |
+- PDF/A (Archival):
+  - Purpose: ISO 19005 standard for long-term preservation. Ensures PDFs remain readable and visually identical for decades without external dependencies.
+  - Supported Standards: `PDF/A-2b`, `PDF/A-2u`, `PDF/A-2a`, `PDF/A-3b`, `PDF/A-3u`, `PDF/A-3a`
+
+- PDF/UA (Accessibility):
+  - Purpose: ISO 14289 standard for universal accessibility. Includes full support for screen readers and assistive technologies for people with disabilities.
+  - Supported Standards: `PDF/UA-1`
+
+- EN 16931 (E-Invoicing):
+  - Purpose: European standard for electronic invoicing. Embeds structured invoice data (XML) within PDF documents for automated processing.
+  - Supported Standards: `ZUGFeRD`, `Factur-X`
 
 <br>
 <hr>
@@ -287,6 +283,7 @@ A model that benefits everyone. Commercial licensing provides businesses with le
 - All features included in every tier without restrictions
 - Predictable pricing: no per-seat, per-server, or usage fees
 
+> [!TIP]
 > Free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue.
 
 [![QuestPDF Pricing](https://img.shields.io/badge/view%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/license.html)
@@ -304,7 +301,7 @@ Follow our detailed tutorial and see how easy it is to generate a fully function
 - Production-ready code
 - Best practices included
 
-<img width="400" alt="Example Invoice" src="https://github.com/user-attachments/assets/881008ed-136d-4661-926a-7ad5431e95a1" />
+<img width="300" alt="Example Invoice" src="https://github.com/user-attachments/assets/881008ed-136d-4661-926a-7ad5431e95a1" />
 
 [![Read getting started tutorial](https://img.shields.io/badge/read%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/invoice-tutorial.html)
 
