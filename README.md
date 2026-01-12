@@ -4,6 +4,9 @@
   <img src="https://github.com/user-attachments/assets/e9d197ee-0cad-44f0-9efa-80ad68c31abe" width="300">
 </picture>
 
+<br>
+<br>
+
 ## Modern PDF library for C# developers
 
 QuestPDF is a production-ready library that lets you design documents the way you design software: with clean, maintainable, strong-typed C# code.
@@ -15,6 +18,7 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 <br>
 [![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20and%20commercial-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/license.html)
 
+<br>
 <hr>
 
 [Home Page](https://www.questpdf.com)
@@ -91,7 +95,6 @@ The code above produces the following PDF document:
 > Read more about licensing [here](https://www.questpdf.com/license/)
 
 <br>
-<hr>
 <br>
 
 ## Installation
@@ -108,7 +111,6 @@ dotnet add package QuestPDF
 ```
 
 <br>
-<hr>
 <br>
 
 ## Everything you need to generate PDFs
@@ -144,7 +146,6 @@ From layout and styling to production features, QuestPDF gives you the flexibili
 [![Explore All QuestPDF Features](https://img.shields.io/badge/explore%20all%20features-0288D1?style=for-the-badge)](https://www.questpdf.com/features-overview.html)
 
 <br>
-<hr>
 <br>
 
 ## Familiar Programming Patterns
@@ -185,7 +186,6 @@ void ComposeItem(IContainer container, OrderItem item)
 ```
 
 <br>
-<hr>
 <br>
 
 ## Companion App
@@ -207,7 +207,6 @@ Accelerate development with live document preview and hot-reload capability. See
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/features-666666?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
 
 <br>
-<hr>
 <br>
 
 ## Enterprise-grade foundations
@@ -227,7 +226,6 @@ Accelerate development with live document preview and hot-reload capability. See
 - **Optimized File Size** - Drastically reduce file sizes without compromising quality. Benefit from automatic font subsetting, optimal image compression, and efficient file compression.
 
 <br>
-<hr>
 <br>
 
 ## Perform common PDF operations
@@ -263,7 +261,6 @@ DocumentOperation
 [![Learn Document Operation API](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/concepts/document-operations.html)
 
 <br>
-<hr>
 <br>
 
 ## Works everywhere you do
@@ -279,7 +276,6 @@ Deploy on any major operating system and integrate seamlessly with your favorite
 | **IDEs** | Visual Studio, VS Code, JetBrains Rider, Others |
 
 <br>
-<hr>
 <br>
 
 ## Industry-standard PDF compliance
@@ -299,7 +295,6 @@ Generate PDF documents that meet the strictest archival and accessibility requir
   - Supported Standards: `ZUGFeRD`, `Factur-X`
 
 <br>
-<hr>
 <br>
 
 ## Fair and Sustainable License
@@ -318,7 +313,6 @@ A model that benefits everyone. Commercial licensing provides businesses with le
 [![QuestPDF License Terms](https://img.shields.io/badge/license%20terms-666666?style=for-the-badge)](https://www.questpdf.com/license/guide.html)
 
 <br>
-<hr>
 <br>
 
 ## See a real-world example
@@ -334,7 +328,6 @@ Follow our detailed tutorial and see how easy it is to generate a fully function
 [![Read Real-world Invoice Tutorial](https://img.shields.io/badge/read%20tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/invoice-tutorial.html)
 
 <br>
-<hr>
 <br>
 
 ## Community QuestPDF
@@ -352,7 +345,6 @@ Thank you for helping us grow and reach more developers!
 [![JetBrains OSS Power-Ups: QuestPDF](https://img.youtube.com/vi/-iYvZvpLX0g/0.jpg)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
 
 <br>
-<hr>
 <br>
 
 ## Please help by giving a star ⭐
