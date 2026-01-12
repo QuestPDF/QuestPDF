@@ -10,6 +10,7 @@ namespace QuestPDF.Elements
     internal sealed class DynamicHost : Element, IStateful, IContentDirectionAware, ISemanticAware
     {
         public SemanticTreeManager? SemanticTreeManager { get; set; }
+        private SemanticTreeSnapshots? SemanticTreeSnapshots { get; set; }
         
         private DynamicComponentProxy Child { get; }
         private object InitialComponentState { get; set; }
@@ -53,6 +54,9 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            SemanticTreeSnapshots ??= new SemanticTreeSnapshots(SemanticTreeManager, PageContext);
+            using var scope = SemanticTreeSnapshots.StartSemanticStateScope(RenderCount);
+            
             var context = CreateContext(availableSpace);
             var composeResult = ComposeContent(context, acceptNewState: true);
             var content = composeResult.Content as Element; 
@@ -63,6 +67,8 @@ namespace QuestPDF.Elements
             
             if (!composeResult.HasMoreContent)
                 IsRendered = true;
+            
+            RenderCount++;
         }
 
         private DynamicContext CreateContext(Size availableSize)
@@ -102,14 +108,17 @@ namespace QuestPDF.Elements
 
         public struct DynamicState
         {
+            public int RenderCount;
             public bool IsRendered;
             public object ChildState;
         }
-        
+
+        private int RenderCount { get; set; } 
         private bool IsRendered { get; set; }
     
         public void ResetState(bool hardReset = false)
         {
+            RenderCount = 0;
             IsRendered = false;
             Child.SetState(InitialComponentState);
         }
@@ -118,6 +127,7 @@ namespace QuestPDF.Elements
         {
             return new DynamicState  
             {
+                RenderCount = RenderCount,
                 IsRendered = IsRendered,
                 ChildState = Child.GetState()
             };
@@ -127,6 +137,7 @@ namespace QuestPDF.Elements
         {
             var dynamicState = (DynamicState) state;
             
+            RenderCount = dynamicState.RenderCount;
             IsRendered = dynamicState.IsRendered;
             Child.SetState(dynamicState.ChildState);
         }
@@ -193,17 +204,17 @@ namespace QuestPDF.Elements
             CreatedElements.Add(container);
             content(container);
             
+            if (SemanticTreeManager != null)
+            {
+                container.ApplySemanticParagraphs();
+                container.InjectSemanticTreeManager(SemanticTreeManager);
+            }
+            
             container.ApplyInheritedAndGlobalTexStyle(TextStyle);
             container.ApplyContentDirection(ContentDirection);
             container.ApplyDefaultImageConfiguration(ImageTargetDpi, ImageCompressionQuality, UseOriginalImage);
             container.InjectDependencies(PageContext, Canvas);
             container.VisitChildren(x => (x as IStateful)?.ResetState());
-            
-            if (SemanticTreeManager != null)
-            {
-                container.InjectSemanticTreeManager(SemanticTreeManager);
-                container.ApplySemanticParagraphs();
-            }
 
             container.Size = container.Measure(Size.Max);
             
