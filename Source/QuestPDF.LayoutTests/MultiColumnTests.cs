@@ -34,6 +34,7 @@ public class MultiColumnTests
                             .State(new DynamicHost.DynamicState()
                             {
                                 IsRendered = false,
+                                RenderCount = 1,
                                 ChildState = 2
                             });
                         
@@ -43,6 +44,7 @@ public class MultiColumnTests
                             .State(new DynamicHost.DynamicState()
                             {
                                 IsRendered = false,
+                                RenderCount = 2,
                                 ChildState = 3
                             });
                     });
@@ -58,6 +60,7 @@ public class MultiColumnTests
                             .State(new DynamicHost.DynamicState()
                             {
                                 IsRendered = false,
+                                RenderCount = 3,
                                 ChildState = 4
                             });
                         
@@ -67,6 +70,7 @@ public class MultiColumnTests
                             .State(new DynamicHost.DynamicState()
                             {
                                 IsRendered = false,
+                                RenderCount = 4,
                                 ChildState = 5
                             });
                     });
@@ -82,6 +86,7 @@ public class MultiColumnTests
                             .State(new DynamicHost.DynamicState()
                             {
                                 IsRendered = true,
+                                RenderCount = 5,
                                 ChildState = 6
                             });
                     });
