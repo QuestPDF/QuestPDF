@@ -1,4 +1,10 @@
-# QuestPDF - Modern PDF library for C# developers
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/9535de26-aeac-42ac-ac45-019a2893ed6b">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/e9d197ee-0cad-44f0-9efa-80ad68c31abe">
+  <img src="https://github.com/user-attachments/assets/e9d197ee-0cad-44f0-9efa-80ad68c31abe" width="300">
+</picture>
+
+## Modern PDF library for C# developers
 
 QuestPDF is a production-ready library that lets you design documents the way you design software: with clean, maintainable, strong-typed C# code.
 Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices, and exports using the language and tools you already love.
