@@ -1,3 +1,9 @@
-- Fixed an issue where merged documents rendered incorrectly for the second and subsequent documents.
-- Fixed an issue where the Table layout could fail to render all items in certain row-span scenarios.
-- Fixed semantic tagging in advanced layouts (e.g., MultiColumn) and refactored canvas-related code.
+Fixes:
+- Fixed semantic structure handling in the Dynamic element
+- Fixed semantic structure handling in the Lazy element
+
+Improvements:
+- Updated package icon
+- Updated NuGet package metadata (readme and description)
+- Revised welcome message to clarify licensing options and improve guidance
+- Updated third-party license attributions (removed ICU, added libgrapheme)
