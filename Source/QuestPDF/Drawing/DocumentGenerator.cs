@@ -74,16 +74,19 @@ namespace QuestPDF.Drawing
             const string newParagraph = "\n\n";
 
             var exceptionMessage = 
-                $"{newParagraph}{newParagraph}Welcome to QuestPDF! 👋 {newParagraph}" +
-                $"QuestPDF is an open-source library committed to long-term sustainability and continuous improvement. {newParagraph}" +
-                $"To maintain high-quality development and support while keeping the library free for most users, we use a fair pricing model where only larger organizations help by providing necessary funding for the project. {newParagraph}" +
-                $"If your organization’s annual gross revenue exceeds $1M USD, a Commercial License is required for production use (you can freely evaluate and test QuestPDF in non-production environments at no cost). " +
-                $"In that case, please share this information with your team or management. By purchasing a license, you directly contribute to the ongoing development and reliability of QuestPDF. {newParagraph}" +
-                $"For details on the license types and determining which applies to you, please visit: https://www.questpdf.com/license/ {newParagraph}" +
-                $"We trust our users. To continue, no license key is needed. Instead, simply select and configure the appropriate license in your code. For example, if you qualify for the Community license, add: {newParagraph}" +
-                $"> QuestPDF.Settings.License = LicenseType.Community; {newParagraph}" +
-                $"Thank you for supporting QuestPDF! ❤️ By choosing the right license, you help ensure that our project remains transparent, sustainable, and continuously improving for everyone. 🚀 {newParagraph}{newParagraph}";
-            
+                $"{newParagraph}{newParagraph}Thank you for choosing QuestPDF — one quick step before you continue. Please configure your license.{newParagraph}" +
+                $"QuestPDF is free for most teams. Commercial licenses provide legal compliance and long-term support for larger organizations, while funding continued development for everyone. {newParagraph}" +
+                $"Choose the applicable license:\n" +
+                $"- Community (free): organizations with less than $1M USD annual gross revenue;\n" +
+                $"- Professional / Enterprise (paid): required above this threshold {newParagraph}" +
+                $"Evaluation and non-production use is always permitted under the Community license. {newParagraph}" +
+                $"Set once at application startup:\n" +
+                $"// TODO: verify license compliance {newParagraph}" +
+                $"QuestPDF.Settings.License = LicenseType.Community; {newParagraph}" +
+                $"No license key or activation required — we trust you to select the correct option. {newParagraph}" +
+                $"Read more about licensing and pricing: https://www.questpdf.com/license {newParagraph}" +
+                $"We wish you a great experience! {newParagraph}{newParagraph}";
+
             throw new Exception(exceptionMessage)
             {
                 HelpLink = "https://www.questpdf.com/pricing.html"
