@@ -26,23 +26,6 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 <hr>
 <br>
 
-## Installation
-
-QuestPDF is available as a NuGet package. You can install it through your IDE by searching for phrase `QuestPDF`. If you are not familiar how to do that, please refer to the following guides: 
-- [Visual Studio](https://learn.microsoft.com/en-us/nuget/consume-packages/install-use-packages-visual-studio)
-- [Visual Code](https://code.visualstudio.com/docs/csharp/package-management)
-- [JetBrains Rider](https://www.jetbrains.com/help/rider/Using_NuGet.html)
-
-Or use the following command in your terminal:
-
-```bash
-dotnet add package QuestPDF
-```
-
-<br>
-<hr>
-<br>
-
 ## 🚀 Quick start
 
 Learn how easy it is to design, implement and generate PDF documents using QuestPDF. <br>
@@ -100,6 +83,23 @@ The code above produces the following PDF document:
 > [!TIP]
 > The library is free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue.
 > Read more about licensing [here](https://www.questpdf.com/license/)
+
+<br>
+<hr>
+<br>
+
+## Installation
+
+QuestPDF is available as a NuGet package. You can install it through your IDE by searching for phrase `QuestPDF`. If you are not familiar how to do that, please refer to the following guides: 
+- [Visual Studio](https://learn.microsoft.com/en-us/nuget/consume-packages/install-use-packages-visual-studio)
+- [Visual Code](https://code.visualstudio.com/docs/csharp/package-management)
+- [JetBrains Rider](https://www.jetbrains.com/help/rider/Using_NuGet.html)
+
+Or use the following command in your terminal:
+
+```bash
+dotnet add package QuestPDF
+```
 
 <br>
 <hr>
