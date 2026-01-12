@@ -91,22 +91,33 @@ The code above produces the following PDF document:
 
 From layout and styling to production features, QuestPDF gives you the flexibility to create documents of any complexity.
 
+### 🎨 Visual Content:
 - Page attributes (header, footer, background, watermark, margin),
 - Text (font style, paragraph style, page numbers),
 - Styled containers (background, border, rounded corners, colors and gradients, shadows),
 - Lines (vertical and horizontal, colors and gradients, dash pattern)
 - Images (PNG, JPG, WEBP, SVG),
+
+### 🔀 Layout: 
 - Tables,
 - Lists,
 - Layers,
+- Column / Row,
+- Inlined,
+
+### 📐 Positional:
 - Alignment,
-- Size Controls,
+- Size Controls (width / height),
+- Padding, 
+
+### 🛠️ Other: 
 - Page Breaking Control,
-- Padding,
-- Z-index,
-- Hyperlinks,
+- Aspect Ratio,
 - Integrations (maps, charts, barcodes, QR codes),
-- and more...
+- Hyperlinks,
+- Z-index,
+
+And more ...
 
 [![All QuestPDF Features](https://img.shields.io/badge/explore%20all%20features-0288D1?style=for-the-badge)](https://www.questpdf.com/features-overview.html)
 
