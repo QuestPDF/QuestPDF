@@ -11,8 +11,6 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 
 <hr>
 
-Important links:
-
 [Home Page](https://www.questpdf.com)
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [Quick Start](https://www.questpdf.com/quick-start.html)
@@ -79,7 +77,11 @@ The code above produces the following PDF document:
 
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/79c62304-b895-431e-b012-8e9a39ff7db9" />
 
-[![Quick Start Tutorial](https://img.shields.io/badge/read-tutorial-0288D1?style=for-the-badge)]([https://www.questpdf.com/features-overview.html)
+[![Quick Start Tutorial](https://img.shields.io/badge/read-tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/quick-start.html)
+
+> [!TIP]
+> The library is free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue.
+> Read more about licensing [here](https://www.questpdf.com/license/)
 
 <br>
 <hr>
