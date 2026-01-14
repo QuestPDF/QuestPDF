@@ -28,7 +28,7 @@ internal class ElementObserver : ContainerElement
             Size = ObserverId == "$document" ? Child.Measure(availableSpace) : availableSpace
         };
         
-        if (!Canvas.IsDiscardDrawingCanvas())
+        if (!Canvas.Is<DiscardDrawingCanvas>())
             DrawingRecorder?.Record(drawingEvent);
         
         var matrixBeforeDraw = Canvas.GetCurrentMatrix().ToMatrix4x4();

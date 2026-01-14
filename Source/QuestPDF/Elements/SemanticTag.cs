@@ -20,7 +20,7 @@ internal class SemanticTag : ContainerElement, ISemanticAware
     internal override void Draw(Size availableSpace)
     {
         var shouldIgnoreSemanticMeaning =
-            Canvas.IsDiscardDrawingCanvas() ||
+            Canvas.Is<DiscardDrawingCanvas>() ||
             SemanticTreeManager == null ||
             SemanticTreeManager.IsCurrentContentArtifact();
         

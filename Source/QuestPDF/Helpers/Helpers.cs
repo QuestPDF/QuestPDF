@@ -204,14 +204,14 @@ namespace QuestPDF.Helpers
             return value.ToString("0.#", CultureInfo.InvariantCulture);
         }
         
-        public static bool IsDiscardDrawingCanvas(this IDrawingCanvas canvas)
+        public static bool Is<T>(this IDrawingCanvas canvas) where T : IDrawingCanvas
         {
             var canvasUnderTest = canvas;
 
             while (canvasUnderTest is ProxyDrawingCanvas proxy)
                 canvasUnderTest = proxy.Target;
 
-            return canvasUnderTest is DiscardDrawingCanvas;
+            return canvasUnderTest is T;
         }
     }
 }

@@ -3,6 +3,7 @@ using QuestPDF.Companion;
 using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using Image = QuestPDF.Elements.Image;
 using SvgImage = QuestPDF.Elements.SvgImage;
@@ -25,7 +26,7 @@ internal sealed class LayoutProxy : ElementProxy
         
         base.Draw(availableSpace);
 
-        if (Canvas is DiscardDrawingCanvas)
+        if (!Canvas.Is<SkiaDrawingCanvas>())
             return;
         
         var matrix = Canvas.GetCurrentMatrix();
