@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using QuestPDF.Drawing;
 using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -90,7 +91,7 @@ namespace QuestPDF.Elements
                 // optimization: draw a simple rectangle with border
                 if (backgroundPaint != null)
                 {
-                    Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
+                    using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
                     Canvas.DrawRectangle(Position.Zero, availableSpace, backgroundPaint);
                 }
                 
@@ -100,7 +101,7 @@ namespace QuestPDF.Elements
                 {
                     borderPaint.SetStroke(BorderLeft);
                     
-                    Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
+                    using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
                     Canvas.DrawRectangle(Position.Zero, availableSpace, borderPaint);
                 }
                 
@@ -123,7 +124,7 @@ namespace QuestPDF.Elements
                     Color = Shadow.Color
                 };
                 
-                Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
+                using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
                 Canvas.DrawShadow(shadowRect, canvasShadow);
             }
 
@@ -135,7 +136,7 @@ namespace QuestPDF.Elements
 
             if (backgroundPaint != null)
             {
-                Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
+                using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
                 Canvas.DrawRectangle(Position.Zero, availableSpace, backgroundPaint);
             }
             
@@ -146,7 +147,7 @@ namespace QuestPDF.Elements
 
             if (borderPaint != null)
             {
-                Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
+                using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
                 Canvas.DrawComplexBorder(borderInnerRect, borderOuterRect, borderPaint);
             }
         }

@@ -148,6 +148,11 @@ namespace QuestPDF.Drawing.DrawingCanvases
             
         }
         
+        public int GetSemanticNodeId()
+        {
+            return 0;
+        }
+        
         public void SetSemanticNodeId(int nodeId)
         {
             

@@ -32,8 +32,9 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         
         RegisterCurrentSemanticNode();
         
+        using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SemanticTreeNode.NodeId);
+        
         SemanticTreeManager.PushOnStack(SemanticTreeNode);
-        Canvas.SetSemanticNodeId(SemanticTreeNode.NodeId);
         Child?.Draw(availableSpace);
         SemanticTreeManager.PopStack();
     }
