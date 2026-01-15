@@ -183,6 +183,11 @@ internal class SemanticAwareDrawingCanvas : IDrawingCanvas
     {
         
     }
+    
+    public int GetSemanticNodeId()
+    {
+        return CurrentSemanticNodeId;
+    }
 
     public void SetSemanticNodeId(int nodeId)
     {

@@ -41,14 +41,16 @@ internal sealed class RepeatContent : ContainerElement, IStateful, ISemanticAwar
                 _ => SkSemanticNodeSpecialId.PaginationArtifact
             };
         
-            Canvas.SetSemanticNodeId(paginationNodeId);
+            using var semanticScope = Canvas.StartSemanticScopeWithNodeId(paginationNodeId);
+            
             SemanticTreeManager.BeginArtifactContent();
-        }
-        
-        base.Draw(availableSpace);
-        
-        if (IsFullyRendered)
+            base.Draw(availableSpace);
             SemanticTreeManager.EndArtifactContent();
+        }
+        else
+        {
+            base.Draw(availableSpace);
+        }
 
         ResetChildrenIfNecessary();
 

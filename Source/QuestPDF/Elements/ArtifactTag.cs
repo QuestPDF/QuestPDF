@@ -17,7 +17,7 @@ internal class ArtifactTag : ContainerElement, ISemanticAware
             return;       
         }
         
-        Canvas.SetSemanticNodeId(Id);
+        using var semanticScope = Canvas.StartSemanticScopeWithNodeId(Id);
         
         SemanticTreeManager.BeginArtifactContent();
         Child?.Draw(availableSpace);

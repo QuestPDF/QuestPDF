@@ -169,3 +169,29 @@ class SemanticTreeSnapshots(SemanticTreeManager? semanticTreeManager, IPageConte
         }
     }
 }
+
+internal readonly ref struct SemanticScope : IDisposable
+{
+    private IDrawingCanvas DrawingCanvas { get; }
+    private int OriginalSemanticNodeId { get; }
+
+    public SemanticScope(IDrawingCanvas drawingCanvas, int nodeId)
+    {
+        DrawingCanvas = drawingCanvas;
+        OriginalSemanticNodeId = drawingCanvas.GetSemanticNodeId();
+        DrawingCanvas.SetSemanticNodeId(nodeId);
+    }
+    
+    public void Dispose()
+    {
+        DrawingCanvas.SetSemanticNodeId(OriginalSemanticNodeId);
+    }
+}
+
+internal static class SemanticCanvasExtensions
+{
+    public static SemanticScope StartSemanticScopeWithNodeId(this IDrawingCanvas canvas, int nodeId)
+    {
+        return new SemanticScope(canvas, nodeId);
+    }
+}

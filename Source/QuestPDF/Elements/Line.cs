@@ -73,9 +73,10 @@ namespace QuestPDF.Elements
             var offset = Type == LineType.Vertical
                 ? new Position(Thickness / 2, 0)
                 : new Position(0, Thickness / 2);
+
+            using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
             
             Canvas.Translate(offset);
-            Canvas.SetSemanticNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
             Canvas.DrawLine(start, end, paint);
             Canvas.Translate(offset.Reverse());
             

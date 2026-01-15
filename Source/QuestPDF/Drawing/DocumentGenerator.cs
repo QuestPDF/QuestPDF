@@ -583,15 +583,23 @@ namespace QuestPDF.Drawing
                     if (container.Child is TextBlock textBlock)
                     {
                         var textBlockContainsPageNumber = textBlock.Items.Any(x => x is TextBlockPageNumber);
-                        
+
                         if (isFooterContext && textBlockContainsPageNumber)
-                            return;
-                        
-                        container.CreateProxy(x => new SemanticTag
                         {
-                            Child = x,
-                            TagType = "P"
-                        });
+                            container.CreateProxy(x => new ArtifactTag
+                            {
+                                Child = x,
+                                Id = SkSemanticNodeSpecialId.PaginationArtifact
+                            });
+                        }
+                        else
+                        {
+                            container.CreateProxy(x => new SemanticTag
+                            {
+                                Child = x,
+                                TagType = "P"
+                            });
+                        }
                     }
                     else
                     {
