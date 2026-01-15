@@ -121,7 +121,7 @@ namespace QuestPDF.Drawing
                 RenderPass(pageContext, new SemanticDocumentCanvas(), content);
                 pageContext.ProceedToNextRenderingPhase();
 
-                canvas.ConfigureWithSemanticTree(semanticTreeManager);
+                canvas.ConfigureWithSemanticTree(semanticTreeManager, settings);
                 
                 canvas.BeginDocument();
                 RenderPass(pageContext, canvas, content);
@@ -167,7 +167,7 @@ namespace QuestPDF.Drawing
                 foreach (var documentPart in documentParts)
                     documentPart.PageContext.ProceedToNextRenderingPhase();
                 
-                canvas.ConfigureWithSemanticTree(semanticTreeManager);
+                canvas.ConfigureWithSemanticTree(semanticTreeManager, settings);
                 
                 canvas.BeginDocument();
 
@@ -195,21 +195,24 @@ namespace QuestPDF.Drawing
                 if (settings.PDFUA_Conformance is not PDFUA_Conformance.None)
                     return true;
 
-                //if (settings.PDFA_Conformance is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_2A or PDFA_Conformance.PDFA_3A)
-                if (settings.PDFA_Conformance is PDFA_Conformance.PDFA_2A or PDFA_Conformance.PDFA_3A)
+                if (settings.PDFA_Conformance is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_2A or PDFA_Conformance.PDFA_3A)
                     return true;
 
                 return false;
             }
         }
 
-        private static void ConfigureWithSemanticTree(this IDocumentCanvas canvas, SemanticTreeManager? semanticTreeManager)
+        private static void ConfigureWithSemanticTree(this IDocumentCanvas canvas, SemanticTreeManager? semanticTreeManager, DocumentSettings settings)
         {
             if (semanticTreeManager == null) 
                 return;
             
             var semanticTree = semanticTreeManager.GetSemanticTree();
             semanticTreeManager.Reset();
+            
+            if (settings.PDFA_Conformance is PDFA_Conformance.PDFA_1A)
+                semanticTree?.AdjustCompatibilityWith_PDF_A1();
+            
             canvas.SetSemanticTree(semanticTree);
         }
 
@@ -604,6 +607,27 @@ namespace QuestPDF.Drawing
                         Traverse(child);
                 }
             }
+        }
+
+        internal static void AdjustCompatibilityWith_PDF_A1(this SemanticTreeNode node)
+        {
+            // the PDF/A-1a standard does not contain the following tags: TFoot, TBody, THead
+            // this method removes unsupported tags from the document
+
+            if (node.Children.Any(IsUnsupported))
+            {
+                var newChildren = node.Children
+                    .SelectMany(child => IsUnsupported(child) ? child.Children : [child])
+                    .ToList();
+            
+                node.Children.Clear();
+                newChildren.ForEach(node.Children.Add);
+            }
+        
+            foreach (var child in node.Children) 
+                child.AdjustCompatibilityWith_PDF_A1();
+            
+            static bool IsUnsupported(SemanticTreeNode node) => node.Type is "TFoot" or "TBody" or "THead";
         }
     }
 }

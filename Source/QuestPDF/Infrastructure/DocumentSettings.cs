@@ -58,8 +58,8 @@ namespace QuestPDF.Infrastructure
     public enum PDFA_Conformance
     {
         None = 0,
-        // PDFA_1A = 1,
-        // PDFA_1B = 2,
+        PDFA_1A = 1,
+        PDFA_1B = 2,
         PDFA_2A = 3,
         PDFA_2B = 4,
         PDFA_2U = 5,

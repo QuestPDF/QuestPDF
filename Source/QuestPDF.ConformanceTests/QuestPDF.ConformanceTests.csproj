@@ -21,6 +21,8 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="NUnit3TestAdapter" Version="6.0.0" />
+        <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.10.1" />
+        <PackageReference Include="Magick.NET.Core" Version="14.10.1" />
     </ItemGroup>
 
     <ItemGroup>

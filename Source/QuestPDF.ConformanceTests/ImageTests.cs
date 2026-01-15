@@ -8,9 +8,26 @@ namespace QuestPDF.ConformanceTests;
 
 internal class ImageTests : ConformanceTestBase
 {
+    [OneTimeSetUp]
+    public void Setup()
+    {
+        // PDF/A-1a and PDF/A-1b require ICC profile version 2
+        // prepare an image with ICC profile version 2
+        var sourceImagePath = Path.Combine("Resources", "photo.jpeg");
+        var targetImagePath = Path.Combine("Resources", "photo-icc2.jpeg");
+
+        ImageHelpers.ConvertImageIccColorSpaceProfileToVersion2(sourceImagePath, targetImagePath);
+    }
+    
     protected override Document GetDocumentUnderTest()
     {
-        var imageData = File.ReadAllBytes("Resources/photo.jpeg");
+        var useImageWithIcc2 = TestContext.CurrentContext.Test.Arguments.FirstOrDefault() is PDFA_Conformance.PDFA_1A or PDFA_Conformance.PDFA_1B;
+        
+        var imagePath = useImageWithIcc2 
+            ? Path.Combine("Resources", "photo-icc2.jpeg") 
+            : Path.Combine("Resources", "photo.jpeg");
+
+        var imageData = File.ReadAllBytes(imagePath);
         
         return Document
             .Create(document =>
