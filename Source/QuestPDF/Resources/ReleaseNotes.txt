@@ -1,9 +1,2 @@
-Fixes:
-- Fixed semantic structure handling in the Dynamic element
-- Fixed semantic structure handling in the Lazy element
-
-Improvements:
-- Updated package icon
-- Updated NuGet package metadata (readme and description)
-- Revised welcome message to clarify licensing options and improve guidance
-- Updated third-party license attributions (removed ICU, added libgrapheme)
+- Improved handling of semantic structure and artifact context, resolving rare edge cases.
+- Fixed an issue where element selection could appear blurry in the QuestPDF Companion App.
