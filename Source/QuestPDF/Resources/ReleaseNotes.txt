@@ -1,9 +1,5 @@
-Fixes:
-- Fixed semantic structure handling in the Dynamic element
-- Fixed semantic structure handling in the Lazy element
+This release adds experimental support for the PDF/A-1a and PDF/A-1b conformance standards.
 
-Improvements:
-- Updated package icon
-- Updated NuGet package metadata (readme and description)
-- Revised welcome message to clarify licensing options and improve guidance
-- Updated third-party license attributions (removed ICU, added libgrapheme)
+Due to the significant complexity of these standards, this feature is marked as experimental and may not cover all edge cases.
+
+Output compliance has been tested with Adobe Acrobat Pro Preflight and veraPDF.
