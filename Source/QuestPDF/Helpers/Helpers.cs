@@ -178,24 +178,41 @@ namespace QuestPDF.Helpers
         
             float ConvertToPoints(float value, SkSvgImageSize.Unit unit)
             {
-                const float InchToCentimetre = 2.54f;
-                const float InchToPoints = 72;
-            
-                // in CSS dpi is set to 96, but Skia uses more traditional 90
-                const float PointToPixel = 90f / 72;
+                const float inchToCentimetre = 2.54f;
+                const float inchToPoints = 72;
         
                 var points =  unit switch
                 {
-                    Centimeters => value / InchToCentimetre * InchToPoints,
-                    Millimeters => value / 10 / InchToCentimetre * InchToPoints,
-                    Inches => value * InchToPoints,
+                    Centimeters => value / inchToCentimetre * inchToPoints,
+                    Millimeters => value / 10 / inchToCentimetre * inchToPoints,
+                    Inches => value * inchToPoints,
                     Points => value,
                     Picas => value * 12,
                     _ => throw new ArgumentOutOfRangeException()
                 };
         
                 // different naming schema: SVG pixel = PDF point
-                return points * PointToPixel;
+                return points * GetScalingFactor();
+            }
+
+            float GetScalingFactor()
+            {
+                // in CSS dpi is set to 96, but Skia uses more traditional 90
+                // when the SVG ViewBox attribute is present, Skia uses legacy/traditional 90 DPI
+                // otherwise, we should assume modern CSS-based 96 DPI for better compatibility
+                var targetDpi = HasViewBox() ? 90f : 96f;
+                return targetDpi / 72;
+            }
+
+            bool HasViewBox()
+            {
+                return image.ViewBox is not
+                {
+                    Left : 0f, 
+                    Top : 0f, 
+                    Width : 0f, 
+                    Height : 0f
+                };
             }
         }
 
