@@ -168,7 +168,7 @@ namespace QuestPDF.Helpers
             float CalculateDimensionScale(float availableSize, float imageSize, SkSvgImageSize.Unit unit)
             {
                 if (unit == Percentage)
-                    return 100f / imageSize;
+                    return 1;
 
                 if (unit is Centimeters or Millimeters or Inches or Points or Picas)
                     return availableSize / ConvertToPoints(imageSize, unit);   
