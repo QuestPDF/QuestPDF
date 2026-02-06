@@ -1,2 +1,4 @@
-- Improved handling of semantic structure and artifact context, resolving rare edge cases.
-- Fixed an issue where element selection could appear blurry in the QuestPDF Companion App.
+- Enhanced layout debugging algorithms for more accurate error detection.
+- Improved representation of layout root causes in the Companion app.
+- Fixed SVG image scaling when the viewBox attribute is not specified.
+- Fixed SVG incorrect scaling of images that use percentage units.
