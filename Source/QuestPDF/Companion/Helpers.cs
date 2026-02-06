@@ -52,6 +52,9 @@ internal static class CompanionModelHelpers
         {
             var layout = node.Value;
             var child = layout.Child;
+
+            while (child is ElementProxy proxy)
+                child = proxy.Child;
                 
             return new CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement
             {
