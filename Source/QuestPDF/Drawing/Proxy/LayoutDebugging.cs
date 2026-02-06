@@ -94,12 +94,11 @@ internal static class LayoutDebugging
             // all the code below relates to element that is wrapping,
             // it could be a root cause, or contain a child (even deeply nested) that is the root cause
             
-            // strategy
-            // the current does not contain any wrapping elements, no obvious root causes,
+            // strategy:
+            // the current element does not contain any wrapping children, no obvious root causes,
             // if it renders at least partially with extended space, it is a layout root cause
             if (element.Children.All(x => x.Value.SpacePlan?.Type is not SpacePlanType.Wrap) && MeasureElementWithExtendedSpace() is SpacePlanType.PartialRender or SpacePlanType.FullRender)
             {
-                // so apply the layout overflow proxy
                 element.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });
                 return;
             }
@@ -109,28 +108,41 @@ internal static class LayoutDebugging
             // traverse them and attempt to fix them
             foreach (var child in element.Children.Where(x => x.Value.SpacePlan?.Type is SpacePlanType.Wrap).ToList())
                 Traverse(child);
-                
-            // check if fixing wrapping children helped
-            if (MeasureElementWithExtendedSpace() is not SpacePlanType.Wrap)
+
+            // check if fixing wrapping children resolved the issue under original constraints
+            if (MeasureElementWithOriginalSpace() is not SpacePlanType.Wrap)
                 return;
 
+            // fixing wrapping children was not sufficient under original constraints;
+            // if this element fits with extended space, it is also a root cause
+            if (MeasureElementWithExtendedSpace() is SpacePlanType.PartialRender or SpacePlanType.FullRender)
+            {
+                element.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });
+                return;
+            }
+
             // strategy:
-            // the current element has layout issues but no obvious/trivial root causes
+            // the current element has layout issues but no obvious/trivial root causes,
             // possibly the problem is in nested children of partial rendering children
             foreach (var child in element.Children.Where(x => x.Value.SpacePlan?.Type is SpacePlanType.PartialRender).ToList())
                 Traverse(child);
-                
-            // check if fixing partial children helped
-            if (MeasureElementWithExtendedSpace() is not SpacePlanType.Wrap)
+
+            // check if fixing partial children resolved the issue under original constraints
+            if (MeasureElementWithOriginalSpace() is not SpacePlanType.Wrap)
                 return;
-            
-            // none of the attempts above have fixed the layout issue
+
+            // none of the attempts above have fixed the layout issue,
             // the element itself is the root cause
             element.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });
 
             SpacePlanType MeasureElementWithExtendedSpace()
             {
-                return element.Value.TryMeasureWithOverflow(element.Value.AvailableSpace.Value).Type;
+                return element.Value.TryMeasureWithOverflow(element.Value.AvailableSpace!.Value).Type;
+            }
+
+            SpacePlanType MeasureElementWithOriginalSpace()
+            {
+                return element.Value.Measure(element.Value.AvailableSpace!.Value).Type;
             }
         }
     }

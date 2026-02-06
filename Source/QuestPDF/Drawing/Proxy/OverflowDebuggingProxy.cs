@@ -18,7 +18,7 @@ internal sealed class OverflowDebuggingProxy : ElementProxy
     {
         var spacePlan = Child.Measure(availableSpace);
 
-        if (IsMeasuring)
+        if (IsMeasuring && !Size.Equal(availableSpace, Size.Zero))
         {
             AvailableSpace = availableSpace;
             SpacePlan = spacePlan;
