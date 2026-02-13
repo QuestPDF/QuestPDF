@@ -1,4 +1,1 @@
-- Enhanced layout debugging algorithms for more accurate error detection.
-- Improved representation of layout root causes in the Companion app.
-- Fixed SVG image scaling when the viewBox attribute is not specified.
-- Fixed SVG incorrect scaling of images that use percentage units.
+- Updated the Skia native dependency to the m144 version.
