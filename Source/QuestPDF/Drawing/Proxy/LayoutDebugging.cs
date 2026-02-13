@@ -97,7 +97,7 @@ internal static class LayoutDebugging
             // strategy:
             // the current element does not contain any wrapping children, no obvious root causes,
             // if it renders at least partially with extended space, it is a layout root cause
-            if (element.Children.All(x => x.Value.SpacePlan?.Type is not SpacePlanType.Wrap) && MeasureElementWithExtendedSpace() is SpacePlanType.PartialRender or SpacePlanType.FullRender)
+            if (element.Children.All(x => x.Value.SpacePlan?.Type is not SpacePlanType.Wrap) && MeasureElementWithExtendedSpace() is not SpacePlanType.Wrap)
             {
                 element.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });
                 return;
@@ -115,7 +115,7 @@ internal static class LayoutDebugging
 
             // fixing wrapping children was not sufficient under original constraints;
             // if this element fits with extended space, it is also a root cause
-            if (MeasureElementWithExtendedSpace() is SpacePlanType.PartialRender or SpacePlanType.FullRender)
+            if (MeasureElementWithExtendedSpace() is not SpacePlanType.Wrap)
             {
                 element.Value.CreateProxy(x => new LayoutOverflowVisualization { Child = x });
                 return;
