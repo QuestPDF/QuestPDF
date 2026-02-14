@@ -34,7 +34,8 @@ namespace QuestPDF.Elements.Text
         private bool AreParagraphMetricsValid { get; set; }
         private bool AreParagraphItemsTransformedWithSpacingAndIndentation { get; set; }
         
-        private SkSize[] LineMetrics { get; set; }
+        public SkSize[] LineMetrics { get; private set; }
+        
         private float WidthForLineMetricsCalculation { get; set; }
         private float MaximumWidth { get; set; }
         private SkRect[] PlaceholderPositions { get; set; }
