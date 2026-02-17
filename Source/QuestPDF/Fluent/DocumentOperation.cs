@@ -206,18 +206,18 @@ public sealed class DocumentOperation
     /// <summary>
     /// Loads the specified PDF file for processing, enabling operations such as merging, overlaying or underlaying content, selecting pages, adding attachments, and encrypting.
     /// </summary>
-    /// <param name="filepath">The full path to the PDF file to be loaded.</param>
+    /// <param name="filePath">The full path to the PDF file to be loaded.</param>
     /// <param name="password">The password for the PDF file, if it is password-protected. Optional.</param>
-    public static DocumentOperation LoadFile(string filepath, string? password = null)
+    public static DocumentOperation LoadFile(string filePath, string? password = null)
     {
-        if (!File.Exists(filepath))
-            throw new Exception("The file could not be found");
+        if (!File.Exists(filePath))
+            throw new Exception($"The file could not be found: {filePath}");
         
         return new DocumentOperation
         {
             Configuration = new JobConfiguration
             {
-                InputFile = filepath,
+                InputFile = filePath,
                 Password = password
             }
         };
@@ -249,7 +249,7 @@ public sealed class DocumentOperation
     public DocumentOperation MergeFile(string filePath, string? pageSelector = null)
     {
         if (!File.Exists(filePath))
-            throw new Exception("The file could not be found");
+            throw new Exception($"The file could not be found: {filePath}");
         
         if (Configuration.Pages == null)
             TakePages("1-z");
@@ -270,7 +270,7 @@ public sealed class DocumentOperation
     public DocumentOperation UnderlayFile(LayerConfiguration configuration)
     {
         if (!File.Exists(configuration.FilePath))
-            throw new Exception("The file could not be found");
+            throw new Exception($"The file could not be found: {configuration.FilePath}");
         
         Configuration.Underlay ??= new List<JobConfiguration.LayerConfiguration>();
         
@@ -292,7 +292,7 @@ public sealed class DocumentOperation
     public DocumentOperation OverlayFile(LayerConfiguration configuration)
     {
         if (!File.Exists(configuration.FilePath))
-            throw new Exception("The file could not be found");
+            throw new Exception($"The file could not be found: {configuration.FilePath}");
         
         Configuration.Overlay ??= new List<JobConfiguration.LayerConfiguration>();
         
@@ -330,7 +330,7 @@ public sealed class DocumentOperation
         Configuration.AddAttachment ??= new List<JobConfiguration.AddDocumentAttachment>();
 
         if (!File.Exists(attachment.FilePath))
-            throw new Exception("The file could not be found");
+            throw new Exception($"The file could not be found: {attachment.FilePath}");
         
         var file = new FileInfo(attachment.FilePath);
         
