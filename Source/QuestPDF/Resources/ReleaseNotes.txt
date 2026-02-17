@@ -1,1 +1,2 @@
-- Updated the Skia native dependency to the m144 version.
+- Fixed an issue where the DocumentOperation API could throw an exception when a warning occurs
+- Improved error handling in DocumentOperation by including file paths in exception messages
