@@ -30,19 +30,20 @@ static class QpdfAPI
         var jobHandle = API.qpdfjob_init();
         API.qpdfjob_set_logger(jobHandle, logger);
         API.qpdfjob_initialize_from_json(jobHandle, jobJson);
-        API.qpdfjob_run(jobHandle);
+        var jobResultId = API.qpdfjob_run(jobHandle);
         API.qpdfjob_cleanup(jobHandle);
         
         // logger cleanup
         API.qpdflogger_cleanup(logger);
         
         // check errors
-        var errorMessage = error.ToString();
+        var isError = jobResultId is 2; // 0 = success, 1 = undefined, 2 = error, 3 = warning
         
+        var errorMessage = error.ToString();
         errorHandle.Free();
         
-        if (!string.IsNullOrEmpty(errorMessage))
-            throw new Exception(errorMessage);
+        if (isError)
+            throw new Exception($"QuestPDF could not perform document operation:\n\n{errorMessage}");
     }
     
     #region Logging
