@@ -9,13 +9,6 @@ namespace QuestPDF.Interop.Generators.Languages;
 /// </summary>
 public class PythonLanguageProvider : ILanguageProvider
 {
-    public string LanguageName => "Python";
-    public string FileExtension => ".py";
-    public string MainTemplateName => "Python.Main";
-    public string ObjectTemplateName => "Python.Object";
-    public string EnumTemplateName => "Python.Enum";
-    public string ColorsTemplateName => "Python.Colors";
-
     public string ConvertName(string csharpName, NameContext context)
     {
         return context switch
@@ -237,15 +230,5 @@ public class PythonLanguageProvider : ILanguageProvider
             CallbackArgumentTypeName = callback.ArgumentTypeName,
             InternalCallbackName = $"_internal_{ConvertName(callback.ParameterName, NameContext.Parameter)}_handler"
         };
-    }
-
-    public object BuildEnumTemplateModel(object enums)
-    {
-        return new { Enums = enums };
-    }
-
-    public object BuildColorsTemplateModel(object basicColors, object colorGroups)
-    {
-        return new { BasicColors = basicColors, ColorGroups = colorGroups };
     }
 }

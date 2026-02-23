@@ -9,13 +9,6 @@ namespace QuestPDF.Interop.Generators.Languages;
 /// </summary>
 public class TypeScriptLanguageProvider : ILanguageProvider
 {
-    public string LanguageName => "TypeScript";
-    public string FileExtension => ".ts";
-    public string MainTemplateName => "TypeScript.Main";
-    public string ObjectTemplateName => "TypeScript.Object";
-    public string EnumTemplateName => "TypeScript.Enum";
-    public string ColorsTemplateName => "TypeScript.Colors";
-
     // Store current class name for TypeParameter resolution
     private string _currentClassName;
 
@@ -273,15 +266,5 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         }));
 
         return $"{returnType} {methodName}({string.Join(", ", parameters)})";
-    }
-
-    public object BuildEnumTemplateModel(object enums)
-    {
-        return new { Enums = enums };
-    }
-
-    public object BuildColorsTemplateModel(object basicColors, object colorGroups)
-    {
-        return new { BasicColors = basicColors, ColorGroups = colorGroups };
     }
 }

@@ -171,7 +171,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         var customClass = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Class");
         
         var templateModel = provider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
-        var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var mainCode = TemplateManager.RenderTemplate("Python.Object", templateModel);
 
         return mainCode;
     }
@@ -186,7 +186,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         var customClass = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Class");
         
         var templateModel = provider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
-        var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var mainCode = TemplateManager.RenderTemplate("TypeScript.Object", templateModel);
 
         return mainCode;
     }
@@ -201,7 +201,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
         var customClass = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Class");
         
         var templateModel = provider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
-        var mainCode = TemplateManager.RenderTemplate(provider.ObjectTemplateName, templateModel);
+        var mainCode = TemplateManager.RenderTemplate("Kotlin.Object", templateModel);
 
         return mainCode;
     }
