@@ -164,7 +164,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     public string GeneratePythonCode(Compilation compilation)
     {
         var classModel = BuildClassModel(compilation);
-        var provider = LanguageProviderRegistry.Python;
+        var provider = new PythonLanguageProvider();
 
         var customDefinitions = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Defs");
         var customInit = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Init");
@@ -179,7 +179,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     public string GenerateTypeScriptCode(Compilation compilation)
     {
         var classModel = BuildClassModel(compilation);
-        var provider = LanguageProviderRegistry.TypeScript;
+        var provider = new TypeScriptLanguageProvider();
         
         var customDefinitions = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Defs");
         var customInit = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Init");
@@ -194,7 +194,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     public string GenerateKotlinCode(Compilation compilation)
     {
         var classModel = BuildClassModel(compilation);
-        var provider = LanguageProviderRegistry.Kotlin;
+        var provider = new KotlinLanguageProvider();
         
         var customDefinitions = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Defs");
         var customInit = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Init");
