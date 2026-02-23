@@ -9,12 +9,7 @@ namespace QuestPDF.Interop.Generators.Languages;
 /// </summary>
 public class KotlinLanguageProvider : ILanguageProvider
 {
-    public string LanguageName => "Kotlin";
-    public string FileExtension => ".kt";
-    public string MainTemplateName => "Kotlin.Main";
     public string ObjectTemplateName => "Kotlin.Object";
-    public string EnumTemplateName => "Kotlin.Enum";
-    public string ColorsTemplateName => "Kotlin.Colors";
 
     // Store current class name for TypeParameter resolution
     private string _currentClassName;
@@ -340,15 +335,5 @@ public class KotlinLanguageProvider : ILanguageProvider
         }));
 
         return $"fun {methodName}({string.Join(", ", parameters)}): {returnType}";
-    }
-
-    public object BuildEnumTemplateModel(object enums)
-    {
-        return new { Enums = enums };
-    }
-
-    public object BuildColorsTemplateModel(object basicColors, object colorGroups)
-    {
-        return new { BasicColors = basicColors, ColorGroups = colorGroups };
     }
 }

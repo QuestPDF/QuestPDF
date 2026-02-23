@@ -1,8 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using QuestPDF.Interop.Generators.Languages;
@@ -208,14 +205,6 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     
     private string TryLoadingCustomContent(string id)
     {
-        using var stream = Assembly
-            .GetExecutingAssembly()
-            .GetManifestResourceStream($"QuestPDF.Interop.Generators.Templates.{id}.liquid");
-        
-        if (stream == null)
-            return string.Empty;
-
-        using var streamReader = new StreamReader(stream);
-        return streamReader.ReadToEnd();
+        return TemplateManager.TryLoadRawTemplate(id);
     }
 }

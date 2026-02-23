@@ -74,13 +74,14 @@ public sealed class PublicApiGenerator
             new ContainerSourceGenerator()
             {
                 ExcludeMembers = [
+                    "DynamicComponentExtensions",
                     "BackgroundLinearGradient",
                     "BorderLinearGradient",
                     "QuestPDF.Fluent.ImageExtensions.Image(QuestPDF.Infrastructure.IContainer, System.Func<QuestPDF.Infrastructure.ImageSize, byte[]>)",
                     "QuestPDF.Fluent.SvgExtensions.Svg(QuestPDF.Infrastructure.IContainer, System.Func<QuestPDF.Infrastructure.Size, string>)"
                 ]
             },
-            new TableCellDescriptorSourceGenerator()
+            new ContainerSourceGenerator("ITableCellContainer", "QuestPDF.Elements.Table.ITableCellContainer")
             {
                 InheritFrom = "Container"
             },

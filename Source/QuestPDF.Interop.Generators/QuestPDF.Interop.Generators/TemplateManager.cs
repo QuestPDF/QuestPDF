@@ -69,33 +69,28 @@ internal static class TemplateManager
     }
 
     /// <summary>
-    /// Checks if a template exists as an embedded resource.
+    /// Loads the raw content of a template file, or returns an empty string if it does not exist.
     /// </summary>
-    public static bool TemplateExists(string templateName)
-    {
-        var resourceName = $"QuestPDF.Interop.Generators.Templates.{templateName}.liquid";
-        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-        return stream != null;
-    }
-
-    /// <summary>
-    /// Renders a template if it exists, otherwise returns an empty string.
-    /// </summary>
-    public static string RenderTemplateIfExists(string templateName, object templateModel)
-    {
-        if (!TemplateExists(templateName))
-            return string.Empty;
-
-        return RenderTemplate(templateName, templateModel);
-    }
-
-    private static string LoadTemplateString(string templateName)
+    public static string TryLoadRawTemplate(string templateName)
     {
         using var stream = Assembly
             .GetExecutingAssembly()
             .GetManifestResourceStream($"QuestPDF.Interop.Generators.Templates.{templateName}.liquid");
 
+        if (stream == null)
+            return string.Empty;
+
         using var streamReader = new StreamReader(stream);
         return streamReader.ReadToEnd();
+    }
+
+    private static string LoadTemplateString(string templateName)
+    {
+        var content = TryLoadRawTemplate(templateName);
+
+        if (string.IsNullOrEmpty(content))
+            throw new InvalidOperationException($"Template '{templateName}' not found.");
+
+        return content;
     }
 }

@@ -10,69 +10,14 @@ namespace QuestPDF.Interop.Generators.Languages;
 public interface ILanguageProvider
 {
     /// <summary>
-    /// The name of the target language (e.g., "Python", "Java", "TypeScript").
-    /// </summary>
-    string LanguageName { get; }
-
-    /// <summary>
-    /// The file extension for generated files (e.g., ".py", ".java", ".ts").
-    /// </summary>
-    string FileExtension { get; }
-
-    /// <summary>
-    /// Converts a C# name to the target language's naming convention.
-    /// </summary>
-    string ConvertName(string csharpName, NameContext context);
-
-    /// <summary>
-    /// Gets the target language type for a given interop type model.
-    /// </summary>
-    string GetTargetType(InteropTypeModel type);
-
-    /// <summary>
-    /// Formats a default value for the target language.
-    /// </summary>
-    string FormatDefaultValue(InteropParameterModel parameter);
-
-    /// <summary>
-    /// Gets the value representation for passing to interop calls.
-    /// </summary>
-    string GetInteropValue(InteropParameterModel parameter, string variableName);
-
-    /// <summary>
-    /// Gets the template name for the main output file.
-    /// </summary>
-    string MainTemplateName { get; }
-
-    /// <summary>
     /// Gets the template name for object/class generation.
     /// </summary>
     string ObjectTemplateName { get; }
 
     /// <summary>
-    /// Gets the template name for enum generation.
-    /// </summary>
-    string EnumTemplateName { get; }
-
-    /// <summary>
-    /// Gets the template name for colors generation.
-    /// </summary>
-    string ColorsTemplateName { get; }
-
-    /// <summary>
     /// Builds a language-specific template model for a class.
     /// </summary>
     object BuildClassTemplateModel(InteropClassModel classModel, string customDefinitions, string customInit, string customClass);
-
-    /// <summary>
-    /// Builds a language-specific template model for enums.
-    /// </summary>
-    object BuildEnumTemplateModel(object enums);
-
-    /// <summary>
-    /// Builds a language-specific template model for colors.
-    /// </summary>
-    object BuildColorsTemplateModel(object basicColors, object colorGroups);
 }
 
 /// <summary>
