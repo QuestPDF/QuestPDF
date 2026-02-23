@@ -8,7 +8,8 @@ namespace QuestPDF.Interop.Generators.Languages;
 /// naming conventions, and template model generation.
 /// </summary>
 public interface ILanguageProvider
-{ /// <summary>
+{ 
+    /// <summary>
     /// Builds a language-specific template model for a class.
     /// </summary>
     object BuildClassTemplateModel(InteropClassModel classModel, string customDefinitions, string customInit, string customClass);

@@ -163,45 +163,28 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     
     public string GeneratePythonCode(Compilation compilation)
     {
-        var classModel = BuildClassModel(compilation);
-        var provider = new PythonLanguageProvider();
-
-        var customDefinitions = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Defs");
-        var customInit = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Init");
-        var customClass = TryLoadingCustomContent($"Python.{GetTargetClassName(compilation)}.Object.Class");
-        
-        var templateModel = provider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
-        var mainCode = TemplateManager.RenderTemplate("Python.Object", templateModel);
-
-        return mainCode;
+        return GenerateCode(compilation, "Python", new PythonLanguageProvider());
     }
 
     public string GenerateTypeScriptCode(Compilation compilation)
     {
-        var classModel = BuildClassModel(compilation);
-        var provider = new TypeScriptLanguageProvider();
-        
-        var customDefinitions = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Defs");
-        var customInit = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Init");
-        var customClass = TryLoadingCustomContent($"TypeScript.{GetTargetClassName(compilation)}.Object.Class");
-        
-        var templateModel = provider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
-        var mainCode = TemplateManager.RenderTemplate("TypeScript.Object", templateModel);
-
-        return mainCode;
+        return GenerateCode(compilation, "TypeScript", new TypeScriptLanguageProvider());
     }
 
     public string GenerateKotlinCode(Compilation compilation)
     {
+        return GenerateCode(compilation, "Kotlin", new KotlinLanguageProvider());
+    }
+
+    private string GenerateCode(Compilation compilation, string prefix, ILanguageProvider languageProvider)
+    {
         var classModel = BuildClassModel(compilation);
-        var provider = new KotlinLanguageProvider();
+        var customDefinitions = TryLoadingCustomContent($"{prefix}.{GetTargetClassName(compilation)}.Object.Defs");
+        var customInit = TryLoadingCustomContent($"{prefix}.{GetTargetClassName(compilation)}.Object.Init");
+        var customClass = TryLoadingCustomContent($"{prefix}.{GetTargetClassName(compilation)}.Object.Class");
         
-        var customDefinitions = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Defs");
-        var customInit = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Init");
-        var customClass = TryLoadingCustomContent($"Kotlin.{GetTargetClassName(compilation)}.Object.Class");
-        
-        var templateModel = provider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
-        var mainCode = TemplateManager.RenderTemplate("Kotlin.Object", templateModel);
+        var templateModel = languageProvider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
+        var mainCode = TemplateManager.RenderTemplate($"{prefix}.Object", templateModel);
 
         return mainCode;
     }
