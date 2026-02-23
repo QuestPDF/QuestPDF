@@ -6,38 +6,19 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 using QuestPDF.Interop.Generators.Languages;
-using QuestPDF.Interop.Generators.Models;
 
 namespace QuestPDF.Interop.Generators;
 
 internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 {
     public string? InheritFrom { get; set; }
-    
+
     protected abstract IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation);
     protected abstract INamedTypeSymbol GetTargetType(Compilation compilation);
 
     private string GetTargetClassName(Compilation compilation)
     {
-        var targetType = GetTargetType(compilation);
-
-        if (targetType.TypeKind == TypeKind.Interface)
-            return targetType.Name.TrimStart('I');
-
-        return targetType.Name;
-    }
-
-    /// <summary>
-    /// Builds a language-agnostic class model from the compilation.
-    /// This model can be reused across all target languages.
-    /// </summary>
-    protected InteropClassModel BuildClassModel(Compilation compilation)
-    {
-        var targetType = GetTargetType(compilation);
-        var methods = GetTargetMethods(compilation);
-        var result = InteropModelBuilder.BuildClassModel(targetType, methods);
-        result.InheritFrom = InheritFrom;
-        return result;
+        return GetTargetType(compilation).GetGeneratedClassName();
     }
 
     public string GenerateCSharpCode(Compilation compilation)
@@ -47,14 +28,14 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             {
                 Methods = GetTargetMethods(compilation).Select(MapMethod)
             });
-        
+
         object MapMethod(IMethodSymbol method)
         {
             var parameters = method.Parameters.SelectMany(GetMethodParameter);
-            
+
             if (!method.IsExtensionMethod && !method.IsStatic)
                 parameters = parameters.Prepend("IntPtr target");
-            
+
             return new NativeInteropMethodTemplateModel
             {
                 NativeName = method.GetNativeMethodName(GetTargetClassName(compilation)),
@@ -80,7 +61,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                     .TypeArguments
                     .Select(x => x.GetInteropMethodParameterType())
                     .Append("void");
-                
+
                 var genericTypesString = string.Join(", ", genericTypes);
                 yield return $"delegate* unmanaged[Cdecl]<{genericTypesString}> {parameterSymbol.Name}";
             }
@@ -89,7 +70,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 var genericTypes = funcSymbol
                     .TypeArguments
                     .Select(x => x.GetInteropMethodParameterType());
-                
+
                 var genericTypesString = string.Join(", ", genericTypes);
                 yield return $"delegate* unmanaged[Cdecl]<{genericTypesString}> {parameterSymbol.Name}";
             }
@@ -112,15 +93,15 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
                 yield return $"{parameterSymbol.Type.GetInteropMethodParameterType()} {parameterSymbol.Name}";
             }
         }
-        
+
         IEnumerable<string> GetTargetMethodParameter(IParameterSymbol parameterSymbol)
         {
             var imageType = typeof(QuestPDF.Infrastructure.Image);
             var svgImageType = typeof(QuestPDF.Infrastructure.SvgImage);
-            
+
             if (parameterSymbol.Type.TypeKind == TypeKind.Enum)
             {
-                yield return $"({parameterSymbol.Type.ToDisplayString()}){parameterSymbol.Name}";   
+                yield return $"({parameterSymbol.Type.ToDisplayString()}){parameterSymbol.Name}";
             }
             else if (parameterSymbol.Type.Name == "QuestPDF.Infrastructure.Color")
             {
@@ -128,7 +109,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             }
             else if (parameterSymbol.Type.IsAction())
             {
-                yield return $"x => {{ var boxed = BoxHandle(x); {parameterSymbol.Name}(boxed); FreeHandle(boxed); }}";   
+                yield return $"x => {{ var boxed = BoxHandle(x); {parameterSymbol.Name}(boxed); FreeHandle(boxed); }}";
             }
             else if (parameterSymbol.Type.IsFunc())
             {
@@ -160,7 +141,7 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
             }
         }
     }
-    
+
     public string GeneratePythonCode(Compilation compilation)
     {
         return GenerateCode(compilation, "Python", new PythonLanguageProvider());
@@ -178,23 +159,28 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
 
     private string GenerateCode(Compilation compilation, string prefix, ILanguageProvider languageProvider)
     {
-        var classModel = BuildClassModel(compilation);
-        var customDefinitions = TryLoadingCustomContent($"{prefix}.{GetTargetClassName(compilation)}.Object.Defs");
-        var customInit = TryLoadingCustomContent($"{prefix}.{GetTargetClassName(compilation)}.Object.Init");
-        var customClass = TryLoadingCustomContent($"{prefix}.{GetTargetClassName(compilation)}.Object.Class");
-        
-        var templateModel = languageProvider.BuildClassTemplateModel(classModel, customDefinitions, customInit, customClass);
-        var mainCode = TemplateManager.RenderTemplate($"{prefix}.Object", templateModel);
+        var targetType = GetTargetType(compilation);
+        var methods = GetTargetMethods(compilation).ToList();
+        var overloads = methods.ComputeOverloads();
+        var className = targetType.GetGeneratedClassName();
 
-        return mainCode;
+        var customDefinitions = TryLoadingCustomContent($"{prefix}.{className}.Object.Defs");
+        var customInit = TryLoadingCustomContent($"{prefix}.{className}.Object.Init");
+        var customClass = TryLoadingCustomContent($"{prefix}.{className}.Object.Class");
+
+        var templateModel = languageProvider.BuildClassTemplateModel(
+            targetType, methods, overloads, InheritFrom,
+            customDefinitions, customInit, customClass);
+
+        return TemplateManager.RenderTemplate($"{prefix}.Object", templateModel);
     }
-    
+
     private string TryLoadingCustomContent(string id)
     {
         using var stream = Assembly
             .GetExecutingAssembly()
             .GetManifestResourceStream($"QuestPDF.Interop.Generators.Templates.{id}.liquid");
-        
+
         if (stream == null)
             return string.Empty;
 

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using QuestPDF.Interop.Generators.Models;
+using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
 
 /// <summary>
 /// Language provider for TypeScript code generation using koffi.
 /// </summary>
-public class TypeScriptLanguageProvider : ILanguageProvider
+internal class TypeScriptLanguageProvider : ILanguageProvider
 {
     // Store current class name for TypeParameter resolution
     private string _currentClassName;
@@ -26,22 +26,23 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         };
     }
 
-    public string GetTargetType(InteropTypeModel type)
+    public string GetTargetType(ITypeSymbol type)
     {
-        return type.Kind switch
+        var kind = type.GetInteropTypeKind();
+        return kind switch
         {
             InteropTypeKind.Void => "void",
             InteropTypeKind.Boolean => "boolean",
             InteropTypeKind.Integer => "number",
             InteropTypeKind.Float => "number",
             InteropTypeKind.String => "string",
-            InteropTypeKind.Enum => type.ShortName,
-            InteropTypeKind.Class => type.ShortName,
-            InteropTypeKind.Interface => type.ShortName.TrimStart('I'),
+            InteropTypeKind.Enum => type.Name,
+            InteropTypeKind.Class => type.Name,
+            InteropTypeKind.Interface => type.Name.TrimStart('I'),
             InteropTypeKind.TypeParameter => _currentClassName ?? "unknown",
             InteropTypeKind.Color => "Color",
-            InteropTypeKind.Action => FormatFunctionType(type, isFunc: false),
-            InteropTypeKind.Func => FormatFunctionType(type, isFunc: true),
+            InteropTypeKind.Action => FormatFunctionType((INamedTypeSymbol)type, isFunc: false),
+            InteropTypeKind.Func => FormatFunctionType((INamedTypeSymbol)type, isFunc: true),
             InteropTypeKind.Unknown => "unknown",
             _ => "unknown"
         };
@@ -52,9 +53,10 @@ public class TypeScriptLanguageProvider : ILanguageProvider
     /// Note: koffi doesn't support callback type names in signature strings,
     /// so all callbacks are declared as void* pointers.
     /// </summary>
-    public string GetKoffiType(InteropTypeModel type)
+    public string GetKoffiType(ITypeSymbol type)
     {
-        return type.Kind switch
+        var kind = type.GetInteropTypeKind();
+        return kind switch
         {
             InteropTypeKind.Void => "void",
             InteropTypeKind.Boolean => "uint8_t",
@@ -73,9 +75,9 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         };
     }
 
-    private string GetKoffiIntegerType(InteropTypeModel type)
+    private string GetKoffiIntegerType(ITypeSymbol type)
     {
-        var typeName = type.OriginalTypeName ?? "";
+        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         if (typeName.Contains("Int64") || typeName.Contains("long"))
             return "int64_t";
         if (typeName.Contains("UInt64") || typeName.Contains("ulong"))
@@ -93,15 +95,15 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         return "int32_t";
     }
 
-    private string GetKoffiFloatType(InteropTypeModel type)
+    private string GetKoffiFloatType(ITypeSymbol type)
     {
-        var typeName = type.OriginalTypeName ?? "";
+        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         return typeName.Contains("Double") || typeName.Contains("double") ? "double" : "float";
     }
 
-    private string FormatFunctionType(InteropTypeModel type, bool isFunc)
+    private string FormatFunctionType(INamedTypeSymbol type, bool isFunc)
     {
-        if (type.TypeArguments == null || type.TypeArguments.Length == 0)
+        if (type.TypeArguments.Length == 0)
             return isFunc ? "() => unknown" : "() => void";
 
         if (isFunc)
@@ -118,39 +120,43 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         }
     }
 
-    private string GetTargetTypeForCallback(InteropTypeModel type)
+    private string GetTargetTypeForCallback(ITypeSymbol type)
     {
-        if (type.Kind == InteropTypeKind.Interface)
-            return type.ShortName.TrimStart('I');
-        return type.ShortName;
+        if (type.GetInteropTypeKind() == InteropTypeKind.Interface)
+            return type.Name.TrimStart('I');
+        return type.Name;
     }
 
-    public string FormatDefaultValue(InteropParameterModel parameter)
+    public string FormatDefaultValue(IParameterSymbol parameter)
     {
-        if (!parameter.HasDefaultValue)
+        if (!parameter.HasExplicitDefaultValue)
             return null;
 
-        if (parameter.DefaultValue == null)
+        if (parameter.ExplicitDefaultValue == null)
             return "undefined";
 
-        if (parameter.Type.Kind == InteropTypeKind.Enum && parameter.DefaultEnumMemberName != null)
-            return $"{parameter.Type.ShortName}.{parameter.DefaultEnumMemberName}";
+        var kind = parameter.Type.GetInteropTypeKind();
 
-        if (parameter.DefaultValue is bool boolValue)
+        if (kind == InteropTypeKind.Enum && parameter.GetDefaultEnumMemberName() != null)
+            return $"{parameter.Type.Name}.{parameter.GetDefaultEnumMemberName()}";
+
+        if (parameter.ExplicitDefaultValue is bool boolValue)
             return boolValue ? "true" : "false";
 
-        if (parameter.DefaultValue is string stringValue)
+        if (parameter.ExplicitDefaultValue is string stringValue)
             return $"'{stringValue}'";
 
-        return parameter.DefaultValue?.ToString() ?? "undefined";
+        return parameter.ExplicitDefaultValue?.ToString() ?? "undefined";
     }
 
-    public string GetInteropValue(InteropParameterModel parameter, string variableName)
+    public string GetInteropValue(IParameterSymbol parameter, string variableName)
     {
-        if (parameter.Type.InteropType.Contains("QuestPDF.Infrastructure.Color"))
+        var kind = parameter.Type.GetInteropTypeKind();
+
+        if (kind == InteropTypeKind.Color)
             return $"{variableName}.hex";
-        
-        return parameter.Type.Kind switch
+
+        return kind switch
         {
             InteropTypeKind.Enum => variableName,
             InteropTypeKind.String => variableName,
@@ -162,30 +168,47 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         };
     }
 
-    public object BuildClassTemplateModel(InteropClassModel classModel, string customDefinitions, string customInit, string customClass)
+    public object BuildClassTemplateModel(
+        INamedTypeSymbol targetType,
+        IReadOnlyList<IMethodSymbol> methods,
+        Dictionary<IMethodSymbol, OverloadInfo> overloads,
+        string inheritFrom,
+        string customDefinitions, string customInit, string customClass)
     {
-        _currentClassName = classModel.GeneratedClassName;
+        var className = targetType.GetGeneratedClassName();
+        _currentClassName = className;
+
+        var callbackTypedefs = methods
+            .GetCallbackTypedefs()
+            .Select(t => t.TypedefDefinition)
+            .Distinct()
+            .ToList();
 
         return new
         {
-            ClassName = classModel.GeneratedClassName,
-            InheritFrom = classModel.InheritFrom,
-            CallbackTypedefs = classModel.CallbackTypedefs,
-            Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
+            ClassName = className,
+            InheritFrom = inheritFrom,
+            CallbackTypedefs = callbackTypedefs,
+            Methods = methods.Select(m => BuildMethodTemplateModel(m, targetType, overloads)).ToList(),
             CustomDefinitions = customDefinitions,
             CustomInit = customInit,
             CustomClass = customClass
         };
     }
 
-    private object BuildMethodTemplateModel(InteropMethodModel method)
+    private object BuildMethodTemplateModel(IMethodSymbol method, INamedTypeSymbol targetType, Dictionary<IMethodSymbol, OverloadInfo> overloads)
     {
+        var isStaticMethod = method.IsStatic && !method.IsExtensionMethod;
+        var nonThisParams = method.GetNonThisParameters();
+        var overloadInfo = overloads[method];
+        var className = targetType.GetGeneratedClassName();
+
         // Build TypeScript parameter string
-        var tsParams = method.Parameters.Select(p =>
+        var tsParams = nonThisParams.Select(p =>
         {
-            var name = ConvertName(p.OriginalName, NameContext.Parameter);
+            var name = ConvertName(p.Name, NameContext.Parameter);
             var type = GetTargetType(p.Type);
-            var defaultVal = p.HasDefaultValue ? FormatDefaultValue(p) : null;
+            var defaultVal = p.HasExplicitDefaultValue ? FormatDefaultValue(p) : null;
             return defaultVal != null ? $"{name}: {type} = {defaultVal}" : $"{name}: {type}";
         });
         var tsParametersStr = string.Join(", ", tsParams);
@@ -193,76 +216,81 @@ public class TypeScriptLanguageProvider : ILanguageProvider
         // Build native call arguments
         var nativeArgs = new List<string>();
 
-        if (!method.IsStaticMethod)
+        if (!isStaticMethod)
             nativeArgs.Add("this._ptr");
 
-        nativeArgs.AddRange(method.Parameters.Select(p =>
-            GetInteropValue(p, ConvertName(p.OriginalName, NameContext.Parameter))));
+        nativeArgs.AddRange(nonThisParams.Select(p =>
+            GetInteropValue(p, ConvertName(p.Name, NameContext.Parameter))));
         var nativeCallArgsStr = string.Join(", ", nativeArgs);
 
         // Build C signature for koffi.func()
-        var cSignature = BuildCSignature(method);
+        var cSignature = BuildCSignature(method, targetType);
 
         // Determine return type and class name
         var tsReturnType = GetReturnTypeName(method);
         var returnClassName = tsReturnType != "void" ? tsReturnType : null;
 
         // Extract unique ID from native entry point (the hash at the end)
-        var uniqueId = method.NativeEntryPoint.ExtractNativeMethodHash();
+        var nativeEntryPoint = method.GetNativeMethodName(className);
+        var uniqueId = nativeEntryPoint.ExtractNativeMethodHash();
 
         // Use disambiguated name for overloads (makes them private with _prefix)
-        var methodName = method.IsOverload
-            ? ConvertName(method.DisambiguatedName, NameContext.Method)
-            : ConvertName(method.OriginalName, NameContext.Method);
+        var methodName = overloadInfo.IsOverload
+            ? ConvertName(overloadInfo.DisambiguatedName, NameContext.Method)
+            : ConvertName(method.Name, NameContext.Method);
 
         return new
         {
             TsMethodName = methodName,
-            NativeMethodName = method.NativeEntryPoint,
+            NativeMethodName = nativeEntryPoint,
             TsParameters = tsParametersStr,
             TsReturnType = tsReturnType,
             ReturnClassName = returnClassName,
             CSignature = cSignature,
             NativeCallArgs = nativeCallArgsStr,
             UniqueId = uniqueId,
-            DeprecationMessage = method.DeprecationMessage,
-            IsStaticMethod = method.IsStaticMethod,
-            Callbacks = method.Callbacks.Select(c => new
+            DeprecationMessage = method.TryGetDeprecationMessage(),
+            IsStaticMethod = isStaticMethod,
+            Callbacks = method.GetCallbackParameters().Select(c => new
             {
-                ParameterName = ConvertName(c.ParameterName, NameContext.Parameter),
-                ArgumentTypeName = c.ArgumentTypeName
+                ParameterName = ConvertName(c.Name, NameContext.Parameter),
+                ArgumentTypeName = c.GetCallbackArgumentTypeName()
             }).ToList(),
-            IsOverload = method.IsOverload,
-            OriginalName = ConvertName(method.OriginalName, NameContext.Method)
+            IsOverload = overloadInfo.IsOverload,
+            OriginalName = ConvertName(method.Name, NameContext.Method)
         };
     }
 
-    private string GetReturnTypeName(InteropMethodModel method)
+    private string GetReturnTypeName(IMethodSymbol method)
     {
-        if (method.ReturnType.Kind == InteropTypeKind.Void)
+        var kind = method.ReturnType.GetInteropTypeKind();
+
+        if (kind == InteropTypeKind.Void)
             return "void";
 
-        if (method.ReturnType.Kind == InteropTypeKind.TypeParameter)
+        if (kind == InteropTypeKind.TypeParameter)
             return _currentClassName;
 
         return GetTargetType(method.ReturnType);
     }
 
-    private string BuildCSignature(InteropMethodModel method)
+    private string BuildCSignature(IMethodSymbol method, INamedTypeSymbol targetType)
     {
         var returnType = GetKoffiType(method.ReturnType);
-        var methodName = method.NativeEntryPoint;
+        var className = targetType.GetGeneratedClassName();
+        var methodName = method.GetNativeMethodName(className);
+        var isStaticMethod = method.IsStatic && !method.IsExtensionMethod;
 
         // Build parameters: first is void* target for instance methods
         var parameters = new List<string>();
 
-        if (!method.IsStaticMethod)
+        if (!isStaticMethod)
             parameters.Add("void* target");
 
-        parameters.AddRange(method.Parameters.Select(p =>
+        parameters.AddRange(method.GetNonThisParameters().Select(p =>
         {
             var koffiType = GetKoffiType(p.Type);
-            return $"{koffiType} {p.OriginalName}";
+            return $"{koffiType} {p.Name}";
         }));
 
         return $"{returnType} {methodName}({string.Join(", ", parameters)})";

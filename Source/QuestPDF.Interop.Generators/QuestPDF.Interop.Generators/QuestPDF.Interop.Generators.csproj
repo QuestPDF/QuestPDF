@@ -32,5 +32,15 @@
     <ItemGroup>
       <ProjectReference Include="..\..\QuestPDF\QuestPDF.csproj" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Compile Remove="Expected\QuestPDF.Interop.g.cs" />
+      <Content Include="Expected\QuestPDF.Interop.g.cs" />
+    </ItemGroup>
 
+    <ItemGroup>
+        <None Include="Expected\**\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>

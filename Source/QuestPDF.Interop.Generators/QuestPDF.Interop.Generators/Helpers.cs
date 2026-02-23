@@ -7,6 +7,31 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
+/// <summary>
+/// Categorizes types for code generation purposes.
+/// </summary>
+internal enum InteropTypeKind
+{
+    Void,
+    Boolean,
+    Integer,
+    Float,
+    String,
+    Enum,
+    Class,
+    Interface,
+    Action,
+    Func,
+    TypeParameter,
+    Color,
+    ByteArray,
+    Size,
+    ImageSize,
+    Unknown
+}
+
+internal record OverloadInfo(bool IsOverload, string DisambiguatedName, string OverloadSuffix);
+
 internal static partial class Helpers
 {
     public static string ToSnakeCase(this string input)
@@ -43,13 +68,13 @@ internal static partial class Helpers
         }
         return nativeEntryPoint.GetHashCode().ToString("x8");
     }
-    
+
     public static string GetNativeMethodName(this IMethodSymbol methodSymbol, string targetTypeName)
     {
         var hash = methodSymbol.ToDisplayString().GetDeterministicHash();
         return $"questpdf__{ToSnakeCase(targetTypeName)}__{ToSnakeCase(methodSymbol.Name)}__{hash}";
     }
-    
+
     public static string GetDeterministicHash(this string input)
     {
         using var sha256 = SHA256.Create();
@@ -57,13 +82,13 @@ internal static partial class Helpers
         var hashBytes = sha256.ComputeHash(bytes);
         return string.Concat(hashBytes.Take(4).Select(b => b.ToString("x2")));
     }
-    
+
     public static string GetManagedMethodName(this IMethodSymbol methodSymbol, string targetTypeName)
     {
         var hash = methodSymbol.ToDisplayString().GetDeterministicHash();
         return $"{targetTypeName}_{methodSymbol.Name}_{hash}";
     }
-    
+
     public static string GetInteropResultType(this IMethodSymbol methodSymbol)
     {
         if (methodSymbol.ReturnType.ToDisplayString().Contains("QuestPDF.Infrastructure.Color"))
@@ -71,104 +96,104 @@ internal static partial class Helpers
 
         if (methodSymbol.IsGenericMethod && methodSymbol.ReturnType.TypeKind == TypeKind.TypeParameter)
             return "IntPtr";
-        
+
         if (methodSymbol.ReturnType.TypeKind == TypeKind.Class)
             return "IntPtr";
-        
+
         if (methodSymbol.ReturnType.TypeKind == TypeKind.Interface)
             return "IntPtr";
-        
+
         if (methodSymbol.ReturnType.ToDisplayString() == "byte[]")
             return "Buffer";
-        
+
         return methodSymbol.ReturnType.ToString();
     }
-    
+
     public static string GetCSharpResultTransformFunction(this IMethodSymbol methodSymbol)
     {
         if (methodSymbol.ReturnType.ToDisplayString().Contains("QuestPDF.Infrastructure.Color"))
             return "NoTransformation";
-        
+
         // byte[]
         if (methodSymbol.ReturnType.ToDisplayString() == "byte[]")
             return "HandleBuffer";
-        
+
         // string
         if (methodSymbol.ReturnType.SpecialType == SpecialType.System_String)
             return "HandleText";
-        
+
         if (methodSymbol.ReturnType.TypeKind == TypeKind.Class)
             return "BoxHandle";
-        
+
         if (methodSymbol.ReturnType.TypeKind == TypeKind.Interface)
             return "BoxHandle";
-        
+
         if (methodSymbol.IsGenericMethod && methodSymbol.ReturnType.TypeKind == TypeKind.TypeParameter)
             return "BoxHandle";
-        
+
         return "NoTransformation";
     }
-    
+
     public static string GetInteropMethodParameterType(this ITypeSymbol typeSymbol)
     {
         if (typeSymbol.TypeKind == TypeKind.TypeParameter)
             return "IntPtr";
-        
+
         if (typeSymbol.TypeKind == TypeKind.Enum)
             return "int";
 
         if (typeSymbol.TypeKind == TypeKind.Class)
             return "IntPtr";
-        
+
         if (typeSymbol.TypeKind == TypeKind.Interface)
             return "IntPtr";
-        
+
         return typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
     }
-    
+
     public static string GetNativeParameterType(this ITypeSymbol typeSymbol)
     {
         var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
 
         if (typeSymbol.SpecialType == SpecialType.System_Void)
             return "void";
-        
+
         if (typeSymbol.TypeKind == TypeKind.Enum)
             return "int32_t";
-        
+
         if (typeName.Contains("QuestPDF.Infrastructure.Color"))
             return "uint32_t";
-        
+
         if (typeSymbol.SpecialType == SpecialType.System_String)
             return "const char*";
-        
+
         if (typeSymbol.TypeKind == TypeKind.Class)
             return "void*";
-        
+
         if (typeSymbol.TypeKind == TypeKind.Interface)
             return "void*";
-        
+
         if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
         {
             var genericTypes = actionSymbol
                 .TypeArguments
                 .Select(x => x.GetNativeParameterType())
                 .Append("void");
-            
+
             var genericTypesString = string.Join(", ", genericTypes);
             return $"delegate* unmanaged[Cdecl]<{genericTypesString}>";
         }
-        
+
         if (typeSymbol.IsFunc() && typeSymbol is INamedTypeSymbol funcSymbol)
         {
             var genericTypes = funcSymbol
                 .TypeArguments
                 .Select(x => x.GetNativeParameterType());
-            
+
             var genericTypesString = string.Join(", ", genericTypes);
             return $"delegate* unmanaged[Cdecl]<{genericTypesString}>";
         }
-        
+
         return typeName switch
         {
             "int" or "System.Int32" => "int32_t",
@@ -191,11 +216,11 @@ internal static partial class Helpers
             _ => "void*" // Default for unknown types
         };
     }
-    
+
     public static string GetCallbackTypedefName(this ITypeSymbol typeSymbol, IMethodSymbol containingMethod)
     {
         var prefix = containingMethod.ToDisplayString().GetDeterministicHash();
-        
+
         if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
         {
             var argumentTypes = actionSymbol.TypeArguments;
@@ -306,21 +331,21 @@ internal static partial class Helpers
             ?.ConstructorArguments
             .FirstOrDefault().Value as string;
     }
-    
+
     public static bool IsAction(this ITypeSymbol typeSymbol)
     {
         return typeSymbol
             .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
             .StartsWith("global::System.Action");
     }
-    
+
     public static bool IsFunc(this ITypeSymbol typeSymbol)
     {
         return typeSymbol
             .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
             .StartsWith("global::System.Func");
     }
-    
+
     public static bool HasSimpleSingleActionCallback(this IMethodSymbol methodSymbol)
     {
         var parameters = methodSymbol
@@ -335,7 +360,7 @@ internal static partial class Helpers
 
         return parameters.Single().Type.IsAction();
     }
-    
+
     public static IEnumerable<INamedTypeSymbol> GetMembersRecursively(this INamespaceSymbol namespaceSymbol)
     {
         foreach (var typeSymbol in namespaceSymbol.GetTypeMembers())
@@ -345,12 +370,12 @@ internal static partial class Helpers
         foreach (var nestedMember in GetMembersRecursively(nestedNamespace))
             yield return nestedMember;
     }
-    
+
     public static IEnumerable<INamedTypeSymbol> FilterSupportedTypes(this IEnumerable<INamedTypeSymbol> typeSymbols)
     {
         return typeSymbols.Where(x => !x.IsGenericType);
     }
-    
+
     public static IEnumerable<IMethodSymbol> FilterSupportedMethods(this IEnumerable<IMethodSymbol> methodSymbols)
     {
         return methodSymbols
@@ -373,11 +398,11 @@ internal static partial class Helpers
             return x => x.Where(x => !x.Parameters.Any(p => p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains(phrase)));
         }
     }
-    
+
     public static IEnumerable<IMethodSymbol> ExcludeOldObsoleteMethods(this IEnumerable<IMethodSymbol> methodSymbols)
     {
         var oldVersion = new Version(2025, 0);
-        
+
         return methodSymbols.Where(x => !IsOldObsolete(x));
 
         bool IsOldObsolete(IMethodSymbol method)
@@ -385,27 +410,27 @@ internal static partial class Helpers
             var obsoleteAttribute = method
                 .GetAttributes()
                 .FirstOrDefault(attr => attr.AttributeClass?.Name == nameof(ObsoleteAttribute));
-            
+
             if (obsoleteAttribute == null)
                 return false;
-            
+
             var deprecationMessage = obsoleteAttribute
                 .ConstructorArguments
                 .FirstOrDefault().Value as string;
 
             var parser = GetVersionParser().Match(deprecationMessage ?? string.Empty);
-            
+
             if (!parser.Success)
                 return false;
-            
+
             var yearVersion = parser.Groups["year"].Value;
             var monthVersion = parser.Groups["month"].Value;
-            
+
             var currentVersion = new Version(int.Parse(yearVersion), int.Parse(monthVersion));
             return currentVersion < oldVersion;
         }
     }
-    
+
     /// <summary>
     /// Applies a filter function to the method collection.
     /// Useful for building fluent filter chains.
@@ -414,7 +439,7 @@ internal static partial class Helpers
     {
         return filter(methodSymbols);
     }
-    
+
     public static bool InheritsFromOrEquals(this ITypeSymbol type, ITypeSymbol baseType)
     {
         // Check for equality first (Roslyn requires SymbolEqualityComparer)
@@ -437,7 +462,7 @@ internal static partial class Helpers
         // Note: If you need to check Interfaces, you must also check type.AllInterfaces
         return type.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, baseType));
     }
-    
+
     public static bool IsExtensionFor(this IMethodSymbol method, ITypeSymbol targetType)
     {
         // 1. Basic check: Is it actually an extension method?
@@ -456,9 +481,9 @@ internal static partial class Helpers
             // If you ONLY want methods specifically constrained to your class, return false here if constraints are empty.
             if (!typeParam.ConstraintTypes.Any())
             {
-                // Returns true because "this T" applies to "MyClass", 
+                // Returns true because "this T" applies to "MyClass",
                 // but change to false if you strictly want "where T : MyClass"
-                return true; 
+                return true;
             }
 
             // Check if any of the constraints imply the target type
@@ -469,6 +494,206 @@ internal static partial class Helpers
         // We check if our TargetType inherits from (or is equal to) the parameter type.
         // Note: Logic is reversed here. If method extends "BaseClass", "MyClass" is valid.
         return targetType.InheritsFromOrEquals(thisParamType);
+    }
+
+    // =========================================================================
+    // Type classification and overload handling
+    // =========================================================================
+
+    public static InteropTypeKind GetInteropTypeKind(this ITypeSymbol type)
+    {
+        if (type.SpecialType == SpecialType.System_Void)
+            return InteropTypeKind.Void;
+
+        if (type.SpecialType == SpecialType.System_Boolean)
+            return InteropTypeKind.Boolean;
+
+        if (type.SpecialType == SpecialType.System_String)
+            return InteropTypeKind.String;
+
+        if (type.TypeKind == TypeKind.Enum)
+            return InteropTypeKind.Enum;
+
+        if (type.TypeKind == TypeKind.TypeParameter)
+            return InteropTypeKind.TypeParameter;
+
+        if (type.IsAction())
+            return InteropTypeKind.Action;
+
+        if (type.IsFunc())
+            return InteropTypeKind.Func;
+
+        if (type.TypeKind == TypeKind.Interface)
+            return InteropTypeKind.Interface;
+
+        if (type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("QuestPDF.Infrastructure.Color"))
+            return InteropTypeKind.Color;
+
+        if (type.TypeKind == TypeKind.Class)
+            return InteropTypeKind.Class;
+
+        if (type.ToDisplayString() == "byte[]")
+            return InteropTypeKind.ByteArray;
+
+        if (type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("QuestPDF.Infrastructure.ImageSize"))
+            return InteropTypeKind.ImageSize;
+
+        if (type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("QuestPDF.Infrastructure.Size"))
+            return InteropTypeKind.Size;
+
+        // Check for numeric types
+        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+        if (IsIntegerType(typeName))
+            return InteropTypeKind.Integer;
+
+        if (IsFloatType(typeName))
+            return InteropTypeKind.Float;
+
+        return InteropTypeKind.Unknown;
+    }
+
+    private static bool IsIntegerType(string typeName)
+    {
+        return typeName is "int" or "System.Int32" or "global::System.Int32"
+            or "uint" or "System.UInt32" or "global::System.UInt32"
+            or "long" or "System.Int64" or "global::System.Int64"
+            or "ulong" or "System.UInt64" or "global::System.UInt64"
+            or "short" or "System.Int16" or "global::System.Int16"
+            or "ushort" or "System.UInt16" or "global::System.UInt16"
+            or "byte" or "System.Byte" or "global::System.Byte"
+            or "sbyte" or "System.SByte" or "global::System.SByte";
+    }
+
+    private static bool IsFloatType(string typeName)
+    {
+        return typeName is "float" or "System.Single" or "global::System.Single"
+            or "double" or "System.Double" or "global::System.Double";
+    }
+
+    public static string GetGeneratedClassName(this INamedTypeSymbol type)
+    {
+        return type.TypeKind == TypeKind.Interface
+            ? type.Name.TrimStart('I')
+            : type.Name;
+    }
+
+    public static string GetDefaultEnumMemberName(this IParameterSymbol parameter)
+    {
+        if (!parameter.HasExplicitDefaultValue || parameter.Type.TypeKind != TypeKind.Enum)
+            return null;
+
+        return parameter.Type
+            .GetMembers()
+            .OfType<IFieldSymbol>()
+            .FirstOrDefault(x => x.HasConstantValue && x.ConstantValue.Equals(parameter.ExplicitDefaultValue))
+            ?.Name;
+    }
+
+    public static IReadOnlyList<IParameterSymbol> GetNonThisParameters(this IMethodSymbol method)
+    {
+        return method.Parameters
+            .Skip(method.IsExtensionMethod ? 1 : 0)
+            .ToList();
+    }
+
+    public static IEnumerable<IParameterSymbol> GetCallbackParameters(this IMethodSymbol method)
+    {
+        return method.GetNonThisParameters()
+            .Where(p => p.Type.IsAction() || p.Type.IsFunc());
+    }
+
+    public static string GetCallbackArgumentTypeName(this IParameterSymbol parameter)
+    {
+        if (parameter.Type is not INamedTypeSymbol delegateType)
+            return null;
+
+        var argumentType = delegateType.TypeArguments.FirstOrDefault();
+        if (argumentType == null)
+            return null;
+
+        return argumentType.TypeKind == TypeKind.Interface
+            ? argumentType.Name.TrimStart('I')
+            : argumentType.Name;
+    }
+
+    public static Dictionary<IMethodSymbol, OverloadInfo> ComputeOverloads(this IReadOnlyList<IMethodSymbol> methods)
+    {
+        var result = new Dictionary<IMethodSymbol, OverloadInfo>(SymbolEqualityComparer.Default);
+        var methodGroups = methods.GroupBy(m => m.Name);
+
+        foreach (var group in methodGroups)
+        {
+            var groupMethods = group.ToList();
+
+            if (groupMethods.Count == 1)
+            {
+                result[groupMethods[0]] = new OverloadInfo(false, groupMethods[0].Name, string.Empty);
+            }
+            else
+            {
+                // Generate initial suffixes
+                var entries = groupMethods.Select(m => (Method: m, Suffix: GenerateOverloadSuffix(m))).ToList();
+
+                // Resolve collisions
+                var suffixGroups = entries.GroupBy(x => x.Suffix);
+
+                foreach (var suffixGroup in suffixGroups)
+                {
+                    var collisions = suffixGroup.ToList();
+                    if (collisions.Count > 1)
+                    {
+                        for (int i = 0; i < collisions.Count; i++)
+                        {
+                            var suffix = $"{collisions[i].Suffix}_{i + 1}";
+                            result[collisions[i].Method] = new OverloadInfo(true, collisions[i].Method.Name + suffix, suffix);
+                        }
+                    }
+                    else
+                    {
+                        var suffix = collisions[0].Suffix;
+                        result[collisions[0].Method] = new OverloadInfo(true, collisions[0].Method.Name + suffix, suffix);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static string GenerateOverloadSuffix(IMethodSymbol method)
+    {
+        var parameters = method.GetNonThisParameters();
+        if (parameters.Count == 0)
+            return "_NoArgs";
+
+        var parts = parameters.Select(GetTypeShortName);
+        return "_" + string.Join("_", parts);
+    }
+
+    private static string GetTypeShortName(IParameterSymbol parameter)
+    {
+        var type = parameter.Type;
+        var kind = type.GetInteropTypeKind();
+
+        return kind switch
+        {
+            InteropTypeKind.Void => "Void",
+            InteropTypeKind.Boolean => "Bool",
+            InteropTypeKind.Integer => "Int",
+            InteropTypeKind.Float => "Float",
+            InteropTypeKind.String => "String",
+            InteropTypeKind.Enum => type.Name,
+            InteropTypeKind.Class => type.Name,
+            InteropTypeKind.Interface => type.Name.TrimStart('I'),
+            InteropTypeKind.Action => "Action",
+            InteropTypeKind.Func => "Func",
+            InteropTypeKind.TypeParameter => "T",
+            InteropTypeKind.Color => "Color",
+            InteropTypeKind.ByteArray => "Bytes",
+            InteropTypeKind.Size => "Size",
+            InteropTypeKind.ImageSize => "ImageSize",
+            _ => "Unknown"
+        };
     }
 
     [GeneratedRegex(@"(?<year>20\d{2})\.(?<month>0?[1-9]|1[0-2])")]

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using QuestPDF.Interop.Generators.Models;
+using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
 
 /// <summary>
 /// Language provider for Python code generation.
 /// </summary>
-public class PythonLanguageProvider : ILanguageProvider
+internal class PythonLanguageProvider : ILanguageProvider
 {
     public string ConvertName(string csharpName, NameContext context)
     {
@@ -23,9 +23,10 @@ public class PythonLanguageProvider : ILanguageProvider
         };
     }
 
-    public string GetTargetType(InteropTypeModel type)
+    public string GetTargetType(ITypeSymbol type)
     {
-        return type.Kind switch
+        var kind = type.GetInteropTypeKind();
+        return kind switch
         {
             InteropTypeKind.Void => "None",
             InteropTypeKind.Boolean => "bool",
@@ -35,21 +36,21 @@ public class PythonLanguageProvider : ILanguageProvider
             InteropTypeKind.ByteArray => "bytes",
             InteropTypeKind.Size => "Size",
             InteropTypeKind.ImageSize => "ImageSize",
-            InteropTypeKind.Enum => type.ShortName,
-            InteropTypeKind.Class => type.ShortName,
-            InteropTypeKind.Interface => type.ShortName.TrimStart('I'),
+            InteropTypeKind.Enum => type.Name,
+            InteropTypeKind.Class => type.Name,
+            InteropTypeKind.Interface => type.Name.TrimStart('I'),
             InteropTypeKind.TypeParameter => "Any",
             InteropTypeKind.Color => "Color",
-            InteropTypeKind.Action => FormatCallableType(type, isFunc: false),
-            InteropTypeKind.Func => FormatCallableType(type, isFunc: true),
+            InteropTypeKind.Action => FormatCallableType((INamedTypeSymbol)type, isFunc: false),
+            InteropTypeKind.Func => FormatCallableType((INamedTypeSymbol)type, isFunc: true),
             InteropTypeKind.Unknown => "Any",
             _ => "Any"
         };
     }
 
-    private string FormatCallableType(InteropTypeModel type, bool isFunc)
+    private string FormatCallableType(INamedTypeSymbol type, bool isFunc)
     {
-        if (type.TypeArguments == null || type.TypeArguments.Length == 0)
+        if (type.TypeArguments.Length == 0)
             return "Callable[[], Any]"; // both Action and Func expect Any to mitigate problems with multi-line lambdas
 
         if (isFunc)
@@ -66,52 +67,58 @@ public class PythonLanguageProvider : ILanguageProvider
         }
     }
 
-    private string GetTargetTypeForCallable(InteropTypeModel type)
+    private string GetTargetTypeForCallable(ITypeSymbol type)
     {
-        if (type.Kind == InteropTypeKind.Interface)
-            return type.ShortName.TrimStart('I');
-        
-        if (type.Kind == InteropTypeKind.ByteArray)
+        var kind = type.GetInteropTypeKind();
+
+        if (kind == InteropTypeKind.Interface)
+            return type.Name.TrimStart('I');
+
+        if (kind == InteropTypeKind.ByteArray)
             return "bytes";
-        
-        if (type.Kind == InteropTypeKind.ImageSize)
+
+        if (kind == InteropTypeKind.ImageSize)
             return "ImageSize";
-        
-        if (type.Kind == InteropTypeKind.Size)
+
+        if (kind == InteropTypeKind.Size)
             return "Size";
-        
-        if (type.Kind == InteropTypeKind.String)
+
+        if (kind == InteropTypeKind.String)
             return "str";
-        
-        return type.ShortName;
+
+        return type.Name;
     }
 
-    public string FormatDefaultValue(InteropParameterModel parameter)
+    public string FormatDefaultValue(IParameterSymbol parameter)
     {
-        if (!parameter.HasDefaultValue)
+        if (!parameter.HasExplicitDefaultValue)
             return null;
 
-        if (parameter.DefaultValue == null)
+        if (parameter.ExplicitDefaultValue == null)
             return "None";
 
-        if (parameter.Type.Kind == InteropTypeKind.Enum && parameter.DefaultEnumMemberName != null)
-            return $"{parameter.Type.ShortName}.{parameter.DefaultEnumMemberName.ToSnakeCase()}";
+        var kind = parameter.Type.GetInteropTypeKind();
 
-        if (parameter.DefaultValue is bool boolValue)
+        if (kind == InteropTypeKind.Enum && parameter.GetDefaultEnumMemberName() != null)
+            return $"{parameter.Type.Name}.{parameter.GetDefaultEnumMemberName().ToSnakeCase()}";
+
+        if (parameter.ExplicitDefaultValue is bool boolValue)
             return boolValue ? "True" : "False";
 
-        if (parameter.DefaultValue is string stringValue)
+        if (parameter.ExplicitDefaultValue is string stringValue)
             return $"'{stringValue}'";
 
-        return parameter.DefaultValue?.ToString() ?? "None";
+        return parameter.ExplicitDefaultValue?.ToString() ?? "None";
     }
 
-    public string GetInteropValue(InteropParameterModel parameter, string variableName)
+    public string GetInteropValue(IParameterSymbol parameter, string variableName)
     {
-        if (parameter.Type.InteropType.Contains("QuestPDF.Infrastructure.Color"))
+        var kind = parameter.Type.GetInteropTypeKind();
+
+        if (kind == InteropTypeKind.Color)
             return $"{variableName}.hex";
-        
-        return parameter.Type.Kind switch
+
+        return kind switch
         {
             InteropTypeKind.Enum => $"{variableName}.value",
             InteropTypeKind.String => $"questpdf_ffi.new(\"char[]\", {variableName}.encode(\"utf-8\"))",
@@ -124,111 +131,136 @@ public class PythonLanguageProvider : ILanguageProvider
     // Store the current class name for resolving TypeParameter return types
     private string _currentClassName;
 
-    public object BuildClassTemplateModel(InteropClassModel classModel, string customDefinitions, string customInit, string customClass)
+    public object BuildClassTemplateModel(
+        INamedTypeSymbol targetType,
+        IReadOnlyList<IMethodSymbol> methods,
+        Dictionary<IMethodSymbol, OverloadInfo> overloads,
+        string inheritFrom,
+        string customDefinitions, string customInit, string customClass)
     {
-        _currentClassName = classModel.GeneratedClassName;
+        var className = targetType.GetGeneratedClassName();
+        _currentClassName = className;
+
+        var callbackTypedefs = methods
+            .GetCallbackTypedefs()
+            .Select(t => t.TypedefDefinition)
+            .Distinct()
+            .ToList();
+
+        var cHeaders = methods
+            .Select(m => m.GetCHeaderDefinition(className))
+            .ToList();
 
         return new
         {
-            CallbackTypedefs = classModel.CallbackTypedefs,
-            InheritFrom = classModel.InheritFrom,
-            Headers = classModel.CHeaderSignatures,
-            ClassName = classModel.GeneratedClassName,
-            Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
+            CallbackTypedefs = callbackTypedefs,
+            InheritFrom = inheritFrom,
+            Headers = cHeaders,
+            ClassName = className,
+            Methods = methods.Select(m => BuildMethodTemplateModel(m, targetType, overloads)).ToList(),
             CustomDefinitions = customDefinitions,
             CustomInit = customInit,
             CustomClass = customClass
         };
     }
 
-    private object BuildMethodTemplateModel(InteropMethodModel method)
+    private object BuildMethodTemplateModel(IMethodSymbol method, INamedTypeSymbol targetType, Dictionary<IMethodSymbol, OverloadInfo> overloads)
     {
+        var isStaticMethod = method.IsStatic && !method.IsExtensionMethod;
+        var nonThisParams = method.GetNonThisParameters();
+        var overloadInfo = overloads[method];
+        var className = targetType.GetGeneratedClassName();
+
         var parameters = new List<string>();
-        
-        if (!method.IsStaticMethod)
+
+        if (!isStaticMethod)
             parameters.Add("self");
-        
-        parameters.AddRange(method.Parameters.Select(FormatParameter));
+
+        parameters.AddRange(nonThisParams.Select(FormatParameter));
 
         var interopParams = new List<string>();
-        
-        if (!method.IsStaticMethod)
+
+        if (!isStaticMethod)
             interopParams.Add("self.target_pointer");
-        
-        interopParams.AddRange(method.Parameters.Select(p =>
-            GetInteropValue(p, ConvertName(p.OriginalName, NameContext.Parameter))));
+
+        interopParams.AddRange(nonThisParams.Select(p =>
+            GetInteropValue(p, ConvertName(p.Name, NameContext.Parameter))));
 
         // Use disambiguated name for overloads (makes them private with _prefix in template)
-        var methodName = method.IsOverload
-            ? "_" + ConvertName(method.DisambiguatedName, NameContext.Method)
-            : ConvertName(method.OriginalName, NameContext.Method);
+        var methodName = overloadInfo.IsOverload
+            ? "_" + ConvertName(overloadInfo.DisambiguatedName, NameContext.Method)
+            : ConvertName(method.Name, NameContext.Method);
 
         return new
         {
             PythonMethodName = methodName,
             PythonMethodParameters = parameters,
-            IsStaticMethod = method.IsStaticMethod,
-            InteropMethodName = method.NativeEntryPoint,
+            IsStaticMethod = isStaticMethod,
+            InteropMethodName = method.GetNativeMethodName(className),
             InteropMethodParameters = interopParams,
             PythonMethodReturnType = GetReturnTypeName(method),
             PythonReturnConversionMethod = GetReturnConversionMethod(method),
-            DeprecationMessage = method.DeprecationMessage,
-            Callbacks = method.Callbacks.Select(BuildCallbackTemplateModel).ToList(),
-            IsOverload = method.IsOverload,
-            OriginalName = ConvertName(method.OriginalName, NameContext.Method)
+            DeprecationMessage = method.TryGetDeprecationMessage(),
+            Callbacks = method.GetCallbackParameters().Select(BuildCallbackTemplateModel).ToList(),
+            IsOverload = overloadInfo.IsOverload,
+            OriginalName = ConvertName(method.Name, NameContext.Method)
         };
     }
 
-    private string FormatParameter(InteropParameterModel parameter)
+    private string FormatParameter(IParameterSymbol parameter)
     {
-        var name = ConvertName(parameter.OriginalName, NameContext.Parameter);
+        var name = ConvertName(parameter.Name, NameContext.Parameter);
         var typeName = GetTargetType(parameter.Type);
         var result = $"{name}: {typeName}";
 
-        if (parameter.HasDefaultValue)
+        if (parameter.HasExplicitDefaultValue)
             result += $" = {FormatDefaultValue(parameter)}";
 
         return result;
     }
 
-    private string GetReturnTypeName(InteropMethodModel method)
+    private string GetReturnTypeName(IMethodSymbol method)
     {
-        if (method.ReturnType.Kind == InteropTypeKind.Void)
+        var kind = method.ReturnType.GetInteropTypeKind();
+
+        if (kind == InteropTypeKind.Void)
             return null;
 
         // For TypeParameter (generic methods returning T), use the containing class name
-        if (method.ReturnType.Kind == InteropTypeKind.TypeParameter)
+        if (kind == InteropTypeKind.TypeParameter)
             return _currentClassName;
 
         return GetTargetType(method.ReturnType);
     }
-    
-    private string GetReturnConversionMethod(InteropMethodModel method)
+
+    private string GetReturnConversionMethod(IMethodSymbol method)
     {
-        if (method.ReturnType.Kind == InteropTypeKind.Void)
+        var kind = method.ReturnType.GetInteropTypeKind();
+
+        if (kind == InteropTypeKind.Void)
             return null;
 
-        if (method.ReturnType.Kind == InteropTypeKind.String)
+        if (kind == InteropTypeKind.String)
             return "decode_text_as_utf_8";
-        
+
         // For TypeParameter (generic methods returning T), use the containing class name
-        if (method.ReturnType.Kind == InteropTypeKind.TypeParameter)
+        if (kind == InteropTypeKind.TypeParameter)
             return _currentClassName;
-        
-        if (method.ReturnType.Kind == InteropTypeKind.ByteArray)
+
+        if (kind == InteropTypeKind.ByteArray)
             return "questpdf_ffi.string";
 
         return GetTargetType(method.ReturnType);
     }
 
 
-    private object BuildCallbackTemplateModel(InteropCallbackModel callback)
+    private object BuildCallbackTemplateModel(IParameterSymbol callbackParam)
     {
         return new
         {
-            PythonParameterName = ConvertName(callback.ParameterName, NameContext.Parameter),
-            CallbackArgumentTypeName = callback.ArgumentTypeName,
-            InternalCallbackName = $"_internal_{ConvertName(callback.ParameterName, NameContext.Parameter)}_handler"
+            PythonParameterName = ConvertName(callbackParam.Name, NameContext.Parameter),
+            CallbackArgumentTypeName = callbackParam.GetCallbackArgumentTypeName(),
+            InternalCallbackName = $"_internal_{ConvertName(callbackParam.Name, NameContext.Parameter)}_handler"
         };
     }
 }

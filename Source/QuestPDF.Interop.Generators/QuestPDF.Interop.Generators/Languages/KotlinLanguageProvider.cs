@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
-using QuestPDF.Interop.Generators.Models;
+using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
 
 /// <summary>
 /// Language provider for Kotlin code generation using JNA (Java Native Access).
 /// </summary>
-public class KotlinLanguageProvider : ILanguageProvider
+internal class KotlinLanguageProvider : ILanguageProvider
 {
     // Store current class name for TypeParameter resolution
     private string _currentClassName;
@@ -46,22 +46,23 @@ public class KotlinLanguageProvider : ILanguageProvider
         };
     }
 
-    public string GetTargetType(InteropTypeModel type)
+    public string GetTargetType(ITypeSymbol type)
     {
-        return type.Kind switch
+        var kind = type.GetInteropTypeKind();
+        return kind switch
         {
             InteropTypeKind.Void => "Unit",
             InteropTypeKind.Boolean => "Boolean",
             InteropTypeKind.Integer => GetKotlinIntegerType(type),
             InteropTypeKind.Float => GetKotlinFloatType(type),
             InteropTypeKind.String => "String",
-            InteropTypeKind.Enum => ConvertTypeName(type.ShortName),
-            InteropTypeKind.Class => type.ShortName,
-            InteropTypeKind.Interface => type.ShortName.TrimStart('I'),
+            InteropTypeKind.Enum => ConvertTypeName(type.Name),
+            InteropTypeKind.Class => type.Name,
+            InteropTypeKind.Interface => type.Name.TrimStart('I'),
             InteropTypeKind.TypeParameter => _currentClassName ?? "Any",
             InteropTypeKind.Color => "Color",
-            InteropTypeKind.Action => FormatFunctionType(type, isFunc: false),
-            InteropTypeKind.Func => FormatFunctionType(type, isFunc: true),
+            InteropTypeKind.Action => FormatFunctionType((INamedTypeSymbol)type, isFunc: false),
+            InteropTypeKind.Func => FormatFunctionType((INamedTypeSymbol)type, isFunc: true),
             InteropTypeKind.Unknown => "Any",
             _ => "Any"
         };
@@ -70,9 +71,10 @@ public class KotlinLanguageProvider : ILanguageProvider
     /// <summary>
     /// Gets the JNA-compatible type for native library interface declarations.
     /// </summary>
-    public string GetJnaType(InteropTypeModel type)
+    public string GetJnaType(ITypeSymbol type)
     {
-        return type.Kind switch
+        var kind = type.GetInteropTypeKind();
+        return kind switch
         {
             InteropTypeKind.Void => "Unit",
             InteropTypeKind.Boolean => "Byte", // JNA uses byte for C bool
@@ -91,9 +93,9 @@ public class KotlinLanguageProvider : ILanguageProvider
         };
     }
 
-    private string GetKotlinIntegerType(InteropTypeModel type)
+    private string GetKotlinIntegerType(ITypeSymbol type)
     {
-        var typeName = type.OriginalTypeName ?? "";
+        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         if (typeName.Contains("Int64") || typeName.Contains("UInt64"))
             return "Long";
         if (typeName.Contains("Int16") || typeName.Contains("UInt16"))
@@ -103,9 +105,9 @@ public class KotlinLanguageProvider : ILanguageProvider
         return "Int";
     }
 
-    private string GetJnaIntegerType(InteropTypeModel type)
+    private string GetJnaIntegerType(ITypeSymbol type)
     {
-        var typeName = type.OriginalTypeName ?? "";
+        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
         if (typeName.Contains("Int64") || typeName.Contains("UInt64"))
             return "Long";
         if (typeName.Contains("Int16") || typeName.Contains("UInt16"))
@@ -115,19 +117,19 @@ public class KotlinLanguageProvider : ILanguageProvider
         return "Int";
     }
 
-    private string GetKotlinFloatType(InteropTypeModel type)
+    private string GetKotlinFloatType(ITypeSymbol type)
     {
-        return type.OriginalTypeName?.Contains("Double") == true ? "Double" : "Float";
+        return type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("Double") ? "Double" : "Float";
     }
 
-    private string GetJnaFloatType(InteropTypeModel type)
+    private string GetJnaFloatType(ITypeSymbol type)
     {
-        return type.OriginalTypeName?.Contains("Double") == true ? "Double" : "Float";
+        return type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("Double") ? "Double" : "Float";
     }
 
-    private string FormatFunctionType(InteropTypeModel type, bool isFunc)
+    private string FormatFunctionType(INamedTypeSymbol type, bool isFunc)
     {
-        if (type.TypeArguments == null || type.TypeArguments.Length == 0)
+        if (type.TypeArguments.Length == 0)
             return isFunc ? "() -> Any" : "() -> Unit";
 
         if (isFunc)
@@ -144,44 +146,47 @@ public class KotlinLanguageProvider : ILanguageProvider
         }
     }
 
-    private string GetTargetTypeForCallback(InteropTypeModel type)
+    private string GetTargetTypeForCallback(ITypeSymbol type)
     {
-        if (type.Kind == InteropTypeKind.Interface)
-            return type.ShortName.TrimStart('I');
-        return type.ShortName;
+        if (type.GetInteropTypeKind() == InteropTypeKind.Interface)
+            return type.Name.TrimStart('I');
+        return type.Name;
     }
 
-    public string FormatDefaultValue(InteropParameterModel parameter)
+    public string FormatDefaultValue(IParameterSymbol parameter)
     {
-        if (!parameter.HasDefaultValue)
+        if (!parameter.HasExplicitDefaultValue)
             return null;
 
-        if (parameter.DefaultValue == null)
+        if (parameter.ExplicitDefaultValue == null)
             return "null";
 
-        if (parameter.Type.Kind == InteropTypeKind.Enum && parameter.DefaultEnumMemberName != null)
-            return $"{ConvertTypeName(parameter.Type.ShortName)}.{parameter.DefaultEnumMemberName}";
+        var kind = parameter.Type.GetInteropTypeKind();
 
-        if (parameter.DefaultValue is bool boolValue)
+        if (kind == InteropTypeKind.Enum && parameter.GetDefaultEnumMemberName() != null)
+            return $"{ConvertTypeName(parameter.Type.Name)}.{parameter.GetDefaultEnumMemberName()}";
+
+        if (parameter.ExplicitDefaultValue is bool boolValue)
             return boolValue ? "true" : "false";
 
-        if (parameter.DefaultValue is string stringValue)
+        if (parameter.ExplicitDefaultValue is string stringValue)
             return $"\"{stringValue}\"";
 
         // For floating point defaults, add 'f' suffix for Float type
-        if (parameter.Type.Kind == InteropTypeKind.Float)
+        if (kind == InteropTypeKind.Float)
         {
             var floatType = GetKotlinFloatType(parameter.Type);
             if (floatType == "Float")
-                return $"{parameter.DefaultValue}f";
+                return $"{parameter.ExplicitDefaultValue}f";
         }
 
-        return parameter.DefaultValue?.ToString() ?? "null";
+        return parameter.ExplicitDefaultValue?.ToString() ?? "null";
     }
 
-    public string GetInteropValue(InteropParameterModel parameter, string variableName)
+    public string GetInteropValue(IParameterSymbol parameter, string variableName)
     {
-        return parameter.Type.Kind switch
+        var kind = parameter.Type.GetInteropTypeKind();
+        return kind switch
         {
             InteropTypeKind.Enum => $"{variableName}.value",
             InteropTypeKind.String => variableName,
@@ -195,44 +200,65 @@ public class KotlinLanguageProvider : ILanguageProvider
         };
     }
 
-    public object BuildClassTemplateModel(InteropClassModel classModel, string customDefinitions, string customInit, string customClass)
+    public object BuildClassTemplateModel(
+        INamedTypeSymbol targetType,
+        IReadOnlyList<IMethodSymbol> methods,
+        Dictionary<IMethodSymbol, OverloadInfo> overloads,
+        string inheritFrom,
+        string customDefinitions, string customInit, string customClass)
     {
-        _currentClassName = classModel.GeneratedClassName;
+        var className = targetType.GetGeneratedClassName();
+        _currentClassName = className;
 
         // Collect all unique callback interfaces needed
-        var callbackInterfaces = classModel.Methods
-            .SelectMany(m => m.Callbacks)
+        var callbackInterfaces = methods
+            .SelectMany(m => m.GetCallbackParameters())
             .Select(c => new
             {
-                InterfaceName = $"{c.ArgumentTypeName}Callback",
-                ArgumentTypeName = c.ArgumentTypeName
+                InterfaceName = $"{c.GetCallbackArgumentTypeName()}Callback",
+                ArgumentTypeName = c.GetCallbackArgumentTypeName()
             })
             .DistinctBy(c => c.InterfaceName)
             .ToList();
 
+        var callbackTypedefs = methods
+            .GetCallbackTypedefs()
+            .Select(t => t.TypedefDefinition)
+            .Distinct()
+            .ToList();
+
+        var cHeaders = methods
+            .Select(m => m.GetCHeaderDefinition(className))
+            .ToList();
+
         return new
         {
-            ClassName = classModel.GeneratedClassName,
-            InheritFrom = classModel.InheritFrom,
-            Methods = classModel.Methods.Select(BuildMethodTemplateModel).ToList(),
+            ClassName = className,
+            InheritFrom = inheritFrom,
+            Methods = methods.Select(m => BuildMethodTemplateModel(m, targetType, overloads)).ToList(),
             CallbackInterfaces = callbackInterfaces,
-            CallbackTypedefs = classModel.CallbackTypedefs,
-            Headers = classModel.CHeaderSignatures,
+            CallbackTypedefs = callbackTypedefs,
+            Headers = cHeaders,
             CustomDefinitions = customDefinitions,
             CustomInit = customInit,
             CustomClass = customClass
         };
     }
 
-    private object BuildMethodTemplateModel(InteropMethodModel method)
+    private object BuildMethodTemplateModel(IMethodSymbol method, INamedTypeSymbol targetType, Dictionary<IMethodSymbol, OverloadInfo> overloads)
     {
+        var isStaticMethod = method.IsStatic && !method.IsExtensionMethod;
+        var nonThisParams = method.GetNonThisParameters();
+        var overloadInfo = overloads[method];
+        var className = targetType.GetGeneratedClassName();
+
         // Build Kotlin method parameter string
-        var kotlinParams = method.Parameters.Select(p =>
+        var kotlinParams = nonThisParams.Select(p =>
         {
-            var name = ConvertName(p.OriginalName, NameContext.Parameter);
+            var name = ConvertName(p.Name, NameContext.Parameter);
             var type = GetTargetType(p.Type);
-            var defaultVal = p.HasDefaultValue ? FormatDefaultValue(p) : null;
-            return new { Name = name, Type = type, OriginalType = p.Type, DefaultValue = defaultVal };
+            var defaultVal = p.HasExplicitDefaultValue ? FormatDefaultValue(p) : null;
+            return new { Name = name, Type = type, OriginalParam = p, DefaultValue = defaultVal };
         }).ToList();
 
         var kotlinParametersStr = string.Join(", ", kotlinParams.Select(p =>
@@ -241,35 +267,37 @@ public class KotlinLanguageProvider : ILanguageProvider
         // Build native call arguments
         var nativeArgs = new List<string>();
 
-        if (!method.IsStaticMethod)
+        if (!isStaticMethod)
             nativeArgs.Add("pointer");
 
-        nativeArgs.AddRange(method.Parameters.Select(p =>
-            GetInteropValue(p, ConvertName(p.OriginalName, NameContext.Parameter))));
+        nativeArgs.AddRange(nonThisParams.Select(p =>
+            GetInteropValue(p, ConvertName(p.Name, NameContext.Parameter))));
         var nativeCallArgsStr = string.Join(", ", nativeArgs);
 
         // Build JNA interface method signature
-        var jnaSignature = BuildJnaSignature(method);
+        var jnaSignature = BuildJnaSignature(method, targetType);
 
         // Determine return type
+        var returnTypeKind = method.ReturnType.GetInteropTypeKind();
         var kotlinReturnType = GetReturnTypeName(method);
-        var jnaReturnType = method.ReturnType.Kind == InteropTypeKind.Void
+        var jnaReturnType = returnTypeKind == InteropTypeKind.Void
             ? "Unit"
             : GetJnaType(method.ReturnType);
         var returnClassName = kotlinReturnType != "Unit" ? kotlinReturnType : null;
 
         // Extract unique ID from native entry point
-        var uniqueId = method.NativeEntryPoint.ExtractNativeMethodHash();
+        var nativeEntryPoint = method.GetNativeMethodName(className);
+        var uniqueId = nativeEntryPoint.ExtractNativeMethodHash();
 
         // Use disambiguated name for overloads
-        var methodName = method.IsOverload
-            ? ConvertName(method.DisambiguatedName, NameContext.Method)
-            : ConvertName(method.OriginalName, NameContext.Method);
+        var methodName = overloadInfo.IsOverload
+            ? ConvertName(overloadInfo.DisambiguatedName, NameContext.Method)
+            : ConvertName(method.Name, NameContext.Method);
 
         return new
         {
             KotlinMethodName = methodName,
-            NativeMethodName = method.NativeEntryPoint,
+            NativeMethodName = nativeEntryPoint,
             KotlinParameters = kotlinParametersStr,
             KotlinReturnType = kotlinReturnType,
             JnaReturnType = jnaReturnType,
@@ -277,59 +305,67 @@ public class KotlinLanguageProvider : ILanguageProvider
             ReturnClassName = returnClassName,
             NativeCallArgs = nativeCallArgsStr,
             UniqueId = uniqueId,
-            DeprecationMessage = method.DeprecationMessage,
-            IsStaticMethod = method.IsStaticMethod,
-            Callbacks = method.Callbacks.Select(c => new
+            DeprecationMessage = method.TryGetDeprecationMessage(),
+            IsStaticMethod = isStaticMethod,
+            Callbacks = method.GetCallbackParameters().Select(c => new
             {
-                ParameterName = ConvertName(c.ParameterName, NameContext.Parameter),
-                ArgumentTypeName = c.ArgumentTypeName,
-                CallbackInterfaceName = $"{c.ArgumentTypeName}Callback"
+                ParameterName = ConvertName(c.Name, NameContext.Parameter),
+                ArgumentTypeName = c.GetCallbackArgumentTypeName(),
+                CallbackInterfaceName = $"{c.GetCallbackArgumentTypeName()}Callback"
             }).ToList(),
-            IsOverload = method.IsOverload,
-            OriginalName = ConvertName(method.OriginalName, NameContext.Method),
-            Parameters = kotlinParams.Select(p => new
+            IsOverload = overloadInfo.IsOverload,
+            OriginalName = ConvertName(method.Name, NameContext.Method),
+            Parameters = kotlinParams.Select(p =>
             {
-                p.Name,
-                p.Type,
-                JnaType = GetJnaType(p.OriginalType),
-                IsCallback = p.OriginalType.Kind is InteropTypeKind.Action or InteropTypeKind.Func,
-                IsEnum = p.OriginalType.Kind == InteropTypeKind.Enum,
-                IsString = p.OriginalType.Kind == InteropTypeKind.String,
-                IsBoolean = p.OriginalType.Kind == InteropTypeKind.Boolean,
-                IsColor = p.OriginalType.Kind == InteropTypeKind.Color,
-                IsObject = p.OriginalType.Kind is InteropTypeKind.Class or InteropTypeKind.Interface
+                var kind = p.OriginalParam.Type.GetInteropTypeKind();
+                return new
+                {
+                    p.Name,
+                    p.Type,
+                    JnaType = GetJnaType(p.OriginalParam.Type),
+                    IsCallback = kind is InteropTypeKind.Action or InteropTypeKind.Func,
+                    IsEnum = kind == InteropTypeKind.Enum,
+                    IsString = kind == InteropTypeKind.String,
+                    IsBoolean = kind == InteropTypeKind.Boolean,
+                    IsColor = kind == InteropTypeKind.Color,
+                    IsObject = kind is InteropTypeKind.Class or InteropTypeKind.Interface
+                };
             }).ToList(),
-            ReturnsPointer = method.ReturnType.Kind is InteropTypeKind.Class or InteropTypeKind.Interface or InteropTypeKind.TypeParameter,
-            HasCallbacks = method.Callbacks.Any()
+            ReturnsPointer = returnTypeKind is InteropTypeKind.Class or InteropTypeKind.Interface or InteropTypeKind.TypeParameter,
+            HasCallbacks = method.GetCallbackParameters().Any()
         };
     }
 
-    private string GetReturnTypeName(InteropMethodModel method)
+    private string GetReturnTypeName(IMethodSymbol method)
     {
-        if (method.ReturnType.Kind == InteropTypeKind.Void)
+        var kind = method.ReturnType.GetInteropTypeKind();
+
+        if (kind == InteropTypeKind.Void)
             return "Unit";
 
-        if (method.ReturnType.Kind == InteropTypeKind.TypeParameter)
+        if (kind == InteropTypeKind.TypeParameter)
             return _currentClassName;
 
         return GetTargetType(method.ReturnType);
     }
 
-    private string BuildJnaSignature(InteropMethodModel method)
+    private string BuildJnaSignature(IMethodSymbol method, INamedTypeSymbol targetType)
     {
         var returnType = GetJnaType(method.ReturnType);
-        var methodName = method.NativeEntryPoint;
+        var className = targetType.GetGeneratedClassName();
+        var methodName = method.GetNativeMethodName(className);
+        var isStaticMethod = method.IsStatic && !method.IsExtensionMethod;
 
         // Build parameters: first is Pointer target for instance methods
         var parameters = new List<string>();
 
-        if (!method.IsStaticMethod)
+        if (!isStaticMethod)
             parameters.Add("target: Pointer");
 
-        parameters.AddRange(method.Parameters.Select(p =>
+        parameters.AddRange(method.GetNonThisParameters().Select(p =>
         {
             var jnaType = GetJnaType(p.Type);
-            return $"{p.OriginalName}: {jnaType}";
+            return $"{p.Name}: {jnaType}";
         }));
 
         return $"fun {methodName}({string.Join(", ", parameters)}): {returnType}";
