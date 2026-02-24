@@ -11,20 +11,6 @@ public sealed class PublicApiGenerator
 {
     public static void GenerateSource(Compilation compilation)
     {
-        var listOfAvailableMethods = compilation
-            .GlobalNamespace
-            .GetNamespaceMembers()
-            .Where(x => x.Name.StartsWith("QuestPDF"))
-            .SelectMany(x => x.GetMembersRecursively())
-            .Where(x => x.DeclaredAccessibility == Accessibility.Public)
-            .SelectMany(x => x.GetMembers())
-            .OfType<IMethodSymbol>()
-            .ExcludeOldObsoleteMethods()
-            .Where(x => x.MethodKind is not (MethodKind.PropertyGet or MethodKind.PropertySet))
-            .Where(x => x.DeclaredAccessibility == Accessibility.Public)
-            .Select(x => x.ToDisplayString())
-            .ToList();
-        
         var generators = new List<IInteropSourceGenerator>
         {
             new ColorsSourceGenerator(),

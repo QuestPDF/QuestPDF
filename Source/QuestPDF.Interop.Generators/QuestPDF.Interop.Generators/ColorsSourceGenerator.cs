@@ -12,74 +12,33 @@ public class ColorsSourceGenerator : IInteropSourceGenerator
         if (language == "CSharp")
             return string.Empty;
 
-        return TemplateManager.RenderTemplate($"{language}.Colors", GetTemplateModel(compilation));
-    }
-
-    public class TemplateModel
-    {
-        public IEnumerable<Color> BasicColors { get; set; }
-        public IEnumerable<ColorGroup> ColorGroups { get; set; }
-        
-        public class Color
-        {
-            public string Name { get; set; }
-            public string Value { get; set; }
-        }
-
-        public class ColorGroup
-        {
-            public string Name { get; set; }
-            public IEnumerable<Color> Colors { get; set; }
-        }
-    }
-
-    private TemplateModel GetTemplateModel(Compilation compilation)
-    {
         var colorType = compilation.GetTypeByMetadataName("QuestPDF.Infrastructure.Color");
-        var colorClass = compilation.GetTypeByMetadataName("QuestPDF.Helpers.Colors")!;
+        var colorsClass = compilation.GetTypeByMetadataName("QuestPDF.Helpers.Colors")!;
 
-        return new TemplateModel
+        var model = new
         {
-            BasicColors = GetColorDefinitions(colorClass),
-            ColorGroups = GetColorGroups()
+            BasicColors = GetColorFields(colorsClass, colorType),
+            ColorGroups = colorsClass.GetTypeMembers()
+                .Where(t => t.TypeKind == TypeKind.Class)
+                .Select(t => new { t.Name, Colors = GetColorFields(t, colorType) })
         };
 
-        IEnumerable<TemplateModel.ColorGroup> GetColorGroups()
-        {
-            return colorClass
-                .GetTypeMembers()
-                .Where(t => t.TypeKind == TypeKind.Class)
-                .Select(t => new TemplateModel.ColorGroup
-                {
-                    Name = t.Name, 
-                    Colors = GetColorDefinitions(t)
-                });
-        }
+        return TemplateManager.RenderTemplate($"{language}.Colors", model);
+    }
 
-        IEnumerable<TemplateModel.Color> GetColorDefinitions(INamedTypeSymbol namedTypeSymbol)
-        {
-            return namedTypeSymbol
-                .GetMembers()
-                .Where(x => x.IsStatic)
-                .OfType<IFieldSymbol>()
-                .Where(x => SymbolEqualityComparer.Default.Equals(x.Type, colorType))
-                .Select(x => new TemplateModel.Color
-                {
-                    Name = x.Name,
-                    Value = GetColorValue(x)
-                });
-        }
+    private static IEnumerable<object> GetColorFields(INamedTypeSymbol type, INamedTypeSymbol colorType)
+    {
+        return type.GetMembers()
+            .Where(x => x.IsStatic)
+            .OfType<IFieldSymbol>()
+            .Where(x => SymbolEqualityComparer.Default.Equals(x.Type, colorType))
+            .Select(x => new { x.Name, Value = GetColorValue(x) });
+    }
 
-        static string GetColorValue(IFieldSymbol fieldSymbol)
-        {
-            var syntaxRef = fieldSymbol.DeclaringSyntaxReferences.Single();
-            var syntaxNode = syntaxRef.GetSyntax();
-            var declarator = syntaxNode as VariableDeclaratorSyntax;
-    
-            var initializer = declarator.Initializer;
-            var creation = initializer?.Value as BaseObjectCreationExpressionSyntax;
-        
-            return creation.ArgumentList?.Arguments.Single().Expression.ToString();
-        }
+    private static string GetColorValue(IFieldSymbol field)
+    {
+        var declarator = (VariableDeclaratorSyntax)field.DeclaringSyntaxReferences.Single().GetSyntax();
+        var creation = (BaseObjectCreationExpressionSyntax)declarator.Initializer!.Value;
+        return creation.ArgumentList!.Arguments.Single().Expression.ToString();
     }
 }

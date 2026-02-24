@@ -58,6 +58,23 @@ internal static partial class Helpers
             yield return nestedMember;
     }
 
+    public static IEnumerable<INamedTypeSymbol> GetAllQuestPdfTypes(this Compilation compilation)
+    {
+        return compilation.GlobalNamespace
+            .GetNamespaceMembers()
+            .Where(x => x.Name.StartsWith("QuestPDF"))
+            .SelectMany(x => x.GetMembersRecursively());
+    }
+
+    public static IEnumerable<IMethodSymbol> GetAllQuestPdfExtensionMethods(this Compilation compilation)
+    {
+        return compilation.GetAllQuestPdfTypes()
+            .Where(x => !x.IsGenericType)
+            .SelectMany(x => x.GetMembers())
+            .OfType<IMethodSymbol>()
+            .Where(x => x.DeclaredAccessibility == Accessibility.Public && x.IsStatic && x.IsExtensionMethod);
+    }
+
     public static IEnumerable<INamedTypeSymbol> FilterSupportedTypes(this IEnumerable<INamedTypeSymbol> typeSymbols)
     {
         return typeSymbols.Where(x => !x.IsGenericType);
