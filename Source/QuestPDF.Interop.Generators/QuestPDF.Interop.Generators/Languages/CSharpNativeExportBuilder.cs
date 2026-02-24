@@ -39,7 +39,7 @@ internal class CSharpNativeExportBuilder
         return new
         {
             NativeName = method.GetNativeMethodName(_className),
-            ManagedName = method.GetManagedMethodName(_className),
+            ManagedName = GetManagedMethodName(method, _className),
             ApiName = method.Name,
             MethodParameters = parameters,
             IsStaticMethod = isStaticMethod,
@@ -166,5 +166,11 @@ internal class CSharpNativeExportBuilder
             InteropTypeKind.TypeParameter => "BoxHandle",
             _ => "NoTransformation"
         };
+    }
+
+    private static string GetManagedMethodName(IMethodSymbol methodSymbol, string targetTypeName)
+    {
+        var hash = methodSymbol.ToDisplayString().GetDeterministicHash();
+        return $"{targetTypeName}_{methodSymbol.Name}_{hash}";
     }
 }
