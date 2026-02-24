@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -11,7 +11,7 @@ namespace QuestPDF.Interop;
 public unsafe struct Buffer
 {
     public byte* data;
-    public nuint length;  // size_t-like
+    public nuint length; // size_t equivalent
 }
 
 
@@ -35,13 +35,12 @@ public static unsafe partial class Exports
         var gch = GCHandle.FromIntPtr(handle);
         if (gch.IsAllocated) gch.Free();
     }
-    
+
     static Buffer HandleBuffer(byte[] byteArray)
     {
         nuint len = (nuint)byteArray.Length;
         byte* ptr = (byte*)NativeMemory.Alloc(len); // caller must free
 
-        // Copy managed -> unmanaged
         fixed (byte* src = byteArray)
         {
             global::System.Buffer.MemoryCopy(src, ptr, len, len);
@@ -49,60 +48,59 @@ public static unsafe partial class Exports
 
         return new Buffer { data = ptr, length = len };
     }
-    
+
     static byte[] HandleBuffer(Buffer buffer)
     {
         var result = new byte[buffer.length];
-        
+
         fixed (byte* ptr = result)
             global::System.Buffer.MemoryCopy(buffer.data, ptr, result.Length, result.Length);
-        
+
         return result;
     }
-    
+
     static IntPtr HandleText(string text)
     {
-        if (text == null) 
+        if (text == null)
             return IntPtr.Zero;
 
         var length = Encoding.UTF8.GetByteCount(text);
         var nativeArray = Marshal.AllocHGlobal(length + 1);
-        
+
         fixed (char* pText = text)
         {
             var ptr = (byte*)nativeArray;
             Encoding.UTF8.GetBytes(pText, text.Length, ptr, length);
         }
-        
-        Marshal.WriteByte(nativeArray, length, 0); // null termination
-        
+
+        Marshal.WriteByte(nativeArray, length, 0); // null terminator
+
         return nativeArray;
     }
-    
+
     static T NoTransformation<T>(T obj)
     {
         return obj;
-    }    
-    
-    
+    }
+
+
     [UnmanagedCallersOnly(EntryPoint = "questpdf_sum", CallConvs = new[] { typeof(CallConvCdecl) })]
     [SuppressGCTransition]
     public static int Sum(int a, int b) => a + b;
-    
+
     [UnmanagedCallersOnly(EntryPoint = "apply_binary_op", CallConvs = new[] { typeof(CallConvCdecl) })]
     public static int ApplyBinaryOp(delegate* unmanaged[Cdecl]<int, int, int> op, int a, int b)
     {
-        // Invoke the Python-provided callback
         return op(a, b);
     }
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
     [UnmanagedCallersOnly(EntryPoint = "questpdf_document_create", CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static nint Document_Create(delegate* unmanaged[Cdecl]<nint, void> documentContainerHandler) // returns opaque handle
+    public static nint Document_Create(delegate* unmanaged[Cdecl]<nint, void> documentContainerHandler)
     {
         var thing = Document
             .Create(documentContainer =>
@@ -110,7 +108,7 @@ public static unsafe partial class Exports
                 var pagePointer = BoxHandle(documentContainer);
                 documentContainerHandler(pagePointer);
             });
-        
+
         return BoxHandle(thing);
     }
 
@@ -119,12 +117,11 @@ public static unsafe partial class Exports
     {
         var thing = UnboxHandle<Document>(handle);
         var byteArray = thing.GeneratePdf();
-        
-        
+
+
         nuint len = (nuint)byteArray.Length;
         byte* ptr = (byte*)NativeMemory.Alloc(len); // caller must free
 
-        // Copy managed -> unmanaged
         fixed (byte* src = byteArray)
         {
             global::System.Buffer.MemoryCopy(src, ptr, len, len);
@@ -138,27 +135,27 @@ public static unsafe partial class Exports
     {
         FreeHandle(handle);
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     [UnmanagedCallersOnly(EntryPoint = "questpdf_document_container_add_page", CallConvs = new[] { typeof(CallConvCdecl) })]
-    public static void Document_ContainerAddPage(nint documentContainerPointer, delegate* unmanaged[Cdecl]<nint, void> descriptor) // returns opaque handle
+    public static void Document_ContainerAddPage(nint documentContainerPointer, delegate* unmanaged[Cdecl]<nint, void> descriptor)
     {
         var documentContainer = UnboxHandle<IDocumentContainer>(documentContainerPointer);
-        
+
         documentContainer.Page(page =>
         {
             var pagePointer = BoxHandle(page);
             descriptor(pagePointer);
         });
     }
-    
-    
-    
-    
-    
+
+
+
+
+
 
     [UnmanagedCallersOnly(EntryPoint = "questpdf_page_set_margin", CallConvs = new[] { typeof(CallConvCdecl) })]
     public static void Page_SetMargins(nint handle, int value)
@@ -174,7 +171,7 @@ public static unsafe partial class Exports
         var result = thing.Content();
         return BoxHandle(result);
     }
-    
+
     [UnmanagedCallersOnly(EntryPoint = "questpdf_container_background", CallConvs = new[] { typeof(CallConvCdecl) })]
     public static IntPtr Background(nint containerPointer, uint color)
     {
@@ -183,7 +180,7 @@ public static unsafe partial class Exports
         var result = containerObject.Background(color);
         return BoxHandle(result);
     }
-    
+
     [UnmanagedCallersOnly(EntryPoint = "questpdf_free_bytes", CallConvs = new[] { typeof(CallConvCdecl) })]
     public static void FreeBytes(byte* ptr)
     {

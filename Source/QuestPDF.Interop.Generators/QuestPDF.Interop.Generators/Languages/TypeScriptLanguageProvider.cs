@@ -4,9 +4,6 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
 
-/// <summary>
-/// Language provider for TypeScript code generation using koffi.
-/// </summary>
 internal class TypeScriptLanguageProvider : LanguageProviderBase
 {
     protected override string SelfParameterName => null;
@@ -20,7 +17,7 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
             NameContext.Parameter => csharpName.ToCamelCase(),
             NameContext.Property => csharpName.ToCamelCase(),
             NameContext.Constant => csharpName.ToSnakeCase().ToUpperInvariant(),
-            _ => csharpName // PascalCase for Class, EnumValue
+            _ => csharpName
         };
     }
 
@@ -81,8 +78,6 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
         };
     }
 
-    // ─── TypeScript-specific overrides ──────────────────────────────
-
     protected override string BuildNativeSignature(IMethodSymbol method, INamedTypeSymbol targetType)
     {
         var returnType = GetKoffiType(method.ReturnType);
@@ -100,8 +95,6 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
 
         return $"{returnType} {methodName}({string.Join(", ", parameters)})";
     }
-
-    // ─── Koffi type mapping ─────────────────────────────────────────
 
     private string GetKoffiType(ITypeSymbol type)
     {
@@ -133,8 +126,6 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
         SpecialType.System_Single => "float",
         _ => "int32_t"
     };
-
-    // ─── TypeScript function type formatting ────────────────────────
 
     private string FormatFunctionType(INamedTypeSymbol type, bool isFunc)
     {

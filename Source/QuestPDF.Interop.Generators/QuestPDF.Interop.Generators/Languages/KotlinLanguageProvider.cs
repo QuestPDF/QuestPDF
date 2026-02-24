@@ -4,26 +4,20 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
 
-/// <summary>
-/// Language provider for Kotlin code generation using JNA (Java Native Access).
-/// </summary>
 internal class KotlinLanguageProvider : LanguageProviderBase
 {
     protected override string SelfParameterName => null;
     protected override string SelfPointerExpression => "pointer";
 
-    /// <summary>
-    /// Maps C# type names that conflict with Kotlin reserved words.
-    /// "Unit" in C# (a measurement type) conflicts with Kotlin's Unit (void).
-    /// </summary>
-    private static readonly Dictionary<string, string> TypeNameMappings = new()
+    // "Unit" in C# is a measurement type, but in Kotlin "Unit" means void — rename to avoid conflict
+    private static readonly Dictionary<string, string> KotlinReservedWordMappings = new()
     {
         ["Unit"] = "LengthUnit"
     };
 
     public static string ConvertTypeName(string csharpTypeName)
     {
-        return TypeNameMappings.TryGetValue(csharpTypeName, out var kotlinName)
+        return KotlinReservedWordMappings.TryGetValue(csharpTypeName, out var kotlinName)
             ? kotlinName
             : csharpTypeName;
     }
@@ -36,7 +30,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             NameContext.Parameter => csharpName.ToCamelCase(),
             NameContext.Property => csharpName.ToCamelCase(),
             NameContext.Constant => csharpName.ToSnakeCase().ToUpperInvariant(),
-            _ => csharpName // PascalCase for Class, EnumValue
+            _ => csharpName
         };
     }
 
@@ -101,8 +95,6 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         };
     }
 
-    // ─── Kotlin-specific overrides ──────────────────────────────────
-
     protected override string BuildNativeSignature(IMethodSymbol method, INamedTypeSymbol targetType)
     {
         var returnType = GetJnaType(method.ReturnType);
@@ -155,8 +147,6 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         return methods.Select(m => m.GetCHeaderDefinition(className)).ToList();
     }
 
-    // ─── JNA type mapping ───────────────────────────────────────────
-
     private string GetJnaType(ITypeSymbol type)
     {
         var kind = type.GetInteropTypeKind();
@@ -183,8 +173,6 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         SpecialType.System_Single => "Float",
         _ => "Int"
     };
-
-    // ─── Kotlin function type formatting ────────────────────────────
 
     private string FormatFunctionType(INamedTypeSymbol type, bool isFunc)
     {

@@ -11,7 +11,6 @@ const string projectPath = "/Users/marcinziabek/RiderProjects/QuestPDF2/Source/Q
 MSBuildLocator.RegisterDefaults();
 using var workspace = MSBuildWorkspace.Create();
     
-// Load your project
 var project = await workspace.OpenProjectAsync(projectPath);
 var compilation = await project.GetCompilationAsync();
 

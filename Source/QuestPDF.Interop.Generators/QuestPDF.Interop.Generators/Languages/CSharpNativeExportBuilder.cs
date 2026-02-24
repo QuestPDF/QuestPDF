@@ -5,13 +5,8 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
 
-/// <summary>
-/// Builds template models for C# native export stubs ([UnmanagedCallersOnly]).
-///
-/// Unlike the other language providers which generate client-side wrapper classes,
-/// this generates server-side export stubs that marshal native types INTO managed calls.
-/// The data flow is inverted: native types → managed types (vs. managed → native for Python/TS/Kotlin).
-/// </summary>
+// Unlike client-side providers (Python/TS/Kotlin) that marshal managed→native,
+// this generates server-side export stubs that marshal native→managed.
 internal class CSharpNativeExportBuilder
 {
     private readonly string _className;
@@ -58,18 +53,11 @@ internal class CSharpNativeExportBuilder
         };
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // Export parameter types (managed → native boundary)
-    // Maps C# types to their interop representations for the export stub signature.
-    // ═══════════════════════════════════════════════════════════════════
-
     private static IEnumerable<string> GetExportParameters(IParameterSymbol parameter)
     {
         var kind = parameter.Type.GetInteropTypeKind();
         var typeName = parameter.Type.ToDisplayString();
 
-        // Compound struct types are decomposed into primitive components at the FFI boundary.
-        // These are QuestPDF.Helpers types (not the QuestPDF.Infrastructure types that InteropTypeKind handles).
         if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size")
         {
             yield return $"float {parameter.Name}_width";
@@ -119,18 +107,12 @@ internal class CSharpNativeExportBuilder
         };
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // Marshalled arguments (native → managed call)
-    // Converts interop values back to managed types for the actual API call.
-    // ═══════════════════════════════════════════════════════════════════
-
     private IEnumerable<string> GetMarshalledArguments(IParameterSymbol parameter)
     {
         var kind = parameter.Type.GetInteropTypeKind();
         var name = parameter.Name;
         var typeName = parameter.Type.ToDisplayString();
 
-        // Compound struct types: reconstruct from decomposed width/height components
         if (typeName == "QuestPDF.Helpers.PageSize")
         {
             yield return $"new PageSize({name}_width, {name}_height)";
@@ -155,10 +137,6 @@ internal class CSharpNativeExportBuilder
             _ => name
         };
     }
-
-    // ═══════════════════════════════════════════════════════════════════
-    // Return type mapping
-    // ═══════════════════════════════════════════════════════════════════
 
     private static string GetInteropReturnType(IMethodSymbol method)
     {

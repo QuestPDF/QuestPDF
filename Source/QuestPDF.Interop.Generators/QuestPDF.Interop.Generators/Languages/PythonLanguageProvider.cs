@@ -4,9 +4,6 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
 
-/// <summary>
-/// Language provider for Python code generation using cffi.
-/// </summary>
 internal class PythonLanguageProvider : LanguageProviderBase
 {
     protected override string SelfParameterName => "self";
@@ -17,7 +14,7 @@ internal class PythonLanguageProvider : LanguageProviderBase
     {
         return context switch
         {
-            NameContext.Class => csharpName, // Keep PascalCase for classes
+            NameContext.Class => csharpName,
             _ => csharpName.ToSnakeCase()
         };
     }
@@ -82,8 +79,6 @@ internal class PythonLanguageProvider : LanguageProviderBase
         };
     }
 
-    // ─── Python-specific overrides ──────────────────────────────────
-
     protected override List<string> BuildHeaders(IReadOnlyList<IMethodSymbol> methods, string className)
     {
         return methods.Select(m => m.GetCHeaderDefinition(className)).ToList();
@@ -104,8 +99,6 @@ internal class PythonLanguageProvider : LanguageProviderBase
 
         return GetReturnTypeName(method, className);
     }
-
-    // ─── Python callable type formatting ────────────────────────────
 
     private string FormatCallableType(INamedTypeSymbol type, bool isFunc)
     {

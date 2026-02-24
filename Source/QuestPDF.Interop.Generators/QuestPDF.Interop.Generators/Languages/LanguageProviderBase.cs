@@ -4,63 +4,23 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
 
-/// <summary>
-/// Base class for language-specific code generation providers.
-/// Implements the shared logic for building template models,
-/// delegating language-specific details to abstract methods.
-/// </summary>
 internal abstract class LanguageProviderBase : ILanguageProvider
 {
-    // ═══════════════════════════════════════════════════════════════════
-    // Abstract: each language must define these
-    // ═══════════════════════════════════════════════════════════════════
-
-    /// <summary>Name to include in the parameter list for instance methods (e.g. "self" in Python, null for others).</summary>
     protected abstract string SelfParameterName { get; }
-
-    /// <summary>Expression to pass as the target pointer in native calls (e.g. "self.target_pointer", "this._ptr", "pointer").</summary>
     protected abstract string SelfPointerExpression { get; }
-
-    /// <summary>Prefix added to overloaded method names (e.g. "_" in Python to make them private by convention).</summary>
     protected virtual string OverloadMethodNamePrefix => "";
 
-    /// <summary>Converts a C# name to the target language's naming convention.</summary>
     public abstract string ConvertName(string name, NameContext context);
-
-    /// <summary>Maps a Roslyn type symbol to the target language's type name.</summary>
     protected abstract string GetTargetType(ITypeSymbol type);
-
-    /// <summary>Formats a parameter's default value in the target language's syntax.</summary>
     protected abstract string FormatDefaultValue(IParameterSymbol parameter);
-
-    /// <summary>Produces the expression to pass a parameter value across the FFI boundary.</summary>
     protected abstract string GetInteropValue(IParameterSymbol parameter, string variableName);
 
-    // ═══════════════════════════════════════════════════════════════════
-    // Virtual: override for language-specific extras (null = not applicable)
-    // ═══════════════════════════════════════════════════════════════════
-
-    /// <summary>Builds the native function signature string (e.g. koffi C signature, JNA Kotlin signature).</summary>
     protected virtual string BuildNativeSignature(IMethodSymbol method, INamedTypeSymbol targetType) => null;
-
-    /// <summary>Gets the native/FFI return type (e.g. JNA return type for Kotlin).</summary>
     protected virtual string GetNativeReturnType(IMethodSymbol method) => null;
-
-    /// <summary>Gets the return conversion method name (e.g. "decode_text_as_utf_8" in Python).</summary>
     protected virtual string GetReturnConversionMethod(IMethodSymbol method, string className) => null;
-
-    /// <summary>Builds per-parameter detail models for native interface declarations (Kotlin JNA).</summary>
     protected virtual List<object> BuildParameterDetails(IReadOnlyList<IParameterSymbol> parameters) => null;
-
-    /// <summary>Builds callback interface models (Kotlin JNA).</summary>
     protected virtual List<object> BuildCallbackInterfaces(IReadOnlyList<IMethodSymbol> methods) => null;
-
-    /// <summary>Builds C header definition strings for native function declarations (Python cffi, Kotlin).</summary>
     protected virtual List<string> BuildHeaders(IReadOnlyList<IMethodSymbol> methods, string className) => null;
-
-    // ═══════════════════════════════════════════════════════════════════
-    // Shared: BuildClassTemplateModel (orchestration)
-    // ═══════════════════════════════════════════════════════════════════
 
     public object BuildClassTemplateModel(
         INamedTypeSymbol targetType,
@@ -91,10 +51,6 @@ internal abstract class LanguageProviderBase : ILanguageProvider
         };
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // Shared: BuildMethodModel
-    // ═══════════════════════════════════════════════════════════════════
-
     private object BuildMethodModel(
         IMethodSymbol method, INamedTypeSymbol targetType,
         Dictionary<IMethodSymbol, OverloadInfo> overloads, string className)
@@ -105,18 +61,15 @@ internal abstract class LanguageProviderBase : ILanguageProvider
         var nativeEntryPoint = method.GetNativeMethodName(className);
         var uniqueId = nativeEntryPoint.ExtractNativeMethodHash();
 
-        // Determine method name (with overload disambiguation)
         var methodName = overloadInfo.IsOverload
             ? OverloadMethodNamePrefix + ConvertName(overloadInfo.DisambiguatedName, NameContext.Method)
             : ConvertName(method.Name, NameContext.Method);
 
-        // Build formatted parameters string
         var paramParts = nonThisParams.Select(FormatParameter).ToList();
         if (!isStaticMethod && SelfParameterName != null)
             paramParts.Insert(0, SelfParameterName);
         var parameters = string.Join(", ", paramParts);
 
-        // Build native call arguments string
         var nativeArgParts = nonThisParams
             .Select(p => GetInteropValue(p, ConvertName(p.Name, NameContext.Parameter)))
             .ToList();
@@ -124,7 +77,6 @@ internal abstract class LanguageProviderBase : ILanguageProvider
             nativeArgParts.Insert(0, SelfPointerExpression);
         var nativeCallArgs = string.Join(", ", nativeArgParts);
 
-        // Return type info
         var returnType = GetReturnTypeName(method, className);
         var returnTypeKind = method.ReturnType.GetInteropTypeKind();
         var isVoidReturn = returnTypeKind == InteropTypeKind.Void;
@@ -151,10 +103,6 @@ internal abstract class LanguageProviderBase : ILanguageProvider
             HasCallbacks = method.GetCallbackParameters().Any(),
         };
     }
-
-    // ═══════════════════════════════════════════════════════════════════
-    // Shared: helper methods
-    // ═══════════════════════════════════════════════════════════════════
 
     protected string GetReturnTypeName(IMethodSymbol method, string className)
     {

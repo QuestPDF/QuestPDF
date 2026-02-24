@@ -7,9 +7,6 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
-/// <summary>
-/// Categorizes types for code generation purposes.
-/// </summary>
 internal enum InteropTypeKind
 {
     Void,
@@ -55,10 +52,6 @@ internal static partial class Helpers
         return char.ToLowerInvariant(input[0]) + input.Substring(1);
     }
 
-    /// <summary>
-    /// Extracts the unique hash suffix from a native entry point name.
-    /// Native entry points end with a hash like "__a1b2c3d4".
-    /// </summary>
     public static string ExtractNativeMethodHash(this string nativeEntryPoint)
     {
         var lastUnderscore = nativeEntryPoint.LastIndexOf("__");
@@ -240,7 +233,6 @@ internal static partial class Helpers
             .Parameters
             .Select(x =>
             {
-                // Use typedef name for callbacks instead of inline function pointer
                 if (x.Type.IsAction() || x.Type.IsFunc())
                     return $"{x.Type.GetCallbackTypedefName(methodSymbol)} {x.Name}";
 
@@ -363,10 +355,6 @@ internal static partial class Helpers
         }
     }
 
-    /// <summary>
-    /// Applies a filter function to the method collection.
-    /// Useful for building fluent filter chains.
-    /// </summary>
     public static IEnumerable<IMethodSymbol> Apply(this IEnumerable<IMethodSymbol> methodSymbols, Func<IEnumerable<IMethodSymbol>, IEnumerable<IMethodSymbol>> filter)
     {
         return filter(methodSymbols);
@@ -374,63 +362,39 @@ internal static partial class Helpers
 
     public static bool InheritsFromOrEquals(this ITypeSymbol type, ITypeSymbol baseType)
     {
-        // Check for equality first (Roslyn requires SymbolEqualityComparer)
         if (SymbolEqualityComparer.Default.Equals(type, baseType))
-        {
             return true;
-        }
 
-        // Walk up the inheritance chain
         var current = type.BaseType;
         while (current != null)
         {
             if (SymbolEqualityComparer.Default.Equals(current, baseType))
-            {
                 return true;
-            }
+
             current = current.BaseType;
         }
 
-        // Note: If you need to check Interfaces, you must also check type.AllInterfaces
         return type.AllInterfaces.Any(i => SymbolEqualityComparer.Default.Equals(i, baseType));
     }
 
     public static bool IsExtensionFor(this IMethodSymbol method, ITypeSymbol targetType)
     {
-        // 1. Basic check: Is it actually an extension method?
         if (!method.IsExtensionMethod || method.Parameters.IsEmpty)
-        {
             return false;
-        }
 
-        // 2. Get the type of the 'this' parameter (always the first one)
         var thisParamType = method.Parameters[0].Type;
 
-        // 3. Handle Generic Parameters (e.g., public static void Foo<T>(this T item) where T : MyClass)
         if (thisParamType is ITypeParameterSymbol typeParam)
         {
-            // If the generic is unconstrained (extends Object), it technically extends *everything*.
-            // If you ONLY want methods specifically constrained to your class, return false here if constraints are empty.
+            // Unconstrained generic "this T" applies to all types
             if (!typeParam.ConstraintTypes.Any())
-            {
-                // Returns true because "this T" applies to "MyClass",
-                // but change to false if you strictly want "where T : MyClass"
                 return true;
-            }
 
-            // Check if any of the constraints imply the target type
             return typeParam.ConstraintTypes.Any(constraint => targetType.InheritsFromOrEquals(constraint));
         }
 
-        // 4. Handle Direct Types (e.g., public static void Foo(this MyClass item))
-        // We check if our TargetType inherits from (or is equal to) the parameter type.
-        // Note: Logic is reversed here. If method extends "BaseClass", "MyClass" is valid.
         return targetType.InheritsFromOrEquals(thisParamType);
     }
-
-    // =========================================================================
-    // Type classification and overload handling
-    // =========================================================================
 
     public static InteropTypeKind GetInteropTypeKind(this ITypeSymbol type)
     {
@@ -546,10 +510,8 @@ internal static partial class Helpers
             }
             else
             {
-                // Generate initial suffixes
                 var entries = groupMethods.Select(m => (Method: m, Suffix: GenerateOverloadSuffix(m))).ToList();
 
-                // Resolve collisions
                 var suffixGroups = entries.GroupBy(x => x.Suffix);
 
                 foreach (var suffixGroup in suffixGroups)
@@ -592,7 +554,7 @@ internal static partial class Helpers
 
         if (kind is InteropTypeKind.Enum or InteropTypeKind.Class)
             return type.Name;
-        
+
         if (kind is InteropTypeKind.Interface)
             return type.Name.TrimStart('I');
 

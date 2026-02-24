@@ -15,8 +15,6 @@ public class ColorsSourceGenerator : IInteropSourceGenerator
         return TemplateManager.RenderTemplate($"{language}.Colors", GetTemplateModel(compilation));
     }
 
-    #region Shared
-
     public class TemplateModel
     {
         public IEnumerable<Color> BasicColors { get; set; }
@@ -84,6 +82,4 @@ public class ColorsSourceGenerator : IInteropSourceGenerator
             return creation.ArgumentList?.Arguments.Single().Expression.ToString();
         }
     }
-
-    #endregion
 }
