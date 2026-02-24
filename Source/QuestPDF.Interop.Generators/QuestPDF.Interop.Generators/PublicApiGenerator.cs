@@ -71,7 +71,7 @@ public sealed class PublicApiGenerator
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.DynamicImageDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.SvgImageDescriptor)),
             new DescriptorSourceGenerator(typeof(QuestPDF.Fluent.PageDescriptor)),
-            new ContainerSourceGenerator()
+            new ExtensionMethodSourceGenerator(typeof(QuestPDF.Infrastructure.IContainer))
             {
                 ExcludeMembers = [
                     "BackgroundLinearGradient",
@@ -80,7 +80,7 @@ public sealed class PublicApiGenerator
                     "QuestPDF.Fluent.SvgExtensions.Svg(QuestPDF.Infrastructure.IContainer, System.Func<QuestPDF.Infrastructure.Size, string>)"
                 ]
             },
-            new TableCellDescriptorSourceGenerator()
+            new ExtensionMethodSourceGenerator(typeof(QuestPDF.Elements.Table.ITableCellContainer))
             {
                 InheritFrom = "Container"
             },

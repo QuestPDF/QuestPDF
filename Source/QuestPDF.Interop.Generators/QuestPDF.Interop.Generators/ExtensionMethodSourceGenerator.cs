@@ -5,12 +5,14 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
-internal class TableCellDescriptorSourceGenerator : ObjectSourceGeneratorBase
+internal class ExtensionMethodSourceGenerator(Type targetInterfaceType) : ObjectSourceGeneratorBase
 {
     public ICollection<string> ExcludeMembers { get; set; } = Array.Empty<string>();
-    
+
     protected override IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {
+        var targetType = GetTargetType(compilation);
+
         return compilation
             .GlobalNamespace
             .GetNamespaceMembers()
@@ -22,11 +24,11 @@ internal class TableCellDescriptorSourceGenerator : ObjectSourceGeneratorBase
             .Where(x => !ExcludeMembers.Any(x.ToDisplayString().Contains))
             .FilterSupportedMethods()
             .Where(x => x.DeclaredAccessibility == Accessibility.Public && x.IsStatic && x.IsExtensionMethod)
-            .Where(x => x.Parameters.First().Type.Name.Contains("ITableCellContainer"));
+            .Where(x => x.Parameters.First().Type.Name.Contains(targetInterfaceType.Name));
     }
 
     protected override INamedTypeSymbol GetTargetType(Compilation compilation)
     {
-        return compilation.GetTypeByMetadataName("QuestPDF.Elements.Table.ITableCellContainer");
+        return compilation.GetTypeByMetadataName(targetInterfaceType.FullName);
     }
 }
