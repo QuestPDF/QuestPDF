@@ -21,18 +21,18 @@ class {{ className }}{% if inheritFrom %}({{ inheritFrom }}){% endif %}:
 {% for method in methods %}
     {% if method.deprecationMessage %}@deprecated("{{ method.deprecationMessage }}"){% endif %}
     {% if method.isStaticMethod %}@staticmethod{% endif %}
-    def {{ method.pythonMethodName }}({{ method.pythonMethodParameters | join: ", " }}) -> {% if method.pythonMethodReturnType %}'{{ method.pythonMethodReturnType }}'{% else %}None{% endif %}:
+    def {{ method.methodName }}({{ method.parameters }}) -> {% if method.returnConversionMethod %}'{{ method.returnType }}'{% else %}None{% endif %}:
 {% for callback in method.callbacks %}
         @questpdf_ffi.callback("void(void*)")
-        def {{ callback.internalCallbackName }}({{ callback.pythonParameterName }}_pointer):
-            {{ callback.pythonParameterName }}_object = {{ callback.callbackArgumentTypeName }}({{ callback.pythonParameterName }}_pointer)
-            {{ callback.pythonParameterName }}({{ callback.pythonParameterName }}_object)
+        def {{ callback.internalCallbackName }}({{ callback.parameterName }}_pointer):
+            {{ callback.parameterName }}_object = {{ callback.argumentTypeName }}({{ callback.parameterName }}_pointer)
+            {{ callback.parameterName }}({{ callback.parameterName }}_object)
 
         self._callbacks.append({{ callback.internalCallbackName }})
 {% endfor %}
 
-        result = questpdf.lib.{{ method.interopMethodName }}({{ method.interopMethodParameters | join: ", " }})
-        {% if method.pythonReturnConversionMethod %}return {{ method.pythonReturnConversionMethod }}(result){% endif %}
+        result = questpdf.lib.{{ method.nativeMethodName }}({{ method.nativeCallArgs }})
+        {% if method.returnConversionMethod %}return {{ method.returnConversionMethod }}(result){% endif %}
 {% endfor %}
 
 {{ customClass }}

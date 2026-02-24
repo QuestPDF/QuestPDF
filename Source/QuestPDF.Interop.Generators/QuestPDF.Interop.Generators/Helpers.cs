@@ -89,68 +89,6 @@ internal static partial class Helpers
         return $"{targetTypeName}_{methodSymbol.Name}_{hash}";
     }
 
-    public static string GetInteropResultType(this IMethodSymbol methodSymbol)
-    {
-        if (methodSymbol.ReturnType.ToDisplayString().Contains("QuestPDF.Infrastructure.Color"))
-            return "uint";
-
-        if (methodSymbol.IsGenericMethod && methodSymbol.ReturnType.TypeKind == TypeKind.TypeParameter)
-            return "IntPtr";
-
-        if (methodSymbol.ReturnType.TypeKind == TypeKind.Class)
-            return "IntPtr";
-
-        if (methodSymbol.ReturnType.TypeKind == TypeKind.Interface)
-            return "IntPtr";
-
-        if (methodSymbol.ReturnType.ToDisplayString() == "byte[]")
-            return "Buffer";
-
-        return methodSymbol.ReturnType.ToString();
-    }
-
-    public static string GetCSharpResultTransformFunction(this IMethodSymbol methodSymbol)
-    {
-        if (methodSymbol.ReturnType.ToDisplayString().Contains("QuestPDF.Infrastructure.Color"))
-            return "NoTransformation";
-
-        // byte[]
-        if (methodSymbol.ReturnType.ToDisplayString() == "byte[]")
-            return "HandleBuffer";
-
-        // string
-        if (methodSymbol.ReturnType.SpecialType == SpecialType.System_String)
-            return "HandleText";
-
-        if (methodSymbol.ReturnType.TypeKind == TypeKind.Class)
-            return "BoxHandle";
-
-        if (methodSymbol.ReturnType.TypeKind == TypeKind.Interface)
-            return "BoxHandle";
-
-        if (methodSymbol.IsGenericMethod && methodSymbol.ReturnType.TypeKind == TypeKind.TypeParameter)
-            return "BoxHandle";
-
-        return "NoTransformation";
-    }
-
-    public static string GetInteropMethodParameterType(this ITypeSymbol typeSymbol)
-    {
-        if (typeSymbol.TypeKind == TypeKind.TypeParameter)
-            return "IntPtr";
-
-        if (typeSymbol.TypeKind == TypeKind.Enum)
-            return "int";
-
-        if (typeSymbol.TypeKind == TypeKind.Class)
-            return "IntPtr";
-
-        if (typeSymbol.TypeKind == TypeKind.Interface)
-            return "IntPtr";
-
-        return typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-    }
-
     public static string GetNativeParameterType(this ITypeSymbol typeSymbol)
     {
         var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);

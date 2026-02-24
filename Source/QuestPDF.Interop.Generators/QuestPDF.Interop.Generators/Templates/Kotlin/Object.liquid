@@ -1,7 +1,7 @@
 {% macro renderMethodDefinition(method) %}
 {% if method.deprecationMessage %}@Deprecated("{{ method.deprecationMessage }}"){% endif %}
 {% if method.isStaticMethod %}@JvmStatic{% endif %}
-fun {{ method.originalName }}({{ method.kotlinParameters }}){% if method.kotlinReturnType != 'Unit' %}: {{ method.kotlinReturnType }}{% endif %} {
+fun {{ method.originalName }}({{ method.parameters }}){% if method.returnType != 'Unit' %}: {{ method.returnType }}{% endif %} {
 {% for callback in method.callbacks %}
     // Create callback for {{ callback.parameterName }}
     val {{ callback.parameterName }}Callback = object : {{ callback.callbackInterfaceName }} {
@@ -13,7 +13,7 @@ fun {{ method.originalName }}({{ method.kotlinParameters }}){% if method.kotlinR
     callbacks.add({{ callback.parameterName }}Callback)
 
 {% endfor %}
-{% if method.kotlinReturnType == 'Unit' %}
+{% if method.returnType == 'Unit' %}
     lib().{{ method.nativeMethodName }}({{ method.nativeCallArgs }})
 {% elsif method.returnsPointer %}
     val result = lib().{{ method.nativeMethodName }}({{ method.nativeCallArgs }})
@@ -35,7 +35,7 @@ fun {{ method.originalName }}({{ method.kotlinParameters }}){% if method.kotlinR
  */
 private interface {{ className }}Native : Library {
 {% for method in methods %}
-    fun {{ method.nativeMethodName }}({% unless method.isStaticMethod %}target: Pointer{% for param in method.parameters %}, {{ param.name }}: {{ param.jnaType }}{% endfor %}{% else %}{% for param in method.parameters %}{% if forloop.first == false %}, {% endif %}{{ param.name }}: {{ param.jnaType }}{% endfor %}{% endunless %}): {{ method.jnaReturnType }}
+    fun {{ method.nativeMethodName }}({% unless method.isStaticMethod %}target: Pointer{% for param in method.parameterDetails %}, {{ param.name }}: {{ param.nativeType }}{% endfor %}{% else %}{% for param in method.parameterDetails %}{% if forloop.first == false %}, {% endif %}{{ param.name }}: {{ param.nativeType }}{% endfor %}{% endunless %}): {{ method.nativeReturnType }}
 {% endfor %}
 
 {{ customInit }}

@@ -12,7 +12,7 @@ const {{ className }}NativeFunctions: Record<string, ((...args: any[]) => any) |
 
 function init{{ className }}Functions(lib: koffi.IKoffiLib): void {
 {% for method in methods %}
-  {{ className }}NativeFunctions['{{ method.nativeMethodName }}'] = lib.func('{{ method.cSignature }}');
+  {{ className }}NativeFunctions['{{ method.nativeMethodName }}'] = lib.func('{{ method.nativeSignature }}');
 {% endfor %}
 
 {{ customInit }}
@@ -39,7 +39,7 @@ export class {{ className }} {
 
 {% for method in methods %}
   {% if method.deprecationMessage %}/** @deprecated {{ method.deprecationMessage }} */{% endif %}
-    {% if method.isStaticMethod %}static {% endif %}{% if method.isOverload %}private {% endif %}{{ method.tsMethodName }}({{ method.tsParameters }}): {{ method.tsReturnType }} {
+    {% if method.isStaticMethod %}static {% endif %}{% if method.isOverload %}private {% endif %}{{ method.methodName }}({{ method.parameters }}): {{ method.returnType }} {
 {% for callback in method.callbacks %}
     // Create callback type and register handler
     const {{ callback.parameterName }}CallbackType_{{ method.uniqueId }} = koffi.proto('void {{ callback.parameterName }}Cb_{{ method.uniqueId }}(void* ptr)');
@@ -52,7 +52,7 @@ export class {{ className }} {
 {% endfor %}
 
     const result = {{ className }}NativeFunctions['{{ method.nativeMethodName }}']!({{ method.nativeCallArgs }});
-{% if method.tsReturnType != 'void' %}
+{% if method.returnType != 'void' %}
     return new {{ method.returnClassName }}(result);
 {% endif %}
   }
