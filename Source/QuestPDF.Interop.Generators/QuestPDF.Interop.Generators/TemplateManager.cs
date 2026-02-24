@@ -67,21 +67,6 @@ internal static class TemplateManager
         return template.Render(context);
     }
 
-    public static bool TemplateExists(string templateName)
-    {
-        var resourceName = $"QuestPDF.Interop.Generators.Templates.{templateName}.liquid";
-        using var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
-        return stream != null;
-    }
-
-    public static string RenderTemplateIfExists(string templateName, object templateModel)
-    {
-        if (!TemplateExists(templateName))
-            return string.Empty;
-
-        return RenderTemplate(templateName, templateModel);
-    }
-
     private static string LoadTemplateString(string templateName)
     {
         using var stream = Assembly
