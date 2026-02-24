@@ -6,24 +6,9 @@ namespace QuestPDF.Interop.Generators;
 
 public class PlainSourceLoader(string resourceName) : IInteropSourceGenerator
 {
-    public string GenerateCSharpCode(Compilation compilation)
+    public string GenerateCode(Compilation compilation, string language)
     {
-        return LoadResource($"CSharp.{resourceName}");
-    }
-
-    public string GeneratePythonCode(Compilation compilation)
-    {
-        return LoadResource($"Python.{resourceName}");
-    }
-
-    public string GenerateTypeScriptCode(Compilation compilation)
-    {
-        return LoadResource($"TypeScript.{resourceName}");
-    }
-
-    public string GenerateKotlinCode(Compilation compilation)
-    {
-        return LoadResource($"Kotlin.{resourceName}");
+        return LoadResource($"{language}.{resourceName}");
     }
 
     private static string LoadResource(string resourceName)
@@ -31,7 +16,7 @@ public class PlainSourceLoader(string resourceName) : IInteropSourceGenerator
         using var stream = Assembly
             .GetExecutingAssembly()
             .GetManifestResourceStream($"QuestPDF.Interop.Generators.Templates.{resourceName}.liquid");
-        
+
         if (stream == null)
             return string.Empty;
 

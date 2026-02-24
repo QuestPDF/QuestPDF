@@ -4,8 +4,5 @@ namespace QuestPDF.Interop.Generators;
 
 public interface IInteropSourceGenerator
 {
-    string GenerateCSharpCode(Compilation compilation);
-    string GeneratePythonCode(Compilation compilation);
-    string GenerateTypeScriptCode(Compilation compilation);
-    string GenerateKotlinCode(Compilation compilation);
+    string GenerateCode(Compilation compilation, string language);
 }

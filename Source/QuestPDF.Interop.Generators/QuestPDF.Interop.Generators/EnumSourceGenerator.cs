@@ -5,43 +5,35 @@ using QuestPDF.Interop.Generators.Languages;
 
 namespace QuestPDF.Interop.Generators;
 
-public class EnumSourceGenerator() : IInteropSourceGenerator
+public class EnumSourceGenerator : IInteropSourceGenerator
 {
-    public string GenerateCSharpCode(Compilation compilation)
+    public string GenerateCode(Compilation compilation, string language)
     {
-        return string.Empty;
-    }
-    
-    public string GeneratePythonCode(Compilation compilation)
-    {
-        var model = GetTemplateModel(compilation);
-        return TemplateManager.RenderTemplate("Python.Enum", model);
-    }
-    
-    public string GenerateTypeScriptCode(Compilation compilation)
-    {
-        var model = GetTemplateModel(compilation);
-        return TemplateManager.RenderTemplate("TypeScript.Enum", model);
+        if (language == "CSharp")
+            return string.Empty;
+
+        var model = new TemplateModel
+        {
+            Enums = GetAllPublicEnumsFromCompilation(compilation).Select(symbol => new TemplateModel.Enum
+            {
+                Name = language == "Kotlin" ? KotlinLanguageProvider.ConvertTypeName(symbol.Name) : symbol.Name,
+                Members = GetEnumMembers(symbol)
+            })
+        };
+
+        return TemplateManager.RenderTemplate($"{language}.Enum", model);
     }
 
-    public string GenerateKotlinCode(Compilation compilation)
-    {
-        var model = GetKotlinTemplateModel(compilation);
-        return TemplateManager.RenderTemplate("Kotlin.Enum", model);
-    }
-
-    #region Shared
-    
     class TemplateModel
     {
         public IEnumerable<Enum> Enums { get; set; }
-        
+
         public class Enum
         {
             public string Name { get; set; }
             public IEnumerable<EnumMember> Members { get; set; }
         }
-        
+
         public class EnumMember
         {
             public string Name { get; set; }
@@ -49,41 +41,6 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
         }
     }
 
-    private TemplateModel GetTemplateModel(Compilation compilation)
-    {
-        return new TemplateModel
-        {
-            Enums = GetAllPublicEnumsFromCompilation(compilation).Select(Map)
-        };
-    }
-
-    private TemplateModel GetKotlinTemplateModel(Compilation compilation)
-    {
-        return new TemplateModel
-        {
-            Enums = GetAllPublicEnumsFromCompilation(compilation).Select(MapForKotlin)
-        };
-    }
-
-    private static TemplateModel.Enum MapForKotlin(INamedTypeSymbol symbol)
-    {
-        return new TemplateModel.Enum
-        {
-            // Apply Kotlin type name conversions (e.g., Unit -> LengthUnit)
-            Name = KotlinLanguageProvider.ConvertTypeName(symbol.Name),
-            Members = GetEnumMembers(symbol)
-        };
-    }
-
-    private static TemplateModel.Enum Map(INamedTypeSymbol symbol)
-    {
-        return new TemplateModel.Enum
-        {
-            Name = symbol.Name,
-            Members = GetEnumMembers(symbol)
-        };
-    }
-    
     private static IEnumerable<INamedTypeSymbol> GetAllPublicEnumsFromCompilation(Compilation compilation)
     {
         return compilation
@@ -102,10 +59,8 @@ public class EnumSourceGenerator() : IInteropSourceGenerator
             .Where(x => x.HasConstantValue)
             .Select(x => new TemplateModel.EnumMember
             {
-                Name = x.Name, 
+                Name = x.Name,
                 Value = System.Convert.ToInt32(x.ConstantValue)
             });
     }
-    
-    #endregion
 }

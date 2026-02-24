@@ -86,30 +86,33 @@ public sealed class PublicApiGenerator
             },
         };
         
-        GenerateCode("QuestPDF.Interop.g.cs", "CSharp.Main", x => x.GenerateCSharpCode(compilation));
-        GenerateCode("QuestPDF.Interop.g.py", "Python.Main", x => x.GeneratePythonCode(compilation));
-        GenerateCode("QuestPDF.Interop.g.ts", "TypeScript.Main", x => x.GenerateTypeScriptCode(compilation));
-        GenerateCode("QuestPDF.Interop.g.kt", "Kotlin.Main", x => x.GenerateKotlinCode(compilation));
-        
-        void GenerateCode(string sourceFileName, string templateName, Func<IInteropSourceGenerator, string> selector)
+        var languages = new (string FileName, string Language)[]
         {
-            var codeFragments = generators
-                .Select(selector);
-                
-            var finalCode = TemplateManager
-                .RenderTemplate(templateName, new
-                {
-                    GenerationDateTime = DateTime.Now.ToString(CultureInfo.InvariantCulture),
-                    Fragments = codeFragments.ToList()
-                });
-            
-            Directory.CreateDirectory("generated");
-            
-            var path = Path.Combine("generated", sourceFileName);
-            
+            ("QuestPDF.Interop.g.cs", "CSharp"),
+            ("QuestPDF.Interop.g.py", "Python"),
+            ("QuestPDF.Interop.g.ts", "TypeScript"),
+            ("QuestPDF.Interop.g.kt", "Kotlin"),
+        };
+
+        Directory.CreateDirectory("generated");
+
+        foreach (var (fileName, language) in languages)
+        {
+            var fragments = generators
+                .Select(g => g.GenerateCode(compilation, language))
+                .ToList();
+
+            var finalCode = TemplateManager.RenderTemplate($"{language}.Main", new
+            {
+                GenerationDateTime = DateTime.Now.ToString(CultureInfo.InvariantCulture),
+                Fragments = fragments
+            });
+
+            var path = Path.Combine("generated", fileName);
+
             if (File.Exists(path))
                 File.Delete(path);
-            
+
             File.WriteAllText(path, finalCode);
         }
     }

@@ -7,27 +7,12 @@ namespace QuestPDF.Interop.Generators;
 
 public class ColorsSourceGenerator : IInteropSourceGenerator
 {
-    public string GenerateCSharpCode(Compilation compilation)
+    public string GenerateCode(Compilation compilation, string language)
     {
-        return string.Empty;
-    }
+        if (language == "CSharp")
+            return string.Empty;
 
-    public string GeneratePythonCode(Compilation compilation)
-    {
-        var model = GetTemplateModel(compilation);
-        return TemplateManager.RenderTemplate("Python.Colors", model);
-    }
-
-    public string GenerateTypeScriptCode(Compilation compilation)
-    {
-        var model = GetTemplateModel(compilation);
-        return TemplateManager.RenderTemplate("TypeScript.Colors", model);
-    }
-
-    public string GenerateKotlinCode(Compilation compilation)
-    {
-        var model = GetTemplateModel(compilation);
-        return TemplateManager.RenderTemplate("Kotlin.Colors", model);
+        return TemplateManager.RenderTemplate($"{language}.Colors", GetTemplateModel(compilation));
     }
 
     #region Shared

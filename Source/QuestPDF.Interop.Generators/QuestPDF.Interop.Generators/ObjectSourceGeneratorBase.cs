@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,44 +15,37 @@ internal abstract class ObjectSourceGeneratorBase : IInteropSourceGenerator
     protected abstract IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation);
     protected abstract INamedTypeSymbol GetTargetType(Compilation compilation);
 
-    public string GenerateCSharpCode(Compilation compilation)
+    public string GenerateCode(Compilation compilation, string language)
     {
-        var builder = new CSharpNativeExportBuilder(GetTargetType(compilation));
-        var templateModel = builder.BuildTemplateModel(GetTargetMethods(compilation));
-        return TemplateManager.RenderTemplate("CSharp.NativeInteropMethod", templateModel);
-    }
+        if (language == "CSharp")
+        {
+            var builder = new CSharpNativeExportBuilder(GetTargetType(compilation));
+            var csharpModel = builder.BuildTemplateModel(GetTargetMethods(compilation));
+            return TemplateManager.RenderTemplate("CSharp.NativeInteropMethod", csharpModel);
+        }
 
-    public string GeneratePythonCode(Compilation compilation)
-    {
-        return GenerateCode(compilation, "Python", new PythonLanguageProvider());
-    }
+        ILanguageProvider languageProvider = language switch
+        {
+            "Python" => new PythonLanguageProvider(),
+            "TypeScript" => new TypeScriptLanguageProvider(),
+            "Kotlin" => new KotlinLanguageProvider(),
+            _ => throw new NotSupportedException($"Language not supported: {language}")
+        };
 
-    public string GenerateTypeScriptCode(Compilation compilation)
-    {
-        return GenerateCode(compilation, "TypeScript", new TypeScriptLanguageProvider());
-    }
-
-    public string GenerateKotlinCode(Compilation compilation)
-    {
-        return GenerateCode(compilation, "Kotlin", new KotlinLanguageProvider());
-    }
-
-    private string GenerateCode(Compilation compilation, string prefix, ILanguageProvider languageProvider)
-    {
         var targetType = GetTargetType(compilation);
         var methods = GetTargetMethods(compilation).ToList();
         var overloads = methods.ComputeOverloads();
         var className = targetType.GetGeneratedClassName();
 
-        var customDefinitions = TryLoadingCustomContent($"{prefix}.{className}.Object.Defs");
-        var customInit = TryLoadingCustomContent($"{prefix}.{className}.Object.Init");
-        var customClass = TryLoadingCustomContent($"{prefix}.{className}.Object.Class");
+        var customDefinitions = TryLoadingCustomContent($"{language}.{className}.Object.Defs");
+        var customInit = TryLoadingCustomContent($"{language}.{className}.Object.Init");
+        var customClass = TryLoadingCustomContent($"{language}.{className}.Object.Class");
 
         var templateModel = languageProvider.BuildClassTemplateModel(
             targetType, methods, overloads, InheritFrom,
             customDefinitions, customInit, customClass);
 
-        return TemplateManager.RenderTemplate($"{prefix}.Object", templateModel);
+        return TemplateManager.RenderTemplate($"{language}.Object", templateModel);
     }
 
     private string TryLoadingCustomContent(string id)
