@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
@@ -62,28 +61,19 @@ internal class CSharpNativeExportBuilder
         {
             yield return $"float {parameter.Name}_width";
             yield return $"float {parameter.Name}_height";
-            yield break;
         }
-
-        switch (kind)
+        else if (kind is InteropTypeKind.Action or InteropTypeKind.Func && parameter.Type is INamedTypeSymbol delegateType)
         {
-            case InteropTypeKind.Action or InteropTypeKind.Func when parameter.Type is INamedTypeSymbol delegateType:
-            {
-                var genericTypes = delegateType.TypeArguments.Select(GetInteropParameterType);
-                if (kind == InteropTypeKind.Action)
-                    genericTypes = genericTypes.Append("void");
-                yield return $"delegate* unmanaged[Cdecl]<{string.Join(", ", genericTypes)}> {parameter.Name}";
-                break;
-            }
-            case InteropTypeKind.Color:
-                yield return $"uint {parameter.Name}";
-                break;
-            case InteropTypeKind.String:
-                yield return $"IntPtr {parameter.Name}";
-                break;
-            default:
-                yield return $"{GetInteropParameterType(parameter.Type)} {parameter.Name}";
-                break;
+            var genericTypes = delegateType.TypeArguments.Select(GetInteropParameterType);
+            
+            if (kind == InteropTypeKind.Action)
+                genericTypes = genericTypes.Append("void");
+            
+            yield return $"delegate* unmanaged[Cdecl]<{string.Join(", ", genericTypes)}> {parameter.Name}";
+        }
+        else
+        {
+            yield return $"{GetInteropParameterType(parameter.Type)} {parameter.Name}";
         }
     }
 
@@ -91,8 +81,9 @@ internal class CSharpNativeExportBuilder
     {
         return type.GetInteropTypeKind() switch
         {
-            InteropTypeKind.TypeParameter or InteropTypeKind.Class or InteropTypeKind.Interface => "IntPtr",
+            InteropTypeKind.TypeParameter or InteropTypeKind.Class or InteropTypeKind.Interface or InteropTypeKind.String => "IntPtr",
             InteropTypeKind.Enum => "int",
+            InteropTypeKind.Color => "uint",
             _ => type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
         };
     }
