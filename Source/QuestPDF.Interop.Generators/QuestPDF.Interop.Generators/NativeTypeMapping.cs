@@ -17,12 +17,10 @@ internal static class NativeTypeMapping
 
     public static string ExtractNativeMethodHash(this string nativeEntryPoint)
     {
-        var lastUnderscore = nativeEntryPoint.LastIndexOf("__");
-        if (lastUnderscore >= 0 && lastUnderscore < nativeEntryPoint.Length - 2)
-        {
-            return nativeEntryPoint.Substring(lastUnderscore + 2);
-        }
-        return nativeEntryPoint.GetHashCode().ToString("x8");
+        var lastSeparator = nativeEntryPoint.LastIndexOf("__");
+        return lastSeparator >= 0 && lastSeparator < nativeEntryPoint.Length - 2
+            ? nativeEntryPoint.Substring(lastSeparator + 2)
+            : nativeEntryPoint.GetHashCode().ToString("x8");
     }
 
     public static string GetNativeMethodName(this IMethodSymbol methodSymbol, string targetTypeName)
@@ -45,31 +43,15 @@ internal static class NativeTypeMapping
         if (typeSymbol.SpecialType == SpecialType.System_String)
             return "const char*";
 
-        if (typeSymbol.TypeKind == TypeKind.Class)
+        if (typeSymbol.TypeKind is TypeKind.Class or TypeKind.Interface)
             return "void*";
 
-        if (typeSymbol.TypeKind == TypeKind.Interface)
-            return "void*";
-
-        if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
+        if ((typeSymbol.IsAction() || typeSymbol.IsFunc()) && typeSymbol is INamedTypeSymbol delegateSymbol)
         {
-            var genericTypes = actionSymbol
-                .TypeArguments
-                .Select(x => x.GetNativeParameterType())
-                .Append("void");
-
-            var genericTypesString = string.Join(", ", genericTypes);
-            return $"delegate* unmanaged[Cdecl]<{genericTypesString}>";
-        }
-
-        if (typeSymbol.IsFunc() && typeSymbol is INamedTypeSymbol funcSymbol)
-        {
-            var genericTypes = funcSymbol
-                .TypeArguments
-                .Select(x => x.GetNativeParameterType());
-
-            var genericTypesString = string.Join(", ", genericTypes);
-            return $"delegate* unmanaged[Cdecl]<{genericTypesString}>";
+            var nativeTypes = delegateSymbol.TypeArguments.Select(x => x.GetNativeParameterType());
+            if (typeSymbol.IsAction())
+                nativeTypes = nativeTypes.Append("void");
+            return $"delegate* unmanaged[Cdecl]<{string.Join(", ", nativeTypes)}>";
         }
 
         return typeSymbol.SpecialType switch
@@ -93,38 +75,22 @@ internal static class NativeTypeMapping
 
     public static string GetCallbackTypedefName(this ITypeSymbol typeSymbol, IMethodSymbol containingMethod)
     {
-        var prefix = containingMethod.ToDisplayString().GetDeterministicHash();
+        var hash = containingMethod.ToDisplayString().GetDeterministicHash();
 
         if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
         {
-            var argumentTypes = actionSymbol.TypeArguments;
-            if (argumentTypes.Length == 0)
-                return $"voidCallback_{prefix}";
+            if (actionSymbol.TypeArguments.Length == 0)
+                return $"voidCallback_{hash}";
 
-            var argumentNames = argumentTypes.Select(x =>
-            {
-                var typeName = x.TypeKind == TypeKind.Interface ? x.Name.TrimStart('I') : x.Name;
-                return typeName.ToSnakeCase();
-            });
-            return $"{string.Join("_", argumentNames)}_callback_{prefix}";
+            var argNames = actionSymbol.TypeArguments.Select(x => x.GetInteropTypeName().ToSnakeCase());
+            return $"{string.Join("_", argNames)}_callback_{hash}";
         }
 
         if (typeSymbol.IsFunc() && typeSymbol is INamedTypeSymbol funcSymbol)
         {
-            var argumentTypes = funcSymbol.TypeArguments.Take(funcSymbol.TypeArguments.Length - 1);
-            var returnType = funcSymbol.TypeArguments.Last();
-
-            var argumentNames = argumentTypes.Select(x =>
-            {
-                var typeName = x.TypeKind == TypeKind.Interface ? x.Name.TrimStart('I') : x.Name;
-                return typeName.ToSnakeCase();
-            });
-
-            var returnTypeName = returnType.TypeKind == TypeKind.Interface
-                ? returnType.Name.TrimStart('I').ToSnakeCase()
-                : returnType.Name.ToSnakeCase();
-
-            return $"{string.Join("_", argumentNames)}_{returnTypeName}_func_{prefix}";
+            var argNames = funcSymbol.TypeArguments.SkipLast(1).Select(x => x.GetInteropTypeName().ToSnakeCase());
+            var returnName = funcSymbol.TypeArguments.Last().GetInteropTypeName().ToSnakeCase();
+            return $"{string.Join("_", argNames)}_{returnName}_func_{hash}";
         }
 
         return "unknown_callback";
@@ -134,26 +100,13 @@ internal static class NativeTypeMapping
     {
         var typedefName = typeSymbol.GetCallbackTypedefName(containingMethod);
 
-        if (typeSymbol.IsAction() && typeSymbol is INamedTypeSymbol actionSymbol)
+        if ((typeSymbol.IsAction() || typeSymbol.IsFunc()) && typeSymbol is INamedTypeSymbol { TypeArguments.Length: > 0 } delegateSymbol)
         {
-            var parameters = actionSymbol
-                .TypeArguments
+            var isFunc = typeSymbol.IsFunc();
+            var paramTypes = (isFunc ? delegateSymbol.TypeArguments.SkipLast(1) : delegateSymbol.TypeArguments)
                 .Select(x => x.GetNativeParameterType());
-
-            var parametersString = string.Join(", ", parameters);
-            return $"typedef void (*{typedefName})({parametersString});";
-        }
-
-        if (typeSymbol.IsFunc() && typeSymbol is INamedTypeSymbol funcSymbol)
-        {
-            var parameters = funcSymbol
-                .TypeArguments
-                .Take(funcSymbol.TypeArguments.Length - 1)
-                .Select(x => x.GetNativeParameterType());
-
-            var returnType = funcSymbol.TypeArguments.Last().GetNativeParameterType();
-            var parametersString = string.Join(", ", parameters);
-            return $"typedef {returnType} (*{typedefName})({parametersString});";
+            var returnType = isFunc ? delegateSymbol.TypeArguments.Last().GetNativeParameterType() : "void";
+            return $"typedef {returnType} (*{typedefName})({string.Join(", ", paramTypes)});";
         }
 
         return $"typedef void (*{typedefName})();";
@@ -161,16 +114,9 @@ internal static class NativeTypeMapping
 
     public static IEnumerable<(string TypedefName, string TypedefDefinition)> GetCallbackTypedefs(this IEnumerable<IMethodSymbol> methods)
     {
-        foreach (var methodSymbol in methods)
-        {
-            var results = methodSymbol.Parameters
-                .Where(p => p.Type.IsAction() || p.Type.IsFunc())
-                .Select(p => p.Type)
-                .Select(p => (p.GetCallbackTypedefName(methodSymbol), p.GetCallbackTypedefDefinition(methodSymbol)));
-
-            foreach (var valueTuple in results)
-                yield return valueTuple;
-        }
+        return methods.SelectMany(method => method.Parameters
+            .Where(p => p.Type.IsAction() || p.Type.IsFunc())
+            .Select(p => (p.Type.GetCallbackTypedefName(method), p.Type.GetCallbackTypedefDefinition(method))));
     }
 
     public static string GetCHeaderDefinition(this IMethodSymbol methodSymbol, string targetTypeName)
@@ -178,21 +124,17 @@ internal static class NativeTypeMapping
         var resultType = methodSymbol.ReturnType.GetNativeParameterType();
         var methodName = methodSymbol.GetNativeMethodName(targetTypeName);
 
-        var parameters = methodSymbol
-            .Parameters
-            .Select(x =>
-            {
-                if (x.Type.IsAction() || x.Type.IsFunc())
-                    return $"{x.Type.GetCallbackTypedefName(methodSymbol)} {x.Name}";
-
-                return $"{x.Type.GetNativeParameterType()} {x.Name}";
-            });
+        var parameters = methodSymbol.Parameters.Select(x =>
+        {
+            var type = x.Type.IsAction() || x.Type.IsFunc()
+                ? x.Type.GetCallbackTypedefName(methodSymbol)
+                : x.Type.GetNativeParameterType();
+            return $"{type} {x.Name}";
+        });
 
         if (!methodSymbol.IsExtensionMethod && !methodSymbol.IsStatic)
             parameters = parameters.Prepend("void* target");
 
-        var parametersString = string.Join(", ", parameters);
-
-        return $"{resultType} {methodName}({parametersString});";
+        return $"{resultType} {methodName}({string.Join(", ", parameters)});";
     }
 }

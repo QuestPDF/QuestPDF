@@ -112,12 +112,7 @@ internal abstract class LanguageProviderBase : ILanguageProvider
         return GetTargetType(method.ReturnType);
     }
 
-    protected string GetTargetTypeForCallback(ITypeSymbol type)
-    {
-        if (type.GetInteropTypeKind() == InteropTypeKind.Interface)
-            return type.Name.TrimStart('I');
-        return type.Name;
-    }
+    protected static string GetTargetTypeForCallback(ITypeSymbol type) => type.GetInteropTypeName();
 
     protected string FormatParameter(IParameterSymbol parameter)
     {

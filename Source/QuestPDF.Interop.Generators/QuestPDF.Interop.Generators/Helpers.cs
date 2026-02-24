@@ -147,12 +147,12 @@ internal static partial class Helpers
         return targetType.InheritsFromOrEquals(thisParamType);
     }
 
-    public static string GetGeneratedClassName(this INamedTypeSymbol type)
+    public static string GetInteropTypeName(this ITypeSymbol type)
     {
-        return type.TypeKind == TypeKind.Interface
-            ? type.Name.TrimStart('I')
-            : type.Name;
+        return type.TypeKind == TypeKind.Interface ? type.Name.TrimStart('I') : type.Name;
     }
+
+    public static string GetGeneratedClassName(this INamedTypeSymbol type) => type.GetInteropTypeName();
 
     public static string GetDefaultEnumMemberName(this IParameterSymbol parameter)
     {
@@ -181,53 +181,36 @@ internal static partial class Helpers
 
     public static string GetCallbackArgumentTypeName(this IParameterSymbol parameter)
     {
-        if (parameter.Type is not INamedTypeSymbol delegateType)
+        if (parameter.Type is not INamedTypeSymbol { TypeArguments.Length: > 0 } delegateType)
             return null;
 
-        var argumentType = delegateType.TypeArguments.FirstOrDefault();
-        if (argumentType == null)
-            return null;
-
-        return argumentType.TypeKind == TypeKind.Interface
-            ? argumentType.Name.TrimStart('I')
-            : argumentType.Name;
+        return delegateType.TypeArguments[0].GetInteropTypeName();
     }
 
     public static Dictionary<IMethodSymbol, OverloadInfo> ComputeOverloads(this IReadOnlyList<IMethodSymbol> methods)
     {
         var result = new Dictionary<IMethodSymbol, OverloadInfo>(SymbolEqualityComparer.Default);
-        var methodGroups = methods.GroupBy(m => m.Name);
 
-        foreach (var group in methodGroups)
+        foreach (var group in methods.GroupBy(m => m.Name))
         {
             var groupMethods = group.ToList();
 
             if (groupMethods.Count == 1)
             {
                 result[groupMethods[0]] = new OverloadInfo(false, groupMethods[0].Name, string.Empty);
+                continue;
             }
-            else
+
+            var entries = groupMethods.Select(m => (Method: m, Suffix: GenerateOverloadSuffix(m))).ToList();
+
+            foreach (var suffixGroup in entries.GroupBy(x => x.Suffix))
             {
-                var entries = groupMethods.Select(m => (Method: m, Suffix: GenerateOverloadSuffix(m))).ToList();
+                var collisions = suffixGroup.ToList();
 
-                var suffixGroups = entries.GroupBy(x => x.Suffix);
-
-                foreach (var suffixGroup in suffixGroups)
+                for (int i = 0; i < collisions.Count; i++)
                 {
-                    var collisions = suffixGroup.ToList();
-                    if (collisions.Count > 1)
-                    {
-                        for (int i = 0; i < collisions.Count; i++)
-                        {
-                            var suffix = $"{collisions[i].Suffix}_{i + 1}";
-                            result[collisions[i].Method] = new OverloadInfo(true, collisions[i].Method.Name + suffix, suffix);
-                        }
-                    }
-                    else
-                    {
-                        var suffix = collisions[0].Suffix;
-                        result[collisions[0].Method] = new OverloadInfo(true, collisions[0].Method.Name + suffix, suffix);
-                    }
+                    var suffix = collisions.Count > 1 ? $"{collisions[i].Suffix}_{i + 1}" : collisions[i].Suffix;
+                    result[collisions[i].Method] = new OverloadInfo(true, collisions[i].Method.Name + suffix, suffix);
                 }
             }
         }
