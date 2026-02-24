@@ -11,13 +11,6 @@ namespace QuestPDF.Interop.Generators.Languages;
 /// </summary>
 internal abstract class LanguageProviderBase : ILanguageProvider
 {
-    /// <summary>
-    /// The class name currently being generated.
-    /// Set at the start of BuildClassTemplateModel and used by GetReturnTypeName
-    /// to resolve generic type parameters (T) to the containing class.
-    /// </summary>
-    private string _currentClassName;
-
     // ═══════════════════════════════════════════════════════════════════
     // Abstract: each language must define these
     // ═══════════════════════════════════════════════════════════════════
@@ -54,7 +47,7 @@ internal abstract class LanguageProviderBase : ILanguageProvider
     protected virtual string GetNativeReturnType(IMethodSymbol method) => null;
 
     /// <summary>Gets the return conversion method name (e.g. "decode_text_as_utf_8" in Python).</summary>
-    protected virtual string GetReturnConversionMethod(IMethodSymbol method) => null;
+    protected virtual string GetReturnConversionMethod(IMethodSymbol method, string className) => null;
 
     /// <summary>Builds per-parameter detail models for native interface declarations (Kotlin JNA).</summary>
     protected virtual List<object> BuildParameterDetails(IReadOnlyList<IParameterSymbol> parameters) => null;
@@ -76,7 +69,7 @@ internal abstract class LanguageProviderBase : ILanguageProvider
         string inheritFrom,
         string customDefinitions, string customInit, string customClass)
     {
-        _currentClassName = targetType.GetGeneratedClassName();
+        var className = targetType.GetGeneratedClassName();
 
         var callbackTypedefs = methods
             .GetCallbackTypedefs()
@@ -86,11 +79,11 @@ internal abstract class LanguageProviderBase : ILanguageProvider
 
         return new
         {
-            ClassName = _currentClassName,
+            ClassName = className,
             InheritFrom = inheritFrom,
-            Methods = methods.Select(m => BuildMethodModel(m, targetType, overloads)).ToList(),
+            Methods = methods.Select(m => BuildMethodModel(m, targetType, overloads, className)).ToList(),
             CallbackTypedefs = callbackTypedefs,
-            Headers = BuildHeaders(methods, _currentClassName),
+            Headers = BuildHeaders(methods, className),
             CallbackInterfaces = BuildCallbackInterfaces(methods),
             CustomDefinitions = customDefinitions,
             CustomInit = customInit,
@@ -104,12 +97,12 @@ internal abstract class LanguageProviderBase : ILanguageProvider
 
     private object BuildMethodModel(
         IMethodSymbol method, INamedTypeSymbol targetType,
-        Dictionary<IMethodSymbol, OverloadInfo> overloads)
+        Dictionary<IMethodSymbol, OverloadInfo> overloads, string className)
     {
         var isStaticMethod = method.IsStatic && !method.IsExtensionMethod;
         var nonThisParams = method.GetNonThisParameters();
         var overloadInfo = overloads[method];
-        var nativeEntryPoint = method.GetNativeMethodName(_currentClassName);
+        var nativeEntryPoint = method.GetNativeMethodName(className);
         var uniqueId = nativeEntryPoint.ExtractNativeMethodHash();
 
         // Determine method name (with overload disambiguation)
@@ -132,7 +125,7 @@ internal abstract class LanguageProviderBase : ILanguageProvider
         var nativeCallArgs = string.Join(", ", nativeArgParts);
 
         // Return type info
-        var returnType = GetReturnTypeName(method);
+        var returnType = GetReturnTypeName(method, className);
         var returnTypeKind = method.ReturnType.GetInteropTypeKind();
         var isVoidReturn = returnTypeKind == InteropTypeKind.Void;
 
@@ -146,7 +139,7 @@ internal abstract class LanguageProviderBase : ILanguageProvider
             NativeCallArgs = nativeCallArgs,
             NativeSignature = BuildNativeSignature(method, targetType),
             NativeReturnType = GetNativeReturnType(method),
-            ReturnConversionMethod = GetReturnConversionMethod(method),
+            ReturnConversionMethod = GetReturnConversionMethod(method, className),
             UniqueId = uniqueId,
             IsStaticMethod = isStaticMethod,
             DeprecationMessage = method.TryGetDeprecationMessage(),
@@ -163,11 +156,11 @@ internal abstract class LanguageProviderBase : ILanguageProvider
     // Shared: helper methods
     // ═══════════════════════════════════════════════════════════════════
 
-    protected string GetReturnTypeName(IMethodSymbol method)
+    protected string GetReturnTypeName(IMethodSymbol method, string className)
     {
         var kind = method.ReturnType.GetInteropTypeKind();
         if (kind == InteropTypeKind.TypeParameter)
-            return _currentClassName;
+            return className;
         return GetTargetType(method.ReturnType);
     }
 

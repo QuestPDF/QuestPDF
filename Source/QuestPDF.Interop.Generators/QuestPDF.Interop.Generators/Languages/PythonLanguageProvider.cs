@@ -89,7 +89,7 @@ internal class PythonLanguageProvider : LanguageProviderBase
         return methods.Select(m => m.GetCHeaderDefinition(className)).ToList();
     }
 
-    protected override string GetReturnConversionMethod(IMethodSymbol method)
+    protected override string GetReturnConversionMethod(IMethodSymbol method, string className)
     {
         var kind = method.ReturnType.GetInteropTypeKind();
 
@@ -102,7 +102,7 @@ internal class PythonLanguageProvider : LanguageProviderBase
         if (kind == InteropTypeKind.ByteArray)
             return "questpdf_ffi.string";
 
-        return GetReturnTypeName(method);
+        return GetReturnTypeName(method, className);
     }
 
     // ─── Python callable type formatting ────────────────────────────
