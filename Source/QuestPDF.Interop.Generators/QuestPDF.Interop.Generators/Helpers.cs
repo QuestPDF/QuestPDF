@@ -31,6 +31,14 @@ internal static partial class Helpers
         return char.ToLowerInvariant(input[0]) + input.Substring(1);
     }
 
+    public static string ToPascalCase(this string input)
+    {
+        if (string.IsNullOrEmpty(input))
+            return input;
+
+        return char.ToUpperInvariant(input[0]) + input.Substring(1);
+    }
+
     public static string? TryGetDeprecationMessage(this ISymbol symbol)
     {
         return symbol
@@ -230,15 +238,11 @@ internal static partial class Helpers
 
     private static string GetTypeShortName(IParameterSymbol parameter)
     {
-        var type = parameter.Type;
-        var kind = type.GetInteropTypeKind();
+        var kind = parameter.Type.GetInteropTypeKind();
 
-        if (kind is InteropTypeKind.Enum or InteropTypeKind.Class)
-            return type.Name;
-
-        if (kind is InteropTypeKind.Interface)
-            return type.Name.TrimStart('I');
-
+        if (kind is InteropTypeKind.Enum or InteropTypeKind.Class or InteropTypeKind.Interface)
+            return parameter.Type.GetInteropTypeName();
+        
         return kind.ToString();
     }
 
