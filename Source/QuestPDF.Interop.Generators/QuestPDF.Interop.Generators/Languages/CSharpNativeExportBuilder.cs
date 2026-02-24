@@ -67,18 +67,11 @@ internal class CSharpNativeExportBuilder
 
         switch (kind)
         {
-            case InteropTypeKind.Action when parameter.Type is INamedTypeSymbol actionType:
+            case InteropTypeKind.Action or InteropTypeKind.Func when parameter.Type is INamedTypeSymbol delegateType:
             {
-                var genericTypes = actionType.TypeArguments
-                    .Select(GetInteropParameterType)
-                    .Append("void");
-                yield return $"delegate* unmanaged[Cdecl]<{string.Join(", ", genericTypes)}> {parameter.Name}";
-                break;
-            }
-            case InteropTypeKind.Func when parameter.Type is INamedTypeSymbol funcType:
-            {
-                var genericTypes = funcType.TypeArguments
-                    .Select(GetInteropParameterType);
+                var genericTypes = delegateType.TypeArguments.Select(GetInteropParameterType);
+                if (kind == InteropTypeKind.Action)
+                    genericTypes = genericTypes.Append("void");
                 yield return $"delegate* unmanaged[Cdecl]<{string.Join(", ", genericTypes)}> {parameter.Name}";
                 break;
             }
@@ -96,13 +89,10 @@ internal class CSharpNativeExportBuilder
 
     private static string GetInteropParameterType(ITypeSymbol type)
     {
-        var kind = type.GetInteropTypeKind();
-        return kind switch
+        return type.GetInteropTypeKind() switch
         {
-            InteropTypeKind.TypeParameter => "IntPtr",
+            InteropTypeKind.TypeParameter or InteropTypeKind.Class or InteropTypeKind.Interface => "IntPtr",
             InteropTypeKind.Enum => "int",
-            InteropTypeKind.Class => "IntPtr",
-            InteropTypeKind.Interface => "IntPtr",
             _ => type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
         };
     }
@@ -113,15 +103,9 @@ internal class CSharpNativeExportBuilder
         var name = parameter.Name;
         var typeName = parameter.Type.ToDisplayString();
 
-        if (typeName == "QuestPDF.Helpers.PageSize")
+        if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size")
         {
-            yield return $"new PageSize({name}_width, {name}_height)";
-            yield break;
-        }
-
-        if (typeName == "QuestPDF.Helpers.Size")
-        {
-            yield return $"new Size({name}_width, {name}_height)";
+            yield return $"new {parameter.Type.Name}({name}_width, {name}_height)";
             yield break;
         }
 
@@ -132,38 +116,29 @@ internal class CSharpNativeExportBuilder
             InteropTypeKind.Action => $"x => {{ var boxed = BoxHandle(x); {name}(boxed); FreeHandle(boxed); }}",
             InteropTypeKind.Func => $"x => {{ var boxed = BoxHandle(x); var result = {name}(boxed); FreeHandle(boxed); return UnboxHandle<{_targetTypeName}>(result); }}",
             InteropTypeKind.String => $"Marshal.PtrToStringUTF8({name})",
-            InteropTypeKind.Class => $"UnboxHandle<{parameter.Type.ToDisplayString()}>({name})",
-            InteropTypeKind.Interface => $"UnboxHandle<{parameter.Type.ToDisplayString()}>({name})",
+            InteropTypeKind.Class or InteropTypeKind.Interface => $"UnboxHandle<{parameter.Type.ToDisplayString()}>({name})",
             _ => name
         };
     }
 
     private static string GetInteropReturnType(IMethodSymbol method)
     {
-        var kind = method.ReturnType.GetInteropTypeKind();
-        return kind switch
+        return method.ReturnType.GetInteropTypeKind() switch
         {
             InteropTypeKind.Color => "uint",
-            InteropTypeKind.TypeParameter => "IntPtr",
-            InteropTypeKind.Class => "IntPtr",
-            InteropTypeKind.Interface => "IntPtr",
+            InteropTypeKind.TypeParameter or InteropTypeKind.Class or InteropTypeKind.Interface or InteropTypeKind.String => "IntPtr",
             InteropTypeKind.ByteArray => "Buffer",
-            InteropTypeKind.String => "IntPtr",
             _ => method.ReturnType.ToString()
         };
     }
 
     private static string GetResultTransformFunction(IMethodSymbol method)
     {
-        var kind = method.ReturnType.GetInteropTypeKind();
-        return kind switch
+        return method.ReturnType.GetInteropTypeKind() switch
         {
-            InteropTypeKind.Color => "NoTransformation",
             InteropTypeKind.ByteArray => "HandleBuffer",
             InteropTypeKind.String => "HandleText",
-            InteropTypeKind.Class => "BoxHandle",
-            InteropTypeKind.Interface => "BoxHandle",
-            InteropTypeKind.TypeParameter => "BoxHandle",
+            InteropTypeKind.Class or InteropTypeKind.Interface or InteropTypeKind.TypeParameter => "BoxHandle",
             _ => "NoTransformation"
         };
     }

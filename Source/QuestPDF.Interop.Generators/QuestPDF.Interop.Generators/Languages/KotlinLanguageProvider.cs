@@ -26,9 +26,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
     {
         return context switch
         {
-            NameContext.Method => csharpName.ToCamelCase(),
-            NameContext.Parameter => csharpName.ToCamelCase(),
-            NameContext.Property => csharpName.ToCamelCase(),
+            NameContext.Method or NameContext.Parameter or NameContext.Property => csharpName.ToCamelCase(),
             NameContext.Constant => csharpName.ToSnakeCase().ToUpperInvariant(),
             _ => csharpName
         };
@@ -43,11 +41,9 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             InteropTypeKind.Boolean => "Boolean",
             InteropTypeKind.Int or InteropTypeKind.Float => GetNumericType(type),
             InteropTypeKind.String => "String",
-            InteropTypeKind.Enum => ConvertTypeName(type.Name),
-            InteropTypeKind.Class => type.Name,
-            InteropTypeKind.Interface => type.Name.TrimStart('I'),
-            InteropTypeKind.TypeParameter => "Any",
             InteropTypeKind.Color => "Color",
+            InteropTypeKind.Enum => ConvertTypeName(type.Name),
+            InteropTypeKind.Class or InteropTypeKind.Interface => type.GetInteropTypeName(),
             InteropTypeKind.Action => FormatFunctionType((INamedTypeSymbol)type, isFunc: false),
             InteropTypeKind.Func => FormatFunctionType((INamedTypeSymbol)type, isFunc: true),
             _ => "Any"
@@ -87,10 +83,8 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             InteropTypeKind.Enum => $"{variableName}.value",
             InteropTypeKind.Boolean => $"(if ({variableName}) 1.toByte() else 0.toByte())",
             InteropTypeKind.Color => $"{variableName}.hex.toInt()",
-            InteropTypeKind.Action => $"{variableName}Callback",
-            InteropTypeKind.Func => $"{variableName}Callback",
-            InteropTypeKind.Class => $"{variableName}.pointer",
-            InteropTypeKind.Interface => $"{variableName}.pointer",
+            InteropTypeKind.Action or InteropTypeKind.Func => $"{variableName}Callback",
+            InteropTypeKind.Class or InteropTypeKind.Interface => $"{variableName}.pointer",
             _ => variableName
         };
     }

@@ -13,9 +13,7 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
     {
         return context switch
         {
-            NameContext.Method => csharpName.ToCamelCase(),
-            NameContext.Parameter => csharpName.ToCamelCase(),
-            NameContext.Property => csharpName.ToCamelCase(),
+            NameContext.Method or NameContext.Parameter or NameContext.Property => csharpName.ToCamelCase(),
             NameContext.Constant => csharpName.ToSnakeCase().ToUpperInvariant(),
             _ => csharpName
         };
@@ -28,16 +26,11 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
         {
             InteropTypeKind.Void => "void",
             InteropTypeKind.Boolean => "boolean",
-            InteropTypeKind.Int => "number",
-            InteropTypeKind.Float => "number",
+            InteropTypeKind.Int or InteropTypeKind.Float => "number",
             InteropTypeKind.String => "string",
-            InteropTypeKind.Enum => type.Name,
-            InteropTypeKind.Class => type.Name,
-            InteropTypeKind.Interface => type.Name.TrimStart('I'),
-            InteropTypeKind.TypeParameter => "unknown",
             InteropTypeKind.Color => "Color",
-            InteropTypeKind.Action => FormatFunctionType((INamedTypeSymbol)type, isFunc: false),
-            InteropTypeKind.Func => FormatFunctionType((INamedTypeSymbol)type, isFunc: true),
+            InteropTypeKind.Enum or InteropTypeKind.Class or InteropTypeKind.Interface => type.GetInteropTypeName(),
+            InteropTypeKind.Action or InteropTypeKind.Func => FormatFunctionType((INamedTypeSymbol)type, isFunc: kind == InteropTypeKind.Func),
             _ => "unknown"
         };
     }
@@ -70,10 +63,8 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
         return kind switch
         {
             InteropTypeKind.Color => $"{variableName}.hex",
-            InteropTypeKind.Action => $"{variableName}Cb",
-            InteropTypeKind.Func => $"{variableName}Cb",
-            InteropTypeKind.Class => $"{variableName}.pointer",
-            InteropTypeKind.Interface => $"{variableName}.pointer",
+            InteropTypeKind.Action or InteropTypeKind.Func => $"{variableName}Cb",
+            InteropTypeKind.Class or InteropTypeKind.Interface => $"{variableName}.pointer",
             _ => variableName
         };
     }

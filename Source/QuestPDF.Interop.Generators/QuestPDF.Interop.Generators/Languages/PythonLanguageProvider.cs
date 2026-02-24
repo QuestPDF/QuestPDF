@@ -30,16 +30,10 @@ internal class PythonLanguageProvider : LanguageProviderBase
             InteropTypeKind.Float => "float",
             InteropTypeKind.String => "str",
             InteropTypeKind.ByteArray => "bytes",
-            InteropTypeKind.Size => "Size",
-            InteropTypeKind.ImageSize => "ImageSize",
-            InteropTypeKind.Enum => type.Name,
-            InteropTypeKind.Class => type.Name,
-            InteropTypeKind.Interface => type.Name.TrimStart('I'),
-            InteropTypeKind.TypeParameter => "Any",
             InteropTypeKind.Color => "Color",
-            InteropTypeKind.Action => FormatCallableType((INamedTypeSymbol)type, isFunc: false),
-            InteropTypeKind.Func => FormatCallableType((INamedTypeSymbol)type, isFunc: true),
-            _ => "Any"
+            InteropTypeKind.TypeParameter or InteropTypeKind.Unknown => "Any",
+            InteropTypeKind.Action or InteropTypeKind.Func => FormatCallableType((INamedTypeSymbol)type, isFunc: kind == InteropTypeKind.Func),
+            _ => type.GetInteropTypeName()
         };
     }
 
@@ -73,8 +67,7 @@ internal class PythonLanguageProvider : LanguageProviderBase
             InteropTypeKind.Color => $"{variableName}.hex",
             InteropTypeKind.Enum => $"{variableName}.value",
             InteropTypeKind.String => $"questpdf_ffi.new(\"char[]\", {variableName}.encode(\"utf-8\"))",
-            InteropTypeKind.Action => $"_internal_{variableName}_handler",
-            InteropTypeKind.Func => $"_internal_{variableName}_handler",
+            InteropTypeKind.Action or InteropTypeKind.Func => $"_internal_{variableName}_handler",
             _ => variableName
         };
     }
@@ -119,17 +112,13 @@ internal class PythonLanguageProvider : LanguageProviderBase
         }
     }
 
-    private string GetTargetTypeForCallable(ITypeSymbol type)
+    private static string GetTargetTypeForCallable(ITypeSymbol type)
     {
-        var kind = type.GetInteropTypeKind();
-        return kind switch
+        return type.GetInteropTypeKind() switch
         {
-            InteropTypeKind.Interface => type.Name.TrimStart('I'),
             InteropTypeKind.ByteArray => "bytes",
-            InteropTypeKind.ImageSize => "ImageSize",
-            InteropTypeKind.Size => "Size",
             InteropTypeKind.String => "str",
-            _ => type.Name
+            _ => type.GetInteropTypeName()
         };
     }
 }
