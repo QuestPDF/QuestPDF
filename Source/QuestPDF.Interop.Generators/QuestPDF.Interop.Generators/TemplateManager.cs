@@ -50,7 +50,7 @@ internal static class TemplateManager
     {
         return TemplateCache.GetOrAdd(templateName, static name =>
         {
-            var templateString = LoadTemplateString(name);
+            var templateString = LoadEmbeddedContent(name);
 
             if (!Parser.TryParse(templateString, out var template, out var error))
                 throw new InvalidOperationException($"Failed to parse template '{name}': {error}");
@@ -67,11 +67,14 @@ internal static class TemplateManager
         return template.Render(context);
     }
 
-    private static string LoadTemplateString(string templateName)
+    public static string LoadEmbeddedContent(string templateName)
     {
         using var stream = Assembly
             .GetExecutingAssembly()
             .GetManifestResourceStream($"QuestPDF.Interop.Generators.Templates.{templateName}.liquid");
+
+        if (stream == null)
+            return string.Empty;
 
         using var streamReader = new StreamReader(stream);
         return streamReader.ReadToEnd();
