@@ -108,12 +108,7 @@ public sealed class PublicApiGenerator
                 Fragments = fragments
             });
 
-            var path = Path.Combine("generated", fileName);
-
-            if (File.Exists(path))
-                File.Delete(path);
-
-            File.WriteAllText(path, finalCode);
+            File.WriteAllText(Path.Combine("generated", fileName), finalCode);
         }
     }
 }
