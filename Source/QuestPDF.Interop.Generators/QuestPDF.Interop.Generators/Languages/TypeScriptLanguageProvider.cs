@@ -31,7 +31,7 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
         {
             InteropTypeKind.Void => "void",
             InteropTypeKind.Boolean => "boolean",
-            InteropTypeKind.Integer => "number",
+            InteropTypeKind.Int => "number",
             InteropTypeKind.Float => "number",
             InteropTypeKind.String => "string",
             InteropTypeKind.Enum => type.Name,
@@ -110,8 +110,7 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
         {
             InteropTypeKind.Void => "void",
             InteropTypeKind.Boolean => "uint8_t",
-            InteropTypeKind.Integer => GetKoffiIntegerType(type),
-            InteropTypeKind.Float => GetKoffiFloatType(type),
+            InteropTypeKind.Int or InteropTypeKind.Float => GetKoffiNumericType(type),
             InteropTypeKind.String => "str16",
             InteropTypeKind.Enum => "int32_t",
             InteropTypeKind.Color => "uint32_t",
@@ -121,24 +120,19 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
         };
     }
 
-    private static string GetKoffiIntegerType(ITypeSymbol type)
+    private static string GetKoffiNumericType(ITypeSymbol type) => type.SpecialType switch
     {
-        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        if (typeName.Contains("Int64") || typeName.Contains("long")) return "int64_t";
-        if (typeName.Contains("UInt64") || typeName.Contains("ulong")) return "uint64_t";
-        if (typeName.Contains("Int16") || typeName.Contains("short")) return "int16_t";
-        if (typeName.Contains("UInt16") || typeName.Contains("ushort")) return "uint16_t";
-        if (typeName.Contains("Byte")) return "uint8_t";
-        if (typeName.Contains("SByte")) return "int8_t";
-        if (typeName.Contains("UInt32") || typeName.Contains("uint")) return "uint32_t";
-        return "int32_t";
-    }
-
-    private static string GetKoffiFloatType(ITypeSymbol type)
-    {
-        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        return typeName.Contains("Double") || typeName.Contains("double") ? "double" : "float";
-    }
+        SpecialType.System_Int64 => "int64_t",
+        SpecialType.System_UInt64 => "uint64_t",
+        SpecialType.System_Int16 => "int16_t",
+        SpecialType.System_UInt16 => "uint16_t",
+        SpecialType.System_Byte => "uint8_t",
+        SpecialType.System_SByte => "int8_t",
+        SpecialType.System_UInt32 => "uint32_t",
+        SpecialType.System_Double => "double",
+        SpecialType.System_Single => "float",
+        _ => "int32_t"
+    };
 
     // ─── TypeScript function type formatting ────────────────────────
 

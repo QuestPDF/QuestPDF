@@ -14,7 +14,7 @@ internal enum InteropTypeKind
 {
     Void,
     Boolean,
-    Integer,
+    Int,
     Float,
     String,
     Enum,
@@ -91,15 +91,13 @@ internal static partial class Helpers
 
     public static string GetNativeParameterType(this ITypeSymbol typeSymbol)
     {
-        var typeName = typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-
         if (typeSymbol.SpecialType == SpecialType.System_Void)
             return "void";
 
         if (typeSymbol.TypeKind == TypeKind.Enum)
             return "int32_t";
 
-        if (typeName.Contains("QuestPDF.Infrastructure.Color"))
+        if (typeSymbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("QuestPDF.Infrastructure.Color"))
             return "uint32_t";
 
         if (typeSymbol.SpecialType == SpecialType.System_String)
@@ -132,26 +130,22 @@ internal static partial class Helpers
             return $"delegate* unmanaged[Cdecl]<{genericTypesString}>";
         }
 
-        return typeName switch
+        return typeSymbol.SpecialType switch
         {
-            "int" or "System.Int32" => "int32_t",
-            "uint" or "System.UInt32" => "uint32_t",
-            "long" or "System.Int64" => "int64_t",
-            "ulong" or "System.UInt64" => "uint64_t",
-            "short" or "System.Int16" => "int16_t",
-            "ushort" or "System.UInt16" => "uint16_t",
-            "byte" or "System.Byte" => "uint8_t",
-            "sbyte" or "System.SByte" => "int8_t",
-            "float" or "System.Single" => "float",
-            "double" or "System.Double" => "double",
-            "bool" or "System.Boolean" => "uint8_t",
-            "char" or "System.Char" => "uint16_t",
-            "string" or "System.String" => "const char*",
-            "System.IntPtr" => "void*",
-            "System.UIntPtr" => "void*",
-            _ when typeSymbol.TypeKind == TypeKind.Pointer => "void*",
-            _ when typeSymbol.TypeKind == TypeKind.Class || typeSymbol.TypeKind == TypeKind.Interface => "void*",
-            _ => "void*" // Default for unknown types
+            SpecialType.System_Int32 => "int32_t",
+            SpecialType.System_UInt32 => "uint32_t",
+            SpecialType.System_Int64 => "int64_t",
+            SpecialType.System_UInt64 => "uint64_t",
+            SpecialType.System_Int16 => "int16_t",
+            SpecialType.System_UInt16 => "uint16_t",
+            SpecialType.System_Byte => "uint8_t",
+            SpecialType.System_SByte => "int8_t",
+            SpecialType.System_Single => "float",
+            SpecialType.System_Double => "double",
+            SpecialType.System_Boolean => "uint8_t",
+            SpecialType.System_Char => "uint16_t",
+            SpecialType.System_IntPtr or SpecialType.System_UIntPtr => "void*",
+            _ => "void*"
         };
     }
 
@@ -479,33 +473,16 @@ internal static partial class Helpers
         if (type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("QuestPDF.Infrastructure.Size"))
             return InteropTypeKind.Size;
 
-        // Check for numeric types
-        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        if (IsIntegerType(typeName))
-            return InteropTypeKind.Integer;
+        if (type.SpecialType is SpecialType.System_Int32 or SpecialType.System_UInt32
+            or SpecialType.System_Int64 or SpecialType.System_UInt64
+            or SpecialType.System_Int16 or SpecialType.System_UInt16
+            or SpecialType.System_Byte or SpecialType.System_SByte)
+            return InteropTypeKind.Int;
 
-        if (IsFloatType(typeName))
+        if (type.SpecialType is SpecialType.System_Single or SpecialType.System_Double)
             return InteropTypeKind.Float;
 
         return InteropTypeKind.Unknown;
-    }
-
-    private static bool IsIntegerType(string typeName)
-    {
-        return typeName is "int" or "System.Int32" or "global::System.Int32"
-            or "uint" or "System.UInt32" or "global::System.UInt32"
-            or "long" or "System.Int64" or "global::System.Int64"
-            or "ulong" or "System.UInt64" or "global::System.UInt64"
-            or "short" or "System.Int16" or "global::System.Int16"
-            or "ushort" or "System.UInt16" or "global::System.UInt16"
-            or "byte" or "System.Byte" or "global::System.Byte"
-            or "sbyte" or "System.SByte" or "global::System.SByte";
-    }
-
-    private static bool IsFloatType(string typeName)
-    {
-        return typeName is "float" or "System.Single" or "global::System.Single"
-            or "double" or "System.Double" or "global::System.Double";
     }
 
     public static string GetGeneratedClassName(this INamedTypeSymbol type)
@@ -613,25 +590,13 @@ internal static partial class Helpers
         var type = parameter.Type;
         var kind = type.GetInteropTypeKind();
 
-        return kind switch
-        {
-            InteropTypeKind.Void => "Void",
-            InteropTypeKind.Boolean => "Bool",
-            InteropTypeKind.Integer => "Int",
-            InteropTypeKind.Float => "Float",
-            InteropTypeKind.String => "String",
-            InteropTypeKind.Enum => type.Name,
-            InteropTypeKind.Class => type.Name,
-            InteropTypeKind.Interface => type.Name.TrimStart('I'),
-            InteropTypeKind.Action => "Action",
-            InteropTypeKind.Func => "Func",
-            InteropTypeKind.TypeParameter => "T",
-            InteropTypeKind.Color => "Color",
-            InteropTypeKind.ByteArray => "Bytes",
-            InteropTypeKind.Size => "Size",
-            InteropTypeKind.ImageSize => "ImageSize",
-            _ => "Unknown"
-        };
+        if (kind is InteropTypeKind.Enum or InteropTypeKind.Class)
+            return type.Name;
+        
+        if (kind is InteropTypeKind.Interface)
+            return type.Name.TrimStart('I');
+
+        return kind.ToString();
     }
 
     [GeneratedRegex(@"(?<year>20\d{2})\.(?<month>0?[1-9]|1[0-2])")]

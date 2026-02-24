@@ -29,7 +29,7 @@ internal class PythonLanguageProvider : LanguageProviderBase
         {
             InteropTypeKind.Void => "None",
             InteropTypeKind.Boolean => "bool",
-            InteropTypeKind.Integer => "int",
+            InteropTypeKind.Int => "int",
             InteropTypeKind.Float => "float",
             InteropTypeKind.String => "str",
             InteropTypeKind.ByteArray => "bytes",

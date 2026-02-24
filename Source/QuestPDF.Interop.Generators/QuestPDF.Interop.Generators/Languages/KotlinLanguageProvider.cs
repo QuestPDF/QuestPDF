@@ -47,8 +47,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         {
             InteropTypeKind.Void => "Unit",
             InteropTypeKind.Boolean => "Boolean",
-            InteropTypeKind.Integer => GetKotlinIntegerType(type),
-            InteropTypeKind.Float => GetKotlinFloatType(type),
+            InteropTypeKind.Int or InteropTypeKind.Float => GetNumericType(type),
             InteropTypeKind.String => "String",
             InteropTypeKind.Enum => ConvertTypeName(type.Name),
             InteropTypeKind.Class => type.Name,
@@ -80,7 +79,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         if (parameter.ExplicitDefaultValue is string stringValue)
             return $"\"{stringValue}\"";
 
-        if (kind == InteropTypeKind.Float && GetKotlinFloatType(parameter.Type) == "Float")
+        if (parameter.Type.SpecialType == SpecialType.System_Single)
             return $"{parameter.ExplicitDefaultValue}f";
 
         return parameter.ExplicitDefaultValue?.ToString() ?? "null";
@@ -165,8 +164,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         {
             InteropTypeKind.Void => "Unit",
             InteropTypeKind.Boolean => "Byte",
-            InteropTypeKind.Integer => GetJnaIntegerType(type),
-            InteropTypeKind.Float => GetJnaFloatType(type),
+            InteropTypeKind.Int or InteropTypeKind.Float => GetNumericType(type),
             InteropTypeKind.String => "String",
             InteropTypeKind.Enum => "Int",
             InteropTypeKind.Color => "Int",
@@ -176,35 +174,15 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         };
     }
 
-    // ─── Kotlin/JNA numeric type helpers ────────────────────────────
-
-    private static string GetKotlinIntegerType(ITypeSymbol type)
+    private static string GetNumericType(ITypeSymbol type) => type.SpecialType switch
     {
-        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        if (typeName.Contains("Int64") || typeName.Contains("UInt64")) return "Long";
-        if (typeName.Contains("Int16") || typeName.Contains("UInt16")) return "Short";
-        if (typeName.Contains("Byte") || typeName.Contains("SByte")) return "Byte";
-        return "Int";
-    }
-
-    private static string GetJnaIntegerType(ITypeSymbol type)
-    {
-        var typeName = type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
-        if (typeName.Contains("Int64") || typeName.Contains("UInt64")) return "Long";
-        if (typeName.Contains("Int16") || typeName.Contains("UInt16")) return "Short";
-        if (typeName.Contains("Byte") || typeName.Contains("SByte")) return "Byte";
-        return "Int";
-    }
-
-    private static string GetKotlinFloatType(ITypeSymbol type)
-    {
-        return type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("Double") ? "Double" : "Float";
-    }
-
-    private static string GetJnaFloatType(ITypeSymbol type)
-    {
-        return type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains("Double") ? "Double" : "Float";
-    }
+        SpecialType.System_Int64 or SpecialType.System_UInt64 => "Long",
+        SpecialType.System_Int16 or SpecialType.System_UInt16 => "Short",
+        SpecialType.System_Byte or SpecialType.System_SByte => "Byte",
+        SpecialType.System_Double => "Double",
+        SpecialType.System_Single => "Float",
+        _ => "Int"
+    };
 
     // ─── Kotlin function type formatting ────────────────────────────
 

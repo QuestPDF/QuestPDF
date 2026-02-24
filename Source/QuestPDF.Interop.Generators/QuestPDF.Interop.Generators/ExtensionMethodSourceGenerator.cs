@@ -11,8 +11,6 @@ internal class ExtensionMethodSourceGenerator(Type targetInterfaceType) : Object
 
     protected override IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {
-        var targetType = GetTargetType(compilation);
-
         return compilation
             .GlobalNamespace
             .GetNamespaceMembers()
