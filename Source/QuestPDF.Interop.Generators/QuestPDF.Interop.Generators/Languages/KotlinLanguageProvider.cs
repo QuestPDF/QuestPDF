@@ -59,8 +59,8 @@ internal class KotlinLanguageProvider : LanguageProviderBase
 
         var kind = parameter.Type.GetInteropTypeKind();
 
-        if (kind == InteropTypeKind.Enum && parameter.GetDefaultEnumMemberName() != null)
-            return $"{ConvertTypeName(parameter.Type.Name)}.{parameter.GetDefaultEnumMemberName()}";
+        if (kind == InteropTypeKind.Enum && parameter.GetDefaultEnumMemberName() is { } enumMember)
+            return $"{ConvertTypeName(parameter.Type.Name)}.{enumMember}";
 
         if (parameter.ExplicitDefaultValue is bool boolValue)
             return boolValue ? "true" : "false";
@@ -101,11 +101,8 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         if (!isStaticMethod)
             parameters.Add("target: Pointer");
 
-        method
-            .GetNonThisParameters()
-            .Select(p => $"{p.Name}: {GetJnaType(p.Type)}")
-            .ToList()
-            .ForEach(parameters.Add);
+        parameters.AddRange(
+            method.GetNonThisParameters().Select(p => $"{p.Name}: {GetJnaType(p.Type)}"));
 
         return $"fun {methodName}({string.Join(", ", parameters)}): {returnType}";
     }

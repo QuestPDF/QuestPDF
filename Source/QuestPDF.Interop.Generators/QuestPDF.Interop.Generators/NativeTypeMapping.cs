@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
@@ -9,7 +10,7 @@ internal static class NativeTypeMapping
 {
     public static string GetDeterministicHash(this string input)
     {
-        var bytes = System.Text.Encoding.UTF8.GetBytes(input);
+        var bytes = Encoding.UTF8.GetBytes(input);
         var hashBytes = SHA256.HashData(bytes);
         return string.Concat(hashBytes.Take(4).Select(b => b.ToString("x2")));
     }

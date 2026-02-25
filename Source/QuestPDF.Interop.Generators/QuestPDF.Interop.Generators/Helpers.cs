@@ -10,15 +10,27 @@ internal record OverloadInfo(bool IsOverload, string DisambiguatedName, string O
 
 internal static partial class Helpers
 {
+    [GeneratedRegex(@"([a-z0-9])([A-Z])")]
+    private static partial Regex LowerToUpperRegex();
+
+    [GeneratedRegex(@"([A-Z]+)([A-Z][a-z])")]
+    private static partial Regex UpperSequenceRegex();
+
+    [GeneratedRegex(@"([a-zA-Z])(\d)")]
+    private static partial Regex AlphaToDigitRegex();
+
+    [GeneratedRegex(@"(\d)([a-zA-Z])")]
+    private static partial Regex DigitToAlphaRegex();
+
     public static string ToSnakeCase(this string input)
     {
         if (string.IsNullOrEmpty(input))
             return input;
 
-        var result = Regex.Replace(input, @"([a-z0-9])([A-Z])", "$1_$2");
-        result = Regex.Replace(result, @"([A-Z]+)([A-Z][a-z])", "$1_$2");
-        result = Regex.Replace(result, @"([a-zA-Z])(\d)", "$1_$2");
-        result = Regex.Replace(result, @"(\d)([a-zA-Z])", "$1_$2");
+        var result = LowerToUpperRegex().Replace(input, "$1_$2");
+        result = UpperSequenceRegex().Replace(result, "$1_$2");
+        result = AlphaToDigitRegex().Replace(result, "$1_$2");
+        result = DigitToAlphaRegex().Replace(result, "$1_$2");
 
         return result.ToLowerInvariant();
     }
@@ -124,6 +136,9 @@ internal static partial class Helpers
         }
     }
 
+    [GeneratedRegex(@"(?<year>20\d{2})\.(?<month>0?[1-9]|1[0-2])")]
+    private static partial Regex ObsoleteVersionRegex();
+
     public static IEnumerable<IMethodSymbol> ExcludeOldObsoleteMethods(this IEnumerable<IMethodSymbol> methodSymbols)
     {
         return methodSymbols.Where(method => !IsOldObsolete(method));
@@ -135,7 +150,7 @@ internal static partial class Helpers
             if (deprecationMessage is null)
                 return false;
 
-            var match = Regex.Match(deprecationMessage, @"(?<year>20\d{2})\.(?<month>0?[1-9]|1[0-2])");
+            var match = ObsoleteVersionRegex().Match(deprecationMessage);
 
             if (!match.Success)
                 return false;

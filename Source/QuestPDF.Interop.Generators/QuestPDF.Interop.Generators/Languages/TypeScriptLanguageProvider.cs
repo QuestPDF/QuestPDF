@@ -45,8 +45,8 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
 
         var kind = parameter.Type.GetInteropTypeKind();
 
-        if (kind == InteropTypeKind.Enum && parameter.GetDefaultEnumMemberName() != null)
-            return $"{parameter.Type.Name}.{parameter.GetDefaultEnumMemberName()}";
+        if (kind == InteropTypeKind.Enum && parameter.GetDefaultEnumMemberName() is { } enumMember)
+            return $"{parameter.Type.Name}.{enumMember}";
 
         if (parameter.ExplicitDefaultValue is bool boolValue)
             return boolValue ? "true" : "false";

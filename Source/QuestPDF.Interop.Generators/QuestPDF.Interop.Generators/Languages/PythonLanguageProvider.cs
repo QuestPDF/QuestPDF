@@ -48,8 +48,8 @@ internal class PythonLanguageProvider : LanguageProviderBase
 
         var kind = parameter.Type.GetInteropTypeKind();
 
-        if (kind == InteropTypeKind.Enum && parameter.GetDefaultEnumMemberName() != null)
-            return $"{parameter.Type.Name}.{parameter.GetDefaultEnumMemberName().ToSnakeCase()}";
+        if (kind == InteropTypeKind.Enum && parameter.GetDefaultEnumMemberName() is { } enumMember)
+            return $"{parameter.Type.Name}.{enumMember.ToSnakeCase()}";
 
         if (parameter.ExplicitDefaultValue is bool boolValue)
             return boolValue ? "True" : "False";
