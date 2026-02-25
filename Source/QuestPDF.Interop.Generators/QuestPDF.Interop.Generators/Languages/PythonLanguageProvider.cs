@@ -10,7 +10,7 @@ internal class PythonLanguageProvider : LanguageProviderBase
     protected override string SelfPointerExpression => "self.target_pointer";
     protected override string OverloadMethodNamePrefix => "_";
 
-    public override string ConvertName(string csharpName, NameContext context)
+    protected override string ConvertName(string csharpName, NameContext context)
     {
         return context switch
         {
@@ -22,6 +22,7 @@ internal class PythonLanguageProvider : LanguageProviderBase
     protected override string GetTargetType(ITypeSymbol type)
     {
         var kind = type.GetInteropTypeKind();
+        
         return kind switch
         {
             InteropTypeKind.Void => "None",
@@ -62,6 +63,7 @@ internal class PythonLanguageProvider : LanguageProviderBase
     protected override string GetInteropValue(IParameterSymbol parameter, string variableName)
     {
         var kind = parameter.Type.GetInteropTypeKind();
+        
         return kind switch
         {
             InteropTypeKind.Color => $"{variableName}.hex",
@@ -93,18 +95,14 @@ internal class PythonLanguageProvider : LanguageProviderBase
         if (type.TypeArguments.Length == 0)
             return "Callable[[], Any]";
 
-        if (isFunc)
-        {
-            var args = type.TypeArguments.SkipLast(1)
-                .Select(t => $"'{GetTargetTypeForCallable(t)}'");
-            var returnType = GetTargetTypeForCallable(type.TypeArguments.Last());
-            return $"Callable[[{string.Join(", ", args)}], '{returnType}']";
-        }
-        else
-        {
-            var args = type.TypeArguments.Select(t => $"'{GetTargetTypeForCallable(t)}'");
-            return $"Callable[[{string.Join(", ", args)}], Any]";
-        }
+        var args = type
+            .TypeArguments
+            .SkipLast(isFunc ? 1 : 0)
+            .Select(t => $"'{GetTargetTypeForCallable(t)}'");
+        
+        var returnType = isFunc ? $"'{GetTargetTypeForCallback(type.TypeArguments.Last())}'" : "Any";
+        
+        return $"Callable[[{string.Join(", ", args)}], {returnType}]";
     }
 
     private static string GetTargetTypeForCallable(ITypeSymbol type)

@@ -17,12 +17,10 @@ internal class KotlinLanguageProvider : LanguageProviderBase
 
     public static string ConvertTypeName(string csharpTypeName)
     {
-        return KotlinReservedWordMappings.TryGetValue(csharpTypeName, out var kotlinName)
-            ? kotlinName
-            : csharpTypeName;
+        return KotlinReservedWordMappings.GetValueOrDefault(csharpTypeName, csharpTypeName);
     }
 
-    public override string ConvertName(string csharpName, NameContext context)
+    protected override string ConvertName(string csharpName, NameContext context)
     {
         return context switch
         {
@@ -35,6 +33,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
     protected override string GetTargetType(ITypeSymbol type)
     {
         var kind = type.GetInteropTypeKind();
+        
         return kind switch
         {
             InteropTypeKind.Void => "Unit",
@@ -78,6 +77,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
     protected override string GetInteropValue(IParameterSymbol parameter, string variableName)
     {
         var kind = parameter.Type.GetInteropTypeKind();
+        
         return kind switch
         {
             InteropTypeKind.Enum => $"{variableName}.value",
@@ -101,8 +101,11 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         if (!isStaticMethod)
             parameters.Add("target: Pointer");
 
-        parameters.AddRange(method.GetNonThisParameters().Select(p =>
-            $"{p.Name}: {GetJnaType(p.Type)}"));
+        method
+            .GetNonThisParameters()
+            .Select(p => $"{p.Name}: {GetJnaType(p.Type)}")
+            .ToList()
+            .ForEach(parameters.Add);
 
         return $"fun {methodName}({string.Join(", ", parameters)}): {returnType}";
     }
@@ -115,11 +118,13 @@ internal class KotlinLanguageProvider : LanguageProviderBase
 
     protected override List<object> BuildParameterDetails(IReadOnlyList<IParameterSymbol> parameters)
     {
-        return parameters.Select(p => (object)new
-        {
-            Name = p.Name,
-            NativeType = GetJnaType(p.Type)
-        }).ToList();
+        return parameters
+            .Select(p => (object)new
+            {
+                Name = p.Name,
+                NativeType = GetJnaType(p.Type)
+            })
+            .ToList();
     }
 
     protected override List<object> BuildCallbackInterfaces(IReadOnlyList<IMethodSymbol> methods)
@@ -144,6 +149,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
     private string GetJnaType(ITypeSymbol type)
     {
         var kind = type.GetInteropTypeKind();
+        
         return kind switch
         {
             InteropTypeKind.Void => "Unit",
@@ -173,16 +179,13 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         if (type.TypeArguments.Length == 0)
             return isFunc ? "() -> Any" : "() -> Unit";
 
-        if (isFunc)
-        {
-            var args = type.TypeArguments.SkipLast(1).Select(GetTargetTypeForCallback);
-            var returnType = GetTargetTypeForCallback(type.TypeArguments.Last());
-            return $"({string.Join(", ", args)}) -> {returnType}";
-        }
-        else
-        {
-            var args = type.TypeArguments.Select(GetTargetTypeForCallback);
-            return $"({string.Join(", ", args)}) -> Unit";
-        }
+        var args = type
+            .TypeArguments
+            .SkipLast(isFunc ? 1 : 0)
+            .Select(GetTargetTypeForCallback);
+        
+        var returnType = isFunc ? GetTargetTypeForCallback(type.TypeArguments.Last()) : "Unit";
+        
+        return $"({string.Join(", ", args)}) -> {returnType}";
     }
 }

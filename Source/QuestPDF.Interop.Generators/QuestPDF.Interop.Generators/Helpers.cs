@@ -135,7 +135,7 @@ internal static partial class Helpers
             if (deprecationMessage is null)
                 return false;
 
-            var match = GetVersionParser().Match(deprecationMessage);
+            var match = Regex.Match(deprecationMessage, @"(?<year>20\d{2})\.(?<month>0?[1-9]|1[0-2])");
 
             if (!match.Success)
                 return false;
@@ -151,6 +151,7 @@ internal static partial class Helpers
             return true;
 
         var current = type.BaseType;
+        
         while (current != null)
         {
             if (SymbolEqualityComparer.Default.Equals(current, baseType))
@@ -188,7 +189,7 @@ internal static partial class Helpers
 
     public static string GetGeneratedClassName(this INamedTypeSymbol type) => type.GetInteropTypeName();
 
-    public static string GetDefaultEnumMemberName(this IParameterSymbol parameter)
+    public static string? GetDefaultEnumMemberName(this IParameterSymbol parameter)
     {
         if (!parameter.HasExplicitDefaultValue || parameter.Type.TypeKind != TypeKind.Enum)
             return null;
@@ -209,11 +210,12 @@ internal static partial class Helpers
 
     public static IEnumerable<IParameterSymbol> GetCallbackParameters(this IMethodSymbol method)
     {
-        return method.GetNonThisParameters()
+        return method
+            .GetNonThisParameters()
             .Where(p => p.Type.IsAction() || p.Type.IsFunc());
     }
 
-    public static string GetCallbackArgumentTypeName(this IParameterSymbol parameter)
+    public static string? GetCallbackArgumentTypeName(this IParameterSymbol parameter)
     {
         if (parameter.Type is not INamedTypeSymbol { TypeArguments.Length: > 0 } delegateType)
             return null;
@@ -223,38 +225,40 @@ internal static partial class Helpers
 
     public static Dictionary<IMethodSymbol, OverloadInfo> ComputeOverloads(this IReadOnlyList<IMethodSymbol> methods)
     {
-        var result = new Dictionary<IMethodSymbol, OverloadInfo>(SymbolEqualityComparer.Default);
+        return methods
+            .GroupBy(m => m.Name)
+            .SelectMany(ProcessNameGroup)
+            .ToDictionary(x => x.Method, x => x.Info);
 
-        foreach (var group in methods.GroupBy(m => m.Name))
+        static IEnumerable<(IMethodSymbol Method, OverloadInfo Info)> ProcessNameGroup(IGrouping<string, IMethodSymbol> group)
         {
             var groupMethods = group.ToList();
 
             if (groupMethods.Count == 1)
-            {
-                result[groupMethods[0]] = new OverloadInfo(false, groupMethods[0].Name, string.Empty);
-                continue;
-            }
+                return [(groupMethods[0], new OverloadInfo(false, groupMethods[0].Name, string.Empty))];
 
-            var entries = groupMethods.Select(m => (Method: m, Suffix: GenerateOverloadSuffix(m))).ToList();
-
-            foreach (var suffixGroup in entries.GroupBy(x => x.Suffix))
-            {
-                var collisions = suffixGroup.ToList();
-
-                for (int i = 0; i < collisions.Count; i++)
-                {
-                    var suffix = collisions.Count > 1 ? $"{collisions[i].Suffix}_{i + 1}" : collisions[i].Suffix;
-                    result[collisions[i].Method] = new OverloadInfo(true, collisions[i].Method.Name + suffix, suffix);
-                }
-            }
+            return groupMethods
+                .Select(m => (Method: m, Suffix: GenerateOverloadSuffix(m)))
+                .GroupBy(x => x.Suffix)
+                .SelectMany(ResolveSuffixCollisions);
         }
 
-        return result;
+        static IEnumerable<(IMethodSymbol Method, OverloadInfo Info)> ResolveSuffixCollisions(IGrouping<string, (IMethodSymbol Method, string Suffix)> suffixGroup)
+        {
+            var collisions = suffixGroup.ToList();
+
+            return collisions.Select((entry, i) =>
+            {
+                var suffix = collisions.Count > 1 ? $"{entry.Suffix}_{i + 1}" : entry.Suffix;
+                return (entry.Method, new OverloadInfo(true, entry.Method.Name + suffix, suffix));
+            });
+        }
     }
 
     private static string GenerateOverloadSuffix(IMethodSymbol method)
     {
         var parameters = method.GetNonThisParameters();
+        
         if (parameters.Count == 0)
             return "_NoArgs";
 
@@ -271,7 +275,4 @@ internal static partial class Helpers
         
         return kind.ToString();
     }
-
-    [GeneratedRegex(@"(?<year>20\d{2})\.(?<month>0?[1-9]|1[0-2])")]
-    private static partial Regex GetVersionParser();
 }

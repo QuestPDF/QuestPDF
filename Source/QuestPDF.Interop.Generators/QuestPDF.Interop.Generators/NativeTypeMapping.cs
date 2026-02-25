@@ -14,14 +14,6 @@ internal static class NativeTypeMapping
         return string.Concat(hashBytes.Take(4).Select(b => b.ToString("x2")));
     }
 
-    public static string ExtractNativeMethodHash(this string nativeEntryPoint)
-    {
-        var lastSeparator = nativeEntryPoint.LastIndexOf("__");
-        return lastSeparator >= 0 && lastSeparator < nativeEntryPoint.Length - 2
-            ? nativeEntryPoint.Substring(lastSeparator + 2)
-            : nativeEntryPoint.GetHashCode().ToString("x8");
-    }
-
     public static string GetNativeMethodName(this IMethodSymbol methodSymbol, string targetTypeName)
     {
         var hash = methodSymbol.ToDisplayString().GetDeterministicHash();

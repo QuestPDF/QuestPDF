@@ -20,7 +20,7 @@ internal abstract class LanguageProviderBase
     protected abstract string SelfPointerExpression { get; }
     protected virtual string OverloadMethodNamePrefix => "";
 
-    public abstract string ConvertName(string name, NameContext context);
+    protected abstract string ConvertName(string name, NameContext context);
     protected abstract string GetTargetType(ITypeSymbol type);
     protected abstract string FormatDefaultValue(IParameterSymbol parameter);
     protected abstract string GetInteropValue(IParameterSymbol parameter, string variableName);
@@ -69,7 +69,7 @@ internal abstract class LanguageProviderBase
         var nonThisParams = method.GetNonThisParameters();
         var overloadInfo = overloads[method];
         var nativeEntryPoint = method.GetNativeMethodName(className);
-        var uniqueId = nativeEntryPoint.ExtractNativeMethodHash();
+        var uniqueId = method.ToDisplayString().GetDeterministicHash();
 
         var methodName = overloadInfo.IsOverload
             ? OverloadMethodNamePrefix + ConvertName(overloadInfo.DisambiguatedName, NameContext.Method)
@@ -121,8 +121,10 @@ internal abstract class LanguageProviderBase
     protected string GetReturnTypeName(IMethodSymbol method, string className)
     {
         var kind = method.ReturnType.GetInteropTypeKind();
+        
         if (kind == InteropTypeKind.TypeParameter)
             return className;
+        
         return GetTargetType(method.ReturnType);
     }
 

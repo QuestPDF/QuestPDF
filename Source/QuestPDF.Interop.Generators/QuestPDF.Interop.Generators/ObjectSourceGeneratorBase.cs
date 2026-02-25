@@ -13,7 +13,9 @@ internal abstract class ObjectSourceGeneratorBase(Type targetType) : IInteropSou
     protected Type TargetClrType => targetType;
 
     protected INamedTypeSymbol GetTargetType(Compilation compilation)
-        => compilation.GetTypeByMetadataName(targetType.FullName);
+    {
+        return compilation.GetTypeByMetadataName(targetType.FullName);
+    }
 
     protected abstract IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation);
 
@@ -25,7 +27,8 @@ internal abstract class ObjectSourceGeneratorBase(Type targetType) : IInteropSou
         if (language == "CSharp")
         {
             var builder = new CSharpNativeExportBuilder(resolvedType);
-            return TemplateManager.RenderTemplate("CSharp.NativeInteropMethod", builder.BuildTemplateModel(methods));
+            var model = builder.BuildTemplateModel(methods);
+            return TemplateManager.RenderTemplate("CSharp.NativeInteropMethod", model);
         }
 
         LanguageProviderBase languageProvider = language switch

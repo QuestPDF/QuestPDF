@@ -22,6 +22,7 @@ internal class CSharpNativeExportBuilder(INamedTypeSymbol targetType)
         var isExtension = method.IsExtensionMethod;
 
         var parameters = method.Parameters.SelectMany(GetExportParameters);
+        
         if (!isExtension && !method.IsStatic)
             parameters = parameters.Prepend("IntPtr target");
 

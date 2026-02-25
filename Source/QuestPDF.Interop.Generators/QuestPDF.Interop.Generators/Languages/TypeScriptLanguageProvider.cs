@@ -9,7 +9,7 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
     protected override string SelfParameterName => null;
     protected override string SelfPointerExpression => "this._ptr";
 
-    public override string ConvertName(string csharpName, NameContext context)
+    protected override string ConvertName(string csharpName, NameContext context)
     {
         return context switch
         {
@@ -122,18 +122,14 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
     {
         if (type.TypeArguments.Length == 0)
             return isFunc ? "() => unknown" : "() => void";
-
-        if (isFunc)
-        {
-            var args = type.TypeArguments.SkipLast(1)
-                .Select((t, i) => $"arg{i}: {GetTargetTypeForCallback(t)}");
-            var returnType = GetTargetTypeForCallback(type.TypeArguments.Last());
-            return $"({string.Join(", ", args)}) => {returnType}";
-        }
-        else
-        {
-            var args = type.TypeArguments.Select((t, i) => $"arg{i}: {GetTargetTypeForCallback(t)}");
-            return $"({string.Join(", ", args)}) => void";
-        }
+        
+        var args = type
+            .TypeArguments
+            .SkipLast(isFunc ? 1 : 0)
+            .Select((t, i) => $"arg{i}: {GetTargetTypeForCallback(t)}");
+        
+        var returnType = isFunc ? GetTargetTypeForCallback(type.TypeArguments.Last()) : "void";
+        
+        return $"({string.Join(", ", args)}) => {returnType}";
     }
 }

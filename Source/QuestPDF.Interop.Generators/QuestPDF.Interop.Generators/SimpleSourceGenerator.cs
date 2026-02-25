@@ -9,7 +9,8 @@ internal class SimpleSourceGenerator(Type targetType) : ObjectSourceGeneratorBas
 {
     protected override IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {
-        return GetTargetType(compilation).GetMembers()
+        return GetTargetType(compilation)
+            .GetMembers()
             .OfType<IMethodSymbol>()
             .Where(x => !ExcludeMembers.Any(x.Name.Contains))
             .Where(x => x.DeclaredAccessibility == Accessibility.Public)
