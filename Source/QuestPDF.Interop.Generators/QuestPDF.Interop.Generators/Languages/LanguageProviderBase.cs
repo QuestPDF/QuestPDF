@@ -4,7 +4,17 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators.Languages;
 
-internal abstract class LanguageProviderBase : ILanguageProvider
+internal enum NameContext
+{
+    Method,
+    Parameter,
+    Class,
+    EnumValue,
+    Property,
+    Constant
+}
+
+internal abstract class LanguageProviderBase
 {
     protected abstract string SelfParameterName { get; }
     protected abstract string SelfPointerExpression { get; }
@@ -15,12 +25,12 @@ internal abstract class LanguageProviderBase : ILanguageProvider
     protected abstract string FormatDefaultValue(IParameterSymbol parameter);
     protected abstract string GetInteropValue(IParameterSymbol parameter, string variableName);
 
-    protected virtual string BuildNativeSignature(IMethodSymbol method, INamedTypeSymbol targetType) => null;
-    protected virtual string GetNativeReturnType(IMethodSymbol method) => null;
-    protected virtual string GetReturnConversionMethod(IMethodSymbol method, string className) => null;
-    protected virtual List<object> BuildParameterDetails(IReadOnlyList<IParameterSymbol> parameters) => null;
-    protected virtual List<object> BuildCallbackInterfaces(IReadOnlyList<IMethodSymbol> methods) => null;
-    protected virtual List<string> BuildHeaders(IReadOnlyList<IMethodSymbol> methods, string className) => null;
+    protected virtual string? BuildNativeSignature(IMethodSymbol method, INamedTypeSymbol targetType) => null;
+    protected virtual string? GetNativeReturnType(IMethodSymbol method) => null;
+    protected virtual string? GetReturnConversionMethod(IMethodSymbol method, string className) => null;
+    protected virtual List<object>? BuildParameterDetails(IReadOnlyList<IParameterSymbol> parameters) => null;
+    protected virtual List<object>? BuildCallbackInterfaces(IReadOnlyList<IMethodSymbol> methods) => null;
+    protected virtual List<string>? BuildHeaders(IReadOnlyList<IMethodSymbol> methods, string className) => null;
 
     public object BuildClassTemplateModel(
         INamedTypeSymbol targetType,
@@ -66,41 +76,45 @@ internal abstract class LanguageProviderBase : ILanguageProvider
             : ConvertName(method.Name, NameContext.Method);
 
         var paramParts = nonThisParams.Select(FormatParameter).ToList();
+        
         if (!isStaticMethod && SelfParameterName != null)
             paramParts.Insert(0, SelfParameterName);
-        var parameters = string.Join(", ", paramParts);
 
         var nativeArgParts = nonThisParams
             .Select(p => GetInteropValue(p, ConvertName(p.Name, NameContext.Parameter)))
             .ToList();
+        
         if (!isStaticMethod)
             nativeArgParts.Insert(0, SelfPointerExpression);
-        var nativeCallArgs = string.Join(", ", nativeArgParts);
 
         var returnType = GetReturnTypeName(method, className);
         var returnTypeKind = method.ReturnType.GetInteropTypeKind();
-        var isVoidReturn = returnTypeKind == InteropTypeKind.Void;
+        
+        var callbacks = method
+            .GetCallbackParameters()
+            .Select(c => BuildCallbackModel(c, uniqueId))
+            .ToList();
 
         return new
         {
             MethodName = methodName,
             NativeMethodName = nativeEntryPoint,
-            Parameters = parameters,
+            Parameters = string.Join(", ", paramParts),
             ReturnType = returnType,
-            ReturnClassName = isVoidReturn ? null : returnType,
-            NativeCallArgs = nativeCallArgs,
+            ReturnClassName = returnTypeKind == InteropTypeKind.Void ? null : returnType,
+            NativeCallArgs = string.Join(", ", nativeArgParts),
             NativeSignature = BuildNativeSignature(method, targetType),
             NativeReturnType = GetNativeReturnType(method),
             ReturnConversionMethod = GetReturnConversionMethod(method, className),
             UniqueId = uniqueId,
             IsStaticMethod = isStaticMethod,
             DeprecationMessage = method.TryGetDeprecationMessage(),
-            Callbacks = method.GetCallbackParameters().Select(c => BuildCallbackModel(c, uniqueId)).ToList(),
+            Callbacks = callbacks,
+            HasCallbacks = callbacks.Count > 0,
             IsOverload = overloadInfo.IsOverload,
             OriginalName = ConvertName(method.Name, NameContext.Method),
             ParameterDetails = BuildParameterDetails(nonThisParams),
             ReturnsPointer = returnTypeKind is InteropTypeKind.Class or InteropTypeKind.Interface or InteropTypeKind.TypeParameter,
-            HasCallbacks = method.GetCallbackParameters().Any(),
         };
     }
 

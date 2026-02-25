@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -5,7 +6,7 @@ using QuestPDF.Interop.Generators.Languages;
 
 namespace QuestPDF.Interop.Generators;
 
-public class EnumSourceGenerator : IInteropSourceGenerator
+internal class EnumSourceGenerator : IInteropSourceGenerator
 {
     public string GenerateCode(Compilation compilation, string language)
     {
@@ -35,7 +36,7 @@ public class EnumSourceGenerator : IInteropSourceGenerator
             .Select(x => new
             {
                 x.Name, 
-                Value = System.Convert.ToInt32(x.ConstantValue)
+                Value = Convert.ToInt32(x.ConstantValue)
             });
     }
 }

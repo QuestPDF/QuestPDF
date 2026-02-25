@@ -9,9 +9,8 @@ internal static class NativeTypeMapping
 {
     public static string GetDeterministicHash(this string input)
     {
-        using var sha256 = SHA256.Create();
         var bytes = System.Text.Encoding.UTF8.GetBytes(input);
-        var hashBytes = sha256.ComputeHash(bytes);
+        var hashBytes = SHA256.HashData(bytes);
         return string.Concat(hashBytes.Take(4).Select(b => b.ToString("x2")));
     }
 
@@ -68,7 +67,6 @@ internal static class NativeTypeMapping
             SpecialType.System_Double => "double",
             SpecialType.System_Boolean => "uint8_t",
             SpecialType.System_Char => "uint16_t",
-            SpecialType.System_IntPtr or SpecialType.System_UIntPtr => "void*",
             _ => "void*"
         };
     }

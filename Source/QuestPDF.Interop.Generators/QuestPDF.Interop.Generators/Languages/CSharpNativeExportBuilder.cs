@@ -6,16 +6,10 @@ namespace QuestPDF.Interop.Generators.Languages;
 
 // Unlike client-side providers (Python/TS/Kotlin) that marshal managed→native,
 // this generates server-side export stubs that marshal native→managed.
-internal class CSharpNativeExportBuilder
+internal class CSharpNativeExportBuilder(INamedTypeSymbol targetType)
 {
-    private readonly string _className;
-    private readonly string _targetTypeName;
-
-    public CSharpNativeExportBuilder(INamedTypeSymbol targetType)
-    {
-        _className = targetType.GetGeneratedClassName();
-        _targetTypeName = targetType.Name;
-    }
+    private readonly string _className = targetType.GetGeneratedClassName();
+    private readonly string _targetTypeName = targetType.Name;
 
     public object BuildTemplateModel(IEnumerable<IMethodSymbol> methods)
     {

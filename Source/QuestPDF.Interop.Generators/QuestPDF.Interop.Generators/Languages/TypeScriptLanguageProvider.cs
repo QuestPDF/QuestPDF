@@ -125,7 +125,7 @@ internal class TypeScriptLanguageProvider : LanguageProviderBase
 
         if (isFunc)
         {
-            var args = type.TypeArguments.Take(type.TypeArguments.Length - 1)
+            var args = type.TypeArguments.SkipLast(1)
                 .Select((t, i) => $"arg{i}: {GetTargetTypeForCallback(t)}");
             var returnType = GetTargetTypeForCallback(type.TypeArguments.Last());
             return $"({string.Join(", ", args)}) => {returnType}";

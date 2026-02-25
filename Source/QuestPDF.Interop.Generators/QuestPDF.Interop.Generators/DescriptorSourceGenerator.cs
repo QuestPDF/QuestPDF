@@ -7,7 +7,7 @@ namespace QuestPDF.Interop.Generators;
 
 internal class DescriptorSourceGenerator(Type targetType) : ObjectSourceGeneratorBase(targetType)
 {
-    public bool IncludeInheritedExtensionMethods { get; set; }
+    public bool IncludeInheritedExtensionMethods { get; init; }
 
     protected override IEnumerable<IMethodSymbol> GetTargetMethods(Compilation compilation)
     {

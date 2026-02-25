@@ -175,14 +175,13 @@ internal class KotlinLanguageProvider : LanguageProviderBase
 
         if (isFunc)
         {
-            var args = type.TypeArguments.Take(type.TypeArguments.Length - 1)
-                .Select(t => GetTargetTypeForCallback(t));
+            var args = type.TypeArguments.SkipLast(1).Select(GetTargetTypeForCallback);
             var returnType = GetTargetTypeForCallback(type.TypeArguments.Last());
             return $"({string.Join(", ", args)}) -> {returnType}";
         }
         else
         {
-            var args = type.TypeArguments.Select(t => GetTargetTypeForCallback(t));
+            var args = type.TypeArguments.Select(GetTargetTypeForCallback);
             return $"({string.Join(", ", args)}) -> Unit";
         }
     }

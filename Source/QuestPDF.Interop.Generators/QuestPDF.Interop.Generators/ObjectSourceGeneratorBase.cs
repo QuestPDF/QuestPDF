@@ -8,8 +8,8 @@ namespace QuestPDF.Interop.Generators;
 
 internal abstract class ObjectSourceGeneratorBase(Type targetType) : IInteropSourceGenerator
 {
-    public string? InheritFrom { get; set; }
-    public ICollection<string> ExcludeMembers { get; set; } = [];
+    public string? InheritFrom { get; init; }
+    public ICollection<string> ExcludeMembers { get; init; } = [];
     protected Type TargetClrType => targetType;
 
     protected INamedTypeSymbol GetTargetType(Compilation compilation)
@@ -28,7 +28,7 @@ internal abstract class ObjectSourceGeneratorBase(Type targetType) : IInteropSou
             return TemplateManager.RenderTemplate("CSharp.NativeInteropMethod", builder.BuildTemplateModel(methods));
         }
 
-        ILanguageProvider languageProvider = language switch
+        LanguageProviderBase languageProvider = language switch
         {
             "Python" => new PythonLanguageProvider(),
             "TypeScript" => new TypeScriptLanguageProvider(),

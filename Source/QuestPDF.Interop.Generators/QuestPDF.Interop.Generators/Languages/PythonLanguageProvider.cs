@@ -77,20 +77,15 @@ internal class PythonLanguageProvider : LanguageProviderBase
         return methods.Select(m => m.GetCHeaderDefinition(className)).ToList();
     }
 
-    protected override string GetReturnConversionMethod(IMethodSymbol method, string className)
+    protected override string? GetReturnConversionMethod(IMethodSymbol method, string className)
     {
-        var kind = method.ReturnType.GetInteropTypeKind();
-
-        if (kind == InteropTypeKind.Void)
-            return null;
-
-        if (kind == InteropTypeKind.String)
-            return "decode_text_as_utf_8";
-
-        if (kind == InteropTypeKind.ByteArray)
-            return "questpdf_ffi.string";
-
-        return GetReturnTypeName(method, className);
+        return method.ReturnType.GetInteropTypeKind() switch
+        {
+            InteropTypeKind.Void => null,
+            InteropTypeKind.String => "decode_text_as_utf_8",
+            InteropTypeKind.ByteArray => "questpdf_ffi.string",
+            _ => GetReturnTypeName(method, className)
+        };
     }
 
     private string FormatCallableType(INamedTypeSymbol type, bool isFunc)
@@ -100,7 +95,7 @@ internal class PythonLanguageProvider : LanguageProviderBase
 
         if (isFunc)
         {
-            var args = type.TypeArguments.Take(type.TypeArguments.Length - 1)
+            var args = type.TypeArguments.SkipLast(1)
                 .Select(t => $"'{GetTargetTypeForCallable(t)}'");
             var returnType = GetTargetTypeForCallable(type.TypeArguments.Last());
             return $"Callable[[{string.Join(", ", args)}], '{returnType}']";

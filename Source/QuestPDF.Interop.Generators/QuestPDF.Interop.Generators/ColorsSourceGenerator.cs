@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace QuestPDF.Interop.Generators;
 
-public class ColorsSourceGenerator : IInteropSourceGenerator
+internal class ColorsSourceGenerator : IInteropSourceGenerator
 {
     public string GenerateCode(Compilation compilation, string language)
     {

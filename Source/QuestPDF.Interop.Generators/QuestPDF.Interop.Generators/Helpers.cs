@@ -28,7 +28,7 @@ internal static partial class Helpers
         if (string.IsNullOrEmpty(input))
             return input;
 
-        return char.ToLowerInvariant(input[0]) + input.Substring(1);
+        return char.ToLowerInvariant(input[0]) + input[1..];
     }
 
     public static string ToPascalCase(this string input)
@@ -36,7 +36,7 @@ internal static partial class Helpers
         if (string.IsNullOrEmpty(input))
             return input;
 
-        return char.ToUpperInvariant(input[0]) + input.Substring(1);
+        return char.ToUpperInvariant(input[0]) + input[1..];
     }
 
     public static string? TryGetDeprecationMessage(this ISymbol symbol)
@@ -92,47 +92,56 @@ internal static partial class Helpers
 
     public static IEnumerable<IMethodSymbol> FilterSupportedMethods(this IEnumerable<IMethodSymbol> methodSymbols)
     {
-        return methodSymbols
-            .ExcludeOldObsoleteMethods()
-            .Where(x => !x.Parameters.Any(p => p.Type.TypeKind == TypeKind.Array))
-            .Where(x => !x.Name.Contains("Component"))
-            .Where(x => !x.Parameters.Any(p => !p.Type.IsAction() && !p.Type.IsFunc() && p.Type.TypeKind == TypeKind.Delegate))
-            .Where(x => !x.Parameters.Any(p => ExcludedParameterTypeNames.Any(
-                phrase => p.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat).Contains(phrase))))
-            .Where(x => x.Name != "Dispose")
-            .Where(x => !(x.Parameters.Skip(1).FirstOrDefault()?.Type?.Name?.Contains("IContainer") ?? false))
-            .Where(x => !x.Parameters.Any(p => p.GetAttributes().Any()));
+        return methodSymbols.ExcludeOldObsoleteMethods().Where(IsSupported);
+
+        static bool IsSupported(IMethodSymbol method)
+        {
+            if (method.Name is "Dispose" || method.Name.Contains("Component"))
+                return false;
+
+            if (method.Parameters.Any(p => p.Type.TypeKind == TypeKind.Array))
+                return false;
+
+            if (method.Parameters.Any(p => p.Type.TypeKind == TypeKind.Delegate && !p.Type.IsAction() && !p.Type.IsFunc()))
+                return false;
+
+            if (method.Parameters.Any(p => p.GetAttributes().Any()))
+                return false;
+
+            if (method.Parameters.Skip(1).FirstOrDefault()?.Type?.Name?.Contains("IContainer") ?? false)
+                return false;
+
+            if (method.Parameters.Any(HasExcludedParameterType))
+                return false;
+
+            return true;
+        }
+
+        static bool HasExcludedParameterType(IParameterSymbol parameter)
+        {
+            var typeName = parameter.Type.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat);
+            return ExcludedParameterTypeNames.Any(typeName.Contains);
+        }
     }
 
     public static IEnumerable<IMethodSymbol> ExcludeOldObsoleteMethods(this IEnumerable<IMethodSymbol> methodSymbols)
     {
-        var oldVersion = new Version(2025, 0);
+        return methodSymbols.Where(method => !IsOldObsolete(method));
 
-        return methodSymbols.Where(x => !IsOldObsolete(x));
-
-        bool IsOldObsolete(IMethodSymbol method)
+        static bool IsOldObsolete(IMethodSymbol method)
         {
-            var obsoleteAttribute = method
-                .GetAttributes()
-                .FirstOrDefault(attr => attr.AttributeClass?.Name == nameof(ObsoleteAttribute));
+            var deprecationMessage = method.TryGetDeprecationMessage();
 
-            if (obsoleteAttribute == null)
+            if (deprecationMessage is null)
                 return false;
 
-            var deprecationMessage = obsoleteAttribute
-                .ConstructorArguments
-                .FirstOrDefault().Value as string;
+            var match = GetVersionParser().Match(deprecationMessage);
 
-            var parser = GetVersionParser().Match(deprecationMessage ?? string.Empty);
-
-            if (!parser.Success)
+            if (!match.Success)
                 return false;
 
-            var yearVersion = parser.Groups["year"].Value;
-            var monthVersion = parser.Groups["month"].Value;
-
-            var currentVersion = new Version(int.Parse(yearVersion), int.Parse(monthVersion));
-            return currentVersion < oldVersion;
+            var year = int.Parse(match.Groups["year"].Value);
+            return year < 2025;
         }
     }
 

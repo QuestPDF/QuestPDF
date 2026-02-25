@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
 
-public sealed class PublicApiGenerator
+internal static class PublicApiGenerator
 {
     public static void GenerateSource(Compilation compilation)
     {
