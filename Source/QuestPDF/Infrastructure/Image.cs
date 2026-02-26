@@ -31,7 +31,7 @@ namespace QuestPDF.Infrastructure
 
         internal bool IsShared { get; set; } = true;
         internal SkImage SkImage { get; }
-        internal ImageSize Size { get; }
+        public ImageSize Size { get; }
 
         internal LinkedList<(GetImageVersionRequest request, SkImage image)> ScaledImageCache { get; } = new();
  
