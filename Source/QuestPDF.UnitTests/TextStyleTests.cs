@@ -619,5 +619,19 @@ namespace QuestPDF.UnitTests
 
             Assert.That(targetStyle.ToString(), Is.EqualTo(expectedStyle.ToString()));
         }
+
+        [TestCase(true, FontWeight.Bold)]
+        [TestCase(false, FontWeight.Normal)]
+        public void BoldWithBooleanParameter(bool isBold, FontWeight expectedWeight)
+        {
+            // arrange
+            var textStyle = TextStyle.Default.ExtraBold();
+
+            // act
+            textStyle = textStyle.Bold(isBold);
+
+            // assert
+            textStyle.FontWeight.Should().Be(expectedWeight);
+        }
     }
 }
