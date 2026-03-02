@@ -352,6 +352,4 @@ Thank you for helping us grow and reach more developers!
 
 GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! 
 
-<img src="https://github.com/user-attachments/assets/418f9fac-cb4b-40c1-bc2e-0ab6717d9fdd" width="700" />
-
-
+<img src="https://github.com/user-attachments/assets/cb7077b5-ebbf-493b-96c4-af6ae25eca56" width="700" />
