@@ -1,0 +1,110 @@
+interface UnitLibrary : Library {
+    companion object {
+        val INSTANCE: UnitLibrary = QuestLibrary.getLibrary(UnitLibrary::class.java)
+    }
+
+    fun questpdf__unit__convert_to_points(value: Float, unit: LengthUnit): Float;
+}
+
+data class PageSize(val width: Float, val height: Float) {
+    /**
+     * Defines the physical dimensions (width and height) of a page.
+     *
+     * Commonly used page sizes are available in the PageSizes object.
+     * Change page orientation with the portrait() and landscape() methods.
+     */
+    constructor(width: Float, height: Float, unit: LengthUnit = LengthUnit.Point) : this(
+        width = validated(width, "width", unit),
+        height = validated(height, "height", unit)
+    )
+
+    /** Sets page size to portrait orientation, making width smaller than height. */
+    fun portrait(): PageSize = PageSize(
+        width = minOf(width, height),
+        height = maxOf(width, height)
+    )
+
+    /** Sets page size to landscape orientation, making width bigger than height. */
+    fun landscape(): PageSize = PageSize(
+        width = maxOf(width, height),
+        height = minOf(width, height)
+    )
+
+    companion object {
+        private fun validated(value: Float, name: String, unit: LengthUnit): Float {
+            require(value >= 0) { "Page $name must be greater than 0." }
+            return UnitLibrary.INSTANCE.questpdf__unit__convert_to_points(value, unit)
+        }
+    }
+}
+
+
+/**
+ * Contains predefined, common and standard page sizes,
+ * such as A4 with dimensions of 595 points in width and 842 points in height.
+ */
+object PageSizes {
+    const val POINTS_PER_INCH: Int = 72
+
+    // ISO A Series
+    val A0 = PageSize(2384f, 3370f)
+    val A1 = PageSize(1684f, 2384f)
+    val A2 = PageSize(1191f, 1684f)
+    val A3 = PageSize(842f, 1191f)
+    val A4 = PageSize(595f, 842f)
+    val A5 = PageSize(420f, 595f)
+    val A6 = PageSize(298f, 420f)
+    val A7 = PageSize(210f, 298f)
+    val A8 = PageSize(147f, 210f)
+    val A9 = PageSize(105f, 147f)
+    val A10 = PageSize(74f, 105f)
+
+    // ISO B Series
+    val B0 = PageSize(2835f, 4008f)
+    val B1 = PageSize(2004f, 2835f)
+    val B2 = PageSize(1417f, 2004f)
+    val B3 = PageSize(1001f, 1417f)
+    val B4 = PageSize(709f, 1001f)
+    val B5 = PageSize(499f, 709f)
+    val B6 = PageSize(354f, 499f)
+    val B7 = PageSize(249f, 354f)
+    val B8 = PageSize(176f, 249f)
+    val B9 = PageSize(125f, 176f)
+    val B10 = PageSize(88f, 125f)
+
+    // ISO C Series (Envelopes)
+    val C0 = PageSize(2599f, 3677f)
+    val C1 = PageSize(1837f, 2599f)
+    val C2 = PageSize(1298f, 1837f)
+    val C3 = PageSize(918f, 1298f)
+    val C4 = PageSize(649f, 918f)
+    val C5 = PageSize(459f, 649f)
+    val C6 = PageSize(323f, 459f)
+    val C7 = PageSize(230f, 323f)
+    val C8 = PageSize(162f, 230f)
+    val C9 = PageSize(113f, 162f)
+    val C10 = PageSize(79f, 113f)
+
+    // Envelopes
+    val ENV_10 = PageSize(297f, 684f)
+    val ENV_C4 = PageSize(649f, 918f)
+    val ENV_DL = PageSize(312f, 624f)
+
+    // North American
+    val POSTCARD = PageSize(284f, 419f)
+    val EXECUTIVE = PageSize(522f, 756f)
+    val LETTER = PageSize(612f, 792f)
+    val LEGAL = PageSize(612f, 1008f)
+    val LEDGER = PageSize(792f, 1224f)
+    val TABLOID = PageSize(1224f, 792f)
+
+    // Architectural
+    val ARCH_A = PageSize(648f, 864f)
+    val ARCH_B = PageSize(864f, 1296f)
+    val ARCH_C = PageSize(1296f, 1728f)
+    val ARCH_D = PageSize(1728f, 2592f)
+    val ARCH_E = PageSize(2592f, 3456f)
+    val ARCH_E1 = PageSize(2160f, 3024f)
+    val ARCH_E2 = PageSize(1872f, 2736f)
+    val ARCH_E3 = PageSize(1944f, 2808f)
+}
