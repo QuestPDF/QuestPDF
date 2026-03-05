@@ -12,6 +12,9 @@ import java.util.Collections
 
 var jnaOptions = Collections.singletonMap(Library.OPTION_STRING_ENCODING, "UTF-16LE");
 
+@DslMarker
+annotation class QuestDsl
+
 private class QuestLibrary {
     companion object {
         private val initLock = Any()
@@ -199,14 +202,14 @@ object QuestPDF {
 /**
  * Represents a document container for adding pages.
  */
-class DocumentContainer internal constructor(val pointer: Pointer) {
+@QuestDsl class DocumentContainer internal constructor(val pointer: Pointer) {
     // Keep strong references to callbacks to prevent GC
     private val callbacks = mutableListOf<Callback>()
 
     /**
      * Adds a page to the document.
      */
-    fun page(configurator: (PageDescriptor) -> Unit) {
+    fun page(configurator: PageDescriptor.() -> Unit) {
         val callback = object : PointerCallback {
             override fun callback(ptr: Pointer) {
                 val page = PageDescriptor(ptr)
@@ -223,7 +226,7 @@ class DocumentContainer internal constructor(val pointer: Pointer) {
 /**
  * Represents a QuestPDF document.
  */
-class Document private constructor() {
+@QuestDsl class Document private constructor() {
     private var ptr: Pointer? = null
     // Keep strong references to callbacks to prevent GC
     private val callbacks = mutableListOf<Callback>()
@@ -232,7 +235,7 @@ class Document private constructor() {
         /**
          * Creates a new document with the given configuration.
          */
-        fun create(configurator: (DocumentContainer) -> Unit): Document {
+        fun create(configurator: DocumentContainer.() -> Unit): Document {
             val doc = Document()
 
             val containerCallback = object : PointerCallback {

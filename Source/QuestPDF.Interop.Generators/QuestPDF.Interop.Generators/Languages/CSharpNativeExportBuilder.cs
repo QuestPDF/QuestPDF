@@ -51,8 +51,14 @@ internal class CSharpNativeExportBuilder(INamedTypeSymbol targetType)
     {
         var kind = parameter.Type.GetInteropTypeKind();
         var typeName = parameter.Type.ToDisplayString();
+        
+        if (parameter.Type.NullableAnnotation == NullableAnnotation.Annotated)
+        {
+            yield return $"float {parameter.Name}_width";
+            yield return $"float {parameter.Name}_height";
+        }
 
-        if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size")
+        if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size" or "QuestPDF.Infrastructure.ImageSize")
         {
             yield return $"float {parameter.Name}_width";
             yield return $"float {parameter.Name}_height";

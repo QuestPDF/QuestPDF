@@ -45,6 +45,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             InteropTypeKind.Class or InteropTypeKind.Interface => type.GetInteropTypeName(),
             InteropTypeKind.Action => FormatFunctionType((INamedTypeSymbol)type, isFunc: false),
             InteropTypeKind.Func => FormatFunctionType((INamedTypeSymbol)type, isFunc: true),
+            InteropTypeKind.ImageSize => "ImageSize",
             _ => "Any"
         };
     }
@@ -77,6 +78,12 @@ internal class KotlinLanguageProvider : LanguageProviderBase
     protected override string GetInteropValue(IParameterSymbol parameter, string variableName)
     {
         var kind = parameter.Type.GetInteropTypeKind();
+        var typeName = parameter.Type.ToDisplayString();
+
+        if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size" or "QuestPDF.Infrastructure.ImageSize")
+        {
+            return $"{variableName}.width, {variableName}.height";
+        }
         
         return kind switch
         {
@@ -115,13 +122,52 @@ internal class KotlinLanguageProvider : LanguageProviderBase
 
     protected override List<object> BuildParameterDetails(IReadOnlyList<IParameterSymbol> parameters)
     {
-        return parameters
-            .Select(p => (object)new
+        return GetDetails().ToList();
+        
+        IEnumerable<object> GetDetails()
+        {
+            foreach (var parameterSymbol in parameters)
             {
-                Name = p.Name,
-                NativeType = GetJnaType(p.Type)
-            })
-            .ToList();
+                var typeName = parameterSymbol.Type.ToDisplayString();
+
+                if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size")
+                {
+                    yield return new
+                    {
+                        Name = $"{parameterSymbol.Name}_width",
+                        NativeType = "Float"
+                    };
+                    
+                    yield return new
+                    {
+                        Name = $"{parameterSymbol.Name}_height",
+                        NativeType = "Float"
+                    };
+                }
+                else if (typeName is "QuestPDF.Infrastructure.ImageSize")
+                {
+                    yield return new
+                    {
+                        Name = $"{parameterSymbol.Name}_width",
+                        NativeType = "Int"
+                    };
+                    
+                    yield return new
+                    {
+                        Name = $"{parameterSymbol.Name}_height",
+                        NativeType = "Int"
+                    };
+                }
+                else
+                {
+                    yield return new
+                    {
+                        Name = parameterSymbol.Name,
+                        NativeType = GetJnaType(parameterSymbol.Type)
+                    };
+                }
+            }
+        }
     }
 
     protected override List<object> BuildCallbackInterfaces(IReadOnlyList<IMethodSymbol> methods)
@@ -180,6 +226,11 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             .TypeArguments
             .SkipLast(isFunc ? 1 : 0)
             .Select(GetTargetTypeForCallback);
+
+        if (!isFunc && type.TypeArguments.Length == 1)
+        {
+            return $"{args.First()}.() -> Unit";
+        }
         
         var returnType = isFunc ? GetTargetTypeForCallback(type.TypeArguments.Last()) : "Unit";
         
