@@ -19,7 +19,8 @@ fun {{ method.originalName }}({{ method.parameters }}){% if method.returnType !=
     val result = lib().{{ method.nativeMethodName }}({{ method.nativeCallArgs }})
     return {{ method.returnClassName }}(result)
 {% else %}
-    return lib().{{ method.nativeMethodName }}({{ method.nativeCallArgs }})
+    val result = lib().{{ method.nativeMethodName }}({{ method.nativeCallArgs }});
+    return {% if method.returnConversionMethod %}{{ method.returnConversionMethod }}(result){% else %}result{% endif %} 
 {% endif %}
 }
 {% endmacro %}

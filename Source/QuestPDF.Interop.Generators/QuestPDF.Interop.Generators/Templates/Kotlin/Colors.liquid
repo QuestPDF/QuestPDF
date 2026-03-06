@@ -6,6 +6,10 @@ value class Color(val hex: UInt) {
 
 }
 
+fun convert_int_to_color(value: Int): Color {
+    return Color(value.toUInt())
+}
+
 /**
  * Predefined color constants.
  */
@@ -23,3 +27,5 @@ object Colors {
 
 {% endfor %}
 }
+
+

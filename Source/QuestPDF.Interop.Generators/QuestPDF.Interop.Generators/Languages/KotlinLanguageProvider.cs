@@ -34,7 +34,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
     {
         var kind = type.GetInteropTypeKind();
         
-        return kind switch
+        var result = kind switch
         {
             InteropTypeKind.Void => "Unit",
             InteropTypeKind.Boolean => "Boolean",
@@ -48,6 +48,11 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             InteropTypeKind.ImageSize => "ImageSize",
             _ => "Any"
         };
+
+        if (type.NullableAnnotation == NullableAnnotation.Annotated)
+            return $"{result}?";
+        
+        return result;
     }
 
     protected override string FormatDefaultValue(IParameterSymbol parameter)
@@ -119,6 +124,14 @@ internal class KotlinLanguageProvider : LanguageProviderBase
         var kind = method.ReturnType.GetInteropTypeKind();
         return kind == InteropTypeKind.Void ? "Unit" : GetJnaType(method.ReturnType);
     }
+    
+    protected override string? GetReturnConversionMethod(IMethodSymbol method, string className)
+    {
+        if (method.ReturnType.ToDisplayString() == "QuestPDF.Infrastructure.Color")
+            return "convert_int_to_color";
+
+        return null;
+    }
 
     protected override List<object> BuildParameterDetails(IReadOnlyList<IParameterSymbol> parameters)
     {
@@ -173,13 +186,14 @@ internal class KotlinLanguageProvider : LanguageProviderBase
     protected override List<object> BuildCallbackInterfaces(IReadOnlyList<IMethodSymbol> methods)
     {
         return methods
-            .SelectMany(m => m.GetCallbackParameters())
-            .Select(c => new
-            {
-                InterfaceName = $"{c.GetCallbackArgumentTypeName()}Callback",
-                ArgumentTypeName = c.GetCallbackArgumentTypeName()
-            })
-            .DistinctBy(c => c.InterfaceName)
+            .SelectMany(method => method
+                .GetCallbackParameters()
+                .Select(c => new
+                {
+                    InterfaceName =
+                        $"{c.GetCallbackArgumentTypeName()}Callback_{method.Name.GetDeterministicHash()}",
+                    ArgumentTypeName = c.GetCallbackArgumentTypeName()
+                }))
             .Select(c => (object)c)
             .ToList();
     }
@@ -193,7 +207,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
     {
         var kind = type.GetInteropTypeKind();
         
-        return kind switch
+        var result = kind switch
         {
             InteropTypeKind.Void => "Unit",
             InteropTypeKind.Boolean => "Byte",
@@ -202,9 +216,13 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             InteropTypeKind.Enum => "Int",
             InteropTypeKind.Color => "Int",
             InteropTypeKind.Action or InteropTypeKind.Func => "Callback",
-            InteropTypeKind.Class or InteropTypeKind.Interface or InteropTypeKind.TypeParameter => "Pointer",
             _ => "Pointer"
         };
+        
+        if (type.NullableAnnotation == NullableAnnotation.Annotated)
+            return $"{result}?";
+        
+        return result;   
     }
 
     private static string GetNumericType(ITypeSymbol type) => type.SpecialType switch

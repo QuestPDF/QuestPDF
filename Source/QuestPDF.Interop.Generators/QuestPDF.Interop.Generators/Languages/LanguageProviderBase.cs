@@ -92,7 +92,7 @@ internal abstract class LanguageProviderBase
         
         var callbacks = method
             .GetCallbackParameters()
-            .Select(c => BuildCallbackModel(c, uniqueId))
+            .Select(parameter => BuildCallbackModel(method, parameter, uniqueId))
             .ToList();
 
         return new
@@ -134,6 +134,7 @@ internal abstract class LanguageProviderBase
     {
         var name = ConvertName(parameter.Name, NameContext.Parameter);
         var typeName = GetTargetType(parameter.Type);
+  
         var result = $"{name}: {typeName}";
 
         if (parameter.HasExplicitDefaultValue)
@@ -142,7 +143,7 @@ internal abstract class LanguageProviderBase
         return result;
     }
 
-    private object BuildCallbackModel(IParameterSymbol callbackParam, string uniqueId)
+    private object BuildCallbackModel(IMethodSymbol methodSymbol, IParameterSymbol callbackParam, string uniqueId)
     {
         var parameterName = ConvertName(callbackParam.Name, NameContext.Parameter);
         var argumentTypeName = callbackParam.GetCallbackArgumentTypeName();
@@ -152,7 +153,7 @@ internal abstract class LanguageProviderBase
             ParameterName = parameterName,
             ArgumentTypeName = argumentTypeName,
             InternalCallbackName = $"_internal_{parameterName}_handler",
-            CallbackInterfaceName = $"{argumentTypeName}Callback",
+            CallbackInterfaceName = $"{argumentTypeName}Callback_{methodSymbol.Name.GetDeterministicHash()}",
             UniqueId = uniqueId
         };
     }
