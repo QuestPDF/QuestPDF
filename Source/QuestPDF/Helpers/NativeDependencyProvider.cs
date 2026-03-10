@@ -58,7 +58,7 @@ internal static class NativeDependencyProvider
             Environment.CurrentDirectory,
             AppContext.BaseDirectory,
             Directory.GetCurrentDirectory(),
-            new FileInfo(typeof(NativeDependencyProvider).Assembly.Location).Directory?.FullName
+            new FileInfo(typeof(NativeDependencyProvider).Assembly.Location ?? string.Empty).Directory?.FullName
         };
         
         foreach (var location in availableLocations)
