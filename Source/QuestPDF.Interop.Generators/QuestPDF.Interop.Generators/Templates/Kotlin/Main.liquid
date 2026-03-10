@@ -10,7 +10,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.Collections
 
-var jnaOptions = Collections.singletonMap(Library.OPTION_STRING_ENCODING, "UTF-16LE");
+var jnaOptions = Collections.singletonMap(Library.OPTION_STRING_ENCODING, "UTF-8");
 
 @DslMarker
 annotation class QuestDsl
@@ -58,6 +58,10 @@ private class QuestLibrary {
 // Native Buffer Structure
 // ============================================================================
 
+fun getByteArrayFromNativeBuffer(buffer: NativeBuffer): ByteArray {
+    return buffer.getByteArray()
+}
+
 /**
  * Native buffer structure for receiving byte arrays from native code.
  */
@@ -69,6 +73,10 @@ open class NativeBuffer : Structure {
     constructor() : super()
     constructor(p: Pointer) : super(p) {
         read()
+    }
+
+    fun getByteArray(): ByteArray {
+        return data!!.getByteArray(0, this.length.toInt())
     }
 
     class ByValue : NativeBuffer(), Structure.ByValue
@@ -289,6 +297,17 @@ object QuestPDF {
         }
     }
 }
+
+
+data class Size(val width: Float, val height: Float)
+
+data class ImageSize(val width: Int, val height: Int) {
+    init {
+        require(width > 0 && height > 0) { "Width and height must be positive" }
+    }
+}
+                
+data class Position(val x: Float, val y: Float)
 
 // ============================================================================
 // Generated Code

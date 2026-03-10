@@ -17,7 +17,6 @@ internal static class PublicApiGenerator
             new EnumSourceGenerator(),
             new PlainSourceLoader("Settings"),
             new PlainSourceLoader("PageSizes"),
-            new PlainSourceLoader("ImageSize"),
             new SimpleSourceGenerator(typeof(QuestPDF.Helpers.FontFeatures)),
             new SimpleSourceGenerator(typeof(QuestPDF.Helpers.Placeholders)),
             new SimpleSourceGenerator(typeof(QuestPDF.Drawing.FontManager))

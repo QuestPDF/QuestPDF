@@ -1,3 +1,4 @@
+using System.Linq;
 using Microsoft.CodeAnalysis;
 
 namespace QuestPDF.Interop.Generators;
@@ -26,6 +27,21 @@ internal static class InteropTypeClassification
 {
     public static InteropTypeKind GetInteropTypeKind(this ITypeSymbol type)
     {
+        if (type.NullableAnnotation == NullableAnnotation.Annotated)
+        {
+            if (type.IsReferenceType)
+            {
+                var underlyingType = (type as INamedTypeSymbol)?.ConstructedFrom;
+                return GetInteropTypeKind(underlyingType);
+            }
+            else
+            {
+                // For nullable types, classify based on the underlying non-nullable type
+                var underlyingType = (type as INamedTypeSymbol)?.TypeArguments.Single();
+                return GetInteropTypeKind(underlyingType);
+            }
+        }
+        
         // primitives (by SpecialType)
         if (type.SpecialType == SpecialType.System_Void)
             return InteropTypeKind.Void;

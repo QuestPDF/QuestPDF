@@ -7,15 +7,20 @@ interface UnitLibrary : Library {
 }
 
 data class PageSize(val width: Float, val height: Float) {
+    init {
+        require(width >= 0) { "Page width must be greater than 0." }
+        require(height >= 0) { "Page height must be greater than 0." }
+    }
+
     /**
      * Defines the physical dimensions (width and height) of a page.
      *
      * Commonly used page sizes are available in the PageSizes object.
      * Change page orientation with the portrait() and landscape() methods.
      */
-    constructor(width: Float, height: Float, unit: LengthUnit = LengthUnit.Point) : this(
-        width = validated(width, "width", unit),
-        height = validated(height, "height", unit)
+    constructor(width: Float, height: Float, unit: LengthUnit) : this(
+        width = UnitLibrary.INSTANCE.questpdf__unit__convert_to_points(width, unit),
+        height = UnitLibrary.INSTANCE.questpdf__unit__convert_to_points(height, unit)
     )
 
     /** Sets page size to portrait orientation, making width smaller than height. */
@@ -29,13 +34,6 @@ data class PageSize(val width: Float, val height: Float) {
         width = maxOf(width, height),
         height = minOf(width, height)
     )
-
-    companion object {
-        private fun validated(value: Float, name: String, unit: LengthUnit): Float {
-            require(value >= 0) { "Page $name must be greater than 0." }
-            return UnitLibrary.INSTANCE.questpdf__unit__convert_to_points(value, unit)
-        }
-    }
 }
 
 

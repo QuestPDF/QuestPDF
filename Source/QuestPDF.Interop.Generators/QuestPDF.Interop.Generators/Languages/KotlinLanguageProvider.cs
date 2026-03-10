@@ -46,6 +46,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             InteropTypeKind.Action => FormatFunctionType((INamedTypeSymbol)type, isFunc: false),
             InteropTypeKind.Func => FormatFunctionType((INamedTypeSymbol)type, isFunc: true),
             InteropTypeKind.ImageSize => "ImageSize",
+            InteropTypeKind.ByteArray => "ByteArray",
             _ => "Any"
         };
 
@@ -90,6 +91,11 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             return $"{variableName}.width, {variableName}.height";
         }
         
+        if (typeName is "QuestPDF.Infrastructure.Position")
+        {
+            return $"{variableName}.x, {variableName}.y";
+        }
+        
         return kind switch
         {
             InteropTypeKind.Enum => $"{variableName}.value",
@@ -127,10 +133,14 @@ internal class KotlinLanguageProvider : LanguageProviderBase
     
     protected override string? GetReturnConversionMethod(IMethodSymbol method, string className)
     {
-        if (method.ReturnType.ToDisplayString() == "QuestPDF.Infrastructure.Color")
-            return "convert_int_to_color";
+        var kind = method.ReturnType.GetInteropTypeKind();
 
-        return null;
+        return kind switch
+        {
+            InteropTypeKind.Color => "convert_int_to_color",
+            InteropTypeKind.ByteArray => "getByteArrayFromNativeBuffer",
+            _ => null
+        };
     }
 
     protected override List<object> BuildParameterDetails(IReadOnlyList<IParameterSymbol> parameters)
@@ -169,6 +179,20 @@ internal class KotlinLanguageProvider : LanguageProviderBase
                     {
                         Name = $"{parameterSymbol.Name}_height",
                         NativeType = "Int"
+                    };
+                }
+                else if (typeName is "QuestPDF.Infrastructure.Position")
+                {
+                    yield return new
+                    {
+                        Name = $"{parameterSymbol.Name}_x",
+                        NativeType = "Float"
+                    };
+                    
+                    yield return new
+                    {
+                        Name = $"{parameterSymbol.Name}_y",
+                        NativeType = "Float"
                     };
                 }
                 else
@@ -216,6 +240,7 @@ internal class KotlinLanguageProvider : LanguageProviderBase
             InteropTypeKind.Enum => "Int",
             InteropTypeKind.Color => "Int",
             InteropTypeKind.Action or InteropTypeKind.Func => "Callback",
+            InteropTypeKind.ByteArray => "NativeBuffer.ByValue",
             _ => "Pointer"
         };
         

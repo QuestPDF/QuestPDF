@@ -1,4 +1,4 @@
-// AUTO-GENERATED on 12/10/2025 08:47:16
+// AUTO-GENERATED on 03/09/2026 12:03:58
 
 using System;
 using System.Runtime.CompilerServices;
@@ -13,6 +13,8 @@ namespace QuestPDF.Interop;
 
 public static unsafe partial class Exports
 {
+    
+    
     
     
     
@@ -235,11 +237,11 @@ public static Buffer Placeholders_Image_a8827df6(int width, int height)
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__placeholders__image__2891dd9e", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static Buffer Placeholders_Image_2891dd9e(global::QuestPDF.Infrastructure.ImageSize size)
+public static Buffer Placeholders_Image_2891dd9e(int size_width, int size_height)
 {
     
     
-    var result = Placeholders.Image(size);
+    var result = Placeholders.Image(new ImageSize(size_width, size_height));
     return HandleBuffer(result);
 }
 
@@ -287,11 +289,11 @@ public static IntPtr SvgImage_FromText_82b4cf0f(IntPtr svg)
     
     
 [UnmanagedCallersOnly(EntryPoint = "questpdf__line_descriptor__line_color__a86ca4e3", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr LineDescriptor_LineColor_a86ca4e3(IntPtr target, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr LineDescriptor_LineColor_a86ca4e3(IntPtr target, uint color)
 {
     var targetObject = UnboxHandle<LineDescriptor>(target);
     
-    var result = targetObject.LineColor(color);
+    var result = targetObject.LineColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -652,46 +654,6 @@ public static IntPtr MultiColumnDescriptor_Spacer_9d6eea5d(IntPtr target)
 
     
     
-[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__column__384372f0", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TableCellContainer_Column_384372f0(IntPtr tableCellContainer, uint value)
-{
-    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
-    FreeHandle(tableCellContainer);
-    var result = targetObject.Column(value);
-    return BoxHandle(result);
-}
-
-[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__column_span__629b3552", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TableCellContainer_ColumnSpan_629b3552(IntPtr tableCellContainer, uint value)
-{
-    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
-    FreeHandle(tableCellContainer);
-    var result = targetObject.ColumnSpan(value);
-    return BoxHandle(result);
-}
-
-[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__row__7ddb9999", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TableCellContainer_Row_7ddb9999(IntPtr tableCellContainer, uint value)
-{
-    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
-    FreeHandle(tableCellContainer);
-    var result = targetObject.Row(value);
-    return BoxHandle(result);
-}
-
-[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__row_span__e9016d30", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TableCellContainer_RowSpan_e9016d30(IntPtr tableCellContainer, uint value)
-{
-    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
-    FreeHandle(tableCellContainer);
-    var result = targetObject.RowSpan(value);
-    return BoxHandle(result);
-}
-
-
-
-    
-    
 [UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_descriptor__cell__1061edf9", CallConvs = new[] { typeof(CallConvCdecl) })]
 public static IntPtr TableCellDescriptor_Cell_1061edf9(IntPtr target)
 {
@@ -843,7 +805,7 @@ public static void TextDescriptor_ParagraphFirstLineIndentation_414498e7(IntPtr 
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_descriptor__span__41a383c0", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextDescriptor_Span_41a383c0(IntPtr target, IntPtr text)
+public static IntPtr TextDescriptor_Span_41a383c0(IntPtr target, float text_width, float text_height, IntPtr text)
 {
     var targetObject = UnboxHandle<TextDescriptor>(target);
     
@@ -852,7 +814,7 @@ public static IntPtr TextDescriptor_Span_41a383c0(IntPtr target, IntPtr text)
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_descriptor__line__17db2520", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextDescriptor_Line_17db2520(IntPtr target, IntPtr text)
+public static IntPtr TextDescriptor_Line_17db2520(IntPtr target, float text_width, float text_height, IntPtr text)
 {
     var targetObject = UnboxHandle<TextDescriptor>(target);
     
@@ -924,7 +886,7 @@ public static IntPtr TextDescriptor_TotalPagesWithinSection_250c06e5(IntPtr targ
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_descriptor__section_link__c9b32c1a", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextDescriptor_SectionLink_c9b32c1a(IntPtr target, IntPtr text, IntPtr sectionName)
+public static IntPtr TextDescriptor_SectionLink_c9b32c1a(IntPtr target, float text_width, float text_height, IntPtr text, IntPtr sectionName)
 {
     var targetObject = UnboxHandle<TextDescriptor>(target);
     
@@ -933,7 +895,7 @@ public static IntPtr TextDescriptor_SectionLink_c9b32c1a(IntPtr target, IntPtr t
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_descriptor__hyperlink__f38a28c7", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextDescriptor_Hyperlink_f38a28c7(IntPtr target, IntPtr text, IntPtr url)
+public static IntPtr TextDescriptor_Hyperlink_f38a28c7(IntPtr target, float text_width, float text_height, IntPtr text, IntPtr url)
 {
     var targetObject = UnboxHandle<TextDescriptor>(target);
     
@@ -963,20 +925,20 @@ public static void TextDescriptor_Element_ff63896d(IntPtr target, delegate* unma
     
     
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_span_descriptor__font_color__a0d06e42", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextSpanDescriptor_FontColor_a0d06e42(IntPtr descriptor, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr TextSpanDescriptor_FontColor_a0d06e42(IntPtr descriptor, uint color)
 {
     var targetObject = UnboxHandle<TextSpanDescriptor>(descriptor);
     FreeHandle(descriptor);
-    var result = targetObject.FontColor(color);
+    var result = targetObject.FontColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_span_descriptor__background_color__5461b453", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextSpanDescriptor_BackgroundColor_5461b453(IntPtr descriptor, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr TextSpanDescriptor_BackgroundColor_5461b453(IntPtr descriptor, uint color)
 {
     var targetObject = UnboxHandle<TextSpanDescriptor>(descriptor);
     FreeHandle(descriptor);
-    var result = targetObject.BackgroundColor(color);
+    var result = targetObject.BackgroundColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -990,7 +952,7 @@ public static IntPtr TextSpanDescriptor_FontSize_c989487d(IntPtr descriptor, flo
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_span_descriptor__line_height__a1b4697a", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextSpanDescriptor_LineHeight_a1b4697a(IntPtr descriptor, float? factor)
+public static IntPtr TextSpanDescriptor_LineHeight_a1b4697a(IntPtr descriptor, float factor_width, float factor_height, float? factor)
 {
     var targetObject = UnboxHandle<TextSpanDescriptor>(descriptor);
     FreeHandle(descriptor);
@@ -1053,11 +1015,11 @@ public static IntPtr TextSpanDescriptor_Overline_add25860(IntPtr descriptor, boo
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_span_descriptor__decoration_color__5d18d151", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextSpanDescriptor_DecorationColor_5d18d151(IntPtr descriptor, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr TextSpanDescriptor_DecorationColor_5d18d151(IntPtr descriptor, uint color)
 {
     var targetObject = UnboxHandle<TextSpanDescriptor>(descriptor);
     FreeHandle(descriptor);
-    var result = targetObject.DecorationColor(color);
+    var result = targetObject.DecorationColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -1282,20 +1244,20 @@ public static IntPtr TextSpanDescriptor_DisableFontFeature_5bd81de9(IntPtr descr
     
     
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_page_number_descriptor__font_color__a0d06e42", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextPageNumberDescriptor_FontColor_a0d06e42(IntPtr descriptor, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr TextPageNumberDescriptor_FontColor_a0d06e42(IntPtr descriptor, uint color)
 {
     var targetObject = UnboxHandle<TextPageNumberDescriptor>(descriptor);
     FreeHandle(descriptor);
-    var result = targetObject.FontColor(color);
+    var result = targetObject.FontColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_page_number_descriptor__background_color__5461b453", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextPageNumberDescriptor_BackgroundColor_5461b453(IntPtr descriptor, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr TextPageNumberDescriptor_BackgroundColor_5461b453(IntPtr descriptor, uint color)
 {
     var targetObject = UnboxHandle<TextPageNumberDescriptor>(descriptor);
     FreeHandle(descriptor);
-    var result = targetObject.BackgroundColor(color);
+    var result = targetObject.BackgroundColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -1309,7 +1271,7 @@ public static IntPtr TextPageNumberDescriptor_FontSize_c989487d(IntPtr descripto
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_page_number_descriptor__line_height__a1b4697a", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextPageNumberDescriptor_LineHeight_a1b4697a(IntPtr descriptor, float? factor)
+public static IntPtr TextPageNumberDescriptor_LineHeight_a1b4697a(IntPtr descriptor, float factor_width, float factor_height, float? factor)
 {
     var targetObject = UnboxHandle<TextPageNumberDescriptor>(descriptor);
     FreeHandle(descriptor);
@@ -1372,11 +1334,11 @@ public static IntPtr TextPageNumberDescriptor_Overline_add25860(IntPtr descripto
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_page_number_descriptor__decoration_color__5d18d151", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextPageNumberDescriptor_DecorationColor_5d18d151(IntPtr descriptor, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr TextPageNumberDescriptor_DecorationColor_5d18d151(IntPtr descriptor, uint color)
 {
     var targetObject = UnboxHandle<TextPageNumberDescriptor>(descriptor);
     FreeHandle(descriptor);
-    var result = targetObject.DecorationColor(color);
+    var result = targetObject.DecorationColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -1682,20 +1644,20 @@ public static IntPtr TextBlockDescriptor_ParagraphFirstLineIndentation_5d11cadd(
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_block_descriptor__font_color__a0d06e42", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextBlockDescriptor_FontColor_a0d06e42(IntPtr descriptor, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr TextBlockDescriptor_FontColor_a0d06e42(IntPtr descriptor, uint color)
 {
     var targetObject = UnboxHandle<TextBlockDescriptor>(descriptor);
     FreeHandle(descriptor);
-    var result = targetObject.FontColor(color);
+    var result = targetObject.FontColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_block_descriptor__background_color__5461b453", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextBlockDescriptor_BackgroundColor_5461b453(IntPtr descriptor, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr TextBlockDescriptor_BackgroundColor_5461b453(IntPtr descriptor, uint color)
 {
     var targetObject = UnboxHandle<TextBlockDescriptor>(descriptor);
     FreeHandle(descriptor);
-    var result = targetObject.BackgroundColor(color);
+    var result = targetObject.BackgroundColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -1709,7 +1671,7 @@ public static IntPtr TextBlockDescriptor_FontSize_c989487d(IntPtr descriptor, fl
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_block_descriptor__line_height__a1b4697a", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextBlockDescriptor_LineHeight_a1b4697a(IntPtr descriptor, float? factor)
+public static IntPtr TextBlockDescriptor_LineHeight_a1b4697a(IntPtr descriptor, float factor_width, float factor_height, float? factor)
 {
     var targetObject = UnboxHandle<TextBlockDescriptor>(descriptor);
     FreeHandle(descriptor);
@@ -1772,11 +1734,11 @@ public static IntPtr TextBlockDescriptor_Overline_add25860(IntPtr descriptor, bo
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__text_block_descriptor__decoration_color__5d18d151", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr TextBlockDescriptor_DecorationColor_5d18d151(IntPtr descriptor, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr TextBlockDescriptor_DecorationColor_5d18d151(IntPtr descriptor, uint color)
 {
     var targetObject = UnboxHandle<TextBlockDescriptor>(descriptor);
     FreeHandle(descriptor);
-    var result = targetObject.DecorationColor(color);
+    var result = targetObject.DecorationColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -2242,11 +2204,11 @@ public static void PageDescriptor_ContentFromRightToLeft_dbce6933(IntPtr target)
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__page_descriptor__page_color__7ab89cfe", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static void PageDescriptor_PageColor_7ab89cfe(IntPtr target, global::QuestPDF.Infrastructure.Color color)
+public static void PageDescriptor_PageColor_7ab89cfe(IntPtr target, uint color)
 {
     var targetObject = UnboxHandle<PageDescriptor>(target);
     
-    targetObject.PageColor(color);
+    targetObject.PageColor((QuestPDF.Infrastructure.Color)color);
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__page_descriptor__background__8048fed3", CallConvs = new[] { typeof(CallConvCdecl) })]
@@ -2433,11 +2395,11 @@ public static IntPtr Container_ContentFromRightToLeft_a31dbd9d(IntPtr element)
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__container__debug_area__a69b9c65", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr Container_DebugArea_a69b9c65(IntPtr parent, IntPtr text, global::QuestPDF.Infrastructure.Color? color)
+public static IntPtr Container_DebugArea_a69b9c65(IntPtr parent, float text_width, float text_height, IntPtr text, float color_width, float color_height, uint color)
 {
     var targetObject = UnboxHandle<IContainer>(parent);
     FreeHandle(parent);
-    var result = targetObject.DebugArea(Marshal.PtrToStringUTF8(text), color);
+    var result = targetObject.DebugArea(Marshal.PtrToStringUTF8(text), (QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -2468,7 +2430,7 @@ public static IntPtr Container_AspectRatio_fd5bc0dc(IntPtr element, float ratio,
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__container__placeholder__a560192f", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static void Container_Placeholder_a560192f(IntPtr element, IntPtr text)
+public static void Container_Placeholder_a560192f(IntPtr element, float text_width, float text_height, IntPtr text)
 {
     var targetObject = UnboxHandle<IContainer>(element);
     FreeHandle(element);
@@ -2910,20 +2872,20 @@ public static IntPtr Container_ShrinkHorizontal_588cfd0f(IntPtr element)
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__container__border__a6712928", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr Container_Border_a6712928(IntPtr element, float all, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr Container_Border_a6712928(IntPtr element, float all, uint color)
 {
     var targetObject = UnboxHandle<IContainer>(element);
     FreeHandle(element);
-    var result = targetObject.Border(all, color);
+    var result = targetObject.Border(all, (QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__container__background__68f98b81", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr Container_Background_68f98b81(IntPtr element, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr Container_Background_68f98b81(IntPtr element, uint color)
 {
     var targetObject = UnboxHandle<IContainer>(element);
     FreeHandle(element);
-    var result = targetObject.Background(color);
+    var result = targetObject.Background((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -3036,11 +2998,11 @@ public static IntPtr Container_CornerRadiusBottomRight_b07c1d8d(IntPtr element, 
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__container__border_color__2a24bda0", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr Container_BorderColor_2a24bda0(IntPtr element, global::QuestPDF.Infrastructure.Color color)
+public static IntPtr Container_BorderColor_2a24bda0(IntPtr element, uint color)
 {
     var targetObject = UnboxHandle<IContainer>(element);
     FreeHandle(element);
-    var result = targetObject.BorderColor(color);
+    var result = targetObject.BorderColor((QuestPDF.Infrastructure.Color)color);
     return BoxHandle(result);
 }
 
@@ -3106,7 +3068,7 @@ public static void Container_Text_357e362f(IntPtr element, delegate* unmanaged[C
 }
 
 [UnmanagedCallersOnly(EntryPoint = "questpdf__container__text__3f6b5b07", CallConvs = new[] { typeof(CallConvCdecl) })]
-public static IntPtr Container_Text_3f6b5b07(IntPtr container, IntPtr text)
+public static IntPtr Container_Text_3f6b5b07(IntPtr container, float text_width, float text_height, IntPtr text)
 {
     var targetObject = UnboxHandle<IContainer>(container);
     FreeHandle(container);
@@ -3129,6 +3091,46 @@ public static IntPtr Container_TranslateY_d99602db(IntPtr element, float value, 
     var targetObject = UnboxHandle<IContainer>(element);
     FreeHandle(element);
     var result = targetObject.TranslateY(value, (QuestPDF.Infrastructure.Unit)unit);
+    return BoxHandle(result);
+}
+
+
+
+    
+    
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__column__384372f0", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Column_384372f0(IntPtr tableCellContainer, uint value)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
+    FreeHandle(tableCellContainer);
+    var result = targetObject.Column(value);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__column_span__629b3552", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_ColumnSpan_629b3552(IntPtr tableCellContainer, uint value)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
+    FreeHandle(tableCellContainer);
+    var result = targetObject.ColumnSpan(value);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__row__7ddb9999", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_Row_7ddb9999(IntPtr tableCellContainer, uint value)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
+    FreeHandle(tableCellContainer);
+    var result = targetObject.Row(value);
+    return BoxHandle(result);
+}
+
+[UnmanagedCallersOnly(EntryPoint = "questpdf__table_cell_container__row_span__e9016d30", CallConvs = new[] { typeof(CallConvCdecl) })]
+public static IntPtr TableCellContainer_RowSpan_e9016d30(IntPtr tableCellContainer, uint value)
+{
+    var targetObject = UnboxHandle<ITableCellContainer>(tableCellContainer);
+    FreeHandle(tableCellContainer);
+    var result = targetObject.RowSpan(value);
     return BoxHandle(result);
 }
 

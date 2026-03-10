@@ -58,10 +58,20 @@ internal class CSharpNativeExportBuilder(INamedTypeSymbol targetType)
             yield return $"float {parameter.Name}_height";
         }
 
-        if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size" or "QuestPDF.Infrastructure.ImageSize")
+        if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size")
         {
             yield return $"float {parameter.Name}_width";
             yield return $"float {parameter.Name}_height";
+        }
+        else if (typeName is "QuestPDF.Infrastructure.ImageSize")
+        {
+            yield return $"int {parameter.Name}_width";
+            yield return $"int {parameter.Name}_height";
+        }
+        else if (typeName is "QuestPDF.Infrastructure.Position")
+        {
+            yield return $"float {parameter.Name}_x";
+            yield return $"float {parameter.Name}_y";
         }
         else if (kind is InteropTypeKind.Action or InteropTypeKind.Func && parameter.Type is INamedTypeSymbol delegateType)
         {
@@ -89,19 +99,23 @@ internal class CSharpNativeExportBuilder(INamedTypeSymbol targetType)
         };
     }
 
-    private IEnumerable<string> GetMarshalledArguments(IParameterSymbol parameter)
+    private string GetMarshalledArguments(IParameterSymbol parameter)
     {
         var kind = parameter.Type.GetInteropTypeKind();
         var name = parameter.Name;
         var typeName = parameter.Type.ToDisplayString();
 
-        if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size")
+        if (typeName is "QuestPDF.Helpers.PageSize" or "QuestPDF.Helpers.Size" or "QuestPDF.Infrastructure.ImageSize")
         {
-            yield return $"new {parameter.Type.Name}({name}_width, {name}_height)";
-            yield break;
+            return $"new {parameter.Type.Name}({name}_width, {name}_height)";
+        }
+        
+        if (typeName is "QuestPDF.Infrastructure.Position")
+        {
+            return $"new {parameter.Type.Name}({name}_x, {name}_y)";
         }
 
-        yield return kind switch
+        return kind switch
         {
             InteropTypeKind.Enum => $"({parameter.Type.ToDisplayString()}){name}",
             InteropTypeKind.Color => $"(QuestPDF.Infrastructure.Color){name}",
