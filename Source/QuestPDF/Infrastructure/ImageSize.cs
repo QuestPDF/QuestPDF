@@ -1,4 +1,6 @@
-﻿namespace QuestPDF.Infrastructure
+﻿using System;
+
+namespace QuestPDF.Infrastructure
 {
     public readonly struct ImageSize
     {
@@ -7,6 +9,9 @@
 
         public ImageSize(int width, int height)
         {
+            if (width <= 0 || height <= 0)
+                throw new ArgumentException("Image dimensions must be positive");
+            
             Width = width;
             Height = height;
         }
