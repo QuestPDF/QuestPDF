@@ -11,8 +11,8 @@ namespace QuestPDF.Elements
         public ContentDirection ContentDirection { get; set; }
         public TextStyle DefaultTextStyle { get; set; } = TextStyle.Default;
         
-        public Size MinSize { get; set; } = PageSizes.A4;
-        public Size MaxSize { get; set; } = PageSizes.A4;
+        public Size? MinSize { get; set; }
+        public Size? MaxSize { get; set; }
 
         public float MarginLeft { get; set; }
         public float MarginRight { get; set; }
@@ -30,6 +30,8 @@ namespace QuestPDF.Elements
 
         public void Compose(IContainer container)
         {
+            SetDefaultPageSizeIfNotSpecified();
+            
             container
                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Page.ToString())
                 .ContentDirection(ContentDirection)
@@ -50,10 +52,10 @@ namespace QuestPDF.Elements
                     layers
                         .PrimaryLayer()
                         
-                        .MinWidth(MinSize.Width)
-                        .MinHeight(MinSize.Height)
-                        .MaxWidth(MaxSize.Width)
-                        .MaxHeight(MaxSize.Height)
+                        .MinWidth(MinSize?.Width ?? 0)
+                        .MinHeight(MinSize?.Height ?? 0)
+                        .MaxWidth(MaxSize?.Width ?? Size.Max.Width)
+                        .MaxHeight(MaxSize?.Height ?? Size.Max.Height)
                         .EnforceSizeWhenEmpty()
                         
                         .PaddingLeft(MarginLeft)
@@ -70,8 +72,8 @@ namespace QuestPDF.Elements
 
                             decoration
                                 .Content()
-                                .NonTrackingElement(x => IsClose(MinSize.Width, MaxSize.Width) ? x.ExtendHorizontal() : x)
-                                .NonTrackingElement(x => IsClose(MinSize.Height, MaxSize.Height) ? x.ExtendVertical() : x)
+                                .NonTrackingElement(x => (MinSize?.Width == MaxSize?.Width) ? x.ExtendHorizontal() : x)
+                                .NonTrackingElement(x => (MinSize?.Height == MaxSize?.Height) ? x.ExtendVertical() : x)
                                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Content.ToString())
                                 .Element(Content);
 
@@ -88,11 +90,15 @@ namespace QuestPDF.Elements
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Foreground.ToString())
                         .Element(Foreground);
                 });
+        }
 
-            bool IsClose(float x, float y)
-            {
-                return Math.Abs(x - y) < Size.Epsilon;
-            }
+        private void SetDefaultPageSizeIfNotSpecified()
+        {
+            if (MinSize.HasValue || MaxSize.HasValue)
+                return;
+
+            MinSize = PageSizes.A4;
+            MaxSize = PageSizes.A4;
         }
     }
 }
