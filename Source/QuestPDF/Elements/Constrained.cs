@@ -21,6 +21,12 @@ namespace QuestPDF.Elements
         
         internal override SpacePlan Measure(Size availableSpace)
         {
+            if (MinWidth > MaxWidth)
+                return SpacePlan.Wrap($"The minimum width {MinWidth} is greater than the maximum width {MaxWidth}.");
+            
+            if (MinHeight > MaxHeight)
+                return SpacePlan.Wrap($"The minimum height {MinHeight} is greater than the maximum height {MaxHeight}.");
+            
             if (!EnforceSizeWhenEmpty && Child.IsEmpty())
                 return SpacePlan.Empty();
             
