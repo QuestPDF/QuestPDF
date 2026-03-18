@@ -93,7 +93,7 @@ public class MultiColumnExamples
             {
                 document.Page(page =>
                 {
-                    page.MinSize(PageSizes.A4);
+                    page.Size(PageSizes.A4);
                     page.DefaultTextStyle(x => x.FontSize(14));
                     page.Margin(30);
 
