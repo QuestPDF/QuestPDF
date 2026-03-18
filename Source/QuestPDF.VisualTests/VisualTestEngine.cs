@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -158,6 +159,8 @@ public static class VisualTest
 {
     public static void Perform(Action<IDocumentContainer> documentBuilder)
     {
+        SetUpCultureInfoToInvariant();
+        
         Document
             .Create(documentBuilder)
             .ShouldMatchExpectedImage();
@@ -165,6 +168,8 @@ public static class VisualTest
     
     public static void PerformWithDefaultPageSettings(Action<IContainer> contentBuilder)
     {
+        SetUpCultureInfoToInvariant();
+        
         Document
             .Create(document =>
             {
@@ -181,5 +186,14 @@ public static class VisualTest
                 });
             })
             .ShouldMatchExpectedImage();
+    }
+
+    private static void SetUpCultureInfoToInvariant()
+    {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+        Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+        
+        CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+        CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
     }
 }
