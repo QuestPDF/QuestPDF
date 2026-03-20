@@ -7,6 +7,13 @@
     public enum LicenseType
     {
         /// <summary>
+        /// The QuestPDF Evaluation License is intended solely for evaluation before choosing an appropriate license.
+        /// It is not suitable for production use.
+        /// <a href="https://www.questpdf.com/license">Learn more</a>
+        /// </summary>
+        Evaluation,
+
+        /// <summary>
         /// The QuestPDF Community MIT License is applicable mainly for companies and individuals with less than $1M USD annual gross revenue.
         /// <a href="https://www.questpdf.com/license">Learn more</a>
         /// </summary>

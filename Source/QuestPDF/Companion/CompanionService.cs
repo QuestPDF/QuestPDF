@@ -22,7 +22,7 @@ namespace QuestPDF.Companion
         
         public event Action? OnCompanionStopped;
 
-        private const int RequiredCompanionApiVersion = 2;
+        private const int RequiredCompanionApiVersion = 3;
         
         private static CompanionDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
 

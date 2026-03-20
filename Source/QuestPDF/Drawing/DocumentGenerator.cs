@@ -25,10 +25,13 @@ namespace QuestPDF.Drawing
         
         internal static void GeneratePdf(SkWriteStream stream, IDocument document)
         {
-            ValidateLicense();
+            LicenseChecker.ValidateLicense();
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
+            
+            if (Settings.License == LicenseType.Evaluation)
+                metadata.Producer = "QuestPDF (Evaluation Mode)";
 
             using var canvas = new PdfDocumentCanvas(stream, metadata, settings);
             RenderDocument(canvas, document, settings);
@@ -36,7 +39,7 @@ namespace QuestPDF.Drawing
         
         internal static void GenerateXps(SkWriteStream stream, IDocument document)
         {
-            ValidateLicense();
+            LicenseChecker.ValidateLicense();
             
             var settings = document.GetSettings();
             using var canvas = new XpsDocumentCanvas(stream, settings);
@@ -45,7 +48,7 @@ namespace QuestPDF.Drawing
         
         internal static ICollection<byte[]> GenerateImages(IDocument document, ImageGenerationSettings imageGenerationSettings)
         {
-            ValidateLicense();
+            LicenseChecker.ValidateLicense();
             
             var documentSettings = document.GetSettings();
             documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
@@ -58,39 +61,12 @@ namespace QuestPDF.Drawing
         
         internal static ICollection<string> GenerateSvg(IDocument document)
         {
-            ValidateLicense();
+            LicenseChecker.ValidateLicense();
             
             using var canvas = new SvgDocumentCanvas();
             RenderDocument(canvas, document, document.GetSettings());
 
             return canvas.Images;
-        }
-        
-        internal static void ValidateLicense()
-        {
-            if (Settings.License.HasValue)
-                return;
-            
-            const string newParagraph = "\n\n";
-
-            var exceptionMessage = 
-                $"{newParagraph}{newParagraph}Thank you for choosing QuestPDF — one quick step before you continue. Please configure your license.{newParagraph}" +
-                $"QuestPDF is free for most teams. Commercial licenses provide legal compliance and long-term support for larger organizations, while funding continued development for everyone. {newParagraph}" +
-                $"Choose the applicable license:\n" +
-                $"- Community (free): organizations with less than $1M USD annual gross revenue;\n" +
-                $"- Professional / Enterprise (paid): required above this threshold {newParagraph}" +
-                $"Evaluation and non-production use is always permitted under the Community license. {newParagraph}" +
-                $"Set once at application startup:\n" +
-                $"// TODO: verify license compliance {newParagraph}" +
-                $"QuestPDF.Settings.License = LicenseType.Community; {newParagraph}" +
-                $"No license key or activation required — we trust you to select the correct option. {newParagraph}" +
-                $"Read more about licensing and pricing: https://www.questpdf.com/license {newParagraph}" +
-                $"We wish you a great experience! {newParagraph}{newParagraph}";
-
-            throw new Exception(exceptionMessage)
-            {
-                HelpLink = "https://www.questpdf.com/pricing.html"
-            };
         }
 
         internal static CompanionDocumentSnapshot GenerateCompanionContent(IDocument document)

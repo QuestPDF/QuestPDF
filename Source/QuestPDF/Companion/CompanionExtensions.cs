@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Companion
@@ -10,7 +11,7 @@ namespace QuestPDF.Companion
     {
         static CompanionExtensions()
         {
-            DocumentGenerator.ValidateLicense();
+            LicenseChecker.ValidateLicense();
         }
 
         #if NET6_0_OR_GREATER
