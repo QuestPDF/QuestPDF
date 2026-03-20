@@ -1,1 +1,3 @@
-- Fixed visual regression when rendering complex borders.
+- Fixed a bug where using Page.MinSize() or Page.MaxSize() could produce unexpected results
+- Added more helpful validation messages for minimum and maximum size constraints in the Constrained element
+- Improved the welcome message with a clearer explanation of the library license
