@@ -190,6 +190,40 @@ namespace QuestPDF.Fluent
         }
 
         /// <summary>
+        /// <para>Hides its content on the last page of a Decoration's content span, and shows it on all preceding pages.</para>
+        /// <para>This element must be used within the Before or After slot of a <see cref="Elements.Decoration"/> element.</para>
+        /// </summary>
+        /// <remarks>
+        /// <para>The Decoration element determines "last page" by checking if its Content slot returns FullRender.</para>
+        /// <para>If showing or hiding last-page content causes the page count to change (layout oscillation), the element falls back to non-last-page behavior for stability.</para>
+        /// </remarks>
+        /// <example>
+        /// <para>Common usage: hide a "continued on next page" footer on the final page:</para>
+        /// <para><c>decoration.After().SkipLast().Text("Continued on next page...");</c></para>
+        /// </example>
+        public static IContainer SkipLast(this IContainer element)
+        {
+            return element.Element(new SkipLast());
+        }
+
+        /// <summary>
+        /// <para>Shows its content only on the last page of a Decoration's content span, and hides it on all preceding pages.</para>
+        /// <para>This element must be used within the Before or After slot of a <see cref="Elements.Decoration"/> element.</para>
+        /// </summary>
+        /// <remarks>
+        /// <para>The Decoration element determines "last page" by checking if its Content slot returns FullRender.</para>
+        /// <para>If showing or hiding last-page content causes the page count to change (layout oscillation), the element falls back to non-last-page behavior for stability.</para>
+        /// </remarks>
+        /// <example>
+        /// <para>Common usage: show a summary or total row only on the final page:</para>
+        /// <para><c>decoration.After().ShowLast().Text("Total: $1,234.56");</c></para>
+        /// </example>
+        public static IContainer ShowLast(this IContainer element)
+        {
+            return element.Element(new ShowLast());
+        }
+
+        /// <summary>
         /// Ensures its content is displayed entirely on a single page by disabling the default paging capability.
         /// <a href="https://www.questpdf.com/api-reference/show-entire.html">Learn more</a>
         /// </summary>
