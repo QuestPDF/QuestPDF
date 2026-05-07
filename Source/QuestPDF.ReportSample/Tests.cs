@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.ReportSample.Layouts;
 
@@ -64,6 +65,41 @@ namespace QuestPDF.ReportSample
             GC.Collect();
             GC.WaitForPendingFinalizers();
             await Task.Delay(1000);
+        }
+        
+        [Test]
+        public void TestExtremelyLongParagraph()
+        {
+            Document.Create(container =>
+                {
+                    container.Page(page =>
+                    {
+                        page.Size(PageSizes.A4);
+                        page.Margin(2, Unit.Centimetre);
+                        page.PageColor(Colors.White);
+                        page.DefaultTextStyle(x => x.FontSize(20));
+
+                        page.Header()
+                            .Text("Hello PDF!")
+                            .SemiBold().FontSize(36).FontColor(Colors.Blue.Medium);
+
+                        page.Content()
+                            .PaddingVertical(1, Unit.Centimetre)
+                            .Column(x =>
+                            {
+                                x.Item().Text(File.ReadAllText(@"attach.txt"));
+                            });
+
+                        page.Footer()
+                            .AlignCenter()
+                            .Text(x =>
+                            {
+                                x.Span("Page ");
+                                x.CurrentPageNumber();
+                            });
+                    });
+                })
+                .GeneratePdf("TestExtremelyLongParagraph.pdf");
         }
     }
 }

@@ -29,4 +29,10 @@
     <ItemGroup>
       <EmbeddedResource Include="Resources\Logo.png" />
     </ItemGroup>
+
+    <ItemGroup>
+      <None Update="attach.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
 </Project>
