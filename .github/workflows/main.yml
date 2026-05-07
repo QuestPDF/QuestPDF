@@ -89,7 +89,7 @@ jobs:
           mv verapdf* verapdf 
 
           cd verapdf
-          printf "1\n\nO\n1\nY\nY\nN\n1\nY\n\n" | ./verapdf-install
+          printf "1\n\nO\n1\nY\nY\nN\nN\n1\n1\n" | ./verapdf-install
           alias verapdf='/root/verapdf/verapdf'
           verapdf --version
 
