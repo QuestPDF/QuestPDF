@@ -3,6 +3,13 @@ using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia.Text;
 
+[StructLayout(LayoutKind.Sequential)]
+internal struct SkLineExtent
+{
+    public float Top;
+    public float Bottom;
+}
+
 internal sealed class SkParagraph : IDisposable
 {
     public IntPtr Instance { get; private set; }
@@ -17,22 +24,28 @@ internal sealed class SkParagraph : IDisposable
     {
         API.paragraph_plan_layout(Instance, availableWidth);
     }
-    
-    public SkSize[] GetLineMetrics()
+
+    public (float width, float height) GetSize()
     {
-        API.paragraph_get_line_metrics(Instance, out var array, out var arrayLength);
+        API.paragraph_get_size(Instance, out var totalWidth, out var totalHeight);
+        return (totalWidth, totalHeight);
+    }
+    
+    public SkLineExtent[] GetLineExtents()
+    {
+        API.paragraph_get_line_extents(Instance, out var array, out var arrayLength);
+
+        var managedArray = new SkLineExtent[arrayLength];
         
-        var managedArray = new SkSize[arrayLength];
-        
-        var size = Marshal.SizeOf<SkSize>();
+        var size = Marshal.SizeOf<SkLineExtent>();
         
         for (var i = 0; i < arrayLength; i++)
         {
             var ptr = IntPtr.Add(array, i * size);
-            managedArray[i] = Marshal.PtrToStructure<SkSize>(ptr);
+            managedArray[i] = Marshal.PtrToStructure<SkLineExtent>(ptr);
         }
 
-        API.paragraph_delete_line_metrics(array);
+        API.paragraph_delete_line_extents(array);
         return managedArray;
     }
     
@@ -105,10 +118,13 @@ internal sealed class SkParagraph : IDisposable
         public static extern void paragraph_plan_layout(IntPtr paragraph, float availableWidth);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_get_line_metrics(IntPtr paragraph, out IntPtr array, out int arrayLength);
-        
+        public static extern void paragraph_get_size(IntPtr paragraph, out float totalWidth, out float totalHeight);
+
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_delete_line_metrics(IntPtr array);
+        public static extern void paragraph_get_line_extents(IntPtr paragraph, out IntPtr lineExtentsArray, out int lineExtentsArrayLength);
+
+        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern void paragraph_delete_line_extents(IntPtr array);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_get_unresolved_codepoints(IntPtr paragraph, out IntPtr array, out int arrayLength);

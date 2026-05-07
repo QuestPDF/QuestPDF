@@ -34,9 +34,10 @@ namespace QuestPDF.Elements.Text
         private bool AreParagraphMetricsValid { get; set; }
         private bool AreParagraphItemsTransformedWithSpacingAndIndentation { get; set; }
         
-        private SkSize[] LineMetrics { get; set; }
+        private int LineCount { get; set; }
+        private SkLineExtent[] LineExtents { get; set; }
         private float WidthForLineMetricsCalculation { get; set; }
-        private float MaximumWidth { get; set; }
+        private float TotalWidth { get; set; }
         private SkRect[] PlaceholderPositions { get; set; }
         private bool? ContainsOnlyWhiteSpace { get; set; }
         
@@ -96,40 +97,46 @@ namespace QuestPDF.Elements.Text
 
             CalculateParagraphMetrics(availableSpace);
             
-            if (availableSpace.Width < MaximumWidth - Size.Epsilon)
+            if (availableSpace.Width < TotalWidth - Size.Epsilon)
                 return SpacePlan.Wrap($"The available space is not sufficient to render even a single character.");
 
-            if (MaximumWidth == 0)
+            if (TotalWidth == 0)
                 return SpacePlan.FullRender(Size.Zero);
             
-            var totalHeight = 0f;
-            var totalLines = 0;
-            
-            for (var lineIndex = CurrentLineIndex; lineIndex < LineMetrics.Length; lineIndex++)
-            {
-                var lineMetric = LineMetrics[lineIndex];
-                var newTotalHeight = totalHeight + lineMetric.Height;
-                
-                if (newTotalHeight > availableSpace.Height + Size.Epsilon)
-                    break;
-                
-                totalHeight = newTotalHeight;
-                totalLines++;
-            }
+            var (linesToDraw, takenHeight) = DetermineLinesToDraw(availableSpace);
 
-            if (totalLines == 0)
+            if (linesToDraw == 0)
                 return SpacePlan.Wrap("The available space is not sufficient to render even a single line of text.");
 
             var requiredArea = new Size(
-                Math.Min(MaximumWidth, availableSpace.Width),
-                Math.Min(totalHeight, availableSpace.Height));
+                Math.Min(TotalWidth, availableSpace.Width),
+                Math.Min(takenHeight, availableSpace.Height));
             
-            if (CurrentLineIndex + totalLines < LineMetrics.Length)
+            if (CurrentLineIndex + linesToDraw < LineCount)
                 return SpacePlan.PartialRender(requiredArea);
 
             return SpacePlan.FullRender(requiredArea);
         }
 
+        private (int linesToDraw, float takenHeight) DetermineLinesToDraw(Size availableSpace)
+        {
+            var firstLine = LineExtents[CurrentLineIndex];
+            
+            var totalLines = LineExtents
+                .Skip(CurrentLineIndex)
+                .TakeWhile(lineExtent => lineExtent.Bottom - firstLine.Top < availableSpace.Height + Size.Epsilon)
+                .Count();
+            
+            if (totalLines == 0)
+                return (0, 0);
+            
+            var lastLine = LineExtents[CurrentLineIndex + totalLines - 1];
+            
+            var takenHeight = lastLine.Bottom - firstLine.Top;
+
+            return (totalLines, takenHeight);
+        }
+        
         internal override void Draw(Size availableSpace)
         {
             if (Items.Count == 0)
@@ -143,16 +150,20 @@ namespace QuestPDF.Elements.Text
             
             CalculateParagraphMetrics(availableSpace);
 
-            if (MaximumWidth == 0)
+            if (TotalWidth == 0)
                 return;
             
-            var (linesToDraw, takenHeight) = DetermineLinesToDraw();
+            var pageStartTop = LineExtents[CurrentLineIndex].Top;
+            var (linesToDraw, takenHeight) = DetermineLinesToDraw(availableSpace);
+            
+            if (linesToDraw == 0)
+                return;
+            
             DrawParagraph();
             
             CurrentLineIndex += linesToDraw;
-            CurrentTopOffset += takenHeight;
 
-            if (CurrentLineIndex == LineMetrics.Length)
+            if (CurrentLineIndex == LineCount)
                 IsRendered = true;
             
             if (IsRendered && ClearInternalCacheAfterFullRender)
@@ -162,43 +173,22 @@ namespace QuestPDF.Elements.Text
             }
             
             return;
-
-            (int linesToDraw, float takenHeight) DetermineLinesToDraw()
-            {
-                var linesToDraw = 0;
-                var takenHeight = 0f;
-                
-                for (var lineIndex = CurrentLineIndex; lineIndex < LineMetrics.Length; lineIndex++)
-                {
-                    var lineMetric = LineMetrics[lineIndex];
-                
-                    var newTotalHeight = takenHeight + lineMetric.Height;
-
-                    if (newTotalHeight > availableSpace.Height + Size.Epsilon)
-                        break;
-                    
-                    takenHeight = newTotalHeight;
-                    linesToDraw++;
-                }
-
-                return (linesToDraw, takenHeight);
-            }
             
             void DrawParagraph()
             {
-                var takesMultiplePages = linesToDraw != LineMetrics.Length;
-                
+                var takesMultiplePages = linesToDraw != LineCount;
+
                 if (takesMultiplePages)
                 {
                     Canvas.Save();
-                    Canvas.Translate(new Position(0, -CurrentTopOffset));
+                    Canvas.Translate(new Position(0, -pageStartTop));
                 }
 
                 Canvas.DrawParagraph(Paragraph, CurrentLineIndex, CurrentLineIndex + linesToDraw - 1);
                 
                 if (takesMultiplePages)
-                    Canvas.ClipRectangle(new SkRect(0, CurrentTopOffset, availableSpace.Width, takenHeight + CurrentTopOffset));
-                
+                    Canvas.ClipRectangle(new SkRect(0, pageStartTop, availableSpace.Width, pageStartTop + takenHeight));
+
                 DrawInjectedElements();
                 DrawHyperlinks();
                 DrawSectionLinks();
@@ -532,11 +522,13 @@ namespace QuestPDF.Elements.Text
                 Paragraph.PlanLayout(availableSpace.Width);
 
             CheckUnresolvedGlyphs();
-                
-            LineMetrics = Paragraph.GetLineMetrics();
+
+            LineExtents = Paragraph.GetLineExtents();
+            LineCount = LineExtents.Length;
             PlaceholderPositions = Paragraph.GetPlaceholderPositions();
-            MaximumWidth = LineMetrics.Any() ? LineMetrics.Max(x => x.Width) : 0;
-            
+
+            TotalWidth = Paragraph.GetSize().width;
+
             AreParagraphMetricsValid = true;
         }
         
@@ -620,7 +612,9 @@ namespace QuestPDF.Elements.Text
 
                     using var paragraph = builder.CreateParagraph();
                     paragraph.PlanLayout(1000);
-                    return paragraph.GetLineMetrics().First().Height;
+                    
+                    var lineExtent = paragraph.GetLineExtents().First();
+                    return lineExtent.Bottom - lineExtent.Top;
                 }
                 finally
                 {
@@ -635,20 +629,17 @@ namespace QuestPDF.Elements.Text
         
         private bool IsRendered { get; set; }
         private int CurrentLineIndex { get; set; }
-        private float CurrentTopOffset { get; set; }
     
         public struct TextBlockState
         {
             public bool IsRendered;
             public int CurrentLineIndex;
-            public float CurrentTopOffset;
         }
         
         public void ResetState(bool hardReset = false)
         {
             IsRendered = false;
             CurrentLineIndex = 0;
-            CurrentTopOffset = 0;
         }
 
         public object GetState()
@@ -656,8 +647,7 @@ namespace QuestPDF.Elements.Text
             return new TextBlockState
             {
                 IsRendered = IsRendered,
-                CurrentLineIndex = CurrentLineIndex,
-                CurrentTopOffset = CurrentTopOffset
+                CurrentLineIndex = CurrentLineIndex
             };
         }
 
@@ -667,7 +657,6 @@ namespace QuestPDF.Elements.Text
             
             IsRendered = textBlockState.IsRendered;
             CurrentLineIndex = textBlockState.CurrentLineIndex;
-            CurrentTopOffset = textBlockState.CurrentTopOffset;
         }
     
         #endregion
