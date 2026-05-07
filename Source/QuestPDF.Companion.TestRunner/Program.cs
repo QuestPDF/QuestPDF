@@ -13,6 +13,8 @@ Settings.License = LicenseType.Professional;
 await RunSimpleDocument();
 //await RunReportDocument();
 //await RunDocumentWithMultiplePages();
+//await RunTextLayoutMeasurerDocument();
+return;
 
 Task RunGenericException()
 {
@@ -158,4 +160,102 @@ Task RunMergedDocument()
     var mergedDocument = Document.Merge(document1, document2);
 
     return mergedDocument.ShowInCompanionAsync();
+}
+
+Task RunTextLayoutMeasurerDocument()
+{
+    return Document
+        .Create(container =>
+        {
+            container.Page(page =>
+            {
+                page.Size(PageSizes.A4);
+                page.Margin(2, Unit.Centimetre);
+                page.PageColor(Colors.White);
+                page.DefaultTextStyle(x => x.FontSize(20));
+
+                page.Header()
+                    .Text("Hello PDF!")
+                    .SemiBold().FontSize(36).FontColor(Colors.Blue.Medium);
+
+                page.Content()
+                    .PaddingVertical(1, Unit.Centimetre)
+                    .Column(x =>
+                    {
+                        x.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.ConstantColumn(120);
+                                columns.ConstantColumn(120);
+                            });
+
+                            table.Cell()
+                                .Border(1)
+                                .PaddingLeft(30)
+                                .Text("Text");
+                            table.Cell()
+                                .Border(1)
+                                .AlignCenter()
+                                .AlignMiddle()
+                                .Text("Line Count");
+                            table.Cell()
+                                .Border(1)
+                                .PaddingRight(5)
+                                .AlignRight()
+                                .AlignMiddle()
+                                .Text("Line Height");
+
+                            var style = TextStyle
+                                .Default
+                                .FontSize(20)
+                                .FontFamily("Arial")
+                                .EnableFontFeature(FontFeatures.StandardLigatures);
+
+                            string[] rows =
+                            [
+                                "Hello World",
+                                "Hello World Hello AAA1",
+                                "Hello World Hello AAAA"
+                            ];
+
+                            foreach (var text in rows)
+                            {
+                                const float textWidth = 241.6f; // Quest Pdf Companion UI
+                                var lineCount = TextLayoutMeasurer.GetLineCount(text, style, textWidth, 30f);
+                                var lineHeight = TextLayoutMeasurer.GetHeight(text, style, textWidth, 30f);
+
+                                table.Cell()
+                                    .Border(1)
+                                    .PaddingLeft(30)
+                                    .Text(text)
+                                    .Style(style);
+
+                                table.Cell()
+                                    .Border(1)
+                                    .AlignCenter()
+                                    .AlignMiddle()
+                                    .Text(lineCount.ToString());
+
+                                table.Cell()
+                                    .Border(1)
+                                    .PaddingRight(5)
+                                    .AlignRight()
+                                    .AlignMiddle()
+                                    .Text($"{lineHeight:F2}");
+                            }
+                        });
+                    });
+
+                page.Footer()
+                    .AlignCenter()
+                    .Text(x =>
+                    {
+                        x.Span("Page ");
+                        x.CurrentPageNumber();
+                    });
+            });
+        })
+        .ShowInCompanionAsync();
 }
