@@ -207,7 +207,7 @@ namespace QuestPDF.Elements.Text
 
                     var offset = new Position(placeholder.Left, placeholder.Top);
                     
-                    if (!IsPositionVisible(offset))
+                    if (!IsPositionVisible(placeholder))
                         continue;
                     
                     Canvas.Translate(offset);
@@ -226,7 +226,7 @@ namespace QuestPDF.Elements.Text
                     {
                         var offset = new Position(position.Left, position.Top);
                         
-                        if (!IsPositionVisible(offset))
+                        if (!IsPositionVisible(position))
                             continue;
                         
                         Canvas.Translate(offset);
@@ -247,7 +247,7 @@ namespace QuestPDF.Elements.Text
                     {
                         var offset = new Position(position.Left, position.Top);
                         
-                        if (!IsPositionVisible(offset))
+                        if (!IsPositionVisible(position))
                             continue;
                         
                         Canvas.Translate(offset);
@@ -257,9 +257,9 @@ namespace QuestPDF.Elements.Text
                 }
             }
 
-            bool IsPositionVisible(Position position)
+            bool IsPositionVisible(SkRect rect)
             {
-                return CurrentTopOffset <= position.Y || position.Y <= CurrentTopOffset + takenHeight;
+                return pageStartTop <= rect.Bottom && rect.Top <= pageStartTop + takenHeight;
             }
         }
         
