@@ -1,3 +1,4 @@
-- Fixed a bug where using Page.MinSize() or Page.MaxSize() could produce unexpected results
-- Added more helpful validation messages for minimum and maximum size constraints in the Constrained element
-- Improved the welcome message with a clearer explanation of the library license
+- Fixed a bug where Table elements with RowSpan could render incorrectly or break when spanning across pages.
+- Fixed visual rendering artifacts that could appear in complex or very large paragraphs.
+- Improved error message when native dependency versions are mismatched — the error now includes step-by-step guidance for updating manually copied native files.
+- Updated the underlying Skia native dependency to version m146.
