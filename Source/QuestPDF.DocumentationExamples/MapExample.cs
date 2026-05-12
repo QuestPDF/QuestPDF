@@ -7,7 +7,7 @@ namespace QuestPDF.DocumentationExamples;
 static class MapboxStaticMapRenderer
 {
     private const string MapboxBaseUrl = "https://api.mapbox.com/styles/v1/mapbox/streets-v12/static";
-    private const string AccessToken = "pk.eyJ1IjoibWFyY2luLXppYWJlayIsImEiOiJjbTc5cHZkZTUwNmM4MmxxdGN2cnRxMTBpIn0.8G-_nwFqjjfNQUCmHSOqKw";
+    private const string AccessToken = "pk.eyJ1IjoibWFyY2luLXppYWJlayIsImEiOiJjbW9uYXVta24xNDI4MnNzYnMwNDd4MXFjIn0.sku5jzU78_5DOUrs8dwTHw";
 
     public static async Task<byte[]?> FetchStaticMapAsync(double longitude, double latitude, float zoom, int width, int height)
     {

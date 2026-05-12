@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+ using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
@@ -20,7 +19,6 @@ namespace QuestPDF.Elements.Table
         private bool CacheInitialized { get; set; }
         private bool HasRelativeColumns { get; set; }
         private int LastRowIndex { get; set; }
-        private int RowsCount { get; set; }
         private int MaxRow { get; set; }
         private int MaxRowSpan { get; set; }
         
@@ -43,7 +41,6 @@ namespace QuestPDF.Elements.Table
 
             HasRelativeColumns = Columns.Any(x => x.RelativeSize > 0);
             LastRowIndex = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
-            RowsCount = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
             Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
             BuildCache();
 
@@ -144,15 +141,21 @@ namespace QuestPDF.Elements.Table
             if (!commands.Any())
                 return CurrentRow;
 
-            var notRenderedCells = commands
-                .Where(x => !x.Cell.IsRendered)
-                .Where(x => x.Measurement.Type is SpacePlanType.Wrap or SpacePlanType.PartialRender)
-                .ToList();
+            // Advance past every row whose cells all finished on this page (FullRender or Empty).
+            // Stop at the first row that still has a cell needing more space — this also prevents
+            // a spanning cell with FullRender measurement from hiding wrapped cells in its span.
+            var doneCells = commands
+                .Where(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
+                .Select(x => x.Cell);
             
-            if (notRenderedCells.Any())
-                return notRenderedCells.Min(x => x.Cell.Row + x.Cell.RowSpan - 1);
-                
-            return commands.Max(x => x.Cell.Row + x.Cell.RowSpan - 1) + 1;
+            var doneCellsCache = new HashSet<TableCell>(doneCells);
+
+            var nextRow = CurrentRow;
+            
+            while (nextRow <= MaxRow && CellsCache[nextRow].All(x => x.IsRendered || doneCellsCache.Contains(x)))
+                nextRow++;
+
+            return nextRow;
         }
         
         private void UpdateColumnsWidth(float availableWidth)
@@ -206,7 +209,7 @@ namespace QuestPDF.Elements.Table
                     .SelectMany(x => CellsCache[x]);
                 
                 var currentRow = CurrentRow;
-                var maxRenderingRow = RowsCount;
+                var maxRenderingRow = LastRowIndex;
                 
                 foreach (var cell in cellsToTry)
                 {
