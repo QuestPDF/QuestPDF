@@ -20,8 +20,8 @@ jobs:
         runtime: 
         - name: win-x64
           runs-on: windows-latest-xlarge
-        # - name: win-x86
-        #   runs-on: windows-latest-xlarge
+        - name: win-x86
+          runs-on: windows-latest-xlarge
         - name: linux-x64
           runs-on: ubuntu-latest-xlarge
           container: ubuntu:24.04
@@ -30,7 +30,7 @@ jobs:
           container: ubuntu:24.04
         - name: linux-musl-x64
           runs-on: ubuntu-latest-xlarge
-          container: alpine:3.20
+          container: alpine:3.22
         - name: osx-x64
           runs-on: macos-latest-large
         - name: osx-arm64
@@ -70,10 +70,31 @@ jobs:
           apk add libstdc++ libgcc
 
 
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: '10.0.x'
+      - name: Setup .NET 10.0 SDK (Windows)
+        if: startsWith(matrix.runtime.name, 'win-')
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.runtime.name }}".Replace("win-", "")
+      
+          $script = "$env:RUNNER_TEMP\dotnet-install.ps1"
+          $installDir = "$env:RUNNER_TEMP\dotnet-$arch"
+      
+          Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile $script
+          & $script -Channel 10.0 -Architecture $arch -InstallDir $installDir
+      
+          Add-Content -Path $env:GITHUB_PATH -Value $installDir
+          Add-Content -Path $env:GITHUB_ENV -Value "DOTNET_ROOT=$installDir"
+
+      
+      - name: Setup .NET 10.0 SDK (Unix)
+        if: startsWith(matrix.runtime.name, 'win-') == false
+        shell: bash
+        run: |
+          curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
+          INSTALL_DIR="$HOME/.dotnet"
+          bash /tmp/dotnet-install.sh --channel 10.0 --install-dir "$INSTALL_DIR"
+          echo "$INSTALL_DIR" >> $GITHUB_PATH
+          echo "DOTNET_ROOT=$INSTALL_DIR" >> $GITHUB_ENV
 
 
       - name: Install veraPDF - PDF conformance testing tool
