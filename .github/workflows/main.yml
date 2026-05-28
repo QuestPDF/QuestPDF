@@ -120,9 +120,11 @@ jobs:
         run: |
           mkdir -p /root/mustang
           cd /root/mustang
-          
-          wget https://repo1.maven.org/maven2/org/mustangproject/Mustang-CLI/2.20.0/Mustang-CLI-2.20.0.jar -O mustang-cli.jar
 
+          MUSTANG_VERSION=$(wget -qO- https://repo1.maven.org/maven2/org/mustangproject/Mustang-CLI/maven-metadata.xml | grep -oP '(?<=<release>)[^<]+')
+          
+          wget "https://repo1.maven.org/maven2/org/mustangproject/Mustang-CLI/${MUSTANG_VERSION}/Mustang-CLI-${MUSTANG_VERSION}.jar" -O mustang-cli.jar
+            
           alias mustang='java -jar /root/mustang/mustang-cli.jar'
           mustang --help
 
