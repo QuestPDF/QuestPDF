@@ -50,22 +50,22 @@ internal sealed class SkCanvas : IDisposable
     
     public void DrawLine(SkPoint start, SkPoint end, SkPaint paint)
     {
-        API.canvas_draw_line(Instance, start, end, paint.Instance);
+        API.canvas_draw_line(Instance, in start, in end, paint.Instance);
     }
 
     public void DrawRectangle(SkRect position, SkPaint paint)
     {
-        API.canvas_draw_rectangle(Instance, position, paint.Instance);
+        API.canvas_draw_rectangle(Instance, in position, paint.Instance);
     }
     
     public void DrawComplexBorder(SkRoundedRect innerRect, SkRoundedRect outerRect, SkPaint paint)
     {
-        API.canvas_draw_complex_border(Instance, innerRect, outerRect, paint.Instance);
+        API.canvas_draw_complex_border(Instance, in innerRect, in outerRect, paint.Instance);
     }
     
     public void DrawShadow(SkRoundedRect shadowRect, SkBoxShadow shadow)
     {
-        API.canvas_draw_shadow(Instance, shadowRect, shadow);
+        API.canvas_draw_shadow(Instance, in shadowRect, in shadow);
     }
     
     public void DrawImage(SkImage image, float width, float height)
@@ -98,22 +98,22 @@ internal sealed class SkCanvas : IDisposable
     /// </summary>
     public void DrawOverflowArea(SkRect position)
     {
-        API.canvas_draw_overflow_area(Instance, position);
+        API.canvas_draw_overflow_area(Instance, in position);
     }
     
     public void ClipOverflowArea(SkRect availableSpace, SkRect requiredSpace)
     {
-        API.canvas_clip_overflow_area(Instance, availableSpace, requiredSpace);
+        API.canvas_clip_overflow_area(Instance, in availableSpace, in requiredSpace);
     }
     
     public void ClipRectangle(SkRect clipArea)
     {
-        API.canvas_clip_rectangle(Instance, clipArea);
+        API.canvas_clip_rectangle(Instance, in clipArea);
     }
     
     public void ClipRoundedRectangle(SkRoundedRect rect)
     {
-        API.canvas_clip_rounded_rectangle(Instance, rect);
+        API.canvas_clip_rounded_rectangle(Instance, in rect);
     }
     
     public void AnnotateUrl(float width, float height, string url, string? description)
@@ -133,12 +133,13 @@ internal sealed class SkCanvas : IDisposable
     
     public SkCanvasMatrix GetCurrentMatrix()
     { 
-        return API.canvas_get_matrix9(Instance);
+        API.canvas_get_matrix9(Instance, out var matrix);
+        return matrix;
     }
     
     public void SetCurrentMatrix(SkCanvasMatrix matrix)
     {
-        API.canvas_set_matrix9(Instance, matrix);
+        API.canvas_set_matrix9(Instance, in matrix);
     }
     
     public void SetSemanticNodeId(int nodeId)
@@ -194,16 +195,16 @@ internal sealed class SkCanvas : IDisposable
         public static extern void canvas_draw_picture(IntPtr canvas, IntPtr picture);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_draw_line(IntPtr canvas, SkPoint start, SkPoint end, IntPtr paint);
+        public static extern void canvas_draw_line(IntPtr canvas, in SkPoint start, in SkPoint end, IntPtr paint);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_draw_rectangle(IntPtr canvas, SkRect position, IntPtr paint);
+        public static extern void canvas_draw_rectangle(IntPtr canvas, in SkRect position, IntPtr paint);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_draw_complex_border(IntPtr canvas, SkRoundedRect innerRect, SkRoundedRect outerRect, IntPtr paint);
+        public static extern void canvas_draw_complex_border(IntPtr canvas, in SkRoundedRect innerRect, in SkRoundedRect outerRect, IntPtr paint);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_draw_shadow(IntPtr canvas, SkRoundedRect shadowRect, SkBoxShadow shadow);
+        public static extern void canvas_draw_shadow(IntPtr canvas, in SkRoundedRect shadowRect, in SkBoxShadow shadow);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void canvas_draw_paragraph(IntPtr canvas, IntPtr paragraph, int lineFrom, int lineTo);
@@ -215,16 +216,16 @@ internal sealed class SkCanvas : IDisposable
         public static extern void canvas_draw_svg(IntPtr canvas, IntPtr svg, float width, float height);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_draw_overflow_area(IntPtr canvas, SkRect position);
+        public static extern void canvas_draw_overflow_area(IntPtr canvas, in SkRect position);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_clip_overflow_area(IntPtr canvas, SkRect availableSpace, SkRect requiredSpace);
+        public static extern void canvas_clip_overflow_area(IntPtr canvas, in SkRect availableSpace, in SkRect requiredSpace);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_clip_rectangle(IntPtr canvas, SkRect clipArea);
+        public static extern void canvas_clip_rectangle(IntPtr canvas, in SkRect clipArea);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_clip_rounded_rectangle(IntPtr canvas, SkRoundedRect rect);
+        public static extern void canvas_clip_rounded_rectangle(IntPtr canvas, in SkRoundedRect rect);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void canvas_annotate_url(
@@ -246,10 +247,10 @@ internal sealed class SkCanvas : IDisposable
             [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string? description);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SkCanvasMatrix canvas_get_matrix9(IntPtr canvas);
+        public static extern void canvas_get_matrix9(IntPtr canvas, out SkCanvasMatrix matrix);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void canvas_set_matrix9(IntPtr canvas, SkCanvasMatrix matrix);
+        public static extern void canvas_set_matrix9(IntPtr canvas, in SkCanvasMatrix matrix);
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void canvas_set_semantic_node_id(IntPtr canvas, int nodeId);

@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using System.Xml;
 
 namespace QuestPDF.Skia;
 
@@ -50,13 +49,13 @@ internal static class SkPdfDocument
 {
     public static SkDocument Create(SkWriteStream stream, SkPdfDocumentMetadata metadata)
     {
-        var instance = API.pdf_document_create(stream.Instance, metadata);
+        var instance = API.pdf_document_create(stream.Instance, in metadata);
         return new SkDocument(instance);
     }
 
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr pdf_document_create(IntPtr stream, SkPdfDocumentMetadata metadata);
+        public static extern IntPtr pdf_document_create(IntPtr stream, in SkPdfDocumentMetadata metadata);
     }
 }

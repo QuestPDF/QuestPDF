@@ -109,7 +109,7 @@ internal sealed class SkParagraphBuilder : IDisposable
             LineClampEllipsis = clampLinesEllipsis.Instance
         };
         
-        var instance = API.paragraph_builder_create(paragraphStyleConfiguration, SkUnicode.Global.Instance, fontCollection.Instance);
+        var instance = API.paragraph_builder_create(in paragraphStyleConfiguration, SkUnicode.Global.Instance, fontCollection.Instance);
         SkiaAPI.EnsureNotNull(instance);
         
         return new SkParagraphBuilder
@@ -127,7 +127,7 @@ internal sealed class SkParagraphBuilder : IDisposable
     
     public void AddPlaceholder(SkPlaceholderStyle placeholderStyle)
     {
-        API.paragraph_builder_add_placeholder(Instance, placeholderStyle);
+        API.paragraph_builder_add_placeholder(Instance, in placeholderStyle);
     }
     
     public SkParagraph CreateParagraph()
@@ -162,13 +162,13 @@ internal sealed class SkParagraphBuilder : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr paragraph_builder_create(ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr unicode, IntPtr fontCollection);
+        public static extern IntPtr paragraph_builder_create(in ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr unicode, IntPtr fontCollection);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void paragraph_builder_add_text(IntPtr paragraphBuilder, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string text, IntPtr textStyle);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_builder_add_placeholder(IntPtr paragraphBuilder, SkPlaceholderStyle placeholderStyle);
+        public static extern void paragraph_builder_add_placeholder(IntPtr paragraphBuilder, in SkPlaceholderStyle placeholderStyle);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr paragraph_builder_create_paragraph(IntPtr paragraphBuilder);

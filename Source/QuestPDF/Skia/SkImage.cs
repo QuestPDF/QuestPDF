@@ -17,7 +17,7 @@ internal sealed class SkImage : IDisposable
         SkiaAPI.EnsureNotNull(Instance);
         
         // load image details
-        var details = API.image_get_details(Instance);
+        API.image_get_details(Instance, out var details);
         
         Width = details.Width;
         Height = details.Height;
@@ -96,7 +96,7 @@ internal sealed class SkImage : IDisposable
         }
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern SkImageDetails image_get_details(IntPtr image);
+        public static extern void image_get_details(IntPtr image, out SkImageDetails details);
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr image_get_encoded_data(IntPtr image);
