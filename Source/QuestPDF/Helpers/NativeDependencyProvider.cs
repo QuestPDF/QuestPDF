@@ -13,6 +13,7 @@ internal static class NativeDependencyProvider
     {
         "win-x86",
         "win-x64",
+        "win-arm64",
         "linux-x64",
         "linux-arm64",
         "linux-musl-x64",
@@ -77,11 +78,6 @@ internal static class NativeDependencyProvider
         
     public static string GetRuntimePlatform()
     {
-#if NET6_0_OR_GREATER
-        if (RuntimeInformation.ProcessArchitecture == Architecture.Wasm)
-            return "browser-wasm";
-#endif
-        
         return $"{GetSystemIdentifier()}-{GetProcessArchitecture()}";
 
         static string GetSystemIdentifier()

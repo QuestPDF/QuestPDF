@@ -5,9 +5,12 @@ namespace QuestPDF.Qpdf;
 
 internal static class QpdfNativeDependencyCompatibilityChecker
 {
+    private const int ExpectedNativeLibraryVersion = 2;
+    
     private static NativeDependencyCompatibilityChecker Instance { get; } = new()
     {
         ExecuteNativeCode = ExecuteNativeCode,
+        CheckNativeLibraryVersion = CheckNativeLibraryVersion,
         ExceptionHint = GetHint
     };
     
@@ -18,10 +21,19 @@ internal static class QpdfNativeDependencyCompatibilityChecker
     
     private static void ExecuteNativeCode()
     {
-        var qpdfVersion = QpdfAPI.GetQpdfVersion();
-        
-        if (string.IsNullOrEmpty(qpdfVersion))
-            throw new Exception();
+        QpdfAPI.GetCompatibilityVersion();
+    }
+    
+    private static bool CheckNativeLibraryVersion()
+    {
+        try
+        {
+            return QpdfAPI.GetCompatibilityVersion() == ExpectedNativeLibraryVersion;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private static string GetHint()

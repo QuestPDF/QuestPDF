@@ -6,7 +6,7 @@ namespace QuestPDF.Helpers
 {
     internal sealed class NativeDependencyCompatibilityChecker
     {
-        private static readonly Version RequiredGlibcVersionOnLinux = Version.Parse("2.29");
+        private static readonly Version RequiredGlibcVersionOnLinux = Version.Parse("2.28");
         
         private bool IsCompatibilityChecked { get; set; } = false;
 

@@ -7,10 +7,9 @@ namespace QuestPDF.Qpdf;
 
 static class QpdfAPI
 {
-    public static string? GetQpdfVersion()
+    public static int GetCompatibilityVersion()
     {
-        var ptr = API.qpdf_get_qpdf_version();
-        return Marshal.PtrToStringAnsi(ptr);
+        return API.get_questpdf_version();
     }
     
     public static void ExecuteJob(string jobJson)
@@ -31,10 +30,10 @@ static class QpdfAPI
         API.qpdfjob_set_logger(jobHandle, logger);
         API.qpdfjob_initialize_from_json(jobHandle, jobJson);
         var jobResultId = API.qpdfjob_run(jobHandle);
-        API.qpdfjob_cleanup(jobHandle);
+        API.qpdfjob_cleanup(ref jobHandle);
         
         // logger cleanup
-        API.qpdflogger_cleanup(logger);
+        API.qpdflogger_cleanup(ref logger);
         
         // check errors
         var isError = jobResultId is 2; // 0 = success, 1 = undefined, 2 = error, 3 = warning
@@ -55,13 +54,16 @@ static class QpdfAPI
 
         var handle = GCHandle.FromIntPtr(udata);
         var stringBuilder = (StringBuilder)handle.Target;
-        stringBuilder?.Append(Encoding.ASCII.GetString(bytes));
+        stringBuilder?.Append(Encoding.UTF8.GetString(bytes));
 
         return 0;
     }
     
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     private delegate int CallbackDelegate(IntPtr data, int length, IntPtr udata);
+    
     private static readonly CallbackDelegate LoggingCallbackDelegate = LoggingCallback;
+    
     private static readonly IntPtr LoggingCallbackPointer = Marshal.GetFunctionPointerForDelegate(LoggingCallbackDelegate);
     
     #endregion
@@ -73,7 +75,7 @@ static class QpdfAPI
         /* GENERAL */
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr qpdf_get_qpdf_version();
+        public static extern int get_questpdf_version();
     
         /* JOBS */
         
@@ -81,7 +83,7 @@ static class QpdfAPI
         public static extern IntPtr qpdfjob_init();
     
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void qpdfjob_cleanup(IntPtr jobHandle);
+        public static extern void qpdfjob_cleanup(ref IntPtr jobHandle);
     
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern int qpdfjob_initialize_from_json(IntPtr jobHandle, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string json);
@@ -95,7 +97,7 @@ static class QpdfAPI
         public static extern IntPtr qpdflogger_create();
 
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = nameof(qpdflogger_cleanup))]
-        public static extern void qpdflogger_cleanup(IntPtr loggerHandle);
+        public static extern void qpdflogger_cleanup(ref IntPtr loggerHandle);
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = nameof(qpdflogger_set_error))]
         public static extern void qpdflogger_set_error(IntPtr loggerHandle, int destination, IntPtr callBackHandler, IntPtr udata);
