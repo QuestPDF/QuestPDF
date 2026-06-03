@@ -30,7 +30,7 @@ public class LayersExamples
                                     layers.Layer().Image("Resources/card-background.jpg").FitUnproportionally();
 
                                     layers.PrimaryLayer()
-                                        .TranslateY(75)
+                                        .OffsetY(75)
                                         .Column(innerColumn =>
                                         {
                                             innerColumn.Item()

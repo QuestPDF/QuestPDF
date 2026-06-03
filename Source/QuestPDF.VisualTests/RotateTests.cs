@@ -20,8 +20,8 @@ public class RotateTests
                 
                 .Rotate(angle) // <-
                 
-                .TranslateX(-100)
-                .TranslateY(-50)
+                .OffsetX(-100)
+                .OffsetY(-50)
                 .Width(200)
                 .Height(100)
                 .Background(Colors.Grey.Lighten3)

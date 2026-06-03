@@ -241,8 +241,8 @@ public class DocumentOperationTests
                             var verticalTranslation = Random.Shared.Next(0, (int)PageSizes.A4.Height - height);
                             
                             column.Item()
-                                .TranslateX(horizontalTranslation)
-                                .TranslateY(verticalTranslation)
+                                .OffsetX(horizontalTranslation)
+                                .OffsetY(verticalTranslation)
                                 .Width(width)
                                 .Height(height)
                                 .Background(color.WithAlpha(64))

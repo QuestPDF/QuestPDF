@@ -85,9 +85,9 @@ public class CodePatternCapturePositionExample
                         layers
                             .Layer()
                             .Unconstrained() 
-                            .TranslateY(mistakeLocation.Y - containerLocation.Y)
-                            .TranslateX(-12)
-                            .TranslateY(-12)
+                            .OffsetY(mistakeLocation.Y - containerLocation.Y)
+                            .OffsetX(-12)
+                            .OffsetY(-12)
                             .Width(24)
                             .Svg("Resources/proofreading.svg");
                     }

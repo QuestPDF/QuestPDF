@@ -77,13 +77,13 @@ public class RotateExamples
                                     .Width(itemSize)
                                     .AspectRatio(1)
                                     
-                                    .TranslateX(itemSize / 2)
-                                    .TranslateY(itemSize / 2)
+                                    .OffsetX(itemSize / 2)
+                                    .OffsetY(itemSize / 2)
                                     
                                     .Rotate(angle)
                                     
-                                    .TranslateX(-itemSize / 2)
-                                    .TranslateY(-itemSize / 2)
+                                    .OffsetX(-itemSize / 2)
+                                    .OffsetY(-itemSize / 2)
                                     
                                     .Svg("Resources/compass.svg");
                             }

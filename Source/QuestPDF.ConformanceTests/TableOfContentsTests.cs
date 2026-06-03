@@ -72,7 +72,7 @@ internal class TableOfContentsTests : ConformanceTestBase
                                     {
                                         row.ConstantItem(25).Text($"{i}.");
                                         row.AutoItem().Text(Placeholders.Label());
-                                        row.RelativeItem().PaddingHorizontal(2).TranslateY(11).LineHorizontal(1).LineDashPattern([1, 3]);
+                                        row.RelativeItem().PaddingHorizontal(2).OffsetY(11).LineHorizontal(1).LineDashPattern([1, 3]);
                                         row.AutoItem().Text(text => text.BeginPageNumberOfSection($"section-{i}"));
                                     });
                             }

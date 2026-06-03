@@ -4,7 +4,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.DocumentationExamples;
 
-public class TranslateExamples
+public class OffsetExamples
 {
     [Test]
     public void Example()
@@ -21,8 +21,8 @@ public class TranslateExamples
                     page.Content()
                         .Padding(50)
                         .Background(Colors.Blue.Lighten3)
-                        .TranslateX(25)
-                        .TranslateY(25)
+                        .OffsetX(25)
+                        .OffsetY(25)
                         .Border(4)
                         .BorderColor(Colors.Blue.Darken2)
                         .Padding(50)
@@ -30,6 +30,6 @@ public class TranslateExamples
                         .FontSize(25);
                 });
             })
-            .GenerateImages(x => "translate.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
+            .GenerateImages(x => "offset.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
 }

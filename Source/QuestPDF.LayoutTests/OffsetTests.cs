@@ -1,15 +1,15 @@
 namespace QuestPDF.LayoutTests;
 
-public class TranslateTests
+public class OffsetTests
 {
     [Test]
-    public void HorizontalTranslation()
+    public void HorizontalOffset()
     {
         LayoutTest
             .HavingSpaceOfSize(100, 120)
             .ForContent(content =>
             {
-                content.Shrink().TranslateX(15).Mock("a").SolidBlock(40, 50);
+                content.Shrink().OffsetX(15).Mock("a").SolidBlock(40, 50);
             })
             .ExpectDrawResult(document =>
             {
@@ -22,15 +22,15 @@ public class TranslateTests
                     });
             });
     }
-    
+
     [Test]
-    public void VerticalTranslation()
+    public void VerticalOffset()
     {
         LayoutTest
             .HavingSpaceOfSize(100, 120)
             .ForContent(content =>
             {
-                content.Shrink().TranslateY(25).Mock("a").SolidBlock(30, 40);
+                content.Shrink().OffsetY(25).Mock("a").SolidBlock(30, 40);
             })
             .ExpectDrawResult(document =>
             {
@@ -43,9 +43,9 @@ public class TranslateTests
                     });
             });
     }
-    
+
     [Test]
-    public void MultipleItemsWithTranslation()
+    public void MultipleItemsWithOffset()
     {
         LayoutTest
             .HavingSpaceOfSize(100, 120)
@@ -53,9 +53,9 @@ public class TranslateTests
             {
                 content.Shrink().Column(column =>
                 {
-                    column.Item().TranslateX(5).TranslateY(10).Mock("a").SolidBlock(40, 20);
-                    column.Item().TranslateX(-10).TranslateY(20).Mock("b").SolidBlock(30, 25);
-                    column.Item().TranslateX(30).TranslateY(-15).Mock("c").SolidBlock(50, 15);
+                    column.Item().OffsetX(5).OffsetY(10).Mock("a").SolidBlock(40, 20);
+                    column.Item().OffsetX(-10).OffsetY(20).Mock("b").SolidBlock(30, 25);
+                    column.Item().OffsetX(30).OffsetY(-15).Mock("c").SolidBlock(50, 15);
                 });
             })
             .ExpectDrawResult(document =>

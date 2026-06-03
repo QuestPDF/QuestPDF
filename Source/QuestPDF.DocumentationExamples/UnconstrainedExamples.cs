@@ -30,8 +30,8 @@ public class UnconstrainedExamples
                             column
                                 .Item()
                                 .Unconstrained()
-                                .TranslateX(-50)
-                                .TranslateY(-50)
+                                .OffsetX(-50)
+                                .OffsetY(-50)
                                 .Width(100)
                                 .Height(100)
                                 .Background(Colors.Blue.Darken2);

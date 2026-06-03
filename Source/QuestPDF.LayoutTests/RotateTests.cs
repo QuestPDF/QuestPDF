@@ -21,7 +21,7 @@ public class RotateTests
                 content
                     .Shrink()
                     .Rotate(angle)
-                    .TranslateX(armLength)
+                    .OffsetX(armLength)
                     .Mock("a")
                     .SolidBlock(100, 100);
             })
