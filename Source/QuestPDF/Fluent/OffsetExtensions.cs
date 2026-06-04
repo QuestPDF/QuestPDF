@@ -42,9 +42,13 @@ namespace QuestPDF.Fluent
             value = value.ToPoints(unit);
             return element.Offset(y: value);
         }
-
-        #region Obsolete
-
+    }
+    
+    #region Obsolete
+    
+    [Obsolete("This class has been replaced by OffsetExtensions.")]
+    public static class TranslateExtensions
+    {
         [Obsolete("This element has been renamed since version 2026.6. Please use the OffsetX method.")]
         [ExcludeFromCodeCoverage]
         public static IContainer TranslateX(this IContainer element, float value, Unit unit = Unit.Point)
@@ -58,7 +62,7 @@ namespace QuestPDF.Fluent
         {
             return element.OffsetY(value, unit);
         }
-
-        #endregion
     }
+    
+    #endregion
 }
