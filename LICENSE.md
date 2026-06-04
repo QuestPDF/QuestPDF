@@ -14,8 +14,10 @@ We believe in offering the full power of QuestPDF to all our users, regardless o
 - Support for commercial usage.
 - Freedom to create and deploy unlimited closed-source projects, applications, and APIs.
 - Royalty-free redistribution of the compiled library with your applications.
-  Transitive Dependency Usage
-  If you're using QuestPDF as a transitive dependency, you're free to use it under the MIT license without any cost. However, you're welcomed and encouraged to support the project by purchasing a paid license if you find the library valuable.
+  
+### Transitive Dependency Usage
+
+If you're using QuestPDF as a transitive dependency, you're free to use it under the MIT license without any cost. However, you're welcomed and encouraged to support the project by purchasing a paid license if you find the library valuable.
 
 ### Non-profit Usage
 
@@ -29,17 +31,15 @@ For companies generating less than $1M USD in annual gross revenue, you can use 
 
 Companies with an annual gross revenue exceeding $1M USD are required to purchase a paid license. The type of license you need depends on the number of developers working on projects that use QuestPDF:
 
-Professional License - If there are up to 10 developers in your company who are using QuestPDF, you need to purchase the Professional License.
+- Professional License - If there are up to 10 developers in your company who are using QuestPDF, you need to purchase the Professional License.
 
-Enterprise License - If your company has more than 10 developers using QuestPDF, the Enterprise License is the right choice.
+- Enterprise License - If your company has more than 10 developers using QuestPDF, the Enterprise License is the right choice.
 
 ### Beyond Compliance
 
 Remember, purchasing a license isn't just about adhering to our guidelines, but also supporting the development of QuestPDF. Your contribution helps us to improve the library and offer top-notch support to all users.
 
-<br>
-<hr>
-<br>
+
 
 ## QuestPDF Community MIT License
 
@@ -55,9 +55,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-<br>
-<hr>
-<br>
+
 
 ## QuestPDF Professional and Enterprise Use License
 
