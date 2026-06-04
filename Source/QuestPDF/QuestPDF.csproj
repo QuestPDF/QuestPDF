@@ -15,7 +15,7 @@
         <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
         <PackageReadmeFile>README.md</PackageReadmeFile>
-        <RepositoryUrl>https://github.com/QuestPDF/library.git</RepositoryUrl>
+        <RepositoryUrl>https://github.com/QuestPDF/QuestPDF</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <Copyright>Marcin Ziąbek, QuestPDF contributors</Copyright>
         <PackageTags>pdf generation creation export merge edit html</PackageTags>
