@@ -9,6 +9,7 @@
         <LangVersion>13</LangVersion>
         <Deterministic>true</Deterministic>
         <EnablePackageValidation>true</EnablePackageValidation>
+        <PackageValidationBaselineVersion>2026.5.0</PackageValidationBaselineVersion>
         <PackageIcon>Logo.png</PackageIcon>
         <PackageIconUrl>https://www.questpdf.com/logo.webp</PackageIconUrl>
         <PackageProjectUrl>https://www.questpdf.com/</PackageProjectUrl>
