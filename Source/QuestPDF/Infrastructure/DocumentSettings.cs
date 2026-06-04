@@ -7,6 +7,7 @@ namespace QuestPDF.Infrastructure
         public const int DefaultRasterDpi = 72;
 
         [Obsolete("Please use the ConformanceLevel property instead.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public bool PdfA
         {
             get => PDFA_Conformance != PDFA_Conformance.None;

@@ -105,6 +105,7 @@ namespace QuestPDF.Fluent
         #region Obsolete
 
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public IContainer Header()
         {
@@ -114,6 +115,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'Before' method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public void Header(Action<IContainer> handler)
         {
@@ -121,6 +123,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public IContainer Footer()
         {
@@ -130,6 +133,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'After' method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public void Footer(Action<IContainer> handler)
         {

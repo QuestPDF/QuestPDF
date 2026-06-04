@@ -47,9 +47,11 @@ namespace QuestPDF.Fluent
     #region Obsolete
     
     [Obsolete("This class has been replaced by OffsetExtensions.")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     public static class TranslateExtensions
     {
         [Obsolete("This element has been renamed since version 2026.6. Please use the OffsetX method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static IContainer TranslateX(this IContainer element, float value, Unit unit = Unit.Point)
         {
@@ -57,6 +59,7 @@ namespace QuestPDF.Fluent
         }
 
         [Obsolete("This element has been renamed since version 2026.6. Please use the OffsetY method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static IContainer TranslateY(this IContainer element, float value, Unit unit = Unit.Point)
         {

@@ -14,6 +14,7 @@ namespace QuestPDF
         public static LicenseType? License { get; set; }
         
         [Obsolete("This setting is ignored since the 2023.10 version. The new infinite layout detection algorithm works automatically. You can safely remove this setting from your codebase.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public static int DocumentLayoutExceptionThreshold { get; set; } = 250;
         
         /// <summary>

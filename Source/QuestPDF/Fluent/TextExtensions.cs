@@ -234,6 +234,7 @@ namespace QuestPDF.Fluent
         }
 
         [Obsolete("This element has been renamed since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public void Span(string? text, TextStyle style)
         {
@@ -300,6 +301,7 @@ namespace QuestPDF.Fluent
         }
 
         [Obsolete("This element has been renamed since version 2022.3. Please use the BeginPageNumberOfSection method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public void PageNumberOfLocation(string sectionName, TextStyle? style = null)
         {
@@ -376,6 +378,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public void InternalLocation(string? text, string locationName, TextStyle? style = null)
         {
@@ -406,6 +409,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the Hyperlink method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public void ExternalLocation(string? text, string url, TextStyle? style = null)
         {
@@ -473,6 +477,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This method has been deprecated since version 2022.3. Please use the overload that returns a TextSpanDescriptor object which allows to specify text style.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static void Text(this IContainer element, object? text, TextStyle style)
         {
@@ -480,6 +485,7 @@ namespace QuestPDF.Fluent
         }
 
         [Obsolete("This method has been deprecated since version 2022.12. Please use an overload where the text parameter is passed explicitly as a string.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static TextSpanDescriptor Text(this IContainer element, object? text)
         {

@@ -27,6 +27,7 @@ namespace QuestPDF.Drawing
         }
         
         [Obsolete("Since version 2022.8 this method has been renamed. Please use the RegisterFontWithCustomName method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static void RegisterFontType(string fontName, Stream stream)
         {

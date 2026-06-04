@@ -15,6 +15,7 @@ public static class PreviewerExtensions
     #if NET6_0_OR_GREATER
     
     [Obsolete(ObsoleteMessage)]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
     public static void ShowInPreviewer(this IDocument document, int port = 12500)
     {
@@ -22,6 +23,7 @@ public static class PreviewerExtensions
     }
     
     [Obsolete(ObsoleteMessage)]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
     public static Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
     {
@@ -31,6 +33,7 @@ public static class PreviewerExtensions
     #else
 
     [Obsolete(ObsoleteMessage)]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
     public static void ShowInPreviewer(this IDocument document, int port = 12500)
     {
@@ -38,6 +41,7 @@ public static class PreviewerExtensions
     }
 
     [Obsolete(ObsoleteMessage)]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
     public static async Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
     {

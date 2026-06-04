@@ -56,6 +56,7 @@ namespace QuestPDF.Fluent
         #region Obsolete
 
         [Obsolete("This element has been renamed since version 2022.1. Please use the Shrink method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static IContainer Box(this IContainer element)
         {
@@ -63,6 +64,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2023.11. Please use the Shrink method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static IContainer MinimalBox(this IContainer element)
         {

@@ -40,6 +40,7 @@ namespace QuestPDF.Fluent
     public static class ColumnExtensions
     {
         [Obsolete("This element has been renamed since version 2022.2. Please use the 'Column' method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static void Stack(this IContainer element, Action<ColumnDescriptor> handler)
         {

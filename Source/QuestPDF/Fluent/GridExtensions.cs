@@ -74,6 +74,7 @@ namespace QuestPDF.Fluent
     public static class GridExtensions
     {
         [Obsolete("This element has been deprecated since version 2022.11. Please use the Table element, or the combination of the Row and Column elements.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static void Grid(this IContainer element, Action<GridDescriptor> handler)
         {

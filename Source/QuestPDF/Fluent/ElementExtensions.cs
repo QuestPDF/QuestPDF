@@ -272,6 +272,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the Hyperlink method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static IContainer ExternalLink(this IContainer element, string url)
         {
@@ -295,6 +296,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the Section method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static IContainer Location(this IContainer element, string locationName)
         {
@@ -325,6 +327,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the SectionLink method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static IContainer InternalLink(this IContainer element, string locationName)
         {
@@ -534,9 +537,11 @@ namespace QuestPDF.Fluent
         private const string CanvasDeprecatedMessage = "The Canvas API has been deprecated since version 2024.3.0. Please use the .Svg(stringContent) API to provide custom content, and consult documentation webpage regarding integrating SkiaSharp with QuestPDF: https://www.questpdf.com/api-reference/skiasharp-integration.html";
         
         [Obsolete(CanvasDeprecatedMessage)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         public delegate void DrawOnCanvas(object canvas, Size availableSpace);
         
         [Obsolete(CanvasDeprecatedMessage)]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static void Canvas(this IContainer element, DrawOnCanvas handler)
         {

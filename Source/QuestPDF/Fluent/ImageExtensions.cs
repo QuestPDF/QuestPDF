@@ -264,6 +264,7 @@ namespace QuestPDF.Fluent
         #region Obsolete
         
         [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that takes the GenerateDynamicImageDelegate as an argument.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static void Image(this IContainer element, Func<Size, byte[]> imageSource)
         {
@@ -271,6 +272,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that returns the ImageDescriptor object.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static void Image(this IContainer parent, byte[] imageData, ImageScaling scaling)
         {
@@ -278,6 +280,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that returns the ImageDescriptor object.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static void Image(this IContainer parent, string filePath, ImageScaling scaling)
         {
@@ -285,6 +288,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been changed since version 2023.5. Please use the Image method overload that returns the ImageDescriptor object.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static void Image(this IContainer parent, Stream fileStream, ImageScaling scaling)
         {

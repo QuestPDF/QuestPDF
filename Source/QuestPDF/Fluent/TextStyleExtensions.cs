@@ -10,6 +10,7 @@ namespace QuestPDF.Fluent
     public static class TextStyleExtensions
     {
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontColor method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static TextStyle Color(this TextStyle style, string value)
         {
@@ -33,6 +34,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontFamily method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static TextStyle FontType(this TextStyle style, string value)
         {
@@ -49,6 +51,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This element has been renamed since version 2022.3. Please use the FontSize method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static TextStyle Size(this TextStyle style, float value)
         {
@@ -95,6 +98,7 @@ namespace QuestPDF.Fluent
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
         [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)
         {
@@ -284,6 +288,7 @@ namespace QuestPDF.Fluent
         #region Fallback
         
         [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static TextStyle Fallback(this TextStyle style, TextStyle? value = null)
         {
@@ -300,6 +305,7 @@ namespace QuestPDF.Fluent
         }
         
         [Obsolete("This setting is not supported since the 2024.3 version. Please use the FontFamilyFallback method or rely on the new automated fallback mechanism.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static TextStyle Fallback(this TextStyle style, Func<TextStyle, TextStyle> handler)
         {
