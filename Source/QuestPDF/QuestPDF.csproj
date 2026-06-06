@@ -14,7 +14,6 @@
         <PackageIconUrl>https://www.questpdf.com/logo.webp</PackageIconUrl>
         <PackageProjectUrl>https://www.questpdf.com/</PackageProjectUrl>
         <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <RepositoryUrl>https://github.com/QuestPDF/QuestPDF</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
