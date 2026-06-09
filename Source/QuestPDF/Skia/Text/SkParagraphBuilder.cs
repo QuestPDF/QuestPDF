@@ -109,7 +109,7 @@ internal sealed class SkParagraphBuilder : IDisposable
             LineClampEllipsis = clampLinesEllipsis.Instance
         };
         
-        var instance = API.paragraph_builder_create(in paragraphStyleConfiguration, SkUnicode.Global.Instance, fontCollection.Instance);
+        var instance = API.questpdf_skia_paragraph_builder_create(in paragraphStyleConfiguration, SkUnicode.Global.Instance, fontCollection.Instance);
         SkiaAPI.EnsureNotNull(instance);
         
         return new SkParagraphBuilder
@@ -122,23 +122,23 @@ internal sealed class SkParagraphBuilder : IDisposable
     
     public void AddText(string text, SkTextStyle textStyle)
     {
-        API.paragraph_builder_add_text(Instance, text, textStyle.Instance);
+        API.questpdf_skia_paragraph_builder_add_text(Instance, text, textStyle.Instance);
     }
     
     public void AddPlaceholder(SkPlaceholderStyle placeholderStyle)
     {
-        API.paragraph_builder_add_placeholder(Instance, in placeholderStyle);
+        API.questpdf_skia_paragraph_builder_add_placeholder(Instance, in placeholderStyle);
     }
     
     public SkParagraph CreateParagraph()
     {
-        var instance = API.paragraph_builder_create_paragraph(Instance);
+        var instance = API.questpdf_skia_paragraph_builder_create_paragraph(Instance);
         return new SkParagraph(instance);
     }
     
     public void Reset()
     {
-        API.paragraph_builder_reset(Instance);
+        API.questpdf_skia_paragraph_builder_reset(Instance);
     }
     
     ~SkParagraphBuilder()
@@ -154,7 +154,7 @@ internal sealed class SkParagraphBuilder : IDisposable
         
         FontCollection?.Dispose();
         
-        API.paragraph_builder_delete(Instance);
+        API.questpdf_skia_paragraph_builder_delete(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -162,21 +162,21 @@ internal sealed class SkParagraphBuilder : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr paragraph_builder_create(in ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr unicode, IntPtr fontCollection);
+        public static extern IntPtr questpdf_skia_paragraph_builder_create(in ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr unicode, IntPtr fontCollection);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_builder_add_text(IntPtr paragraphBuilder, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string text, IntPtr textStyle);
+        public static extern void questpdf_skia_paragraph_builder_add_text(IntPtr paragraphBuilder, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string text, IntPtr textStyle);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_builder_add_placeholder(IntPtr paragraphBuilder, in SkPlaceholderStyle placeholderStyle);
+        public static extern void questpdf_skia_paragraph_builder_add_placeholder(IntPtr paragraphBuilder, in SkPlaceholderStyle placeholderStyle);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr paragraph_builder_create_paragraph(IntPtr paragraphBuilder);
+        public static extern IntPtr questpdf_skia_paragraph_builder_create_paragraph(IntPtr paragraphBuilder);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_builder_reset(IntPtr paragraphBuilder);
+        public static extern void questpdf_skia_paragraph_builder_reset(IntPtr paragraphBuilder);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_builder_delete(IntPtr paragraphBuilder);
+        public static extern void questpdf_skia_paragraph_builder_delete(IntPtr paragraphBuilder);
     }
 }

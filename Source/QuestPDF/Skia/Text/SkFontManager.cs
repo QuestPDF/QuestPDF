@@ -8,8 +8,8 @@ internal sealed class SkFontManager
 {
     public IntPtr Instance { get; }
     
-    public static SkFontManager Local { get; } = new(API.font_manager_create_local(Settings.FontDiscoveryPaths.FirstOrDefault() ?? Helpers.Helpers.ApplicationFilesPath));
-    public static SkFontManager Global { get; } = new(API.font_manager_create_global());
+    public static SkFontManager Local { get; } = new(API.questpdf_skia_font_manager_create_local(Settings.FontDiscoveryPaths.FirstOrDefault() ?? Helpers.Helpers.ApplicationFilesPath));
+    public static SkFontManager Global { get; } = new(API.questpdf_skia_font_manager_create_global());
 
     private SkFontManager(IntPtr instance)
     {
@@ -19,7 +19,7 @@ internal sealed class SkFontManager
     
     public SkTypeface CreateTypeface(SkData data)
     {
-        var instance = API.font_manager_create_typeface(Instance, data.Instance);
+        var instance = API.questpdf_skia_font_manager_create_typeface(Instance, data.Instance);
         
         if (instance == IntPtr.Zero)
             throw new Exception("Cannot decode the provided font file.");
@@ -30,12 +30,12 @@ internal sealed class SkFontManager
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr font_manager_create_local(string path);
+        public static extern IntPtr questpdf_skia_font_manager_create_local(string path);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr font_manager_create_global();
+        public static extern IntPtr questpdf_skia_font_manager_create_global();
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr font_manager_create_typeface(IntPtr fontManager, IntPtr fontData);
+        public static extern IntPtr questpdf_skia_font_manager_create_typeface(IntPtr fontManager, IntPtr fontData);
     }
 }

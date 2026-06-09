@@ -11,13 +11,13 @@ internal sealed class SkPaint : IDisposable
     
     public SkPaint()
     {
-        Instance = API.paint_create();
+        Instance = API.questpdf_skia_paint_create();
         SkiaAPI.EnsureNotNull(Instance);
     }
     
     public void SetSolidColor(uint color)
     {
-        API.paint_set_solid_color(Instance, color);
+        API.questpdf_skia_paint_set_solid_color(Instance, color);
     }
     
     public void SetLinearGradient(Position start, Position end, Color[] colors)
@@ -30,12 +30,12 @@ internal sealed class SkPaint : IDisposable
         
         var colorArray = colors.Select(c => c.Hex).ToArray();
         
-        API.paint_set_linear_gradient(Instance, in startPoint, in endPoint, colorArray.Length, colorArray);
+        API.questpdf_skia_paint_set_linear_gradient(Instance, in startPoint, in endPoint, colorArray.Length, colorArray);
     }
     
     public void SetStroke(float thickness)
     {
-        API.paint_set_stroke(Instance, thickness);
+        API.questpdf_skia_paint_set_stroke(Instance, thickness);
     }
     
     public void SetDashedPathEffect(float[] intervals)
@@ -46,7 +46,7 @@ internal sealed class SkPaint : IDisposable
         if (intervals.Length % 2 != 0)
             throw new ArgumentException("The intervals array must contain an even number of elements.", nameof(intervals));
         
-        API.paint_set_dashed_path_effect(Instance, intervals.Length, intervals);
+        API.questpdf_skia_paint_set_dashed_path_effect(Instance, intervals.Length, intervals);
     }
     
     ~SkPaint()
@@ -60,7 +60,7 @@ internal sealed class SkPaint : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.paint_delete(Instance);
+        API.questpdf_skia_paint_delete(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -68,21 +68,21 @@ internal sealed class SkPaint : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr paint_create();
+        public static extern IntPtr questpdf_skia_paint_create();
     
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paint_delete(IntPtr paint);
+        public static extern void questpdf_skia_paint_delete(IntPtr paint);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paint_set_solid_color(IntPtr paint, uint color);
+        public static extern void questpdf_skia_paint_set_solid_color(IntPtr paint, uint color);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paint_set_linear_gradient(IntPtr paint, in SkPoint start, in SkPoint end, int colorsLength, uint[] colors);
+        public static extern void questpdf_skia_paint_set_linear_gradient(IntPtr paint, in SkPoint start, in SkPoint end, int colorsLength, uint[] colors);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paint_set_stroke(IntPtr paint, float thickness);    
+        public static extern void questpdf_skia_paint_set_stroke(IntPtr paint, float thickness);    
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paint_set_dashed_path_effect(IntPtr paint, int arrayLength, float[] intervals); 
+        public static extern void questpdf_skia_paint_set_dashed_path_effect(IntPtr paint, int arrayLength, float[] intervals); 
     }
 }

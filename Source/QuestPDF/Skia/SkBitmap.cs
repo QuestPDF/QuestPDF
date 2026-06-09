@@ -9,25 +9,25 @@ internal sealed class SkBitmap : IDisposable
 
     public SkBitmap(int width, int height)
     {
-        Instance = API.bitmap_create(width, height);
+        Instance = API.questpdf_skia_bitmap_create(width, height);
         SkiaAPI.EnsureNotNull(Instance);
     }
     
     public SkData EncodeAsJpeg(int quality)
     {
-        var dataInstance = API.bitmap_encode_as_jpg(Instance, quality);
+        var dataInstance = API.questpdf_skia_bitmap_encode_as_jpg(Instance, quality);
         return new SkData(dataInstance);
     }
     
     public SkData EncodeAsPng()
     {
-        var dataInstance = API.bitmap_encode_as_png(Instance);
+        var dataInstance = API.questpdf_skia_bitmap_encode_as_png(Instance);
         return new SkData(dataInstance);
     }
     
     public SkData EncodeAsWebp(int quality)
     {
-        var dataInstance = API.bitmap_encode_as_webp(Instance, quality);
+        var dataInstance = API.questpdf_skia_bitmap_encode_as_webp(Instance, quality);
         return new SkData(dataInstance);
     }
     
@@ -42,7 +42,7 @@ internal sealed class SkBitmap : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.bitmap_delete(Instance);
+        API.questpdf_skia_bitmap_delete(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -50,18 +50,18 @@ internal sealed class SkBitmap : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr bitmap_create(int width, int height);
+        public static extern IntPtr questpdf_skia_bitmap_create(int width, int height);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void bitmap_delete(IntPtr image);
+        public static extern void questpdf_skia_bitmap_delete(IntPtr image);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr bitmap_encode_as_jpg(IntPtr image, int quality);
+        public static extern IntPtr questpdf_skia_bitmap_encode_as_jpg(IntPtr image, int quality);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr bitmap_encode_as_png(IntPtr image);
+        public static extern IntPtr questpdf_skia_bitmap_encode_as_png(IntPtr image);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr bitmap_encode_as_webp(IntPtr image, int quality);
+        public static extern IntPtr questpdf_skia_bitmap_encode_as_webp(IntPtr image, int quality);
     }
 }

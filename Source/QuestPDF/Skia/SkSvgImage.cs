@@ -37,12 +37,12 @@ internal sealed class SkSvgImage : IDisposable
     {
         using var data = SkData.FromBinary(System.Text.Encoding.UTF8.GetBytes(svgString));
 
-        Instance = API.svg_create(data.Instance, resourceProvider.Instance, fontManager.Instance);
+        Instance = API.questpdf_skia_svg_create(data.Instance, resourceProvider.Instance, fontManager.Instance);
         
         if (Instance == IntPtr.Zero)
             throw new Exception("Cannot decode the provided SVG image.");
         
-        API.svg_get_size(Instance, out Size, out ViewBox);
+        API.questpdf_skia_svg_get_size(Instance, out Size, out ViewBox);
     }
 
     internal float AspectRatio
@@ -67,7 +67,7 @@ internal sealed class SkSvgImage : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.svg_unref(Instance);
+        API.questpdf_skia_svg_unref(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -75,12 +75,12 @@ internal sealed class SkSvgImage : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr svg_create(IntPtr data, IntPtr resourceProvider, IntPtr fontManager);
+        public static extern IntPtr questpdf_skia_svg_create(IntPtr data, IntPtr resourceProvider, IntPtr fontManager);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void svg_unref(IntPtr svg);
+        public static extern void questpdf_skia_svg_unref(IntPtr svg);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void svg_get_size(IntPtr svg, out SkSvgImageSize size, out SkRect viewBox);
+        public static extern void questpdf_skia_svg_get_size(IntPtr svg, out SkSvgImageSize size, out SkRect viewBox);
     }
 }

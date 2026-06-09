@@ -83,7 +83,7 @@ internal sealed class SkTextStyle : IDisposable
     
     public SkTextStyle(TextStyleConfiguration textStyleConfiguration)
     {
-        Instance = API.text_style_create(in textStyleConfiguration);
+        Instance = API.questpdf_skia_text_style_create(in textStyleConfiguration);
         SkiaAPI.EnsureNotNull(Instance);
     }
     
@@ -98,7 +98,7 @@ internal sealed class SkTextStyle : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.text_style_delete(Instance);
+        API.questpdf_skia_text_style_delete(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -106,9 +106,9 @@ internal sealed class SkTextStyle : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr text_style_create(in TextStyleConfiguration textStyleConfiguration);
+        public static extern IntPtr questpdf_skia_text_style_create(in TextStyleConfiguration textStyleConfiguration);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void text_style_delete(IntPtr textStyle);
+        public static extern void questpdf_skia_text_style_delete(IntPtr textStyle);
     }
 }

@@ -15,13 +15,13 @@ internal sealed class SkResourceProvider
 
     private SkResourceProvider(SkFontManager fontManager)
     {
-        Instance = API.resource_provider_create(Helpers.Helpers.ApplicationFilesPath, fontManager.Instance);
+        Instance = API.questpdf_skia_resource_provider_create(Helpers.Helpers.ApplicationFilesPath, fontManager.Instance);
         SkiaAPI.EnsureNotNull(Instance);
     }
     
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr resource_provider_create(string resourcesPath, IntPtr fontManager);
+        public static extern IntPtr questpdf_skia_resource_provider_create(string resourcesPath, IntPtr fontManager);
     }
 }

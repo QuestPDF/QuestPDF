@@ -24,7 +24,7 @@ internal sealed class SkTypeface : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.typeface_unref(Instance);
+        API.questpdf_skia_typeface_unref(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -32,6 +32,6 @@ internal sealed class SkTypeface : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void typeface_unref(IntPtr typeface);
+        public static extern void questpdf_skia_typeface_unref(IntPtr typeface);
     }
 }

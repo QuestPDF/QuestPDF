@@ -7,13 +7,13 @@ internal static class SkXpsDocument
 {
     public static SkDocument Create(SkWriteStream stream, float dpi)
     {
-        var instance = API.xps_document_create(stream.Instance, dpi);
+        var instance = API.questpdf_skia_xps_document_create(stream.Instance, dpi);
         return new SkDocument(instance);
     }
 
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr xps_document_create(IntPtr stream, float dpi);
+        public static extern IntPtr questpdf_skia_xps_document_create(IntPtr stream, float dpi);
     }
 }

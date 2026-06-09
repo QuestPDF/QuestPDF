@@ -28,13 +28,13 @@ internal sealed class SkWriteStream : IDisposable
 
         CallbackHandle = GCHandle.Alloc(nativeCallback);
         
-        Instance = API.write_stream_create(nativeCallback);
+        Instance = API.questpdf_skia_write_stream_create(nativeCallback);
         SkiaAPI.EnsureNotNull(Instance);
     }
     
     public void Flush()
     {
-        API.write_stream_flush(Instance);
+        API.questpdf_skia_write_stream_flush(Instance);
     }
     
     ~SkWriteStream()
@@ -49,7 +49,7 @@ internal sealed class SkWriteStream : IDisposable
             return;
      
         CallbackHandle.Free();
-        API.write_stream_delete(Instance);
+        API.questpdf_skia_write_stream_delete(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -60,12 +60,12 @@ internal sealed class SkWriteStream : IDisposable
         public delegate void ByteArrayCallback(IntPtr data, int size);
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr write_stream_create(ByteArrayCallback callback);
+        public static extern IntPtr questpdf_skia_write_stream_create(ByteArrayCallback callback);
     
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void write_stream_flush(IntPtr stream);
+        public static extern void questpdf_skia_write_stream_flush(IntPtr stream);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void write_stream_delete(IntPtr stream);
+        public static extern void questpdf_skia_write_stream_delete(IntPtr stream);
     }
 }

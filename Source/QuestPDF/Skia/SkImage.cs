@@ -17,7 +17,7 @@ internal sealed class SkImage : IDisposable
         SkiaAPI.EnsureNotNull(Instance);
         
         // load image details
-        API.image_get_details(Instance, out var details);
+        API.questpdf_skia_image_get_details(Instance, out var details);
         
         Width = details.Width;
         Height = details.Height;
@@ -28,7 +28,7 @@ internal sealed class SkImage : IDisposable
 
     public static SkImage FromData(SkData data)
     {
-        var instance = API.image_create_from_data(data.Instance);
+        var instance = API.questpdf_skia_image_create_from_data(data.Instance);
         
         if (instance == IntPtr.Zero)
             throw new Exception("Cannot decode the provided image.");
@@ -43,19 +43,19 @@ internal sealed class SkImage : IDisposable
     /// </summary>
     public SkImage ResizeAndCompress(int targetWidth, int targetHeight, int compressionQuality, bool downsample)
     {
-        var instance = API.image_resize_and_compress(Instance, targetWidth, targetHeight, compressionQuality, downsample);
+        var instance = API.questpdf_skia_image_resize_and_compress(Instance, targetWidth, targetHeight, compressionQuality, downsample);
         return new SkImage(instance);
     }
     
     public static SkImage GeneratePlaceholder(int targetWidth, int targetHeight, uint firstColor, uint secondColor)
     {
-        var instance = API.image_generate_placeholder(targetWidth, targetHeight, firstColor, secondColor);
+        var instance = API.questpdf_skia_image_generate_placeholder(targetWidth, targetHeight, firstColor, secondColor);
         return new SkImage(instance);
     }
     
     public SkData GetEncodedData()
     {
-        var dataInstance = API.image_get_encoded_data(Instance);
+        var dataInstance = API.questpdf_skia_image_get_encoded_data(Instance);
         return new SkData(dataInstance);
     }
     
@@ -70,7 +70,7 @@ internal sealed class SkImage : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.image_unref(Instance);
+        API.questpdf_skia_image_unref(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
         GC.RemoveMemoryPressure(EncodedDataSize);
@@ -79,13 +79,13 @@ internal sealed class SkImage : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr image_create_from_data(IntPtr data);
+        public static extern IntPtr questpdf_skia_image_create_from_data(IntPtr data);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void image_unref(IntPtr image);
+        public static extern void questpdf_skia_image_unref(IntPtr image);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr image_resize_and_compress(IntPtr image, int targetImageWidth, int targetImageHeight, int compressionQuality, bool downsample);
+        public static extern IntPtr questpdf_skia_image_resize_and_compress(IntPtr image, int targetImageWidth, int targetImageHeight, int compressionQuality, bool downsample);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SkImageDetails
@@ -96,12 +96,12 @@ internal sealed class SkImage : IDisposable
         }
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void image_get_details(IntPtr image, out SkImageDetails details);
+        public static extern void questpdf_skia_image_get_details(IntPtr image, out SkImageDetails details);
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr image_get_encoded_data(IntPtr image);
+        public static extern IntPtr questpdf_skia_image_get_encoded_data(IntPtr image);
  
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr image_generate_placeholder(int imageWidth, int imageHeight, UInt32 firstColor, UInt32 secondColor);
+        public static extern IntPtr questpdf_skia_image_generate_placeholder(int imageWidth, int imageHeight, UInt32 firstColor, UInt32 secondColor);
     }
 }

@@ -15,13 +15,13 @@ internal sealed class SkPicture : IDisposable
     
     public static SkPicture Deserialize(SkData data)
     {
-        var instance = API.picture_deserialize(data.Instance);
+        var instance = API.questpdf_skia_picture_deserialize(data.Instance);
         return new SkPicture(instance);
     }
     
     public SkData Serialize()
     {
-        var dataInstance = API.picture_serialize(Instance);
+        var dataInstance = API.questpdf_skia_picture_serialize(Instance);
         return new SkData(dataInstance);
     }
     
@@ -36,7 +36,7 @@ internal sealed class SkPicture : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.picture_unref(Instance);
+        API.questpdf_skia_picture_unref(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -44,12 +44,12 @@ internal sealed class SkPicture : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void picture_unref(IntPtr picture);
+        public static extern void questpdf_skia_picture_unref(IntPtr picture);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr picture_serialize(IntPtr picture);
+        public static extern IntPtr questpdf_skia_picture_serialize(IntPtr picture);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr picture_deserialize(IntPtr data);
+        public static extern IntPtr questpdf_skia_picture_deserialize(IntPtr data);
     }
 }

@@ -15,7 +15,7 @@ internal sealed class SkFontCollection : IDisposable
 
     public static SkFontCollection Create(SkTypefaceProvider typefaceProvider, SkFontManager fontManager)
     {
-        var instance = API.font_collection_create(fontManager.Instance, typefaceProvider.Instance);
+        var instance = API.questpdf_skia_font_collection_create(fontManager.Instance, typefaceProvider.Instance);
         return new SkFontCollection(instance);
     }
     
@@ -30,7 +30,7 @@ internal sealed class SkFontCollection : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.font_collection_unref(Instance);
+        API.questpdf_skia_font_collection_unref(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -38,9 +38,9 @@ internal sealed class SkFontCollection : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr font_collection_create(IntPtr fontManager, IntPtr typefaceProvider);
+        public static extern IntPtr questpdf_skia_font_collection_create(IntPtr fontManager, IntPtr typefaceProvider);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void font_collection_unref(IntPtr fontCollection);
+        public static extern void questpdf_skia_font_collection_unref(IntPtr fontCollection);
     }
 }

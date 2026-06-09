@@ -22,18 +22,18 @@ internal sealed class SkParagraph : IDisposable
 
     public void PlanLayout(float availableWidth)
     {
-        API.paragraph_plan_layout(Instance, availableWidth);
+        API.questpdf_skia_paragraph_plan_layout(Instance, availableWidth);
     }
 
     public (float width, float height) GetSize()
     {
-        API.paragraph_get_size(Instance, out var totalWidth, out var totalHeight);
+        API.questpdf_skia_paragraph_get_size(Instance, out var totalWidth, out var totalHeight);
         return (totalWidth, totalHeight);
     }
     
     public SkLineExtent[] GetLineExtents()
     {
-        API.paragraph_get_line_extents(Instance, out var array, out var arrayLength);
+        API.questpdf_skia_paragraph_get_line_extents(Instance, out var array, out var arrayLength);
 
         var managedArray = new SkLineExtent[arrayLength];
         
@@ -45,24 +45,24 @@ internal sealed class SkParagraph : IDisposable
             managedArray[i] = Marshal.PtrToStructure<SkLineExtent>(ptr);
         }
 
-        API.paragraph_delete_line_extents(array);
+        API.questpdf_skia_paragraph_delete_line_extents(array);
         return managedArray;
     }
     
     public int[] GetUnresolvedCodepoints()
     {
-        API.paragraph_get_unresolved_codepoints(Instance, out var array, out var arrayLength);
+        API.questpdf_skia_paragraph_get_unresolved_codepoints(Instance, out var array, out var arrayLength);
         
         var managedArray = new int[arrayLength];
         Marshal.Copy(array, managedArray,  0, arrayLength);
-        API.paragraph_delete_unresolved_codepoints(array);
+        API.questpdf_skia_paragraph_delete_unresolved_codepoints(array);
 
         return managedArray;
     }
     
     public SkRect[] GetPlaceholderPositions()
     {
-        API.paragraph_get_placeholder_positions(Instance, out var array, out var arrayLength);
+        API.questpdf_skia_paragraph_get_placeholder_positions(Instance, out var array, out var arrayLength);
         
         var managedArray = new SkRect[arrayLength];
         
@@ -74,13 +74,13 @@ internal sealed class SkParagraph : IDisposable
             managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
         }
 
-        API.paragraph_delete_positions(array);
+        API.questpdf_skia_paragraph_delete_positions(array);
         return managedArray;
     }
     
     public SkRect[] GetTextRangePositions(int rangeStart, int rangeEnd)
     {
-        API.paragraph_get_text_range_positions(Instance, rangeStart, rangeEnd, out var array, out var arrayLength);
+        API.questpdf_skia_paragraph_get_text_range_positions(Instance, rangeStart, rangeEnd, out var array, out var arrayLength);
         
         var managedArray = new SkRect[arrayLength];
         
@@ -92,7 +92,7 @@ internal sealed class SkParagraph : IDisposable
             managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
         }
 
-        API.paragraph_delete_positions(array);
+        API.questpdf_skia_paragraph_delete_positions(array);
         return managedArray;
     }
     
@@ -107,7 +107,7 @@ internal sealed class SkParagraph : IDisposable
         if (Instance == IntPtr.Zero)
             return;
         
-        API.paragraph_delete(Instance);
+        API.questpdf_skia_paragraph_delete(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
     }
@@ -115,33 +115,33 @@ internal sealed class SkParagraph : IDisposable
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_plan_layout(IntPtr paragraph, float availableWidth);
+        public static extern void questpdf_skia_paragraph_plan_layout(IntPtr paragraph, float availableWidth);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_get_size(IntPtr paragraph, out float totalWidth, out float totalHeight);
+        public static extern void questpdf_skia_paragraph_get_size(IntPtr paragraph, out float totalWidth, out float totalHeight);
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_get_line_extents(IntPtr paragraph, out IntPtr lineExtentsArray, out int lineExtentsArrayLength);
+        public static extern void questpdf_skia_paragraph_get_line_extents(IntPtr paragraph, out IntPtr lineExtentsArray, out int lineExtentsArrayLength);
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_delete_line_extents(IntPtr array);
+        public static extern void questpdf_skia_paragraph_delete_line_extents(IntPtr array);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_get_unresolved_codepoints(IntPtr paragraph, out IntPtr array, out int arrayLength);
+        public static extern void questpdf_skia_paragraph_get_unresolved_codepoints(IntPtr paragraph, out IntPtr array, out int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_delete_unresolved_codepoints(IntPtr array);
+        public static extern void questpdf_skia_paragraph_delete_unresolved_codepoints(IntPtr array);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_get_placeholder_positions(IntPtr paragraph, out IntPtr array, out int arrayLength);
+        public static extern void questpdf_skia_paragraph_get_placeholder_positions(IntPtr paragraph, out IntPtr array, out int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_get_text_range_positions(IntPtr paragraph, int rangeStart, int rangeEnd, out IntPtr array, out int arrayLength);
+        public static extern void questpdf_skia_paragraph_get_text_range_positions(IntPtr paragraph, int rangeStart, int rangeEnd, out IntPtr array, out int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_delete_positions(IntPtr array);
+        public static extern void questpdf_skia_paragraph_delete_positions(IntPtr array);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void paragraph_delete(IntPtr paragraph);
+        public static extern void questpdf_skia_paragraph_delete(IntPtr paragraph);
     }
 }
