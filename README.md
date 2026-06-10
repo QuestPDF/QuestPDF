@@ -17,7 +17,7 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 <br>
 [![Nuget package download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge&label=NuGet%20downloads&logo=nuget&color=0277BD&logoColor=white)](https://www.nuget.org/packages/QuestPDF/)
 <br>
-[![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20and%20commercial-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/license.html)
+[![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20and%20commercial-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/pricing/)
 
 <br>
 <hr>
@@ -30,7 +30,9 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [Features Overview](https://www.questpdf.com/features-overview.html)
 &nbsp;&nbsp;•&nbsp;&nbsp;
-[License & Pricing](https://www.questpdf.com/license/)
+[License](https://www.questpdf.com/license/)
+&nbsp;&nbsp;•&nbsp;&nbsp;
+[Pricing](https://www.questpdf.com/pricing/)
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [NuGet](https://www.nuget.org/packages/QuestPDF)
 
