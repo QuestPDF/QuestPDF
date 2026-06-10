@@ -26,9 +26,8 @@ static class LicenseChecker
     {
         var warningMessage =
             "[QuestPDF] The library is running in Evaluation Mode. " +
-            "This mode is fully functional and intended only for product evaluation and internal testing. " +
-            "Commercial and production use requires an appropriate license. " +
-            "For licensing details and pricing, please visit: https://www.questpdf.com/license";
+            "This mode is fully functional and intended solely for assessing the library before selecting a license; it is not permitted in production. " +
+            "License terms: https://www.questpdf.com/license | Pricing: https://www.questpdf.com/pricing";
 
         try
         {
