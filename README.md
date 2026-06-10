@@ -26,7 +26,7 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [Quick Start](https://www.questpdf.com/quick-start.html)
 &nbsp;&nbsp;•&nbsp;&nbsp;
-[Real-world Invoice Tutorial](https://www.questpdf.com/invoice-tutorial.html)
+[Invoice Tutorial](https://www.questpdf.com/invoice-tutorial.html)
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [Features Overview](https://www.questpdf.com/features-overview.html)
 &nbsp;&nbsp;•&nbsp;&nbsp;
