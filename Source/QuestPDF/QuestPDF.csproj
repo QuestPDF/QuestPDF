@@ -3,7 +3,7 @@
         <Authors>MarcinZiabek</Authors>
         <Company>CodeFlint</Company>
         <PackageId>QuestPDF</PackageId>
-        <Version>2026.5.0</Version>
+        <Version>2026.6.0</Version>
         <Title>QuestPDF — Modern PDF Generation Library for  C# and .NET</Title>
         <PackageDescription>QuestPDF is a modern PDF generation library for C# and .NET. Create invoices, reports, and data exports — a code-first alternative to HTML-to-PDF conversion. Merge and edit documents, generate PDF/A and accessible PDF/UA files, embed ZUGFeRD and Factur-X invoice XML. Source-available with a free Community license.</PackageDescription>
         <PackageReleaseNotes>$([System.IO.File]::ReadAllText("$(MSBuildProjectDirectory)/Resources/ReleaseNotes.txt"))</PackageReleaseNotes>
