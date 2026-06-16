@@ -168,9 +168,12 @@ public sealed class DocumentOperation
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.fillingForms"]/*' />
         public bool AllowFillingForms { get; set; } = true;
 
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.modification"]/*' />
+        public bool AllowModification { get; set; } = true;
+
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.printing"]/*' />
         public bool AllowPrinting { get; set; } = true;
-    
+
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.encryptMetadata"]/*' />
         public bool EncryptMetadata { get; set; } = true;
     }
@@ -189,13 +192,16 @@ public sealed class DocumentOperation
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.fillingForms"]/*' />
         public bool AllowFillingForms { get; set; } = true;
 
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.modification"]/*' />
+        public bool AllowModification { get; set; } = true;
+
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.printing"]/*' />
         public bool AllowPrinting { get; set; } = true;
-    
+
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.encryptMetadata"]/*' />
         public bool EncryptMetadata { get; set; } = true;
     }
-    
+
     internal JobConfiguration Configuration { get; private set; }
     
     private DocumentOperation()
@@ -439,6 +445,7 @@ public sealed class DocumentOperation
                 Assemble = FormatBooleanFlag(encryption.AllowAssembly),
                 Extract = FormatBooleanFlag(encryption.AllowContentExtraction),
                 Form = FormatBooleanFlag(encryption.AllowFillingForms),
+                ModifyOther = FormatBooleanFlag(encryption.AllowModification),
                 Print = encryption.AllowPrinting ? "full" : "none",
                 CleartextMetadata = encryption.EncryptMetadata ? null : string.Empty
             }
@@ -465,6 +472,7 @@ public sealed class DocumentOperation
                 Assemble = FormatBooleanFlag(encryption.AllowAssembly),
                 Extract = FormatBooleanFlag(encryption.AllowContentExtraction),
                 Form = FormatBooleanFlag(encryption.AllowFillingForms),
+                ModifyOther = FormatBooleanFlag(encryption.AllowModification),
                 Print = encryption.AllowPrinting ? "full" : "none",
                 CleartextMetadata = encryption.EncryptMetadata ? null : string.Empty
             }
