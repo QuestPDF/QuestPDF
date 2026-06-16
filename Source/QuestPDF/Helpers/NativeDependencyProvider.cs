@@ -53,7 +53,7 @@ internal static class NativeDependencyProvider
         }
     }
     
-    public static bool IsCurrentPlatformSupported()
+    public static bool IsCurrentRuntimeSupported()
     {
         var currentRuntime = GetRuntimePlatform();
         return SupportedPlatforms.Contains(currentRuntime);
