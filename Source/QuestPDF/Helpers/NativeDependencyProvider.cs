@@ -23,22 +23,33 @@ internal static class NativeDependencyProvider
     
     public static void EnsureNativeFileAvailability()
     {
-        var nativeFilesPath = GetNativeFileSourcePath();
-        
-        if (nativeFilesPath == null)
-            return;
-
-        foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
+        try
         {
-            var targetDirectory = new FileInfo(nativeFilePath)
-                .Directory
-                .Parent // native
-                .Parent // platform
-                .Parent // runtimes
-                .FullName;
+            var nativeFilesPath = GetNativeFileSourcePath();
+        
+            if (nativeFilesPath == null)
+                return;
+
+            foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
+            {
+                var targetDirectory = new FileInfo(nativeFilePath)
+                    .Directory
+                    .Parent // native
+                    .Parent // platform
+                    .Parent // runtimes
+                    .FullName;
             
-            var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
-            CopyFileIfNewer(nativeFilePath, targetPath);
+                var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
+                CopyFileIfNewer(nativeFilePath, targetPath);
+            }
+        }
+        catch (Exception e)
+        {
+            Trace.TraceWarning(
+                "QuestPDF was unable to copy its native dependency files to the application directory. " +
+                "This is a best-effort fallback and is not necessarily a problem; native libraries may still load correctly through the standard .NET runtime mechanism. " +
+                "However, if document generation subsequently fails with a native dependency error, the most likely causes are insufficient file system permissions or a read-only application directory. " +
+                $"Details: {e.Message}");
         }
     }
     
@@ -145,6 +156,10 @@ internal static class NativeDependencyProvider
     public static Version? GetGlibcVersion()
     {
         var lddCommandOutput = ExecuteLddCommand() ?? string.Empty;
+        
+        if (string.IsNullOrEmpty(lddCommandOutput))
+            return null;
+        
         var match = Regex.Match(lddCommandOutput, @"ldd \(.+\) (?<version>[1-9]\.[0-9]{2})");
     
         if (!match.Success)
