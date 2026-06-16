@@ -169,6 +169,9 @@ public sealed class DocumentOperation
         public bool AllowFillingForms { get; set; } = true;
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.modification"]/*' />
+        /// <remarks>Maps to the PDF "modify contents" permission (qpdf <c>modifyOther</c>): general content edits,
+        /// independent of the annotation, form-filling and assembly permissions controlled by
+        /// <see cref="AllowAnnotation"/>, <see cref="AllowFillingForms"/> and <see cref="AllowAssembly"/>.</remarks>
         public bool AllowModification { get; set; } = true;
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.printing"]/*' />
@@ -193,6 +196,9 @@ public sealed class DocumentOperation
         public bool AllowFillingForms { get; set; } = true;
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.modification"]/*' />
+        /// <remarks>Maps to the PDF "modify contents" permission (qpdf <c>modifyOther</c>): general content edits,
+        /// independent of the annotation, form-filling and assembly permissions controlled by
+        /// <see cref="AllowAnnotation"/>, <see cref="AllowFillingForms"/> and <see cref="AllowAssembly"/>.</remarks>
         public bool AllowModification { get; set; } = true;
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.encryption.allow.printing"]/*' />

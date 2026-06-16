@@ -78,7 +78,7 @@ sealed class JobConfiguration
         [Name("assemble")] public string Assemble { get; set; }
         [Name("extract")] public string Extract { get; set; }
         [Name("form")] public string Form { get; set; }
-        [Name("modifyOther")] public string? ModifyOther { get; set; }
+        [Name("modifyOther")] public string ModifyOther { get; set; }
         [Name("print")] public string? Print { get; set; }
         [Name("useAes")] public string? UseAES { get; set; } = "y";
         [Name("cleartextMetadata")] public string? CleartextMetadata { get; set; }
@@ -90,7 +90,7 @@ sealed class JobConfiguration
         [Name("assemble")] public string Assemble { get; set; }
         [Name("extract")] public string Extract { get; set; }
         [Name("form")] public string Form { get; set; }
-        [Name("modifyOther")] public string? ModifyOther { get; set; }
+        [Name("modifyOther")] public string ModifyOther { get; set; }
         [Name("print")] public string? Print { get; set; }
         [Name("cleartextMetadata")] public string? CleartextMetadata { get; set; }
     }
