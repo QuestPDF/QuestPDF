@@ -102,9 +102,10 @@ namespace QuestPDF.Helpers
 
             static void Throw(string platformName, string? details = null)
             {
-                var message = $"The current platform ({platformName}) is not supported. " +
-                              "QuestPDF relies on native dependencies that are only available on Windows, Linux, and macOS (desktop/server environments). " +
-                              "To resolve this issue, please consider moving the PDF generation logic to a server, backend, or cloud environment, and then transfer the generated document to the client.";
+                var message = $"QuestPDF cannot run on the current platform ({platformName}). " +
+                              "It depends on native components that are available only on Windows, Linux, and macOS (desktop and server environments), " +
+                              "and therefore cannot generate documents directly on mobile, browser (WebAssembly), or other sandboxed platforms. " +
+                              "The recommended solution is to move PDF generation to a backend service (for example, a Web API, server, or cloud function) and then deliver the generated file to the client.";
 
                 if (!string.IsNullOrWhiteSpace(details))
                     message += $" {details}";
@@ -122,9 +123,11 @@ namespace QuestPDF.Helpers
             var currentRuntime = NativeDependencyProvider.GetRuntimePlatform();
             
             throw new PlatformNotSupportedException(
-                $"{ExceptionBaseMessage}{Paragraph}Your runtime is not supported by QuestPDF. " +
-                $"The following runtimes are supported: {supportedRuntimes}. " +
-                $"Your current runtime is detected as '{currentRuntime}'. ");
+                $"{ExceptionBaseMessage}{Paragraph}" +
+                $"QuestPDF does not ship native components for your current runtime ('{currentRuntime}'). " +
+                $"The supported runtimes are: {supportedRuntimes}.{Paragraph}" +
+                $"This typically happens on 32-bit Linux, 32-bit ARM devices (such as some Raspberry Pi configurations), or operating systems other than Windows, Linux, and macOS. " +
+                $"To resolve this issue, please run your application on one of the supported runtimes listed above — on Linux and ARM devices this usually means switching to a 64-bit operating system.");
         }
 
         private static void EnsureLinuxGlibcVersionIsSupported()
@@ -136,9 +139,9 @@ namespace QuestPDF.Helpers
             
             throw new PlatformNotSupportedException(
                 $"{ExceptionBaseMessage}{Paragraph}" +
-                $"Please consider updating your operating system distribution. " +
-                $"Current GLIBC version: {glibcVersion}. " +
-                $"The minimum required version is {RequiredGlibcVersionOnLinux}. ");
+                $"Your Linux environment provides GLIBC {glibcVersion}, but QuestPDF requires at least GLIBC {RequiredGlibcVersionOnLinux}.{Paragraph}" +
+                $"This usually happens on older Linux distributions or outdated Docker base images. " +
+                $"To resolve this issue, please upgrade to a newer distribution or base image — for example, Debian 10+, Ubuntu 20.04+, or a recent Alpine image (which uses musl instead of GLIBC).");
         }
         
         private void EnsureNativeVersionCompatibility()
@@ -148,9 +151,10 @@ namespace QuestPDF.Helpers
             
             throw new InitializationException(
                 $"{ExceptionBaseMessage}{Paragraph}" +
-                $"The loaded native library version is incompatible with the current QuestPDF version.{Paragraph}" +
-                $"To resolve this issue, please: 1) Clean and rebuild your solution, 2) Remove the bin and obj folders, and 3) Ensure all projects in your solution use the same QuestPDF NuGet package version.{Paragraph}" +
-                $"If you have copied any QuestPDF-related native files manually, please make sure to replace them with the updated ones provided by the NuGet package.");
+                $"The loaded native library belongs to a different QuestPDF version than the one your application references. " +
+                $"This usually happens after upgrading QuestPDF when older native files remain in the output folder, or when projects within the same solution reference different QuestPDF versions.{Paragraph}" +
+                $"To resolve this issue, please: 1) ensure every project in your solution references the same QuestPDF NuGet package version, 2) delete the 'bin' and 'obj' folders, 3) restore NuGet packages, and 4) rebuild the solution.{Paragraph}" +
+                $"If you have copied any QuestPDF native files manually, please replace them with the matching files provided by the NuGet package.");
         }
         
         private Exception? CheckIfExceptionIsThrownWhenLoadingNativeDependencies()
@@ -168,16 +172,34 @@ namespace QuestPDF.Helpers
         
         private static void ThrowGeneralCompatibilityException(Exception innerException, string? exceptionHint)
         {
+            var platform = NativeDependencyProvider.GetRuntimePlatform();
+
             var message = $"{ExceptionBaseMessage}{Paragraph}" +
-                          $"The reason could not be automatically determined. " +
-                          $"QuestPDF requires additional native shared libraries to run. " +
-                          $"They are distributed with the QuestPDF NuGet package under the 'runtimes/{NativeDependencyProvider.GetRuntimePlatform()}/native' folder. " +
-                          $"Please ensure that the appropriate native files are copied to the application output or publish directory and are available to the native loader.";
-            
-            if (!string.IsNullOrWhiteSpace(exceptionHint))  
+                          $"QuestPDF's native components could not be loaded, and the exact cause could not be determined automatically. " +
+                          $"These components are shipped with the QuestPDF NuGet package under the 'runtimes/{platform}/native' folder and must be present in your application's output or publish directory.{Paragraph}" +
+                          $"To resolve this issue, please: " +
+                          $"1) confirm that the 'runtimes/{platform}/native' folder is included in your build output (this can be missing in single-file or trimmed publishes), " +
+                          $"2) verify that no antivirus or security policy is blocking the native files from being loaded.";
+
+            var architectureMismatchHint = GetArchitectureMismatchHint(innerException);
+
+            if (!string.IsNullOrWhiteSpace(architectureMismatchHint))
+                message += $"{Paragraph}{architectureMismatchHint}";
+
+            if (!string.IsNullOrWhiteSpace(exceptionHint))
                 message += $"{Paragraph}{exceptionHint}";
-            
+
             throw new InitializationException(message, innerException);
+        }
+
+        private static string? GetArchitectureMismatchHint(Exception innerException)
+        {
+            if (innerException is not BadImageFormatException || !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                return null;
+
+            return "This usually indicates an architecture mismatch between your application process and the native QuestPDF binary. " +
+                   "Ensure your process architecture (x86, x64, or Arm64) matches one of the shipped native runtimes — " +
+                   "on .NET Framework in particular, set an explicit 'Platform target' (x86/x64/Arm64) rather than 'Any CPU' so the process bitness is deterministic.";
         }
     }
 }
