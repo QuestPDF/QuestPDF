@@ -139,7 +139,10 @@ namespace QuestPDF.Helpers
 
         private static void EnsureLinuxGlibcVersionIsSupported()
         {
-            var glibcVersion = NativeDependencyProvider.GetGlibcVersion.Value;
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                return;
+            
+            var glibcVersion = NativeDependencyProvider.GlibcVersion.Value;
             
             if (glibcVersion == null || glibcVersion >= RequiredGlibcVersionOnLinux) 
                 return;

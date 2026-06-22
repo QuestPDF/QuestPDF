@@ -149,8 +149,24 @@ internal static class NativeDependencyProvider
         return lddCommandOutput.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
     });
 
-    public static readonly Lazy<Version?> GetGlibcVersion = new(() =>
+    public static readonly Lazy<Version?> GlibcVersion = new(() =>
     {
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            return null;
+        
+        // strategy 1: use gnu_get_libc_version
+        try
+        {
+            var versionPtr = gnu_get_libc_version();
+            var versionText = Marshal.PtrToStringAnsi(versionPtr);
+            return Version.Parse(versionText);
+        }
+        catch
+        {
+            // ignore
+        }
+        
+        // strategy 2: use ldd command
         var lddCommandOutput = LddCommandOutput.Value ?? string.Empty;
         
         if (string.IsNullOrEmpty(lddCommandOutput))
@@ -168,6 +184,9 @@ internal static class NativeDependencyProvider
     
         return Version.TryParse(versionGroup.Value, out var parsedVersion) ? parsedVersion : null;
     });
+    
+    [DllImport("libc", EntryPoint = "gnu_get_libc_version")]
+    private static extern IntPtr gnu_get_libc_version();
 
     private static void CopyFileIfNewer(string sourcePath, string targetPath)
     {
