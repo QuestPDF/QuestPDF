@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace QuestPDF.Helpers;
@@ -112,10 +113,10 @@ internal static class NativeDependencyProvider
             Environment.CurrentDirectory,
             AppContext.BaseDirectory,
             Directory.GetCurrentDirectory(),
-            new FileInfo(typeof(NativeDependencyProvider).Assembly.Location).Directory?.FullName
+            GetAssemblyDirectoryOrNull()
         };
         
-        foreach (var location in availableLocations)
+        foreach (var location in availableLocations.Distinct())
         {
             if (string.IsNullOrEmpty(location))
                 continue;
@@ -127,6 +128,19 @@ internal static class NativeDependencyProvider
         }
 
         return null;
+    }
+    
+    private static string? GetAssemblyDirectoryOrNull()
+    {
+        try
+        {
+            var location = typeof(NativeDependencyProvider).Assembly.Location;
+            return new FileInfo(location).Directory?.FullName;
+        }
+        catch
+        {
+            return null;
+        }
     }
     
     private static void CopyFileIfNewer(string sourcePath, string targetPath)
