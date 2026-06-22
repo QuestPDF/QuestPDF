@@ -50,16 +50,7 @@ namespace QuestPDF.Helpers
             EnsureLinuxGlibcVersionIsSupported();
 
             // first attempt: preload the native dependencies directly from the "runtimes/{rid}/native"
-            // folder by absolute path. This requires no write access to the application directory, which
-            // makes it robust in read-only or restricted deployments (for example, IIS hosted from Program Files).
-            try
-            {
-                NativeDependencyProvider.TryPreloadNativeDependencies();
-            }
-            catch
-            {
-                // best-effort: fall back to copying the native files below
-            }
+            NativeDependencyProvider.TryPreloadNativeDependencies();
 
             innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
 

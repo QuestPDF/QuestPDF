@@ -11,17 +11,28 @@ internal static class NativeDependencyProvider
 
     public static void TryPreloadNativeDependencies()
     {
-        var nativeFilesPath = GetNativeFileSourcePath();
-
-        if (nativeFilesPath == null)
-            return;
-
-        foreach (var baseName in new[] { "QuestPdfSkia", "qpdf" })
+        try
         {
-            var nativeFilePath = Path.Combine(nativeFilesPath, GetNativeLibraryFileName(baseName));
+            var nativeFilesPath = GetNativeFileSourcePath();
 
-            if (File.Exists(nativeFilePath))
-                LoadNativeLibrary(nativeFilePath);
+            if (nativeFilesPath == null)
+                return;
+
+            foreach (var baseName in new[] { "QuestPdfSkia", "qpdf" })
+            {
+                var nativeFilePath = Path.Combine(nativeFilesPath, GetNativeLibraryFileName(baseName));
+
+                if (File.Exists(nativeFilePath))
+                    LoadNativeLibrary(nativeFilePath);
+            }
+        }
+        catch (Exception e)
+        {
+            Trace.TraceWarning(
+                "QuestPDF was unable to preload its native dependencies from the 'runtimes/{rid}/native' folder. " +
+                "This operation runs only after the standard .NET native library resolution has already failed, as part of QuestPDF's recovery process. " +
+                "The most likely causes are a missing or incompatible native binary, or a runtime/architecture mismatch. " +
+                $"Details: {e.Message}");
         }
     }
 
@@ -97,8 +108,8 @@ internal static class NativeDependencyProvider
         {
             Trace.TraceWarning(
                 "QuestPDF was unable to copy its native dependency files to the application directory. " +
-                "This is a best-effort fallback and is not necessarily a problem; native libraries may still load correctly through the standard .NET runtime mechanism. " +
-                "However, if document generation subsequently fails with a native dependency error, the most likely causes are insufficient file system permissions or a read-only application directory. " +
+                "This operation runs only after the standard .NET native library resolution has already failed, as part of QuestPDF's recovery process. " +
+                "The most likely causes are insufficient file system permissions or a read-only application directory. " +
                 $"Details: {e.Message}");
         }
     }
