@@ -9,13 +9,6 @@ internal static class NativeDependencyProvider
 {
     #region Native Library Preloading
 
-    /// <summary>
-    /// Loads the native dependencies directly from the "runtimes/{rid}/native" folder by absolute path.
-    /// Unlike <see cref="EnsureNativeFileAvailability"/>, this requires no write access to the application
-    /// directory, which makes it robust in read-only or restricted deployments (for example, IIS hosted
-    /// from Program Files). This is primarily relevant on .NET Framework, where the runtime does not probe
-    /// the "runtimes/{rid}/native" folder automatically.
-    /// </summary>
     public static void TryPreloadNativeDependencies()
     {
         var nativeFilesPath = GetNativeFileSourcePath();
@@ -78,7 +71,7 @@ internal static class NativeDependencyProvider
     
     #region Native File Copying
 
-    public static void EnsureNativeFileAvailability()
+    public static void TryCopyNativeDependenciesToApplicationDirectory()
     {
         try
         {

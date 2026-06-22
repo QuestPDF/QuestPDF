@@ -70,7 +70,7 @@ namespace QuestPDF.Helpers
             }
 
             // second attempt: copy the appropriate native files next to the application and test again
-            NativeDependencyProvider.EnsureNativeFileAvailability();
+            NativeDependencyProvider.TryCopyNativeDependenciesToApplicationDirectory();
 
             innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
 
