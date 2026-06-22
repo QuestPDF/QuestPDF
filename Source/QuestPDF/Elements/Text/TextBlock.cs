@@ -271,6 +271,7 @@ namespace QuestPDF.Elements.Text
             if (!AreParagraphItemsTransformedWithSpacingAndIndentation)
             {
                 Items = ApplyParagraphSpacingToTextBlockItems().ToList();
+                RemoveWhitespaceAtLineEnds(Items);
                 AreParagraphItemsTransformedWithSpacingAndIndentation = true;
             }
             
@@ -494,6 +495,93 @@ namespace QuestPDF.Elements.Text
                 
                 result.Add(new TextBlockSpan() { Text = "\n", Style = TextStyle.ParagraphSpacing });
                 result.Add(new TextBlockParagraphSpacing(ParagraphFirstLineIndentation, 0));
+            }
+        }
+
+        /// <summary>
+        /// Removes whitespace located at the end of each line of text.
+        /// Such whitespace is invisible, yet a line composed solely of whitespace (e.g. a word followed
+        /// by a newline and a long series of spaces) may report a width far larger than the available
+        /// space, which would otherwise incorrectly prevent the text from being rendered.
+        /// Non-text items (injected elements, placeholders) as well as hyperlinks, section links,
+        /// page numbers and paragraph-spacing helpers act as content barriers so that meaningful
+        /// whitespace (e.g. between words split across spans) is preserved.
+        /// </summary>
+        private static void RemoveWhitespaceAtLineEnds(List<ITextBlockItem> items)
+        {
+            // Scan all characters of editable text spans from right to left. A whitespace character is
+            // removed when everything to its right - up to the next line break or the end of the text -
+            // is also whitespace.
+            var keepFlags = new Dictionary<TextBlockSpan, bool[]>();
+            var pendingTrailing = true;
+
+            for (var itemIndex = items.Count - 1; itemIndex >= 0; itemIndex--)
+            {
+                if (!IsEditableTextSpan(items[itemIndex], out var span))
+                {
+                    // Any non-editable item is treated as content.
+                    pendingTrailing = false;
+                    continue;
+                }
+
+                var text = span.Text ?? string.Empty;
+                var keep = new bool[text.Length];
+                var anyRemoved = false;
+
+                for (var charIndex = text.Length - 1; charIndex >= 0; charIndex--)
+                {
+                    var character = text[charIndex];
+
+                    if (character == '\n')
+                    {
+                        keep[charIndex] = true;
+                        pendingTrailing = true;
+                    }
+                    else if (IsRemovableHorizontalWhitespace(character))
+                    {
+                        keep[charIndex] = !pendingTrailing;
+                        anyRemoved |= pendingTrailing;
+                    }
+                    else
+                    {
+                        keep[charIndex] = true;
+                        pendingTrailing = false;
+                    }
+                }
+
+                if (anyRemoved)
+                    keepFlags[span] = keep;
+            }
+
+            foreach (var entry in keepFlags)
+            {
+                var span = entry.Key;
+                var keep = entry.Value;
+
+                var text = span.Text;
+                var builder = new System.Text.StringBuilder(text.Length);
+
+                for (var charIndex = 0; charIndex < text.Length; charIndex++)
+                {
+                    if (keep[charIndex])
+                        builder.Append(text[charIndex]);
+                }
+
+                span.Text = builder.ToString();
+            }
+
+            static bool IsEditableTextSpan(ITextBlockItem item, out TextBlockSpan span)
+            {
+                span = item as TextBlockSpan;
+
+                return span != null
+                       && span.GetType() == typeof(TextBlockSpan)
+                       && !ReferenceEquals(span.Style, TextStyle.ParagraphSpacing);
+            }
+
+            static bool IsRemovableHorizontalWhitespace(char character)
+            {
+                return character is ' ' or '\t' or '\r' or '\f' or '\v';
             }
         }
 
