@@ -11,6 +11,7 @@ namespace QuestPDF.Helpers
         
         private static readonly Version RequiredGlibcVersionOnLinux = Version.Parse("2.28");
         
+        private readonly object Lock = new();
         private bool IsCompatibilityChecked { get; set; } = false;
 
         public Action ExecuteNativeCode { get; set; } = () => { };
@@ -22,8 +23,14 @@ namespace QuestPDF.Helpers
             if (IsCompatibilityChecked)
                 return;
 
-            TestOnce();
-            IsCompatibilityChecked = true;
+            lock (Lock)
+            {
+                if (IsCompatibilityChecked)
+                    return;
+
+                TestOnce();
+                IsCompatibilityChecked = true;
+            }
         }
         
         private void TestOnce()
