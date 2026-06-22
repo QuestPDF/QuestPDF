@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements.Text.Items;
@@ -559,7 +560,7 @@ namespace QuestPDF.Elements.Text
                 var keep = entry.Value;
 
                 var text = span.Text;
-                var builder = new System.Text.StringBuilder(text.Length);
+                var builder = new StringBuilder(text.Length);
 
                 for (var charIndex = 0; charIndex < text.Length; charIndex++)
                 {

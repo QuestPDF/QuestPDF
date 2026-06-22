@@ -1,4 +1,3 @@
-using System;
 using NUnit.Framework;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Fluent;
@@ -9,9 +8,9 @@ namespace QuestPDF.UnitTests;
 
 public class TextWhitespaceTests
 {
-    private static byte[] GeneratePdf(string text)
+    private static void GeneratePdf(string text)
     {
-        return Document
+        Document
             .Create(container =>
             {
                 container.Page(page =>
