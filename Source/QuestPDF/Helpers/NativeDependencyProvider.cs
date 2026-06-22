@@ -59,23 +59,12 @@ internal static class NativeDependencyProvider
             if (LoadLibraryEx(nativeFilePath, IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH) == IntPtr.Zero)
                 throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
         }
-        else
-        {
-            const int RTLD_NOW = 0x0002;
-            const int RTLD_GLOBAL = 0x0100;
-
-            if (dlopen(nativeFilePath, RTLD_NOW | RTLD_GLOBAL) == IntPtr.Zero)
-                throw new InvalidOperationException($"Failed to load native library '{nativeFilePath}'.");
-        }
 #endif
     }
 
 #if !NET6_0_OR_GREATER
     [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, uint dwFlags);
-
-    [DllImport("libdl", EntryPoint = "dlopen")]
-    private static extern IntPtr dlopen(string fileName, int flags);
 #endif
 
     #endregion
