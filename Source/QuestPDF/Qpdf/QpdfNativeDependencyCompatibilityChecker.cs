@@ -1,4 +1,4 @@
-using System;
+using System.Runtime.InteropServices;
 using QuestPDF.Helpers;
 
 namespace QuestPDF.Qpdf;
@@ -38,6 +38,8 @@ internal static class QpdfNativeDependencyCompatibilityChecker
 
     private static string GetHint()
     {
-        return $"Please do NOT install the qpdf package.";
+        return "QuestPDF bundles its own qpdf native library. " +
+               "If a different, system-wide qpdf is installed, it may be loaded instead of the bundled one and cause a version conflict. " +
+               "If present, please remove the system 'qpdf' package.";
     }
 }
