@@ -55,14 +55,11 @@ internal static class NativeDependencyProvider
     
     public static bool IsCurrentRuntimeSupported()
     {
-        var currentRuntime = GetRuntimePlatform();
-        return SupportedPlatforms.Contains(currentRuntime);
+        return SupportedPlatforms.Contains(RuntimePlatform.Value);
     }
     
     static string? GetNativeFileSourcePath()
     {
-        var platform = GetRuntimePlatform();
-
         var availableLocations = new[]
         {
             AppDomain.CurrentDomain.RelativeSearchPath, 
@@ -78,7 +75,7 @@ internal static class NativeDependencyProvider
             if (string.IsNullOrEmpty(location))
                 continue;
 
-            var nativeFileSourcePath = Path.Combine(location, "runtimes", platform, "native");
+            var nativeFileSourcePath = Path.Combine(location, "runtimes", RuntimePlatform.Value, "native");
 
             if (Directory.Exists(nativeFileSourcePath))
                 return nativeFileSourcePath;
@@ -86,8 +83,8 @@ internal static class NativeDependencyProvider
 
         return null;
     }
-        
-    public static string GetRuntimePlatform()
+
+    public static readonly Lazy<string> RuntimePlatform = new(() =>
     {
         return $"{GetSystemIdentifier()}-{GetProcessArchitecture()}";
 
@@ -97,7 +94,7 @@ internal static class NativeDependencyProvider
                 return "win";
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return IsLinuxMusl() ? "linux-musl" : "linux";
+                return IsLinuxMusl.Value ? "linux-musl" : "linux";
                 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
                 return "osx";
@@ -109,9 +106,9 @@ internal static class NativeDependencyProvider
         {
             return RuntimeInformation.ProcessArchitecture.ToString().ToLower();
         }
-    }
+    });
     
-    private static string? ExecuteLddCommand()
+    private static readonly Lazy<string?> LddCommandOutput = new(() =>
     {
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             return null;
@@ -144,23 +141,22 @@ internal static class NativeDependencyProvider
         {
             return null;
         }
-    }
+    });
 
-    private static bool IsLinuxMusl()
+    private static readonly Lazy<bool> IsLinuxMusl = new(() =>
     {
-        var lddCommandOutput = ExecuteLddCommand() ?? string.Empty;
-        var containsMuslText = lddCommandOutput.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
-        return containsMuslText;
-    }
+        var lddCommandOutput = LddCommandOutput.Value ?? string.Empty;
+        return lddCommandOutput.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
+    });
 
-    public static Version? GetGlibcVersion()
+    public static readonly Lazy<Version?> GetGlibcVersion = new(() =>
     {
-        var lddCommandOutput = ExecuteLddCommand() ?? string.Empty;
+        var lddCommandOutput = LddCommandOutput.Value ?? string.Empty;
         
         if (string.IsNullOrEmpty(lddCommandOutput))
             return null;
         
-        var match = Regex.Match(lddCommandOutput, @"ldd \(.+\) (?<version>[1-9]\.[0-9]{2})");
+        var match = Regex.Match(lddCommandOutput, @"ldd \(.+\) (?<version>\d+\.\d+)");
     
         if (!match.Success)
             return null;
@@ -171,7 +167,7 @@ internal static class NativeDependencyProvider
             return null;
     
         return Version.TryParse(versionGroup.Value, out var parsedVersion) ? parsedVersion : null;
-    }
+    });
 
     private static void CopyFileIfNewer(string sourcePath, string targetPath)
     {

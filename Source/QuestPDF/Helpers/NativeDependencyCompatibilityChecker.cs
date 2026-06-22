@@ -60,7 +60,7 @@ namespace QuestPDF.Helpers
                 return;
             }
 
-            ThrowGeneralCompatibilityException(innerException, ExceptionHint.Invoke());
+            ThrowGeneralCompatibilityException(innerException);
         }
         
         private static void EnsureOperatingSystemIsSupported()
@@ -127,7 +127,7 @@ namespace QuestPDF.Helpers
                 return;
 
             var supportedRuntimes = string.Join(", ", NativeDependencyProvider.SupportedPlatforms);
-            var currentRuntime = NativeDependencyProvider.GetRuntimePlatform();
+            var currentRuntime = NativeDependencyProvider.RuntimePlatform.Value;
             
             throw new PlatformNotSupportedException(
                 $"{ExceptionBaseMessage}{Paragraph}" +
@@ -139,7 +139,7 @@ namespace QuestPDF.Helpers
 
         private static void EnsureLinuxGlibcVersionIsSupported()
         {
-            var glibcVersion = NativeDependencyProvider.GetGlibcVersion();
+            var glibcVersion = NativeDependencyProvider.GetGlibcVersion.Value;
             
             if (glibcVersion == null || glibcVersion >= RequiredGlibcVersionOnLinux) 
                 return;
@@ -155,13 +155,20 @@ namespace QuestPDF.Helpers
         {
             if (CheckNativeLibraryVersion())
                 return;
-            
-            throw new InitializationException(
+
+            var message =
                 $"{ExceptionBaseMessage}{Paragraph}" +
                 $"The loaded native library belongs to a different QuestPDF version than the one your application references. " +
                 $"This usually happens after upgrading QuestPDF when older native files remain in the output folder, or when projects within the same solution reference different QuestPDF versions.{Paragraph}" +
                 $"To resolve this issue, please: 1) ensure every project in your solution references the same QuestPDF NuGet package version, 2) delete the 'bin' and 'obj' folders, 3) restore NuGet packages, and 4) rebuild the solution.{Paragraph}" +
-                $"If you have copied any QuestPDF native files manually, please replace them with the matching files provided by the NuGet package.");
+                $"If you have copied any QuestPDF native files manually, please replace them with the matching files provided by the NuGet package.";
+
+            var exceptionHint = ExceptionHint.Invoke();
+
+            if (!string.IsNullOrWhiteSpace(exceptionHint))
+                message += $"{Paragraph}{exceptionHint}";
+
+            throw new InitializationException(message);
         }
         
         private Exception? CheckIfExceptionIsThrownWhenLoadingNativeDependencies()
@@ -177,22 +184,25 @@ namespace QuestPDF.Helpers
             }
         }
         
-        private static void ThrowGeneralCompatibilityException(Exception innerException, string? exceptionHint)
+        private void ThrowGeneralCompatibilityException(Exception innerException)
         {
-            var platform = NativeDependencyProvider.GetRuntimePlatform();
+            var platform = NativeDependencyProvider.RuntimePlatform.Value;
 
             var message = $"{ExceptionBaseMessage}{Paragraph}" +
                           $"QuestPDF's native components could not be loaded, and the exact cause could not be determined automatically. " +
                           $"These components are shipped with the QuestPDF NuGet package under the 'runtimes/{platform}/native' folder and must be present in your application's output or publish directory.{Paragraph}" +
                           $"To resolve this issue, please: " +
                           $"1) confirm that the 'runtimes/{platform}/native' folder is included in your build output (this can be missing in single-file or trimmed publishes), " +
-                          $"2) verify that no antivirus or security policy is blocking the native files from being loaded.";
+                          $"2) when publishing for a specific runtime (a self-contained publish or 'dotnet publish -r <RID>'), make sure the RuntimeIdentifier matches the machine you deploy to rather than the machine you build on — for example '{platform}' for this environment, 'linux-musl-x64' for Alpine Linux, or 'osx-arm64' for Apple Silicon; for a framework-dependent deployment, prefer not pinning a RID at build time so that every 'runtimes/{{rid}}/native' folder is preserved and resolved by the .NET runtime, " +
+                          $"3) verify that no antivirus or security policy is blocking the native files from being loaded.";
 
             var architectureMismatchHint = GetArchitectureMismatchHint(innerException);
 
             if (!string.IsNullOrWhiteSpace(architectureMismatchHint))
                 message += $"{Paragraph}{architectureMismatchHint}";
 
+            var exceptionHint = ExceptionHint.Invoke();
+            
             if (!string.IsNullOrWhiteSpace(exceptionHint))
                 message += $"{Paragraph}{exceptionHint}";
 
@@ -201,12 +211,24 @@ namespace QuestPDF.Helpers
 
         private static string? GetArchitectureMismatchHint(Exception innerException)
         {
-            if (innerException is not BadImageFormatException || !RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (innerException is not BadImageFormatException)
                 return null;
 
-            return "This usually indicates an architecture mismatch between your application process and the native QuestPDF binary. " +
-                   "Ensure your process architecture (x86, x64, or Arm64) matches one of the shipped native runtimes — " +
-                   "on .NET Framework in particular, set an explicit 'Platform target' (x86/x64/Arm64) rather than 'Any CPU' so the process bitness is deterministic.";
+            var processArchitecture = RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant();
+            var osArchitecture = RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant();
+
+            var hint = 
+                "This error usually indicates an architecture (bitness) mismatch between your application process and the native QuestPDF binary. " +
+                $"Your process runs as '{processArchitecture}' on a '{osArchitecture}' operating system.{Paragraph}" +
+                "Please ensure your process architecture (x86, x64, or Arm64) matches one of the shipped native runtimes. " +
+                $"A common cause is building on one architecture and running on another — for example, building on Apple Silicon (arm64) and then running the artifact as x64 in Docker or CI.{Paragraph}" +
+                "When you publish for a specific runtime, set the RuntimeIdentifier to match the target machine (for example 'dotnet publish -r linux-x64', or 'linux-musl-x64' for Alpine Linux).";
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                hint += $"{Paragraph}On .NET Framework, set an explicit 'Platform target' (x86/x64/Arm64) instead of 'Any CPU' so the process bitness is deterministic. " +
+                        "When hosting in IIS, make sure the application pool bitness ('Enable 32-Bit Applications') matches your build.";
+
+            return hint;
         }
     }
 }
