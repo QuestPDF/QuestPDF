@@ -7,5 +7,10 @@
             <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+
+        <None Include="$(MSBuildThisFileDirectory)\..\..\LatoFont\*.*">
+            <Link>LatoFont\%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 </Project>
