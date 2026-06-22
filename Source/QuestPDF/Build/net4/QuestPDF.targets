@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
-        <None Include="$(MSBuildThisFileDirectory)\..\..\runtimes\**\*.*">
+        <!-- .NET Framework is Windows-only; exclude linux/osx native binaries that would never load here. -->
+        <None Include="$(MSBuildThisFileDirectory)\..\..\runtimes\**\*.*"
+              Exclude="$(MSBuildThisFileDirectory)\..\..\runtimes\linux-*\**\*.*;$(MSBuildThisFileDirectory)\..\..\runtimes\osx-*\**\*.*">
             <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
