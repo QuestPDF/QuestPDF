@@ -49,9 +49,29 @@ namespace QuestPDF.Helpers
             EnsureRuntimeIdentifierIsSupported();
             EnsureLinuxGlibcVersionIsSupported();
 
-            // detect platform, copy appropriate native files and test compatibility again
+            // first attempt: preload the native dependencies directly from the "runtimes/{rid}/native"
+            // folder by absolute path. This requires no write access to the application directory, which
+            // makes it robust in read-only or restricted deployments (for example, IIS hosted from Program Files).
+            try
+            {
+                NativeDependencyProvider.TryPreloadNativeDependencies();
+            }
+            catch
+            {
+                // best-effort: fall back to copying the native files below
+            }
+
+            innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
+
+            if (innerException == null)
+            {
+                EnsureNativeVersionCompatibility();
+                return;
+            }
+
+            // second attempt: copy the appropriate native files next to the application and test again
             NativeDependencyProvider.EnsureNativeFileAvailability();
-            
+
             innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
 
             if (innerException == null)
@@ -123,11 +143,11 @@ namespace QuestPDF.Helpers
 
         private static void EnsureRuntimeIdentifierIsSupported()
         {
-            if (NativeDependencyProvider.IsCurrentRuntimeSupported())
+            if (NativeRuntimeDetection.IsCurrentRuntimeSupported())
                 return;
 
-            var supportedRuntimes = string.Join(", ", NativeDependencyProvider.SupportedPlatforms);
-            var currentRuntime = NativeDependencyProvider.RuntimePlatform.Value;
+            var supportedRuntimes = string.Join(", ", NativeRuntimeDetection.SupportedPlatforms);
+            var currentRuntime = NativeRuntimeDetection.RuntimePlatform.Value;
             
             throw new PlatformNotSupportedException(
                 $"{ExceptionBaseMessage}{Paragraph}" +
@@ -142,7 +162,7 @@ namespace QuestPDF.Helpers
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 return;
             
-            var glibcVersion = NativeDependencyProvider.GlibcVersion.Value;
+            var glibcVersion = NativeRuntimeDetection.GlibcVersion.Value;
             
             if (glibcVersion == null || glibcVersion >= RequiredGlibcVersionOnLinux) 
                 return;
@@ -189,7 +209,7 @@ namespace QuestPDF.Helpers
         
         private void ThrowGeneralCompatibilityException(Exception innerException)
         {
-            var platform = NativeDependencyProvider.RuntimePlatform.Value;
+            var platform = NativeRuntimeDetection.RuntimePlatform.Value;
 
             var message = $"{ExceptionBaseMessage}{Paragraph}" +
                           $"QuestPDF's native components could not be loaded, and the exact cause could not be determined automatically. " +

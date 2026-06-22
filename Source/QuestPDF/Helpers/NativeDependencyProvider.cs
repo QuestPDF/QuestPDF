@@ -1,26 +1,83 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 
 namespace QuestPDF.Helpers;
 
 internal static class NativeDependencyProvider
 {
-    public static readonly string[] SupportedPlatforms =
+    #region Native Library Preloading
+
+    /// <summary>
+    /// Loads the native dependencies directly from the "runtimes/{rid}/native" folder by absolute path.
+    /// Unlike <see cref="EnsureNativeFileAvailability"/>, this requires no write access to the application
+    /// directory, which makes it robust in read-only or restricted deployments (for example, IIS hosted
+    /// from Program Files). This is primarily relevant on .NET Framework, where the runtime does not probe
+    /// the "runtimes/{rid}/native" folder automatically.
+    /// </summary>
+    public static void TryPreloadNativeDependencies()
     {
-        "win-x86",
-        "win-x64",
-        "win-arm64",
-        "linux-x64",
-        "linux-arm64",
-        "linux-musl-x64",
-        "osx-x64",
-        "osx-arm64"
-    };
+        var nativeFilesPath = GetNativeFileSourcePath();
+
+        if (nativeFilesPath == null)
+            return;
+
+        foreach (var baseName in new[] { "QuestPdfSkia", "qpdf" })
+        {
+            var nativeFilePath = Path.Combine(nativeFilesPath, GetNativeLibraryFileName(baseName));
+
+            if (File.Exists(nativeFilePath))
+                LoadNativeLibrary(nativeFilePath);
+        }
+    }
+
+    private static string GetNativeLibraryFileName(string baseName)
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return $"{baseName}.dll";
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            return $"lib{baseName}.dylib";
+
+        return $"lib{baseName}.so";
+    }
+
+    private static void LoadNativeLibrary(string nativeFilePath)
+    {
+#if NET6_0_OR_GREATER
+        NativeLibrary.Load(nativeFilePath);
+#else
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            const uint LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008;
+
+            if (LoadLibraryEx(nativeFilePath, IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH) == IntPtr.Zero)
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        }
+        else
+        {
+            const int RTLD_NOW = 0x0002;
+            const int RTLD_GLOBAL = 0x0100;
+
+            if (dlopen(nativeFilePath, RTLD_NOW | RTLD_GLOBAL) == IntPtr.Zero)
+                throw new InvalidOperationException($"Failed to load native library '{nativeFilePath}'.");
+        }
+#endif
+    }
+
+#if !NET6_0_OR_GREATER
+    [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, uint dwFlags);
+
+    [DllImport("libdl", EntryPoint = "dlopen")]
+    private static extern IntPtr dlopen(string fileName, int flags);
+#endif
+
+    #endregion
     
+    #region Native File Copying
+
     public static void EnsureNativeFileAvailability()
     {
         try
@@ -53,11 +110,6 @@ internal static class NativeDependencyProvider
         }
     }
     
-    public static bool IsCurrentRuntimeSupported()
-    {
-        return SupportedPlatforms.Contains(RuntimePlatform.Value);
-    }
-    
     static string? GetNativeFileSourcePath()
     {
         var availableLocations = new[]
@@ -75,7 +127,7 @@ internal static class NativeDependencyProvider
             if (string.IsNullOrEmpty(location))
                 continue;
 
-            var nativeFileSourcePath = Path.Combine(location, "runtimes", RuntimePlatform.Value, "native");
+            var nativeFileSourcePath = Path.Combine(location, "runtimes", NativeRuntimeDetection.RuntimePlatform.Value, "native");
 
             if (Directory.Exists(nativeFileSourcePath))
                 return nativeFileSourcePath;
@@ -83,111 +135,7 @@ internal static class NativeDependencyProvider
 
         return null;
     }
-
-    public static readonly Lazy<string> RuntimePlatform = new(() =>
-    {
-        return $"{GetSystemIdentifier()}-{GetProcessArchitecture()}";
-
-        static string GetSystemIdentifier()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                return "win";
-                
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return IsLinuxMusl.Value ? "linux-musl" : "linux";
-                
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                return "osx";
-
-            return "other";
-        }
-
-        static string GetProcessArchitecture()
-        {
-            return RuntimeInformation.ProcessArchitecture.ToString().ToLower();
-        }
-    });
     
-    private static readonly Lazy<string?> LddCommandOutput = new(() =>
-    {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            return null;
-        
-        try
-        {
-            var processStartInfo = new ProcessStartInfo
-            {
-                FileName = "ldd",
-                Arguments = "--version",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-                
-            using var process = Process.Start(processStartInfo);
-                
-            if (process == null)
-                return null;
-                
-            var standardOutputText = process.StandardOutput.ReadToEnd();
-            var standardErrorText = process.StandardError.ReadToEnd();
-                
-            process.WaitForExit();
-                
-            return standardOutputText + standardErrorText;
-        }
-        catch
-        {
-            return null;
-        }
-    });
-
-    private static readonly Lazy<bool> IsLinuxMusl = new(() =>
-    {
-        var lddCommandOutput = LddCommandOutput.Value ?? string.Empty;
-        return lddCommandOutput.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
-    });
-
-    public static readonly Lazy<Version?> GlibcVersion = new(() =>
-    {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            return null;
-        
-        // strategy 1: use gnu_get_libc_version
-        try
-        {
-            var versionPtr = gnu_get_libc_version();
-            var versionText = Marshal.PtrToStringAnsi(versionPtr);
-            return Version.Parse(versionText);
-        }
-        catch
-        {
-            // ignore
-        }
-        
-        // strategy 2: use ldd command
-        var lddCommandOutput = LddCommandOutput.Value ?? string.Empty;
-        
-        if (string.IsNullOrEmpty(lddCommandOutput))
-            return null;
-        
-        var match = Regex.Match(lddCommandOutput, @"ldd \(.+\) (?<version>\d+\.\d+)");
-    
-        if (!match.Success)
-            return null;
-
-        var versionGroup = match.Groups["version"];
-        
-        if (!versionGroup.Success)
-            return null;
-    
-        return Version.TryParse(versionGroup.Value, out var parsedVersion) ? parsedVersion : null;
-    });
-    
-    [DllImport("libc", EntryPoint = "gnu_get_libc_version")]
-    private static extern IntPtr gnu_get_libc_version();
-
     private static void CopyFileIfNewer(string sourcePath, string targetPath)
     {
         if (!File.Exists(sourcePath))
@@ -196,4 +144,6 @@ internal static class NativeDependencyProvider
         if (!File.Exists(targetPath) || File.GetLastWriteTime(sourcePath) > File.GetLastWriteTime(targetPath))
             File.Copy(sourcePath, targetPath, true);
     }
+    
+    #endregion
 }
