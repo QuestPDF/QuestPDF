@@ -28,16 +28,17 @@ namespace QuestPDF.Helpers
                 if (IsCompatibilityChecked)
                     return;
 
-                TestOnce();
+                EnsureNativeDependencyIsLoadedAndWorking();
+                EnsureNativeVersionCompatibility();
                 IsCompatibilityChecked = true;
             }
         }
         
-        private void TestOnce()
+        private void EnsureNativeDependencyIsLoadedAndWorking()
         {
             // test with dotnet-based mechanism where native files are provided
             // in the "runtimes/{rid}/native" folder on Core, or by the targets file on .NET Framework
-            if (IsNativeDependencyWorking())
+            if (IsNativeDependencyLoadedAndWorking())
                 return;
 
             EnsureOperatingSystemIsSupported();
@@ -47,27 +48,16 @@ namespace QuestPDF.Helpers
             // first attempt: preload the native dependencies directly from the "runtimes/{rid}/native"
             NativeDependencyProvider.TryPreloadNativeDependencies();
 
-            if (IsNativeDependencyWorking())
+            if (IsNativeDependencyLoadedAndWorking())
                 return;
 
             // second attempt: copy the appropriate native files next to the application and test again
             NativeDependencyProvider.TryCopyNativeDependenciesToApplicationDirectory();
 
-            if (IsNativeDependencyWorking())
+            if (IsNativeDependencyLoadedAndWorking())
                 return;
 
             ThrowGeneralCompatibilityException();
-        }
-        
-        private bool IsNativeDependencyWorking()
-        {
-            var loadException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
-
-            if (loadException != null)
-                return false;
-
-            EnsureNativeVersionCompatibility();
-            return true;
         }
         
         private static void EnsureOperatingSystemIsSupported()
@@ -179,6 +169,11 @@ namespace QuestPDF.Helpers
                 message += $"{Paragraph}{exceptionHint}";
 
             throw new InitializationException(message);
+        }
+        
+        private bool IsNativeDependencyLoadedAndWorking()
+        {
+            return CheckIfExceptionIsThrownWhenLoadingNativeDependencies() == null;
         }
         
         private Exception? CheckIfExceptionIsThrownWhenLoadingNativeDependencies()
