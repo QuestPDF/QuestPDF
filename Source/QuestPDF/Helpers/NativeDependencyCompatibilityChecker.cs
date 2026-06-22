@@ -37,14 +37,9 @@ namespace QuestPDF.Helpers
         {
             // test with dotnet-based mechanism where native files are provided
             // in the "runtimes/{rid}/native" folder on Core, or by the targets file on .NET Framework
-            var innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
-
-            if (innerException == null)
-            {
-                EnsureNativeVersionCompatibility();
+            if (IsNativeDependencyWorking())
                 return;
-            }
-            
+
             EnsureOperatingSystemIsSupported();
             EnsureRuntimeIdentifierIsSupported();
             EnsureLinuxGlibcVersionIsSupported();
@@ -52,26 +47,27 @@ namespace QuestPDF.Helpers
             // first attempt: preload the native dependencies directly from the "runtimes/{rid}/native"
             NativeDependencyProvider.TryPreloadNativeDependencies();
 
-            innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
-
-            if (innerException == null)
-            {
-                EnsureNativeVersionCompatibility();
+            if (IsNativeDependencyWorking())
                 return;
-            }
 
             // second attempt: copy the appropriate native files next to the application and test again
             NativeDependencyProvider.TryCopyNativeDependenciesToApplicationDirectory();
 
-            innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
-
-            if (innerException == null)
-            {
-                EnsureNativeVersionCompatibility();
+            if (IsNativeDependencyWorking())
                 return;
-            }
 
-            ThrowGeneralCompatibilityException(innerException);
+            ThrowGeneralCompatibilityException();
+        }
+        
+        private bool IsNativeDependencyWorking()
+        {
+            var loadException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
+
+            if (loadException != null)
+                return false;
+
+            EnsureNativeVersionCompatibility();
+            return true;
         }
         
         private static void EnsureOperatingSystemIsSupported()
@@ -198,8 +194,13 @@ namespace QuestPDF.Helpers
             }
         }
         
-        private void ThrowGeneralCompatibilityException(Exception innerException)
+        private void ThrowGeneralCompatibilityException()
         {
+            var innerException = CheckIfExceptionIsThrownWhenLoadingNativeDependencies();
+            
+            if (innerException == null)
+                return; 
+            
             var platform = NativeRuntimeDetection.RuntimePlatform.Value;
 
             var message = $"{ExceptionBaseMessage}{Paragraph}" +
