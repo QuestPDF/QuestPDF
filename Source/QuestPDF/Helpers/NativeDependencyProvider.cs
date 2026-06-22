@@ -108,12 +108,12 @@ internal static class NativeDependencyProvider
     {
         var availableLocations = new[]
         {
+            GetAssemblyDirectoryOrNull(),
             AppDomain.CurrentDomain.RelativeSearchPath, 
             AppDomain.CurrentDomain.BaseDirectory,
             Environment.CurrentDirectory,
             AppContext.BaseDirectory,
-            Directory.GetCurrentDirectory(),
-            GetAssemblyDirectoryOrNull()
+            Directory.GetCurrentDirectory()
         };
         
         foreach (var location in availableLocations.Distinct())
