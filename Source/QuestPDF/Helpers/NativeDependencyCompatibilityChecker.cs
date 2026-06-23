@@ -102,7 +102,7 @@ namespace QuestPDF.Helpers
                     Throw("watchOS");
                 
                 if (OperatingSystem.IsFreeBSD())
-                    Throw("watchOS");
+                    Throw("FreeBSD");
 #endif
             
 #if NET8_0_OR_GREATER
@@ -236,8 +236,8 @@ namespace QuestPDF.Helpers
             if (innerException is not BadImageFormatException)
                 return null;
 
-            var processArchitecture = RuntimeInformation.ProcessArchitecture.ToString().ToLowerInvariant();
-            var osArchitecture = RuntimeInformation.OSArchitecture.ToString().ToLowerInvariant();
+            var processArchitecture = RuntimeInformation.ProcessArchitecture.ToString().ToLower();
+            var osArchitecture = RuntimeInformation.OSArchitecture.ToString().ToLower();
 
             var hint = 
                 "This error usually indicates an architecture (bitness) mismatch between your application process and the native QuestPDF binary. " +
@@ -255,10 +255,10 @@ namespace QuestPDF.Helpers
 
         private static void WarnIfNativeDependenciesAreSuccessfullyResolvedViaFallbackOnModernRuntime()
         {
-#if NETCOREAPP3_0_OR_GREATER
+#if NET5_0_OR_GREATER
             Trace.TraceWarning(
                 "QuestPDF successfully loaded its native dependencies through its own fallback recovery mechanism, after the standard .NET native library resolution had already failed. " +
-                "On .NET Core 3.0 and newer, the runtime normally resolves these binaries from the runtimes/{rid}/native folder automatically. " +
+                "On .NET 5.0 and newer, the runtime normally resolves these binaries from the runtimes/{rid}/native folder automatically. " +
                 "Reaching this fallback means the files were present on disk but were not part of the resolved dependency graph, so the runtime did not load them on its own. " +
                 "The usual cause is a non-standard deployment. " +
                 "Generation works now because the files happened to be reachable, but relying on this fallback is fragile - changes to how the application is built, published, or hosted could prevent the libraries from loading. " +

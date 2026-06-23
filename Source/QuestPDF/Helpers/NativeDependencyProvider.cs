@@ -50,7 +50,7 @@ internal static class NativeDependencyProvider
 
     private static void LoadNativeLibrary(string nativeFilePath)
     {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
         NativeLibrary.Load(nativeFilePath);
 #else
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -63,7 +63,7 @@ internal static class NativeDependencyProvider
 #endif
     }
 
-#if !NET6_0_OR_GREATER
+#if !NET5_0_OR_GREATER
     [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, uint dwFlags);
 #endif
