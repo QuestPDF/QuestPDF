@@ -3,71 +3,125 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 
 namespace QuestPDF.Helpers;
 
 internal static class NativeDependencyProvider
 {
-    public static readonly string[] SupportedPlatforms =
-    {
-        "win-x86",
-        "win-x64",
-        "win-arm64",
-        "linux-x64",
-        "linux-arm64",
-        "linux-musl-x64",
-        "osx-x64",
-        "osx-arm64"
-    };
-    
-    public static void EnsureNativeFileAvailability()
-    {
-        var nativeFilesPath = GetNativeFileSourcePath();
-        
-        if (nativeFilesPath == null)
-            return;
+    #region Native Library Preloading
 
-        foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
+    public static void TryPreloadNativeDependencies()
+    {
+        try
         {
-            var targetDirectory = new FileInfo(nativeFilePath)
-                .Directory
-                .Parent // native
-                .Parent // platform
-                .Parent // runtimes
-                .FullName;
-            
-            var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
-            CopyFileIfNewer(nativeFilePath, targetPath);
+            var nativeFilesPath = GetNativeFileSourcePath();
+
+            if (nativeFilesPath == null)
+                return;
+
+            foreach (var baseName in new[] { "QuestPdfSkia", "qpdf" })
+            {
+                var nativeFilePath = Path.Combine(nativeFilesPath, GetNativeLibraryFileName(baseName));
+
+                if (File.Exists(nativeFilePath))
+                    LoadNativeLibrary(nativeFilePath);
+            }
+        }
+        catch (Exception e)
+        {
+            Trace.TraceWarning(
+                "QuestPDF was unable to preload its native dependencies from the 'runtimes/{rid}/native' folder. " +
+                "This operation runs only after the standard .NET native library resolution has already failed, as part of QuestPDF's recovery process. " +
+                "The most likely causes are a missing or incompatible native binary, or a runtime/architecture mismatch. " +
+                $"Details: {e.Message}");
         }
     }
-    
-    public static bool IsCurrentPlatformSupported()
+
+    private static string GetNativeLibraryFileName(string baseName)
     {
-        var currentRuntime = GetRuntimePlatform();
-        return SupportedPlatforms.Contains(currentRuntime);
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return $"{baseName}.dll";
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            return $"lib{baseName}.dylib";
+
+        return $"lib{baseName}.so";
+    }
+
+    private static void LoadNativeLibrary(string nativeFilePath)
+    {
+#if NET5_0_OR_GREATER
+        NativeLibrary.Load(nativeFilePath);
+#else
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            const uint LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008;
+
+            if (LoadLibraryEx(nativeFilePath, IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH) == IntPtr.Zero)
+                throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
+        }
+#endif
+    }
+
+#if !NET5_0_OR_GREATER
+    [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, uint dwFlags);
+#endif
+
+    #endregion
+    
+    #region Native File Copying
+
+    public static void TryCopyNativeDependenciesToApplicationDirectory()
+    {
+        try
+        {
+            var nativeFilesPath = GetNativeFileSourcePath();
+        
+            if (nativeFilesPath == null)
+                return;
+
+            foreach (var nativeFilePath in Directory.GetFiles(nativeFilesPath))
+            {
+                var targetDirectory = new FileInfo(nativeFilePath)
+                    .Directory
+                    .Parent // native
+                    .Parent // platform
+                    .Parent // runtimes
+                    .FullName;
+            
+                var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
+                File.Copy(nativeFilePath, targetPath, true);
+            }
+        }
+        catch (Exception e)
+        {
+            Trace.TraceWarning(
+                "QuestPDF was unable to copy its native dependency files to the application directory. " +
+                "This operation runs only after the standard .NET native library resolution has already failed, as part of QuestPDF's recovery process. " +
+                "The most likely causes are insufficient file system permissions or a read-only application directory. " +
+                $"Details: {e.Message}");
+        }
     }
     
     static string? GetNativeFileSourcePath()
     {
-        var platform = GetRuntimePlatform();
-
         var availableLocations = new[]
         {
+            GetAssemblyDirectoryOrNull(),
             AppDomain.CurrentDomain.RelativeSearchPath, 
             AppDomain.CurrentDomain.BaseDirectory,
             Environment.CurrentDirectory,
             AppContext.BaseDirectory,
-            Directory.GetCurrentDirectory(),
-            new FileInfo(typeof(NativeDependencyProvider).Assembly.Location).Directory?.FullName
+            Directory.GetCurrentDirectory()
         };
         
-        foreach (var location in availableLocations)
+        foreach (var location in availableLocations.Distinct())
         {
             if (string.IsNullOrEmpty(location))
                 continue;
 
-            var nativeFileSourcePath = Path.Combine(location, "runtimes", platform, "native");
+            var nativeFileSourcePath = Path.Combine(location, "runtimes", NativeRuntimeDetection.RuntimePlatform.Value, "native");
 
             if (Directory.Exists(nativeFileSourcePath))
                 return nativeFileSourcePath;
@@ -75,95 +129,19 @@ internal static class NativeDependencyProvider
 
         return null;
     }
-        
-    public static string GetRuntimePlatform()
-    {
-        return $"{GetSystemIdentifier()}-{GetProcessArchitecture()}";
-
-        static string GetSystemIdentifier()
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                return "win";
-                
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                return IsLinuxMusl() ? "linux-musl" : "linux";
-                
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                return "osx";
-
-            return "other";
-        }
-
-        static string GetProcessArchitecture()
-        {
-            return RuntimeInformation.ProcessArchitecture.ToString().ToLower();
-        }
-    }
     
-    private static string? ExecuteLddCommand()
+    private static string? GetAssemblyDirectoryOrNull()
     {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            return null;
-        
         try
         {
-            var processStartInfo = new ProcessStartInfo
-            {
-                FileName = "ldd",
-                Arguments = "--version",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-                
-            using var process = Process.Start(processStartInfo);
-                
-            if (process == null)
-                return null;
-                
-            var standardOutputText = process.StandardOutput.ReadToEnd();
-            var standardErrorText = process.StandardError.ReadToEnd();
-                
-            process.WaitForExit();
-                
-            return standardOutputText + standardErrorText;
+            var location = typeof(NativeDependencyProvider).Assembly.Location;
+            return new FileInfo(location).Directory?.FullName;
         }
         catch
         {
             return null;
         }
     }
-
-    private static bool IsLinuxMusl()
-    {
-        var lddCommandOutput = ExecuteLddCommand() ?? string.Empty;
-        var containsMuslText = lddCommandOutput.IndexOf("musl", StringComparison.InvariantCultureIgnoreCase) >= 0;
-        return containsMuslText;
-    }
-
-    public static Version? GetGlibcVersion()
-    {
-        var lddCommandOutput = ExecuteLddCommand() ?? string.Empty;
-        var match = Regex.Match(lddCommandOutput, @"ldd \(.+\) (?<version>[1-9]\.[0-9]{2})");
     
-        if (!match.Success)
-            return null;
-
-        var versionGroup = match.Groups["version"];
-        
-        if (!versionGroup.Success)
-            return null;
-    
-        return Version.TryParse(versionGroup.Value, out var parsedVersion) ? parsedVersion : null;
-    }
-
-    private static void CopyFileIfNewer(string sourcePath, string targetPath)
-    {
-        if (!File.Exists(sourcePath))
-            throw new FileNotFoundException($"Source file not found: {sourcePath}");
-
-        if (!File.Exists(targetPath) || File.GetLastWriteTime(sourcePath) > File.GetLastWriteTime(targetPath))
-            File.Copy(sourcePath, targetPath, true);
-    }
+    #endregion
 }

@@ -9,9 +9,7 @@ namespace QuestPDF.VisualTests
         [OneTimeSetUp]
         public static void Setup()
         {
-            var currentRuntime = NativeDependencyProvider.GetRuntimePlatform();
-
-            if (currentRuntime != "osx-arm64")
+            if (NativeRuntimeDetection.RuntimePlatform.Value != "osx-arm64")
             {
                 Assert.Ignore(
                     "Visual tests are performed based on osx-arm64 runtime output. " +
