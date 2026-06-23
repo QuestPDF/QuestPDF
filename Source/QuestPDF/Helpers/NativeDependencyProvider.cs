@@ -91,7 +91,7 @@ internal static class NativeDependencyProvider
                     .FullName;
             
                 var targetPath = Path.Combine(targetDirectory, Path.GetFileName(nativeFilePath));
-                CopyFileIfNewer(nativeFilePath, targetPath);
+                File.Copy(nativeFilePath, targetPath, true);
             }
         }
         catch (Exception e)
@@ -141,15 +141,6 @@ internal static class NativeDependencyProvider
         {
             return null;
         }
-    }
-    
-    private static void CopyFileIfNewer(string sourcePath, string targetPath)
-    {
-        if (!File.Exists(sourcePath))
-            throw new FileNotFoundException($"Source file not found: {sourcePath}");
-
-        if (!File.Exists(targetPath) || File.GetLastWriteTime(sourcePath) > File.GetLastWriteTime(targetPath))
-            File.Copy(sourcePath, targetPath, true);
     }
     
     #endregion
