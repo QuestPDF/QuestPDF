@@ -74,15 +74,17 @@ namespace QuestPDF.Helpers
             static void CheckAndThrow()
             {
 #if NET6_0_OR_GREATER
+                if (OperatingSystem.IsMacCatalyst())
+                    Throw("Mac Catalyst");
+#endif
+                
+#if NET5_0_OR_GREATER
                 if (OperatingSystem.IsBrowser())
                     Throw("WebAssembly / Browser", "For example, perform this operation on Blazor Server (not WASM).");
 
                 if (OperatingSystem.IsAndroid())
                     Throw("Android");
-
-                if (OperatingSystem.IsMacCatalyst())
-                    Throw("Mac Catalyst");
-
+                
                 if (OperatingSystem.IsIOS())
                     Throw("iOS / iPadOS");
 
@@ -90,6 +92,9 @@ namespace QuestPDF.Helpers
                     Throw("tvOS");
 
                 if (OperatingSystem.IsWatchOS())
+                    Throw("watchOS");
+                
+                if (OperatingSystem.IsFreeBSD())
                     Throw("watchOS");
 #endif
             
