@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using QuestPDF.Drawing.Exceptions;
 
@@ -49,13 +50,19 @@ namespace QuestPDF.Helpers
             NativeDependencyProvider.TryPreloadNativeDependencies();
 
             if (CheckIfNativeCodeCanBeInvoked())
+            {
+                WarnIfNativeDependenciesAreSuccessfullyResolvedViaFallbackOnModernRuntime();
                 return;
+            }
 
             // second attempt: copy the appropriate native files next to the application and test again
             NativeDependencyProvider.TryCopyNativeDependenciesToApplicationDirectory();
 
             if (CheckIfNativeCodeCanBeInvoked())
+            {
+                WarnIfNativeDependenciesAreSuccessfullyResolvedViaFallbackOnModernRuntime();
                 return;
+            }
 
             ThrowNativeDependencyLoadException();
         }
@@ -244,6 +251,19 @@ namespace QuestPDF.Helpers
                         "When hosting in IIS, make sure the application pool bitness ('Enable 32-Bit Applications') matches your build.";
 
             return hint;
+        }
+
+        private static void WarnIfNativeDependenciesAreSuccessfullyResolvedViaFallbackOnModernRuntime()
+        {
+#if NETCOREAPP3_0_OR_GREATER
+            Trace.TraceWarning(
+                "QuestPDF successfully loaded its native dependencies through its own fallback recovery mechanism, after the standard .NET native library resolution had already failed. " +
+                "On .NET Core 3.0 and newer, the runtime normally resolves these binaries from the runtimes/{rid}/native folder automatically. " +
+                "Reaching this fallback means the files were present on disk but were not part of the resolved dependency graph, so the runtime did not load them on its own. " +
+                "The usual cause is a non-standard deployment. " +
+                "Generation works now because the files happened to be reachable, but relying on this fallback is fragile - changes to how the application is built, published, or hosted could prevent the libraries from loading. " +
+                "PDF generation will continue normally; this message is purely informational.");
+#endif
         }
     }
 }
