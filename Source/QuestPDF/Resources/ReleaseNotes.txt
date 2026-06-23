@@ -1,16 +1,5 @@
-- Substantially revised the QuestPDF legal documents to better support enterprise procurement and compliance requirements and to define usage terms more clearly.
-- Introduced native support for Windows ARM64 (win-arm64) environments.
-- Improved compatibility with older Linux distributions (glibc 2.28 and newer).
-- Reduced the NuGet package size by optimizing native dependencies.
-- Renamed the `TranslateX` / `TranslateY` methods to `OffsetX` / `OffsetY` to improve discoverability.
-- SVG rendering improvements:
-  - Prevented zero-width strokes from being rendered as hairlines, aligning behavior with the SVG specification.
-  - Added support for embedded Base64 images that use the modern `href` attribute instead of `xlink:href`.
-  - Added support for the `#RGBA` and `#RRGGBBAA` color formats.
-  - Added support for the `transparent` named color.
-- Fixed PDF bookmark titles so they include only text from the associated paragraph, excluding the alternative text of images.
-- Fixed SectionLink behaving incorrectly when target Section is placed in page header.
-- Updated the Skia native dependency to version m149.
-- Updated the qpdf native dependency to version 12.3.2.
-- Modernized the build system for native dependencies, including how QuestPDF-specific patches are applied.
-- Updated all GitHub Actions workflows to use standard runners, reducing costs and making it easier for everyone to contribute to the project.
+- Updated the Skia native dependency to M150.
+- Improved text rendering stability when handling an excessive number of whitespace characters.
+- Improved the failure message shown when the library runs on an unsupported platform (e.g., Android, iOS, or WASM).
+- Improved platform compatibility checks and introduced more advanced fallback mechanisms.
+- Made the Image.Size property public.
