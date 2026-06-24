@@ -26,7 +26,7 @@ public class ImageComparerTests
     }
     
     [Test]
-    public void ShouldRejectTooManyPixelsWithinColorTolerance()
+    public void ShouldAcceptManyPixelsWithinColorTolerance()
     {
         using var image1 = CreateBitmap(10, 10);
         using var image2 = CreateBitmap(10, 10);
@@ -37,7 +37,7 @@ public class ImageComparerTests
             image2.SetPixel(x % 10, x / 10, new SKColor(110, 110, 110));
         }
         
-        Assert.That(() => ImageComparer.AreImagesSimilar(image1, image2), Throws.TypeOf<AssertionException>());
+        Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
     }
     
     [Test]
@@ -53,7 +53,20 @@ public class ImageComparerTests
     }
     
     [Test]
-    public void ShouldRejectTooManyPixelsMovedByOnePixel()
+    public void ShouldAcceptPixelWithinFuzzyNeighborhoodRange()
+    {
+        using var image1 = CreateBitmap(30, 30);
+        using var image2 = CreateBitmap(30, 30);
+        
+        image1.SetPixel(15, 15, new SKColor(128, 128, 128));
+        image1.SetPixel(14, 15, new SKColor(90, 90, 90));
+        image2.SetPixel(15, 15, new SKColor(100, 100, 100));
+        
+        Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
+    }
+    
+    [Test]
+    public void ShouldAcceptManyPixelsMovedByOnePixel()
     {
         using var image1 = CreateBitmap(20, 20);
         using var image2 = CreateBitmap(20, 20);
@@ -62,6 +75,30 @@ public class ImageComparerTests
         {
             image1.SetPixel(9, y, SKColors.Black);
             image2.SetPixel(10, y, SKColors.Black);
+        }
+        
+        Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
+    }
+    
+    [Test]
+    public void ShouldAcceptDifferentSizesWhenMissingPixelsAreWhite()
+    {
+        using var image1 = CreateBitmap(10, 10);
+        using var image2 = CreateBitmap(11, 10);
+        
+        Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
+    }
+    
+    [Test]
+    public void ShouldRejectDifferentSizesWhenMissingPixelsAreNotWhite()
+    {
+        using var image1 = CreateBitmap(10, 10);
+        using var image2 = CreateBitmap(12, 10);
+
+        for (var y = 0; y < 10; y++)
+        {
+            image2.SetPixel(10, y, SKColors.Black);
+            image2.SetPixel(11, y, SKColors.Black);
         }
         
         Assert.That(() => ImageComparer.AreImagesSimilar(image1, image2), Throws.TypeOf<AssertionException>());

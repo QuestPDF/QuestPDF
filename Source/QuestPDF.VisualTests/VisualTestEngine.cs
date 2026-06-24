@@ -19,31 +19,17 @@ public static class ImageComparer
 {
     private const int PixelTolerance = 16;
     private const int FuzzyPixelSearchRadius = 1;
-    private const double MaxToleratedDifferentPixelsPercentage = 10;
-    private const double MaxFuzzyDifferentPixelsPercentage = 0.5;
     private const double MaxFailedDifferentPixelsPercentage = 1;
     
     public static bool AreImagesSimilar(SKBitmap bitmap1, SKBitmap bitmap2)
     {
-        if (bitmap1.Width != bitmap2.Width || bitmap1.Height != bitmap2.Height)
-        {
-            Assert.Fail("Different image sizes: " +
-                        $"Image 1: {bitmap1.Width}x{bitmap1.Height}, " +
-                        $"Image 2: {bitmap2.Width}x{bitmap2.Height}");
-        }
-
         var pixels1 = bitmap1.Pixels;
         var pixels2 = bitmap2.Pixels;
-
-        if (pixels1.Length != pixels2.Length)
-        {
-            Assert.Fail("Different image pixel counts: " +
-                        $"Image 1: {pixels1.Length}, " +
-                        $"Image 2: {pixels2.Length}");
-        }
+        var width = Math.Max(bitmap1.Width, bitmap2.Width);
+        var height = Math.Max(bitmap1.Height, bitmap2.Height);
         
-        var actualToExpected = ComparePixels(pixels1, pixels2, bitmap1.Width, bitmap1.Height);
-        var expectedToActual = ComparePixels(pixels2, pixels1, bitmap1.Width, bitmap1.Height);
+        var actualToExpected = ComparePixels(pixels1, bitmap1.Width, bitmap1.Height, pixels2, bitmap2.Width, bitmap2.Height, width, height);
+        var expectedToActual = ComparePixels(pixels2, bitmap2.Width, bitmap2.Height, pixels1, bitmap1.Width, bitmap1.Height, width, height);
         
         if (actualToExpected.PixelsAreIdentical && expectedToActual.PixelsAreIdentical)
             return true;
@@ -51,13 +37,12 @@ public static class ImageComparer
         if (!actualToExpected.IsAccepted || !expectedToActual.IsAccepted)
         {
             var message =
-                "Images differ. " +
-                $"Allowed same-position color tolerance: {PixelTolerance}, " +
-                $"allowed fuzzy radius: {FuzzyPixelSearchRadius}px. " +
-                $"Allowed pixels within same-position tolerance: {MaxToleratedDifferentPixelsPercentage:F4}%. " +
-                $"Allowed fuzzy pixels: {MaxFuzzyDifferentPixelsPercentage:F4}%. " +
-                $"Allowed failed pixels: {MaxFailedDifferentPixelsPercentage:F4}%. " +
-                $"Actual -> expected: {actualToExpected}. " +
+                "Images differ. \n" +
+                $"Image 1: {bitmap1.Width}x{bitmap1.Height}, image 2: {bitmap2.Width}x{bitmap2.Height}. \n" +
+                $"Allowed fuzzy color tolerance: {PixelTolerance},\n" +
+                $"allowed fuzzy radius: {FuzzyPixelSearchRadius}px. \n" +
+                $"Allowed failed pixels: {MaxFailedDifferentPixelsPercentage:F4}%. \n" +
+                $"Actual -> expected: {actualToExpected}. \n" +
                 $"Expected -> actual: {expectedToActual}.";
             
             Assert.Fail(message);
@@ -74,11 +59,19 @@ public static class ImageComparer
         return AreImagesSimilar(bitmap1, bitmap2);
     }
     
-    private static ImageComparisonResult ComparePixels(SKColor[] sourcePixels, SKColor[] targetPixels, int width, int height)
+    private static ImageComparisonResult ComparePixels(
+        SKColor[] sourcePixels,
+        int sourceWidth,
+        int sourceHeight,
+        SKColor[] targetPixels,
+        int targetWidth,
+        int targetHeight,
+        int width,
+        int height)
     {
         var differentPixels = 0;
-        var toleratedDifferentPixels = 0;
-        var fuzzyDifferentPixels = 0;
+        var exactPixels = 0;
+        var fuzzyPixels = 0;
         var failedDifferentPixels = 0;
         var minDifference = int.MaxValue;
         var maxDifference = 0;
@@ -88,72 +81,111 @@ public static class ImageComparer
         {
             for (var x = 0; x < width; x++)
             {
-                var index = y * width + x;
-                var sourcePixel = sourcePixels[index];
-                var targetPixel = targetPixels[index];
-
-                if (sourcePixel == targetPixel)
-                    continue;
-
+                var sourcePixel = GetPixelOrWhite(sourcePixels, sourceWidth, sourceHeight, x, y);
+                var targetPixel = GetPixelOrWhite(targetPixels, targetWidth, targetHeight, x, y);
+                
                 var difference = GetPixelDifference(sourcePixel, targetPixel);
 
+                if (difference == 0)
+                {
+                    exactPixels++;
+                    continue;
+                }
+                
                 differentPixels++;
                 minDifference = Math.Min(minDifference, difference);
                 maxDifference = Math.Max(maxDifference, difference);
                 totalDifference += difference;
-
-                if (difference <= PixelTolerance)
-                {
-                    toleratedDifferentPixels++;
-                }
-                else if (HasFuzzyMatch(sourcePixel, targetPixels, width, height, x, y))
-                {
-                    fuzzyDifferentPixels++;
-                }
-                else
+                
+                if (!FitsWithinFuzzyNeighborhoodRange(sourcePixel, targetPixels, targetWidth, targetHeight, width, height, x, y))
                 {
                     failedDifferentPixels++;
+                    continue;
                 }
+                
+                fuzzyPixels++;
             }
         }
 
         return new ImageComparisonResult(
-            sourcePixels.Length,
+            width * height,
+            exactPixels,
             differentPixels,
-            toleratedDifferentPixels,
-            fuzzyDifferentPixels,
+            fuzzyPixels,
             failedDifferentPixels,
             minDifference == int.MaxValue ? 0 : minDifference,
             maxDifference,
             differentPixels == 0 ? 0 : totalDifference / (double) differentPixels);
     }
 
-    private static bool HasFuzzyMatch(SKColor sourcePixel, SKColor[] targetPixels, int width, int height, int x, int y)
+    private static bool FitsWithinFuzzyNeighborhoodRange(
+        SKColor sourcePixel,
+        SKColor[] targetPixels,
+        int targetWidth,
+        int targetHeight,
+        int width,
+        int height,
+        int x,
+        int y)
     {
         var left = Math.Max(0, x - FuzzyPixelSearchRadius);
         var top = Math.Max(0, y - FuzzyPixelSearchRadius);
         var right = Math.Min(width - 1, x + FuzzyPixelSearchRadius);
         var bottom = Math.Min(height - 1, y + FuzzyPixelSearchRadius);
 
+        var minRed = byte.MaxValue;
+        var minGreen = byte.MaxValue;
+        var minBlue = byte.MaxValue;
+        var minAlpha = byte.MaxValue;
+        
+        var maxRed = byte.MinValue;
+        var maxGreen = byte.MinValue;
+        var maxBlue = byte.MinValue;
+        var maxAlpha = byte.MinValue;
+        
         for (var fuzzyY = top; fuzzyY <= bottom; fuzzyY++)
         {
             for (var fuzzyX = left; fuzzyX <= right; fuzzyX++)
             {
-                var targetPixel = targetPixels[fuzzyY * width + fuzzyX];
-
-                if (GetPixelDifference(sourcePixel, targetPixel) <= PixelTolerance)
-                    return true;
+                var targetPixel = GetPixelOrWhite(targetPixels, targetWidth, targetHeight, fuzzyX, fuzzyY);
+                
+                minRed = Math.Min(minRed, targetPixel.Red);
+                minGreen = Math.Min(minGreen, targetPixel.Green);
+                minBlue = Math.Min(minBlue, targetPixel.Blue);
+                minAlpha = Math.Min(minAlpha, targetPixel.Alpha);
+                
+                maxRed = Math.Max(maxRed, targetPixel.Red);
+                maxGreen = Math.Max(maxGreen, targetPixel.Green);
+                maxBlue = Math.Max(maxBlue, targetPixel.Blue);
+                maxAlpha = Math.Max(maxAlpha, targetPixel.Alpha);
             }
         }
 
-        return false;
+        return
+            FitsWithinChannelRange(sourcePixel.Red, minRed, maxRed) &&
+            FitsWithinChannelRange(sourcePixel.Green, minGreen, maxGreen) &&
+            FitsWithinChannelRange(sourcePixel.Blue, minBlue, maxBlue) &&
+            FitsWithinChannelRange(sourcePixel.Alpha, minAlpha, maxAlpha);
+    }
+
+    private static bool FitsWithinChannelRange(byte value, byte minValue, byte maxValue)
+    {
+        return value >= minValue - PixelTolerance && value <= maxValue + PixelTolerance;
+    }
+
+    private static SKColor GetPixelOrWhite(SKColor[] pixels, int width, int height, int x, int y)
+    {
+        if (x >= width || y >= height)
+            return SKColors.White;
+        
+        return pixels[y * width + x];
     }
     
     private readonly record struct ImageComparisonResult(
         int AllPixels,
+        int ExactPixels,
         int DifferentPixels,
-        int ToleratedDifferentPixels,
-        int FuzzyDifferentPixels,
+        int FuzzyPixels,
         int FailedDifferentPixels,
         int MinDifference,
         int MaxDifference,
@@ -162,22 +194,20 @@ public static class ImageComparer
         public bool PixelsAreIdentical => DifferentPixels == 0;
         
         public bool IsAccepted =>
-            ToleratedDifferentPixelsPercentage <= MaxToleratedDifferentPixelsPercentage &&
-            FuzzyDifferentPixelsPercentage <= MaxFuzzyDifferentPixelsPercentage &&
             FailedDifferentPixelsPercentage <= MaxFailedDifferentPixelsPercentage;
 
+        private double ExactPixelsPercentage => ExactPixels / (double) AllPixels * 100;
         private double DifferentPixelsPercentage => DifferentPixels / (double) AllPixels * 100;
-        private double ToleratedDifferentPixelsPercentage => ToleratedDifferentPixels / (double) AllPixels * 100;
-        private double FuzzyDifferentPixelsPercentage => FuzzyDifferentPixels / (double) AllPixels * 100;
+        private double FuzzyPixelsPercentage => FuzzyPixels / (double) AllPixels * 100;
         private double FailedDifferentPixelsPercentage => FailedDifferentPixels / (double) AllPixels * 100;
 
         public override string ToString()
         {
             return
-                $"different pixels: {DifferentPixels} ({DifferentPixelsPercentage:F4}%), " +
-                $"same-position tolerated pixels: {ToleratedDifferentPixels} ({ToleratedDifferentPixelsPercentage:F4}%), " +
-                $"fuzzy pixels: {FuzzyDifferentPixels} ({FuzzyDifferentPixelsPercentage:F4}%), " +
-                $"failed pixels: {FailedDifferentPixels} ({FailedDifferentPixelsPercentage:F4}%), " +
+                $"exact pixels: {ExactPixels} ({ExactPixelsPercentage:F4}%), \n" +
+                $"different pixels: {DifferentPixels} ({DifferentPixelsPercentage:F4}%), \n" +
+                $"fuzzy pixels: {FuzzyPixels} ({FuzzyPixelsPercentage:F4}%), \n" +
+                $"failed pixels: {FailedDifferentPixels} ({FailedDifferentPixelsPercentage:F4}%), \n" +
                 $"difference: {MinDifference} (min), {MaxDifference} (max), {AverageDifference:F2} (avg)";
         }
     }
