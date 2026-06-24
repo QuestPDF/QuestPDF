@@ -1,0 +1,87 @@
+using SkiaSharp;
+
+namespace QuestPDF.VisualTests;
+
+public class ImageComparerTests
+{
+    [Test]
+    public void ShouldAcceptIdenticalImages()
+    {
+        using var image1 = CreateBitmap(10, 10);
+        using var image2 = CreateBitmap(10, 10);
+        
+        Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
+    }
+    
+    [Test]
+    public void ShouldAcceptSmallNumberOfPixelsWithinColorTolerance()
+    {
+        using var image1 = CreateBitmap(10, 10);
+        using var image2 = CreateBitmap(10, 10);
+        
+        image1.SetPixel(5, 5, new SKColor(100, 100, 100));
+        image2.SetPixel(5, 5, new SKColor(110, 110, 110));
+        
+        Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
+    }
+    
+    [Test]
+    public void ShouldRejectTooManyPixelsWithinColorTolerance()
+    {
+        using var image1 = CreateBitmap(10, 10);
+        using var image2 = CreateBitmap(10, 10);
+        
+        image1.SetPixel(4, 5, new SKColor(100, 100, 100));
+        image2.SetPixel(4, 5, new SKColor(110, 110, 110));
+        
+        image1.SetPixel(5, 5, new SKColor(100, 100, 100));
+        image2.SetPixel(5, 5, new SKColor(110, 110, 110));
+        
+        Assert.That(() => ImageComparer.AreImagesSimilar(image1, image2), Throws.TypeOf<AssertionException>());
+    }
+    
+    [Test]
+    public void ShouldAcceptSmallNumberOfPixelsMovedByOnePixel()
+    {
+        using var image1 = CreateBitmap(30, 30);
+        using var image2 = CreateBitmap(30, 30);
+        
+        image1.SetPixel(15, 15, SKColors.Black);
+        image2.SetPixel(16, 15, SKColors.Black);
+        
+        Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
+    }
+    
+    [Test]
+    public void ShouldRejectTooManyPixelsMovedByOnePixel()
+    {
+        using var image1 = CreateBitmap(20, 20);
+        using var image2 = CreateBitmap(20, 20);
+
+        for (var y = 0; y < 20; y++)
+        {
+            image1.SetPixel(9, y, SKColors.Black);
+            image2.SetPixel(10, y, SKColors.Black);
+        }
+        
+        Assert.That(() => ImageComparer.AreImagesSimilar(image1, image2), Throws.TypeOf<AssertionException>());
+    }
+    
+    [Test]
+    public void ShouldRejectPixelWithoutNearbyMatch()
+    {
+        using var image1 = CreateBitmap(30, 30);
+        using var image2 = CreateBitmap(30, 30);
+        
+        image1.SetPixel(15, 15, SKColors.Black);
+        
+        Assert.That(() => ImageComparer.AreImagesSimilar(image1, image2), Throws.TypeOf<AssertionException>());
+    }
+    
+    private static SKBitmap CreateBitmap(int width, int height)
+    {
+        var bitmap = new SKBitmap(width, height);
+        bitmap.Erase(SKColors.White);
+        return bitmap;
+    }
+}
