@@ -12,6 +12,9 @@
 QuestPDF is a production-ready library that lets you design documents the way you design software: with clean, maintainable, strong-typed C# code.
 Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices, and exports using the language and tools you already love.
 
+The library is free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue. [Read more](https://www.questpdf.com/pricing.html)
+
+<br>
 
 [![GitHub Stars and Stargazers](https://img.shields.io/github/stars/QuestPDF/QuestPDF?style=for-the-badge&label=GitHub%20Stars&logo=github&color=FFEB3B&logoColor=white)](https://github.com/QuestPDF/QuestPDF)
 <br>
@@ -38,6 +41,7 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 
 <hr>
 <br>
+
 
 ## 🚀 Quick start
 
@@ -87,15 +91,11 @@ Document.Create(container =>
 .GeneratePdf("hello.pdf");
 ```
 
+<br>
+
 The code above produces the following PDF document:
 
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/46784e17-e8be-41d2-87f4-d6322c3b5e52" />
-
-[![Quick Start Tutorial](https://img.shields.io/badge/read-tutorial-0288D1?style=for-the-badge)](https://www.questpdf.com/quick-start.html)
-
-> [!TIP]
-> The library is free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue.
-> Read more about licensing [here](https://www.questpdf.com/license/)
 
 <br>
 <br>
