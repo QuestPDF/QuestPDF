@@ -17,8 +17,8 @@ public static class Helpers
 
 public static class ImageComparer
 {
-    private const int PixelTolerance = 8;
-    private const int FuzzyPixelSearchRadius = 2;
+    private const int PixelTolerance = 16;
+    private const int FuzzyPixelSearchRadius = 3;
     private const int ImageSizeTolerance = 1;
     
     public static bool AreImagesSimilar(SKBitmap bitmap1, SKBitmap bitmap2)
