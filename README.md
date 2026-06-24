@@ -100,6 +100,15 @@ The code above produces the following PDF document:
 <br>
 <br>
 
+## Please help by giving a star ⭐
+
+GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! 
+
+<img src="https://github.com/user-attachments/assets/96a1d6ee-5df8-48e3-9507-a3649f339b4a" width="700" />
+
+<br>
+<br>
+
 ## Installation
 
 QuestPDF is available as a NuGet package. You can install it through your IDE by searching for phrase `QuestPDF`. If you are not familiar how to do that, please refer to the following guides: 
@@ -347,11 +356,3 @@ Thank you for helping us grow and reach more developers!
 
 [![JetBrains OSS Power-Ups: QuestPDF](https://github.com/user-attachments/assets/3519b532-c2aa-430e-ab1b-f40edd3fa120)](https://www.youtube.com/watch?v=-iYvZvpLX0g)
 
-<br>
-<br>
-
-## Please help by giving a star ⭐
-
-GitHub stars guide developers toward great tools. If you find this project valuable, please give it a star – it helps the community and takes just a second! 
-
-<img src="https://github.com/user-attachments/assets/cb7077b5-ebbf-493b-96c4-af6ae25eca56" width="700" />
