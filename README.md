@@ -30,9 +30,9 @@ Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [Features Overview](https://www.questpdf.com/features-overview.html)
 &nbsp;&nbsp;•&nbsp;&nbsp;
-[License](https://www.questpdf.com/license/)
-&nbsp;&nbsp;•&nbsp;&nbsp;
 [Pricing](https://www.questpdf.com/pricing/)
+&nbsp;&nbsp;•&nbsp;&nbsp;
+[License](https://www.questpdf.com/license/)
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [NuGet](https://www.nuget.org/packages/QuestPDF)
 
