@@ -99,6 +99,7 @@ The code above produces the following PDF document:
 
 <br>
 <br>
+<br>
 
 ## Please help by giving a star ⭐
 
@@ -214,12 +215,14 @@ Accelerate development with live document preview and hot-reload capability. See
 - 🔍 Quickly magnify and measure content
 - 🐞 Debug runtime exceptions with stack traces and code snippets
 - 🛠️ Identify, understand and solve layout errors
-
+  
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
-  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/39d4c08c-6a78-4743-8837-208c0c1718fd">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/d2cbade8-4252-4fc7-ac0d-d408a6373bdf">
+  <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/9e2ae731-d710-4776-9fa8-508ac8b0a6a9">
   <img src="https://github.com/user-attachments/assets/ce394258-1f10-498d-b65f-26c9fbed2994" width="600">
 </picture>
+
+<br> 
 
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)](https://www.questpdf.com/companion/usage.html)
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/features-666666?style=for-the-badge)](https://www.questpdf.com/companion/features.html)
