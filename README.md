@@ -127,33 +127,44 @@ dotnet add package QuestPDF
 
 ## Everything you need to generate PDFs
 
-From layout and styling to production features, QuestPDF gives you the flexibility to create documents of any complexity.
+QuestPDF provides 60+ production-ready features for building complex, data-driven PDF documents with clean and maintainable C# code.
 
-### 🎨 Visual Content:
-- Page attributes (header, footer, background, watermark, margin),
-- Text (font style, paragraph style, page numbers),
-- Styled containers (background, border, rounded corners, colors and gradients, shadows),
-- Lines (vertical and horizontal, colors and gradients, dash pattern)
-- Images (PNG, JPG, WEBP, SVG),
+<br>
 
-### 🔀 Layout: 
-- Tables,
-- Lists,
-- Layers,
-- Column / Row,
-- Inlined,
+**🧱 Layout**
 
-### 📐 Positional:
-- Alignment,
-- Size Controls (width / height),
-- Padding, 
+Page setup, headers, footers, watermarks, tables, rows, columns, lists, layers, inlined content, multi-column flow, sections, decorations
 
-### 🛠️ Other: 
-- Page Breaking Control,
-- Aspect Ratio,
-- Integrations (maps, charts, barcodes, QR codes),
-- Hyperlinks,
-- Z-index,
+<br>
+
+**🎨 Visual Content**
+
+Rich text, fonts, colors, backgrounds, borders, rounded corners, shadows, lines, raster images, SVG, placeholders, canvas graphics
+
+<br>
+
+**📐 Positioning**
+
+Alignment, width, height, padding, aspect ratio, rotation, scaling, scale-to-fit, offset, flip, extend, shrink, unconstrained layout, Z-index
+
+<br>
+
+**🌊 Content Flow**
+
+Page breaks, prevent page breaks, ensure space, show entire, repeat, show once, skip once, conditional rendering, stop paging
+
+<br>
+
+**🧩 Dynamic Documents**
+Loops, conditions, reusable components, dynamic components, lazy loading, custom helpers, extension methods, strongly-typed models
+
+<br>
+
+**🌍 Internationalization**
+
+RTL layout direction, bidirectional text, advanced text shaping, font fallback, multilingual documents, accessibility support
+
+<br>
 
 [![Explore All QuestPDF Features](https://img.shields.io/badge/explore%20all%20features-0288D1?style=for-the-badge)](https://www.questpdf.com/features-overview.html)
 
