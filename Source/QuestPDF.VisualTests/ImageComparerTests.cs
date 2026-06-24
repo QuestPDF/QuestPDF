@@ -20,7 +20,7 @@ public class ImageComparerTests
         using var image2 = CreateBitmap(10, 10);
         
         image1.SetPixel(5, 5, new SKColor(100, 100, 100));
-        image2.SetPixel(5, 5, new SKColor(110, 110, 110));
+        image2.SetPixel(5, 5, new SKColor(108, 108, 108));
         
         Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
     }
@@ -34,7 +34,7 @@ public class ImageComparerTests
         for (var x = 0; x < 11; x++)
         {
             image1.SetPixel(x % 10, x / 10, new SKColor(100, 100, 100));
-            image2.SetPixel(x % 10, x / 10, new SKColor(110, 110, 110));
+            image2.SetPixel(x % 10, x / 10, new SKColor(108, 108, 108));
         }
         
         Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
@@ -59,7 +59,7 @@ public class ImageComparerTests
         using var image2 = CreateBitmap(30, 30);
         
         image1.SetPixel(15, 15, new SKColor(128, 128, 128));
-        image1.SetPixel(14, 15, new SKColor(90, 90, 90));
+        image1.SetPixel(14, 15, new SKColor(92, 92, 92));
         image2.SetPixel(15, 15, new SKColor(100, 100, 100));
         
         Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);

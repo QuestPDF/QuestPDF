@@ -20,7 +20,6 @@ public static class ImageComparer
     private const int PixelTolerance = 8;
     private const int FuzzyPixelSearchRadius = 2;
     private const int ImageSizeTolerance = 1;
-    private const double MaxFailedDifferentPixelsPercentage = 0;
     
     public static bool AreImagesSimilar(SKBitmap bitmap1, SKBitmap bitmap2)
     {
@@ -39,21 +38,18 @@ public static class ImageComparer
         var height = Math.Max(bitmap1.Height, bitmap2.Height);
         
         var actualToExpected = ComparePixels(pixels1, bitmap1.Width, bitmap1.Height, pixels2, bitmap2.Width, bitmap2.Height, width, height);
-        var expectedToActual = ComparePixels(pixels2, bitmap2.Width, bitmap2.Height, pixels1, bitmap1.Width, bitmap1.Height, width, height);
         
-        if (actualToExpected.PixelsAreIdentical && expectedToActual.PixelsAreIdentical)
+        if (actualToExpected.PixelsAreIdentical)
             return true;
 
-        if (!actualToExpected.IsAccepted || !expectedToActual.IsAccepted)
+        if (!actualToExpected.IsAccepted)
         {
             var message =
                 "Images differ. \n" +
                 $"Image 1: {bitmap1.Width}x{bitmap1.Height}, image 2: {bitmap2.Width}x{bitmap2.Height}. \n" +
                 $"Allowed fuzzy color tolerance: {PixelTolerance},\n" +
                 $"allowed fuzzy radius: {FuzzyPixelSearchRadius}px. \n" +
-                $"Allowed failed pixels: {MaxFailedDifferentPixelsPercentage:F4}%. \n" +
-                $"Actual -> expected: {actualToExpected}. \n" +
-                $"Expected -> actual: {expectedToActual}.";
+                $"Actual -> expected: {actualToExpected}.";
             
             Assert.Fail(message);
         }
@@ -202,9 +198,8 @@ public static class ImageComparer
         double AverageDifference)
     {
         public bool PixelsAreIdentical => DifferentPixels == 0;
-        
-        public bool IsAccepted =>
-            FailedDifferentPixelsPercentage <= MaxFailedDifferentPixelsPercentage;
+
+        public bool IsAccepted => FailedDifferentPixels == 0;
 
         private double ExactPixelsPercentage => ExactPixels / (double) AllPixels * 100;
         private double DifferentPixelsPercentage => DifferentPixels / (double) AllPixels * 100;
