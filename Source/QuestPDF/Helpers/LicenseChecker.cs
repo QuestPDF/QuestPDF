@@ -27,7 +27,7 @@ static class LicenseChecker
         var warningMessage =
             "[QuestPDF] The library is running in Evaluation Mode. " +
             "This mode is fully functional and intended solely for assessing the library before selecting a license; it is not permitted in production. " +
-            "License terms: https://www.questpdf.com/license | Pricing: https://www.questpdf.com/pricing";
+            "Pricing: https://www.questpdf.com/pricing | License terms: https://www.questpdf.com/license";
 
         try
         {
@@ -69,8 +69,7 @@ static class LicenseChecker
             $"- Professional: paid, for teams of up to 10 developers, with dedicated support,\n" +
             $"- Enterprise: paid, for unlimited developers, with prioritized dedicated support,\n" +
             $"- Evaluation: for assessing the library before selecting a license; not permitted in production.{newParagraph}" +
-            $"License terms: https://www.questpdf.com/license\n" +
-            $"Pricing: https://www.questpdf.com/pricing{newParagraph}" +
+            $"QuestPDF License and Pricing: https://www.questpdf.com/pricing{newParagraph}" +
             $"If you are not the decision-maker for software purchases, please forward the license and pricing pages to your team lead or manager.{newParagraph}" +
             $"No license key or activation is required — the setting is a self-declaration, and we trust you to choose correctly. " +
             $"By selecting the appropriate tier, you help keep QuestPDF sustainable and continuously improving for everyone.{newParagraph}" +
