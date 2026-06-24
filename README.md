@@ -215,10 +215,10 @@ void ComposeItem(IContainer container, OrderItem item)
 
 Accelerate development with live document preview and hot-reload capability. See your changes instantly without recompiling.
 
-- Explore PDF document hierarchy and navigate its structure
-- Quickly magnify and measure content
-- Debug runtime exceptions with stack traces and code snippets
-- Identify, understand and solve layout errors
+- 🧭 Explore PDF document hierarchy and navigate its structure
+- 🔍 Quickly magnify and measure content
+- 🐞 Debug runtime exceptions with stack traces and code snippets
+- 🛠️ Identify, understand and solve layout errors
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/7ab596d4-eebc-44e6-b36d-c358b16ed0ba">
@@ -299,14 +299,15 @@ Drastically reduce file sizes without compromising quality. Benefit from automat
 ## Perform common PDF operations
 
 Leverage a powerful C# Fluent API to create, customize, and manage your PDF documents with ease.
-- Merge documents
-- Attach files
-- Extract pages
-- Encrypt / decrypt
-- Extend metadata
-– Limit access
-- Optimize for Web
-- Overlay / underlay
+
+* 🔗 Merge documents
+* 📎 Attach files
+* ✂️ Extract pages
+* 🔐 Encrypt / decrypt
+* 🏷️ Extend metadata
+* 🚫 Limit access
+* ⚡ Optimize for Web
+* 📑 Overlay / underlay
 
 ```c#
 DocumentOperation
@@ -350,15 +351,15 @@ Deploy on any major operating system and integrate seamlessly with your favorite
 
 Generate PDF documents that meet the strictest archival and accessibility requirements. Every build is automatically validated using the open-source veraPDF and Mustang tools.
 
-- PDF/A (Archival):
+- 🗄️ PDF/A (Archival):
   - Purpose: ISO 19005 standard for long-term preservation. Ensures PDFs remain readable and visually identical for decades without external dependencies.
   - Supported Standards: `PDF/A-2b`, `PDF/A-2u`, `PDF/A-2a`, `PDF/A-3b`, `PDF/A-3u`, `PDF/A-3a`
 
-- PDF/UA (Accessibility):
+- ♿ PDF/UA (Accessibility):
   - Purpose: ISO 14289 standard for universal accessibility. Includes full support for screen readers and assistive technologies for people with disabilities.
   - Supported Standards: `PDF/UA-1`
 
-- EN 16931 (E-Invoicing):
+- 🧾 EN 16931 (E-Invoicing):
   - Purpose: European standard for electronic invoicing. Embeds structured invoice data (XML) within PDF documents for automated processing.
   - Supported Standards: `ZUGFeRD`, `Factur-X`
 
