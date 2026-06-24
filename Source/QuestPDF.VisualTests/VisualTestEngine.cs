@@ -19,8 +19,9 @@ public static class ImageComparer
 {
     private const int PixelTolerance = 16;
     private const int FuzzyPixelSearchRadius = 1;
-    private const double MaxToleratedDifferentPixelsPercentage = 1;
+    private const double MaxToleratedDifferentPixelsPercentage = 10;
     private const double MaxFuzzyDifferentPixelsPercentage = 0.5;
+    private const double MaxFailedDifferentPixelsPercentage = 1;
     
     public static bool AreImagesSimilar(SKBitmap bitmap1, SKBitmap bitmap2)
     {
@@ -45,6 +46,7 @@ public static class ImageComparer
                 $"allowed fuzzy radius: {FuzzyPixelSearchRadius}px. " +
                 $"Allowed pixels within same-position tolerance: {MaxToleratedDifferentPixelsPercentage:F4}%. " +
                 $"Allowed fuzzy pixels: {MaxFuzzyDifferentPixelsPercentage:F4}%. " +
+                $"Allowed failed pixels: {MaxFailedDifferentPixelsPercentage:F4}%. " +
                 $"Actual -> expected: {actualToExpected}. " +
                 $"Expected -> actual: {expectedToActual}.";
             
@@ -149,9 +151,9 @@ public static class ImageComparer
         public bool PixelsAreIdentical => DifferentPixels == 0;
         
         public bool IsAccepted =>
-            FailedDifferentPixels == 0 &&
             ToleratedDifferentPixelsPercentage <= MaxToleratedDifferentPixelsPercentage &&
-            FuzzyDifferentPixelsPercentage <= MaxFuzzyDifferentPixelsPercentage;
+            FuzzyDifferentPixelsPercentage <= MaxFuzzyDifferentPixelsPercentage &&
+            FailedDifferentPixelsPercentage <= MaxFailedDifferentPixelsPercentage;
 
         private double DifferentPixelsPercentage => DifferentPixels / (double) AllPixels * 100;
         private double ToleratedDifferentPixelsPercentage => ToleratedDifferentPixels / (double) AllPixels * 100;

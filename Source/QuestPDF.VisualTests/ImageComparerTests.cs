@@ -30,12 +30,12 @@ public class ImageComparerTests
     {
         using var image1 = CreateBitmap(10, 10);
         using var image2 = CreateBitmap(10, 10);
-        
-        image1.SetPixel(4, 5, new SKColor(100, 100, 100));
-        image2.SetPixel(4, 5, new SKColor(110, 110, 110));
-        
-        image1.SetPixel(5, 5, new SKColor(100, 100, 100));
-        image2.SetPixel(5, 5, new SKColor(110, 110, 110));
+
+        for (var x = 0; x < 11; x++)
+        {
+            image1.SetPixel(x % 10, x / 10, new SKColor(100, 100, 100));
+            image2.SetPixel(x % 10, x / 10, new SKColor(110, 110, 110));
+        }
         
         Assert.That(() => ImageComparer.AreImagesSimilar(image1, image2), Throws.TypeOf<AssertionException>());
     }
@@ -72,8 +72,11 @@ public class ImageComparerTests
     {
         using var image1 = CreateBitmap(30, 30);
         using var image2 = CreateBitmap(30, 30);
-        
-        image1.SetPixel(15, 15, SKColors.Black);
+
+        for (var x = 0; x < 10; x++)
+        {
+            image1.SetPixel(x, 15, SKColors.Black);
+        }
         
         Assert.That(() => ImageComparer.AreImagesSimilar(image1, image2), Throws.TypeOf<AssertionException>());
     }
