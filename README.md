@@ -50,7 +50,7 @@ using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 // set your license here:
-// QuestPDF.Settings.License = LicenseType.Community;
+// QuestPDF.Settings.License = LicenseType.Evaluation;
 
 Document.Create(container =>
 {
@@ -131,37 +131,32 @@ QuestPDF provides 60+ production-ready features for building complex, data-drive
 
 <br>
 
-**🧱 Layout**
-
+**🧱 Layout:**<br>
 Page setup, headers, footers, watermarks, tables, rows, columns, lists, layers, inlined content, multi-column flow, sections, decorations
 
 <br>
 
-**🎨 Visual Content**
-
+**🎨 Visual Content:**<br>
 Rich text, fonts, colors, backgrounds, borders, rounded corners, shadows, lines, raster images, SVG, placeholders, canvas graphics
 
 <br>
 
-**📐 Positioning**
-
+**📐 Positioning:**<br>
 Alignment, width, height, padding, aspect ratio, rotation, scaling, scale-to-fit, offset, flip, extend, shrink, unconstrained layout, Z-index
 
 <br>
 
-**🌊 Content Flow**
-
+**🌊 Content Flow:**<br>
 Page breaks, prevent page breaks, ensure space, show entire, repeat, show once, skip once, conditional rendering, stop paging
 
 <br>
 
-**🧩 Dynamic Documents**
+**🧩 Dynamic Documents:**<br>
 Loops, conditions, reusable components, dynamic components, lazy loading, custom helpers, extension methods, strongly-typed models
 
 <br>
 
-**🌍 Internationalization**
-
+**🌍 Internationalization:**<br>
 RTL layout direction, bidirectional text, advanced text shaping, font fallback, multilingual documents, accessibility support
 
 <br>
@@ -234,62 +229,52 @@ Accelerate development with live document preview and hot-reload capability. See
 
 ## Enterprise-grade foundations
 
-**🧩 Dynamic Content Is Just Code**
-
+**🧩 Dynamic Content Is Just Code**<br>
 Use your existing programming language and development patterns to ship faster with less training. Loops, conditionals, functions, reusable components, and data-driven generation are supported natively.
 
 <br>
 
-**🔀 Version Control Friendly** 
-
+**🔀 Version Control Friendly**<br>
 Review document changes like any other code. Get clean diffs, pull request approvals, traceable history, and safer collaboration across your team.
 
 <br>
 
-**✨ Ready for AI**
-
+**✨ Ready for AI**<br>
 QuestPDF’s semantic Fluent API helps AI assistants generate layouts, refactor components, explain document structure, and troubleshoot issues more effectively.
 
 <br>
 
-**🎯 Predictable Development**
-
+**🎯 Predictable Development**<br>
 Eliminate CSS debugging, browser quirks, and layout surprises common with HTML-to-PDF tools. What you code is what you get.
 
 <br>
 
-**👁️ Source-available**
-
+**👁️ Source-available**<br>
 Entire QuestPDF source code is available for review and customization, ensuring transparency and compliance with your organization's requirements.
 
 <br>
 
-**🔒 Complete Data Privacy**
-
+**🔒 Complete Data Privacy**<br>
 QuestPDF runs entirely within your infrastructure with no external API calls, internet requirement, or background data collection. As a company, we do not access, collect, store, or process your private data.
 
 <br>
 
-**🏗️ Comprehensive Layout Engine**
-
+**🏗️ Comprehensive Layout Engine**<br>
 A powerful layout engine built specifically for PDF generation. Gain full control over document structure, precise content positioning, and automatic pagination.
 
 <br>
 
-**🌐 Advanced Language Support**
-
+**🌐 Advanced Language Support**<br>
 Create multilingual documents with full RTL language support, advanced text shaping, and bi-directional layout handling.
 
 <br>
 
-**⚡ High Performance**
-
+**⚡ High Performance**<br>
 Generate thousands of pages per second while maintaining minimal CPU and memory usage. Perfect for high-throughput enterprise applications.
 
 <br>
 
-**📦 Optimized File Size**
-
+**📦 Optimized File Size**<br>
 Drastically reduce file sizes without compromising quality. Benefit from automatic font subsetting, optimal image compression, and efficient file compression.
 
 
@@ -351,17 +336,24 @@ Deploy on any major operating system and integrate seamlessly with your favorite
 
 Generate PDF documents that meet the strictest archival and accessibility requirements. Every build is automatically validated using the open-source veraPDF and Mustang tools.
 
-- 🗄️ PDF/A (Archival):
-  - Purpose: ISO 19005 standard for long-term preservation. Ensures PDFs remain readable and visually identical for decades without external dependencies.
-  - Supported Standards: `PDF/A-2b`, `PDF/A-2u`, `PDF/A-2a`, `PDF/A-3b`, `PDF/A-3u`, `PDF/A-3a`
+**🗄️ PDF/A (Archival)**
 
-- ♿ PDF/UA (Accessibility):
-  - Purpose: ISO 14289 standard for universal accessibility. Includes full support for screen readers and assistive technologies for people with disabilities.
-  - Supported Standards: `PDF/UA-1`
+- Purpose: ISO 19005 standard for long-term preservation. Ensures PDFs remain readable and visually identical for decades without external dependencies.
+- Supported Standards: `PDF/A-2b`, `PDF/A-2u`, `PDF/A-2a`, `PDF/A-3b`, `PDF/A-3u`, `PDF/A-3a`
 
-- 🧾 EN 16931 (E-Invoicing):
-  - Purpose: European standard for electronic invoicing. Embeds structured invoice data (XML) within PDF documents for automated processing.
-  - Supported Standards: `ZUGFeRD`, `Factur-X`
+<br>
+
+**♿ PDF/UA (Accessibility)**
+
+- Purpose: ISO 14289 standard for universal accessibility. Includes full support for screen readers and assistive technologies for people with disabilities.
+- Supported Standards: `PDF/UA-1`
+
+<br>
+
+**🧾 EN 16931 (E-Invoicing):**
+
+- Purpose: European standard for electronic invoicing. Embeds structured invoice data (XML) within PDF documents for automated processing.
+- Supported Standards: `ZUGFeRD`, `Factur-X`
 
 <br>
 <br>
