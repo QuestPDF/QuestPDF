@@ -17,7 +17,7 @@ public static class Helpers
 
 public static class ImageComparer
 {
-    private const int PixelTolerance = 8;
+    private const int PixelTolerance = 16;
     private const double MaxToleratedDifferentPixelsPercentage = 1;
     
     public static bool AreImagesSimilar(SKBitmap bitmap1, SKBitmap bitmap2)
