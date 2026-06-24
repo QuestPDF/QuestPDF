@@ -19,10 +19,20 @@ public static class ImageComparer
 {
     private const int PixelTolerance = 16;
     private const int FuzzyPixelSearchRadius = 1;
-    private const double MaxFailedDifferentPixelsPercentage = 1;
+    private const int ImageSizeTolerance = 1;
+    private const double MaxFailedDifferentPixelsPercentage = 0;
     
     public static bool AreImagesSimilar(SKBitmap bitmap1, SKBitmap bitmap2)
     {
+        if (Math.Abs(bitmap1.Width - bitmap2.Width) > ImageSizeTolerance ||
+            Math.Abs(bitmap1.Height - bitmap2.Height) > ImageSizeTolerance)
+        {
+            Assert.Fail("Different image sizes: " +
+                        $"Image 1: {bitmap1.Width}x{bitmap1.Height}, " +
+                        $"Image 2: {bitmap2.Width}x{bitmap2.Height}. " +
+                        $"Allowed size tolerance: {ImageSizeTolerance}px.");
+        }
+        
         var pixels1 = bitmap1.Pixels;
         var pixels2 = bitmap2.Pixels;
         var width = Math.Max(bitmap1.Width, bitmap2.Width);
