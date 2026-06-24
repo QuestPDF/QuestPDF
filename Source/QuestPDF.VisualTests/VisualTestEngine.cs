@@ -32,8 +32,18 @@ public static class ImageComparer
                         $"Image 2: {bitmap2.Width}x{bitmap2.Height}");
         }
 
-        var actualToExpected = ComparePixels(bitmap1, bitmap2);
-        var expectedToActual = ComparePixels(bitmap2, bitmap1);
+        var pixels1 = bitmap1.Pixels;
+        var pixels2 = bitmap2.Pixels;
+
+        if (pixels1.Length != pixels2.Length)
+        {
+            Assert.Fail("Different image pixel counts: " +
+                        $"Image 1: {pixels1.Length}, " +
+                        $"Image 2: {pixels2.Length}");
+        }
+        
+        var actualToExpected = ComparePixels(pixels1, pixels2, bitmap1.Width, bitmap1.Height);
+        var expectedToActual = ComparePixels(pixels2, pixels1, bitmap1.Width, bitmap1.Height);
         
         if (actualToExpected.PixelsAreIdentical && expectedToActual.PixelsAreIdentical)
             return true;
@@ -64,7 +74,7 @@ public static class ImageComparer
         return AreImagesSimilar(bitmap1, bitmap2);
     }
     
-    private static ImageComparisonResult ComparePixels(SKBitmap sourceBitmap, SKBitmap targetBitmap)
+    private static ImageComparisonResult ComparePixels(SKColor[] sourcePixels, SKColor[] targetPixels, int width, int height)
     {
         var differentPixels = 0;
         var toleratedDifferentPixels = 0;
@@ -74,12 +84,13 @@ public static class ImageComparer
         var maxDifference = 0;
         var totalDifference = 0L;
 
-        for (var y = 0; y < sourceBitmap.Height; y++)
+        for (var y = 0; y < height; y++)
         {
-            for (var x = 0; x < sourceBitmap.Width; x++)
+            for (var x = 0; x < width; x++)
             {
-                var sourcePixel = sourceBitmap.GetPixel(x, y);
-                var targetPixel = targetBitmap.GetPixel(x, y);
+                var index = y * width + x;
+                var sourcePixel = sourcePixels[index];
+                var targetPixel = targetPixels[index];
 
                 if (sourcePixel == targetPixel)
                     continue;
@@ -95,7 +106,7 @@ public static class ImageComparer
                 {
                     toleratedDifferentPixels++;
                 }
-                else if (HasFuzzyMatch(sourcePixel, targetBitmap, x, y))
+                else if (HasFuzzyMatch(sourcePixel, targetPixels, width, height, x, y))
                 {
                     fuzzyDifferentPixels++;
                 }
@@ -107,7 +118,7 @@ public static class ImageComparer
         }
 
         return new ImageComparisonResult(
-            sourceBitmap.Width * sourceBitmap.Height,
+            sourcePixels.Length,
             differentPixels,
             toleratedDifferentPixels,
             fuzzyDifferentPixels,
@@ -117,18 +128,18 @@ public static class ImageComparer
             differentPixels == 0 ? 0 : totalDifference / (double) differentPixels);
     }
 
-    private static bool HasFuzzyMatch(SKColor sourcePixel, SKBitmap targetBitmap, int x, int y)
+    private static bool HasFuzzyMatch(SKColor sourcePixel, SKColor[] targetPixels, int width, int height, int x, int y)
     {
         var left = Math.Max(0, x - FuzzyPixelSearchRadius);
         var top = Math.Max(0, y - FuzzyPixelSearchRadius);
-        var right = Math.Min(targetBitmap.Width - 1, x + FuzzyPixelSearchRadius);
-        var bottom = Math.Min(targetBitmap.Height - 1, y + FuzzyPixelSearchRadius);
+        var right = Math.Min(width - 1, x + FuzzyPixelSearchRadius);
+        var bottom = Math.Min(height - 1, y + FuzzyPixelSearchRadius);
 
         for (var fuzzyY = top; fuzzyY <= bottom; fuzzyY++)
         {
             for (var fuzzyX = left; fuzzyX <= right; fuzzyX++)
             {
-                var targetPixel = targetBitmap.GetPixel(fuzzyX, fuzzyY);
+                var targetPixel = targetPixels[fuzzyY * width + fuzzyX];
 
                 if (GetPixelDifference(sourcePixel, targetPixel) <= PixelTolerance)
                     return true;
@@ -173,13 +184,14 @@ public static class ImageComparer
 
     private static int GetPixelDifference(SKColor pixel1, SKColor pixel2)
     {
-        return new[]
-        {
-            Math.Abs(pixel1.Red - pixel2.Red),
-            Math.Abs(pixel1.Green - pixel2.Green),
-            Math.Abs(pixel1.Blue - pixel2.Blue),
-            Math.Abs(pixel1.Alpha - pixel2.Alpha)
-        }.Max();
+        var redDifference = Math.Abs(pixel1.Red - pixel2.Red);
+        var greenDifference = Math.Abs(pixel1.Green - pixel2.Green);
+        var blueDifference = Math.Abs(pixel1.Blue - pixel2.Blue);
+        var alphaDifference = Math.Abs(pixel1.Alpha - pixel2.Alpha);
+        
+        return Math.Max(
+            Math.Max(redDifference, greenDifference),
+            Math.Max(blueDifference, alphaDifference));
     }
 }
 
@@ -200,15 +212,16 @@ public static class ImageNormalizer
         var targetWidth = (sourceBitmap.Width + 1) / 2;
         var targetHeight = (sourceBitmap.Height + 1) / 2;
         var targetBitmap = new SKBitmap(new SKImageInfo(targetWidth, targetHeight, sourceBitmap.ColorType, sourceBitmap.AlphaType));
+        var sourcePixels = sourceBitmap.Pixels;
 
         for (var y = 0; y < targetHeight; y++)
         {
             for (var x = 0; x < targetWidth; x++)
             {
-                var topLeft = GetSourcePixelOrWhite(sourceBitmap, x * 2, y * 2);
-                var topRight = GetSourcePixelOrWhite(sourceBitmap, x * 2 + 1, y * 2);
-                var bottomLeft = GetSourcePixelOrWhite(sourceBitmap, x * 2, y * 2 + 1);
-                var bottomRight = GetSourcePixelOrWhite(sourceBitmap, x * 2 + 1, y * 2 + 1);
+                var topLeft = GetSourcePixelOrWhite(sourcePixels, sourceBitmap.Width, sourceBitmap.Height, x * 2, y * 2);
+                var topRight = GetSourcePixelOrWhite(sourcePixels, sourceBitmap.Width, sourceBitmap.Height, x * 2 + 1, y * 2);
+                var bottomLeft = GetSourcePixelOrWhite(sourcePixels, sourceBitmap.Width, sourceBitmap.Height, x * 2, y * 2 + 1);
+                var bottomRight = GetSourcePixelOrWhite(sourcePixels, sourceBitmap.Width, sourceBitmap.Height, x * 2 + 1, y * 2 + 1);
                 
                 targetBitmap.SetPixel(x, y, Average(topLeft, topRight, bottomLeft, bottomRight));
             }
@@ -217,12 +230,12 @@ public static class ImageNormalizer
         return targetBitmap;
     }
 
-    private static SKColor GetSourcePixelOrWhite(SKBitmap bitmap, int x, int y)
+    private static SKColor GetSourcePixelOrWhite(SKColor[] pixels, int width, int height, int x, int y)
     {
-        if (x >= bitmap.Width || y >= bitmap.Height)
+        if (x >= width || y >= height)
             return SKColors.White;
         
-        return bitmap.GetPixel(x, y);
+        return pixels[y * width + x];
     }
     
     private static SKColor Average(SKColor pixel1, SKColor pixel2, SKColor pixel3, SKColor pixel4)
