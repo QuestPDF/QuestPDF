@@ -32,7 +32,7 @@ public class DocumentCompressionTests
                             columns.ConstantColumn(100);
                         });
 
-                        foreach (var y in Enumerable.Range(1, 100))
+                        foreach (var y in Enumerable.Range(1, 1000))
                         {
                             foreach (var x in Enumerable.Range(1, 4))
                             {
@@ -62,7 +62,7 @@ public class DocumentCompressionTests
         var withCompression = MeasureDocumentSizeAndGenerationTime(true);
         
         var sizeRatio = withoutCompression.documentSize / (float)withCompression.documentSize;
-        Assert.That(sizeRatio, Is.GreaterThan(3));
+        Assert.That(sizeRatio, Is.GreaterThan(4));
 
         var generationTimeRatio = withCompression.generationTime / (float)withoutCompression.generationTime;
         Assert.That(generationTimeRatio, Is.LessThan(2));
