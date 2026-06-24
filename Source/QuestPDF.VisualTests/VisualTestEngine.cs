@@ -195,64 +195,6 @@ public static class ImageComparer
     }
 }
 
-public static class ImageNormalizer
-{
-    public static byte[] DownsampleFromDoubleResolution(byte[] imageData)
-    {
-        using var sourceBitmap = SKBitmap.Decode(imageData);
-        using var normalizedBitmap = DownsampleFromDoubleResolution(sourceBitmap);
-        using var normalizedImage = SKImage.FromBitmap(normalizedBitmap);
-        using var normalizedImageData = normalizedImage.Encode(SKEncodedImageFormat.Png, 100);
-        
-        return normalizedImageData.ToArray();
-    }
-    
-    private static SKBitmap DownsampleFromDoubleResolution(SKBitmap sourceBitmap)
-    {
-        var targetWidth = (sourceBitmap.Width + 1) / 2;
-        var targetHeight = (sourceBitmap.Height + 1) / 2;
-        var targetBitmap = new SKBitmap(new SKImageInfo(targetWidth, targetHeight, sourceBitmap.ColorType, sourceBitmap.AlphaType));
-        var sourcePixels = sourceBitmap.Pixels;
-
-        for (var y = 0; y < targetHeight; y++)
-        {
-            for (var x = 0; x < targetWidth; x++)
-            {
-                var topLeft = GetSourcePixelOrWhite(sourcePixels, sourceBitmap.Width, sourceBitmap.Height, x * 2, y * 2);
-                var topRight = GetSourcePixelOrWhite(sourcePixels, sourceBitmap.Width, sourceBitmap.Height, x * 2 + 1, y * 2);
-                var bottomLeft = GetSourcePixelOrWhite(sourcePixels, sourceBitmap.Width, sourceBitmap.Height, x * 2, y * 2 + 1);
-                var bottomRight = GetSourcePixelOrWhite(sourcePixels, sourceBitmap.Width, sourceBitmap.Height, x * 2 + 1, y * 2 + 1);
-                
-                targetBitmap.SetPixel(x, y, Average(topLeft, topRight, bottomLeft, bottomRight));
-            }
-        }
-
-        return targetBitmap;
-    }
-
-    private static SKColor GetSourcePixelOrWhite(SKColor[] pixels, int width, int height, int x, int y)
-    {
-        if (x >= width || y >= height)
-            return SKColors.White;
-        
-        return pixels[y * width + x];
-    }
-    
-    private static SKColor Average(SKColor pixel1, SKColor pixel2, SKColor pixel3, SKColor pixel4)
-    {
-        return new SKColor(
-            AverageChannel(pixel1.Red, pixel2.Red, pixel3.Red, pixel4.Red),
-            AverageChannel(pixel1.Green, pixel2.Green, pixel3.Green, pixel4.Green),
-            AverageChannel(pixel1.Blue, pixel2.Blue, pixel3.Blue, pixel4.Blue),
-            AverageChannel(pixel1.Alpha, pixel2.Alpha, pixel3.Alpha, pixel4.Alpha));
-    }
-    
-    private static byte AverageChannel(byte value1, byte value2, byte value3, byte value4)
-    {
-        return (byte) ((value1 + value2 + value3 + value4 + 2) / 4);
-    }
-}
-
 public static class VisualTestEngine
 {
     private static string ActualOutputDirectoryName => Path.Combine(TestContext.CurrentContext.TestDirectory, "ActualOutput");
@@ -277,13 +219,13 @@ public static class VisualTestEngine
         var imageGenerationSettings = new ImageGenerationSettings
         {
             ImageFormat = ImageFormat.Png,
-            RasterDpi = 288
+            RasterDpi = 144
         };
         
         var actualImages = document
             .GenerateImages(imageGenerationSettings)
-            .Select(ImageNormalizer.DownsampleFromDoubleResolution)
             .ToList();
+        
         var hasMultipleImages = actualImages.Count > 1;
         
         var actualOutputPath = Path.Combine(ActualOutputDirectoryName, testCategory);
