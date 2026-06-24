@@ -288,14 +288,14 @@ Drastically reduce file sizes without compromising quality. Benefit from automat
 
 Leverage a powerful C# Fluent API to create, customize, and manage your PDF documents with ease.
 
-* 🔗 Merge documents
-* 📎 Attach files
-* ✂️ Extract pages
-* 🔐 Encrypt / decrypt
-* 🏷️ Extend metadata
-* 🚫 Limit access
-* ⚡ Optimize for Web
-* 📑 Overlay / underlay
+- 🔗 Merge documents
+- 📎 Attach files
+- ✂️ Extract pages
+- 🔐 Encrypt / decrypt
+- 🏷️ Extend metadata
+- 🚫 Limit access
+- ⚡ Optimize for Web
+- 📑 Overlay / underlay
 
 ```c#
 DocumentOperation
