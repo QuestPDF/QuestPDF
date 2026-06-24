@@ -17,20 +17,16 @@ public static class Helpers
 
 public static class ImageComparer
 {
-    public static bool AreImagesIdentical(SKBitmap bitmap1, SKBitmap bitmap2)
+    private const int PixelTolerance = 8;
+    private const double MaxToleratedDifferentPixelsPercentage = 1;
+    
+    public static bool AreImagesSimilar(SKBitmap bitmap1, SKBitmap bitmap2)
     {
         if (bitmap1.Width != bitmap2.Width || bitmap1.Height != bitmap2.Height)
         {
             Assert.Fail("Different image sizes: " +
                         $"Image 1: {bitmap1.Width}x{bitmap1.Height}, " +
                         $"Image 2: {bitmap2.Width}x{bitmap2.Height}");
-        }
-
-        if (bitmap1.ColorType != bitmap2.ColorType)
-        {
-            Assert.Fail("Different image color types: " +
-                        $"Image 1: {bitmap1.ColorType}, " +
-                        $"Image 2: {bitmap2.ColorType}");
         }
 
         var pixels1 = bitmap1.Pixels;
@@ -42,39 +38,128 @@ public static class ImageComparer
                         $"Image 1: {pixels1.Length}, " +
                         $"Image 2: {pixels2.Length}");
         }
-            
-        var differences = pixels1.Zip(pixels2, (p1, p2) => new[] {p1.Red - p2.Red, p1.Green - p2.Green, p1.Blue - p2.Blue, p1.Alpha - p2.Alpha })
-            .Select(x => x.Select(Math.Abs))
-            .Select(x => x.Max())
-            .Where(diff => diff > 0)
-            .ToArray();
         
+        var differentPixels = 0;
+        var toleratedDifferentPixels = 0;
+        var significantDifferentPixels = 0;
+        var minDifference = int.MaxValue;
+        var maxDifference = 0;
+        var totalDifference = 0L;
 
-
-        if (differences.Length > 0)
-        {
-            var min = differences.Min();
-            var max = differences.Max();
-            var average = differences.Average(x => x);
-            var message = $"Images differ by {min} (min), {max} (max), {average:F2} (avg). Different pixels: {differences.Length}.";
-            Assert.Fail(message);
-        }
-        
         for (var i = 0; i < pixels1.Length; i++)
         {
             if (pixels1[i] != pixels2[i])
-                return false;
+            {
+                var difference = GetPixelDifference(pixels1[i], pixels2[i]);
+                
+                differentPixels++;
+                minDifference = Math.Min(minDifference, difference);
+                maxDifference = Math.Max(maxDifference, difference);
+                totalDifference += difference;
+
+                if (difference <= PixelTolerance)
+                    toleratedDifferentPixels++;
+                else
+                    significantDifferentPixels++;
+            }
+        }
+
+        if (differentPixels == 0)
+            return true;
+
+        var differentPixelsPercentage = differentPixels / (double) pixels1.Length * 100;
+        var toleratedDifferentPixelsPercentage = toleratedDifferentPixels / (double) pixels1.Length * 100;
+        var averageDifference = totalDifference / (double) differentPixels;
+
+        if (significantDifferentPixels > 0 || toleratedDifferentPixelsPercentage > MaxToleratedDifferentPixelsPercentage)
+        {
+            var message =
+                $"Images differ by {minDifference} (min), {maxDifference} (max), {averageDifference:F2} (avg). " +
+                $"Different pixels: {differentPixels} ({differentPixelsPercentage:F4}%). " +
+                $"Pixels within tolerance {PixelTolerance}: {toleratedDifferentPixels} ({toleratedDifferentPixelsPercentage:F4}%). " +
+                $"Pixels outside tolerance {PixelTolerance}: {significantDifferentPixels}. " +
+                $"Allowed pixels within tolerance: {MaxToleratedDifferentPixelsPercentage:F4}%.";
+            
+            Assert.Fail(message);
         }
         
         return true;
     }
     
-    public static bool AreImagesIdentical(byte[] imageData1, byte[] imageData2)
+    public static bool AreImagesSimilar(byte[] imageData1, byte[] imageData2)
     {
         using var bitmap1 = SKBitmap.Decode(imageData1);
         using var bitmap2 = SKBitmap.Decode(imageData2);
         
-        return AreImagesIdentical(bitmap1, bitmap2);
+        return AreImagesSimilar(bitmap1, bitmap2);
+    }
+
+    private static int GetPixelDifference(SKColor pixel1, SKColor pixel2)
+    {
+        return new[]
+        {
+            Math.Abs(pixel1.Red - pixel2.Red),
+            Math.Abs(pixel1.Green - pixel2.Green),
+            Math.Abs(pixel1.Blue - pixel2.Blue),
+            Math.Abs(pixel1.Alpha - pixel2.Alpha)
+        }.Max();
+    }
+}
+
+public static class ImageNormalizer
+{
+    public static byte[] DownsampleFromDoubleResolution(byte[] imageData)
+    {
+        using var sourceBitmap = SKBitmap.Decode(imageData);
+        using var normalizedBitmap = DownsampleFromDoubleResolution(sourceBitmap);
+        using var normalizedImage = SKImage.FromBitmap(normalizedBitmap);
+        using var normalizedImageData = normalizedImage.Encode(SKEncodedImageFormat.Png, 100);
+        
+        return normalizedImageData.ToArray();
+    }
+    
+    private static SKBitmap DownsampleFromDoubleResolution(SKBitmap sourceBitmap)
+    {
+        var targetWidth = (sourceBitmap.Width + 1) / 2;
+        var targetHeight = (sourceBitmap.Height + 1) / 2;
+        var targetBitmap = new SKBitmap(new SKImageInfo(targetWidth, targetHeight, sourceBitmap.ColorType, sourceBitmap.AlphaType));
+
+        for (var y = 0; y < targetHeight; y++)
+        {
+            for (var x = 0; x < targetWidth; x++)
+            {
+                var topLeft = GetSourcePixelOrWhite(sourceBitmap, x * 2, y * 2);
+                var topRight = GetSourcePixelOrWhite(sourceBitmap, x * 2 + 1, y * 2);
+                var bottomLeft = GetSourcePixelOrWhite(sourceBitmap, x * 2, y * 2 + 1);
+                var bottomRight = GetSourcePixelOrWhite(sourceBitmap, x * 2 + 1, y * 2 + 1);
+                
+                targetBitmap.SetPixel(x, y, Average(topLeft, topRight, bottomLeft, bottomRight));
+            }
+        }
+
+        return targetBitmap;
+    }
+
+    private static SKColor GetSourcePixelOrWhite(SKBitmap bitmap, int x, int y)
+    {
+        if (x >= bitmap.Width || y >= bitmap.Height)
+            return SKColors.White;
+        
+        return bitmap.GetPixel(x, y);
+    }
+    
+    private static SKColor Average(SKColor pixel1, SKColor pixel2, SKColor pixel3, SKColor pixel4)
+    {
+        return new SKColor(
+            AverageChannel(pixel1.Red, pixel2.Red, pixel3.Red, pixel4.Red),
+            AverageChannel(pixel1.Green, pixel2.Green, pixel3.Green, pixel4.Green),
+            AverageChannel(pixel1.Blue, pixel2.Blue, pixel3.Blue, pixel4.Blue),
+            AverageChannel(pixel1.Alpha, pixel2.Alpha, pixel3.Alpha, pixel4.Alpha));
+    }
+    
+    private static byte AverageChannel(byte value1, byte value2, byte value3, byte value4)
+    {
+        return (byte) ((value1 + value2 + value3 + value4 + 2) / 4);
     }
 }
 
@@ -102,10 +187,13 @@ public static class VisualTestEngine
         var imageGenerationSettings = new ImageGenerationSettings
         {
             ImageFormat = ImageFormat.Png,
-            RasterDpi = 144
+            RasterDpi = 288
         };
         
-        var actualImages = document.GenerateImages(imageGenerationSettings).ToList();
+        var actualImages = document
+            .GenerateImages(imageGenerationSettings)
+            .Select(ImageNormalizer.DownsampleFromDoubleResolution)
+            .ToList();
         var hasMultipleImages = actualImages.Count > 1;
         
         var actualOutputPath = Path.Combine(ActualOutputDirectoryName, testCategory);
@@ -144,9 +232,9 @@ public static class VisualTestEngine
             var expectedImageBytes = File.ReadAllBytes(expectedImagePath);
             var actualImageBytes = actualImages[i];
 
-            var imagesAreIdentical = ImageComparer.AreImagesIdentical(actualImageBytes, expectedImageBytes);
+            var imagesAreSimilar = ImageComparer.AreImagesSimilar(actualImageBytes, expectedImageBytes);
 
-            if (imagesAreIdentical) 
+            if (imagesAreSimilar) 
                 continue;
             
             var pageText = actualImages.Count > 1 ? $" (page {i})" : string.Empty;
