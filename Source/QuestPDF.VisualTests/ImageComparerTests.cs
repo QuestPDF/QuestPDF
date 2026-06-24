@@ -66,7 +66,7 @@ public class ImageComparerTests
     }
 
     [Test]
-    public void ShouldAcceptPixelWithinLocalAverageRange()
+    public void ShouldAcceptPixelWithAveragePreprocessing()
     {
         using var image1 = CreateBitmap(30, 30);
         using var image2 = CreateBitmap(30, 30);
