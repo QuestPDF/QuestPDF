@@ -64,6 +64,34 @@ public class ImageComparerTests
         
         Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
     }
+
+    [Test]
+    public void ShouldAcceptPixelWithinLocalAverageRange()
+    {
+        using var image1 = CreateBitmap(30, 30);
+        using var image2 = CreateBitmap(30, 30);
+        
+        for (var y = 14; y <= 16; y++)
+        {
+            for (var x = 14; x <= 16; x++)
+            {
+                image1.SetPixel(x, y, new SKColor(100, 100, 100));
+                image2.SetPixel(x, y, new SKColor(100, 100, 100));
+            }
+        }
+        
+        image1.SetPixel(15, 15, new SKColor(200, 200, 200));
+        image1.SetPixel(14, 14, new SKColor(87, 87, 87));
+        image1.SetPixel(15, 14, new SKColor(87, 87, 87));
+        image1.SetPixel(16, 14, new SKColor(87, 87, 87));
+        image1.SetPixel(14, 15, new SKColor(87, 87, 87));
+        image1.SetPixel(16, 15, new SKColor(88, 88, 88));
+        image1.SetPixel(14, 16, new SKColor(88, 88, 88));
+        image1.SetPixel(15, 16, new SKColor(88, 88, 88));
+        image1.SetPixel(16, 16, new SKColor(88, 88, 88));
+        
+        Assert.That(ImageComparer.AreImagesSimilar(image1, image2), Is.True);
+    }
     
     [Test]
     public void ShouldAcceptManyPixelsMovedByOnePixel()

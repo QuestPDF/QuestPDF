@@ -18,7 +18,9 @@ public static class Helpers
 public static class ImageComparer
 {
     private const int PixelTolerance = 16;
-    private const int FuzzyPixelSearchRadius = 3;
+    private const int FuzzyPixelSearchRadius = 1;
+    private const int LocalAveragePixelTolerance = PixelTolerance;
+    private const int LocalAverageSearchRadius = 1;
     private const int ImageSizeTolerance = 1;
     
     public static bool AreImagesSimilar(SKBitmap bitmap1, SKBitmap bitmap2)
@@ -48,7 +50,9 @@ public static class ImageComparer
                 "Images differ. \n" +
                 $"Image 1: {bitmap1.Width}x{bitmap1.Height}, image 2: {bitmap2.Width}x{bitmap2.Height}. \n" +
                 $"Allowed fuzzy color tolerance: {PixelTolerance},\n" +
-                $"allowed fuzzy radius: {FuzzyPixelSearchRadius}px. \n" +
+                $"allowed fuzzy radius: {FuzzyPixelSearchRadius}px, \n" +
+                $"allowed local average color tolerance: {LocalAveragePixelTolerance}, \n" +
+                $"allowed local average radius: {LocalAverageSearchRadius}px. \n" +
                 $"Actual -> expected: {actualToExpected}.";
             
             Assert.Fail(message);
@@ -78,6 +82,7 @@ public static class ImageComparer
         var differentPixels = 0;
         var exactPixels = 0;
         var fuzzyPixels = 0;
+        var localAveragePixels = 0;
         var failedDifferentPixels = 0;
         var minDifference = int.MaxValue;
         var maxDifference = 0;
@@ -103,13 +108,29 @@ public static class ImageComparer
                 maxDifference = Math.Max(maxDifference, difference);
                 totalDifference += difference;
                 
-                if (!FitsWithinFuzzyNeighborhoodRange(sourcePixel, targetPixels, targetWidth, targetHeight, width, height, x, y))
+                if (FitsWithinFuzzyNeighborhoodRange(sourcePixel, targetPixels, targetWidth, targetHeight, width, height, x, y))
                 {
-                    failedDifferentPixels++;
+                    fuzzyPixels++;
                     continue;
                 }
-                
-                fuzzyPixels++;
+
+                if (FitsWithinLocalAverageRange(
+                        sourcePixels,
+                        sourceWidth,
+                        sourceHeight,
+                        targetPixels,
+                        targetWidth,
+                        targetHeight,
+                        width,
+                        height,
+                        x,
+                        y))
+                {
+                    localAveragePixels++;
+                    continue;
+                }
+
+                failedDifferentPixels++;
             }
         }
 
@@ -118,6 +139,7 @@ public static class ImageComparer
             exactPixels,
             differentPixels,
             fuzzyPixels,
+            localAveragePixels,
             failedDifferentPixels,
             minDifference == int.MaxValue ? 0 : minDifference,
             maxDifference,
@@ -179,6 +201,68 @@ public static class ImageComparer
         return value >= minValue - PixelTolerance && value <= maxValue + PixelTolerance;
     }
 
+    private static bool FitsWithinLocalAverageRange(
+        SKColor[] sourcePixels,
+        int sourceWidth,
+        int sourceHeight,
+        SKColor[] targetPixels,
+        int targetWidth,
+        int targetHeight,
+        int width,
+        int height,
+        int x,
+        int y)
+    {
+        var left = Math.Max(0, x - LocalAverageSearchRadius);
+        var top = Math.Max(0, y - LocalAverageSearchRadius);
+        var right = Math.Min(width - 1, x + LocalAverageSearchRadius);
+        var bottom = Math.Min(height - 1, y + LocalAverageSearchRadius);
+
+        var sourceRed = 0;
+        var sourceGreen = 0;
+        var sourceBlue = 0;
+        var sourceAlpha = 0;
+        
+        var targetRed = 0;
+        var targetGreen = 0;
+        var targetBlue = 0;
+        var targetAlpha = 0;
+        
+        var pixels = 0;
+        
+        for (var averageY = top; averageY <= bottom; averageY++)
+        {
+            for (var averageX = left; averageX <= right; averageX++)
+            {
+                var sourcePixel = GetPixelOrWhite(sourcePixels, sourceWidth, sourceHeight, averageX, averageY);
+                var targetPixel = GetPixelOrWhite(targetPixels, targetWidth, targetHeight, averageX, averageY);
+                
+                sourceRed += sourcePixel.Red;
+                sourceGreen += sourcePixel.Green;
+                sourceBlue += sourcePixel.Blue;
+                sourceAlpha += sourcePixel.Alpha;
+                
+                targetRed += targetPixel.Red;
+                targetGreen += targetPixel.Green;
+                targetBlue += targetPixel.Blue;
+                targetAlpha += targetPixel.Alpha;
+                
+                pixels++;
+            }
+        }
+
+        return
+            FitsWithinAverageChannelRange(sourceRed, targetRed, pixels) &&
+            FitsWithinAverageChannelRange(sourceGreen, targetGreen, pixels) &&
+            FitsWithinAverageChannelRange(sourceBlue, targetBlue, pixels) &&
+            FitsWithinAverageChannelRange(sourceAlpha, targetAlpha, pixels);
+    }
+
+    private static bool FitsWithinAverageChannelRange(int sourceSum, int targetSum, int pixels)
+    {
+        return Math.Abs(sourceSum - targetSum) <= LocalAveragePixelTolerance * pixels;
+    }
+
     private static SKColor GetPixelOrWhite(SKColor[] pixels, int width, int height, int x, int y)
     {
         if (x >= width || y >= height)
@@ -192,6 +276,7 @@ public static class ImageComparer
         int ExactPixels,
         int DifferentPixels,
         int FuzzyPixels,
+        int LocalAveragePixels,
         int FailedDifferentPixels,
         int MinDifference,
         int MaxDifference,
@@ -204,6 +289,7 @@ public static class ImageComparer
         private double ExactPixelsPercentage => ExactPixels / (double) AllPixels * 100;
         private double DifferentPixelsPercentage => DifferentPixels / (double) AllPixels * 100;
         private double FuzzyPixelsPercentage => FuzzyPixels / (double) AllPixels * 100;
+        private double LocalAveragePixelsPercentage => LocalAveragePixels / (double) AllPixels * 100;
         private double FailedDifferentPixelsPercentage => FailedDifferentPixels / (double) AllPixels * 100;
 
         public override string ToString()
@@ -212,6 +298,7 @@ public static class ImageComparer
                 $"exact pixels: {ExactPixels} ({ExactPixelsPercentage:F4}%), \n" +
                 $"different pixels: {DifferentPixels} ({DifferentPixelsPercentage:F4}%), \n" +
                 $"fuzzy pixels: {FuzzyPixels} ({FuzzyPixelsPercentage:F4}%), \n" +
+                $"local average pixels: {LocalAveragePixels} ({LocalAveragePixelsPercentage:F4}%), \n" +
                 $"failed pixels: {FailedDifferentPixels} ({FailedDifferentPixelsPercentage:F4}%), \n" +
                 $"difference: {MinDifference} (min), {MaxDifference} (max), {AverageDifference:F2} (avg)";
         }
