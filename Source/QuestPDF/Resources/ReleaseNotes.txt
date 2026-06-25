@@ -2,5 +2,6 @@
 - Improved text rendering stability when handling an excessive number of whitespace characters.
 - Improved the failure message shown when the library runs on an unsupported platform (e.g., Android, iOS, or WASM).
 - Improved platform compatibility checks and introduced more advanced fallback mechanisms.
+- Improved diagnostics for missing font glyph exceptions.
 - Improved PDF output consistency of section links by avoiding name escaping and removing unnecessary documentId prefix. 
 - Made the Image.Size property public.

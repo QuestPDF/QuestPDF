@@ -551,15 +551,26 @@ namespace QuestPDF.Elements.Text
                 
             var glyphs = string.Join("\n", formattedGlyphs);
 
+            var fontFamilies = Items
+                .OfType<TextBlockSpan>()
+                .SelectMany(x => x.Style.FontFamilies ?? [])
+                .Distinct()
+                .Select(x => $"'{x}'")
+                .ToList();
+
+            var fontFamiliesFormatted = string.Join(", ", fontFamilies);
+
             throw new DocumentDrawingException(
                 $"Could not find an appropriate font fallback for the following glyphs: \n" +
-                $"${glyphs} \n\n" +
+                $"{glyphs} \n\n" +
+                $"Font families used in this text block: [{fontFamiliesFormatted}] \n\n" +
                 $"Possible solutions: \n" +
-                $"1) Install fonts that contain missing glyphs in your runtime environment. \n" +
-                $"2) Configure the fallback TextStyle using the 'TextStyle.FontFamilyFallback' method. \n" +
-                $"3) Register additional application specific fonts using the 'FontManager.RegisterFont' method. \n\n" +
-                $"You can disable this check by setting the 'Settings.CheckIfAllTextGlyphsAreAvailable' option to 'false'. \n" +
-                $"However, this may result with text glyphs being incorrectly rendered without any warning.");
+                $"1) (Recommended) Include all necessary font files with your application (e.g. during the publish operation). The QuestPDF library automatically scans the application directory and registers all present font files. \n" +
+                $"2) Install fonts that contain missing glyphs in your runtime environment. \n" +
+                $"3) Configure the fallback TextStyle using the 'TextStyle.FontFamilyFallback' method. \n" +
+                $"4) Register additional application-specific fonts using the 'FontManager.RegisterFont' method. \n\n" +
+                $"To suppress this check, set 'Settings.CheckIfAllTextGlyphsAreAvailable' to 'false'. \n" +
+                $"Warning: this will silently produce documents with missing or replacement characters.");
         }
         
         #region Handling Of Text Blocks With Only With Space
