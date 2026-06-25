@@ -5,7 +5,7 @@ namespace QuestPDF.Infrastructure
 {
     internal sealed class DocumentLocation
     {
-        public int DocumentId { get; set; }
+        public int? DocumentId { get; set; }
         public string Name { get; set; }
         public int PageStart { get; set; }
         public int PageEnd { get; set; }

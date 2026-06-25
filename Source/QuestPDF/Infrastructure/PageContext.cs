@@ -10,7 +10,7 @@ namespace QuestPDF.Infrastructure
         public int DocumentLength { get; private set; }
         private List<DocumentLocation> Locations { get; } = new();
         
-        public int CurrentDocumentId { get; private set; }
+        public int? CurrentDocumentId { get; private set; }
         public int CurrentPage { get; private set; }
 
         internal void SetDocumentId(int id)
@@ -63,7 +63,9 @@ namespace QuestPDF.Infrastructure
         
         public string GetDocumentLocationName(string locationName)
         {
-            return $"{CurrentDocumentId} | {locationName}";
+            return CurrentDocumentId.HasValue 
+                ? $"{CurrentDocumentId}:{locationName}" 
+                : locationName;
         }
         
         private List<PageElementLocation> ContentCapturedPositions { get; } = new();
