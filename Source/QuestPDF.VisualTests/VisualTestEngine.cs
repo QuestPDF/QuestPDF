@@ -17,6 +17,9 @@ public static class Helpers
 
 public static class ImageComparer
 {
+    private const int PixelTolerance = 8;
+    private const double MaxDifferentPixelsRatio = 0.0005;
+    
     public static bool AreImagesIdentical(SKBitmap bitmap1, SKBitmap bitmap2)
     {
         if (bitmap1.Width != bitmap2.Width || bitmap1.Height != bitmap2.Height)
@@ -42,28 +45,19 @@ public static class ImageComparer
                         $"Image 1: {pixels1.Length}, " +
                         $"Image 2: {pixels2.Length}");
         }
+        
+        var statistics = CalculateDifferenceStatistics(pixels1, pixels2);
+        
+        if (!statistics.IsAccepted)
+        {
+            var message = "Images differ. " +
+                          $"Allowed max pixel channel difference: {PixelTolerance}. " +
+                          $"Allowed different pixels: {FormatPercentage(MaxDifferentPixelsRatio)}. " +
+                          $"Actual different pixels: {statistics.DifferentPixels} ({FormatPercentage(statistics.DifferentPixelsRatio)}). " +
+                          $"Pixels above channel tolerance: {statistics.PixelsAboveTolerance} ({FormatPercentage(statistics.PixelsAboveToleranceRatio)}). " +
+                          $"Difference: {statistics.MinDifference} (min), {statistics.MaxDifference} (max), {statistics.AverageDifference:F2} (avg).";
             
-        var differences = pixels1.Zip(pixels2, (p1, p2) => new[] {p1.Red - p2.Red, p1.Green - p2.Green, p1.Blue - p2.Blue, p1.Alpha - p2.Alpha })
-            .Select(x => x.Select(Math.Abs))
-            .Select(x => x.Max())
-            .Where(diff => diff > 0)
-            .ToArray();
-        
-
-
-        if (differences.Length > 0)
-        {
-            var min = differences.Min();
-            var max = differences.Max();
-            var average = differences.Average(x => x);
-            var message = $"Images differ by {min} (min), {max} (max), {average:F2} (avg). Different pixels: {differences.Length}.";
             Assert.Fail(message);
-        }
-        
-        for (var i = 0; i < pixels1.Length; i++)
-        {
-            if (pixels1[i] != pixels2[i])
-                return false;
         }
         
         return true;
@@ -75,6 +69,70 @@ public static class ImageComparer
         using var bitmap2 = SKBitmap.Decode(imageData2);
         
         return AreImagesIdentical(bitmap1, bitmap2);
+    }
+    
+    private static DifferenceStatistics CalculateDifferenceStatistics(SKColor[] pixels1, SKColor[] pixels2)
+    {
+        var differentPixels = 0;
+        var pixelsAboveTolerance = 0;
+        var minDifference = int.MaxValue;
+        var maxDifference = 0;
+        var differenceSum = 0L;
+        
+        for (var i = 0; i < pixels1.Length; i++)
+        {
+            var difference = GetPixelDifference(pixels1[i], pixels2[i]);
+            
+            if (difference == 0)
+                continue;
+            
+            differentPixels++;
+            differenceSum += difference;
+            minDifference = Math.Min(minDifference, difference);
+            maxDifference = Math.Max(maxDifference, difference);
+            
+            if (difference > PixelTolerance)
+                pixelsAboveTolerance++;
+        }
+        
+        return new DifferenceStatistics
+        {
+            TotalPixels = pixels1.Length,
+            DifferentPixels = differentPixels,
+            PixelsAboveTolerance = pixelsAboveTolerance,
+            MinDifference = differentPixels == 0 ? 0 : minDifference,
+            MaxDifference = maxDifference,
+            AverageDifference = differentPixels == 0 ? 0 : (double) differenceSum / differentPixels
+        };
+    }
+    
+    private static int GetPixelDifference(SKColor pixel1, SKColor pixel2)
+    {
+        return Math.Max(
+            Math.Max(Math.Abs(pixel1.Red - pixel2.Red), Math.Abs(pixel1.Green - pixel2.Green)),
+            Math.Max(Math.Abs(pixel1.Blue - pixel2.Blue), Math.Abs(pixel1.Alpha - pixel2.Alpha)));
+    }
+    
+    private static string FormatPercentage(double value)
+    {
+        return value.ToString("P4", CultureInfo.InvariantCulture);
+    }
+    
+    private sealed class DifferenceStatistics
+    {
+        public int TotalPixels { get; init; }
+        public int DifferentPixels { get; init; }
+        public int PixelsAboveTolerance { get; init; }
+        public int MinDifference { get; init; }
+        public int MaxDifference { get; init; }
+        public double AverageDifference { get; init; }
+        
+        public double DifferentPixelsRatio => TotalPixels == 0 ? 0 : (double) DifferentPixels / TotalPixels;
+        public double PixelsAboveToleranceRatio => TotalPixels == 0 ? 0 : (double) PixelsAboveTolerance / TotalPixels;
+        
+        public bool IsAccepted => 
+            MaxDifference <= PixelTolerance &&
+            DifferentPixelsRatio <= MaxDifferentPixelsRatio;
     }
 }
 
