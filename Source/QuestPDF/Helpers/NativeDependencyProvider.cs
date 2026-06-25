@@ -50,14 +50,19 @@ internal static class NativeDependencyProvider
 
     private static void LoadNativeLibrary(string nativeFilePath)
     {
+        nativeFilePath = Path.GetFullPath(nativeFilePath);
+        
 #if NET5_0_OR_GREATER
         NativeLibrary.Load(nativeFilePath);
 #else
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            const uint LOAD_WITH_ALTERED_SEARCH_PATH = 0x00000008;
+            const uint LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR = 0x00000100;
+            const uint LOAD_LIBRARY_SEARCH_SYSTEM32 = 0x00000800;
 
-            if (LoadLibraryEx(nativeFilePath, IntPtr.Zero, LOAD_WITH_ALTERED_SEARCH_PATH) == IntPtr.Zero)
+            var flags = LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32;
+
+            if (LoadLibraryEx(nativeFilePath, IntPtr.Zero, flags) == IntPtr.Zero)
                 throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
         }
 #endif
