@@ -88,37 +88,23 @@ The code above produces the following PDF document:
 
 QuestPDF provides 60+ production-ready features for building complex, data-driven PDF documents with clean and maintainable C# code.
 
-<br>
-
-**🧱 Layout:**<br>
+**🧱 Layout:**
 Page setup, headers, footers, watermarks, tables, rows, columns, lists, layers, inlined content, multi-column flow, sections, decorations
 
-<br>
-
-**🎨 Visual Content:**<br>
+**🎨 Visual Content:**
 Rich text, fonts, colors, backgrounds, borders, rounded corners, shadows, lines, raster images, SVG, placeholders, canvas graphics
 
-<br>
-
-**📐 Positioning:**<br>
+**📐 Positioning:**
 Alignment, width, height, padding, aspect ratio, rotation, scaling, scale-to-fit, offset, flip, extend, shrink, unconstrained layout, Z-index
 
-<br>
-
-**🌊 Content Flow:**<br>
+**🌊 Content Flow:**
 Page breaks, prevent page breaks, ensure space, show entire, repeat, show once, skip once, conditional rendering, stop paging
 
-<br>
-
-**🧩 Dynamic Documents:**<br>
+**🧩 Dynamic Documents:**
 Loops, conditions, reusable components, dynamic components, lazy loading, custom helpers, extension methods, strongly-typed models
 
-<br>
-
-**🌍 Internationalization:**<br>
+**🌍 Internationalization:**
 RTL layout direction, bidirectional text, advanced text shaping, font fallback, multilingual documents, accessibility support
-
-<br>
 
 [![Explore All QuestPDF Features](https://img.shields.io/badge/explore%20all%20features-0288D1?style=for-the-badge)](https://www.questpdf.com/features-overview.html)
 
@@ -170,7 +156,7 @@ Accelerate development with live document preview and hot-reload capability. See
 - 🐞 Debug runtime exceptions with stack traces and code snippets
 - 🛠️ Identify, understand and solve layout errors
 
-![Screenshot showing the QuestPDF Companion App](https://github.com/user-attachments/assets/9e2ae731-d710-4776-9fa8-508ac8b0a6a9)
+![Screenshot showing the QuestPDF Companion App](https://github.com/QuestPDF/QuestPDF.CompanionApp/blob/0b8da9cb1a78fa2e4188503f2a6e48319b767ca6/application-light.jpeg)
 
 [![Learn about QuestPDF Companion App](https://img.shields.io/badge/learn%20more-0288D1?style=for-the-badge)]([https://www.questpdf.com/companion/features.html](https://www.questpdf.com/companion/usage.html))
 
@@ -179,52 +165,34 @@ Accelerate development with live document preview and hot-reload capability. See
 
 ## Enterprise-grade foundations
 
-**🧩 Dynamic Content Is Just Code**<br>
+**🧩 Dynamic Content Is Just Code**
 Use your existing programming language and development patterns to ship faster with less training. Loops, conditionals, functions, reusable components, and data-driven generation are supported natively.
 
-<br>
-
-**🔀 Version Control Friendly**<br>
+**🔀 Version Control Friendly**
 Review document changes like any other code. Get clean diffs, pull request approvals, traceable history, and safer collaboration across your team.
 
-<br>
-
-**✨ Ready for AI**<br>
+**✨ Ready for AI**
 QuestPDF’s semantic Fluent API helps AI assistants generate layouts, refactor components, explain document structure, and troubleshoot issues more effectively.
 
-<br>
-
-**🎯 Predictable Development**<br>
+**🎯 Predictable Development**
 Eliminate CSS debugging, browser quirks, and layout surprises common with HTML-to-PDF tools. What you code is what you get.
 
-<br>
-
-**👁️ Source-available**<br>
+**👁️ Source-available**
 Entire QuestPDF source code is available for review and customization, ensuring transparency and compliance with your organization's requirements.
 
-<br>
-
-**🔒 Complete Data Privacy**<br>
+**🔒 Complete Data Privacy**
 QuestPDF runs entirely within your infrastructure with no external API calls, internet requirement, or background data collection. As a company, we do not access, collect, store, or process your private data.
 
-<br>
-
-**🏗️ Comprehensive Layout Engine**<br>
+**🏗️ Comprehensive Layout Engine**
 A powerful layout engine built specifically for PDF generation. Gain full control over document structure, precise content positioning, and automatic pagination.
 
-<br>
-
-**🌐 Advanced Language Support**<br>
+**🌐 Advanced Language Support**
 Create multilingual documents with full RTL language support, advanced text shaping, and bi-directional layout handling.
 
-<br>
-
-**⚡ High Performance**<br>
+**⚡ High Performance**
 Generate thousands of pages per second while maintaining minimal CPU and memory usage. Perfect for high-throughput enterprise applications.
 
-<br>
-
-**📦 Optimized File Size**<br>
+**📦 Optimized File Size**
 Drastically reduce file sizes without compromising quality. Benefit from automatic font subsetting, optimal image compression, and efficient file compression.
 
 
@@ -285,14 +253,14 @@ Generate PDF documents that meet the strictest archival and accessibility requir
 - Purpose: ISO 19005 standard for long-term preservation. Ensures PDFs remain readable and visually identical for decades without external dependencies.
 - Supported Standards: `PDF/A-2b`, `PDF/A-2u`, `PDF/A-2a`, `PDF/A-3b`, `PDF/A-3u`, `PDF/A-3a`
 
-<br>
+
 
 **♿ PDF/UA (Accessibility)**
 
 - Purpose: ISO 14289 standard for universal accessibility. Includes full support for screen readers and assistive technologies for people with disabilities.
 - Supported Standards: `PDF/UA-1`
 
-<br>
+
 
 **🧾 EN 16931 (E-Invoicing):**
 
