@@ -17,48 +17,17 @@ public static class Helpers
 
 public static class ImageComparer
 {
-    private const int PixelTolerance = 8;
+    private const int MaxPixelChannelDifference = 8;
     private const double MaxDifferentPixelsRatio = 0.0005;
     
-    public static bool AreImagesIdentical(SKBitmap bitmap1, SKBitmap bitmap2)
+    public static bool AreImagesIdentical(SKBitmap actualImage, SKBitmap expectedImage)
     {
-        if (bitmap1.Width != bitmap2.Width || bitmap1.Height != bitmap2.Height)
-        {
-            Assert.Fail("Different image sizes: " +
-                        $"Image 1: {bitmap1.Width}x{bitmap1.Height}, " +
-                        $"Image 2: {bitmap2.Width}x{bitmap2.Height}");
-        }
-
-        if (bitmap1.ColorType != bitmap2.ColorType)
-        {
-            Assert.Fail("Different image color types: " +
-                        $"Image 1: {bitmap1.ColorType}, " +
-                        $"Image 2: {bitmap2.ColorType}");
-        }
-
-        var pixels1 = bitmap1.Pixels;
-        var pixels2 = bitmap2.Pixels;
-
-        if (pixels1.Length != pixels2.Length)
-        {
-            Assert.Fail("Different image pixel counts: " +
-                        $"Image 1: {pixels1.Length}, " +
-                        $"Image 2: {pixels2.Length}");
-        }
+        EnsureComparableImages(actualImage, expectedImage);
         
-        var statistics = CalculateDifferenceStatistics(pixels1, pixels2);
+        var comparison = ComparePixels(actualImage.Pixels, expectedImage.Pixels);
         
-        if (!statistics.IsAccepted)
-        {
-            var message = "Images differ. " +
-                          $"Allowed max pixel channel difference: {PixelTolerance}. " +
-                          $"Allowed different pixels: {FormatPercentage(MaxDifferentPixelsRatio)}. " +
-                          $"Actual different pixels: {statistics.DifferentPixels} ({FormatPercentage(statistics.DifferentPixelsRatio)}). " +
-                          $"Pixels above channel tolerance: {statistics.PixelsAboveTolerance} ({FormatPercentage(statistics.PixelsAboveToleranceRatio)}). " +
-                          $"Difference: {statistics.MinDifference} (min), {statistics.MaxDifference} (max), {statistics.AverageDifference:F2} (avg).";
-            
-            Assert.Fail(message);
-        }
+        if (!comparison.IsAccepted)
+            Assert.Fail(comparison.GetFailureMessage());
         
         return true;
     }
@@ -71,46 +40,41 @@ public static class ImageComparer
         return AreImagesIdentical(bitmap1, bitmap2);
     }
     
-    private static DifferenceStatistics CalculateDifferenceStatistics(SKColor[] pixels1, SKColor[] pixels2)
+    private static void EnsureComparableImages(SKBitmap actualImage, SKBitmap expectedImage)
     {
-        var differentPixels = 0;
-        var pixelsAboveTolerance = 0;
-        var minDifference = int.MaxValue;
-        var maxDifference = 0;
-        var differenceSum = 0L;
-        
-        for (var i = 0; i < pixels1.Length; i++)
+        if (actualImage.Width != expectedImage.Width || actualImage.Height != expectedImage.Height)
         {
-            var difference = GetPixelDifference(pixels1[i], pixels2[i]);
-            
-            if (difference == 0)
-                continue;
-            
-            differentPixels++;
-            differenceSum += difference;
-            minDifference = Math.Min(minDifference, difference);
-            maxDifference = Math.Max(maxDifference, difference);
-            
-            if (difference > PixelTolerance)
-                pixelsAboveTolerance++;
+            Assert.Fail("Different image sizes: " +
+                        $"Actual image: {actualImage.Width}x{actualImage.Height}, " +
+                        $"Expected image: {expectedImage.Width}x{expectedImage.Height}");
         }
         
-        return new DifferenceStatistics
+        if (actualImage.ColorType != expectedImage.ColorType)
         {
-            TotalPixels = pixels1.Length,
-            DifferentPixels = differentPixels,
-            PixelsAboveTolerance = pixelsAboveTolerance,
-            MinDifference = differentPixels == 0 ? 0 : minDifference,
-            MaxDifference = maxDifference,
-            AverageDifference = differentPixels == 0 ? 0 : (double) differenceSum / differentPixels
-        };
+            Assert.Fail("Different image color types: " +
+                        $"Actual image: {actualImage.ColorType}, " +
+                        $"Expected image: {expectedImage.ColorType}");
+        }
     }
     
-    private static int GetPixelDifference(SKColor pixel1, SKColor pixel2)
+    private static ImageComparisonResult ComparePixels(SKColor[] actualPixels, SKColor[] expectedPixels)
+    {
+        if (actualPixels.Length != expectedPixels.Length)
+        {
+            Assert.Fail("Different image pixel counts: " +
+                        $"Actual image: {actualPixels.Length}, " +
+                        $"Expected image: {expectedPixels.Length}");
+        }
+        
+        var statistics = DifferenceStatistics.Calculate(actualPixels, expectedPixels, MaxPixelChannelDifference);
+        return new ImageComparisonResult(statistics);
+    }
+    
+    private static int GetPixelDifference(SKColor actualPixel, SKColor expectedPixel)
     {
         return Math.Max(
-            Math.Max(Math.Abs(pixel1.Red - pixel2.Red), Math.Abs(pixel1.Green - pixel2.Green)),
-            Math.Max(Math.Abs(pixel1.Blue - pixel2.Blue), Math.Abs(pixel1.Alpha - pixel2.Alpha)));
+            Math.Max(Math.Abs(actualPixel.Red - expectedPixel.Red), Math.Abs(actualPixel.Green - expectedPixel.Green)),
+            Math.Max(Math.Abs(actualPixel.Blue - expectedPixel.Blue), Math.Abs(actualPixel.Alpha - expectedPixel.Alpha)));
     }
     
     private static string FormatPercentage(double value)
@@ -118,21 +82,69 @@ public static class ImageComparer
         return value.ToString("P4", CultureInfo.InvariantCulture);
     }
     
+    private sealed record ImageComparisonResult(DifferenceStatistics Statistics)
+    {
+        public bool IsAccepted => 
+            Statistics.MaxDifference <= MaxPixelChannelDifference &&
+            Statistics.DifferentPixelsRatio <= MaxDifferentPixelsRatio;
+        
+        public string GetFailureMessage()
+        {
+            return "Images differ. " +
+                   $"Allowed max pixel channel difference: {MaxPixelChannelDifference}. \n" +
+                   $"Allowed different pixels: {FormatPercentage(MaxDifferentPixelsRatio)}. \n" +
+                   $"Actual different pixels: {Statistics.DifferentPixels} ({FormatPercentage(Statistics.DifferentPixelsRatio)}). \n" +
+                   $"Pixels above channel tolerance: {Statistics.PixelsAboveTolerance} ({FormatPercentage(Statistics.PixelsAboveToleranceRatio)}). \n" +
+                   $"Difference: {Statistics.MinDifference} (min), {Statistics.MaxDifference} (max), {Statistics.AverageDifference:F2} (avg).";
+        }
+    }
+    
     private sealed class DifferenceStatistics
     {
-        public int TotalPixels { get; init; }
-        public int DifferentPixels { get; init; }
-        public int PixelsAboveTolerance { get; init; }
-        public int MinDifference { get; init; }
-        public int MaxDifference { get; init; }
-        public double AverageDifference { get; init; }
+        public int TotalPixels { get; private init; }
+        public int DifferentPixels { get; private init; }
+        public int PixelsAboveTolerance { get; private init; }
+        public int MinDifference { get; private init; }
+        public int MaxDifference { get; private init; }
+        public double AverageDifference { get; private init; }
         
         public double DifferentPixelsRatio => TotalPixels == 0 ? 0 : (double) DifferentPixels / TotalPixels;
         public double PixelsAboveToleranceRatio => TotalPixels == 0 ? 0 : (double) PixelsAboveTolerance / TotalPixels;
         
-        public bool IsAccepted => 
-            MaxDifference <= PixelTolerance &&
-            DifferentPixelsRatio <= MaxDifferentPixelsRatio;
+        public static DifferenceStatistics Calculate(SKColor[] actualPixels, SKColor[] expectedPixels, int maxPixelChannelDifference)
+        {
+            var differentPixels = 0;
+            var pixelsAboveTolerance = 0;
+            var minDifference = int.MaxValue;
+            var maxDifference = 0;
+            var differenceSum = 0L;
+            
+            for (var i = 0; i < actualPixels.Length; i++)
+            {
+                var difference = GetPixelDifference(actualPixels[i], expectedPixels[i]);
+                
+                if (difference == 0)
+                    continue;
+                
+                differentPixels++;
+                differenceSum += difference;
+                minDifference = Math.Min(minDifference, difference);
+                maxDifference = Math.Max(maxDifference, difference);
+                
+                if (difference > maxPixelChannelDifference)
+                    pixelsAboveTolerance++;
+            }
+            
+            return new DifferenceStatistics
+            {
+                TotalPixels = actualPixels.Length,
+                DifferentPixels = differentPixels,
+                PixelsAboveTolerance = pixelsAboveTolerance,
+                MinDifference = differentPixels == 0 ? 0 : minDifference,
+                MaxDifference = maxDifference,
+                AverageDifference = differentPixels == 0 ? 0 : (double) differenceSum / differentPixels
+            };
+        }
     }
 }
 
