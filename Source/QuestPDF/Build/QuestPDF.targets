@@ -4,6 +4,7 @@
         <None Include="$(MSBuildThisFileDirectory)\..\LatoFont\*.*">
             <Link>LatoFont\%(RecursiveDir)%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <Visible>false</Visible>
         </None>
     </ItemGroup>
 </Project>
