@@ -41,5 +41,11 @@ namespace QuestPDF.Fluent
         {
             return element.Extend(horizontal: true);
         }
+
+        internal static IContainer EnforceExtendWhenEmpty(this IContainer element)
+        {
+            (element as Extend).EnforceWhenEmpty = true;
+            return element;
+        }
     }
 }

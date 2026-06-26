@@ -11,7 +11,7 @@ namespace QuestPDF.LayoutTests.TestEngine;
 internal class LayoutTest
 {
     private string TestIdentifier { get; set; }
-    private Size AvailableSpace { get; set; }
+    private Size? AvailableSpace { get; set; }
     private DrawingRecorder ActualDrawingRecorder { get; } = new();
     private DrawingRecorder ExpectedDrawingRecorder { get; } = new();
     private IContainer? Content { get; set; }
@@ -28,17 +28,39 @@ internal class LayoutTest
 
         return layoutTest;
     }
+    
+    public static LayoutTest ForPage(Action<PageDescriptor> handler, [CallerMemberName] string testIdentifier = "test")
+    {
+        var layoutTest = new LayoutTest
+        {
+            TestIdentifier = testIdentifier,
+            Content = new Container()
+        };
+        
+        var pageDescriptor = new PageDescriptor();
+        handler(pageDescriptor);
+        
+        layoutTest
+            .Content
+            .ElementObserverSetter(layoutTest.ActualDrawingRecorder)
+            .Mock("$document")
+            .Component(pageDescriptor.Page);
+
+        return layoutTest;
+    }
 
     public LayoutTest ForContent(Action<IContainer> handler)
     {
         if (Content != null)
             throw new InvalidOperationException("Content has already been defined.");
         
+        Assert.NotNull(AvailableSpace);
+        
         Content = new Container();
         
         Content
-            .Width(AvailableSpace.Width)
-            .Height(AvailableSpace.Height)
+            .Width(AvailableSpace?.Width ?? 0)
+            .Height(AvailableSpace?.Height ?? 0)
             .ElementObserverSetter(ActualDrawingRecorder)
             .Mock("$document")
             .Element(handler);

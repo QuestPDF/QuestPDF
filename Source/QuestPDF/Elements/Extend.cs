@@ -9,12 +9,26 @@ namespace QuestPDF.Elements
         public bool ExtendVertical { get; set; }
         public bool ExtendHorizontal { get; set; }
         
+        public bool EnforceWhenEmpty { get; set; }
+        
         internal override SpacePlan Measure(Size availableSpace)
         {
             var childSize = base.Measure(availableSpace);
 
-            if (childSize.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+            if (childSize.Type is SpacePlanType.Wrap)
                 return childSize;
+
+            if (childSize.Type is SpacePlanType.Empty)
+            {
+                if (EnforceWhenEmpty)
+                {
+                    return SpacePlan.FullRender(
+                        ExtendHorizontal ? availableSpace.Width : 0,
+                        ExtendVertical ? availableSpace.Height : 0);
+                }
+                
+                return childSize;
+            }
             
             var targetSize = GetTargetSize(availableSpace, childSize);
             

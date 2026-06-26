@@ -51,18 +51,8 @@ namespace QuestPDF.Elements
                     
                     layers
                         .PrimaryLayer()
-                        
-                        .MinWidth(MinSize?.Width ?? 0)
-                        .MinHeight(MinSize?.Height ?? 0)
-                        .MaxWidth(MaxSize?.Width ?? Size.Max.Width)
-                        .MaxHeight(MaxSize?.Height ?? Size.Max.Height)
-                        .EnforceSizeWhenEmpty()
-                        
-                        .PaddingLeft(MarginLeft)
-                        .PaddingRight(MarginRight)
-                        .PaddingTop(MarginTop)
-                        .PaddingBottom(MarginBottom)
-                
+                        .NonTrackingElement(ApplyPageSizeConstraints)
+                        .NonTrackingElement(ApplyMargin)
                         .Decoration(decoration =>
                         {
                             decoration
@@ -72,8 +62,7 @@ namespace QuestPDF.Elements
 
                             decoration
                                 .Content()
-                                .NonTrackingElement(x => (MinSize?.Width == MaxSize?.Width) ? x.ExtendHorizontal() : x)
-                                .NonTrackingElement(x => (MinSize?.Height == MaxSize?.Height) ? x.ExtendVertical() : x)
+                                .NonTrackingElement(EnsurePageContentTakesAllAvailableSpaceWhenPageSizeIsConstant)
                                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Content.ToString())
                                 .Element(Content);
 
@@ -91,7 +80,45 @@ namespace QuestPDF.Elements
                         .Element(Foreground);
                 });
         }
+        
+        private IContainer ApplyPageSizeConstraints(IContainer container)
+        {
+            const float minSize = 3f; // from PDF specification
 
+            var minWidth = Math.Max(MinSize?.Width ?? 0, minSize);
+            var minHeight = Math.Max(MinSize?.Height ?? 0, minSize);
+            
+            var maxWidth = Math.Min(MaxSize?.Width ?? float.MaxValue, Size.Max.Width);
+            var maxHeight = Math.Min(MaxSize?.Height ?? float.MaxValue, Size.Max.Height);
+            
+            return container
+                .MinWidth(minWidth)
+                .MinHeight(minHeight)
+                .MaxWidth(maxWidth)
+                .MaxHeight(maxHeight)
+                .EnforceSizeWhenEmpty();
+        }
+        
+        private IContainer ApplyMargin(IContainer container)
+        {
+            return container
+                .PaddingLeft(MarginLeft)
+                .PaddingRight(MarginRight)
+                .PaddingTop(MarginTop)
+                .PaddingBottom(MarginBottom);
+        }
+
+        private IContainer EnsurePageContentTakesAllAvailableSpaceWhenPageSizeIsConstant(IContainer container)
+        {
+            if (MinSize?.Width == MaxSize?.Width)
+                container = container.ExtendHorizontal().EnforceExtendWhenEmpty();
+                    
+            if (MinSize?.Height == MaxSize?.Height)
+                container = container.ExtendVertical().EnforceExtendWhenEmpty();     
+                    
+            return container;
+        }
+        
         private void SetDefaultPageSizeIfNotSpecified()
         {
             if (MinSize.HasValue || MaxSize.HasValue)
