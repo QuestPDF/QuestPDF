@@ -10,9 +10,10 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            Canvas.Save();
             Canvas.Rotate(Angle);
             Child?.Draw(availableSpace);
-            Canvas.Rotate(-Angle);
+            Canvas.Restore();
         }
 
         internal override string? GetCompanionHint()

@@ -41,7 +41,9 @@ namespace QuestPDF.Elements
 
             var rotate = NormalizedTurnCount * 90;
             
+            Canvas.Save();
             Canvas.Translate(translate);
+            
             Canvas.Rotate(rotate);
             
             if (NormalizedTurnCount == 1 || NormalizedTurnCount == 3)
@@ -49,8 +51,7 @@ namespace QuestPDF.Elements
             
             Child?.Draw(availableSpace);
             
-            Canvas.Rotate(-rotate);
-            Canvas.Translate(translate.Reverse());
+            Canvas.Restore();
         }
 
         internal override string? GetCompanionHint()
