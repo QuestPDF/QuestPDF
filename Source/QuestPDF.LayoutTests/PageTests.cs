@@ -1,20 +1,66 @@
+using QuestPDF.Helpers;
+
 namespace QuestPDF.LayoutTests;
 
 public class PageTests
 {
+    // TODO: adjust and refactor layout tests for the Page element:
+    // there are two types of Empty content:
+    // 1) SpacePlan.Empty, e.g. when Column has nothing more to render
+    // 2) SpacePlan.FullRender(0, 0), used by default in practically all element slots (most common when the IContainer chain is left open)
+    // these tests should properly communicate which type of "empty" is used
+    
     [Test]
-    public void GenerationWorks_WhenPageSizeIsZero_AndUsesSizePerPdfSpecification()
+    public void WhenContentSizeIsEmpty_AppliesMinimalPageSizePerPdfSpecification()
     {
         LayoutTest
             .ForPage(page =>
             {
-                page.ContinuousSize(100);
+                page.MinSize(new PageSize(0, 0));
+                page.MaxSize(new PageSize(100, 100));
             })
             .ExpectDrawResult(document =>
             {
                 document
                     .Page()
-                    .RequiredAreaSize(100, 3);
+                    .RequiredAreaSize(3, 3);
+            });
+    }
+    
+    [Test]
+    public void WhenContentSizeIsEmpty_AppliesMinimalPageSizePerPdfSpecification2()
+    {
+        LayoutTest
+            .ForPage(page =>
+            {
+                page.MinSize(new PageSize(0, 0));
+                page.MaxSize(new PageSize(100, 100));
+                
+                page.Content().Column(_ => { });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(3, 3);
+            });
+    }
+    
+    [Test]
+    public void WhenContentIsEmpty_AppliesMinimumFlexiblePageSize()
+    {
+        LayoutTest
+            .ForPage(page =>
+            {
+                page.MinSize(new PageSize(200, 300));
+                page.MaxSize(new PageSize(400, 500));
+                page.Content().Column(_ => { });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(200, 300);
             });
     }
     
