@@ -4,7 +4,7 @@ QuestPDF is dual-licensed.
 This document contains the License Selection Guide, the Community License, and the Professional / Enterprise License.
 
 Not sure which license applies to you?
-Visit https://www.questpdf.com/license for a human-friendly FAQ that explains the licensing in plain language. 
+Visit https://www.questpdf.com/pricing for a human-friendly overview that explains the licensing in plain language. 
 If anything's still unclear, we're happy to help at contact@questpdf.com.
 
 The FAQ is informational only; in case of any conflict, the license texts in this document prevail.
