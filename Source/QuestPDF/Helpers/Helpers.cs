@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
-using System.IO;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.DrawingCanvases;
@@ -145,19 +142,6 @@ namespace QuestPDF.Helpers
             process.WaitForExit();
         }
 
-        internal static string ApplicationFilesPath
-        {
-            get
-            {
-                var baseDirectory = AppContext.BaseDirectory;
-
-                if (string.IsNullOrWhiteSpace(baseDirectory) || baseDirectory == "/")
-                    return Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-
-                return baseDirectory;
-            }
-        }
-        
         internal static (float widthScale, float heightScale) CalculateSpaceScale(this SkSvgImage image, Size availableSpace)
         {
             var widthScale = CalculateDimensionScale(availableSpace.Width, image.Size.Width, image.Size.WidthUnit);

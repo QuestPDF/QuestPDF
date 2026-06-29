@@ -113,11 +113,12 @@ internal static class NativeDependencyProvider
     {
         var availableLocations = new[]
         {
-            GetAssemblyDirectoryOrNull(),
-            AppDomain.CurrentDomain.RelativeSearchPath, 
+            PathHelpers.GetAssemblyDirectoryOrNull(),
+            AppDomain.CurrentDomain.RelativeSearchPath,
             AppDomain.CurrentDomain.BaseDirectory,
-            Environment.CurrentDirectory,
             AppContext.BaseDirectory,
+            PathHelpers.GetProcessDirectoryOrNull(),
+            Environment.CurrentDirectory,
             Directory.GetCurrentDirectory()
         };
         
@@ -133,19 +134,6 @@ internal static class NativeDependencyProvider
         }
 
         return null;
-    }
-    
-    private static string? GetAssemblyDirectoryOrNull()
-    {
-        try
-        {
-            var location = typeof(NativeDependencyProvider).Assembly.Location;
-            return new FileInfo(location).Directory?.FullName;
-        }
-        catch
-        {
-            return null;
-        }
     }
     
     #endregion

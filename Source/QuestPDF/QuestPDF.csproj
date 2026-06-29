@@ -28,6 +28,7 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <IsTrimmable>true</IsTrimmable>
         <IsAotCompatible>true</IsAotCompatible>
+        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(BUILD_PACKAGE)' == 'true'">

@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using QuestPDF.Drawing.Exceptions;
+using QuestPDF.Helpers;
 using QuestPDF.Skia;
 
 namespace QuestPDF.Infrastructure;
@@ -52,7 +53,7 @@ static class StaticImageCache
         if (Path.IsPathRooted(filePath))
             throw new DocumentComposeException($"Cannot load an image under the provided absolute path, file not found: {filePath}");
 
-        var fallbackPath = Path.Combine(Helpers.Helpers.ApplicationFilesPath, filePath);
+        var fallbackPath = Path.Combine(PathHelpers.ApplicationFilesPath, filePath);
 
         if (!File.Exists(fallbackPath))
             throw new DocumentComposeException($"Cannot load an image under the provided relative path, file not found: {filePath}");
