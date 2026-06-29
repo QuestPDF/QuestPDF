@@ -34,7 +34,7 @@
         <IsAotCompatible>true</IsAotCompatible>
     </PropertyGroup>
 
-    <PropertyGroup>
+    <PropertyGroup Condition="'$(BUILD_PACKAGE)' == 'true'">
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
         <SignAssembly>true</SignAssembly>
