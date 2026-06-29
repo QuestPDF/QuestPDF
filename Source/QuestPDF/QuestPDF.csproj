@@ -26,9 +26,11 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0' Or '$(TargetFramework)' == 'net10.0'">
         <IsTrimmable>true</IsTrimmable>
         <IsAotCompatible>true</IsAotCompatible>
-        <InvariantGlobalization>true</InvariantGlobalization>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(BUILD_PACKAGE)' == 'true'">
