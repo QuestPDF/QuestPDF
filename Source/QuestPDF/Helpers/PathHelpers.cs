@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
@@ -64,14 +65,14 @@ internal static class PathHelpers
         }
     }
 
+#if NET5_0_OR_GREATER
+    [UnconditionalSuppressMessage("SingleFile", "IL3000")]
+#endif
     internal static string? GetAssemblyDirectoryOrNull()
     {
         try
         {
-#pragma warning disable IL3000
             var location = typeof(PathHelpers).Assembly.Location;
-#pragma warning restore IL3000
-            
             return new FileInfo(location).Directory?.FullName;
         }
         catch
