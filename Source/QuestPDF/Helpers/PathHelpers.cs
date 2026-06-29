@@ -27,7 +27,7 @@ internal static class PathHelpers
 
         return candidates
             .Where(x => !string.IsNullOrWhiteSpace(x))
-            .FirstOrDefault(x => ContainsLatoFontFolder(x) || !IsRoot(x))
+            .FirstOrDefault(x => !IsRoot(x) || ContainsLatoFontFolder(x))
             ?? defaultPath;
         
         // by default, QuestPDF includes the LatoFont folder in application publish artifacts,
