@@ -35,5 +35,7 @@ namespace QuestPDF.Elements
 
             PageContext.CaptureContentPosition(position);
         }
+
+        internal override string? GetCompanionHint() => $"{Id}";
     }
 }

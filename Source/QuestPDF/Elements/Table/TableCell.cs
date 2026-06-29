@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
@@ -16,5 +17,13 @@ namespace QuestPDF.Elements.Table
         public int SemanticNodeId { get; set; }
         
         public bool IsRendered { get; set; }
+
+        internal override string? GetCompanionHint()
+        {
+            var rowSpan = RowSpan > 1 ? $" (span {RowSpan})" : string.Empty;
+            var columnSpan = ColumnSpan > 1 ? $" (span {ColumnSpan})" : string.Empty;
+            
+            return $"R={Row}{rowSpan}   C={Column}{columnSpan}";
+        }
     }
 }

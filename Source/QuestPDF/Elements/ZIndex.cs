@@ -14,5 +14,7 @@ namespace QuestPDF.Elements
             base.Draw(availableSpace);
             Canvas.SetZIndex(previousZIndex);
         }
+
+        internal override string? GetCompanionHint() => $"{Depth} layer";
     }
 }

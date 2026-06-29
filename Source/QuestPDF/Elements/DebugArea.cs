@@ -11,6 +11,7 @@ namespace QuestPDF.Elements
         
         public string Text { get; set; }
         public Color Color { get; set; } = Colors.Red.Medium;
+
         public void Compose(IContainer container)
         {
             var backgroundColor = Color.WithAlpha(64);

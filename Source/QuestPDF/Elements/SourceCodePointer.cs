@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
@@ -11,6 +12,8 @@ internal sealed class SourceCodePointer : ContainerElement
     public int LineNumber { get; set; }
     
     internal override string? GetCompanionSearchableContent() => $"{MethodName} {CalledFrom} {FilePath}";
+
+    internal override string? GetCompanionHint() => $"{MethodName} in {Path.GetFileName(FilePath)}:{LineNumber}";
 
     internal override IEnumerable<KeyValuePair<string, string>>? GetCompanionProperties()
     {
