@@ -51,7 +51,6 @@ mkdir -p "$publish_dir" "$output_dir"
 
 dotnet restore "$project" \
   --configfile "$nuget_config" \
-  --framework "$target_framework" \
   --runtime "$rid" \
   -p:QuestPDFIntegrationVersion="$package_version" \
   -p:QuestPDFIntegrationTargetFramework="$target_framework"
