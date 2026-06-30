@@ -570,7 +570,7 @@ namespace QuestPDF.Elements.Text
                 $"3) Configure the fallback TextStyle using the 'TextStyle.FontFamilyFallback' method. \n" +
                 $"4) Register additional application-specific fonts using the 'FontManager.RegisterFont' method. \n\n" +
                 $"To suppress this check, set 'Settings.CheckIfAllTextGlyphsAreAvailable' to 'false'. \n" +
-                $"Warning: this will silently produce documents with missing or replacement characters.");
+                $"Please note that disabling this check allows document generation to continue, but missing glyphs may be rendered as replacement characters or empty areas.");
         }
         
         #region Handling Of Text Blocks With Only With Space

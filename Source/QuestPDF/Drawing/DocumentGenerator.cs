@@ -26,6 +26,7 @@ namespace QuestPDF.Drawing
         internal static void GeneratePdf(SkWriteStream stream, IDocument document)
         {
             LicenseChecker.ValidateLicense();
+            ConfigurationValidator.ShowIfNeeded();
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
@@ -40,6 +41,7 @@ namespace QuestPDF.Drawing
         internal static void GenerateXps(SkWriteStream stream, IDocument document)
         {
             LicenseChecker.ValidateLicense();
+            ConfigurationValidator.ShowIfNeeded();
             
             var settings = document.GetSettings();
             using var canvas = new XpsDocumentCanvas(stream, settings);
@@ -49,6 +51,7 @@ namespace QuestPDF.Drawing
         internal static ICollection<byte[]> GenerateImages(IDocument document, ImageGenerationSettings imageGenerationSettings)
         {
             LicenseChecker.ValidateLicense();
+            ConfigurationValidator.ShowIfNeeded();
             
             var documentSettings = document.GetSettings();
             documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
@@ -62,6 +65,7 @@ namespace QuestPDF.Drawing
         internal static ICollection<string> GenerateSvg(IDocument document)
         {
             LicenseChecker.ValidateLicense();
+            ConfigurationValidator.ShowIfNeeded();
             
             using var canvas = new SvgDocumentCanvas();
             RenderDocument(canvas, document, document.GetSettings());

@@ -25,33 +25,12 @@ static class LicenseChecker
     private static void PrintLicenseEvaluationWarning()
     {
         var warningMessage =
-            "[QuestPDF] The library is running in Evaluation Mode. " +
-            "This mode is fully functional and intended solely for assessing the library before selecting a license; it is not permitted in production. " +
+            "[QuestPDF] The QuestPDF library is running with the Evaluation license. " +
+            "This mode is fully functional and intended only for evaluating the library before choosing a license. " +
+            "It must not be used in production. " +
             "Pricing: https://www.questpdf.com/pricing | License terms: https://www.questpdf.com/license";
 
-        try
-        {
-            if (TraceHasListeners())
-                Trace.TraceWarning(warningMessage);
-            
-            else
-                Console.WriteLine($"\n{warningMessage}\n");
-        }
-        catch
-        {
-            
-        }
-    }
-
-    private static bool TraceHasListeners()
-    {
-        if (Trace.Listeners.Count == 0)
-            return false;
-        
-        if (Trace.Listeners.Count == 1 && Trace.Listeners[0] is DefaultTraceListener)
-            return false;
-        
-        return true;
+        Trace.TraceWarning(warningMessage);
     }
     
     private static void ThrowExceptionWithWelcomeMessage()

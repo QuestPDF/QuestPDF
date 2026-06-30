@@ -257,12 +257,10 @@ namespace QuestPDF.Helpers
         {
 #if NET5_0_OR_GREATER
             Trace.TraceWarning(
-                "QuestPDF successfully loaded its native dependencies through its own fallback recovery mechanism, after the standard .NET native library resolution had already failed. " +
-                "On .NET 5.0 and newer, the runtime normally resolves these binaries from the runtimes/{rid}/native folder automatically. " +
-                "Reaching this fallback means the files were present on disk but were not part of the resolved dependency graph, so the runtime did not load them on its own. " +
-                "The usual cause is a non-standard deployment. " +
-                "Generation works now because the files happened to be reachable, but relying on this fallback is fragile - changes to how the application is built, published, or hosted could prevent the libraries from loading. " +
-                "PDF generation will continue normally; this message is purely informational.");
+                "[QuestPDF] QuestPDF loaded its native dependencies using fallback recovery after the standard .NET native library resolution failed. " +
+                "PDF generation can continue, but this deployment is fragile: future changes to how the application is built, published, or hosted may prevent the native libraries from being found. " +
+                "On .NET 5.0 and newer, these binaries are normally resolved automatically from the 'runtimes/{rid}/native' folder. " +
+                "Please review your deployment setup and make sure the QuestPDF native files are included in the resolved dependency graph. ");
 #endif
         }
     }

@@ -30,9 +30,10 @@ internal static class NativeDependencyProvider
         catch (Exception e)
         {
             Trace.TraceWarning(
-                "QuestPDF was unable to preload its native dependencies from the 'runtimes/{rid}/native' folder. " +
-                "This operation runs only after the standard .NET native library resolution has already failed, as part of QuestPDF's recovery process. " +
-                "The most likely causes are a missing or incompatible native binary, or a runtime/architecture mismatch. " +
+                "[QuestPDF] The QuestPDF library has encountered an issue while loading one of its dependencies. " +
+                "During fallback recovery, QuestPDF could not preload its native dependencies from the 'runtimes/{rid}/native'. " +
+                "The standard .NET native library resolution had already failed, and this fallback attempt was not successful. " +
+                "Common causes include missing native files, an incompatible runtime identifier, an architecture mismatch, or blocked file access. " +
                 $"Details: {e.Message}");
         }
     }
@@ -102,9 +103,9 @@ internal static class NativeDependencyProvider
         catch (Exception e)
         {
             Trace.TraceWarning(
-                "QuestPDF was unable to copy its native dependency files to the application directory. " +
-                "This operation runs only after the standard .NET native library resolution has already failed, as part of QuestPDF's recovery process. " +
-                "The most likely causes are insufficient file system permissions or a read-only application directory. " +
+                "[QuestPDF] QuestPDF could not copy its native dependency files to the application directory during fallback recovery. " +
+                "The standard .NET native library resolution had already failed, and this fallback attempt was not successful. " +
+                "Common causes include insufficient file system permissions, a read-only application directory, or a deployment layout that does not allow files to be copied at runtime. " +
                 $"Details: {e.Message}");
         }
     }
