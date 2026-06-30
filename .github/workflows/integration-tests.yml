@@ -58,11 +58,11 @@ jobs:
           path: artifacts/nupkg/*.nupkg
 
   full:
-    name: ${{ matrix.runtime.name }} + ${{ matrix.dotnet-version }} + ${{ matrix.app }}
+    name: ${{ matrix.runtime.name }} + ${{ matrix.dotnet-version }}
     needs: pack
     runs-on: ${{ matrix.runtime.runs-on }}
     container: ${{ matrix.runtime.container }}
-    timeout-minutes: 30
+    timeout-minutes: 10
 
     strategy:
       fail-fast: false
@@ -88,14 +88,6 @@ jobs:
           - name: osx-arm64
             runs-on: macos-latest
         dotnet-version: [ '6.0', '8.0', '10.0' ]
-        app: [ console, console-aot, console-singlefile, webapi, worker ]
-        exclude:
-          - dotnet-version: '6.0'
-            app: console-aot
-          - runtime:
-              name: win-x86
-              runs-on: windows-latest
-            app: console-aot
 
     steps:
       - name: Checkout sources
@@ -146,15 +138,34 @@ jobs:
         shell: bash
         run: dotnet nuget locals all --clear
 
-      - name: Publish and run published output
+      - name: Publish and run published outputs
         shell: bash
-        run: Tests/IntegrationTests/scripts/run-published-test.sh "${{ matrix.app }}" "net${{ matrix.dotnet-version }}" "${{ matrix.runtime.name }}" "${{ needs.pack.outputs.package-version }}"
+        run: |
+          apps=(console console-singlefile webapi worker)
+
+          if [[ "${{ matrix.dotnet-version }}" != "6.0" && "${{ matrix.runtime.name }}" != "win-x86" ]]; then
+            apps+=(console-aot)
+          fi
+
+          exit_code=0
+
+          for app in "${apps[@]}"; do
+            echo "::group::$app"
+
+            if ! Tests/IntegrationTests/scripts/run-published-test.sh "$app" "net${{ matrix.dotnet-version }}" "${{ matrix.runtime.name }}" "${{ needs.pack.outputs.package-version }}"; then
+              exit_code=1
+            fi
+
+            echo "::endgroup::"
+          done
+
+          exit "$exit_code"
 
       - name: Upload integration output
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: questpdf-integration-full-${{ matrix.runtime.name }}-net${{ matrix.dotnet-version }}-${{ matrix.app }}
+          name: questpdf-integration-full-${{ matrix.runtime.name }}-net${{ matrix.dotnet-version }}
           path: artifacts/integration/**
 
   netframework:
