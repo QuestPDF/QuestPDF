@@ -109,17 +109,15 @@ internal static class NativeDependencyProvider
         }
     }
     
-    static string? GetNativeFileSourcePath()
+    private static string? GetNativeFileSourcePath()
     {
         var availableLocations = new[]
         {
-            PathHelpers.GetAssemblyDirectoryOrNull(),
             AppDomain.CurrentDomain.RelativeSearchPath,
-            AppDomain.CurrentDomain.BaseDirectory,
-            AppContext.BaseDirectory,
+            AppContext.BaseDirectory, 
+            PathHelpers.GetAssemblyDirectoryOrNull(), 
             PathHelpers.GetProcessDirectoryOrNull(),
-            Environment.CurrentDirectory,
-            Directory.GetCurrentDirectory()
+            Environment.CurrentDirectory
         };
         
         foreach (var location in availableLocations.Distinct())
