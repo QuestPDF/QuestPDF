@@ -58,7 +58,7 @@ jobs:
           path: artifacts/nupkg/*.nupkg
 
   full:
-    name: Full / ${{ matrix.runtime.name }} / .NET ${{ matrix.dotnet-version }} / ${{ matrix.app }}
+    name: ${{ matrix.runtime.name }} + ${{ matrix.dotnet-version }} + ${{ matrix.app }}
     needs: pack
     runs-on: ${{ matrix.runtime.runs-on }}
     container: ${{ matrix.runtime.container }}
