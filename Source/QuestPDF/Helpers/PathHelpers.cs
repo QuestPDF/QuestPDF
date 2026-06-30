@@ -66,13 +66,17 @@ internal static class PathHelpers
     }
 
 #if NET5_0_OR_GREATER
-    [UnconditionalSuppressMessage("SingleFile", "IL3000")]
+    [UnconditionalSuppressMessage("SingleFile", "IL3000", Justification = "Code correctly handles the null value when compiled as single file, yet the non-null value on other environments may be useful.")]
 #endif
     internal static string? GetAssemblyDirectoryOrNull()
     {
         try
         {
             var location = typeof(PathHelpers).Assembly.Location;
+        
+            if (string.IsNullOrWhiteSpace(location))
+                return null;
+            
             return new FileInfo(location).Directory?.FullName;
         }
         catch
