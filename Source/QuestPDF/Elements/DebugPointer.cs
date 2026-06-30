@@ -31,6 +31,8 @@ namespace QuestPDF.Elements
         
         internal override string? GetCompanionSearchableContent() => Label;
 
+        internal override string? GetCompanionHint() => $"{Type} / {Label}";
+
         public DebugPointer()
         {
             

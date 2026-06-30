@@ -217,9 +217,13 @@ namespace QuestPDF.Infrastructure
             var style = TextStyles[styleId];
             var parent = TextStyles[parentId];
             
-            return Enum
-                .GetValues(typeof(TextStyleProperty))
-                .Cast<TextStyleProperty>()
+#if NET5_0_OR_GREATER
+            var styleProperties = Enum.GetValues<TextStyleProperty>();
+#else
+            var styleProperties = Enum.GetValues(typeof(TextStyleProperty)).Cast<TextStyleProperty>();
+#endif
+
+            return styleProperties
                 .Aggregate(style, (mutableStyle, nextProperty) =>
                 {
                     var getParentProperty = typeof(TextStyle).GetProperty(nextProperty.ToString(), BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);

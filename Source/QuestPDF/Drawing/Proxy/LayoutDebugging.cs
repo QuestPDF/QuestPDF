@@ -284,9 +284,17 @@ internal static class LayoutDebugging
                 
                 yield return new string('-', title.Length + 1);
             }
+
+            if (child is StyledBox styledBox)
+            {
+                foreach (var valueTuple in styledBox.GetCompanionCustomContent())
+                    yield return $"{valueTuple.Item1}: {valueTuple.Item2}";
+            }
+            else
+            {
+                yield return $"Configuration: {child.GetCompanionHint() ?? "-"}";
+            }
             
-            foreach (var configuration in child.GetElementConfiguration())
-                yield return $"{configuration.Property}: {configuration.Value}";
             
             string GetTitle()
             {
@@ -308,22 +316,6 @@ internal static class LayoutDebugging
             }
         }
         
-    }
-    
-    public static IEnumerable<(string Property, string Value)> GetElementConfiguration(this IElement element)
-    {
-        return element
-            .GetType()
-            .GetProperties()
-            .Select(x => new
-            {
-                Property = x.Name.PrettifyName(),
-                Value = x.GetValue(element)
-            })
-            .Where(x => !(x.Value is IElement))
-            .Where(x => x.Value is string || !(x.Value is IEnumerable))
-            .Where(x => !(x.Value is TextStyle))
-            .Select(x => (x.Property, x.Value?.ToString() ?? "-"));
     }
 
     public const string LayoutVisualizationLegend =

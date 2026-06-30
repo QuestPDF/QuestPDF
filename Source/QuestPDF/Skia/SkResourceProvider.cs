@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.InteropServices;
+using QuestPDF.Helpers;
 using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Skia;
@@ -15,7 +16,7 @@ internal sealed class SkResourceProvider
 
     private SkResourceProvider(SkFontManager fontManager)
     {
-        Instance = API.questpdf_skia_resource_provider_create(Helpers.Helpers.ApplicationFilesPath, fontManager.Instance);
+        Instance = API.questpdf_skia_resource_provider_create(PathHelpers.ApplicationFilesPath, fontManager.Instance);
         SkiaAPI.EnsureNotNull(Instance);
     }
     

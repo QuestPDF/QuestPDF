@@ -499,7 +499,7 @@ public sealed class DocumentOperation
             File.Delete(filePath);
         
         Configuration.OutputFile = filePath;
-        var json = SimpleJsonSerializer.Serialize(Configuration);
+        var json = QpdfJobSerializer.Serialize(Configuration);
         QpdfAPI.ExecuteJob(json);
     }
 }

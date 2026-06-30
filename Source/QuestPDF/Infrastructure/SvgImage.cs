@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
+using QuestPDF.Helpers;
 using QuestPDF.Skia;
 
 namespace QuestPDF.Infrastructure;
@@ -43,10 +44,10 @@ public sealed class SvgImage : IDisposable
     {
         if (!File.Exists(filePath))
         {
-            var fallbackPath = Path.Combine(Helpers.Helpers.ApplicationFilesPath, filePath);
+            var fallbackPath = Path.Combine(PathHelpers.ApplicationFilesPath, filePath);
                 
             if (!File.Exists(fallbackPath))
-                throw new DocumentComposeException($"Cannot load an SVG image under the provided path, file not found: ${filePath}");
+                throw new DocumentComposeException($"Cannot load an SVG image under the provided path, file not found: {filePath}");
                 
             filePath = fallbackPath;
         }

@@ -109,16 +109,15 @@ internal static class NativeDependencyProvider
         }
     }
     
-    static string? GetNativeFileSourcePath()
+    private static string? GetNativeFileSourcePath()
     {
         var availableLocations = new[]
         {
-            GetAssemblyDirectoryOrNull(),
-            AppDomain.CurrentDomain.RelativeSearchPath, 
-            AppDomain.CurrentDomain.BaseDirectory,
-            Environment.CurrentDirectory,
-            AppContext.BaseDirectory,
-            Directory.GetCurrentDirectory()
+            AppDomain.CurrentDomain.RelativeSearchPath,
+            AppContext.BaseDirectory, 
+            PathHelpers.GetAssemblyDirectoryOrNull(), 
+            PathHelpers.GetProcessDirectoryOrNull(),
+            Environment.CurrentDirectory
         };
         
         foreach (var location in availableLocations.Distinct())
@@ -133,19 +132,6 @@ internal static class NativeDependencyProvider
         }
 
         return null;
-    }
-    
-    private static string? GetAssemblyDirectoryOrNull()
-    {
-        try
-        {
-            var location = typeof(NativeDependencyProvider).Assembly.Location;
-            return new FileInfo(location).Directory?.FullName;
-        }
-        catch
-        {
-            return null;
-        }
     }
     
     #endregion

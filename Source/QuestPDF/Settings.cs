@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
@@ -61,7 +62,7 @@ namespace QuestPDF
         /// </remarks>
         public static ICollection<string> FontDiscoveryPaths { get; } = new List<string>()
         {
-            Helpers.Helpers.ApplicationFilesPath
+            PathHelpers.ApplicationFilesPath
         };
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 using QuestPDF.Skia.Text;
@@ -113,8 +114,8 @@ namespace QuestPDF.Drawing
                 {
                     try
                     {
-                        return Directory
-                            .EnumerateFiles(path, "*.*", SearchOption.AllDirectories)
+                        return PathHelpers
+                            .EnumerateFilesRecursively(path)
                             .Take(maxFilesToScan)
                             .ToArray();
                     }

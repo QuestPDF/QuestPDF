@@ -2,7 +2,11 @@ using System.Collections.Generic;
 
 namespace QuestPDF.Qpdf;
 
+#if NET5_0_OR_GREATER
+using Name = System.Text.Json.Serialization.JsonPropertyNameAttribute;
+#else
 using Name = SimpleJsonPropertyNameAttribute;
+#endif
 
 sealed class JobConfiguration
 {
