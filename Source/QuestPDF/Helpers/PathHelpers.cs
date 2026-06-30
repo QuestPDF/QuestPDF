@@ -66,7 +66,7 @@ internal static class PathHelpers
     }
 
 #if NET5_0_OR_GREATER
-    [SuppressMessage("SingleFile", "IL3000", Justification = "Code correctly handles the null value when compiled as single file, yet the non-null value on other environments may be useful.")]
+    [UnconditionalSuppressMessage("SingleFile", "IL3000", Justification = "Code correctly handles the null value when compiled as single file, yet the non-null value on other environments may be useful.")]
 #endif
     internal static string? GetAssemblyDirectoryOrNull()
     {
