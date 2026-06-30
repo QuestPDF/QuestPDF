@@ -17,27 +17,22 @@ case "$app_type" in
   console)
     project_name="QuestPDF.Tests.Console"
     self_contained="false"
-    extra_publish_args=()
     ;;
   console-aot)
     project_name="QuestPDF.Tests.Console.Aot"
     self_contained="true"
-    extra_publish_args=()
     ;;
   console-singlefile)
     project_name="QuestPDF.Tests.Console.SingleFile"
     self_contained="true"
-    extra_publish_args=()
     ;;
   webapi)
     project_name="QuestPDF.Tests.WebApi"
     self_contained="false"
-    extra_publish_args=()
     ;;
   worker)
     project_name="QuestPDF.Tests.Worker"
     self_contained="false"
-    extra_publish_args=()
     ;;
   *)
     echo "Unknown app type: $app_type" >&2
@@ -63,8 +58,7 @@ dotnet publish "$project" \
   --output "$publish_dir" \
   --no-restore \
   -p:QuestPDFIntegrationVersion="$package_version" \
-  -p:QuestPDFIntegrationTargetFramework="$target_framework" \
-  "${extra_publish_args[@]}"
+  -p:QuestPDFIntegrationTargetFramework="$target_framework"
 
 exe="$publish_dir/$project_name"
 
