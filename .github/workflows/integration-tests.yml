@@ -39,15 +39,16 @@ jobs:
           echo "$HOME/.dotnet" >> "$GITHUB_PATH"
           echo "DOTNET_ROOT=$HOME/.dotnet" >> "$GITHUB_ENV"
 
-      - name: Pack
+      - name: Build package
         shell: bash
         run: |
-          dotnet pack Source/QuestPDF/QuestPDF.csproj \
+          mkdir -p artifacts/nupkg
+          dotnet build Source/QuestPDF/QuestPDF.csproj \
             --configuration Release \
-            --output artifacts/nupkg \
             -p:BUILD_PACKAGE=true \
             -p:Version="${{ steps.version.outputs.package-version }}" \
             -p:PackageVersion="${{ steps.version.outputs.package-version }}" \
+            -p:PackageOutputPath="$PWD/artifacts/nupkg" \
             -p:WarningLevel=0
 
       - name: Upload package
