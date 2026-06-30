@@ -87,7 +87,10 @@ public static class SvgExtensions
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="svg.descriptor"]/*' />
     public static SvgImageDescriptor Svg(this IContainer container, string svg)
     {
-        var isFile = Path.GetExtension(svg).Equals(".svg", StringComparison.OrdinalIgnoreCase);
+        if (string.IsNullOrEmpty(svg))
+            throw new ArgumentException("SVG content cannot be null or empty.", nameof(svg));
+        
+        var isFile = svg.EndsWith(".svg", StringComparison.OrdinalIgnoreCase);
         
         var image = isFile ? SvgImage.FromFile(svg) : SvgImage.FromText(svg);
         image.IsShared = false;
