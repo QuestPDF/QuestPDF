@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <QuestPDFIntegrationVersion Condition="'$(QuestPDFIntegrationVersion)' == ''">0.0.0-local</QuestPDFIntegrationVersion>
+    <QuestPDFIntegrationTargetFramework Condition="'$(QuestPDFIntegrationTargetFramework)' == ''">net10.0</QuestPDFIntegrationTargetFramework>
+    <MicrosoftExtensionsVersion Condition="'$(MicrosoftExtensionsVersion)' == '' and '$(QuestPDFIntegrationTargetFramework)' == 'net6.0'">6.0.1</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsVersion Condition="'$(MicrosoftExtensionsVersion)' == '' and '$(QuestPDFIntegrationTargetFramework)' == 'net8.0'">8.0.1</MicrosoftExtensionsVersion>
+    <MicrosoftExtensionsVersion Condition="'$(MicrosoftExtensionsVersion)' == ''">10.0.0</MicrosoftExtensionsVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+</Project>
