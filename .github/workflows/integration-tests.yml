@@ -62,7 +62,7 @@ jobs:
     needs: pack
     runs-on: ${{ matrix.runtime.runs-on }}
     container: ${{ matrix.runtime.container }}
-    timeout-minutes: 45
+    timeout-minutes: 30
 
     strategy:
       fail-fast: false
