@@ -201,12 +201,12 @@ jobs:
           path: artifacts/nupkg
 
       - name: Clear NuGet caches
-        shell: pwsh
+        shell: bash
         run: dotnet nuget locals all --clear
 
       - name: Build and run .NET Framework output
-        shell: pwsh
-        run: Tests/IntegrationTests/scripts/run-netframework-test.ps1 -PackageVersion "${{ needs.pack.outputs.package-version }}" -TargetFramework "${{ matrix.target-framework }}" -PlatformTarget "${{ matrix.platform-target }}"
+        shell: bash
+        run: Tests/IntegrationTests/scripts/run-netframework-test.sh "${{ needs.pack.outputs.package-version }}" "${{ matrix.target-framework }}" "${{ matrix.platform-target }}"
 
       - name: Upload integration output
         uses: actions/upload-artifact@v4
