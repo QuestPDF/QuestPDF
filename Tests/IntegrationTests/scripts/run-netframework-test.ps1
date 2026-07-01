@@ -1,6 +1,12 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string] $PackageVersion
+    [string] $PackageVersion,
+
+    [ValidateSet('net472', 'net481')]
+    [string] $TargetFramework = 'net472',
+
+    [ValidateSet('x64', 'x86', 'AnyCPU')]
+    [string] $PlatformTarget = 'AnyCPU'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -8,23 +14,24 @@ $ErrorActionPreference = 'Stop'
 $repoRoot = Resolve-Path "$PSScriptRoot/../../.."
 $integrationRoot = Join-Path $repoRoot "Tests/IntegrationTests"
 $project = Join-Path $integrationRoot "QuestPDF.Tests.NetFramework/QuestPDF.Tests.NetFramework.csproj"
-$outputDirectory = Join-Path $repoRoot "artifacts/integration/netframework/net472/output"
+$outputDirectory = Join-Path $repoRoot "artifacts/integration/netframework/$TargetFramework/$PlatformTarget/output"
 $nugetConfig = Join-Path $integrationRoot "nuget.config"
+$pdfFileName = "questpdf-integration-$TargetFramework-$PlatformTarget.pdf"
 
 Remove-Item -Recurse -Force (Join-Path $repoRoot "artifacts/integration/netframework") -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Path $outputDirectory | Out-Null
 
-dotnet restore $project --configfile $nugetConfig "-p:QuestPDFIntegrationVersion=$PackageVersion"
-dotnet build $project --configuration Release --framework net472 --no-restore "-p:QuestPDFIntegrationVersion=$PackageVersion"
+dotnet restore $project --configfile $nugetConfig "-p:QuestPDFIntegrationVersion=$PackageVersion" "-p:QuestPDFIntegrationTargetFramework=$TargetFramework" "-p:QuestPDFNetFrameworkTargetFramework=$TargetFramework" "-p:PlatformTarget=$PlatformTarget"
+dotnet build $project --configuration Release --framework $TargetFramework --no-restore "-p:QuestPDFIntegrationVersion=$PackageVersion" "-p:QuestPDFIntegrationTargetFramework=$TargetFramework" "-p:QuestPDFNetFrameworkTargetFramework=$TargetFramework" "-p:PlatformTarget=$PlatformTarget"
 
-$exe = Join-Path $integrationRoot "QuestPDF.Tests.NetFramework/bin/Release/net472/QuestPDF.Tests.NetFramework.exe"
-& $exe $outputDirectory
+$exe = Join-Path $integrationRoot "QuestPDF.Tests.NetFramework/bin/Release/$TargetFramework/QuestPDF.Tests.NetFramework.exe"
+& $exe $outputDirectory $pdfFileName $PlatformTarget
 
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-$pdf = Join-Path $outputDirectory "questpdf-integration-net472.pdf"
+$pdf = Join-Path $outputDirectory $pdfFileName
 
 if (-not (Test-Path $pdf)) {
     throw "PDF does not exist: $pdf"

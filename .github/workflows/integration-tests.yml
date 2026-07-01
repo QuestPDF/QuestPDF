@@ -169,10 +169,16 @@ jobs:
           path: artifacts/integration/**
 
   netframework:
-    name: .NET Framework net472
+    name: .NET Framework ${{ matrix.target-framework }} + ${{ matrix.platform-target }}
     needs: pack
     runs-on: windows-latest
     timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target-framework: [ 'net472', 'net481' ]
+        platform-target: [ 'x64', 'x86', 'AnyCPU' ]
 
     steps:
       - name: Checkout sources
@@ -200,11 +206,11 @@ jobs:
 
       - name: Build and run .NET Framework output
         shell: pwsh
-        run: Tests/IntegrationTests/scripts/run-netframework-test.ps1 -PackageVersion "${{ needs.pack.outputs.package-version }}"
+        run: Tests/IntegrationTests/scripts/run-netframework-test.ps1 -PackageVersion "${{ needs.pack.outputs.package-version }}" -TargetFramework "${{ matrix.target-framework }}" -PlatformTarget "${{ matrix.platform-target }}"
 
       - name: Upload integration output
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: questpdf-integration-netframework-net472
+          name: questpdf-integration-netframework-${{ matrix.target-framework }}-${{ matrix.platform-target }}
           path: artifacts/integration/**

@@ -17,3 +17,7 @@ Tests/IntegrationTests/scripts/run-published-test.sh console net10.0 osx-arm64 0
 ```
 
 The .NET Framework project is Windows-only and uses `dotnet build`, because .NET Framework does not have the same publish model. It still validates the package restore output and native DLL copy behavior.
+
+```powershell
+Tests/IntegrationTests/scripts/run-netframework-test.ps1 -PackageVersion 0.0.0-local -TargetFramework net481 -PlatformTarget x64
+```
