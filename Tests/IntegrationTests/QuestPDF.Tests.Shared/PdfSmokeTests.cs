@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -9,6 +10,7 @@ namespace QuestPDF.Tests.Shared;
 public static class PdfSmokeTests
 {
     private const string InlineSvg = "<svg width=\"120\" height=\"80\" viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"120\" height=\"80\" rx=\"10\" fill=\"#E3F2FD\"/><circle cx=\"34\" cy=\"40\" r=\"18\" fill=\"#1976D2\"/><path d=\"M62 25h38v8H62zm0 18h30v8H62zm0 18h22v8H62z\" fill=\"#0D47A1\"/></svg>";
+    private static bool TraceListenerConfigured;
 
     public static byte[] GeneratePdfBytes()
     {
@@ -30,6 +32,13 @@ public static class PdfSmokeTests
 
     private static void ConfigureQuestPdf()
     {
+        if (!TraceListenerConfigured)
+        {
+            Trace.Listeners.Add(new ConsoleTraceListener(useErrorStream: true));
+            Trace.AutoFlush = true;
+            TraceListenerConfigured = true;
+        }
+
         QuestPDF.Settings.License = LicenseType.Community;
     }
 
