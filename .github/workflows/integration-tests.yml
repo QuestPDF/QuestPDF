@@ -58,7 +58,7 @@ jobs:
           path: artifacts/nupkg/*.nupkg
 
   full:
-    name: ${{ matrix.runtime.name }} + ${{ matrix.dotnet-version }}
+    name: ${{ matrix.runtime.name }} + dotnet ${{ matrix.dotnet-version }}
     needs: pack
     runs-on: ${{ matrix.runtime.runs-on }}
     container: ${{ matrix.runtime.container }}
@@ -169,7 +169,7 @@ jobs:
           path: artifacts/integration/**
 
   netframework:
-    name: .NET Framework ${{ matrix.target-framework }} + ${{ matrix.platform-target }}
+    name: ${{ matrix.platform-target }} + .NET ${{ matrix.target-framework }}
     needs: pack
     runs-on: windows-latest
     timeout-minutes: 20
