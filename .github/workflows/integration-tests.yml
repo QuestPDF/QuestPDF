@@ -169,7 +169,7 @@ jobs:
           path: artifacts/integration/**
 
   netframework:
-    name: ${{ matrix.platform-target }} + .NET ${{ matrix.target-framework }}
+    name: win-${{ matrix.platform-target }} + ${{ matrix.target-framework }}
     needs: pack
     runs-on: windows-latest
     timeout-minutes: 20
