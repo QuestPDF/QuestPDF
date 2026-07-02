@@ -1,6 +1,8 @@
 name: Package Integration Tests
 
-permissions: {}
+permissions:
+  actions: write
+  contents: read
 
 on:
   pull_request:
@@ -214,3 +216,19 @@ jobs:
         with:
           name: questpdf-integration-output-netframework-${{ matrix.target-framework }}-${{ matrix.platform-target }}
           path: artifacts/integration-output/**
+
+  merge-output-artifacts:
+    name: Merge integration output artifacts
+    needs: [ full, netframework ]
+    runs-on: ubuntu-latest
+    if: always()
+    timeout-minutes: 10
+
+    steps:
+      - name: Merge integration output artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: questpdf-integration-output
+          pattern: questpdf-integration-output-*
+          separate-directories: true
+          delete-merged: true

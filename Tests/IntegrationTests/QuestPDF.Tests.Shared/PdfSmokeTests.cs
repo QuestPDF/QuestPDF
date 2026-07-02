@@ -89,15 +89,17 @@ public static class PdfSmokeTests
 
         try
         {
+            var basePdfPath = Path.Combine(workingDirectory, "base.pdf");
             var appendixPdfPath = Path.Combine(workingDirectory, "appendix.pdf");
 
             CreateDocument().GeneratePdf(skiaPdfPath);
             PdfValidator.ValidateFile(skiaPdfPath);
 
+            File.Copy(skiaPdfPath, basePdfPath);
             CreateAppendixDocument().GeneratePdf(appendixPdfPath);
 
             DocumentOperation
-                .LoadFile(skiaPdfPath)
+                .LoadFile(basePdfPath)
                 .MergeFile(appendixPdfPath)
                 .AddAttachment(new DocumentOperation.DocumentAttachment
                 {
