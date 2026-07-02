@@ -167,7 +167,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: questpdf-integration-output-full-${{ matrix.runtime.name }}-net${{ matrix.dotnet-version }}
+          name: out-${{ matrix.runtime.name }}-net${{ matrix.dotnet-version }}
           path: artifacts/integration-output/**
 
   netframework:
@@ -214,7 +214,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: questpdf-integration-output-netframework-${{ matrix.target-framework }}-${{ matrix.platform-target }}
+          name: out-netframework-${{ matrix.target-framework }}-${{ matrix.platform-target }}
           path: artifacts/integration-output/**
 
   merge-output-artifacts:
@@ -229,6 +229,6 @@ jobs:
         uses: actions/upload-artifact/merge@v4
         with:
           name: questpdf-integration-output
-          pattern: questpdf-integration-output-*
+          pattern: out-*
           separate-directories: true
           delete-merged: true
