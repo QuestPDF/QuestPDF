@@ -24,9 +24,20 @@ public sealed class PdfWorker : BackgroundService
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var outputDirectory = Environment.GetEnvironmentVariable("QUESTPDF_TEST_OUTPUT") ?? AppContext.BaseDirectory;
-        var pdfPath = PdfSmokeTests.GeneratePdfFile(outputDirectory, "questpdf-integration-worker.pdf");
+        var skiaPdfFileName = Environment.GetEnvironmentVariable("QUESTPDF_TEST_SKIA_PDF_FILE") ?? "questpdf-integration-worker-skia.pdf";
+        var qpdfPdfFileName = Environment.GetEnvironmentVariable("QUESTPDF_TEST_QPDF_PDF_FILE") ?? "questpdf-integration-worker-qpdf.pdf";
+        var xpsFileName = Environment.GetEnvironmentVariable("QUESTPDF_TEST_XPS_FILE");
+        var pdfOutput = PdfSmokeTests.GeneratePdfFiles(outputDirectory, skiaPdfFileName, qpdfPdfFileName);
 
-        logger.LogInformation("Generated {PdfPath}", pdfPath);
+        logger.LogInformation("Generated {PdfPath}", pdfOutput.SkiaPdfPath);
+        logger.LogInformation("Generated {PdfPath}", pdfOutput.QpdfPdfPath);
+
+        if (!string.IsNullOrWhiteSpace(xpsFileName))
+        {
+            var xpsPath = PdfSmokeTests.GenerateXpsFile(outputDirectory, xpsFileName);
+            logger.LogInformation("Generated {XpsPath}", xpsPath);
+        }
+
         applicationLifetime.StopApplication();
 
         return Task.CompletedTask;

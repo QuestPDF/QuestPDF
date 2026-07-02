@@ -9,4 +9,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(MSBuildProjectName)' != 'QuestPDF.Tests.Shared'">
+    <Content Include="$(MSBuildThisFileDirectory)QuestPDF.Tests.Shared/Resources/**/*.*" Link="Resources/%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

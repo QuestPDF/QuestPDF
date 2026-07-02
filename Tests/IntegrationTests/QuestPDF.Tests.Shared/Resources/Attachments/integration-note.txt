@@ -1,0 +1,3 @@
+QuestPDF integration test attachment.
+
+This file is bundled with the test app and attached through DocumentOperation to exercise the qpdf native library.

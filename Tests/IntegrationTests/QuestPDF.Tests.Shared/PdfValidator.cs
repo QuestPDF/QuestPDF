@@ -29,4 +29,23 @@ public static class PdfValidator
         if (!tail.Contains("%%EOF"))
             throw new InvalidOperationException(description + " does not contain the PDF EOF marker.");
     }
+
+    public static void ValidateXpsFile(string filePath)
+    {
+        if (!File.Exists(filePath))
+            throw new InvalidOperationException("Expected XPS file was not created: " + filePath);
+
+        ValidateXpsBytes(File.ReadAllBytes(filePath), filePath);
+    }
+
+    public static void ValidateXpsBytes(byte[] xps, string description)
+    {
+        if (xps.Length < 1024)
+            throw new InvalidOperationException(description + " is too small to be a meaningful XPS file. Size: " + xps.Length + " bytes.");
+
+        var header = new byte[] { 0x50, 0x4B, 0x03, 0x04 };
+
+        if (!xps.Take(header.Length).SequenceEqual(header))
+            throw new InvalidOperationException(description + " does not start with the ZIP package header.");
+    }
 }

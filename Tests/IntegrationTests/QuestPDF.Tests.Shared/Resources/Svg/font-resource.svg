@@ -1,0 +1,11 @@
+<svg width="300" height="100" viewBox="0 0 300 100" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @font-face {
+      font-family: "QuestPDFIntegrationSvgFont";
+      src: url("Resources/Fonts/Lato-Bold.ttf");
+    }
+  </style>
+  <rect x="1" y="1" width="298" height="98" rx="8" fill="#FFF8E1" stroke="#F9A825" stroke-width="2"/>
+  <text x="22" y="44" font-family="QuestPDFIntegrationSvgFont" font-size="24" fill="#5D4037">SVG font resource</text>
+  <text x="22" y="72" font-family="QuestPDFIntegrationSvgFont" font-size="16" fill="#795548">Loaded by relative path</text>
+</svg>

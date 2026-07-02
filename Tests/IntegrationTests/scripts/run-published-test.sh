@@ -11,7 +11,11 @@ integration_root="$repo_root/Tests/IntegrationTests"
 nuget_config="$integration_root/nuget.config"
 artifacts_root="$repo_root/artifacts/integration/$app_type/$target_framework/$rid"
 publish_dir="$artifacts_root/publish"
-output_dir="$artifacts_root/output"
+output_dir="$repo_root/artifacts/integration-output/$app_type/$target_framework/$rid"
+log_dir="$artifacts_root/logs"
+skia_pdf_file_name="questpdf-integration-$app_type-$target_framework-$rid-skia.pdf"
+qpdf_pdf_file_name="questpdf-integration-$app_type-$target_framework-$rid-qpdf.pdf"
+xps_file_name="questpdf-integration-$app_type-$target_framework-$rid-skia.xps"
 
 case "$app_type" in
   console)
@@ -42,7 +46,8 @@ esac
 
 project="$integration_root/$project_name/$project_name.csproj"
 rm -rf "$artifacts_root"
-mkdir -p "$publish_dir" "$output_dir"
+rm -rf "$output_dir"
+mkdir -p "$publish_dir" "$output_dir" "$log_dir"
 
 dotnet restore "$project" \
   --configfile "$nuget_config" \
@@ -69,8 +74,10 @@ fi
 case "$app_type" in
   webapi)
     port="${QUESTPDF_TEST_PORT:-5087}"
-    pdf_response="$output_dir/questpdf-webapi-response.pdf"
-    log_file="$output_dir/webapi.log"
+    skia_pdf_response="$output_dir/$skia_pdf_file_name"
+    qpdf_pdf_response="$output_dir/$qpdf_pdf_file_name"
+    xps_response="$output_dir/$xps_file_name"
+    log_file="$log_dir/webapi.log"
 
     ASPNETCORE_URLS="http://127.0.0.1:$port" "$exe" > "$log_file" 2>&1 &
     server_pid=$!
@@ -97,15 +104,43 @@ case "$app_type" in
       sleep 1
     done
 
-    curl -fsS "http://127.0.0.1:$port/generate-pdf" --output "$pdf_response"
-    "$integration_root/scripts/validate-pdf.sh" "$pdf_response"
+    curl -fsS "http://127.0.0.1:$port/generate-skia-pdf" --output "$skia_pdf_response"
+    "$integration_root/scripts/validate-pdf.sh" "$skia_pdf_response"
+
+    curl -fsS "http://127.0.0.1:$port/generate-pdf" --output "$qpdf_pdf_response"
+    "$integration_root/scripts/validate-pdf.sh" "$qpdf_pdf_response"
+
+    if [[ "$rid" == win-* ]]; then
+      curl -fsS "http://127.0.0.1:$port/generate-xps" --output "$xps_response"
+      "$integration_root/scripts/validate-xps.sh" "$xps_response"
+    fi
     ;;
   worker)
-    QUESTPDF_TEST_OUTPUT="$output_dir" "$exe"
-    "$integration_root/scripts/validate-pdf.sh" "$output_dir/questpdf-integration-worker.pdf"
+    if [[ "$rid" == win-* ]]; then
+      QUESTPDF_TEST_OUTPUT="$output_dir" QUESTPDF_TEST_SKIA_PDF_FILE="$skia_pdf_file_name" QUESTPDF_TEST_QPDF_PDF_FILE="$qpdf_pdf_file_name" QUESTPDF_TEST_XPS_FILE="$xps_file_name" "$exe"
+    else
+      QUESTPDF_TEST_OUTPUT="$output_dir" QUESTPDF_TEST_SKIA_PDF_FILE="$skia_pdf_file_name" QUESTPDF_TEST_QPDF_PDF_FILE="$qpdf_pdf_file_name" "$exe"
+    fi
+
+    "$integration_root/scripts/validate-pdf.sh" "$output_dir/$skia_pdf_file_name"
+    "$integration_root/scripts/validate-pdf.sh" "$output_dir/$qpdf_pdf_file_name"
+
+    if [[ "$rid" == win-* ]]; then
+      "$integration_root/scripts/validate-xps.sh" "$output_dir/$xps_file_name"
+    fi
     ;;
   *)
-    "$exe" "$output_dir"
-    "$integration_root/scripts/validate-pdf.sh" "$output_dir/questpdf-integration-smoke.pdf"
+    if [[ "$rid" == win-* ]]; then
+      "$exe" "$output_dir" "$skia_pdf_file_name" "$qpdf_pdf_file_name" "$xps_file_name"
+    else
+      "$exe" "$output_dir" "$skia_pdf_file_name" "$qpdf_pdf_file_name"
+    fi
+
+    "$integration_root/scripts/validate-pdf.sh" "$output_dir/$skia_pdf_file_name"
+    "$integration_root/scripts/validate-pdf.sh" "$output_dir/$qpdf_pdf_file_name"
+
+    if [[ "$rid" == win-* ]]; then
+      "$integration_root/scripts/validate-xps.sh" "$output_dir/$xps_file_name"
+    fi
     ;;
 esac
