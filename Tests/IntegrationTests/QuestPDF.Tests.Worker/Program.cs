@@ -32,7 +32,7 @@ public sealed class PdfWorker : BackgroundService
         logger.LogInformation("Generated {PdfPath}", pdfOutput.SkiaPdfPath);
         logger.LogInformation("Generated {PdfPath}", pdfOutput.QpdfPdfPath);
 
-        if (!string.IsNullOrWhiteSpace(xpsFileName))
+        if (xpsFileName != null)
         {
             var xpsPath = PdfSmokeTests.GenerateXpsFile(outputDirectory, xpsFileName);
             logger.LogInformation("Generated {XpsPath}", xpsPath);

@@ -25,7 +25,7 @@ namespace QuestPDF.Tests.NetFramework
             Console.WriteLine(pdfOutput.SkiaPdfPath);
             Console.WriteLine(pdfOutput.QpdfPdfPath);
 
-            if (!string.IsNullOrWhiteSpace(xpsFileName))
+            if (xpsFileName != null)
             {
                 var xpsPath = PdfSmokeTests.GenerateXpsFile(outputDirectory, xpsFileName);
                 Console.WriteLine(xpsPath);
