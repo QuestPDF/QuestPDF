@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -25,7 +26,10 @@ public static class PdfSmokeTests
     private const string InlineSvg = "<svg width=\"120\" height=\"80\" viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"120\" height=\"80\" rx=\"10\" fill=\"#E3F2FD\"/><circle cx=\"34\" cy=\"40\" r=\"18\" fill=\"#1976D2\"/><path d=\"M62 25h38v8H62zm0 18h30v8H62zm0 18h22v8H62z\" fill=\"#0D47A1\"/></svg>";
     private const string LatoFontFamily = "Lato";
     private const string ArabicFontFamily = "Noto Sans Arabic";
-    private const string DefaultFileName = "questpdf-integration-smoke.pdf";
+
+    public const string SkiaPdfFileName = "skia.pdf";
+    public const string QpdfPdfFileName = "qpdf.pdf";
+    public const string XpsFileName = "skia.xps";
 
     private static readonly object ConfigurationLock = new();
     private static bool TraceListenerConfigured;
@@ -69,21 +73,18 @@ public static class PdfSmokeTests
         return xps;
     }
 
-    public static string GeneratePdfFile(string outputDirectory, string fileName = DefaultFileName)
+    public static string GeneratePdfFile(string outputDirectory)
     {
-        return GeneratePdfFiles(outputDirectory, GetSkiaPdfFileName(fileName), fileName).QpdfPdfPath;
+        return GeneratePdfFiles(outputDirectory).QpdfPdfPath;
     }
 
-    public static PdfSmokeTestOutput GeneratePdfFiles(
-        string outputDirectory,
-        string skiaPdfFileName = "questpdf-integration-smoke-skia.pdf",
-        string qpdfPdfFileName = DefaultFileName)
+    public static PdfSmokeTestOutput GeneratePdfFiles(string outputDirectory)
     {
         ConfigureQuestPdf();
         Directory.CreateDirectory(outputDirectory);
 
-        var skiaPdfPath = Path.Combine(outputDirectory, skiaPdfFileName);
-        var qpdfPdfPath = Path.Combine(outputDirectory, qpdfPdfFileName);
+        var skiaPdfPath = Path.Combine(outputDirectory, SkiaPdfFileName);
+        var qpdfPdfPath = Path.Combine(outputDirectory, QpdfPdfFileName);
         var workingDirectory = Path.Combine(Path.GetTempPath(), "questpdf-integration-work-" + Guid.NewGuid().ToString("N"));
         Directory.CreateDirectory(workingDirectory);
 
@@ -121,26 +122,21 @@ public static class PdfSmokeTests
         return new PdfSmokeTestOutput(skiaPdfPath, qpdfPdfPath);
     }
 
-    public static string GenerateXpsFile(string outputDirectory, string fileName = "questpdf-integration-smoke.xps")
+    public static string GenerateXpsFile(string outputDirectory)
     {
         ConfigureQuestPdf();
         Directory.CreateDirectory(outputDirectory);
 
-        var filePath = Path.Combine(outputDirectory, fileName);
+        var filePath = Path.Combine(outputDirectory, XpsFileName);
         CreateDocument().GenerateXps(filePath);
         PdfValidator.ValidateXpsFile(filePath);
 
         return filePath;
     }
 
-    private static string GetSkiaPdfFileName(string qpdfPdfFileName)
+    public static bool ShouldGenerateXps()
     {
-        var extension = Path.GetExtension(qpdfPdfFileName);
-
-        if (string.IsNullOrWhiteSpace(extension))
-            return qpdfPdfFileName + "-skia";
-
-        return Path.GetFileNameWithoutExtension(qpdfPdfFileName) + "-skia" + extension;
+        return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
     }
 
     private static void ConfigureQuestPdf()
@@ -152,7 +148,7 @@ public static class PdfSmokeTests
 
             if (!TraceListenerConfigured)
             {
-                Trace.Listeners.Add(new ConsoleTraceListener(useErrorStream: true));
+                Trace.Listeners.Add(new TextWriterTraceListener(Console.Error));
                 Trace.AutoFlush = true;
                 TraceListenerConfigured = true;
             }

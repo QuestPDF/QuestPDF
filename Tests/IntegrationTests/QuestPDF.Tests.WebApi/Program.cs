@@ -12,7 +12,7 @@ app.MapGet("/generate-pdf", () =>
     var pdf = PdfSmokeTests.GenerateQpdfPdfBytes();
     PdfValidator.ValidateBytes(pdf, "HTTP response PDF");
 
-    return Results.File(pdf, "application/pdf", "questpdf-integration-smoke.pdf");
+    return Results.File(pdf, "application/pdf", PdfSmokeTests.QpdfPdfFileName);
 });
 
 app.MapGet("/generate-skia-pdf", () =>
@@ -20,7 +20,7 @@ app.MapGet("/generate-skia-pdf", () =>
     var pdf = PdfSmokeTests.GenerateSkiaPdfBytes();
     PdfValidator.ValidateBytes(pdf, "HTTP response Skia PDF");
 
-    return Results.File(pdf, "application/pdf", "questpdf-integration-smoke-skia.pdf");
+    return Results.File(pdf, "application/pdf", PdfSmokeTests.SkiaPdfFileName);
 });
 
 app.MapGet("/generate-xps", () =>
@@ -28,7 +28,7 @@ app.MapGet("/generate-xps", () =>
     var xps = PdfSmokeTests.GenerateXpsBytes();
     PdfValidator.ValidateXpsBytes(xps, "HTTP response XPS");
 
-    return Results.File(xps, "application/vnd.ms-xpsdocument", "questpdf-integration-smoke.xps");
+    return Results.File(xps, "application/vnd.ms-xpsdocument", PdfSmokeTests.XpsFileName);
 });
 
 app.Run();

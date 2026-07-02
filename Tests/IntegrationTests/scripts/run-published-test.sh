@@ -13,9 +13,9 @@ artifacts_root="$repo_root/artifacts/integration/$app_type/$target_framework/$ri
 publish_dir="$artifacts_root/publish"
 output_dir="$repo_root/artifacts/integration-output/$app_type/$target_framework/$rid"
 log_dir="$artifacts_root/logs"
-skia_pdf_file_name="questpdf-integration-$app_type-$target_framework-$rid-skia.pdf"
-qpdf_pdf_file_name="questpdf-integration-$app_type-$target_framework-$rid-qpdf.pdf"
-xps_file_name="questpdf-integration-$app_type-$target_framework-$rid-skia.xps"
+skia_pdf_file_name="skia.pdf"
+qpdf_pdf_file_name="qpdf.pdf"
+xps_file_name="skia.xps"
 
 case "$app_type" in
   console)
@@ -116,11 +116,7 @@ case "$app_type" in
     fi
     ;;
   worker)
-    if [[ "$rid" == win-* ]]; then
-      QUESTPDF_TEST_OUTPUT="$output_dir" QUESTPDF_TEST_SKIA_PDF_FILE="$skia_pdf_file_name" QUESTPDF_TEST_QPDF_PDF_FILE="$qpdf_pdf_file_name" QUESTPDF_TEST_XPS_FILE="$xps_file_name" "$exe"
-    else
-      QUESTPDF_TEST_OUTPUT="$output_dir" QUESTPDF_TEST_SKIA_PDF_FILE="$skia_pdf_file_name" QUESTPDF_TEST_QPDF_PDF_FILE="$qpdf_pdf_file_name" "$exe"
-    fi
+    (cd "$output_dir" && "$exe")
 
     "$integration_root/scripts/validate-pdf.sh" "$output_dir/$skia_pdf_file_name"
     "$integration_root/scripts/validate-pdf.sh" "$output_dir/$qpdf_pdf_file_name"
@@ -130,11 +126,7 @@ case "$app_type" in
     fi
     ;;
   *)
-    if [[ "$rid" == win-* ]]; then
-      "$exe" "$output_dir" "$skia_pdf_file_name" "$qpdf_pdf_file_name" "$xps_file_name"
-    else
-      "$exe" "$output_dir" "$skia_pdf_file_name" "$qpdf_pdf_file_name"
-    fi
+    (cd "$output_dir" && "$exe")
 
     "$integration_root/scripts/validate-pdf.sh" "$output_dir/$skia_pdf_file_name"
     "$integration_root/scripts/validate-pdf.sh" "$output_dir/$qpdf_pdf_file_name"

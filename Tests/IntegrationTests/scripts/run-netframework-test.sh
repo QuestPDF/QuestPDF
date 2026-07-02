@@ -29,9 +29,9 @@ project="$integration_root/QuestPDF.Tests.NetFramework/QuestPDF.Tests.NetFramewo
 nuget_config="$integration_root/nuget.config"
 artifacts_root="$repo_root/artifacts/integration/netframework/$target_framework/$platform_target"
 output_dir="$repo_root/artifacts/integration-output/netframework/$target_framework/$platform_target"
-skia_pdf_file_name="questpdf-integration-netframework-$target_framework-$platform_target-skia.pdf"
-qpdf_pdf_file_name="questpdf-integration-netframework-$target_framework-$platform_target-qpdf.pdf"
-xps_file_name="questpdf-integration-netframework-$target_framework-$platform_target-skia.xps"
+skia_pdf_file_name="skia.pdf"
+qpdf_pdf_file_name="qpdf.pdf"
+xps_file_name="skia.xps"
 
 rm -rf "$artifacts_root"
 rm -rf "$output_dir"
@@ -54,7 +54,7 @@ dotnet build "$project" \
   -p:PlatformTarget="$platform_target"
 
 exe="$integration_root/QuestPDF.Tests.NetFramework/bin/Release/$target_framework/QuestPDF.Tests.NetFramework.exe"
-"$exe" "$output_dir" "$skia_pdf_file_name" "$qpdf_pdf_file_name" "$xps_file_name" "$platform_target"
+(cd "$output_dir" && "$exe" "$platform_target")
 
 "$integration_root/scripts/validate-pdf.sh" "$output_dir/$skia_pdf_file_name"
 "$integration_root/scripts/validate-pdf.sh" "$output_dir/$qpdf_pdf_file_name"
