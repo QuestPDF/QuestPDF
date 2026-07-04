@@ -23,7 +23,7 @@ public sealed class PdfSmokeTestOutput
 
 public static class PdfSmokeTests
 {
-    private const string InlineSvg = "<svg width=\"120\" height=\"80\" viewBox=\"0 0 120 80\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"120\" height=\"80\" rx=\"10\" fill=\"#E3F2FD\"/><circle cx=\"34\" cy=\"40\" r=\"18\" fill=\"#1976D2\"/><path d=\"M62 25h38v8H62zm0 18h30v8H62zm0 18h22v8H62z\" fill=\"#0D47A1\"/></svg>";
+    private const string InlineSvg = "<svg width=\"120\" height=\"64\" viewBox=\"0 0 120 64\" xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"1\" y=\"1\" width=\"118\" height=\"62\" fill=\"#F8FAFC\" stroke=\"#94A3B8\"/><path d=\"M24 38l12-16 10 12 8-7 18 21H18z\" fill=\"#2563EB\"/><circle cx=\"86\" cy=\"24\" r=\"9\" fill=\"#10B981\"/></svg>";
     private const string LatoFontFamily = "Lato";
     private const string ArabicFontFamily = "Noto Sans Arabic";
 
@@ -213,24 +213,23 @@ public static class PdfSmokeTests
             {
                 page.Size(PageSizes.A4);
                 page.Margin(36);
-                page.DefaultTextStyle(x => x.FontFamily(LatoFontFamily).FontSize(9).FontColor(Colors.Grey.Darken4));
+                page.DefaultTextStyle(x => x.FontFamily(LatoFontFamily).FontSize(9).FontColor(Colors.Grey.Darken3));
                 page.Header().Element(BuildDocumentHeader);
 
                 page.Content()
-                    .PaddingTop(18)
+                    .PaddingTop(16)
                     .Column(column =>
                     {
-                        column.Spacing(14);
-                        column.Item().Element(BuildSummaryPanel);
-                        column.Item().Element(BuildStatusStrip);
-                        column.Item().Element(container => BuildSection(container, "Capability matrix", BuildFeatureTable));
+                        column.Spacing(12);
+                        column.Item().Element(BuildPurposeSection);
+                        column.Item().Element(container => BuildSection(container, "Test scenarios", "The table lists environment-sensitive behaviors that must work after publish/deployment.", BuildFeatureTable));
                         column.Item().Row(row =>
                         {
                             row.Spacing(12);
-                            row.RelativeItem().Element(container => BuildSection(container, "Typography", BuildFontPanel));
-                            row.RelativeItem().Element(container => BuildSection(container, "Bundled resources", BuildResourcePanel));
+                            row.RelativeItem().Element(container => BuildSection(container, "Font resources", "Expected: all text is rendered using bundled fonts only.", BuildFontPanel));
+                            row.RelativeItem().Element(container => BuildSection(container, "Image and SVG resources", "Expected: raster, SVG file, inline SVG, and SVG font references resolve from packaged resources.", BuildResourcePanel));
                         });
-                        column.Item().Element(BuildMultiColumnContent);
+                        column.Item().Element(container => BuildSection(container, "Document operations", "Expected: QuestPDF generates the base file, qpdf merges an appendix, attaches a resource file, and linearizes the final PDF.", BuildDocumentOperations));
                         column.Item().PageBreak();
                         column.Item().Element(BuildPaginationContent);
                     });
@@ -241,7 +240,7 @@ public static class PdfSmokeTests
                     .PaddingTop(8)
                     .Text(text =>
                     {
-                        text.Span("QuestPDF integration report").FontColor(Colors.Grey.Darken1);
+                        text.Span("QuestPDF integration smoke test").FontColor(Colors.Grey.Darken1);
                         text.Span("  /  ").FontColor(Colors.Grey.Lighten1);
                         text.Span("Page ").FontColor(Colors.Grey.Darken1);
                         text.CurrentPageNumber();
@@ -264,16 +263,16 @@ public static class PdfSmokeTests
 
                 page.Content().Element(container => container
                     .Border(1)
-                    .BorderColor(Colors.Blue.Lighten3)
+                    .BorderColor(Colors.Grey.Lighten2)
                     .Padding(16)
                     .Column(column =>
                     {
-                        column.Spacing(12);
-                        column.Item().Text("qpdf appendix").FontSize(18).Bold().FontColor(Colors.Blue.Darken4);
-                        column.Item().Text("This page is generated separately, then merged into the final PDF with an attachment and linearization step.");
-                        column.Item().Height(64).Svg(ResourcePath("Svg", "status-badge.svg")).FitArea();
+                        column.Spacing(10);
+                        column.Item().Text("qpdf appendix").FontSize(15).SemiBold().FontColor(Colors.Grey.Darken3);
+                        column.Item().Text("This page is generated as a separate PDF and then merged into qpdf.pdf.");
+                        column.Item().Text("Expected result: if this appendix is present, the qpdf native library was loaded and the merge operation completed.");
                         column.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
-                        column.Item().Text("If this page is visible in the merged artifact, the qpdf native library was loaded and executed successfully.").FontColor(Colors.Grey.Darken2);
+                        column.Item().Text("The qpdf output also contains a bundled text attachment and is saved through the linearization path.").FontColor(Colors.Grey.Darken2);
                     }));
             });
         });
@@ -282,105 +281,59 @@ public static class PdfSmokeTests
     private static void BuildDocumentHeader(IContainer container)
     {
         container
-            .Background(Colors.Blue.Darken4)
-            .Padding(16)
-            .DefaultTextStyle(x => x.FontColor(Colors.White))
+            .BorderBottom(1)
+            .BorderColor(Colors.Grey.Lighten2)
+            .PaddingBottom(12)
             .Row(row =>
             {
-                row.ConstantItem(54)
-                    .Height(54)
-                    .Background(Colors.White)
-                    .Padding(6)
+                row.ConstantItem(46)
+                    .Height(46)
+                    .Padding(2)
                     .Image(ResourcePath("Images", "questpdf-logo.png"))
                     .FitArea();
 
                 row.RelativeItem()
-                    .PaddingLeft(14)
+                    .PaddingLeft(12)
                     .Column(column =>
                     {
                         column.Spacing(4);
-                        column.Item().Text("QuestPDF Package Integration").FontSize(20).Bold();
-                        column.Item().Text("Deployment verification report").FontSize(10).FontColor(Colors.Blue.Lighten4);
-                        column.Item().Text("Native libraries, packaged resources, font discovery, and document operations").FontSize(8).FontColor(Colors.Blue.Lighten3);
+                        column.Item().Text("QuestPDF integration smoke test").FontSize(17).SemiBold().FontColor(Colors.Grey.Darken4);
+                        column.Item().Text("Deployment verification for native libraries, packaged resources, fonts, and document operations.").FontSize(9).FontColor(Colors.Grey.Darken1);
                     });
-
-                row.ConstantItem(112)
-                    .Height(54)
-                    .Svg(InlineSvg)
-                    .FitArea();
             });
     }
 
-    private static void BuildSummaryPanel(IContainer container)
+    private static void BuildPurposeSection(IContainer container)
     {
         container
-            .BorderLeft(4)
-            .BorderColor(Colors.Green.Medium)
-            .Background(Colors.Grey.Lighten5)
-            .PaddingVertical(12)
-            .PaddingHorizontal(14)
-            .Row(row =>
+            .Border(1)
+            .BorderColor(Colors.Grey.Lighten2)
+            .Padding(12)
+            .Column(column =>
             {
-                row.RelativeItem().Column(column =>
+                column.Spacing(6);
+                column.Item().Text("Purpose").FontSize(11).SemiBold().FontColor(Colors.Grey.Darken4);
+                column.Item().Text("This file is produced by the deployed test application. It is intentionally small and predictable, but it touches the parts of QuestPDF that are most likely to fail when packaging or runtime probing is wrong.");
+                column.Item().Text(text =>
                 {
-                    column.Spacing(5);
-                    column.Item().Text("All checks executed from packaged output").FontSize(13).SemiBold().FontColor(Colors.Grey.Darken4);
-                    column.Item().Text("This document intentionally uses only bundled fonts and resources. It also forces Skia rendering, SVG parsing, image loading, qpdf post-processing, page counters, links, and pagination in one deployed workflow.");
+                    text.Span("Expected result: ").SemiBold();
+                    text.Span("PDF generation succeeds without system fonts, without external resource paths, and with native dependencies resolved from the application output.");
                 });
-
-                row.ConstantItem(130)
-                    .AlignMiddle()
-                    .Hyperlink("https://www.questpdf.com")
-                    .Text("questpdf.com")
-                    .FontColor(Colors.Blue.Darken2)
-                    .SemiBold();
             });
     }
 
-    private static void BuildStatusStrip(IContainer container)
-    {
-        container.Row(row =>
-        {
-            row.Spacing(8);
-            row.RelativeItem().Element(card => BuildMetricCard(card, "Skia", "PDF + XPS", Colors.Blue.Darken2, Colors.Blue.Lighten5));
-            row.RelativeItem().Element(card => BuildMetricCard(card, "qpdf", "Merge + attach", Colors.Green.Darken2, Colors.Green.Lighten5));
-            row.RelativeItem().Element(card => BuildMetricCard(card, "Fonts", "Local only", Colors.Amber.Darken3, Colors.Amber.Lighten5));
-            row.RelativeItem().Element(card => BuildMetricCard(card, "Resources", "Files + SVG", Colors.Cyan.Darken3, Colors.Cyan.Lighten5));
-        });
-    }
-
-    private static void BuildMetricCard(IContainer container, string label, string value, Color accent, Color background)
-    {
-        container
-            .Background(background)
-            .Border(1)
-            .BorderColor(Colors.Grey.Lighten2)
-            .Padding(10)
-            .Column(column =>
-            {
-                column.Spacing(4);
-                column.Item().Text(label.ToUpperInvariant()).FontSize(7).SemiBold().FontColor(accent);
-                column.Item().Text(value).FontSize(11).SemiBold().FontColor(Colors.Grey.Darken4);
-            });
-    }
-
-    private static void BuildSection(IContainer container, string title, Action<IContainer> content)
+    private static void BuildSection(IContainer container, string title, string subtitle, Action<IContainer> content)
     {
         container
             .Border(1)
             .BorderColor(Colors.Grey.Lighten2)
+            .Padding(12)
             .Column(column =>
             {
-                column.Item()
-                    .Background(Colors.Grey.Lighten4)
-                    .PaddingVertical(7)
-                    .PaddingHorizontal(10)
-                    .Text(title)
-                    .FontSize(10)
-                    .SemiBold()
-                    .FontColor(Colors.Grey.Darken4);
-
-                column.Item().Padding(10).Element(content);
+                column.Spacing(8);
+                column.Item().Text(title).FontSize(11).SemiBold().FontColor(Colors.Grey.Darken4);
+                column.Item().Text(subtitle).FontSize(8).FontColor(Colors.Grey.Darken1);
+                column.Item().Element(content);
             });
     }
 
@@ -390,23 +343,23 @@ public static class PdfSmokeTests
         {
             table.ColumnsDefinition(columns =>
             {
-                columns.ConstantColumn(80);
+                columns.ConstantColumn(82);
                 columns.RelativeColumn();
-                columns.ConstantColumn(80);
+                columns.RelativeColumn();
             });
 
             table.Header(header =>
             {
                 header.Cell().Element(HeaderCell).Text("Area");
-                header.Cell().Element(HeaderCell).Text("Scenario");
-                header.Cell().Element(HeaderCell).AlignCenter().Text("Status");
+                header.Cell().Element(HeaderCell).Text("Test input");
+                header.Cell().Element(HeaderCell).Text("Expected behavior");
             });
 
-            AddRow(table, "Text", "Multiple spans, weights, colors, links, counters, and pagination.", "PASS");
-            AddRow(table, "Fonts", "Environment fonts disabled; bundled Lato and Noto Sans Arabic are registered.", "PASS");
-            AddRow(table, "Images", "Raster image loaded from a packaged resource path.", "PASS");
-            AddRow(table, "SVG", "Inline SVG, SVG from file, and SVG with a font resource are rendered.", "PASS");
-            AddRow(table, "qpdf", "Final PDF is merged, attached, and linearized after generation.", "PASS");
+            AddRow(table, "Skia", "Generate the base PDF and, on Windows, an XPS file.", "Native Skia assets are loaded from the deployed application.");
+            AddRow(table, "qpdf", "Merge a generated appendix, add a bundled attachment, and save qpdf.pdf.", "Native qpdf assets are loaded and document post-processing succeeds.");
+            AddRow(table, "Fonts", "Disable environment fonts and register bundled Lato plus Noto Sans Arabic.", "Glyph checks pass and text renders without depending on the host system.");
+            AddRow(table, "Resources", "Load PNG, SVG file, inline SVG, and SVG referencing a font file.", "All resources resolve from the packaged output directory.");
+            AddRow(table, "Layout", "Render a table, page footer counters, multi-column text, and repeated rows.", "The document remains valid across page breaks and common layout primitives.");
         });
     }
 
@@ -419,11 +372,11 @@ public static class PdfSmokeTests
             .Column(column =>
             {
                 column.Spacing(8);
-                column.Item().Text("Lato regular").FontSize(8).SemiBold().FontColor(Colors.Blue.Darken2);
+                column.Item().Text("Lato regular").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken1);
                 column.Item().Text("Zażółć gęślą jaźń, 0123456789.").FontFamily(LatoFontFamily).FontSize(12);
-                column.Item().Text("Lato bold and italic").FontSize(8).SemiBold().FontColor(Colors.Blue.Darken2);
-                column.Item().Text("Deterministic font selection.").FontFamily(LatoFontFamily).Bold().Italic();
-                column.Item().Text("Noto Sans Arabic").FontSize(8).SemiBold().FontColor(Colors.Blue.Darken2);
+                column.Item().Text("Lato bold italic").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken1);
+                column.Item().Text("Expected: deterministic bundled font selection.").FontFamily(LatoFontFamily).Bold().Italic();
+                column.Item().Text("Noto Sans Arabic").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken1);
                 column.Item().ContentFromRightToLeft().Text("مرحبا بالعالم").FontFamily(ArabicFontFamily).FontSize(14);
             });
     }
@@ -435,31 +388,32 @@ public static class PdfSmokeTests
             {
                 column.Spacing(7);
 
-                column.Item().Height(54).Row(row =>
+                column.Item().Height(52).Row(row =>
                 {
                     row.Spacing(8);
-                    row.RelativeItem().Background(Colors.Grey.Lighten5).Padding(5).Image(ResourcePath("Images", "questpdf-logo.png")).FitArea();
-                    row.RelativeItem().Background(Colors.Grey.Lighten5).Padding(5).Svg(ResourcePath("Svg", "status-badge.svg")).FitArea();
+                    row.RelativeItem().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Image(ResourcePath("Images", "questpdf-logo.png")).FitArea();
+                    row.RelativeItem().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Svg(ResourcePath("Svg", "status-badge.svg")).FitArea();
                 });
 
-                column.Item().Height(58).Background(Colors.Grey.Lighten5).Padding(5).Svg(ResourcePath("Svg", "font-resource.svg")).FitArea();
+                column.Item().Height(44).Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Svg(InlineSvg).FitArea();
+                column.Item().Height(58).Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Svg(ResourcePath("Svg", "font-resource.svg")).FitArea();
             });
     }
 
     private static IContainer HeaderCell(IContainer container)
     {
         return container
-            .Background(Colors.Blue.Darken4)
-            .DefaultTextStyle(x => x.FontColor(Colors.White).SemiBold())
+            .Background(Colors.Grey.Lighten4)
+            .DefaultTextStyle(x => x.FontColor(Colors.Grey.Darken3).SemiBold())
             .PaddingVertical(7)
             .PaddingHorizontal(8);
     }
 
-    private static void AddRow(TableDescriptor table, string area, string scenario, string status)
+    private static void AddRow(TableDescriptor table, string area, string scenario, string expected)
     {
         table.Cell().Element(BodyCell).Text(area);
         table.Cell().Element(BodyCell).Text(scenario);
-        table.Cell().Element(BodyCell).AlignCenter().Text(status).FontColor(Colors.Green.Darken2).SemiBold();
+        table.Cell().Element(BodyCell).Text(expected);
     }
 
     private static IContainer BodyCell(IContainer container)
@@ -471,21 +425,31 @@ public static class PdfSmokeTests
             .PaddingHorizontal(8);
     }
 
-    private static void BuildMultiColumnContent(IContainer container)
+    private static void BuildDocumentOperations(IContainer container)
     {
-        container.Element(section => BuildSection(section, "Layout workload", content =>
-            content.MultiColumn(multiColumn =>
+        container.Column(column =>
+        {
+            column.Spacing(8);
+            column.Item().Text(text =>
+            {
+                text.Span("Generated files: ").SemiBold();
+                text.Span(SkiaPdfFileName + " is produced directly by QuestPDF/Skia. ");
+                text.Span(QpdfPdfFileName + " is produced by qpdf after merge, attachment, and linearization.");
+            });
+
+            column.Item().MultiColumn(multiColumn =>
             {
                 multiColumn.Columns(2);
                 multiColumn.Spacing(14);
                 multiColumn.Content().Text(text =>
                 {
-                    text.Span("Multi-column composition. ").Bold().FontColor(Colors.Blue.Darken3);
+                    text.Span("Layout coverage. ").SemiBold();
 
-                    for (var i = 0; i < 16; i++)
+                    for (var i = 0; i < 10; i++)
                         text.Span("The deployed application lays out fluent document content while native dependencies and packaged resources are resolved from application output. ");
                 });
-            })));
+            });
+        });
     }
 
     private static void BuildPaginationContent(IContainer container)
@@ -493,8 +457,8 @@ public static class PdfSmokeTests
         container.Column(column =>
         {
             column.Spacing(10);
-            column.Item().Text("Pagination workload").FontSize(17).Bold().FontColor(Colors.Blue.Darken4);
-            column.Item().Text("Repeated rows force page breaks and verify that final document structure remains valid after native rendering and qpdf post-processing.").FontColor(Colors.Grey.Darken2);
+            column.Item().Text("Pagination workload").FontSize(15).SemiBold().FontColor(Colors.Grey.Darken4);
+            column.Item().Text("Expected: page breaks, repeated elements, and footer counters are preserved in both generated PDF variants.").FontColor(Colors.Grey.Darken2);
 
             for (var i = 1; i <= 36; i++)
             {
@@ -508,12 +472,12 @@ public static class PdfSmokeTests
                     .Row(row =>
                     {
                         row.ConstantItem(32)
-                            .Background(Colors.Blue.Lighten5)
+                            .Background(Colors.Grey.Lighten4)
                             .AlignCenter()
                             .AlignMiddle()
                             .Text(index.ToString("00"))
                             .SemiBold()
-                            .FontColor(Colors.Blue.Darken3);
+                            .FontColor(Colors.Grey.Darken3);
 
                         row.RelativeItem()
                             .PaddingLeft(10)
