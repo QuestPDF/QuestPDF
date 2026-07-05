@@ -38,20 +38,20 @@ static class LicenseChecker
         const string newParagraph = "\n\n";
 
         var exceptionMessage =
-            $"{newParagraph}{newParagraph}Welcome to QuestPDF, and thank you for choosing it 👋{newParagraph}" +
-            $"Before you generate your first document, please configure the license. It is a single line of code at application startup, and it confirms which license tier applies to your usage:{newParagraph}" +
+            $"Please configure the QuestPDF license by setting 'QuestPDF.Settings.License' at application startup.{newParagraph}{newParagraph}" +
+            $"Welcome to QuestPDF, and thank you for choosing it 👋{newParagraph}" +
+            $"Before you generate your first document, please declare which license tier applies to you. It is a single line of code at application startup:{newParagraph}" +
             $"> QuestPDF.Settings.License = LicenseType.Evaluation; // or Community / Professional / Enterprise{newParagraph}" +
-            $"QuestPDF requires a commercial license for production use by organizations with more than $1M USD in annual gross revenue. " +
-            $"Individuals, non-profits, open-source projects, and smaller companies qualify for the free Community license.{newParagraph}" +
-            $"Available tiers:\n" +
-            $"- Community: free,\n" +
-            $"- Professional: paid, for teams of up to 10 developers, with dedicated support,\n" +
-            $"- Enterprise: paid, for unlimited developers, with prioritized dedicated support,\n" +
-            $"- Evaluation: for assessing the library before selecting a license; not permitted in production.{newParagraph}" +
-            $"QuestPDF License and Pricing: https://www.questpdf.com/pricing{newParagraph}" +
-            $"If you are not the decision-maker for software purchases, please forward the license and pricing pages to your team lead or manager.{newParagraph}" +
-            $"No license key or activation is required — the setting is a self-declaration, and we trust you to choose correctly. " +
-            $"By selecting the appropriate tier, you help keep QuestPDF sustainable and continuously improving for everyone.{newParagraph}" +
+            $"Available license tiers:\n" +
+            $"- Evaluation: start here; take your time to assess the library before selecting a tier; not permitted in production,\n" +
+            $"- Community: free; for individuals, non-profits, open-source projects, and organizations with annual gross revenue under $1M USD,\n" +
+            $"- Professional: paid; covers your entire company, with unlimited developers,\n" +
+            $"- Enterprise: paid; additionally covers subsidiaries and affiliated companies, includes prioritized support, and off-schedule software updates for critical issues.{newParagraph}" +
+            $"Every tier includes the complete feature set; tiers differ only in usage rights and support.{newParagraph}" +
+            $"Visit https://www.questpdf.com/pricing for a human-friendly overview of licensing and pricing.{newParagraph}" +
+            $"Visit https://www.questpdf.com/license to access all legal documents.{newParagraph}" +
+            $"No license key or activation is required: the setting is a self-declaration, and we simply trust you. By selecting the tier that matches your situation, you help keep QuestPDF sustainable and continuously improving for everyone.{newParagraph}" +
+            $"Evaluating at work? You can start right away; that is exactly what the Evaluation tier is for, and the purchasing decision does not need to be yours. When your team is ready, simply forward the pricing page to your team lead or manager.{newParagraph}" +
             $"We wish you a great experience! 🚀{newParagraph}{newParagraph}";
 
         throw new Exception(exceptionMessage)

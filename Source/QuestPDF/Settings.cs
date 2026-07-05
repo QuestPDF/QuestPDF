@@ -9,8 +9,8 @@ namespace QuestPDF
     public static class Settings
     {
         /// <summary>
-        /// <para>Please kindly select license type that applies to your usage of the QuestPDF library.</para>
-        /// <para>For more details, please check the <a href="https://www.questpdf.com/license">QuestPDF License and Pricing webpage</a></para>
+        /// <para>Selects the QuestPDF license tier that applies to your usage. Set this once at application startup, before generating the first document.</para>
+        /// <para>For more details, please check the <a href="https://www.questpdf.com/pricing">QuestPDF Pricing webpage</a> and <a href="https://www.questpdf.com/license">QuestPDF License webpage</a>.</para>
         /// </summary>
         public static LicenseType? License { get; set; }
         
