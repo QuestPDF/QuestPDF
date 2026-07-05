@@ -12,7 +12,7 @@
 QuestPDF is a production-ready library that lets you design documents the way you design software: with clean, maintainable, strong-typed C# code.
 Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices, and exports using the language and tools you already love.
 
-The library is free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue. [Read more](https://www.questpdf.com/pricing.html)
+The library is free for individuals, non-profits, open-source projects, and organizations under $1M in annual gross revenue. [Read more](https://www.questpdf.com/pricing)
 
 <br>
 
@@ -371,10 +371,10 @@ A model that benefits everyone. Commercial licensing provides businesses with le
 - Predictable pricing: no per-seat, per-server, or usage fees
 
 > [!TIP]
-> Free for individuals, non-profits, all FOSS projects, and organizations under $1M in annual revenue.
+> Free for individuals, non-profits, open-source projects, and organizations under $1M in annual gross revenue.
 
-[![QuestPDF Pricing](https://img.shields.io/badge/view%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/license.html)
-[![QuestPDF License Terms](https://img.shields.io/badge/license%20terms-666666?style=for-the-badge)](https://www.questpdf.com/license/guide.html)
+[![QuestPDF Pricing](https://img.shields.io/badge/view%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/license)
+[![QuestPDF License Terms](https://img.shields.io/badge/license%20terms-666666?style=for-the-badge)](https://www.questpdf.com/license/guide)
 
 <br>
 <br>
