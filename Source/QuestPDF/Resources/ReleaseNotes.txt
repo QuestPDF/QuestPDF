@@ -1,7 +1,4 @@
-- Updated the Skia native dependency to M150.
-- Improved text rendering stability when handling an excessive number of whitespace characters.
-- Improved the failure message shown when the library runs on an unsupported platform (e.g., Android, iOS, or WASM).
-- Improved platform compatibility checks and introduced more advanced fallback mechanisms.
-- Improved diagnostics for missing font glyph exceptions.
-- Improved PDF output consistency of section links by avoiding name escaping and removing unnecessary documentId prefix. 
-- Made the Image.Size property public.
+- Updated licensing terms and conditions to version 3.0, including the removal of the developer seat limit for all paid licenses (details: https://www.questpdf.com/pricing).
+- Added full support for .NET Native AOT and trimming.
+- Added and improved warning messages related to library configuration.
+- Fixed a rare rendering issue where the footer was placed incorrectly when the page content was empty.
