@@ -6,6 +6,7 @@ using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.Qpdf;
 
 namespace QuestPDF.UnitTests;
 
@@ -217,6 +218,55 @@ public class DocumentOperationTests
             .Save("operation-extend-metadata.pdf");
     }
     
+    [Test]
+    public void Encryption256_AllowModification_MapsToModifyOtherFlag()
+    {
+        GenerateSampleDocument("allow-modification-256-input.pdf", Colors.Red.Medium, 1);
+
+        var disabled = DocumentOperation
+            .LoadFile("allow-modification-256-input.pdf")
+            .Encrypt(new DocumentOperation.Encryption256Bit { OwnerPassword = "owner", AllowModification = false });
+        Assert.That(disabled.Configuration.Encrypt!.Options256Bit!.ModifyOther, Is.EqualTo("n"));
+        Assert.That(SimpleJsonSerializer.Serialize(disabled.Configuration), Does.Contain("modifyOther"));
+
+        var enabled = DocumentOperation
+            .LoadFile("allow-modification-256-input.pdf")
+            .Encrypt(new DocumentOperation.Encryption256Bit { OwnerPassword = "owner", AllowModification = true });
+        Assert.That(enabled.Configuration.Encrypt!.Options256Bit!.ModifyOther, Is.EqualTo("y"));
+    }
+
+    [Test]
+    public void Encryption128_AllowModification_MapsToModifyOtherFlag()
+    {
+        GenerateSampleDocument("allow-modification-128-input.pdf", Colors.Red.Medium, 1);
+
+        var disabled = DocumentOperation
+            .LoadFile("allow-modification-128-input.pdf")
+            .Encrypt(new DocumentOperation.Encryption128Bit { OwnerPassword = "owner", AllowModification = false });
+        Assert.That(disabled.Configuration.Encrypt!.Options128Bit!.ModifyOther, Is.EqualTo("n"));
+
+        var enabled = DocumentOperation
+            .LoadFile("allow-modification-128-input.pdf")
+            .Encrypt(new DocumentOperation.Encryption128Bit { OwnerPassword = "owner", AllowModification = true });
+        Assert.That(enabled.Configuration.Encrypt!.Options128Bit!.ModifyOther, Is.EqualTo("y"));
+    }
+
+    [Test]
+    public void Encryption40_AllowModification_MapsToModifyFlag()
+    {
+        GenerateSampleDocument("allow-modification-40-input.pdf", Colors.Red.Medium, 1);
+
+        var disabled = DocumentOperation
+            .LoadFile("allow-modification-40-input.pdf")
+            .Encrypt(new DocumentOperation.Encryption40Bit { OwnerPassword = "owner", AllowModification = false });
+        Assert.That(disabled.Configuration.Encrypt!.Options40Bit!.Modify, Is.EqualTo("none"));
+
+        var enabled = DocumentOperation
+            .LoadFile("allow-modification-40-input.pdf")
+            .Encrypt(new DocumentOperation.Encryption40Bit { OwnerPassword = "owner", AllowModification = true });
+        Assert.That(enabled.Configuration.Encrypt!.Options40Bit!.Modify, Is.EqualTo("all"));
+    }
+
     private void GenerateSampleDocument(string filePath, Color color, int length)
     {
         Document
