@@ -212,7 +212,8 @@ public static class PdfSmokeTests
             document.Page(page =>
             {
                 page.Size(PageSizes.A4);
-                page.Margin(36);
+                page.MarginHorizontal(42);
+                page.MarginVertical(34);
                 page.DefaultTextStyle(x => x.FontFamily(LatoFontFamily).FontSize(9).FontColor(Colors.Grey.Darken3));
                 page.Header().Element(BuildDocumentHeader);
 
@@ -220,14 +221,14 @@ public static class PdfSmokeTests
                     .PaddingTop(16)
                     .Column(column =>
                     {
-                        column.Spacing(12);
+                        column.Spacing(14);
                         column.Item().Element(BuildPurposeSection);
-                        column.Item().Element(container => BuildSection(container, "Test scenarios", "The table lists environment-sensitive behaviors that must work after publish/deployment.", BuildFeatureTable));
+                        column.Item().Element(container => BuildSection(container, "Test scenarios", "Environment-sensitive behaviors that must work after publish/deployment.", BuildFeatureTable));
                         column.Item().Row(row =>
                         {
-                            row.Spacing(12);
-                            row.RelativeItem().Element(container => BuildSection(container, "Font resources", "Expected: all text is rendered using bundled fonts only.", BuildFontPanel));
-                            row.RelativeItem().Element(container => BuildSection(container, "Image and SVG resources", "Expected: raster, SVG file, inline SVG, and SVG font references resolve from packaged resources.", BuildResourcePanel));
+                            row.Spacing(18);
+                            row.RelativeItem().Element(container => BuildSection(container, "Font resources", "Expected: all text uses bundled fonts only; glyph validation must pass.", BuildFontPanel));
+                            row.RelativeItem().Element(container => BuildSection(container, "Image and SVG resources", "Expected: all resources resolve from the application output.", BuildResourcePanel));
                         });
                         column.Item().Element(container => BuildSection(container, "Document operations", "Expected: QuestPDF generates the base file, qpdf merges an appendix, attaches a resource file, and linearizes the final PDF.", BuildDocumentOperations));
                         column.Item().PageBreak();
@@ -262,13 +263,10 @@ public static class PdfSmokeTests
                 page.DefaultTextStyle(x => x.FontFamily(LatoFontFamily).FontSize(10).FontColor(Colors.Grey.Darken4));
 
                 page.Content().Element(container => container
-                    .Border(1)
-                    .BorderColor(Colors.Grey.Lighten2)
-                    .Padding(16)
                     .Column(column =>
                     {
                         column.Spacing(10);
-                        column.Item().Text("qpdf appendix").FontSize(15).SemiBold().FontColor(Colors.Grey.Darken3);
+                        column.Item().Text("qpdf appendix").FontSize(15).SemiBold().FontColor(Colors.Grey.Darken4);
                         column.Item().Text("This page is generated as a separate PDF and then merged into qpdf.pdf.");
                         column.Item().Text("Expected result: if this appendix is present, the qpdf native library was loaded and the merge operation completed.");
                         column.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
@@ -283,12 +281,11 @@ public static class PdfSmokeTests
         container
             .BorderBottom(1)
             .BorderColor(Colors.Grey.Lighten2)
-            .PaddingBottom(12)
+            .PaddingBottom(10)
             .Row(row =>
             {
-                row.ConstantItem(46)
-                    .Height(46)
-                    .Padding(2)
+                row.ConstantItem(38)
+                    .Height(38)
                     .Image(ResourcePath("Images", "questpdf-logo.png"))
                     .FitArea();
 
@@ -297,8 +294,8 @@ public static class PdfSmokeTests
                     .Column(column =>
                     {
                         column.Spacing(4);
-                        column.Item().Text("QuestPDF integration smoke test").FontSize(17).SemiBold().FontColor(Colors.Grey.Darken4);
-                        column.Item().Text("Deployment verification for native libraries, packaged resources, fonts, and document operations.").FontSize(9).FontColor(Colors.Grey.Darken1);
+                        column.Item().Text("QuestPDF integration smoke test").FontSize(16).SemiBold().FontColor(Colors.Grey.Darken4);
+                        column.Item().Text("Native libraries, packaged resources, fonts, and document operations.").FontSize(9).FontColor(Colors.Grey.Darken1);
                     });
             });
     }
@@ -306,9 +303,6 @@ public static class PdfSmokeTests
     private static void BuildPurposeSection(IContainer container)
     {
         container
-            .Border(1)
-            .BorderColor(Colors.Grey.Lighten2)
-            .Padding(12)
             .Column(column =>
             {
                 column.Spacing(6);
@@ -325,9 +319,9 @@ public static class PdfSmokeTests
     private static void BuildSection(IContainer container, string title, string subtitle, Action<IContainer> content)
     {
         container
-            .Border(1)
+            .BorderTop(1)
             .BorderColor(Colors.Grey.Lighten2)
-            .Padding(12)
+            .PaddingTop(10)
             .Column(column =>
             {
                 column.Spacing(8);
@@ -366,17 +360,14 @@ public static class PdfSmokeTests
     private static void BuildFontPanel(IContainer container)
     {
         container
-            .Border(1)
-            .BorderColor(Colors.Grey.Lighten2)
-            .Padding(12)
             .Column(column =>
             {
-                column.Spacing(8);
-                column.Item().Text("Lato regular").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken1);
+                column.Spacing(7);
+                column.Item().Text("Lato regular").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken2);
                 column.Item().Text("Zażółć gęślą jaźń, 0123456789.").FontFamily(LatoFontFamily).FontSize(12);
-                column.Item().Text("Lato bold italic").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken1);
+                column.Item().Text("Lato bold italic").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken2);
                 column.Item().Text("Expected: deterministic bundled font selection.").FontFamily(LatoFontFamily).Bold().Italic();
-                column.Item().Text("Noto Sans Arabic").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken1);
+                column.Item().Text("Noto Sans Arabic").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken2);
                 column.Item().ContentFromRightToLeft().Text("مرحبا بالعالم").FontFamily(ArabicFontFamily).FontSize(14);
             });
     }
@@ -386,17 +377,21 @@ public static class PdfSmokeTests
         container
             .Column(column =>
             {
-                column.Spacing(7);
+                column.Spacing(8);
 
-                column.Item().Height(52).Row(row =>
+                column.Item().Text("Raster image and SVG file").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken2);
+                column.Item().Height(46).Row(row =>
                 {
                     row.Spacing(8);
-                    row.RelativeItem().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Image(ResourcePath("Images", "questpdf-logo.png")).FitArea();
-                    row.RelativeItem().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Svg(ResourcePath("Svg", "status-badge.svg")).FitArea();
+                    row.RelativeItem().Padding(3).Image(ResourcePath("Images", "questpdf-logo.png")).FitArea();
+                    row.RelativeItem().Padding(3).Svg(ResourcePath("Svg", "status-badge.svg")).FitArea();
                 });
 
-                column.Item().Height(44).Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Svg(InlineSvg).FitArea();
-                column.Item().Height(58).Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Svg(ResourcePath("Svg", "font-resource.svg")).FitArea();
+                column.Item().Text("Inline SVG").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken2);
+                column.Item().Height(38).Padding(3).Svg(InlineSvg).FitArea();
+
+                column.Item().Text("SVG with font path").FontSize(8).SemiBold().FontColor(Colors.Grey.Darken2);
+                column.Item().Height(48).Padding(3).Svg(ResourcePath("Svg", "font-resource.svg")).FitArea();
             });
     }
 
@@ -429,12 +424,18 @@ public static class PdfSmokeTests
     {
         container.Column(column =>
         {
-            column.Spacing(8);
+            column.Spacing(7);
             column.Item().Text(text =>
             {
                 text.Span("Generated files: ").SemiBold();
                 text.Span(SkiaPdfFileName + " is produced directly by QuestPDF/Skia. ");
                 text.Span(QpdfPdfFileName + " is produced by qpdf after merge, attachment, and linearization.");
+            });
+
+            column.Item().Text(text =>
+            {
+                text.Span("Attachment: ").SemiBold();
+                text.Span("integration-note.txt is embedded from the bundled Resources directory.");
             });
 
             column.Item().MultiColumn(multiColumn =>
@@ -443,9 +444,9 @@ public static class PdfSmokeTests
                 multiColumn.Spacing(14);
                 multiColumn.Content().Text(text =>
                 {
-                    text.Span("Layout coverage. ").SemiBold();
+                    text.Span("Layout coverage: ").SemiBold();
 
-                    for (var i = 0; i < 10; i++)
+                    for (var i = 0; i < 8; i++)
                         text.Span("The deployed application lays out fluent document content while native dependencies and packaged resources are resolved from application output. ");
                 });
             });
