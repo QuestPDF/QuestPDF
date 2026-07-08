@@ -1,15 +1,17 @@
 #!/usr/bin/env zx
+import { spawn } from 'node:child_process';
+
 import {
   $,
   argv,
   chalk,
+  cliPath,
   errorMessage,
   fetchToFile,
   fs,
   isMain,
   integrationPath,
   isWindowsRuntime,
-  kill,
   outputFileNames,
   path,
   repoPath,
@@ -61,9 +63,9 @@ export async function runPublishedTest({ appType, targetFramework, rid, packageV
   await fs.ensureDir(outputDirectory);
   await fs.ensureDir(logDirectory);
 
-  await $`dotnet restore ${project} --configfile ${nugetConfig} --runtime ${rid} -p:QuestPDFIntegrationVersion=${packageVersion} -p:QuestPDFIntegrationTargetFramework=${targetFramework}`;
+  await $`dotnet restore ${cliPath(project)} --configfile ${cliPath(nugetConfig)} --runtime ${rid} -p:QuestPDFIntegrationVersion=${packageVersion} -p:QuestPDFIntegrationTargetFramework=${targetFramework}`;
 
-  await $`dotnet publish ${project} --configuration Release --framework ${targetFramework} --runtime ${rid} --self-contained ${String(appConfiguration.selfContained)} --output ${publishDirectory} --no-restore -p:QuestPDFIntegrationVersion=${packageVersion} -p:QuestPDFIntegrationTargetFramework=${targetFramework}`;
+  await $`dotnet publish ${cliPath(project)} --configuration Release --framework ${targetFramework} --runtime ${rid} --self-contained ${String(appConfiguration.selfContained)} --output ${cliPath(publishDirectory)} --no-restore -p:QuestPDFIntegrationVersion=${packageVersion} -p:QuestPDFIntegrationTargetFramework=${targetFramework}`;
 
   const executable = path.join(publishDirectory, isWindows ? `${projectName}.exe` : projectName);
 
@@ -80,10 +82,28 @@ async function runWebApiTest({ executable, outputDirectory, logDirectory, isWind
 
   console.log(chalk.cyan(`Starting Web API at ${baseUrl}`));
 
-  const serverPid = (await $({ cwd: path.dirname(executable) })`ASPNETCORE_URLS=${baseUrl} ${executable} > ${logFile} 2>&1 & echo $!`.quiet()).stdout.trim();
+  const logStream = fs.createWriteStream(logFile, { flags: 'w' });
+  const server = spawn(executable, [], {
+    cwd: path.dirname(executable),
+    env: { ...process.env, ASPNETCORE_URLS: baseUrl },
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+
+  server.stdout.pipe(logStream);
+  server.stderr.pipe(logStream);
 
   try {
-    await waitForHttpServer(`${baseUrl}/health`, logFile);
+    const serverExit = new Promise((resolve, reject) => {
+      server.once('error', reject);
+      server.once('exit', (code, signal) => resolve({ code, signal }));
+    });
+
+    await Promise.race([
+      waitForHttpServer(`${baseUrl}/health`, logFile),
+      serverExit.then(({ code, signal }) => {
+        throw new Error(`Web API exited before becoming ready (code: ${code}, signal: ${signal}).`);
+      })
+    ]);
 
     const skiaPdfResponse = path.join(outputDirectory, outputFileNames.skiaPdf);
     const qpdfPdfResponse = path.join(outputDirectory, outputFileNames.qpdfPdf);
@@ -100,12 +120,30 @@ async function runWebApiTest({ executable, outputDirectory, logDirectory, isWind
       await validateXps(xpsResponse);
     }
   } finally {
-    try {
-      await kill(serverPid);
-    } catch {
-      // The server may have already stopped after a failing request.
+    await stopServer(server, logStream);
+  }
+}
+
+async function stopServer(server, logStream) {
+  if (server.exitCode === null && server.signalCode === null) {
+    server.kill();
+
+    await Promise.race([
+      new Promise(resolve => server.once('exit', resolve)),
+      new Promise(resolve => setTimeout(resolve, 5000))
+    ]);
+
+    if (server.exitCode === null && server.signalCode === null) {
+      server.kill('SIGKILL');
+
+      await Promise.race([
+        new Promise(resolve => server.once('exit', resolve)),
+        new Promise(resolve => setTimeout(resolve, 5000))
+      ]);
     }
   }
+
+  await new Promise(resolve => logStream.end(resolve));
 }
 
 async function runConsoleStyleTest({ executable, outputDirectory, isWindows }) {

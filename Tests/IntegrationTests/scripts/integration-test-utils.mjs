@@ -1,11 +1,11 @@
 import { fileURLToPath } from 'node:url';
+import { spawn } from 'node:child_process';
 
 export const $ = globalThis.$;
 export const argv = globalThis.argv;
 export const chalk = globalThis.chalk;
 export const fetch = globalThis.fetch;
 export const fs = globalThis.fs;
-export const kill = globalThis.kill;
 export const path = globalThis.path;
 export const retry = globalThis.retry;
 
@@ -31,6 +31,10 @@ export function isWindowsRuntime(rid) {
   return rid.startsWith('win-');
 }
 
+export function cliPath(filePath) {
+  return filePath.replaceAll('\\', '/');
+}
+
 export function isMain(moduleUrl) {
   const modulePath = path.resolve(fileURLToPath(moduleUrl));
   const candidatePaths = process.argv
@@ -45,7 +49,21 @@ export async function runExecutable(executable, args = [], options = {}) {
   const displayArgs = args.length > 0 ? ` ${args.join(' ')}` : '';
   console.log(chalk.cyan(`Running ${path.basename(executable)}${displayArgs}`));
 
-  await $({ cwd: options.cwd, env: { ...process.env, ...options.env } })`${executable} ${args}`;
+  await new Promise((resolve, reject) => {
+    const child = spawn(executable, args, {
+      cwd: options.cwd,
+      env: { ...process.env, ...options.env },
+      stdio: 'inherit'
+    });
+
+    child.once('error', reject);
+    child.once('exit', (code, signal) => {
+      if (code === 0)
+        resolve();
+      else
+        reject(new Error(`${path.basename(executable)} failed with exit code ${code ?? `signal ${signal}`}.`));
+    });
+  });
 }
 
 export async function waitForHttpServer(url, logFile) {

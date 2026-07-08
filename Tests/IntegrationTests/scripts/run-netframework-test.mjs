@@ -3,6 +3,7 @@ import {
   $,
   argv,
   chalk,
+  cliPath,
   errorMessage,
   fs,
   integrationPath,
@@ -38,9 +39,9 @@ export async function runNetFrameworkTest({ packageVersion, targetFramework, pla
   await fs.remove(outputDirectory);
   await fs.ensureDir(outputDirectory);
 
-  await $`dotnet restore ${project} --configfile ${nugetConfig} -p:QuestPDFIntegrationVersion=${packageVersion} -p:QuestPDFIntegrationTargetFramework=${targetFramework} -p:QuestPDFNetFrameworkTargetFramework=${targetFramework} -p:PlatformTarget=${platformTarget}`;
+  await $`dotnet restore ${cliPath(project)} --configfile ${cliPath(nugetConfig)} -p:QuestPDFIntegrationVersion=${packageVersion} -p:QuestPDFIntegrationTargetFramework=${targetFramework} -p:QuestPDFNetFrameworkTargetFramework=${targetFramework} -p:PlatformTarget=${platformTarget}`;
 
-  await $`dotnet build ${project} --configuration Release --framework ${targetFramework} --no-restore -p:QuestPDFIntegrationVersion=${packageVersion} -p:QuestPDFIntegrationTargetFramework=${targetFramework} -p:QuestPDFNetFrameworkTargetFramework=${targetFramework} -p:PlatformTarget=${platformTarget}`;
+  await $`dotnet build ${cliPath(project)} --configuration Release --framework ${targetFramework} --no-restore -p:QuestPDFIntegrationVersion=${packageVersion} -p:QuestPDFIntegrationTargetFramework=${targetFramework} -p:QuestPDFNetFrameworkTargetFramework=${targetFramework} -p:PlatformTarget=${platformTarget}`;
 
   await runExecutable(executable, [platformTarget], { cwd: outputDirectory });
   await validatePdf(path.join(outputDirectory, outputFileNames.skiaPdf));
