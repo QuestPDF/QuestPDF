@@ -13,11 +13,13 @@ This catches package layout, RID asset selection, publish output, native library
 Local example after packing QuestPDF into `artifacts/nupkg`:
 
 ```bash
-Tests/IntegrationTests/scripts/run-published-test.sh console net10.0 osx-arm64 0.0.0-local
+zx Tests/IntegrationTests/scripts/run-published-test.mjs console net10.0 osx-arm64 0.0.0-local
 ```
+
+Named zx/minimist flags are also supported for local runs, for example `--app`, `--framework`, `--runtime`, and `--package-version`.
 
 The .NET Framework project is Windows-only and uses `dotnet build`, because .NET Framework does not have the same publish model. It still validates the package restore output and native DLL copy behavior.
 
 ```bash
-Tests/IntegrationTests/scripts/run-netframework-test.sh 0.0.0-local net481 x64
+zx Tests/IntegrationTests/scripts/run-netframework-test.mjs 0.0.0-local net481 x64
 ```

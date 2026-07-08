@@ -100,14 +100,14 @@ jobs:
         shell: bash
         run: |
           apt update --yes
-          apt install --yes bash curl ca-certificates clang zlib1g-dev
+          apt install --yes bash curl ca-certificates clang zlib1g-dev nodejs npm
 
       - name: Install Alpine prerequisites
         if: matrix.runtime.name == 'linux-musl-x64'
         shell: sh
         run: |
           apk update
-          apk add bash curl ca-certificates clang build-base zlib-dev libstdc++ libgcc tar gzip
+          apk add bash curl ca-certificates clang build-base zlib-dev libstdc++ libgcc tar gzip nodejs npm
 
       - name: Setup .NET SDK (Windows)
         if: startsWith(matrix.runtime.name, 'win-')
@@ -130,6 +130,10 @@ jobs:
           echo "$HOME/.dotnet" >> "$GITHUB_PATH"
           echo "DOTNET_ROOT=$HOME/.dotnet" >> "$GITHUB_ENV"
 
+      - name: Install zx
+        shell: bash
+        run: npm install --global zx@8
+
       - name: Download package
         uses: actions/download-artifact@v4
         with:
@@ -142,26 +146,7 @@ jobs:
 
       - name: Publish and run published outputs
         shell: bash
-        run: |
-          apps=(console console-singlefile webapi worker)
-
-          if [[ "${{ matrix.dotnet-version }}" != "6.0" && "${{ matrix.runtime.name }}" != "win-x86" ]]; then
-            apps+=(console-aot)
-          fi
-
-          exit_code=0
-
-          for app in "${apps[@]}"; do
-            echo "::group::$app"
-
-            if ! Tests/IntegrationTests/scripts/run-published-test.sh "$app" "net${{ matrix.dotnet-version }}" "${{ matrix.runtime.name }}" "${{ needs.pack.outputs.package-version }}"; then
-              exit_code=1
-            fi
-
-            echo "::endgroup::"
-          done
-
-          exit "$exit_code"
+        run: zx Tests/IntegrationTests/scripts/run-published-suite.mjs "net${{ matrix.dotnet-version }}" "${{ matrix.runtime.name }}" "${{ needs.pack.outputs.package-version }}"
 
       - name: Upload integration output
         uses: actions/upload-artifact@v4
@@ -196,6 +181,10 @@ jobs:
           Add-Content -Path $env:GITHUB_PATH -Value $installDir
           Add-Content -Path $env:GITHUB_ENV -Value "DOTNET_ROOT=$installDir"
 
+      - name: Install zx
+        shell: bash
+        run: npm install --global zx@8
+
       - name: Download package
         uses: actions/download-artifact@v4
         with:
@@ -208,7 +197,7 @@ jobs:
 
       - name: Build and run .NET Framework output
         shell: bash
-        run: Tests/IntegrationTests/scripts/run-netframework-test.sh "${{ needs.pack.outputs.package-version }}" "${{ matrix.target-framework }}" "${{ matrix.platform-target }}"
+        run: zx Tests/IntegrationTests/scripts/run-netframework-test.mjs "${{ needs.pack.outputs.package-version }}" "${{ matrix.target-framework }}" "${{ matrix.platform-target }}"
 
       - name: Upload integration output
         uses: actions/upload-artifact@v4
