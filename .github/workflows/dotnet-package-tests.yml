@@ -186,7 +186,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: out-netframework-${{ matrix.framework }}-${{ matrix.platform-target }}
+          name: out-netframework-${{ matrix.platform-target }}-${{ matrix.framework }}
           path: artifacts/test-output/**
 
   merge-output-artifacts:
