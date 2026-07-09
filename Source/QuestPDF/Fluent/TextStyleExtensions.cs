@@ -230,9 +230,9 @@ namespace QuestPDF.Fluent
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.bold"]/*' />
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.remarks"]/*' />
-        public static TextStyle Bold(this TextStyle style)
+        public static TextStyle Bold(this TextStyle style, bool value = true)
         {
-            return style.Weight(FontWeight.Bold);
+            return value ? style.Weight(FontWeight.Bold) : NormalWeight(style);
         }
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.weight.extraBold"]/*' />
@@ -259,7 +259,7 @@ namespace QuestPDF.Fluent
         #endregion
 
         #region Position
-        
+
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.position.normal"]/*' />
         public static TextStyle NormalPosition(this TextStyle style)
         {
