@@ -133,7 +133,7 @@ jobs:
 
       - name: Build and test solution
         shell: bash
-        working-directory: ./Source
+        working-directory: ./src/dotnet/library
         env:
           VERAPDF_EXECUTABLE_PATH: '/root/verapdf/verapdf'
           MUSTANG_EXECUTABLE_PATH: '/root/mustang/mustang-cli.jar'
