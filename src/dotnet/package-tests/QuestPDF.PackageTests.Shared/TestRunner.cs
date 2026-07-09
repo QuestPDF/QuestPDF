@@ -69,7 +69,10 @@ public static class TestRunner
             {
                 document.Page(page =>
                 {
-                    page.Content().Text("Document to merge");
+                    page.Margin(50);
+                    page.Size(PageSizes.A5);
+                    
+                    page.Content().Text("Document to merge").FontSize(24);
                 });
             });
     }
