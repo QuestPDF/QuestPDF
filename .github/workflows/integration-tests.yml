@@ -28,28 +28,21 @@ jobs:
 
       - name: Create package version
         id: version
-        shell: bash
         run: |
           base_version="$(grep -m1 '<Version>' Source/QuestPDF/QuestPDF.csproj | sed -E 's/.*<Version>([^<]+)<.*/\1/')"
           echo "package-version=${base_version}-ci.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
 
       - name: Setup .NET 10.0 SDK
-        shell: bash
-        run: |
-          curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
-          bash /tmp/dotnet-install.sh --channel 10.0 --install-dir "$HOME/.dotnet"
-          echo "$HOME/.dotnet" >> "$GITHUB_PATH"
-          echo "DOTNET_ROOT=$HOME/.dotnet" >> "$GITHUB_ENV"
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
 
       - name: Build package
-        shell: bash
         run: |
-          mkdir -p artifacts/nupkg
           dotnet build Source/QuestPDF/QuestPDF.csproj \
             --configuration Release \
             -p:BUILD_PACKAGE=true \
             -p:Version="${{ steps.version.outputs.package-version }}" \
-            -p:PackageVersion="${{ steps.version.outputs.package-version }}" \
             -p:PackageOutputPath="$PWD/artifacts/nupkg" \
             -p:WarningLevel=0
 
@@ -59,7 +52,7 @@ jobs:
           name: questpdf-integration-package
           path: artifacts/nupkg/*.nupkg
 
-  full:
+  published:
     name: ${{ matrix.runtime.name }} + dotnet ${{ matrix.dotnet-version }}
     needs: pack
     runs-on: ${{ matrix.runtime.runs-on }}
@@ -109,6 +102,8 @@ jobs:
           apk update
           apk add bash curl ca-certificates clang build-base zlib-dev libstdc++ libgcc tar gzip nodejs npm
 
+      # setup-dotnet cannot install non-default architectures (win-x86) or target musl containers,
+      # so this matrix uses the official install scripts everywhere for consistency.
       - name: Setup .NET SDK (Windows)
         if: startsWith(matrix.runtime.name, 'win-')
         shell: pwsh
@@ -140,10 +135,6 @@ jobs:
           name: questpdf-integration-package
           path: artifacts/nupkg
 
-      - name: Clear NuGet caches
-        shell: bash
-        run: dotnet nuget locals all --clear
-
       - name: Publish and run published outputs
         shell: bash
         run: zx Tests/IntegrationTests/scripts/run-published-suite.mjs "net${{ matrix.dotnet-version }}" "${{ matrix.runtime.name }}" "${{ needs.pack.outputs.package-version }}"
@@ -172,14 +163,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup .NET 10.0 SDK
-        shell: pwsh
-        run: |
-          $script = "$env:RUNNER_TEMP\dotnet-install.ps1"
-          $installDir = "$env:RUNNER_TEMP\dotnet"
-          Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile $script
-          & $script -Channel 10.0 -InstallDir $installDir
-          Add-Content -Path $env:GITHUB_PATH -Value $installDir
-          Add-Content -Path $env:GITHUB_ENV -Value "DOTNET_ROOT=$installDir"
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
 
       - name: Install zx
         shell: bash
@@ -190,10 +176,6 @@ jobs:
         with:
           name: questpdf-integration-package
           path: artifacts/nupkg
-
-      - name: Clear NuGet caches
-        shell: bash
-        run: dotnet nuget locals all --clear
 
       - name: Build and run .NET Framework output
         shell: bash
@@ -208,7 +190,7 @@ jobs:
 
   merge-output-artifacts:
     name: Merge integration output artifacts
-    needs: [ full, netframework ]
+    needs: [ published, netframework ]
     runs-on: ubuntu-latest
     if: always()
     timeout-minutes: 10

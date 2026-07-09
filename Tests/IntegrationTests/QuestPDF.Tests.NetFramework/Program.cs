@@ -7,7 +7,6 @@ namespace QuestPDF.Tests.NetFramework
     {
         private static int Main(string[] args)
         {
-            var outputDirectory = Environment.CurrentDirectory;
             var platformTarget = args.Length > 0 ? args[0] : null;
 
             if (string.Equals(platformTarget, "x64", StringComparison.OrdinalIgnoreCase) && !Environment.Is64BitProcess)
@@ -16,10 +15,7 @@ namespace QuestPDF.Tests.NetFramework
             if (string.Equals(platformTarget, "x86", StringComparison.OrdinalIgnoreCase) && Environment.Is64BitProcess)
                 throw new InvalidOperationException("Expected the test application to run as a 32-bit process.");
 
-            PdfSmokeTests.GeneratePdfFiles(outputDirectory);
-
-            if (PdfSmokeTests.ShouldGenerateXps())
-                PdfSmokeTests.GenerateXpsFile(outputDirectory);
+            PdfSmokeTests.GenerateAllSupportedFiles(Environment.CurrentDirectory);
 
             return 0;
         }

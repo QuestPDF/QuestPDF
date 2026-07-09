@@ -20,12 +20,7 @@ public sealed class PdfWorker : BackgroundService
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var outputDirectory = Environment.CurrentDirectory;
-        PdfSmokeTests.GeneratePdfFiles(outputDirectory);
-
-        if (PdfSmokeTests.ShouldGenerateXps())
-            PdfSmokeTests.GenerateXpsFile(outputDirectory);
-
+        PdfSmokeTests.GenerateAllSupportedFiles(Environment.CurrentDirectory);
         applicationLifetime.StopApplication();
 
         return Task.CompletedTask;

@@ -1,17 +1,10 @@
+// Shared helpers for the integration test scripts.
+// All scripts run through the zx CLI, which provides $, argv, chalk, fs, path, and retry as globals.
 import { fileURLToPath } from 'node:url';
-import { spawn } from 'node:child_process';
 
-export const $ = globalThis.$;
-export const argv = globalThis.argv;
-export const chalk = globalThis.chalk;
-export const fetch = globalThis.fetch;
-export const fs = globalThis.fs;
-export const path = globalThis.path;
-export const retry = globalThis.retry;
-
-export const scriptsRoot = path.dirname(fileURLToPath(import.meta.url));
-export const integrationRoot = path.resolve(scriptsRoot, '..');
-export const repoRoot = path.resolve(scriptsRoot, '../../..');
+const scriptsRoot = path.dirname(fileURLToPath(import.meta.url));
+const integrationRoot = path.resolve(scriptsRoot, '..');
+const repoRoot = path.resolve(scriptsRoot, '../../..');
 
 export const outputFileNames = {
   skiaPdf: 'skia.pdf',
@@ -19,51 +12,31 @@ export const outputFileNames = {
   xps: 'skia.xps'
 };
 
+// Forward slashes work on every supported OS and avoid backslash escaping issues in zx commands.
 export function integrationPath(...segments) {
-  return path.join(integrationRoot, ...segments);
+  return path.join(integrationRoot, ...segments).replaceAll('\\', '/');
 }
 
 export function repoPath(...segments) {
-  return path.join(repoRoot, ...segments);
+  return path.join(repoRoot, ...segments).replaceAll('\\', '/');
 }
 
-export function isWindowsRuntime(rid) {
-  return rid.startsWith('win-');
+export async function runCli(main) {
+  try {
+    await main();
+  } catch (error) {
+    console.error(chalk.red(errorMessage(error)));
+    process.exitCode = 1;
+  }
 }
 
-export function cliPath(filePath) {
-  return filePath.replaceAll('\\', '/');
+export function errorMessage(error) {
+  return error?.message ?? String(error);
 }
 
-export function isMain(moduleUrl) {
-  const modulePath = path.resolve(fileURLToPath(moduleUrl));
-  const candidatePaths = process.argv
-    .slice(1, 3)
-    .filter(Boolean)
-    .map(x => path.resolve(x));
-
-  return candidatePaths.includes(modulePath);
-}
-
-export async function runExecutable(executable, args = [], options = {}) {
-  const displayArgs = args.length > 0 ? ` ${args.join(' ')}` : '';
-  console.log(chalk.cyan(`Running ${path.basename(executable)}${displayArgs}`));
-
-  await new Promise((resolve, reject) => {
-    const child = spawn(executable, args, {
-      cwd: options.cwd,
-      env: { ...process.env, ...options.env },
-      stdio: 'inherit'
-    });
-
-    child.once('error', reject);
-    child.once('exit', (code, signal) => {
-      if (code === 0)
-        resolve();
-      else
-        reject(new Error(`${path.basename(executable)} failed with exit code ${code ?? `signal ${signal}`}.`));
-    });
-  });
+export async function runExecutable(executable, args, cwd) {
+  console.log(chalk.cyan(`Running ${path.basename(executable)} ${args.join(' ')}`.trimEnd()));
+  await $({ cwd, stdio: 'inherit' })`${executable} ${args}`;
 }
 
 export async function waitForHttpServer(url, logFile) {
@@ -81,6 +54,13 @@ export async function waitForHttpServer(url, logFile) {
   }
 }
 
+async function readLog(filePath) {
+  if (!filePath || !await fs.pathExists(filePath))
+    return '';
+
+  return `\nServer log:\n${await fs.readFile(filePath, 'utf8')}`;
+}
+
 export async function fetchToFile(url, outputPath) {
   const response = await fetch(url);
 
@@ -93,51 +73,34 @@ export async function fetchToFile(url, outputPath) {
 }
 
 export async function validatePdf(pdfPath) {
-  if (!await fs.pathExists(pdfPath))
-    throw new Error(`PDF does not exist: ${pdfPath}`);
+  const buffer = await readOutputFile(pdfPath, 'PDF');
 
-  const buffer = await fs.readFile(pdfPath);
-
-  if (buffer.length < 1024)
-    throw new Error(`PDF is too small: ${pdfPath} (${buffer.length} bytes).`);
-
-  const header = buffer.subarray(0, 5).toString('latin1');
-
-  if (header !== '%PDF-')
+  if (buffer.subarray(0, 5).toString('latin1') !== '%PDF-')
     throw new Error(`PDF header is invalid: ${pdfPath}.`);
 
-  const tail = buffer.subarray(Math.max(0, buffer.length - 2048)).toString('latin1');
-
-  if (!tail.includes('%%EOF'))
+  if (!buffer.subarray(-2048).toString('latin1').includes('%%EOF'))
     throw new Error(`PDF EOF marker was not found: ${pdfPath}.`);
 
   console.log(chalk.green(`Validated PDF ${pdfPath} (${buffer.length} bytes)`));
 }
 
 export async function validateXps(xpsPath) {
-  if (!await fs.pathExists(xpsPath))
-    throw new Error(`Expected XPS file was not created: ${xpsPath}`);
+  const buffer = await readOutputFile(xpsPath, 'XPS');
 
-  const buffer = await fs.readFile(xpsPath);
-
-  if (buffer.length < 1024)
-    throw new Error(`XPS file is too small to be meaningful: ${xpsPath} (${buffer.length} bytes).`);
-
-  const hasZipHeader = buffer[0] === 0x50 && buffer[1] === 0x4b && buffer[2] === 0x03 && buffer[3] === 0x04;
-
-  if (!hasZipHeader)
+  if (buffer.readUInt32BE(0) !== 0x504b0304)
     throw new Error(`XPS file does not start with the ZIP package header: ${xpsPath}.`);
 
   console.log(chalk.green(`Validated XPS ${xpsPath} (${buffer.length} bytes)`));
 }
 
-async function readLog(filePath) {
-  if (!filePath || !await fs.pathExists(filePath))
-    return '';
+async function readOutputFile(filePath, kind) {
+  if (!await fs.pathExists(filePath))
+    throw new Error(`Expected ${kind} file was not created: ${filePath}`);
 
-  return `\nServer log:\n${await fs.readFile(filePath, 'utf8')}`;
-}
+  const buffer = await fs.readFile(filePath);
 
-export function errorMessage(error) {
-  return error?.message ?? String(error);
+  if (buffer.length < 1024)
+    throw new Error(`${kind} file is too small to be meaningful: ${filePath} (${buffer.length} bytes).`);
+
+  return buffer;
 }

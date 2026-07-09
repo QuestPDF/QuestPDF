@@ -10,13 +10,12 @@ Modern .NET tests must always follow this sequence:
 
 This catches package layout, RID asset selection, publish output, native library loading, single-file, self-contained, and AOT issues that are invisible when tests use `ProjectReference`, `dotnet build`, or `dotnet run`.
 
-Local example after packing QuestPDF into `artifacts/nupkg`:
+Local examples after packing QuestPDF into `artifacts/nupkg` (the last argument optionally limits the run to a single app):
 
 ```bash
-zx Tests/IntegrationTests/scripts/run-published-test.mjs console net10.0 osx-arm64 0.0.0-local
+zx Tests/IntegrationTests/scripts/run-published-suite.mjs net10.0 osx-arm64 0.0.0-local
+zx Tests/IntegrationTests/scripts/run-published-suite.mjs net10.0 osx-arm64 0.0.0-local console
 ```
-
-Named zx/minimist flags are also supported for local runs, for example `--app`, `--framework`, `--runtime`, and `--package-version`.
 
 The .NET Framework project is Windows-only and uses `dotnet build`, because .NET Framework does not have the same publish model. It still validates the package restore output and native DLL copy behavior.
 

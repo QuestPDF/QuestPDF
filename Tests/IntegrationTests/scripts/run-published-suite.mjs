@@ -1,21 +1,23 @@
 #!/usr/bin/env zx
-import { argv, chalk, errorMessage } from './integration-test-utils.mjs';
-import { runPublishedTest } from './run-published-test.mjs';
+// Publishes and runs every integration app for one target framework / runtime combination.
+import { errorMessage, runCli } from './integration-test-utils.mjs';
+import { appTypes, runPublishedTest } from './run-published-test.mjs';
 
-export async function runPublishedSuite({ targetFramework, rid, packageVersion }) {
-  if (!targetFramework)
-    throw new Error('Target framework is required.');
+await runCli(async () => {
+  const [targetFramework, rid, packageVersion, appFilter] = argv._;
 
-  if (!rid)
-    throw new Error('Runtime identifier is required.');
+  if (!targetFramework || !rid || !packageVersion)
+    throw new Error('Usage: zx run-published-suite.mjs <target-framework> <runtime-identifier> <package-version> [app]');
 
-  if (!packageVersion)
-    throw new Error('QuestPDF package version is required.');
+  if (appFilter && !appTypes.includes(appFilter))
+    throw new Error(`Unknown app type: ${appFilter}. Expected one of: ${appTypes.join(', ')}.`);
 
-  const apps = ['console', 'console-singlefile', 'webapi', 'worker'];
+  // Native AOT is not available for net6.0 console apps or the win-x86 runtime.
+  const supportsAot = targetFramework !== 'net6.0' && rid !== 'win-x86';
+  const apps = (appFilter ? [appFilter] : appTypes).filter(app => app !== 'console-aot' || supportsAot);
 
-  if (targetFramework !== 'net6.0' && rid !== 'win-x86')
-    apps.push('console-aot');
+  if (apps.length === 0)
+    throw new Error(`console-aot is not supported for ${targetFramework} / ${rid}.`);
 
   const failures = [];
 
@@ -25,7 +27,7 @@ export async function runPublishedSuite({ targetFramework, rid, packageVersion }
     try {
       await runPublishedTest({ appType: app, targetFramework, rid, packageVersion });
     } catch (error) {
-      failures.push({ app, error });
+      failures.push(app);
       console.error(chalk.red(`${app} failed: ${errorMessage(error)}`));
     } finally {
       console.log('::endgroup::');
@@ -33,18 +35,5 @@ export async function runPublishedSuite({ targetFramework, rid, packageVersion }
   }
 
   if (failures.length > 0)
-    throw new Error(`${failures.length} published integration app(s) failed: ${failures.map(x => x.app).join(', ')}.`);
-}
-
-try {
-  const [targetFrameworkArg, ridArg, packageVersionArg] = argv._;
-
-  await runPublishedSuite({
-    targetFramework: argv.framework ?? argv['target-framework'] ?? targetFrameworkArg,
-    rid: argv.runtime ?? argv.rid ?? argv['runtime-identifier'] ?? ridArg,
-    packageVersion: argv['package-version'] ?? argv.version ?? packageVersionArg
-  });
-} catch (error) {
-  console.error(chalk.red(errorMessage(error)));
-  process.exit(1);
-}
+    throw new Error(`${failures.length} published integration app(s) failed: ${failures.join(', ')}.`);
+});
