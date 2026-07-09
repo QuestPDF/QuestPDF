@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <QuestPDFNetFrameworkTargetFramework Condition="'$(QuestPDFNetFrameworkTargetFramework)' == ''">net472</QuestPDFNetFrameworkTargetFramework>
+    <TargetFramework>$(QuestPDFNetFrameworkTargetFramework)</TargetFramework>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../QuestPDF.Tests.Shared/QuestPDF.Tests.Shared.csproj" />
+  </ItemGroup>
+</Project>

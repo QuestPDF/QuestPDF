@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>$(QuestPDFIntegrationTargetFramework)</TargetFramework>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../QuestPDF.Tests.Shared/QuestPDF.Tests.Shared.csproj" />
+  </ItemGroup>
+</Project>
