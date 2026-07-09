@@ -142,7 +142,7 @@ jobs:
 
       - name: Run package tests
         shell: bash
-        run: zx src/dotnet/package-tests/QuestPDF.PackageTests/run-tests.mjs --version "${{ needs.pack.outputs.package-version }}" --framework "${{ matrix.framework }}" --runtime "${{ matrix.runtime.name }}"
+        run: zx src/dotnet/package-tests/run-tests.mjs --version "${{ needs.pack.outputs.package-version }}" --framework "${{ matrix.framework }}" --runtime "${{ matrix.runtime.name }}"
 
       - name: Upload test output
         uses: actions/upload-artifact@v4
@@ -184,7 +184,7 @@ jobs:
 
       - name: Run package tests
         shell: bash
-        run: zx src/dotnet/package-tests/QuestPDF.PackageTests/run-tests.mjs --version "${{ needs.pack.outputs.package-version }}" --framework "${{ matrix.framework }}" --platform "${{ matrix.platform-target }}"
+        run: zx src/dotnet/package-tests/run-tests.mjs --version "${{ needs.pack.outputs.package-version }}" --framework "${{ matrix.framework }}" --platform "${{ matrix.platform-target }}"
 
       - name: Upload test output
         uses: actions/upload-artifact@v4

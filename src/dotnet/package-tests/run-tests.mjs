@@ -17,7 +17,7 @@ $.verbose = true;
 
 // Forward slashes work on every supported OS and avoid backslash escaping issues in zx commands.
 const testsRoot = path.dirname(fileURLToPath(import.meta.url)).replaceAll('\\', '/');
-const repoRoot = path.resolve(testsRoot, '../../../..').replaceAll('\\', '/');
+const repoRoot = path.resolve(testsRoot, '../../..').replaceAll('\\', '/');
 const nugetConfig = `${testsRoot}/nuget.config`;
 const packageFeed = `${repoRoot}/artifacts/nupkg`;
 const testOutputRoot = `${repoRoot}/artifacts/test-output`;
