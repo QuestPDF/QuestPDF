@@ -4,7 +4,7 @@
 // runs the resulting binaries, and verifies that the produced documents are valid.
 //
 // Usage:
-//   zx run-tests.mjs [--version <package-version>] --framework <net6.0|net8.0|net10.0> --runtime <rid> [--app <name>]
+//   zx run-tests.mjs [--version <package-version>] --framework <net6.0|net8.0|net10.0> --runtime <rid>
 //   zx run-tests.mjs [--version <package-version>] --framework <net472|net481> --platform <x64|x86|AnyCPU>
 //
 // Without --version, the script packs the QuestPDF library into <repo>/artifacts/nupkg with a unique
@@ -34,7 +34,7 @@ const apps = {
   'netframework': { project: 'QuestPDF.PackageTests.NetFramework' }
 };
 
-const { framework, runtime, platform, app: appFilter } = argv;
+const { framework, runtime, platform } = argv;
 let version = argv.version;
 const isNetFramework = /^net4/.test(framework ?? '');
 const isWindows = isNetFramework || (runtime ?? '').startsWith('win-');
@@ -50,7 +50,7 @@ async function main() {
   if (!framework || (isNetFramework ? !platform : !runtime))
     throw new Error(
       'Usage:\n' +
-      '  zx run-tests.mjs [--version <package-version>] --framework <net6.0|net8.0|net10.0> --runtime <rid> [--app <name>]\n' +
+      '  zx run-tests.mjs [--version <package-version>] --framework <net6.0|net8.0|net10.0> --runtime <rid>\n' +
       '  zx run-tests.mjs [--version <package-version>] --framework <net472|net481> --platform <x64|x86|AnyCPU>');
 
   if (!version)
@@ -58,7 +58,6 @@ async function main() {
   else if (!await fs.pathExists(`${packageFeed}/QuestPDF.${version}.nupkg`))
     throw new Error(`QuestPDF ${version} was not found in ${packageFeed}. Omit --version to pack the library automatically.`);
 
-  // Intermediates left by a previous run with a different target framework can poison the restore.
   const projects = [...Object.values(apps).map(app => app.project), 'QuestPDF.PackageTests.Shared'];
 
   for (const project of projects)
@@ -96,13 +95,6 @@ async function packLibrary() {
   // A unique version prevents NuGet from silently reusing a previously cached package.
   const packVersion = `${baseVersion}-local.${new Date().toISOString().replaceAll(/\D/g, '').slice(0, 14)}`;
 
-  // Previous local packages are no longer reachable and would only grow the caches.
-  const cachedPackages = `${process.env.NUGET_PACKAGES ?? `${os.homedir()}/.nuget/packages`}/questpdf`;
-
-  for (const cached of await fs.readdir(cachedPackages).catch(() => []))
-    if (cached.includes('-local.'))
-      await fs.remove(`${cachedPackages}/${cached}`);
-
   await fs.remove(packageFeed);
 
   console.log(chalk.blue(`Packing QuestPDF ${packVersion}`));
@@ -117,13 +109,6 @@ function selectApps() {
 
   const available = Object.keys(apps).filter(name => name !== 'netframework');
 
-  if (appFilter) {
-    if (!available.includes(appFilter))
-      throw new Error(`Unknown app: ${appFilter}. Expected one of: ${available.join(', ')}.`);
-
-    return [appFilter];
-  }
-
   // Native AOT is not available for net6.0 apps or the win-x86 runtime.
   const supportsAot = framework !== 'net6.0' && runtime !== 'win-x86';
   return available.filter(name => name !== 'aot' || supportsAot);
@@ -132,9 +117,7 @@ function selectApps() {
 async function runApp(name) {
   const binDirectory = isNetFramework ? await buildNetFrameworkApp(name) : await publishApp(name);
   const executable = `${binDirectory}/${apps[name].project}${isWindows ? '.exe' : ''}`;
-
-  // Apps read resources from and write documents to their working directory,
-  // so they must run from the directory that contains the executable.
+  
   if (name === 'webapi')
     await runWebApiApp(executable);
   else
@@ -255,17 +238,27 @@ async function validateDocuments(outputDirectory) {
 }
 
 async function validatePdf(filePath) {
-  const buffer = await readDocument(filePath, '%PDF-');
+  const buffer = await readDocument(filePath);
+  validateHeader(buffer, '%PDF-');
 
   if (!buffer.subarray(-2048).includes('%%EOF'))
     throw new Error(`PDF EOF marker was not found: ${filePath}`);
+
+  console.log(chalk.green(`Validated ${filePath} (${buffer.length} bytes)`));
 }
 
 async function validateXps(filePath) {
-  await readDocument(filePath, 'PK\x03\x04');
+  const buffer = await readDocument(filePath);
+  validateHeader(buffer, 'PK\x03\x04');
+  console.log(chalk.green(`Validated ${filePath} (${buffer.length} bytes)`));
 }
 
-async function readDocument(filePath, expectedHeader) {
+function validateHeader(buffer, expectedHeader) {
+  if (!hasHeader(buffer, expectedHeader))
+    throw new Error(`Output file has an invalid header: ${filePath}`);
+}
+
+async function readDocument(filePath) {
   if (!await fs.pathExists(filePath))
     throw new Error(`Expected output file was not created: ${filePath}`);
 
@@ -273,11 +266,7 @@ async function readDocument(filePath, expectedHeader) {
 
   if (buffer.length < 1024)
     throw new Error(`Output file is suspiciously small: ${filePath} (${buffer.length} bytes).`);
-
-  if (!hasHeader(buffer, expectedHeader))
-    throw new Error(`Output file has an invalid header: ${filePath}`);
-
-  console.log(chalk.green(`Validated ${filePath} (${buffer.length} bytes)`));
+  
   return buffer;
 }
 
