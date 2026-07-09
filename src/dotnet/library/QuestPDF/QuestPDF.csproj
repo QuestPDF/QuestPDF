@@ -50,7 +50,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="../../LICENSE.md" Pack="true" PackagePath="" Visible="false" />
+        <None Include="../../../../LICENSE.md" Pack="true" PackagePath="" Visible="false" />
         
         <None Include="Resources\**\*.*">
             <Pack>true</Pack>
