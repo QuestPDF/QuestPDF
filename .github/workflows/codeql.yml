@@ -23,7 +23,7 @@ jobs:
         - language: actions
           build-mode: none
         - language: csharp
-          build-mode: none
+          build-mode: manual
 
     steps:
     - name: Checkout repository
@@ -36,7 +36,7 @@ jobs:
         build-mode: ${{ matrix.build-mode }}
         
     - name: Run manual build steps
-      if: matrix.language == 'csharp'
+      if: matrix.build-mode == 'manual'
       shell: bash
       run: dotnet build src/dotnet/QuestPDF/QuestPDF.csproj --configuration Release
 
