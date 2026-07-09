@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="QuestPDF.PackageTests.AOT\QuestPDF.PackageTests.AOT.csproj" />
+  <Project Path="QuestPDF.PackageTests.Console/QuestPDF.PackageTests.Console.csproj" />
+  <Project Path="QuestPDF.PackageTests.NetFramework/QuestPDF.PackageTests.NetFramework.csproj" />
+  <Project Path="QuestPDF.PackageTests.Shared/QuestPDF.PackageTests.Shared.csproj" />
+  <Project Path="QuestPDF.PackageTests.SingleFile/QuestPDF.PackageTests.SingleFile.csproj" />
+  <Project Path="QuestPDF.PackageTests.WebAPI/QuestPDF.PackageTests.WebAPI.csproj" />
+  <Project Path="QuestPDF.PackageTests.Worker/QuestPDF.PackageTests.Worker.csproj" />
+</Solution>

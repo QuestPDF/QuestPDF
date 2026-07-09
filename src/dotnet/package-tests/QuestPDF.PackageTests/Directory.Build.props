@@ -1,0 +1,7 @@
+<Project>
+    <PropertyGroup>
+        <QuestPDFIntegrationTargetFramework Condition="'$(QuestPDFIntegrationTargetFramework)' == ''">net10.0</QuestPDFIntegrationTargetFramework>
+        <QuestPDFIntegrationVersion Condition="'$(QuestPDFIntegrationVersion)' == ''">2026.7.0</QuestPDFIntegrationVersion>
+        <MicrosoftExtensionsVersion Condition="'$(MicrosoftExtensionsVersion)' == ''">10.0.0</MicrosoftExtensionsVersion>
+    </PropertyGroup>
+</Project>

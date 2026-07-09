@@ -1,0 +1,1 @@
+﻿QuestPDF.PackageTests.Shared.TestRunner.Run();
