@@ -38,7 +38,9 @@ jobs:
     - name: Run manual build steps
       if: matrix.build-mode == 'manual'
       shell: bash
-      run: dotnet build src/dotnet/QuestPDF/QuestPDF.csproj --configuration Release
+      run: |
+        dotnet build src/dotnet/library/QuestPDF.slnx --configuration Release
+        dotnet build src/dotnet/package-tests/QuestPDF.PackageTests.slnx --configuration Release
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
