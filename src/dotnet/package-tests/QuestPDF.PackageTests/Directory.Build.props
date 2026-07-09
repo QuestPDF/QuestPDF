@@ -1,7 +1,11 @@
 <Project>
     <PropertyGroup>
+        <LangVersion>latest</LangVersion>
         <QuestPDFIntegrationTargetFramework Condition="'$(QuestPDFIntegrationTargetFramework)' == ''">net10.0</QuestPDFIntegrationTargetFramework>
         <QuestPDFIntegrationVersion Condition="'$(QuestPDFIntegrationVersion)' == ''">2026.7.0</QuestPDFIntegrationVersion>
+        <!-- Matches the Microsoft.Extensions.* generation that real applications use on each target framework. -->
+        <MicrosoftExtensionsVersion Condition="'$(MicrosoftExtensionsVersion)' == '' and '$(QuestPDFIntegrationTargetFramework)' == 'net6.0'">6.0.1</MicrosoftExtensionsVersion>
+        <MicrosoftExtensionsVersion Condition="'$(MicrosoftExtensionsVersion)' == '' and '$(QuestPDFIntegrationTargetFramework)' == 'net8.0'">8.0.1</MicrosoftExtensionsVersion>
         <MicrosoftExtensionsVersion Condition="'$(MicrosoftExtensionsVersion)' == ''">10.0.0</MicrosoftExtensionsVersion>
     </PropertyGroup>
 </Project>

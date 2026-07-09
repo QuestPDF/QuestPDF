@@ -5,7 +5,6 @@
         <TargetFramework>$(QuestPDFNetFrameworkTargetFramework)</TargetFramework>
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

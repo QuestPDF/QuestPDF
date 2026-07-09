@@ -1,0 +1,210 @@
+name: Package Tests
+
+permissions:
+  actions: write
+  contents: read
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
+
+jobs:
+  pack:
+    name: Pack QuestPDF
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    outputs:
+      package-version: ${{ steps.version.outputs.package-version }}
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Create package version
+        id: version
+        run: |
+          base_version="$(grep -m1 '<Version>' src/dotnet/library/QuestPDF/QuestPDF.csproj | sed -E 's/.*<Version>([^<]+)<.*/\1/')"
+          echo "package-version=${base_version}-ci.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build package
+        working-directory: src/dotnet/library
+        run: |
+          dotnet build QuestPDF/QuestPDF.csproj \
+            --configuration Release \
+            -p:BUILD_PACKAGE=true \
+            -p:Version="${{ steps.version.outputs.package-version }}" \
+            -p:PackageOutputPath="$GITHUB_WORKSPACE/artifacts/nupkg" \
+            -p:WarningLevel=0
+
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: questpdf-package
+          path: artifacts/nupkg/*.nupkg
+
+  dotnet:
+    name: ${{ matrix.runtime.name }} + ${{ matrix.framework }}
+    needs: pack
+    runs-on: ${{ matrix.runtime.runs-on }}
+    container: ${{ matrix.runtime.container }}
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime:
+          - name: win-x64
+            runs-on: windows-latest
+          - name: win-x86
+            runs-on: windows-latest
+          - name: win-arm64
+            runs-on: windows-11-arm
+          - name: linux-x64
+            runs-on: ubuntu-latest
+            container: ubuntu:24.04
+          - name: linux-arm64
+            runs-on: ubuntu-24.04-arm
+            container: ubuntu:24.04
+          - name: linux-musl-x64
+            runs-on: ubuntu-latest
+            container: alpine:3.22
+          - name: osx-x64
+            runs-on: macos-26-intel
+          - name: osx-arm64
+            runs-on: macos-latest
+        framework: [ 'net6.0', 'net8.0', 'net10.0' ]
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Install Ubuntu prerequisites
+        if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
+        shell: bash
+        run: |
+          apt update --yes
+          apt install --yes bash curl ca-certificates clang zlib1g-dev nodejs npm
+
+      - name: Install Alpine prerequisites
+        if: matrix.runtime.name == 'linux-musl-x64'
+        shell: sh
+        run: |
+          apk update
+          apk add bash curl ca-certificates clang build-base zlib-dev libstdc++ libgcc tar gzip nodejs npm
+
+      # The test apps use modern C#, so they are always built with the latest SDK.
+      # The matrix framework only needs its ASP.NET Core runtime to execute the framework-dependent apps.
+      # setup-dotnet cannot install non-default architectures (win-x86) or target musl containers,
+      # so this matrix uses the official install scripts everywhere for consistency.
+      - name: Setup .NET (Windows)
+        if: startsWith(matrix.runtime.name, 'win-')
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.runtime.name }}".Replace("win-", "")
+          $script = "$env:RUNNER_TEMP\dotnet-install.ps1"
+          $installDir = "$env:RUNNER_TEMP\dotnet"
+          Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile $script
+          & $script -Channel 10.0 -Architecture $arch -InstallDir $installDir
+          & $script -Channel "${{ matrix.framework }}".Replace("net", "") -Runtime aspnetcore -Architecture $arch -InstallDir $installDir
+          Add-Content -Path $env:GITHUB_PATH -Value $installDir
+          Add-Content -Path $env:GITHUB_ENV -Value "DOTNET_ROOT=$installDir"
+
+      - name: Setup .NET (Unix)
+        if: startsWith(matrix.runtime.name, 'win-') == false
+        shell: bash
+        run: |
+          curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
+          bash /tmp/dotnet-install.sh --channel 10.0 --install-dir "$HOME/.dotnet"
+          bash /tmp/dotnet-install.sh --channel "$(echo '${{ matrix.framework }}' | sed 's/net//')" --runtime aspnetcore --install-dir "$HOME/.dotnet"
+          echo "$HOME/.dotnet" >> "$GITHUB_PATH"
+          echo "DOTNET_ROOT=$HOME/.dotnet" >> "$GITHUB_ENV"
+
+      - name: Install zx
+        shell: bash
+        run: npm install --global zx@8
+
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          name: questpdf-package
+          path: artifacts/nupkg
+
+      - name: Run package tests
+        shell: bash
+        run: zx src/dotnet/package-tests/QuestPDF.PackageTests/run-tests.mjs --version "${{ needs.pack.outputs.package-version }}" --framework "${{ matrix.framework }}" --runtime "${{ matrix.runtime.name }}"
+
+      - name: Upload test output
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: out-${{ matrix.runtime.name }}-${{ matrix.framework }}
+          path: artifacts/test-output/**
+
+  netframework:
+    name: win-${{ matrix.platform-target }} + ${{ matrix.framework }}
+    needs: pack
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        framework: [ 'net472', 'net481' ]
+        platform-target: [ 'x64', 'x86', 'AnyCPU' ]
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install zx
+        shell: bash
+        run: npm install --global zx@8
+
+      - name: Download package
+        uses: actions/download-artifact@v4
+        with:
+          name: questpdf-package
+          path: artifacts/nupkg
+
+      - name: Run package tests
+        shell: bash
+        run: zx src/dotnet/package-tests/QuestPDF.PackageTests/run-tests.mjs --version "${{ needs.pack.outputs.package-version }}" --framework "${{ matrix.framework }}" --platform "${{ matrix.platform-target }}"
+
+      - name: Upload test output
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: out-netframework-${{ matrix.framework }}-${{ matrix.platform-target }}
+          path: artifacts/test-output/**
+
+  merge-output-artifacts:
+    name: Merge test output artifacts
+    needs: [ dotnet, netframework ]
+    runs-on: ubuntu-latest
+    if: always()
+    timeout-minutes: 10
+
+    steps:
+      - name: Merge test output artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: questpdf-package-tests-output
+          pattern: out-*
+          separate-directories: true
+          delete-merged: true

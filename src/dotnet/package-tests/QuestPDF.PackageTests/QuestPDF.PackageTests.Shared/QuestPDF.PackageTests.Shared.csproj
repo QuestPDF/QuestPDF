@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <TargetFrameworks>netstandard2.0;$(QuestPDFIntegrationTargetFramework)</TargetFrameworks>
-        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>

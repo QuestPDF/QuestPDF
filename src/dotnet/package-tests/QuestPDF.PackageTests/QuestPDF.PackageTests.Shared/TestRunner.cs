@@ -36,7 +36,7 @@ public static class TestRunner
             .Save(qpdfOutput);
         
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            CreateMainDocument().GeneratePdf(skiaXpsOutput);
+            CreateMainDocument().GenerateXps(skiaXpsOutput);
     }
 
     private static IDocument CreateMainDocument()
