@@ -1,4 +1,4 @@
-name: Package Tests
+name: Dotnet Package Tests
 
 permissions:
   actions: write
@@ -103,10 +103,6 @@ jobs:
           apk update
           apk add bash curl ca-certificates clang build-base zlib-dev libstdc++ libgcc tar gzip nodejs npm
 
-      # The test apps use modern C#, so they are always built with the latest SDK.
-      # The matrix framework only needs its ASP.NET Core runtime to execute the framework-dependent apps.
-      # setup-dotnet cannot install non-default architectures (win-x86) or target musl containers,
-      # so this matrix uses the official install scripts everywhere for consistency.
       - name: Setup .NET (Windows)
         if: startsWith(matrix.runtime.name, 'win-')
         shell: pwsh
