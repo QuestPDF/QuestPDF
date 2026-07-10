@@ -2,6 +2,7 @@
   <Folder Name="/Configuration/">
     <File Path=".editorconfig" />
   </Folder>
+  <Project Path="QuestPDF.Benchmarks/QuestPDF.Benchmarks.csproj" />
   <Project Path="QuestPDF.Companion.TestRunner/QuestPDF.Companion.TestRunner.csproj" />
   <Project Path="QuestPDF.ConformanceTests/QuestPDF.ConformanceTests.csproj" />
   <Project Path="QuestPDF.DocumentationExamples/QuestPDF.DocumentationExamples.csproj" />

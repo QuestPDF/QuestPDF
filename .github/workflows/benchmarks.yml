@@ -1,0 +1,130 @@
+name: Performance Benchmarks
+
+permissions: {}
+
+on:
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    name: benchmark-${{ matrix.runtime.name }}
+    runs-on: ${{ matrix.runtime.runs-on }}
+    container: ${{ matrix.runtime.container }}
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime:
+        - name: win-x64
+          runs-on: windows-latest
+        - name: win-x86
+          runs-on: windows-latest
+        - name: win-arm64
+          runs-on: windows-11-arm
+        - name: linux-x64
+          runs-on: ubuntu-latest
+          container: ubuntu:24.04
+        - name: linux-arm64
+          runs-on: ubuntu-24.04-arm
+          container: ubuntu:24.04
+        - name: linux-musl-x64
+          runs-on: ubuntu-latest
+          container: alpine:3.22
+        - name: osx-x64
+          runs-on: macos-26-intel
+        - name: osx-arm64
+          runs-on: macos-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+
+      - name: Install Build Tools (Linux)
+        if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
+        shell: sh
+        run: |
+          apt update --yes
+          apt upgrade --yes
+
+          # required by actions/setup-dotnet and the dotnet-install script
+          apt install bash wget curl --yes
+
+
+      - name: Install Build Tools (Alpine)
+        if: matrix.runtime.name == 'linux-musl-x64'
+        shell: sh
+        run: |
+          apk update
+          apk upgrade
+
+          # required by the dotnet-install script
+          apk add bash wget curl
+
+          # required by dotnet build command
+          apk add libstdc++ libgcc
+
+
+      - name: Setup .NET (Windows)
+        if: startsWith(matrix.runtime.name, 'win-')
+        shell: pwsh
+        run: |
+          $arch = "${{ matrix.runtime.name }}".Replace("win-", "")
+
+          $script = "$env:RUNNER_TEMP\dotnet-install.ps1"
+          $installDir = "$env:RUNNER_TEMP\dotnet-$arch"
+
+          Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile $script
+          & $script -Channel 10.0 -Architecture $arch -InstallDir $installDir
+          & $script -Channel 8.0 -Runtime dotnet -Architecture $arch -InstallDir $installDir
+          & $script -Channel 6.0 -Runtime dotnet -Architecture $arch -InstallDir $installDir
+
+          Add-Content -Path $env:GITHUB_PATH -Value $installDir
+          Add-Content -Path $env:GITHUB_ENV -Value "DOTNET_ROOT=$installDir"
+
+
+      - name: Setup .NET (Unix)
+        if: startsWith(matrix.runtime.name, 'win-') == false
+        shell: bash
+        run: |
+          curl -sSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
+          INSTALL_DIR="$HOME/.dotnet"
+
+          bash /tmp/dotnet-install.sh --channel 10.0 --install-dir "$INSTALL_DIR"
+          bash /tmp/dotnet-install.sh --channel 8.0 --runtime dotnet --install-dir "$INSTALL_DIR"
+          bash /tmp/dotnet-install.sh --channel 6.0 --runtime dotnet --install-dir "$INSTALL_DIR"
+
+          echo "$INSTALL_DIR" >> $GITHUB_PATH
+          echo "DOTNET_ROOT=$INSTALL_DIR" >> $GITHUB_ENV
+
+
+      - name: Run benchmarks
+        shell: bash
+        working-directory: ./src/dotnet/library
+        env:
+          DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
+        run: |
+          dotnet run --project QuestPDF.Benchmarks --configuration Release --framework net10.0
+
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: questpdf-benchmark-results-${{ matrix.runtime.name }}
+          path: |
+            **/BenchmarkDotNet.Artifacts/results/**
+
+
+  merge:
+    runs-on: ubuntu-latest
+    needs: benchmark
+    if: always()
+    steps:
+      - name: Merge Artifacts
+        uses: actions/upload-artifact/merge@v4
+        with:
+          name: questpdf-benchmark-results
+          pattern: questpdf-benchmark-results-*
+          delete-merged: true

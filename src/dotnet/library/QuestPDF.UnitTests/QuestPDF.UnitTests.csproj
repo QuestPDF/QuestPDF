@@ -24,18 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="Resources\FontContent.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
-      <EmbeddedResource Include="Resources\FontEmbeddedResource.ttf">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-    </ItemGroup>
-
-    <ItemGroup>
-      <None Update="Resources\photo.jpg">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+        <Content Include="Resources\**\**" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>
