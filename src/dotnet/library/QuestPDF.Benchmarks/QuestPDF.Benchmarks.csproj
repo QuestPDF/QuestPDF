@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFrameworks>net10.0;net8.0;net6.0</TargetFrameworks>
+        <LangVersion>13</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+        <PackageReference Include="SkiaSharp" Version="3.119.4" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\QuestPDF\QuestPDF.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Resources\**\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+</Project>

@@ -22,6 +22,7 @@ bld/
 [Bb]in/
 [Oo]bj/
 artifacts/
+BenchmarkDotNet.Artifacts/
 
 # Visual Studio 2015 cache/options directory
 .vs/
