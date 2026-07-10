@@ -114,7 +114,7 @@ jobs:
         run: |
           staging="benchmark-results-staging/${{ matrix.runtime.name }}"
           mkdir -p "$staging"
-          cp -r "src/dotnet/library/QuestPDF.Benchmarks/BenchmarkDotNet.Artifacts/results" "$staging/"
+          cp -r "src/dotnet/library/BenchmarkDotNet.Artifacts/results" "$staging/"
 
 
       - name: Upload benchmark results
