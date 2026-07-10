@@ -24,7 +24,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Resources\**\**" CopyToOutputDirectory="PreserveNewest" />
+      <None Remove="Resources\FontEmbeddedResource.ttf" />
+      <EmbeddedResource Include="Resources\FontEmbeddedResource.ttf" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="Resources\**\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 </Project>

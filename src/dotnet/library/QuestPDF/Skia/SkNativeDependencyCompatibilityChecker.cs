@@ -24,7 +24,7 @@ internal static class SkNativeDependencyCompatibilityChecker
     {
         try
         {
-            return API.questpdf_skia_get_questpdf_version() == ExpectedNativeLibraryVersion;
+            return API.questpdf_skia_get_compatibility_version() == ExpectedNativeLibraryVersion;
         }
         catch
         {
@@ -34,12 +34,12 @@ internal static class SkNativeDependencyCompatibilityChecker
     
     private static void ExecuteNativeCode()
     {
-        API.questpdf_skia_get_questpdf_version();
+        API.questpdf_skia_get_compatibility_version();
     }
     
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int questpdf_skia_get_questpdf_version();
+        public static extern int questpdf_skia_get_compatibility_version();
     }
 }
