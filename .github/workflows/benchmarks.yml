@@ -122,7 +122,7 @@ jobs:
         if: always()
         with:
           name: questpdf-benchmark-results-${{ matrix.runtime.name }}
-          path: benchmark-results-staging/${{ matrix.runtime.name }}/**
+          path: benchmark-results-staging/**
 
 
   merge:
