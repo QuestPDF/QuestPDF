@@ -21,35 +21,11 @@ public class DocumentCompressionTests
                 page.Size(PageSizes.A4);
                 
                 page.Content()
-                    .Table(table =>
+                    .Column(column =>
                     {
-                        table.ColumnsDefinition(columns =>
+                        foreach (var i in Enumerable.Range(0, 10))
                         {
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.ConstantColumn(100);
-                        });
-
-                        foreach (var y in Enumerable.Range(1, 1000))
-                        {
-                            foreach (var x in Enumerable.Range(1, 4))
-                            {
-                                table
-                                    .Cell()
-                                    .Padding(5)
-                                    .Border(1)
-                                    .Background(Placeholders.BackgroundColor())
-                                    .Padding(5)
-                                    .Text($"f({y}, {x}) = '{Placeholders.Sentence()}'");
-                            }
-                        
-                            table
-                                .Cell()
-                                .Padding(5)
-                                .AspectRatio(2f)
-                                .Image(Placeholders.Image);
+                            column.Item().Text($"{i}: {Placeholders.LoremIpsum()}");
                         }
                     });
             });
@@ -62,7 +38,7 @@ public class DocumentCompressionTests
         var withCompression = MeasureDocumentSizeAndGenerationTime(true);
         
         var sizeRatio = withoutCompression.documentSize / (float)withCompression.documentSize;
-        Assert.That(sizeRatio, Is.GreaterThan(4));
+        Assert.That(sizeRatio, Is.GreaterThan(5));
 
         var generationTimeRatio = withCompression.generationTime / (float)withoutCompression.generationTime;
         Assert.That(generationTimeRatio, Is.LessThan(2));

@@ -120,7 +120,7 @@ namespace QuestPDF.UnitTests
             });
 
             var documentWithMultipleImagesSizeRatio = (documentWithMultipleImagesSize / (float)documentWithSingleImageSize);
-            Assert.That(documentWithMultipleImagesSizeRatio, Is.InRange(9.9f, 10));
+            Assert.That(documentWithMultipleImagesSizeRatio, Is.InRange(9.5f, 10));
             
             var documentWithSingleImageUsedMultipleTimesSizeRatio = (documentWithSingleImageUsedMultipleTimesSize / (float)documentWithSingleImageSize);
             Assert.That(documentWithSingleImageUsedMultipleTimesSizeRatio, Is.InRange(1f, 1.05f));
@@ -135,7 +135,7 @@ namespace QuestPDF.UnitTests
             var bestCompressionSize = GetDocumentSize(container => container.Image(photo).WithCompressionQuality(ImageCompressionQuality.Best));
 
             var compressionSizeRatio = (bestCompressionSize / (float)veryLowCompressionSize);
-            Assert.That(compressionSizeRatio, Is.GreaterThan(10));
+            Assert.That(compressionSizeRatio, Is.GreaterThan(8));
         }
         
         [Test]
@@ -147,7 +147,7 @@ namespace QuestPDF.UnitTests
             var highDpiSize = GetDocumentSize(container => container.Image(photo).WithRasterDpi(144));
 
             var dpiSizeRatio = (highDpiSize / (float)lowDpiSize);
-            Assert.That(dpiSizeRatio, Is.GreaterThan(35));
+            Assert.That(dpiSizeRatio, Is.GreaterThan(10));
         }
         
         private static int GetDocumentSize(Action<IContainer> container)

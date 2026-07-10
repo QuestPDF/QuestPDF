@@ -43,9 +43,9 @@ namespace QuestPDF.UnitTests
         
         public static GeneratedImageResolutionCorrespondsToTargetDpi_TestCaseItem[] GeneratedImageResolutionCorrespondsToTargetDpi_TestCases =
         {
-            new(new PageSize(150, 250), 72, new ImageSize(150, 250)),
-            new(new PageSize(200, 300), 144, new ImageSize(400, 600)),
-            new(new PageSize(250, 350), 360, new ImageSize(1250, 1750)),
+            new(new PageSize(150, 250), 36, new ImageSize(75, 125)),
+            new(new PageSize(200, 300), 72, new ImageSize(200, 300)),
+            new(new PageSize(250, 350), 108, new ImageSize(375, 525)),
         };
 
 
@@ -71,7 +71,12 @@ namespace QuestPDF.UnitTests
             int CheckImageSize(ImageCompressionQuality quality)
             {
                 var images = document
-                    .GenerateImages(new ImageGenerationSettings() { ImageFormat = ImageFormat.Jpeg, ImageCompressionQuality = quality })
+                    .GenerateImages(new ImageGenerationSettings()
+                    {
+                        ImageFormat = ImageFormat.Jpeg, 
+                        ImageCompressionQuality = quality,
+                        RasterDpi = 72
+                    })
                     .ToList();
                 
                 Assert.That(images, Has.Exactly(1).Items);
@@ -94,10 +99,15 @@ namespace QuestPDF.UnitTests
                 {
                     document.Page(page =>
                     {
+                        page.Size(100, 100);
                         page.Content().Padding(25).AspectRatio(2).Background(Colors.Red.Medium);
                     });
                 })
-                .GenerateImages(new ImageGenerationSettings() { ImageFormat = imageFormat })
+                .GenerateImages(new ImageGenerationSettings()
+                {
+                    ImageFormat = imageFormat, 
+                    RasterDpi = 72
+                })
                 .ToList();
             
             Assert.That(images, Has.Exactly(1).Items);
