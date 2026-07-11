@@ -1,4 +1,14 @@
-- Updated licensing terms and conditions to version 3.0, including the removal of the developer seat limit for all paid licenses (details: https://www.questpdf.com/pricing).
-- Added full support for .NET Native AOT and trimming.
-- Added and improved warning messages related to library configuration.
-- Fixed a rare rendering issue where the footer was placed incorrectly when the page content was empty.
+## Improved performance
+
+PDF generation is now significantly faster. The Skia native dependency has been recompiled with speed-oriented optimizations (favoring performance over binary size) and with SIMD instructions enabled.
+
+The impact depends on document content and platform. For example, generating image-heavy documents that require image rescaling can be several times faster on Windows x64.
+
+Note: this change slightly increases the size of the native dependency.
+
+
+## Continuous performance monitoring
+
+We have also built a solid foundation for measuring library performance going forward. A new GitHub Actions workflow benchmarks QuestPDF across all supported operating systems, processor architectures, and .NET releases.
+
+This infrastructure helps us ensure that performance remains stable and consistent across all platforms, and allows us to detect regressions early — before they ever reach a release.
