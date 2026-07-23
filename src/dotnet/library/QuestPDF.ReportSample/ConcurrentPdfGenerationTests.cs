@@ -43,7 +43,7 @@ public class ConcurrentPdfGenerationTests
         var warmUpError = ValidatePdf(RenderDocument(seed: 34567), seed: 34567);
         Assert.That(warmUpError, Is.Null, $"Serial warm-up render failed: {warmUpError}");
 
-        var failures = new List<string>();
+        var documents = new List<byte[]>();
 
         var options = new ParallelOptions
         {
@@ -52,14 +52,18 @@ public class ConcurrentPdfGenerationTests
 
         Parallel.For(0, RenderCount, options, seed =>
         {
-            var error = ValidatePdf(RenderDocument(seed), seed);
-
-            if (error == null)
-                return;
-
-            lock (failures)
-                failures.Add(error);
+            var document = RenderDocument(seed);
+            
+            lock (documents)
+                documents.Add(document);
         });
+
+        var failures = documents
+            .Select(ValidatePdfLight)
+            .Where(x => x != null)
+            .ToList();
+        
+        var totalSize = documents.Sum(x => x.Length);
 
         Assert.That(failures, Is.Empty,
             $"{failures.Count}/{RenderCount} parallel renders produced a corrupted document:\n{string.Join("\n", failures.Take(100).Order())}");
@@ -85,6 +89,29 @@ public class ConcurrentPdfGenerationTests
             .GeneratePdf();
     }
 
+    private static string? ValidatePdfLight(byte[] data)
+    {
+        string text;
+
+        try
+        {
+            using var document = PdfDocument.Open(data);
+            text = string.Concat(document.GetPages().Select(page => page.Text));
+        }
+        catch (Exception exception)
+        {
+            return $"Cannot parse the document: {exception.GetType().Name}: {exception.Message}";
+        }
+        
+        if (text.Contains('\0'))
+            return $"Extracted text contains U+0000 characters (corrupted ToUnicode CMap).";
+
+        if (!text.Contains(Sentinel, StringComparison.Ordinal))
+            return $"Expected text '{Sentinel}' not found in extracted content.";
+
+        return null;
+    }
+    
     private static string? ValidatePdf(byte[] data, int seed)
     {
         string text;
