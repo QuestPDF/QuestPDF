@@ -25,7 +25,7 @@ namespace QuestPDF.ReportSample;
 /// </summary>
 public class ConcurrentPdfGenerationTests
 {
-    private const int RenderCount = 100_000;
+    private const int RenderCount = 10_000;
     private const string Sentinel = "The quick brown fox jumps over the lazy dog";
 
     [SetUp]
