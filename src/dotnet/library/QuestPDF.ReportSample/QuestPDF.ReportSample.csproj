@@ -14,6 +14,7 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
         <PackageReference Include="SkiaSharp" Version="3.119.4" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
+        <PackageReference Include="PdfPig" Version="0.1.9" />
     </ItemGroup>
 
     <ItemGroup>
