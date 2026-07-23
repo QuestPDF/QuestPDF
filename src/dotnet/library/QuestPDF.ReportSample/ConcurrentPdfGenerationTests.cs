@@ -91,8 +91,7 @@ public class ConcurrentPdfGenerationTests
 
         try
         {
-            using var stream = new MemoryStream(data);
-            using var document = PdfDocument.Open(stream);
+            using var document = PdfDocument.Open(data);
             text = string.Concat(document.GetPages().Select(page => page.Text));
         }
         catch (Exception exception)
