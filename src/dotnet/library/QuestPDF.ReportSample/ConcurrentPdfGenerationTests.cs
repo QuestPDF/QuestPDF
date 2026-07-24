@@ -59,8 +59,8 @@ public class ConcurrentPdfGenerationTests
         });
 
         var failures = documents
-            .Select(ValidatePdfLight)
-            .Where(x => x != null)
+            .Where(x => ValidatePdfLight(x) != null)
+            .Take(10)
             .ToList();
         
         var totalSize = documents.Sum(x => x.Length);
