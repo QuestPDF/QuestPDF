@@ -35,7 +35,8 @@ namespace QuestPDF.Elements
             container
                 .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Page.ToString())
                 .ContentDirection(ContentDirection)
-                .DefaultTextStyle(DefaultTextStyle.DisableFontFeature(FontFeatures.StandardLigatures))
+                .DefaultTextStyle(TextStyle.Default.DisableFontFeature(FontFeatures.StandardLigatures))
+                .DefaultTextStyle(DefaultTextStyle)
                 .Layers(layers =>
                 {
                     layers.Layer()
