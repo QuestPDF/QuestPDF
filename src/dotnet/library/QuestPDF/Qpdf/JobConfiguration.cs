@@ -71,9 +71,9 @@ sealed class JobConfiguration
     public sealed class Encryption40Bit
     {
         [Name("annotate")] public string Annotate { get; set; }
-        [Name("extract")] public string Extract { get; set; } 
-        [Name("modify")] public string Modify { get; set; }
-        [Name("print")] public string Print { get; set; }
+        [Name("extract")] public string Extract { get; set; }
+        [Name("modify")] public string? Modify { get; set; }
+        [Name("print")] public string? Print { get; set; }
     }
 
     public sealed class Encryption128Bit

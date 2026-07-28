@@ -419,8 +419,8 @@ public sealed class DocumentOperation
             {
                 Annotate = FormatBooleanFlag(encryption.AllowAnnotation),
                 Extract = FormatBooleanFlag(encryption.AllowContentExtraction),
-                Modify = encryption.AllowModification ? "all" : "none",
-                Print = encryption.AllowPrinting ? "full" : "none",
+                Modify = encryption.AllowModification ? null : "none",
+                Print = encryption.AllowPrinting ? null : "none",
             }
         };
         
