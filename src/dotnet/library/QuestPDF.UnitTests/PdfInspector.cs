@@ -31,7 +31,7 @@ internal sealed class PdfInspector : IDisposable
         Document.Dispose();
     }
 
-    public static PdfInspector Load(byte[] pdfData)
+    public static PdfInspector Load(byte[] pdfData, string? password = null)
     {
         var inputPath = Path.Combine(Path.GetTempPath(), $"questpdf-inspector-{Guid.NewGuid():N}.pdf");
         var outputPath = inputPath + ".json";
@@ -40,16 +40,19 @@ internal sealed class PdfInspector : IDisposable
         {
             File.WriteAllBytes(inputPath, pdfData);
 
-            var job = JsonSerializer.Serialize(new Dictionary<string, string>
+            var job = new Dictionary<string, string>
             {
                 ["inputFile"] = inputPath,
                 ["outputFile"] = outputPath,
                 ["json"] = "latest",
                 ["jsonStreamData"] = "inline",
                 ["decodeLevel"] = "generalized"
-            });
+            };
 
-            QpdfAPI.ExecuteJob(job);
+            if (password != null)
+                job["password"] = password;
+
+            QpdfAPI.ExecuteJob(JsonSerializer.Serialize(job));
 
             return new PdfInspector(JsonDocument.Parse(File.ReadAllBytes(outputPath)));
         }
@@ -65,6 +68,9 @@ internal sealed class PdfInspector : IDisposable
 
     /// <summary>All indirect objects, keyed by "obj:N M R".</summary>
     private JsonElement Objects => Root.GetProperty("qpdf")[1];
+
+    /// <summary>The trailer dictionary of the document.</summary>
+    public JsonElement Trailer => Objects.GetProperty("trailer").GetProperty("value");
 
     /// <summary>Page dictionaries, in document order.</summary>
     public IEnumerable<JsonElement> Pages => Root
