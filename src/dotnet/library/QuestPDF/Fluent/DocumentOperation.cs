@@ -413,7 +413,7 @@ public sealed class DocumentOperation
         
         Configuration.Encrypt = new JobConfiguration.EncryptionSettings
         {
-            UserPassword = encryption.UserPassword,
+            UserPassword = encryption.UserPassword ?? string.Empty,
             OwnerPassword = encryption.OwnerPassword,
             Options40Bit = new JobConfiguration.Encryption40Bit
             {
@@ -437,7 +437,7 @@ public sealed class DocumentOperation
         
         Configuration.Encrypt = new JobConfiguration.EncryptionSettings
         {
-            UserPassword = encryption.UserPassword,
+            UserPassword = encryption.UserPassword ?? string.Empty,
             OwnerPassword = encryption.OwnerPassword,
             Options128Bit = new JobConfiguration.Encryption128Bit
             {
@@ -464,7 +464,7 @@ public sealed class DocumentOperation
         
         Configuration.Encrypt = new JobConfiguration.EncryptionSettings
         {
-            UserPassword = encryption.UserPassword,
+            UserPassword = encryption.UserPassword ?? string.Empty,
             OwnerPassword = encryption.OwnerPassword,
             Options256Bit = new JobConfiguration.Encryption256Bit
             {
