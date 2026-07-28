@@ -713,8 +713,12 @@
 
     <doc for="documentOperation.encryption.allow.modification">
         <summary>
-            Specifies whether the user is permitted to insert, rotate, or delete pages within the document.
+            Specifies whether the user is permitted to modify the document content.
         </summary>
+        <remarks>
+            Corresponds to the "modify contents" permission defined in the PDF specification.
+            It covers general content edits and is independent of the separate annotation, form-filling, and page-assembly permissions.
+        </remarks>
     </doc>
 
     <doc for="documentOperation.encryption.allow.printing">
