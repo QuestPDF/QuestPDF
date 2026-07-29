@@ -1,14 +1,5 @@
-## Improved performance
-
-PDF generation is now significantly faster. The Skia native dependency has been recompiled with speed-oriented optimizations (favoring performance over binary size) and with SIMD instructions enabled.
-
-The impact depends on document content and platform. For example, generating image-heavy documents that require image rescaling can be several times faster on Windows x64.
-
-Note: this change slightly increases the size of the native dependency.
-
-
-## Continuous performance monitoring
-
-We have also built a solid foundation for measuring library performance going forward. A new GitHub Actions workflow benchmarks QuestPDF across all supported operating systems, processor architectures, and .NET releases.
-
-This infrastructure helps us ensure that performance remains stable and consistent across all platforms, and allows us to detect regressions early — before they ever reach a release.
+- Fixed a rare Windows x64 concurrency issue where generated PDF documents appeared correct in viewers, but selected and copied text was corrupted.
+- Improved text rendering representation to resolve rare compatibility issues in certain PDF viewers that could cause incorrect results when selecting or copying text.
+- Improved compatibility for complex glyphs, such as ligatures, by annotating them with the `/ActualText` tag. This improves text selection, copying, extraction, and screen-reader accessibility. Ligatures remain disabled by default.
+- Added support for the `AllowModification` permission in `DocumentOperations` when encrypting PDF documents with 128-bit or 256-bit keys.
+- Added minor fixes and expanded test coverage for the `DocumentOperations` API.
