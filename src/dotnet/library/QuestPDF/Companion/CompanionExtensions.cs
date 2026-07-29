@@ -16,13 +16,13 @@ namespace QuestPDF.Companion
 
         #if NET6_0_OR_GREATER
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.supported"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.support"]/*' />
         public static void ShowInCompanion(this IDocument document, int port = 12500)
         {
             document.ShowInCompanionAsync(port).ConfigureAwait(true).GetAwaiter().GetResult();
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.supported"]/*' />
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.support"]/*' />
         public static async Task ShowInCompanionAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
             Settings.EnableCaching = false;
