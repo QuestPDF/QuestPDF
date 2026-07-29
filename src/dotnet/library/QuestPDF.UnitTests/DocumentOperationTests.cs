@@ -118,6 +118,42 @@ public class DocumentOperationTests
     }
     
     [Test]
+    public void NonAsciiCharactersAreSupported()
+    {
+        const string inputFileName = "Hallå där 🎉.pdf";
+        const string outputFileName = "operation-non-ascii-🎯.pdf";
+        const string userPassword = "zażółć gęślą jaźń";
+        const string ownerPassword = "ελληνικά";
+        const string attachmentFileName = "你好.pdf";
+        const string attachmentKey = "Привет 🔑";
+
+        GenerateSampleDocument(inputFileName, Colors.Red.Medium, 10);
+        GenerateSampleDocument(attachmentFileName, Colors.Red.Medium, 10);
+
+        DocumentOperation
+            .LoadFile(inputFileName)
+            .TakePages("2-5")
+            .Encrypt(new DocumentOperation.Encryption128Bit()
+            {
+                UserPassword = userPassword,
+                OwnerPassword = ownerPassword
+            })
+            .AddAttachment(new DocumentOperation.DocumentAttachment()
+            {
+                Key = attachmentKey,
+                FilePath = attachmentFileName,
+                AttachmentName = "こんにちは 안녕"
+            })
+            .Save(outputFileName);
+
+        using var inspector = PdfInspector.Load(File.ReadAllBytes(outputFileName), userPassword);
+        Assert.That(inspector.Pages.Count(), Is.EqualTo(4));
+        
+        var attachment = inspector.Root.GetProperty("attachments").GetProperty(attachmentKey);
+        Assert.That(attachment.GetProperty("preferredname").GetString(), Is.EqualTo("こんにちは 안녕"));
+    }
+
+    [Test]
     public void Encrypt40Test()
     {
         GenerateSampleDocument("encrypt40-input.pdf", Colors.Red.Medium, 10);
