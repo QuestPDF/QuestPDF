@@ -1,1 +1,2 @@
 - Improved the image generation API: images are now always generated with a white background by default, so that the output resembles the document as displayed in a PDF viewer. Previously, PNG and WEBP images were generated with a transparent background. To restore the previous behavior, enable the new `ImageGenerationSettings.UseTransparentBackground` setting (applies only to image formats that support transparency: PNG and WEBP).
+- Improved the developer experience when using `GeneratePdfAndShow` and `GenerateXpsAndShow` methods. 

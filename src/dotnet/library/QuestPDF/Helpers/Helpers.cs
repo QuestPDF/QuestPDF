@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.DrawingCanvases;
@@ -130,16 +132,32 @@ namespace QuestPDF.Helpers
         
         internal static void OpenFileUsingDefaultProgram(string filePath)
         {
-            var process = new Process
+            var fullPath = Path.GetFullPath(filePath);
+            
+            if (!File.Exists(fullPath))
+                throw new FileNotFoundException("Cannot open file because it does not exist.", fullPath);
+            
+            var processInfo = new ProcessStartInfo(GetCommandName(), $"\"{fullPath}\"")
             {
-                StartInfo = new ProcessStartInfo(filePath)
-                {
-                    UseShellExecute = true
-                }
+                UseShellExecute = false,
+                CreateNoWindow = true
             };
+     
+            using var process = Process.Start(processInfo);
 
-            process.Start();
-            process.WaitForExit();
+            static string GetCommandName()
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    return "explorer.exe";
+                
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    return "open";
+
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    return "xdg-open";
+                
+                throw new NotSupportedException($"Unsupported platform: {RuntimeInformation.OSDescription}");
+            }
         }
 
         internal static (float widthScale, float heightScale) CalculateSpaceScale(this SkSvgImage image, Size availableSpace)
