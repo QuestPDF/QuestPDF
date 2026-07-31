@@ -28,6 +28,12 @@ jobs:
         id: version
         run: |
           base_version="$(grep -m1 '<Version>' src/dotnet/library/QuestPDF/QuestPDF.csproj | sed -E 's/.*<Version>([^<]+)<.*/\1/')"
+          
+          if ! printf '%s' "$base_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$'; then
+            echo "::error::Refusing to build: unexpected <Version> value '$base_version'"
+            exit 1
+          fi
+          
           echo "package-version=${base_version}-ci.${GITHUB_RUN_ID}.${GITHUB_RUN_ATTEMPT}" >> "$GITHUB_OUTPUT"
 
       - name: Setup .NET SDK
@@ -37,11 +43,13 @@ jobs:
 
       - name: Build package
         working-directory: src/dotnet/library
+        env:
+          PACKAGE_VERSION: ${{ steps.version.outputs.package-version }}
         run: |
           dotnet build QuestPDF/QuestPDF.csproj \
             --configuration Release \
             -p:BUILD_PACKAGE=true \
-            -p:Version="${{ steps.version.outputs.package-version }}" \
+            -p:Version="$PACKAGE_VERSION" \
             -p:PackageOutputPath="$GITHUB_WORKSPACE/artifacts/nupkg" \
             -p:WarningLevel=0
 
@@ -136,7 +144,9 @@ jobs:
 
       - name: Run package tests
         shell: bash
-        run: zx src/dotnet/package-tests/run-tests.mjs --version "${{ needs.pack.outputs.package-version }}" --framework "${{ matrix.framework }}" --runtime "${{ matrix.runtime.name }}"
+        env:
+          PACKAGE_VERSION: ${{ needs.pack.outputs.package-version }}
+        run: zx src/dotnet/package-tests/run-tests.mjs --version "$PACKAGE_VERSION" --framework "${{ matrix.framework }}" --runtime "${{ matrix.runtime.name }}"
 
       - name: Upload test output
         uses: actions/upload-artifact@v4
@@ -178,7 +188,9 @@ jobs:
 
       - name: Run package tests
         shell: bash
-        run: zx src/dotnet/package-tests/run-tests.mjs --version "${{ needs.pack.outputs.package-version }}" --framework "${{ matrix.framework }}" --platform "${{ matrix.platform-target }}"
+        env:
+          PACKAGE_VERSION: ${{ needs.pack.outputs.package-version }}
+        run: zx src/dotnet/package-tests/run-tests.mjs --version "$PACKAGE_VERSION" --framework "${{ matrix.framework }}" --platform "${{ matrix.platform-target }}"
 
       - name: Upload test output
         uses: actions/upload-artifact@v4
