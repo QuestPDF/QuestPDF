@@ -177,7 +177,7 @@ namespace QuestPDF.Companion
 
         private async Task RenderRequestedPageSnapshots()
         {
-            // get requests
+            // get requests (companion keeps the http connection for 2 seconds, waiting for new rendering requests)
             var getRequestedSnapshots = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests");
             getRequestedSnapshots.EnsureSuccessStatusCode();
             
