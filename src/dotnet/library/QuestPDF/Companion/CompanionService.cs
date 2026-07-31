@@ -22,7 +22,7 @@ namespace QuestPDF.Companion
 
         private const int RequiredCompanionApiVersion = 3;
         
-        private static CompanionDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
+        private CompanionDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
 
         public static bool IsCompanionAttached { get; private set; }
         public static bool IsDocumentHotReloaded { get; set; } = false;
@@ -117,15 +117,11 @@ namespace QuestPDF.Companion
 
         public async Task RefreshPreview(CompanionDocumentSnapshot companionDocumentSnapshot)
         {
-            // clean old state
-            if (CurrentDocumentSnapshot != null)
-            {
-                foreach (var companionPageSnapshot in CurrentDocumentSnapshot.Pictures)
-                    companionPageSnapshot.Picture.Dispose();
-            }
-            
-            // set new state
+            var oldDocumentSnapshot = CurrentDocumentSnapshot;
             CurrentDocumentSnapshot = companionDocumentSnapshot;
+            
+            foreach (var companionPageSnapshot in oldDocumentSnapshot?.Pictures ?? [])
+                companionPageSnapshot.Picture.Dispose();
             
             var documentStructure = new CompanionCommands.UpdateDocumentStructure
             {
@@ -249,6 +245,9 @@ namespace QuestPDF.Companion
         {
             IsCompanionAttached = false;
             HttpClient.Dispose();
+            
+            foreach (var companionPageSnapshot in CurrentDocumentSnapshot?.Pictures ?? [])
+                companionPageSnapshot.Picture.Dispose();
         }
     }
 }
