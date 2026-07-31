@@ -54,6 +54,9 @@ namespace QuestPDF.Companion
                 }
             };
 
+            var refreshSemaphore = new SemaphoreSlim(1, 1);
+            var isRefreshPending = 0;
+
             await companionService.Connect(cancellationTokenSource.Token);
             companionService.StartRenderRequestedPageSnapshotsTask(cancellationTokenSource.Token);
             await RefreshPreview();
@@ -77,6 +80,11 @@ namespace QuestPDF.Companion
 
             async Task RefreshPreviewSafely()
             {
+                // coalesce hot-reload bursts: at most one refresh runs while one more waits;
+                // a refresh that starts later picks up the newest code anyway
+                if (Interlocked.Exchange(ref isRefreshPending, 1) == 1)
+                    return;
+
                 try
                 {
                     await RefreshPreview();
@@ -89,14 +97,22 @@ namespace QuestPDF.Companion
 
             async Task RefreshPreview()
             {
+                await refreshSemaphore.WaitAsync(cancellationTokenSource.Token);
+
                 try
                 {
+                    Interlocked.Exchange(ref isRefreshPending, 0);
+
                     var pictures = await Task.Run(() => DocumentGenerator.GenerateCompanionContent(document));
                     await companionService.RefreshPreview(pictures);
                 }
                 catch (Exception exception)
                 {
                     await companionService.InformAboutGenericException(exception);
+                }
+                finally
+                {
+                    refreshSemaphore.Release();
                 }
             }
 
