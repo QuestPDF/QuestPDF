@@ -13,7 +13,7 @@ using QuestPDF.Drawing.DocumentCanvases;
 
 namespace QuestPDF.Companion
 {
-    internal sealed class CompanionService
+    internal sealed class CompanionService : IDisposable
     {
         private int Port { get; }
         private HttpClient HttpClient { get; }
@@ -50,11 +50,11 @@ namespace QuestPDF.Companion
             };
         }
 
-        public async Task Connect()
+        public async Task Connect(CancellationToken cancellationToken)
         {
             await CheckIfCompanionIsRunning();
             await CheckCompanionVersionCompatibility();
-            StartNotifyPresenceTask();
+            _ = StartNotifyPresenceTask(cancellationToken);
         }
 
         private async Task CheckIfCompanionIsRunning()
@@ -64,43 +64,52 @@ namespace QuestPDF.Companion
                 using var result = await HttpClient.GetAsync("/ping");
                 result.EnsureSuccessStatusCode();
             }
-            catch
+            catch (Exception exception)
             {
-                throw new Exception("Cannot connect to the QuestPDF Companion tool. Please ensure that the tool is running and the port is correct. Learn more: https://www.questpdf.com/companion/usage.html");
+                throw new Exception("Cannot connect to the QuestPDF Companion tool. Please ensure that the tool is running and the port is correct. Learn more: https://www.questpdf.com/companion/usage.html", exception);
             }
         }
-        
-        internal async Task StartNotifyPresenceTask()
+
+        internal async Task StartNotifyPresenceTask(CancellationToken cancellationToken)
         {
-            while (true)
+            try
             {
-                try
+                while (true)
                 {
 #if NET8_0_OR_GREATER
-                    using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), CompanionJsonContext.Default.Notify);
+                    using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), CompanionJsonContext.Default.Notify, cancellationToken);
 #else
-                    using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), JsonSerializerOptions);
+                    using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), JsonSerializerOptions, cancellationToken);
 #endif
-                }
-                catch
-                {
                     
+                    result.EnsureSuccessStatusCode();
+
+                    await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
                 }
-                
-                await Task.Delay(TimeSpan.FromMilliseconds(250));
+            }
+            catch when (cancellationToken.IsCancellationRequested)
+            {
+                // the preview session has ended
+            }
+            catch
+            {
+                // the Companion app is not reachable
+                OnCompanionStopped?.Invoke();
             }
         }
-        
+
         private async Task CheckCompanionVersionCompatibility()
         {
             using var result = await HttpClient.GetAsync("/version");
+            result.EnsureSuccessStatusCode();
+
 #if NET8_0_OR_GREATER
             var response = await result.Content.ReadFromJsonAsync(CompanionJsonContext.Default.GetVersionCommandResponse);
 #else
             var response = await result.Content.ReadFromJsonAsync<CompanionCommands.GetVersionCommandResponse>();
 #endif
-            
-            if (response.SupportedVersions.Contains(RequiredCompanionApiVersion))
+
+            if (response != null && response.SupportedVersions.Contains(RequiredCompanionApiVersion))
                 return;
             
             throw new Exception($"The QuestPDF Companion application is not compatible. Please install the QuestPDF Companion tool in a proper version.");
@@ -144,18 +153,26 @@ namespace QuestPDF.Companion
         {
             Task.Run(async () =>
             {
-                while (!cancellationToken.IsCancellationRequested)
+                try
                 {
-                    try
+                    while (true)
                     {
-                        await RenderRequestedPageSnapshots();
-                    }
-                    catch
-                    {
-                        await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
+                        try
+                        {
+                            await RenderRequestedPageSnapshots();
+                        }
+                        catch when (!cancellationToken.IsCancellationRequested)
+                        {
+                            // the Companion app is temporarily not reachable; retry after a delay
+                            await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
+                        }
                     }
                 }
-            });
+                catch when (cancellationToken.IsCancellationRequested)
+                {
+                    // the preview session has ended
+                }
+            }, CancellationToken.None);
         }
 
         private async Task RenderRequestedPageSnapshots()
@@ -170,14 +187,10 @@ namespace QuestPDF.Companion
             var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
 #endif
             
-            if (!requestedSnapshots.Any())
+            if (requestedSnapshots == null || !requestedSnapshots.Any())
                 return;
             
             if (CurrentDocumentSnapshot == null)
-                return;
-      
-            // render snapshots
-            if (!requestedSnapshots.Any())
                 return;
 
             var renderingTasks = requestedSnapshots
@@ -230,6 +243,12 @@ namespace QuestPDF.Companion
                     InnerException = exception.InnerException == null ? null : Map(exception.InnerException)
                 };
             }
+        }
+
+        public void Dispose()
+        {
+            IsCompanionAttached = false;
+            HttpClient.Dispose();
         }
     }
 }

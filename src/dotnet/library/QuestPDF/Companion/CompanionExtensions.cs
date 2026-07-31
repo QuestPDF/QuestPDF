@@ -19,11 +19,18 @@ namespace QuestPDF.Companion
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.support"]/*' />
         public static void ShowInCompanion(this IDocument document, int port = 12500)
         {
-            document.ShowInCompanionAsync(port).ConfigureAwait(true).GetAwaiter().GetResult();
+            document.ShowInCompanionAsync(port).GetAwaiter().GetResult();
         }
-        
+
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.support"]/*' />
-        public static async Task ShowInCompanionAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
+        public static Task ShowInCompanionAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
+        {
+            // run the entire session on the thread pool so that no await captures the caller's SynchronizationContext;
+            // otherwise the blocking ShowInCompanion entry point could deadlock in UI applications
+            return Task.Run(() => ShowInCompanionImplementation(document, port, cancellationToken));
+        }
+
+        private static async Task ShowInCompanionImplementation(IDocument document, int port, CancellationToken cancellationToken)
         {
             Settings.EnableCaching = false;
             Settings.EnableDebugging = true;
@@ -31,44 +38,77 @@ namespace QuestPDF.Companion
             if (document is MergedDocument)
                 throw new NotSupportedException("The QuestPDF Companion App does not currently support merged documents. Please use the tool with a single document at a time.");
             
-            var companionService = new CompanionService(port);
+            using var companionService = new CompanionService(port);
             
             using var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            companionService.OnCompanionStopped += () => cancellationTokenSource.Cancel();
-
-            await companionService.Connect();
-            companionService.StartRenderRequestedPageSnapshotsTask(cancellationToken);
-            await RefreshPreview();
-
-            HotReloadManager.UpdateApplicationRequested += (_, _) =>
-            {
-                CompanionService.IsDocumentHotReloaded = true;
-                RefreshPreview();
-            };
             
-            await KeepApplicationAlive(cancellationTokenSource.Token);
-            
-            Task RefreshPreview()
+            companionService.OnCompanionStopped += () =>
             {
                 try
                 {
-                    var pictures = DocumentGenerator.GenerateCompanionContent(document);
-                    return companionService.RefreshPreview(pictures);
+                    cancellationTokenSource.Cancel();
                 }
-                catch (Exception exception)
+                catch (ObjectDisposedException)
                 {
-                    return companionService.InformAboutGenericException(exception);
+                    // the preview session has already ended
+                }
+            };
+
+            await companionService.Connect(cancellationTokenSource.Token);
+            companionService.StartRenderRequestedPageSnapshotsTask(cancellationTokenSource.Token);
+            await RefreshPreview();
+
+            HotReloadManager.UpdateApplicationRequested += InvalidatePreview;
+
+            try
+            {
+                await KeepApplicationAlive(cancellationTokenSource.Token);
+            }
+            finally
+            {
+                HotReloadManager.UpdateApplicationRequested -= InvalidatePreview;
+            }
+
+            void InvalidatePreview(object? sender, EventArgs args)
+            {
+                CompanionService.IsDocumentHotReloaded = true;
+                _ = RefreshPreviewSafely();
+            }
+
+            async Task RefreshPreviewSafely()
+            {
+                try
+                {
+                    await RefreshPreview();
+                }
+                catch
+                {
+                    // the Companion app is not reachable; the disconnect detection will end the session
                 }
             }
 
-            async Task KeepApplicationAlive(CancellationToken cancellationToken)
+            async Task RefreshPreview()
             {
-                while (true)
+                try
                 {
-                    if (cancellationToken.IsCancellationRequested)
-                        return;
-                
-                    await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+                    var pictures = await Task.Run(() => DocumentGenerator.GenerateCompanionContent(document));
+                    await companionService.RefreshPreview(pictures);
+                }
+                catch (Exception exception)
+                {
+                    await companionService.InformAboutGenericException(exception);
+                }
+            }
+
+            async Task KeepApplicationAlive(CancellationToken sessionCancellationToken)
+            {
+                try
+                {
+                    await Task.Delay(Timeout.InfiniteTimeSpan, sessionCancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    // the preview session has ended: either the Companion app was closed or the caller cancelled
                 }
             }
         }
