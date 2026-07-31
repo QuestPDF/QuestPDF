@@ -69,16 +69,23 @@ namespace QuestPDF.Drawing.DocumentCanvases
             
             CurrentPageCanvas.Scale(scalingFactor, scalingFactor);
 
-            if (Settings.ImageFormat == ImageFormat.Jpeg)
+            DrawWhiteBackgroundWhenApplicable();
+            
+            DrawingCanvas.Target = new SkiaDrawingCanvas(size.Width, size.Height);
+            DrawingCanvas.SetZIndex(0);
+
+            void DrawWhiteBackgroundWhenApplicable()
             {
+                var imageFormatSupportsTransparency = Settings.ImageFormat is ImageFormat.Png or ImageFormat.Webp;
+
+                if (imageFormatSupportsTransparency && Settings.UseTransparentBackground)
+                    return;
+                
                 using var whitePaint = new SkPaint();
                 whitePaint.SetSolidColor(Colors.White);
                 
                 CurrentPageCanvas.DrawRectangle(new SkRect(0, 0, size.Width, size.Height), whitePaint);
             }
-            
-            DrawingCanvas.Target = new SkiaDrawingCanvas(size.Width, size.Height);
-            DrawingCanvas.SetZIndex(0);
         }
 
         public void EndPage()
