@@ -1,8 +1,6 @@
 name: Package Integration Tests
 
-permissions:
-  actions: write
-  contents: read
+permissions: {}
 
 on:
   pull_request:
