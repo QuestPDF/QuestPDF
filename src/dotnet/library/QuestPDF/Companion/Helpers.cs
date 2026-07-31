@@ -86,8 +86,11 @@ internal static class CompanionModelHelpers
     
     #if NET6_0_OR_GREATER
     
-    internal static CompanionCommands.ShowGenericException.StackFrame[] ParseStackTrace(this string stackTrace)
+    internal static CompanionCommands.ShowGenericException.StackFrame[] ParseStackTrace(this string? stackTrace)
     {
+        if (string.IsNullOrEmpty(stackTrace))
+            return [];
+
         var lines = stackTrace.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
         
         var frames = new List<CompanionCommands.ShowGenericException.StackFrame>();
