@@ -139,10 +139,12 @@ namespace QuestPDF.Companion
             };
 
 #if NET8_0_OR_GREATER
-            await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure);
+            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure);
 #else
-            await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, JsonSerializerOptions);
+            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, JsonSerializerOptions);
 #endif
+
+            result.EnsureSuccessStatusCode();
         }
         
         public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
@@ -174,7 +176,7 @@ namespace QuestPDF.Companion
         private async Task RenderRequestedPageSnapshots()
         {
             // get requests (companion keeps the http connection for 2 seconds, waiting for new rendering requests)
-            var getRequestedSnapshots = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests");
+            using var getRequestedSnapshots = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests");
             getRequestedSnapshots.EnsureSuccessStatusCode();
             
 #if NET8_0_OR_GREATER
@@ -209,10 +211,12 @@ namespace QuestPDF.Companion
             var renderedPages = await Task.WhenAll(renderingTasks);
             var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
 #if NET8_0_OR_GREATER
-            await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, CompanionJsonContext.Default.ProvideRenderedDocumentPage);
+            using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, CompanionJsonContext.Default.ProvideRenderedDocumentPage);
 #else
-            await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command);
+            using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, JsonSerializerOptions);
 #endif
+
+            provideRenderedImagesResult.EnsureSuccessStatusCode();
         }
         
         internal async Task InformAboutGenericException(Exception exception)
@@ -223,10 +227,12 @@ namespace QuestPDF.Companion
             };
             
 #if NET8_0_OR_GREATER
-            await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, CompanionJsonContext.Default.ShowGenericException);
+            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, CompanionJsonContext.Default.ShowGenericException);
 #else
-            await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, JsonSerializerOptions);
+            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, JsonSerializerOptions);
 #endif
+
+            result.EnsureSuccessStatusCode();
             return;
 
             static CompanionCommands.ShowGenericException.GenericExceptionDetails Map(Exception exception)
