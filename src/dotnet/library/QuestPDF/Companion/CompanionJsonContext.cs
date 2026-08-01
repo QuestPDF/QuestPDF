@@ -8,7 +8,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Companion;
 
-[JsonSourceGenerationOptions(MaxDepth = 256, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, Converters = new[] { typeof(CompanionLicenseTypeJsonConverter), typeof(CompanionSpacePlanTypeJsonConverter) })]
+[JsonSourceGenerationOptions(MaxDepth = 512, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, Converters = new[] { typeof(CompanionLicenseTypeJsonConverter), typeof(CompanionSpacePlanTypeJsonConverter) })]
 [JsonSerializable(typeof(CompanionCommands.Notify), TypeInfoPropertyName = "Notify")]
 [JsonSerializable(typeof(CompanionCommands.GetVersionCommandResponse), TypeInfoPropertyName = "GetVersionCommandResponse")]
 [JsonSerializable(typeof(ICollection<PageSnapshotIndex>), TypeInfoPropertyName = "PageSnapshotIndexCollection")]

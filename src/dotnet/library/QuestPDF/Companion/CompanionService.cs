@@ -32,7 +32,7 @@ namespace QuestPDF.Companion
 #else
         private static readonly JsonSerializerOptions JsonSerializerOptions = new()
         {
-            MaxDepth = 256,
+            MaxDepth = 512,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
         };
