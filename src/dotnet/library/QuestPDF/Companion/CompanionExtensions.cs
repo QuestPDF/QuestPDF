@@ -59,12 +59,12 @@ namespace QuestPDF.Companion
 
             await companionService.Connect(cancellationTokenSource.Token);
             companionService.StartRenderRequestedPageSnapshotsTask(cancellationTokenSource.Token);
-            await RefreshPreview();
-
+            
             HotReloadManager.UpdateApplicationRequested += InvalidatePreview;
 
             try
             {
+                await RefreshPreview();
                 await KeepApplicationAlive(cancellationTokenSource.Token);
             }
             finally
