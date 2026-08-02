@@ -6,8 +6,10 @@ namespace QuestPDF.DocumentationExamples;
 
 static class MapboxStaticMapRenderer
 {
+    private static readonly HttpClient HttpClient = new();
+    
     private const string MapboxBaseUrl = "https://api.mapbox.com/styles/v1/mapbox/streets-v12/static";
-    private const string AccessToken = "pk.eyJ1IjoibWFyY2luLXppYWJlayIsImEiOiJjbW9uYXVta24xNDI4MnNzYnMwNDd4MXFjIn0.sku5jzU78_5DOUrs8dwTHw";
+    private const string AccessToken = "<MAPBOX_ACCESS_TOKEN>";
 
     public static async Task<byte[]?> FetchStaticMapAsync(double longitude, double latitude, float zoom, int width, int height)
     {
@@ -15,11 +17,9 @@ static class MapboxStaticMapRenderer
         var latitudeString = latitude.ToString(System.Globalization.CultureInfo.InvariantCulture);
         var url = $"{MapboxBaseUrl}/{longitudeString},{latitudeString},{zoom},0,0/{width}x{height}@2x?access_token={AccessToken}";
 
-        using var client = new HttpClient();
-        
         try
         {
-            var response = await client.GetAsync(url);
+            var response = await HttpClient.GetAsync(url);
             return await response.Content.ReadAsByteArrayAsync();
         }
         catch (Exception ex)
@@ -33,6 +33,7 @@ static class MapboxStaticMapRenderer
 public class MapExample
 {
     [Test]
+    [Ignore("Requires Mapbox access token")]
     public async Task SimpleExample()
     {
         var map = await MapboxStaticMapRenderer.FetchStaticMapAsync(19.9376052f, 50.0616087f, 10, 500, 400);
