@@ -16,12 +16,9 @@ public class RotateTests
                 .Height(300)
                 .AlignCenter()
                 .AlignMiddle()
-                .Unconstrained()
-                
+
                 .Rotate(angle) // <-
-                
-                .OffsetX(-100)
-                .OffsetY(-50)
+
                 .Width(200)
                 .Height(100)
                 .Background(Colors.Grey.Lighten3)
