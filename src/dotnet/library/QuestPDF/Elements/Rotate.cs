@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
@@ -10,9 +10,17 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
+            var contentSize = base.Measure(availableSpace);
+            var pivot = new Position(contentSize.Width / 2, contentSize.Height / 2);
+
             Canvas.Save();
+
+            Canvas.Translate(pivot);
             Canvas.Rotate(Angle);
+            Canvas.Translate(pivot.Reverse());
+
             Child?.Draw(availableSpace);
+
             Canvas.Restore();
         }
 
