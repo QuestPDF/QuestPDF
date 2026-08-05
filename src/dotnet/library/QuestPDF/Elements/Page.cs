@@ -45,7 +45,6 @@ namespace QuestPDF.Elements
                     
                     layers
                         .Layer()
-                        .Repeat()
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Background.ToString())
                         .Artifact(SkSemanticNodeSpecialId.BackgroundArtifact)
                         .Element(Background);
@@ -75,7 +74,6 @@ namespace QuestPDF.Elements
                     
                     layers
                         .Layer()
-                        .Repeat()
                         .Artifact(SkSemanticNodeSpecialId.PaginationWatermarkArtifact)
                         .DebugPointer(DebugPointerType.DocumentStructure, DocumentStructureTypes.Foreground.ToString())
                         .Element(Foreground);
