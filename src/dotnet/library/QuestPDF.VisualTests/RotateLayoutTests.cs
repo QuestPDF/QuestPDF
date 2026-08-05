@@ -3,7 +3,7 @@ using QuestPDF.Helpers;
 
 namespace QuestPDF.VisualTests;
 
-public class SimpleRotateTests
+public class RotateLayoutTests
 {
     [Test]
     public void Rotate(
@@ -17,7 +17,7 @@ public class SimpleRotateTests
                 .Element(element =>
                 {
                     foreach (var i in Enumerable.Range(0, rotationCount))
-                        element = element.RotateRight();
+                        element = element.RotateLayoutClockwise();
     
                     return element;
                 })

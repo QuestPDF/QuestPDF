@@ -25,7 +25,7 @@ internal class MultiColumnTests : ConformanceTestBase
                                 .Spacer()
                                 .PaddingHorizontal(25)
                                 .Background(Colors.Blue.Lighten4)
-                                .RotateLeft()
+                                .RotateLayoutCounterclockwise()
                                 .AlignMiddle()
                                 .AlignCenter()
                                 .Text("This text should not be a part of the semantic tree")
