@@ -37,7 +37,11 @@ namespace QuestPDF.Fluent
         /// <para>If the layer is defined before the primary layer, it's drawn underneath the primary content (as a background).</para>
         /// <para>If defined after the primary layer, it's drawn in front of the primary content (as a watermark).</para>
         /// </remarks>
-        public IContainer Layer() => Layer(false);
+        public IContainer Layer()
+        {
+            return Layer(false)
+                .Repeat();
+        }
         
         /// <summary>
         /// Sets the primary content for the container. 
