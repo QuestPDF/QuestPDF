@@ -47,4 +47,22 @@ internal struct SkCanvasMatrix
             Perspective3 = 1
         };
     }
+    
+    /// <summary>
+    /// Returns the axis-aligned bounding box of the (0, 0, width, height) rectangle after applying this matrix.
+    /// </summary>
+    public SkRect GetTransformedBoundingBox(float width, float height)
+    {
+        var matrix = ToMatrix4x4();
+
+        var topLeft = Vector2.Transform(new Vector2(0, 0), matrix);
+        var topRight = Vector2.Transform(new Vector2(width, 0), matrix);
+        var bottomLeft = Vector2.Transform(new Vector2(0, height), matrix);
+        var bottomRight = Vector2.Transform(new Vector2(width, height), matrix);
+
+        var min = Vector2.Min(Vector2.Min(topLeft, topRight), Vector2.Min(bottomLeft, bottomRight));
+        var max = Vector2.Max(Vector2.Max(topLeft, topRight), Vector2.Max(bottomLeft, bottomRight));
+
+        return new SkRect(min.X, min.Y, max.X, max.Y);
+    }
 }

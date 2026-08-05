@@ -5,8 +5,6 @@ using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using Image = QuestPDF.Elements.Image;
-using SvgImage = QuestPDF.Elements.SvgImage;
 
 namespace QuestPDF.Drawing.Proxy;
 
@@ -29,15 +27,17 @@ internal sealed class LayoutProxy : ElementProxy
         if (!Canvas.Is<SkiaDrawingCanvas>())
             return;
         
-        var matrix = Canvas.GetCurrentMatrix();
-        
+        var rect = Canvas
+            .GetCurrentMatrix()
+            .GetTransformedBoundingBox(size.Width, size.Height);
+
         Snapshots.Add(new CompanionCommands.UpdateDocumentStructure.PageLocation
         {
             PageNumber = PageContext.CurrentPage,
-            Left = matrix.TranslateX,
-            Top = matrix.TranslateY,
-            Right = matrix.TranslateX + size.Width,
-            Bottom = matrix.TranslateY + size.Height
+            Left = rect.Left,
+            Top = rect.Top,
+            Right = rect.Right,
+            Bottom = rect.Bottom
         });
 
         bool ProvideIntrinsicSize()
