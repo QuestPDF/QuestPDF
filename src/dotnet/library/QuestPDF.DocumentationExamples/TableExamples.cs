@@ -234,7 +234,7 @@ public class TableExamples
                                 .Text("Predicted condition").Bold();
                             
                             table.Cell().Row(3).Column(1).RowSpan(2)
-                                .Element(HeaderCellStyle).RotateLeft()
+                                .Element(HeaderCellStyle).RotateLayoutCounterclockwise()
                                 .Text("Actual\ncondition").Bold().AlignCenter();
             
                             table.Cell().Row(2).Column(3)

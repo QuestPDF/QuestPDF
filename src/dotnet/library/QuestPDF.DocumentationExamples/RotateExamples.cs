@@ -7,7 +7,7 @@ namespace QuestPDF.DocumentationExamples;
 public class RotateExamples
 {
     [Test]
-    public void Example()
+    public void RotateLayoutExample()
     {
         Document
             .Create(document =>
@@ -23,7 +23,7 @@ public class RotateExamples
                         .Row(row =>
                         {
                             row.AutoItem()
-                                .RotateLeft()
+                                .RotateLayoutCounterclockwise()
                                 .AlignCenter()
                                 .Text("Definition")
                                 .Bold().FontColor(Colors.Blue.Darken2);
@@ -43,7 +43,7 @@ public class RotateExamples
                         });
                 });
             })
-            .GenerateImages(x => "rotate.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
+            .GenerateImages(x => "rotate-layout.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
     
     [Test]
