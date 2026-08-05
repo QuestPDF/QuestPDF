@@ -46,4 +46,40 @@ public class LayersExamples
             })
             .GenerateImages(x => "layers.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
+    
+    [Test]
+    public void ShortcutForm()
+    {
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.ContinuousSize(450);
+                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.Margin(25);
+                    
+                    page.Content()
+                        .Column(column =>
+                        {
+                            column.Item().PaddingBottom(15).Text("Proposed Business Card Design:").Bold();
+                            
+                            column.Item()
+                                .AspectRatio(4 / 3f)
+                                .BackgroundLayer(x => x.Image("Resources/card-background.jpg").FitUnproportionally())
+                                .OffsetY(75)
+                                .Column(innerColumn =>
+                                {
+                                    innerColumn.Item()
+                                        .AlignCenter()
+                                        .Text("Horizon Ventures")
+                                        .Bold().FontSize(32).FontColor(Colors.Blue.Darken2);
+
+                                    innerColumn.Item().AlignCenter().Text("Your journey begins here");
+                                });
+                        });
+                });
+            })
+            .GenerateImages(x => "layers-shortcut.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
+    }
 }
