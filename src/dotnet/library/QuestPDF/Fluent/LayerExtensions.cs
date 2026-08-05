@@ -3,6 +3,7 @@ using System.Linq;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
+using QuestPDF.Skia;
 
 namespace QuestPDF.Fluent
 {
@@ -81,6 +82,72 @@ namespace QuestPDF.Fluent
             descriptor.Validate();
             
             element.Element(descriptor.Layers);
+        }
+
+        /// <summary>
+        /// <para>Draws the given <paramref name="backgroundContent" /> underneath the main content.</para>
+        /// <para>The Fluent API chain continues with the main content.</para>
+        /// <a href="https://www.questpdf.com/api-reference/layers.html">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// <para>A simplified version of the <see cref="LayerExtensions.Layers">Layers</see> element, limited to exactly two layers.</para>
+        /// <para>The main content determines the size of this container and its paging behavior. If it spans multiple pages, the <paramref name="backgroundContent" /> layer is repeated on each of them.</para>
+        /// <para>The <paramref name="backgroundContent" /> layer is offered the same space but is neither clipped nor scaled. It is not drawn if it does not fit.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// container
+        ///     .BackgroundLayer(x => x.Image("card-background.jpg"))
+        ///     .Element(ComposeBusinessCardText);
+        /// </code>
+        /// </example>
+        /// <param name="backgroundContent">A delegate that populates the layer drawn behind the main content.</param>
+        /// <returns>The container for the main content.</returns>
+        public static IContainer BackgroundLayer(this IContainer container, Action<IContainer> backgroundContent)
+        {
+            var result = new Container();
+
+            container.Layers(layers =>
+            {
+                layers.Layer().Element(backgroundContent);
+                layers.PrimaryLayer().Element(result);
+            });
+
+            return result;
+        }
+
+        /// <summary>
+        /// <para>Draws the given <paramref name="foregroundContent" /> on top of the main content, e.g. a watermark, a stamp or a badge.</para>
+        /// <para>The Fluent API chain continues with the main content.</para>
+        /// <a href="https://www.questpdf.com/api-reference/layers.html">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// <para>A simplified version of the <see cref="LayerExtensions.Layers">Layers</see> element, limited to exactly two layers.</para>
+        /// <para>The main content determines the size of this container and its paging behavior. If it spans multiple pages, the <paramref name="foregroundContent" /> layer is repeated on each of them.</para>
+        /// <para>The <paramref name="foregroundContent" /> layer is offered the same space but is neither clipped nor scaled. It is not drawn if it does not fit.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// page.Content()
+        ///     .ForegroundLayer(watermark => watermark
+        ///         .AlignCenter().AlignMiddle()
+        ///         .Text("DRAFT").FontSize(64).FontColor(Colors.Red.Medium.WithOpacity(0.25f)))
+        ///     .Element(ComposeReport);
+        /// </code>
+        /// </example>
+        /// <param name="foregroundContent">A delegate that populates the layer drawn in front of the main content.</param>
+        /// <returns>The container for the main content.</returns>
+        public static IContainer ForegroundLayer(this IContainer container, Action<IContainer> foregroundContent)
+        {
+            var result = new Container();
+
+            container.Layers(layers =>
+            {
+                layers.PrimaryLayer().Element(result);
+                layers.Layer().Element(foregroundContent);
+            });
+
+            return result;
         }
     }
 }
