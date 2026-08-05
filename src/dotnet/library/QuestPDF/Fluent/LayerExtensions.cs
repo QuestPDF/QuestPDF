@@ -40,6 +40,7 @@ namespace QuestPDF.Fluent
         public IContainer Layer()
         {
             return Layer(false)
+                .Artifact(SkSemanticNodeSpecialId.PaginationArtifact)
                 .Repeat();
         }
         
