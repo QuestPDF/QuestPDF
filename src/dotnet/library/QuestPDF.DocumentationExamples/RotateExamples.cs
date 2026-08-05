@@ -47,7 +47,7 @@ public class RotateExamples
     }
     
     [Test]
-    public void FreeExample()
+    public void RotateAngleExample()
     {
         Document
             .Create(document =>
@@ -76,20 +76,12 @@ public class RotateExamples
                                 row.AutoItem()
                                     .Width(itemSize)
                                     .AspectRatio(1)
-                                    
-                                    .OffsetX(itemSize / 2)
-                                    .OffsetY(itemSize / 2)
-                                    
                                     .Rotate(angle)
-                                    
-                                    .OffsetX(-itemSize / 2)
-                                    .OffsetY(-itemSize / 2)
-                                    
                                     .Svg("Resources/compass.svg");
                             }
                         });
                 });
             })
-            .GenerateImages(x => "rotate-free.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
+            .GenerateImages(x => "rotate-angle.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
 }
