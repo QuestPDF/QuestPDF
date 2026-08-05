@@ -2,7 +2,7 @@ using QuestPDF.Helpers;
 
 namespace QuestPDF.LayoutTests;
 
-public class SimpleRotateTests
+public class RotateLayoutTests
 {
     private void DrawTestSubject(IContainer container)
     {
@@ -62,7 +62,7 @@ public class SimpleRotateTests
             {
                 content
                     .Shrink()
-                    .RotateRight() // <-
+                    .RotateLayoutClockwise() // <-
                     .Element(DrawTestSubject);
             })
             .ExpectDrawResult(document =>
@@ -91,8 +91,8 @@ public class SimpleRotateTests
             {
                 content
                     .Shrink()
-                    .RotateRight() // <-
-                    .RotateRight()
+                    .RotateLayoutClockwise() // <-
+                    .RotateLayoutClockwise()
                     .Element(DrawTestSubject);
             })
             .ExpectDrawResult(document =>
@@ -121,9 +121,9 @@ public class SimpleRotateTests
             {
                 content
                     .Shrink()
-                    .RotateRight() // <-
-                    .RotateRight()
-                    .RotateRight()
+                    .RotateLayoutClockwise() // <-
+                    .RotateLayoutClockwise()
+                    .RotateLayoutClockwise()
                     .Element(DrawTestSubject);
             })
             .ExpectDrawResult(document =>
@@ -189,7 +189,7 @@ public class SimpleRotateTests
             {
                 content
                     .Shrink()
-                    .RotateRight() // <-
+                    .RotateLayoutClockwise() // <-
                     .Element(DrawTestSubject);
             })
             .ExpectDrawResult(document =>
@@ -225,8 +225,8 @@ public class SimpleRotateTests
             {
                 content
                     .Shrink()
-                    .RotateRight() // <-
-                    .RotateRight()
+                    .RotateLayoutClockwise() // <-
+                    .RotateLayoutClockwise()
                     .Element(DrawTestSubject);
             })
             .ExpectDrawResult(document =>
@@ -262,9 +262,9 @@ public class SimpleRotateTests
             {
                 content
                     .Shrink()
-                    .RotateRight() // <-
-                    .RotateRight()
-                    .RotateRight()
+                    .RotateLayoutClockwise() // <-
+                    .RotateLayoutClockwise()
+                    .RotateLayoutClockwise()
                     .Element(DrawTestSubject);
             })
             .ExpectDrawResult(document =>

@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 namespace QuestPDF.UnitTests
 {
     [TestFixture]
-    public class SimpleRotateTests
+    public class RotateLayoutTests
     {
         #region Cumulative rotation
         
@@ -15,13 +15,13 @@ namespace QuestPDF.UnitTests
         {
             var container = EmptyContainer.Create();
             container
-                .RotateRight()
-                .RotateRight()
-                .RotateRight()
-                .RotateRight()
-                .RotateRight();
+                .RotateLayoutClockwise()
+                .RotateLayoutClockwise()
+                .RotateLayoutClockwise()
+                .RotateLayoutClockwise()
+                .RotateLayoutClockwise();
         
-            var rotation = container.Child as SimpleRotate;
+            var rotation = container.Child as RotateLayout;
             Assert.That(rotation?.TurnCount, Is.EqualTo(5));
         }
         
@@ -30,14 +30,14 @@ namespace QuestPDF.UnitTests
         {
             var container = EmptyContainer.Create();
             container
-                .RotateLeft()
-                .RotateLeft()
-                .RotateLeft()
-                .RotateLeft()
-                .RotateLeft()
-                .RotateLeft();
+                .RotateLayoutCounterclockwise()
+                .RotateLayoutCounterclockwise()
+                .RotateLayoutCounterclockwise()
+                .RotateLayoutCounterclockwise()
+                .RotateLayoutCounterclockwise()
+                .RotateLayoutCounterclockwise();
         
-            var rotation = container.Child as SimpleRotate;
+            var rotation = container.Child as RotateLayout;
             Assert.That(rotation?.TurnCount, Is.EqualTo(-6));
         }
         
@@ -46,15 +46,15 @@ namespace QuestPDF.UnitTests
         {
             var container = EmptyContainer.Create();
             container
-                .RotateRight()
-                .RotateRight()
-                .RotateRight()
-                .RotateRight()
-                .RotateLeft()
-                .RotateLeft()
-                .RotateLeft();
+                .RotateLayoutClockwise()
+                .RotateLayoutClockwise()
+                .RotateLayoutClockwise()
+                .RotateLayoutClockwise()
+                .RotateLayoutCounterclockwise()
+                .RotateLayoutCounterclockwise()
+                .RotateLayoutCounterclockwise();
         
-            var rotation = container.Child as SimpleRotate;
+            var rotation = container.Child as RotateLayout;
             Assert.That(rotation?.TurnCount, Is.EqualTo(1));
         }
         
@@ -66,9 +66,9 @@ namespace QuestPDF.UnitTests
         public void NoRotationCompanionHint()
         {
             var container = EmptyContainer.Create();
-            container.RotateRight().RotateLeft();
+            container.RotateLayoutClockwise().RotateLayoutCounterclockwise();
         
-            var rotation = container.Child as SimpleRotate;
+            var rotation = container.Child as RotateLayout;
             Assert.That(rotation?.GetCompanionHint(), Is.EqualTo("No rotation"));
         }
         
@@ -76,9 +76,9 @@ namespace QuestPDF.UnitTests
         public void RotateRightCompanionHint()
         {
             var container = EmptyContainer.Create();
-            container.RotateRight();
+            container.RotateLayoutClockwise();
         
-            var rotation = container.Child as SimpleRotate;
+            var rotation = container.Child as RotateLayout;
             Assert.That(rotation?.GetCompanionHint(), Is.EqualTo("90 deg clockwise"));
         }
         
@@ -86,9 +86,9 @@ namespace QuestPDF.UnitTests
         public void DoubleRotateLeftCompanionHint()
         {
             var container = EmptyContainer.Create();
-            container.RotateLeft().RotateLeft();
+            container.RotateLayoutCounterclockwise().RotateLayoutCounterclockwise();
         
-            var rotation = container.Child as SimpleRotate;
+            var rotation = container.Child as RotateLayout;
             Assert.That(rotation?.GetCompanionHint(), Is.EqualTo("180 deg counter-clockwise"));
         }
         
