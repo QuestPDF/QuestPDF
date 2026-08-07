@@ -45,10 +45,16 @@ namespace QuestPDF.Drawing.DocumentCanvases
         }
     }
     
-    internal sealed class CompanionDocumentSnapshot
+    internal sealed record CompanionDocumentSnapshot(
+        ICollection<CompanionPageSnapshot> Pictures,
+        CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy)
+        : IDisposable
     {
-        public ICollection<CompanionPageSnapshot> Pictures { get; set; }
-        public CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
+        public void Dispose()
+        {
+            foreach (var pageSnapshot in Pictures)
+                pageSnapshot.Picture.Dispose();
+        }
     }
     
     internal sealed class CompanionDocumentCanvas : IDocumentCanvas, IDisposable
@@ -62,11 +68,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
 
         public CompanionDocumentSnapshot GetContent()
         {
-            return new CompanionDocumentSnapshot
-            {
-                Pictures = PageSnapshots,
-                Hierarchy = Hierarchy
-            };
+            return new CompanionDocumentSnapshot(PageSnapshots, Hierarchy);
         }
 
         #region IDisposable

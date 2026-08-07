@@ -22,7 +22,7 @@ namespace QuestPDF.Companion
 
         private const int RequiredCompanionApiVersion = 3;
         
-        private CompanionDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
+        private CancellationTokenSource? RenderingTaskCancellation { get; set; }
 
         public static bool IsCompanionAttached { get; private set; }
         public static bool IsDocumentHotReloaded { get; set; } = false;
@@ -115,14 +115,8 @@ namespace QuestPDF.Companion
             throw new Exception($"The QuestPDF Companion application is not compatible. Please install the QuestPDF Companion tool in a proper version.");
         }
 
-        public async Task RefreshPreview(CompanionDocumentSnapshot companionDocumentSnapshot)
+        public async Task RefreshPreview(CompanionDocumentSnapshot companionDocumentSnapshot, CancellationToken cancellationToken)
         {
-            var oldDocumentSnapshot = CurrentDocumentSnapshot;
-            CurrentDocumentSnapshot = companionDocumentSnapshot;
-            
-            foreach (var companionPageSnapshot in oldDocumentSnapshot?.Pictures ?? [])
-                companionPageSnapshot.Picture.Dispose();
-            
             var documentStructure = new CompanionCommands.UpdateDocumentStructure
             {
                 Hierarchy = companionDocumentSnapshot.Hierarchy.ImproveHierarchyStructure(),
@@ -138,6 +132,12 @@ namespace QuestPDF.Companion
                     .ToArray()
             };
 
+            await StopRenderRequestedPageSnapshotsTask();
+            RenderingTaskCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+            var renderingCancellationToken = RenderingTaskCancellation.Token;
+            _ = Task.Run(() => StartRenderRequestedPageSnapshotsTask(companionDocumentSnapshot, renderingCancellationToken), CancellationToken.None);
+
 #if NET8_0_OR_GREATER
             using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure);
 #else
@@ -147,54 +147,58 @@ namespace QuestPDF.Companion
             result.EnsureSuccessStatusCode();
         }
         
-        public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
+        private async Task StartRenderRequestedPageSnapshotsTask(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
         {
-            Task.Run(async () =>
+            try
             {
-                try
+                while (true)
                 {
-                    while (true)
-                    {
-                        try
-                        {
-                            await RenderRequestedPageSnapshots();
-                        }
-                        catch when (!cancellationToken.IsCancellationRequested)
-                        {
-                            // the Companion app is temporarily not reachable; retry after a delay
-                            await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
-                        }
-                    }
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await RenderRequestedPageSnapshots(documentSnapshot, cancellationToken);
                 }
-                catch when (cancellationToken.IsCancellationRequested)
-                {
-                    // the preview session has ended
-                }
-            }, CancellationToken.None);
+            }
+            catch when (cancellationToken.IsCancellationRequested)
+            {
+                
+            }
+            finally
+            {
+                documentSnapshot.Dispose();
+            }
         }
 
-        private async Task RenderRequestedPageSnapshots()
+        private async Task StopRenderRequestedPageSnapshotsTask()
+        {
+            if (RenderingTaskCancellation == null)
+                return;
+            
+#if NET8_0_OR_GREATER
+            await RenderingTaskCancellation.CancelAsync();
+#else
+                RenderingTaskCancellation.Cancel();
+#endif
+            RenderingTaskCancellation.Dispose();
+        }
+
+        private async Task RenderRequestedPageSnapshots(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
         {
             // get requests (companion keeps the http connection for 2 seconds, waiting for new rendering requests)
-            using var getRequestedSnapshots = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests");
+            using var getRequestedSnapshots = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests", cancellationToken);
             getRequestedSnapshots.EnsureSuccessStatusCode();
             
 #if NET8_0_OR_GREATER
-            var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync(CompanionJsonContext.Default.PageSnapshotIndexCollection);
+            var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync(CompanionJsonContext.Default.PageSnapshotIndexCollection, cancellationToken);
 #else
-            var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
+            var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>(cancellationToken: cancellationToken);
 #endif
             
             if (requestedSnapshots == null || !requestedSnapshots.Any())
-                return;
-            
-            if (CurrentDocumentSnapshot == null)
                 return;
 
             var renderingTasks = requestedSnapshots
                 .Select(index => Task.Run(() =>
                 {
-                    var image = CurrentDocumentSnapshot
+                    var image = documentSnapshot
                         .Pictures
                         .ElementAt(index.PageIndex)
                         .RenderImage(index.ZoomLevel);
@@ -209,11 +213,16 @@ namespace QuestPDF.Companion
                 .ToList();
 
             var renderedPages = await Task.WhenAll(renderingTasks);
+
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
             var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
+            
 #if NET8_0_OR_GREATER
-            using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, CompanionJsonContext.Default.ProvideRenderedDocumentPage);
+            using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, CompanionJsonContext.Default.ProvideRenderedDocumentPage, cancellationToken);
 #else
-            using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, JsonSerializerOptions);
+            using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, JsonSerializerOptions, cancellationToken);
 #endif
 
             provideRenderedImagesResult.EnsureSuccessStatusCode();
@@ -250,10 +259,9 @@ namespace QuestPDF.Companion
         public void Dispose()
         {
             IsCompanionAttached = false;
-            HttpClient.Dispose();
             
-            foreach (var companionPageSnapshot in CurrentDocumentSnapshot?.Pictures ?? [])
-                companionPageSnapshot.Picture.Dispose();
+            _ = StopRenderRequestedPageSnapshotsTask();
+            HttpClient.Dispose();
         }
     }
 }

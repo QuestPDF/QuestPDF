@@ -68,7 +68,6 @@ namespace QuestPDF.Companion
                 CompanionService.OnCompanionStopped += Stop;
 
                 await CompanionService.Connect(CancellationTokenSource.Token);
-                CompanionService.StartRenderRequestedPageSnapshotsTask(CancellationTokenSource.Token);
 
                 HotReloadManager.UpdateApplicationRequested += InvalidatePreview;
 
@@ -84,8 +83,7 @@ namespace QuestPDF.Companion
             }
             finally
             {
-                // release the companion service before signaling completion so that a successor session
-                // starting right after the await observes fully torn-down state
+                Stop();
                 CompanionService?.Dispose();
                 SessionCompletionSource.TrySetResult();
             }
@@ -134,8 +132,8 @@ namespace QuestPDF.Companion
             {
                 Interlocked.Exchange(ref IsRefreshPending, 0);
 
-                var pictures = await Task.Run(() => DocumentGenerator.GenerateCompanionContent(Document));
-                await CompanionService!.RefreshPreview(pictures);
+                var documentSnapshot = await Task.Run(() => DocumentGenerator.GenerateCompanionContent(Document));
+                await CompanionService!.RefreshPreview(documentSnapshot, CancellationTokenSource.Token);
             }
             catch (Exception exception)
             {
