@@ -46,7 +46,9 @@ internal class IgnoreTests : ConformanceTestBase
         return ExpectedSemanticTree.DocumentRoot(root =>
         {
             root.Child("P");
-            root.Child("Figure", figure => figure.Alt("A beautiful landscape"));
+            root.Child("Figure", figure => figure
+                .Alt("A beautiful landscape")
+                .Attribute("Layout", "BBox", new[] { 60f, 397.17035f, 535f, 712.60004f }));
             root.Child("P");
         });
     }

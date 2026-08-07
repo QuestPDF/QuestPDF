@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Numerics;
 using System.Text;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.DrawingCanvases;
@@ -31,13 +33,109 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         }
         
         RegisterCurrentSemanticNode();
-        
+
+        if (TagType is "Figure" or "Formula")
+            UpdateBoundingBoxAttribute(availableSpace);
+
         using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SemanticTreeNode.NodeId);
         
         SemanticTreeManager.PushOnStack(SemanticTreeNode);
         Child?.Draw(availableSpace);
         SemanticTreeManager.PopStack();
     }
+
+    #region Bounding Box
+
+    private SemanticTreeNode.Attribute? BoundingBoxAttribute { get; set; }
+    private int? BoundingBoxPageNumber { get; set; }
+    private bool IsBoundingBoxSuppressed { get; set; }
+
+    /// <summary>
+    /// Illustration elements (Figure, Formula) should provide the Layout/BBox attribute
+    /// that describes the position of their content on the page (ISO 32000-1, Layout attributes).
+    /// While veraPDF does not verify its presence, tools such as PAC (PDF Accessibility Checker) do.
+    /// </summary>
+    /// <remarks>
+    /// The BBox attribute is only meaningful for elements rendered entirely on a single page.
+    /// When content spans multiple pages (or is repeated on every page, e.g. inside a page header),
+    /// the attribute is removed and no longer generated.
+    /// </remarks>
+    private void UpdateBoundingBoxAttribute(Size availableSpace)
+    {
+        // the semantic tree is consumed after the initial rendering phase;
+        // values computed in later phases would never reach the output document
+        if (!PageContext.IsInitialRenderingPhase)
+            return;
+
+        if (IsBoundingBoxSuppressed)
+            return;
+
+        if (BoundingBoxPageNumber != null && BoundingBoxPageNumber != PageContext.CurrentPage)
+        {
+            IsBoundingBoxSuppressed = true;
+
+            if (BoundingBoxAttribute != null)
+            {
+                SemanticTreeNode?.Attributes.Remove(BoundingBoxAttribute);
+                BoundingBoxAttribute = null;
+            }
+
+            return;
+        }
+
+        var pageSize = SemanticTreeManager?.CurrentPageSize ?? Size.Zero;
+
+        if (pageSize.Height < Size.Epsilon)
+            return;
+
+        var contentSize = base.Measure(availableSpace);
+
+        if (contentSize.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+            return;
+
+        // the BBox attribute stores an axis-aligned rectangle,
+        // while the content may be translated, scaled or rotated by its parent elements
+        var transform = Canvas.GetCurrentMatrix().ToMatrix4x4();
+
+        var corners = new[]
+        {
+            Vector2.Transform(new Vector2(0, 0), transform),
+            Vector2.Transform(new Vector2(contentSize.Width, 0), transform),
+            Vector2.Transform(new Vector2(contentSize.Width, contentSize.Height), transform),
+            Vector2.Transform(new Vector2(0, contentSize.Height), transform)
+        };
+
+        // convert from the canvas coordinate space (top-left origin, y-axis down)
+        // to the PDF default user space (bottom-left origin, y-axis up)
+        // using the [left, bottom, right, top] value order
+        var boundingBox = new[]
+        {
+            corners.Min(x => x.X),
+            pageSize.Height - corners.Max(x => x.Y),
+            corners.Max(x => x.X),
+            pageSize.Height - corners.Min(x => x.Y)
+        };
+
+        if (BoundingBoxAttribute == null)
+        {
+            BoundingBoxAttribute = new SemanticTreeNode.Attribute
+            {
+                Owner = "Layout",
+                Name = "BBox",
+                Value = boundingBox
+            };
+
+            SemanticTreeNode!.Attributes.Add(BoundingBoxAttribute);
+        }
+        else
+        {
+            BoundingBoxAttribute.Value = boundingBox;
+        }
+
+        BoundingBoxPageNumber = PageContext.CurrentPage;
+    }
+
+    #endregion
 
     internal void RegisterCurrentSemanticNode()
     {

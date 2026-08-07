@@ -98,13 +98,13 @@ namespace QuestPDF.Drawing
             try
             {
                 var pageContext = new PageContext();
-                RenderPass(pageContext, new SemanticDocumentCanvas(), content);
+                RenderPass(pageContext, new SemanticDocumentCanvas(), content, semanticTreeManager);
                 pageContext.ProceedToNextRenderingPhase();
 
                 canvas.ConfigureWithSemanticTree(semanticTreeManager);
-                
+
                 canvas.BeginDocument();
-                RenderPass(pageContext, canvas, content);
+                RenderPass(pageContext, canvas, content, semanticTreeManager);
                 canvas.EndDocument();
             
                 if (canvas is CompanionDocumentCanvas companionCanvas)
@@ -141,7 +141,7 @@ namespace QuestPDF.Drawing
                 foreach (var documentPart in documentParts)
                 {
                     documentPart.PageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPart.PageContext, semanticDocumentCanvas, documentPart.Content);
+                    RenderPass(documentPart.PageContext, semanticDocumentCanvas, documentPart.Content, semanticTreeManager);
                 }
 
                 foreach (var documentPart in documentParts)
@@ -154,7 +154,7 @@ namespace QuestPDF.Drawing
                 foreach (var documentPart in documentParts)
                 {
                     documentPart.PageContext.SetDocumentId(documentPart.DocumentId);
-                    RenderPass(documentPart.PageContext, canvas, documentPart.Content);
+                    RenderPass(documentPart.PageContext, canvas, documentPart.Content, semanticTreeManager);
                     documentPart.Content.ReleaseDisposableChildren();
                 }
                 
@@ -216,7 +216,7 @@ namespace QuestPDF.Drawing
             return content;
         }
 
-        private static void RenderPass(PageContext pageContext, IDocumentCanvas canvas, ContainerElement content)
+        private static void RenderPass(PageContext pageContext, IDocumentCanvas canvas, ContainerElement content, SemanticTreeManager? semanticTreeManager)
         {
             content.InjectDependencies(pageContext, canvas.GetDrawingCanvas());
             content.VisitChildren(x => (x as IStateful)?.ResetState(hardReset: true));
@@ -225,6 +225,9 @@ namespace QuestPDF.Drawing
             {
                 pageContext.IncrementPageNumber();
                 var spacePlan = content.Measure(Size.Max);
+
+                if (semanticTreeManager != null)
+                    semanticTreeManager.CurrentPageSize = spacePlan;
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {

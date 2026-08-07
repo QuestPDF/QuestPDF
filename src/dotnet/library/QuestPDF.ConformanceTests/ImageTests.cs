@@ -54,6 +54,7 @@ internal class ImageTests : ConformanceTestBase
             root.Child("Figure", figure =>
             {
                 figure.Alt("Sample image description");
+                figure.Attribute("Layout", "BBox", new[] { 60f, 479.58136f, 360f, 698.2001f });
                 figure.Child("Caption", caption => caption.Child("P"));
             });
         });
