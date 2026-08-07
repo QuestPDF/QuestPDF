@@ -13,7 +13,7 @@ using QuestPDF.Drawing.DocumentCanvases;
 
 namespace QuestPDF.Companion
 {
-    internal sealed class CompanionService : IDisposable
+    internal sealed class CompanionService : IAsyncDisposable
     {
         private int Port { get; }
         private HttpClient HttpClient { get; }
@@ -257,12 +257,19 @@ namespace QuestPDF.Companion
             }
         }
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
             IsCompanionAttached = false;
-            
-            _ = StopRenderRequestedPageSnapshotsTask();
             HttpClient.Dispose();
+
+            try
+            {
+                await StopRenderRequestedPageSnapshotsTask();
+            }
+            catch
+            {
+                // ignored
+            }
         }
     }
 }

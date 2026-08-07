@@ -84,7 +84,10 @@ namespace QuestPDF.Companion
             finally
             {
                 Stop();
-                CompanionService?.Dispose();
+
+                if (CompanionService != null)
+                    await CompanionService.DisposeAsync();
+
                 SessionCompletionSource.TrySetResult();
             }
         }
