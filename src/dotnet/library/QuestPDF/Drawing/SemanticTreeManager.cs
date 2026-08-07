@@ -27,6 +27,13 @@ class SemanticTreeManager
     private SemanticTreeNode? Root { get; set; }
     private Stack<SemanticTreeNode> Stack { get; set; } = [];
 
+    /// <remarks>
+    /// Pages within a single document can have different sizes.
+    /// The value is updated by the rendering loop before each page is drawn,
+    /// and is used to convert element positions to the PDF coordinate space (bottom-left origin, y-axis up).
+    /// </remarks>
+    public Size CurrentPageSize { get; set; } = Size.Zero;
+
     public SemanticTreeManager()
     {
         PopulateWithTopLevelNode();

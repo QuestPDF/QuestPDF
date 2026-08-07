@@ -45,7 +45,9 @@ internal class SvgTests : ConformanceTestBase
         {
             root.Child("H1", h1 => h1.Alt("Conformance Test: SVG"));
             root.Child("P");
-            root.Child("Figure", figure => figure.Alt("Sample SVG image description"));
+            root.Child("Figure", figure => figure
+                .Alt("Sample SVG image description")
+                .Attribute("Layout", "BBox", new[] { 60f, 395.7432f, 535f, 674.40015f }));
         });
     }
 }
