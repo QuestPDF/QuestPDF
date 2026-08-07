@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using QuestPDF.Companion;
 using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Helpers;
@@ -66,9 +67,11 @@ namespace QuestPDF.Drawing.DocumentCanvases
         
         internal CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
 
-        public CompanionDocumentSnapshot GetContent()
+        public CompanionDocumentSnapshot GetSnapshot()
         {
-            return new CompanionDocumentSnapshot(PageSnapshots, Hierarchy);
+            var result = new CompanionDocumentSnapshot(PageSnapshots.ToList(), Hierarchy);
+            PageSnapshots.Clear();
+            return result;
         }
 
         #region IDisposable
@@ -82,6 +85,10 @@ namespace QuestPDF.Drawing.DocumentCanvases
         public void Dispose()
         {
             DrawingCanvas.Dispose();
+
+            foreach (var pageSnapshot in PageSnapshots)
+                pageSnapshot.Picture.Dispose();
+
             GC.SuppressFinalize(this);
         }
         

@@ -77,7 +77,7 @@ namespace QuestPDF.Drawing
         {
             using var canvas = new CompanionDocumentCanvas();
             RenderDocument(canvas, document, DocumentSettings.Default);
-            return canvas.GetContent();
+            return canvas.GetSnapshot();
         }
 
         internal static void RenderDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
