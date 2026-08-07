@@ -6,6 +6,7 @@ using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Drawing.Proxy;
 using QuestPDF.Elements;
+using QuestPDF.Elements.Table;
 using QuestPDF.Elements.Text;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Helpers;
@@ -210,9 +211,10 @@ namespace QuestPDF.Drawing
             if (semanticTreeManager != null)
             {
                 content.ApplySemanticParagraphs();
+                content.ApplySemanticTables();
                 content.InjectSemanticTreeManager(semanticTreeManager);
             }
-            
+
             return content;
         }
 
@@ -534,6 +536,43 @@ namespace QuestPDF.Drawing
                 foreach (var child in content.GetChildren())
                     ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
             }
+        }
+
+        /// <summary>
+        /// For every container marked with the SemanticTable method, finds the related Table structure
+        /// and enables its automated accessibility tagging (THead, TBody, TFoot, TR, TH, TD).
+        /// <para>
+        /// The search traverses only single-child containers (e.g. Padding, Border, Background).
+        /// Elements hosting multiple children (e.g. Column, Row) stop the search,
+        /// as the semantic relationship becomes ambiguous.
+        /// </para>
+        /// </summary>
+        internal static void ApplySemanticTables(this Element root)
+        {
+            root.VisitChildren(element =>
+            {
+                if (element is not SemanticTag { TagType: "Table" } semanticTableTag)
+                    return;
+
+                var currentElement = semanticTableTag.Child;
+
+                while (currentElement is ContainerElement containerElement)
+                {
+                    if (currentElement is TableRoot tableRoot)
+                    {
+                        tableRoot.EnableSemanticTagging();
+                        return;
+                    }
+
+                    currentElement = containerElement.Child;
+                }
+
+                throw new DocumentComposeException(
+                    "The container marked with the SemanticTable method does not contain a Table element. " +
+                    "Please call the Table method directly on the marked container, " +
+                    "optionally with single-child styling containers between them (e.g. Padding, Border or Background). " +
+                    "Elements hosting multiple children (e.g. Column, Row or Layers) interrupt this relationship.");
+            });
         }
 
         internal static void ApplySemanticParagraphs(this Element root)

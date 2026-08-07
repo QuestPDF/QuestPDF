@@ -207,6 +207,7 @@ namespace QuestPDF.Elements
             if (SemanticTreeManager != null)
             {
                 container.ApplySemanticParagraphs();
+                container.ApplySemanticTables();
                 container.InjectSemanticTreeManager(SemanticTreeManager);
             }
             
