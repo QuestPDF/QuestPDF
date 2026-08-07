@@ -133,18 +133,17 @@ namespace QuestPDF.Companion
             };
 
             await StopRenderRequestedPageSnapshotsTask();
-            RenderingTaskCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-            var renderingCancellationToken = RenderingTaskCancellation.Token;
-            _ = Task.Run(() => StartRenderRequestedPageSnapshotsTask(companionDocumentSnapshot, renderingCancellationToken), CancellationToken.None);
 
 #if NET8_0_OR_GREATER
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure);
+            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure, cancellationToken);
 #else
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, JsonSerializerOptions);
+            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, JsonSerializerOptions, cancellationToken);
 #endif
 
             result.EnsureSuccessStatusCode();
+            
+            RenderingTaskCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            _ = Task.Run(() => StartRenderRequestedPageSnapshotsTask(companionDocumentSnapshot, RenderingTaskCancellation.Token), CancellationToken.None);
         }
         
         private async Task StartRenderRequestedPageSnapshotsTask(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
@@ -178,6 +177,8 @@ namespace QuestPDF.Companion
                 RenderingTaskCancellation.Cancel();
 #endif
             RenderingTaskCancellation.Dispose();
+            
+            RenderingTaskCancellation = null;
         }
 
         private async Task RenderRequestedPageSnapshots(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
