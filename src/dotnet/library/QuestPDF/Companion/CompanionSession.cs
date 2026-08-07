@@ -138,6 +138,10 @@ namespace QuestPDF.Companion
                 var documentSnapshot = await Task.Run(() => DocumentGenerator.GenerateCompanionContent(Document));
                 await CompanionService!.RefreshPreview(documentSnapshot, CancellationTokenSource.Token);
             }
+            catch (OperationCanceledException) when (CancellationTokenSource.IsCancellationRequested)
+            {
+                // the preview session is ending; there is nothing to refresh anymore
+            }
             catch (Exception exception)
             {
                 await CompanionService!.InformAboutGenericException(exception);
