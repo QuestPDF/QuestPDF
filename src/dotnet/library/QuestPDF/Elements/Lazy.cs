@@ -65,6 +65,7 @@ internal sealed class Lazy : ContainerElement, ISemanticAware, IContentDirection
         if (SemanticTreeManager != null)
         {
             container.ApplySemanticParagraphs();
+            container.ApplySemanticTables();
             container.InjectSemanticTreeManager(SemanticTreeManager);
         }
         

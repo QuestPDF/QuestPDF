@@ -75,8 +75,6 @@ namespace QuestPDF.Fluent
     
     public sealed class TableDescriptor
     {
-        internal bool EnableAutomatedSemanticTagging { get; set; } = false;
-        
         private Table HeaderTable { get; } = new();
         private Table ContentTable { get; } = new();
         private Table FooterTable { get; } = new();
@@ -159,53 +157,71 @@ namespace QuestPDF.Fluent
 
         internal IElement CreateElement()
         {
-            var container = new Container();
+            var container = new TableRoot
+            {
+                HeaderTable = HeaderTable,
+                ContentTable = ContentTable,
+                FooterTable = FooterTable
+            };
 
             var hasHeader = HeaderTable.Cells.Any();
             var hasFooter = FooterTable.Cells.Any();
-            
+
             ConfigureTable(HeaderTable, Table.TablePartType.Header);
             ConfigureTable(ContentTable, Table.TablePartType.Body);
             ConfigureTable(FooterTable, Table.TablePartType.Footer);
-            
+
             var tableRequiresAdvancedHeaderTagging = Table.DoesTableBodyRequireExtendedHeaderTagging(HeaderTable.Cells, ContentTable.Cells);
             HeaderTable.TableRequiresAdvancedHeaderTagging = tableRequiresAdvancedHeaderTagging;
             ContentTable.TableRequiresAdvancedHeaderTagging = tableRequiresAdvancedHeaderTagging;
             ContentTable.HeaderCells = HeaderTable.Cells;
-            
+
             container
                 .Decoration(decoration =>
                 {
+                    // the slot containers are potential injection points for the accessibility tags (THead, TBody, TFoot),
+                    // applied when the table is later discovered inside a container marked with the SemanticTable method
                     decoration
                         .Before()
                         .ShowIf(hasHeader)
-                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("THead") : x)
+                        .NonTrackingElement(x =>
+                        {
+                            container.HeaderSlot = (Container)x;
+                            return x;
+                        })
                         .Element(HeaderTable);
-                    
+
                     decoration
                         .Content()
-                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TBody") : x)
+                        .NonTrackingElement(x =>
+                        {
+                            container.ContentSlot = (Container)x;
+                            return x;
+                        })
                         .ShowIf(ContentTable.Cells.Any())
                         .Element(ContentTable);
-                    
+
                     decoration
                         .After()
                         .ShowIf(hasFooter)
-                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TFoot") : x)
+                        .NonTrackingElement(x =>
+                        {
+                            container.FooterSlot = (Container)x;
+                            return x;
+                        })
                         .Element(FooterTable);
                 });
 
             return container;
-            
+
             void ConfigureTable(Table table, Table.TablePartType tablePartType)
             {
                 if (!table.Columns.Any())
                     throw new DocumentComposeException($"Table should have at least one column. Please call the '{nameof(ColumnsDefinition)}' method to define columns.");
-            
+
                 table.PlanCellPositions();
                 table.ValidateCellPositions();
-                
-                table.EnableAutomatedSemanticTagging = EnableAutomatedSemanticTagging;
+
                 table.PartType = tablePartType;
             }
         }
@@ -223,7 +239,6 @@ namespace QuestPDF.Fluent
         public static void Table(this IContainer element, Action<TableDescriptor> handler)
         {
             var descriptor = new TableDescriptor();
-            descriptor.EnableAutomatedSemanticTagging = element is SemanticTag { TagType: "Table" };
             handler(descriptor);
             element.Element(descriptor.CreateElement());
         }
