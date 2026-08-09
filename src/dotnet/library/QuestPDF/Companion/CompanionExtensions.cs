@@ -13,7 +13,7 @@ namespace QuestPDF.Companion
             LicenseChecker.ValidateLicense();
         }
 
-        #if NET6_0_OR_GREATER
+        #if NET8_0_OR_GREATER
         
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.support"]/*' />
         public static void ShowInCompanion(this IDocument document, int port = 12500)
@@ -34,13 +34,13 @@ namespace QuestPDF.Companion
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.notSupported"]/*' />
         public static void ShowInCompanion(this IDocument document, int port = 12500)
         {
-            throw new Exception("The hot-reload feature requires .NET 6 or later.");
+            throw new Exception("The hot-reload feature requires .NET 8 or later.");
         }
 
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="companion.notSupported"]/*' />
         public static async Task ShowInCompanionAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
         {
-            throw new Exception("The hot-reload feature requires .NET 6 or later.");
+            throw new Exception("The hot-reload feature requires .NET 8 or later.");
         }
 
         #endif

@@ -231,7 +231,7 @@ namespace QuestPDF.Drawing
                     pageContext.DecrementPageNumber();
                     canvas.EndDocument();
 
-                    #if NET6_0_OR_GREATER
+                    #if NET8_0_OR_GREATER
                     if (!CompanionService.IsCompanionAttached)
                         ThrowLayoutException();
                     #else

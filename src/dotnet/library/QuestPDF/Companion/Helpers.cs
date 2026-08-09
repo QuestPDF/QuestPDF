@@ -84,7 +84,7 @@ internal static class CompanionModelHelpers
         };
     }
     
-    #if NET6_0_OR_GREATER
+    #if NET8_0_OR_GREATER
     
     internal static CompanionCommands.ShowGenericException.StackFrame[] ParseStackTrace(this string? stackTrace)
     {

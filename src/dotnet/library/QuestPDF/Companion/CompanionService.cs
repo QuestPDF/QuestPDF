@@ -1,12 +1,10 @@
-﻿#if NET6_0_OR_GREATER
+﻿#if NET8_0_OR_GREATER
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing.DocumentCanvases;
@@ -26,17 +24,6 @@ namespace QuestPDF.Companion
 
         public static bool IsCompanionAttached { get; private set; }
         public static bool IsDocumentHotReloaded { get; set; } = false;
-        
-#if NET8_0_OR_GREATER
-        private static JsonSerializerOptions JsonSerializerOptions => CompanionJsonContext.Default.Options;
-#else
-        private static readonly JsonSerializerOptions JsonSerializerOptions = new()
-        {
-            MaxDepth = 512,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-        };
-#endif
 
         public CompanionService(int port)
         {
@@ -76,12 +63,7 @@ namespace QuestPDF.Companion
             {
                 while (true)
                 {
-#if NET8_0_OR_GREATER
                     using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), CompanionJsonContext.Default.Notify, cancellationToken);
-#else
-                    using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), JsonSerializerOptions, cancellationToken);
-#endif
-                    
                     result.EnsureSuccessStatusCode();
 
                     await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
@@ -103,11 +85,7 @@ namespace QuestPDF.Companion
             using var result = await HttpClient.GetAsync("/version");
             result.EnsureSuccessStatusCode();
 
-#if NET8_0_OR_GREATER
             var response = await result.Content.ReadFromJsonAsync(CompanionJsonContext.Default.GetVersionCommandResponse);
-#else
-            var response = await result.Content.ReadFromJsonAsync<CompanionCommands.GetVersionCommandResponse>();
-#endif
 
             if (response != null && response.SupportedVersions.Contains(RequiredCompanionApiVersion))
                 return;
@@ -134,11 +112,7 @@ namespace QuestPDF.Companion
 
             await StopRenderRequestedPageSnapshotsTask();
 
-#if NET8_0_OR_GREATER
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure, cancellationToken);
-#else
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, JsonSerializerOptions, cancellationToken);
-#endif
+                using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure, cancellationToken);
 
             result.EnsureSuccessStatusCode();
             
@@ -187,11 +161,7 @@ namespace QuestPDF.Companion
             using var getRequestedSnapshots = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests", cancellationToken);
             getRequestedSnapshots.EnsureSuccessStatusCode();
             
-#if NET8_0_OR_GREATER
             var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync(CompanionJsonContext.Default.PageSnapshotIndexCollection, cancellationToken);
-#else
-            var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>(cancellationToken: cancellationToken);
-#endif
             
             if (requestedSnapshots == null || !requestedSnapshots.Any())
                 return;
@@ -220,11 +190,7 @@ namespace QuestPDF.Companion
 
             var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
             
-#if NET8_0_OR_GREATER
             using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, CompanionJsonContext.Default.ProvideRenderedDocumentPage, cancellationToken);
-#else
-            using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, JsonSerializerOptions, cancellationToken);
-#endif
 
             provideRenderedImagesResult.EnsureSuccessStatusCode();
         }
@@ -236,12 +202,7 @@ namespace QuestPDF.Companion
                 Exception = Map(exception)
             };
             
-#if NET8_0_OR_GREATER
             using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, CompanionJsonContext.Default.ShowGenericException);
-#else
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, JsonSerializerOptions);
-#endif
-
             result.EnsureSuccessStatusCode();
             return;
 
