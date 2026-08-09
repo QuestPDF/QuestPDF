@@ -20,7 +20,8 @@ namespace QuestPDF.Companion
 
         private const int RequiredCompanionApiVersion = 3;
         
-        private CancellationTokenSource? RenderingTaskCancellation { get; set; }
+        private CancellationTokenSource? RenderingTaskCancellation;
+        private Task? RenderingTask;
 
         public static bool IsCompanionAttached { get; private set; }
         public static bool IsDocumentHotReloaded { get; set; } = false;
@@ -112,12 +113,15 @@ namespace QuestPDF.Companion
 
             await StopRenderRequestedPageSnapshotsTask();
 
-                using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure, cancellationToken);
+            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure, cancellationToken);
 
             result.EnsureSuccessStatusCode();
-            
-            RenderingTaskCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            _ = Task.Run(() => StartRenderRequestedPageSnapshotsTask(companionDocumentSnapshot, RenderingTaskCancellation.Token), CancellationToken.None);
+
+            var renderingCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            var renderingCancellationToken = renderingCancellation.Token;
+            RenderingTaskCancellation = renderingCancellation;
+
+            RenderingTask = StartRenderRequestedPageSnapshotsTask(companionDocumentSnapshot, renderingCancellationToken);
         }
         
         private async Task StartRenderRequestedPageSnapshotsTask(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
@@ -142,17 +146,18 @@ namespace QuestPDF.Companion
 
         private async Task StopRenderRequestedPageSnapshotsTask()
         {
-            if (RenderingTaskCancellation == null)
+            var renderingCancellation = Interlocked.Exchange(ref RenderingTaskCancellation, null);
+            var renderingTask = Interlocked.Exchange(ref RenderingTask, null);
+
+            if (renderingCancellation == null)
                 return;
+
+            await renderingCancellation.CancelAsync();
             
-#if NET8_0_OR_GREATER
-            await RenderingTaskCancellation.CancelAsync();
-#else
-                RenderingTaskCancellation.Cancel();
-#endif
-            RenderingTaskCancellation.Dispose();
-            
-            RenderingTaskCancellation = null;
+            if (renderingTask != null)
+                await renderingTask.ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
+
+            renderingCancellation.Dispose();
         }
 
         private async Task RenderRequestedPageSnapshots(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
