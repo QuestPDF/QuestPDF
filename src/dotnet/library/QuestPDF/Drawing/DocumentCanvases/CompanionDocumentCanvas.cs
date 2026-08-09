@@ -47,7 +47,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
     }
     
     internal sealed record CompanionDocumentSnapshot(
-        ICollection<CompanionPageSnapshot> Pictures,
+        IReadOnlyList<CompanionPageSnapshot> Pictures,
         CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy)
         : IDisposable
     {
@@ -69,7 +69,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
 
         public CompanionDocumentSnapshot GetSnapshot()
         {
-            var result = new CompanionDocumentSnapshot(PageSnapshots.ToList(), Hierarchy);
+            var result = new CompanionDocumentSnapshot(PageSnapshots.ToList(), Hierarchy.ImproveHierarchyStructure());
             PageSnapshots.Clear();
             return result;
         }

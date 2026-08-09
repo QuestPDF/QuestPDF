@@ -11,7 +11,7 @@ namespace QuestPDF.Companion;
 [JsonSourceGenerationOptions(MaxDepth = 512, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase, Converters = new[] { typeof(CompanionLicenseTypeJsonConverter), typeof(CompanionSpacePlanTypeJsonConverter) })]
 [JsonSerializable(typeof(CompanionCommands.Notify), TypeInfoPropertyName = "Notify")]
 [JsonSerializable(typeof(CompanionCommands.GetVersionCommandResponse), TypeInfoPropertyName = "GetVersionCommandResponse")]
-[JsonSerializable(typeof(ICollection<PageSnapshotIndex>), TypeInfoPropertyName = "PageSnapshotIndexCollection")]
+[JsonSerializable(typeof(List<PageSnapshotIndex>), TypeInfoPropertyName = "PageSnapshotIndexCollection")]
 [JsonSerializable(typeof(CompanionCommands.UpdateDocumentStructure), TypeInfoPropertyName = "UpdateDocumentStructure")]
 [JsonSerializable(typeof(CompanionCommands.ProvideRenderedDocumentPage), TypeInfoPropertyName = "ProvideRenderedDocumentPage")]
 [JsonSerializable(typeof(CompanionCommands.ShowGenericException), TypeInfoPropertyName = "ShowGenericException")]

@@ -1,9 +1,12 @@
 #if NET8_0_OR_GREATER
 
 using System;
+using System.Net.Http;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.DocumentCanvases;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Companion
@@ -18,9 +21,13 @@ namespace QuestPDF.Companion
         private CancellationTokenSource CancellationTokenSource { get; }
         private TaskCompletionSource SessionCompletionSource { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
 
-        private CompanionService? CompanionService { get; set; }
-        private SemaphoreSlim RefreshSemaphore { get; } = new(1, 1);
-        private int IsRefreshPending;
+        /// <summary>                                                                                                                                                                      
+        /// Delivers "regenerate the preview" signals from hot-reload events to the refresh worker.                                                                                        
+        /// Since every refresh picks up the newest code, one pending signal is enough:                                                                                                    
+        /// the single-item capacity with the DropWrite policy safely merges signal bursts into one refresh.                                                                               
+        /// </summary>
+        private Channel<bool> RefreshSignals { get; } = Channel.CreateBounded<bool>(
+            new BoundedChannelOptions(1) { FullMode = BoundedChannelFullMode.DropWrite });
 
         private Task Completion => SessionCompletionSource.Task;
 
@@ -64,17 +71,26 @@ namespace QuestPDF.Companion
         {
             try
             {
-                CompanionService = new CompanionService(Port);
-                CompanionService.OnCompanionStopped += Stop;
-
-                await CompanionService.Connect(CancellationTokenSource.Token);
+                using var companionService = new CompanionService(Port);
+                await companionService.Connect(CancellationTokenSource.Token);
 
                 HotReloadManager.UpdateApplicationRequested += InvalidatePreview;
 
                 try
                 {
-                    await RefreshPreview();
-                    await WaitUntilStopped();
+                    RefreshSignals.Writer.TryWrite(true);
+
+                    var heartbeat = companionService.RunHeartbeatLoop(CancellationTokenSource.Token);
+                    var refreshWorker = RunRefreshWorker(companionService, CancellationTokenSource.Token);
+                    
+                    await Task.WhenAny(heartbeat, refreshWorker);
+                    await CancellationTokenSource.CancelAsync();
+                    
+                    await Task.WhenAll(heartbeat, refreshWorker);
+                }
+                catch (Exception exception) when (exception is OperationCanceledException or HttpRequestException)
+                {
+                    // ignored
                 }
                 finally
                 {
@@ -83,11 +99,6 @@ namespace QuestPDF.Companion
             }
             finally
             {
-                Stop();
-
-                if (CompanionService != null)
-                    await CompanionService.DisposeAsync();
-
                 SessionCompletionSource.TrySetResult();
             }
         }
@@ -100,75 +111,97 @@ namespace QuestPDF.Companion
             }
             catch (ObjectDisposedException)
             {
-                // the preview session has already ended
+                // the preview session has already ended and released its resources
             }
         }
 
         private void InvalidatePreview(object? sender, EventArgs args)
         {
             CompanionService.IsDocumentHotReloaded = true;
-            _ = RefreshPreviewSafely();
+            RefreshSignals.Writer.TryWrite(true);
         }
 
-        private async Task RefreshPreviewSafely()
+        private async Task RunRefreshWorker(CompanionService companionService, CancellationToken cancellationToken)
         {
-            // coalesce hot-reload bursts: at most one refresh runs while one more waits;
-            // a refresh that starts later picks up the newest code anyway
-            if (Interlocked.Exchange(ref IsRefreshPending, 1) == 1)
+            while (await RefreshSignals.Reader.WaitToReadAsync(cancellationToken))
+            {
+                RefreshSignals.Reader.TryRead(out _);
+                await RefreshPreview(companionService, cancellationToken);
+            }
+        }
+
+        private async Task RefreshPreview(CompanionService companionService, CancellationToken cancellationToken)
+        {
+            using var documentSnapshot = await GenerateDocumentSnapshot(companionService, cancellationToken);
+
+            if (documentSnapshot == null)
                 return;
 
-            try
-            {
-                await RefreshPreview();
-            }
-            catch
-            {
-                // the Companion app is not reachable; the disconnect detection will end the session
-            }
+            if (!await TryUpdateDocumentStructure(companionService, documentSnapshot, cancellationToken))
+                return;
+
+            await ServeRenderRequestsUntilNextRefreshSignal(companionService, documentSnapshot, cancellationToken);
         }
 
-        private async Task RefreshPreview()
+        private async Task<CompanionDocumentSnapshot?> GenerateDocumentSnapshot(CompanionService companionService, CancellationToken cancellationToken)
         {
-            await RefreshSemaphore.WaitAsync(CancellationTokenSource.Token);
-
             try
             {
-                Interlocked.Exchange(ref IsRefreshPending, 0);
-
-                var documentSnapshot = await Task.Run(() => DocumentGenerator.GenerateCompanionContent(Document));
-                await CompanionService!.RefreshPreview(documentSnapshot, CancellationTokenSource.Token);
+                return await Task.Run(() => DocumentGenerator.GenerateCompanionContent(Document), cancellationToken);
             }
-            catch (OperationCanceledException) when (CancellationTokenSource.IsCancellationRequested)
+            catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
-                // the preview session is ending; there is nothing to refresh anymore
+                throw;
             }
             catch (Exception exception)
             {
-                await CompanionService!.InformAboutGenericException(exception);
-            }
-            finally
-            {
-                RefreshSemaphore.Release();
+                // the document cannot be generated, e.g. the user code has thrown;
+                // show the problem in the Companion app and wait for the next refresh signal
+                await companionService.InformAboutGenericException(exception, cancellationToken);
+                return null;
             }
         }
 
-        private async Task WaitUntilStopped()
+        private async Task<bool> TryUpdateDocumentStructure(CompanionService companionService, CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
         {
-            try
+            while (true)
             {
-                await Task.Delay(Timeout.InfiniteTimeSpan, CancellationTokenSource.Token);
+                try
+                {
+                    await companionService.UpdateDocumentStructure(documentSnapshot, cancellationToken);
+                    return true;
+                }
+                catch (HttpRequestException exception) when (exception.HttpRequestError == HttpRequestError.ConnectionError)
+                {
+                    // on localhost, a connection that cannot be established means that the Companion app
+                    // has been closed; the heartbeat loop ends the session within one tick
+                    return false;
+                }
+                catch (Exception exception) when (!cancellationToken.IsCancellationRequested && exception is HttpRequestException or TaskCanceledException)
+                {
+                    // the app is alive but temporarily unresponsive, e.g. busy processing the previous update
+                    await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
+                }
             }
-            catch (OperationCanceledException)
-            {
-                // the preview session has ended: the Companion app was closed, the caller cancelled,
-                // or another preview session was started
-            }
+        }
+        
+        private async Task ServeRenderRequestsUntilNextRefreshSignal(CompanionService companionService, CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
+        {
+            using var servingCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+            // observe the signal without consuming it: the refresh worker loop reads it right after this method returns
+            var nextRefreshSignal = RefreshSignals.Reader.WaitToReadAsync(servingCancellation.Token).AsTask();
+            var renderRequestServing = companionService.ServeRenderRequests(documentSnapshot, servingCancellation.Token);
+
+            await Task.WhenAny(nextRefreshSignal, renderRequestServing);
+            await servingCancellation.CancelAsync();
+            
+            await Task.WhenAll(nextRefreshSignal, renderRequestServing).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         }
 
         public void Dispose()
         {
             CancellationTokenSource.Dispose();
-            RefreshSemaphore.Dispose();
         }
     }
 }
