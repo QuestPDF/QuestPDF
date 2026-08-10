@@ -224,6 +224,8 @@ namespace QuestPDF.Drawing
             while(true)
             {
                 pageContext.IncrementPageNumber();
+                pageContext.CurrentPageSize = null;
+                
                 var spacePlan = content.Measure(Size.Max);
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
@@ -243,8 +245,11 @@ namespace QuestPDF.Drawing
 
                 try
                 {
-                    canvas.BeginPage(spacePlan);
-                    content.Draw(spacePlan);
+                    var pageSize = (Size)spacePlan;
+                    
+                    pageContext.CurrentPageSize = pageSize;
+                    canvas.BeginPage(pageSize);
+                    content.Draw(pageSize);
                 }
                 catch (Exception exception)
                 {

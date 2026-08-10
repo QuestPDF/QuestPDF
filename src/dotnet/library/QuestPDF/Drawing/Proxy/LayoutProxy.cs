@@ -27,17 +27,15 @@ internal sealed class LayoutProxy : ElementProxy
         if (!Canvas.Is<SkiaDrawingCanvas>())
             return;
         
-        var rect = Canvas
-            .GetCurrentMatrix()
-            .GetTransformedBoundingBox(size.Width, size.Height);
+        var bounds = Canvas.GetCurrentMatrix().GetTransformedBoundingBox(size);
 
         Snapshots.Add(new CompanionCommands.UpdateDocumentStructure.PageLocation
         {
             PageNumber = PageContext.CurrentPage,
-            Left = rect.Left,
-            Top = rect.Top,
-            Right = rect.Right,
-            Bottom = rect.Bottom
+            Left = bounds.Left,
+            Top = bounds.Top,
+            Right = bounds.Right,
+            Bottom = bounds.Bottom
         });
 
         bool ProvideIntrinsicSize()

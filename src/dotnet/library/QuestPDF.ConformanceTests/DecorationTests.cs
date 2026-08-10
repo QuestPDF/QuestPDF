@@ -79,12 +79,16 @@ internal class DecorationTests : ConformanceTestBase
     {
         return ExpectedSemanticTree.DocumentRoot(root =>
         {
-            root.Child("Figure", figure => figure.Alt("First page: decoration before"));
+            root.Child("Figure", figure => figure
+                .Alt("First page: decoration before")
+                .Attribute("Layout", "BBox", new[] { 50f, 875f, 250f, 925f }));
                 
             foreach (var i in Enumerable.Range(1, 10))
                 root.Child("P");
                 
-            root.Child("Figure", figure => figure.Alt("First page: decoration after"));
+            root.Child("Figure", figure => figure
+                .Alt("First page: decoration after")
+                .Attribute("Layout", "BBox", new[] { 50f, 50f, 250f, 100f }));
             
             foreach (var i in Enumerable.Range(1, 5))
                 root.Child("P");
