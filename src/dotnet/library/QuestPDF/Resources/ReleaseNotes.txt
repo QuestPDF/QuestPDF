@@ -4,3 +4,5 @@
 - The QuestPDF Companion app integration now requires dotnet 8 or higher.
 - Improved semantic coverage by emitting the /BBox attribute for image elements (which is required by some PDF/UA-1 validators).
 - Improved API consistency by deprecating the `AsSemanticHorizontalHeader` method in favor of `SemanticHorizontalHeader`.
+- Fixed the Rotate API behavior by changing the rotation origin from the top-left corner to the center of the element. This is a breaking change, but center-origin rotation is the expected behavior in practically all use cases.
+- Improved API naming consistency by deprecating the RotateLeft/RotateRight methods in favor of RotateLayoutCounterclockwise/RotateLayoutClockwise.
