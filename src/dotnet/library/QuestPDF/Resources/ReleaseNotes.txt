@@ -3,3 +3,4 @@
 - Improved the stability of the QuestPDF Companion integration in various scenarios.
 - The QuestPDF Companion app integration now requires dotnet 8 or higher.
 - Improved semantic coverage by emitting the /BBox attribute for image elements (which is required by some PDF/UA-1 validators).
+- Improved API consistency by deprecating the `AsSemanticHorizontalHeader` method in favor of `SemanticHorizontalHeader`.

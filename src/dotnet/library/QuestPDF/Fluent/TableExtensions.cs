@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements;
@@ -287,11 +288,22 @@ namespace QuestPDF.Fluent
             return tableCellContainer;
         }
 
+        [Obsolete("This method has been deprecated since version 2026.8. Please use the SemanticHorizontalHeader method instead.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static ITableCellContainer AsSemanticHorizontalHeader(this ITableCellContainer tableCellContainer)
+        {
+            if (tableCellContainer is TableCell tableCell)
+                tableCell.IsSemanticHorizontalHeader = true;
+
+            return tableCellContainer;
+        }
+        
         /// <summary>
         /// Marks the specified table cell as a semantic horizontal header.
         /// This allows assistive technologies to recognize the cell as a header, improving accessibility and semantic structure.
         /// </summary>
-        public static ITableCellContainer AsSemanticHorizontalHeader(this ITableCellContainer tableCellContainer)
+        public static ITableCellContainer SemanticHorizontalHeader(this ITableCellContainer tableCellContainer)
         {
             if (tableCellContainer is TableCell tableCell)
                 tableCell.IsSemanticHorizontalHeader = true;
