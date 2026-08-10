@@ -9,7 +9,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Companion;
 
-internal static class CompanionModelHelpers
+internal static partial class CompanionModelHelpers
 {
     internal static CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement ExtractHierarchy(this Element container)
     {
@@ -84,21 +84,27 @@ internal static class CompanionModelHelpers
         };
     }
     
-    #if NET6_0_OR_GREATER
-    
+    #if NET8_0_OR_GREATER
+
+    [GeneratedRegex(@"at\s+(?<codeLocation>.+)\s+in\s(?<fileName>.+)\s*:line\s(?<lineNumber>\d+)")]
+    private static partial Regex StackFrameWithSourceLocationRegex();
+
+    [GeneratedRegex(@"at\s+(?<codeLocation>.+)")]
+    private static partial Regex StackFrameRegex();
+
     internal static CompanionCommands.ShowGenericException.StackFrame[] ParseStackTrace(this string? stackTrace)
     {
         if (string.IsNullOrEmpty(stackTrace))
             return [];
 
-        var lines = stackTrace.Split([Environment.NewLine], StringSplitOptions.RemoveEmptyEntries);
-        
+        var lines = stackTrace.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+
         var frames = new List<CompanionCommands.ShowGenericException.StackFrame>();
 
-        foreach (string line in lines)
+        foreach (var line in lines)
         {
-            var fullMatch = Regex.Match(line, @"at\s+(?<codeLocation>.+)\s+in\s(?<fileName>.+)\s*:line\s(?<lineNumber>\d+)");
-            var codeOnlyMatch = Regex.Match(line, @"at\s+(?<codeLocation>.+)");
+            var fullMatch = StackFrameWithSourceLocationRegex().Match(line);
+            var codeOnlyMatch = StackFrameRegex().Match(line);
 
             if (fullMatch.Success)
             {
