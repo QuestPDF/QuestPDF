@@ -1,12 +1,9 @@
-﻿#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using QuestPDF.Drawing.DocumentCanvases;
@@ -15,120 +12,105 @@ namespace QuestPDF.Companion
 {
     internal sealed class CompanionService : IDisposable
     {
-        private int Port { get; }
-        private HttpClient HttpClient { get; }
-        
-        public event Action? OnCompanionStopped;
-
         private const int RequiredCompanionApiVersion = 3;
-        
-        private CompanionDocumentSnapshot? CurrentDocumentSnapshot { get; set; }
+
+        private HttpClient HttpClient { get; }
 
         public static bool IsCompanionAttached { get; private set; }
-        public static bool IsDocumentHotReloaded { get; set; } = false;
-        
-#if NET8_0_OR_GREATER
-        private static JsonSerializerOptions JsonSerializerOptions => CompanionJsonContext.Default.Options;
-#else
-        private static readonly JsonSerializerOptions JsonSerializerOptions = new()
-        {
-            MaxDepth = 512,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
-        };
-#endif
+        public static bool IsDocumentHotReloaded { get; set; }
 
         public CompanionService(int port)
         {
             IsCompanionAttached = true;
-            
-            Port = port;
+
             HttpClient = new()
             {
-                BaseAddress = new Uri($"http://localhost:{port}/"), 
+                BaseAddress = new Uri($"http://localhost:{port}/"),
                 Timeout = TimeSpan.FromSeconds(5)
             };
         }
 
-        public async Task Connect(CancellationToken cancellationToken)
+        public void Dispose()
         {
-            await CheckIfCompanionIsRunning();
-            await CheckCompanionVersionCompatibility();
-            _ = StartNotifyPresenceTask(cancellationToken);
+            IsCompanionAttached = false;
+            HttpClient.Dispose();
         }
 
-        private async Task CheckIfCompanionIsRunning()
+        public async Task Connect(CancellationToken cancellationToken)
+        {
+            await CheckIfCompanionIsRunning(cancellationToken);
+            await CheckCompanionVersionCompatibility(cancellationToken);
+        }
+
+        private async Task CheckIfCompanionIsRunning(CancellationToken cancellationToken)
         {
             try
             {
-                using var result = await HttpClient.GetAsync("/ping");
+                using var result = await HttpClient.GetAsync("/ping", cancellationToken);
                 result.EnsureSuccessStatusCode();
             }
-            catch (Exception exception)
+            catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
             {
                 throw new Exception("Cannot connect to the QuestPDF Companion tool. Please ensure that the tool is running and the port is correct. Learn more: https://www.questpdf.com/companion/usage.html", exception);
             }
         }
 
-        internal async Task StartNotifyPresenceTask(CancellationToken cancellationToken)
+        private async Task CheckCompanionVersionCompatibility(CancellationToken cancellationToken)
         {
-            try
-            {
-                while (true)
-                {
-#if NET8_0_OR_GREATER
-                    using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), CompanionJsonContext.Default.Notify, cancellationToken);
-#else
-                    using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), JsonSerializerOptions, cancellationToken);
-#endif
-                    
-                    result.EnsureSuccessStatusCode();
-
-                    await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
-                }
-            }
-            catch when (cancellationToken.IsCancellationRequested)
-            {
-                // the preview session has ended
-            }
-            catch
-            {
-                // the Companion app is not reachable
-                OnCompanionStopped?.Invoke();
-            }
-        }
-
-        private async Task CheckCompanionVersionCompatibility()
-        {
-            using var result = await HttpClient.GetAsync("/version");
+            using var result = await HttpClient.GetAsync("/version", cancellationToken);
             result.EnsureSuccessStatusCode();
 
-#if NET8_0_OR_GREATER
-            var response = await result.Content.ReadFromJsonAsync(CompanionJsonContext.Default.GetVersionCommandResponse);
-#else
-            var response = await result.Content.ReadFromJsonAsync<CompanionCommands.GetVersionCommandResponse>();
-#endif
+            var response = await result.Content.ReadFromJsonAsync(CompanionJsonContext.Default.GetVersionCommandResponse, cancellationToken);
 
             if (response != null && response.SupportedVersions.Contains(RequiredCompanionApiVersion))
                 return;
-            
-            throw new Exception($"The QuestPDF Companion application is not compatible. Please install the QuestPDF Companion tool in a proper version.");
+
+            throw new Exception("The QuestPDF Companion application is not compatible. Please install the QuestPDF Companion tool in a proper version.");
+        }
+        
+        public async Task RunHeartbeatLoop(CancellationToken cancellationToken)
+        {
+            using var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(250));
+
+            while (await timer.WaitForNextTickAsync(cancellationToken))
+            {
+                var isCompanionRunning = await SendHeartbeat(cancellationToken);
+
+                if (!isCompanionRunning)
+                    return;
+            }
         }
 
-        public async Task RefreshPreview(CompanionDocumentSnapshot companionDocumentSnapshot)
+        /// <summary>
+        /// Sends a single heartbeat. Returns false only when the Companion app has been closed.
+        /// </summary>
+        private async Task<bool> SendHeartbeat(CancellationToken cancellationToken)
         {
-            var oldDocumentSnapshot = CurrentDocumentSnapshot;
-            CurrentDocumentSnapshot = companionDocumentSnapshot;
-            
-            foreach (var companionPageSnapshot in oldDocumentSnapshot?.Pictures ?? [])
-                companionPageSnapshot.Picture.Dispose();
-            
-            var documentStructure = new CompanionCommands.UpdateDocumentStructure
+            try
             {
-                Hierarchy = companionDocumentSnapshot.Hierarchy.ImproveHierarchyStructure(),
+                using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), CompanionJsonContext.Default.Notify, cancellationToken);
+                return true;
+            }
+            catch (HttpRequestException exception) when (exception.HttpRequestError == HttpRequestError.ConnectionError)
+            {
+                // on localhost, a connection that cannot be established means that the Companion app has been closed
+                return false;
+            }
+            catch when (!cancellationToken.IsCancellationRequested)
+            {
+                // the app is alive but temporarily unresponsive
+                return true;
+            }
+        }
+
+        public async Task UpdateDocumentStructure(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
+        {
+            var command = new CompanionCommands.UpdateDocumentStructure
+            {
+                Hierarchy = documentSnapshot.Hierarchy,
                 IsDocumentHotReloaded = IsDocumentHotReloaded,
-                
-                Pages = companionDocumentSnapshot
+
+                Pages = documentSnapshot
                     .Pictures
                     .Select(x => new CompanionCommands.UpdateDocumentStructure.PageSize
                     {
@@ -138,101 +120,84 @@ namespace QuestPDF.Companion
                     .ToArray()
             };
 
-#if NET8_0_OR_GREATER
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, CompanionJsonContext.Default.UpdateDocumentStructure);
-#else
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", documentStructure, JsonSerializerOptions);
-#endif
-
+            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", command, CompanionJsonContext.Default.UpdateDocumentStructure, cancellationToken);
             result.EnsureSuccessStatusCode();
         }
         
-        public void StartRenderRequestedPageSnapshotsTask(CancellationToken cancellationToken)
+        public async Task ServeRenderRequests(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
         {
-            Task.Run(async () =>
+            while (true)
             {
                 try
                 {
-                    while (true)
-                    {
-                        try
-                        {
-                            await RenderRequestedPageSnapshots();
-                        }
-                        catch when (!cancellationToken.IsCancellationRequested)
-                        {
-                            // the Companion app is temporarily not reachable; retry after a delay
-                            await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
-                        }
-                    }
+                    await ServeRenderRequestsRound(documentSnapshot, cancellationToken);
                 }
-                catch when (cancellationToken.IsCancellationRequested)
+                catch (HttpRequestException exception) when (exception.HttpRequestError == HttpRequestError.ConnectionError)
                 {
-                    // the preview session has ended
+                    // on localhost, a connection that cannot be established means that the Companion app has been closed
+                    return;
                 }
-            }, CancellationToken.None);
+                catch (Exception exception) when (!cancellationToken.IsCancellationRequested && exception is HttpRequestException or TaskCanceledException)
+                {
+                    // the app is alive but the round failed, e.g. it timed out while the app was busy
+                    await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
+                }
+            }
         }
 
-        private async Task RenderRequestedPageSnapshots()
+        private async Task ServeRenderRequestsRound(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
         {
-            // get requests (companion keeps the http connection for 2 seconds, waiting for new rendering requests)
-            using var getRequestedSnapshots = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests");
-            getRequestedSnapshots.EnsureSuccessStatusCode();
-            
-#if NET8_0_OR_GREATER
-            var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync(CompanionJsonContext.Default.PageSnapshotIndexCollection);
-#else
-            var requestedSnapshots = await getRequestedSnapshots.Content.ReadFromJsonAsync<ICollection<PageSnapshotIndex>>();
-#endif
-            
-            if (requestedSnapshots == null || !requestedSnapshots.Any())
-                return;
-            
-            if (CurrentDocumentSnapshot == null)
+            // the Companion app keeps this connection open for up to 2 seconds, waiting for new rendering requests
+            using var renderingRequestsResponse = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests", cancellationToken);
+            renderingRequestsResponse.EnsureSuccessStatusCode();
+
+            var renderingRequests = await renderingRequestsResponse.Content.ReadFromJsonAsync(CompanionJsonContext.Default.PageSnapshotIndexCollection, cancellationToken);
+
+            if (renderingRequests == null || renderingRequests.Count == 0)
                 return;
 
-            var renderingTasks = requestedSnapshots
-                .Select(index => Task.Run(() =>
-                {
-                    var image = CurrentDocumentSnapshot
-                        .Pictures
-                        .ElementAt(index.PageIndex)
-                        .RenderImage(index.ZoomLevel);
+            var renderedPages = renderingRequests
+                .AsParallel()
+                .AsOrdered()
+                .WithCancellation(cancellationToken)
+                .Select(RenderPage)
+                .ToArray();
 
-                    return new CompanionCommands.ProvideRenderedDocumentPage.RenderedPage
-                    {
-                        PageIndex = index.PageIndex,
-                        ZoomLevel = index.ZoomLevel,
-                        ImageData = Convert.ToBase64String(image)
-                    };
-                }))
-                .ToList();
-
-            var renderedPages = await Task.WhenAll(renderingTasks);
             var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
-#if NET8_0_OR_GREATER
-            using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, CompanionJsonContext.Default.ProvideRenderedDocumentPage);
-#else
-            using var provideRenderedImagesResult = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, JsonSerializerOptions);
-#endif
 
-            provideRenderedImagesResult.EnsureSuccessStatusCode();
-        }
-        
-        internal async Task InformAboutGenericException(Exception exception)
-        {
-            var command = new CompanionCommands.ShowGenericException
+            using var provideRenderedImagesResponse = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, CompanionJsonContext.Default.ProvideRenderedDocumentPage, cancellationToken);
+            provideRenderedImagesResponse.EnsureSuccessStatusCode();
+
+            CompanionCommands.ProvideRenderedDocumentPage.RenderedPage RenderPage(PageSnapshotIndex request)
             {
-                Exception = Map(exception)
-            };
-            
-#if NET8_0_OR_GREATER
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, CompanionJsonContext.Default.ShowGenericException);
-#else
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, JsonSerializerOptions);
-#endif
+                var image = documentSnapshot.Pictures[request.PageIndex].RenderImage(request.ZoomLevel);
 
-            result.EnsureSuccessStatusCode();
+                return new CompanionCommands.ProvideRenderedDocumentPage.RenderedPage
+                {
+                    PageIndex = request.PageIndex,
+                    ZoomLevel = request.ZoomLevel,
+                    ImageData = Convert.ToBase64String(image)
+                };
+            }
+        }
+
+        public async Task InformAboutGenericException(Exception exception, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new CompanionCommands.ShowGenericException
+                {
+                    Exception = Map(exception)
+                };
+
+                using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/genericException/show", command, CompanionJsonContext.Default.ShowGenericException, cancellationToken);
+                result.EnsureSuccessStatusCode();
+            }
+            catch
+            {
+                // ignored
+            }
+
             return;
 
             static CompanionCommands.ShowGenericException.GenericExceptionDetails Map(Exception exception)
@@ -245,15 +210,6 @@ namespace QuestPDF.Companion
                     InnerException = exception.InnerException == null ? null : Map(exception.InnerException)
                 };
             }
-        }
-
-        public void Dispose()
-        {
-            IsCompanionAttached = false;
-            HttpClient.Dispose();
-            
-            foreach (var companionPageSnapshot in CurrentDocumentSnapshot?.Pictures ?? [])
-                companionPageSnapshot.Picture.Dispose();
         }
     }
 }

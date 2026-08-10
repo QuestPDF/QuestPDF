@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using QuestPDF.Companion;
 using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Helpers;
@@ -45,10 +46,16 @@ namespace QuestPDF.Drawing.DocumentCanvases
         }
     }
     
-    internal sealed class CompanionDocumentSnapshot
+    internal sealed record CompanionDocumentSnapshot(
+        IReadOnlyList<CompanionPageSnapshot> Pictures,
+        CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy)
+        : IDisposable
     {
-        public ICollection<CompanionPageSnapshot> Pictures { get; set; }
-        public CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
+        public void Dispose()
+        {
+            foreach (var pageSnapshot in Pictures)
+                pageSnapshot.Picture.Dispose();
+        }
     }
     
     internal sealed class CompanionDocumentCanvas : IDocumentCanvas, IDisposable
@@ -60,13 +67,11 @@ namespace QuestPDF.Drawing.DocumentCanvases
         
         internal CompanionCommands.UpdateDocumentStructure.DocumentHierarchyElement Hierarchy { get; set; }
 
-        public CompanionDocumentSnapshot GetContent()
+        public CompanionDocumentSnapshot GetSnapshot()
         {
-            return new CompanionDocumentSnapshot
-            {
-                Pictures = PageSnapshots,
-                Hierarchy = Hierarchy
-            };
+            var result = new CompanionDocumentSnapshot(PageSnapshots.ToList(), Hierarchy.ImproveHierarchyStructure());
+            PageSnapshots.Clear();
+            return result;
         }
 
         #region IDisposable
@@ -80,6 +85,10 @@ namespace QuestPDF.Drawing.DocumentCanvases
         public void Dispose()
         {
             DrawingCanvas.Dispose();
+
+            foreach (var pageSnapshot in PageSnapshots)
+                pageSnapshot.Picture.Dispose();
+
             GC.SuppressFinalize(this);
         }
         
