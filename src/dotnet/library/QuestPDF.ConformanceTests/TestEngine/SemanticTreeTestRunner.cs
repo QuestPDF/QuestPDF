@@ -92,7 +92,14 @@ internal static class SemanticTreeTestRunner
                 {
                     Assert.That(actualAttribute.Owner, Is.EqualTo(expectedAttribute.Owner), "Attribute owner mismatch");
                     Assert.That(actualAttribute.Name, Is.EqualTo(expectedAttribute.Name), "Attribute name mismatch");
-                    Assert.That(actualAttribute.Value, Is.EqualTo(expectedAttribute.Value), $"Attribute value mismatch for '{expectedAttribute.Owner}:{expectedAttribute.Name}");
+
+                    var valueMismatchMessage = $"Attribute value mismatch for '{expectedAttribute.Owner}:{expectedAttribute.Name}";
+
+                    // layout-derived attributes (e.g. BBox) are subject to floating point rounding
+                    if (expectedAttribute.Value is float[] expectedNumbers)
+                        Assert.That(actualAttribute.Value, Is.EqualTo(expectedNumbers).Within(Size.Epsilon), valueMismatchMessage);
+                    else
+                        Assert.That(actualAttribute.Value, Is.EqualTo(expectedAttribute.Value), valueMismatchMessage);
                 }
             }   
         }

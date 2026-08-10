@@ -6,6 +6,8 @@ namespace QuestPDF.Infrastructure
 {
     internal sealed class PageContext : IPageContext
     {
+        public Size? CurrentPageSize { get; set; }
+
         public bool IsInitialRenderingPhase { get; private set; } = true;
         public int DocumentLength { get; private set; }
         private List<DocumentLocation> Locations { get; } = new();

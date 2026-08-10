@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.DrawingCanvases;
@@ -34,6 +35,9 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         
         using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SemanticTreeNode.NodeId);
         
+        if (TagType is "Figure" or "Formula")
+            CaptureBoundingBox(availableSpace);
+
         SemanticTreeManager.PushOnStack(SemanticTreeNode);
         Child?.Draw(availableSpace);
         SemanticTreeManager.PopStack();
@@ -116,6 +120,43 @@ internal class SemanticTag : ContainerElement, ISemanticAware
             
             currentChild = (currentChild as ContainerElement)?.Child;
         }
+    }
+    
+    private void CaptureBoundingBox(Size availableSpace)
+    {
+        if (SemanticTreeNode == null)
+            return;
+        
+        if (!PageContext.IsInitialRenderingPhase)
+            return;
+
+        if (PageContext.CurrentPageSize == null)
+            return;
+
+        if (SemanticTreeNode.Attributes.Any(x => x is { Owner: "Layout", Name: "BBox" }))
+            return;
+        
+        if (base.Measure(availableSpace).Type is not SpacePlanType.FullRender)
+            return;
+        
+        var bounds = Canvas.GetCurrentMatrix().GetTransformedBoundingBox(availableSpace);
+        var pageHeight = PageContext.CurrentPageSize.Value.Height;
+
+        // the PDF coordinate space starts at the bottom-left corner of the page
+        var boundingBox = new[]
+        {
+            (float)Math.Floor(bounds.Left),
+            (float)Math.Floor(pageHeight - bounds.Bottom),
+            (float)Math.Ceiling(bounds.Right),
+            (float)Math.Ceiling(pageHeight - bounds.Top)
+        };
+
+        SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+        {
+            Owner = "Layout",
+            Name = "BBox",
+            Value = boundingBox
+        });
     }
 
     internal override string? GetCompanionHint()

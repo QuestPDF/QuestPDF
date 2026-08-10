@@ -2,3 +2,4 @@
 - Improved the developer experience when using `GeneratePdfAndShow` and `GenerateXpsAndShow` methods.
 - Improved the stability of the QuestPDF Companion integration in various scenarios.
 - The QuestPDF Companion app integration now requires dotnet 8 or higher.
+- Improved semantic coverage by emitting the /BBox attribute for image elements (which is required by some PDF/UA-1 validators).

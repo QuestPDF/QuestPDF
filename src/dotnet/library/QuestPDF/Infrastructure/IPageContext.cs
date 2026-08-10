@@ -29,6 +29,8 @@ namespace QuestPDF.Infrastructure
     
     internal interface IPageContext
     {
+        Size? CurrentPageSize { get; }
+
         bool IsInitialRenderingPhase { get; }
         int DocumentLength { get; }
         int CurrentPage { get; }
