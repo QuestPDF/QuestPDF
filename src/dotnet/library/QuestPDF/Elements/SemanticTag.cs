@@ -35,8 +35,7 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         
         using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SemanticTreeNode.NodeId);
         
-        if (TagType is "Figure" or "Formula")
-            CaptureBoundingBox(availableSpace);
+        CaptureBoundingBoxIfFigureTag(availableSpace);
 
         SemanticTreeManager.PushOnStack(SemanticTreeNode);
         Child?.Draw(availableSpace);
@@ -47,12 +46,9 @@ internal class SemanticTag : ContainerElement, ISemanticAware
     {
         if (SemanticTreeNode != null)
             return;
-        
-        if (TagType is "H" or "H1" or "H2" or "H3" or "H4" or "H5" or "H6")
-            UpdateHeaderText();
-        
-        if (TagType is "Link")
-            UpdateDescriptionOfInnerLink();
+
+        UpdateTitleIfHeaderTag();
+        UpdateDescriptionIfLinkTag();
         
         var id = SemanticTreeManager.GetNextNodeId();
             
@@ -67,8 +63,11 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         SemanticTreeManager.AddNode(SemanticTreeNode);
     }
 
-    private void UpdateHeaderText()
+    private void UpdateTitleIfHeaderTag()
     {
+        if (TagType is not ("H" or "H1" or "H2" or "H3" or "H4" or "H5" or "H6"))
+            return;
+        
         if (!string.IsNullOrWhiteSpace(Alt))
             return;
         
@@ -97,8 +96,11 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         }
     }
     
-    private void UpdateDescriptionOfInnerLink()
+    private void UpdateDescriptionIfLinkTag()
     {
+        if (TagType is not "Link")
+            return;
+        
         if (string.IsNullOrWhiteSpace(Alt))
             return;
         
@@ -122,8 +124,11 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         }
     }
     
-    private void CaptureBoundingBox(Size availableSpace)
+    private void CaptureBoundingBoxIfFigureTag(Size availableSpace)
     {
+        if (TagType is not ("Figure" or "Formula"))
+            return;
+        
         if (SemanticTreeNode == null)
             return;
         
