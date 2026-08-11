@@ -69,9 +69,9 @@ class SemanticTreeManager
         Stack.Pop();
     }
     
-    public SemanticTreeNode PeekStack()
+    public SemanticTreeNode? TryPeekStack()
     {
-        return Stack.Peek();
+        return Stack.Count > 0 ? Stack.Peek() : null;
     }
     
     public void Reset()

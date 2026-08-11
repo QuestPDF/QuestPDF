@@ -76,8 +76,6 @@ namespace QuestPDF.Fluent
     
     public sealed class TableDescriptor
     {
-        internal bool EnableAutomatedSemanticTagging { get; set; } = false;
-        
         private Table HeaderTable { get; } = new();
         private Table ContentTable { get; } = new();
         private Table FooterTable { get; } = new();
@@ -180,19 +178,16 @@ namespace QuestPDF.Fluent
                     decoration
                         .Before()
                         .ShowIf(hasHeader)
-                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("THead") : x)
                         .Element(HeaderTable);
                     
                     decoration
                         .Content()
-                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TBody") : x)
                         .ShowIf(ContentTable.Cells.Any())
                         .Element(ContentTable);
                     
                     decoration
                         .After()
                         .ShowIf(hasFooter)
-                        .NonTrackingElement(x => EnableAutomatedSemanticTagging ? x.SemanticTag("TFoot") : x)
                         .Element(FooterTable);
                 });
 
@@ -206,7 +201,6 @@ namespace QuestPDF.Fluent
                 table.PlanCellPositions();
                 table.ValidateCellPositions();
                 
-                table.EnableAutomatedSemanticTagging = EnableAutomatedSemanticTagging;
                 table.PartType = tablePartType;
             }
         }
@@ -224,7 +218,6 @@ namespace QuestPDF.Fluent
         public static void Table(this IContainer element, Action<TableDescriptor> handler)
         {
             var descriptor = new TableDescriptor();
-            descriptor.EnableAutomatedSemanticTagging = element is SemanticTag { TagType: "Table" };
             handler(descriptor);
             element.Element(descriptor.CreateElement());
         }
