@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
- using System.Linq;
+using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.DrawingCanvases;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements.Table
@@ -374,7 +376,6 @@ namespace QuestPDF.Elements.Table
             Footer
         }
         
-        internal bool EnableAutomatedSemanticTagging { get; set; }
         private bool IsSemanticTaggingApplied { get; set; }
         public SemanticTreeManager? SemanticTreeManager { get; set; } = new();
 
@@ -384,20 +385,41 @@ namespace QuestPDF.Elements.Table
 
         private void RegisterSemanticTree()
         {
+            if (IsSemanticTaggingApplied)
+                return;
+            
+            if (Canvas.Is<DiscardDrawingCanvas>())
+                return;
+
             if (SemanticTreeManager == null)
                 return;
             
             if (SemanticTreeManager.IsCurrentContentArtifact())
                 return;
             
-            if (!EnableAutomatedSemanticTagging)
+            if (!Cells.Any())
                 return;
             
-            if (IsSemanticTaggingApplied)
+            if (SemanticTreeManager.TryPeekStack()?.Type != "Table")
                 return;
-            
+
             IsSemanticTaggingApplied = true;
-            
+
+            var sectionSemanticTreeNode = new SemanticTreeNode
+            {
+                NodeId = SemanticTreeManager.GetNextNodeId(),
+                Type = PartType switch
+                {
+                    TablePartType.Header => "THead",
+                    TablePartType.Body => "TBody",
+                    TablePartType.Footer => "TFoot",
+                    _ => throw new ArgumentOutOfRangeException()
+                }
+            };
+
+            SemanticTreeManager.AddNode(sectionSemanticTreeNode);
+            SemanticTreeManager.PushOnStack(sectionSemanticTreeNode);
+
             foreach (var tableRow in Cells.GroupBy(x => x.Row))
             {
                 var rowSemanticTreeNode = new SemanticTreeNode()
@@ -434,6 +456,8 @@ namespace QuestPDF.Elements.Table
                 
                 SemanticTreeManager.PopStack();
             }
+
+            SemanticTreeManager.PopStack();
 
             AssignCellAttributesForHeaderCellRoles();
             

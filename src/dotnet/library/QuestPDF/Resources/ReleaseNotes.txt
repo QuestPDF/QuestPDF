@@ -6,3 +6,4 @@
 - Improved API consistency by deprecating the `AsSemanticHorizontalHeader` method in favor of `SemanticHorizontalHeader`.
 - Fixed the Rotate API behavior by changing the rotation origin from the top-left corner to the center of the element. This is a breaking change, but center-origin rotation is the expected behavior in practically all use cases.
 - Improved API naming consistency by deprecating the RotateLeft/RotateRight methods in favor of RotateLayoutCounterclockwise/RotateLayoutClockwise.
+- Improved the automated table semantic tagging: it is now applied whenever the Table element is placed within the SemanticTable container, even indirectly. It also enables support for nested Semantic captions.
