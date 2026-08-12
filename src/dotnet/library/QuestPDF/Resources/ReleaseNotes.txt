@@ -1,9 +1,8 @@
-- Improved the image generation API: images are now always generated with a white background by default, so that the output resembles the document as displayed in a PDF viewer. Previously, PNG and WEBP images were generated with a transparent background. To restore the previous behavior, enable the new `ImageGenerationSettings.UseTransparentBackground` setting (applies only to image formats that support transparency: PNG and WEBP).
-- Improved the developer experience when using `GeneratePdfAndShow` and `GenerateXpsAndShow` methods.
-- Improved the stability of the QuestPDF Companion integration in various scenarios.
-- The QuestPDF Companion app integration now requires dotnet 8 or higher.
-- Improved semantic coverage by emitting the /BBox attribute for image elements (which is required by some PDF/UA-1 validators).
-- Improved API consistency by deprecating the `AsSemanticHorizontalHeader` method in favor of `SemanticHorizontalHeader`.
-- Fixed the Rotate API behavior by changing the rotation origin from the top-left corner to the center of the element. This is a breaking change, but center-origin rotation is the expected behavior in practically all use cases.
-- Improved API naming consistency by deprecating the RotateLeft/RotateRight methods in favor of RotateLayoutCounterclockwise/RotateLayoutClockwise.
-- Improved the automated table semantic tagging: it is now applied whenever the Table element is placed within the SemanticTable container, even indirectly. It also enables support for nested Semantic captions.
+- Breaking change: The Rotate API now rotates elements around their center instead of the top-left corner. Center-origin rotation is the expected behavior in virtually all use cases.
+- Behavioral change: Generated images now use a white background by default, so the output matches how the document appears in a PDF viewer. Previously, PNG and WEBP images had a transparent background. To restore the old behavior, enable ImageGenerationSettings.UseTransparentBackground (applies only to formats supporting transparency: PNG and WEBP).
+- Automated table semantic tagging is now applied whenever a Table element is placed inside a SemanticTable container, even indirectly. Nested semantic captions are now supported as well.
+- Image elements now emit the /BBox attribute, improving PDF/UA-1 compliance with validators that require it.
+- Improved the stability of the QuestPDF Companion integration. The integration now requires .NET 8 or newer.
+- Improved the developer experience of the GeneratePdfAndShow and GenerateXpsAndShow methods.
+- Deprecated AsSemanticHorizontalHeader in favor of SemanticHorizontalHeader for API naming consistency.
+- Deprecated RotateLeft and RotateRight in favor of RotateLayoutCounterclockwise and RotateLayoutClockwise, which better describe what these methods do.
