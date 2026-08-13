@@ -82,11 +82,12 @@ namespace QuestPDF.Companion
 
                     var heartbeat = companionService.RunHeartbeatLoop(CancellationTokenSource.Token);
                     var refreshWorker = RunRefreshWorker(companionService, CancellationTokenSource.Token);
+                    var renderWorker = companionService.ServeRenderRequests(CancellationTokenSource.Token);
+                    var allTasks = new[] { heartbeat, refreshWorker, renderWorker };
                     
-                    await Task.WhenAny(heartbeat, refreshWorker);
+                    await Task.WhenAny(allTasks);
                     await CancellationTokenSource.CancelAsync();
-                    
-                    await Task.WhenAll(heartbeat, refreshWorker);
+                    await Task.WhenAll(allTasks);
                 }
                 catch (Exception exception) when (exception is OperationCanceledException or HttpRequestException)
                 {
@@ -132,15 +133,12 @@ namespace QuestPDF.Companion
 
         private async Task RefreshPreview(CompanionService companionService, CancellationToken cancellationToken)
         {
-            using var documentSnapshot = await GenerateDocumentSnapshot(companionService, cancellationToken);
+            var documentSnapshot = await GenerateDocumentSnapshot(companionService, cancellationToken);
 
             if (documentSnapshot == null)
                 return;
 
-            if (!await TryUpdateDocumentStructure(companionService, documentSnapshot, cancellationToken))
-                return;
-
-            await ServeRenderRequestsUntilNextRefreshSignal(companionService, documentSnapshot, cancellationToken);
+            await companionService.UpdateDocumentPreview(documentSnapshot, cancellationToken);
         }
 
         private async Task<CompanionDocumentSnapshot?> GenerateDocumentSnapshot(CompanionService companionService, CancellationToken cancellationToken)
@@ -160,43 +158,6 @@ namespace QuestPDF.Companion
                 await companionService.InformAboutGenericException(exception, cancellationToken);
                 return null;
             }
-        }
-
-        private async Task<bool> TryUpdateDocumentStructure(CompanionService companionService, CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
-        {
-            while (true)
-            {
-                try
-                {
-                    await companionService.UpdateDocumentStructure(documentSnapshot, cancellationToken);
-                    return true;
-                }
-                catch (HttpRequestException exception) when (exception.HttpRequestError == HttpRequestError.ConnectionError)
-                {
-                    // on localhost, a connection that cannot be established means that the Companion app
-                    // has been closed; the heartbeat loop ends the session within one tick
-                    return false;
-                }
-                catch (Exception exception) when (!cancellationToken.IsCancellationRequested && exception is HttpRequestException or TaskCanceledException)
-                {
-                    // the app is alive but temporarily unresponsive, e.g. busy processing the previous update
-                    await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
-                }
-            }
-        }
-        
-        private async Task ServeRenderRequestsUntilNextRefreshSignal(CompanionService companionService, CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
-        {
-            using var servingCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-            // observe the signal without consuming it: the refresh worker loop reads it right after this method returns
-            var nextRefreshSignal = RefreshSignals.Reader.WaitToReadAsync(servingCancellation.Token).AsTask();
-            var renderRequestServing = companionService.ServeRenderRequests(documentSnapshot, servingCancellation.Token);
-
-            await Task.WhenAny(nextRefreshSignal, renderRequestServing);
-            await servingCancellation.CancelAsync();
-            
-            await Task.WhenAll(nextRefreshSignal, renderRequestServing).ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
         }
 
         public void Dispose()
