@@ -1,8 +1,1 @@
-- Breaking change: The Rotate API now rotates elements around their center instead of the top-left corner. Center-origin rotation is the expected behavior in virtually all use cases.
-- Behavioral change: Generated images now use a white background by default, so the output matches how the document appears in a PDF viewer. Previously, PNG and WEBP images had a transparent background. To restore the old behavior, enable ImageGenerationSettings.UseTransparentBackground (applies only to formats supporting transparency: PNG and WEBP).
-- Automated table semantic tagging is now applied whenever a Table element is placed inside a SemanticTable container, even indirectly. Nested semantic captions are now supported as well.
-- Image elements now emit the /BBox attribute, improving PDF/UA-1 compliance with validators that require it.
-- Improved the stability of the QuestPDF Companion integration. The integration now requires .NET 8 or newer.
-- Improved the developer experience of the GeneratePdfAndShow and GenerateXpsAndShow methods.
-- Deprecated AsSemanticHorizontalHeader in favor of SemanticHorizontalHeader for API naming consistency.
-- Deprecated RotateLeft and RotateRight in favor of RotateLayoutCounterclockwise and RotateLayoutClockwise, which better describe what these methods do.
+- Update skia native dependency to version m152
