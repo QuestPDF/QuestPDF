@@ -7,7 +7,12 @@ namespace QuestPDF.Fluent;
 
 /// <summary>
 /// Provides functionality for performing various operations on PDF documents, including loading, merging, overlaying, underlaying, selecting specific pages, adding attachments, and applying encryption settings.
+/// Documents can be provided as files or as in-memory data, and the result can be saved to a file, written to a stream, or returned as binary data.
 /// </summary>
+/// <remarks>
+/// In-memory inputs are processed in place, without copying them or creating any temporary files.
+/// Therefore, please do not modify the provided data until the operation is saved.
+/// </remarks>
 public sealed class DocumentOperation
 {
     /// <summary>
@@ -17,8 +22,15 @@ public sealed class DocumentOperation
     {
         /// <summary>
         /// The file path of the overlay or underlay PDF file to be used.
+        /// Exactly one of <see cref="FilePath"/> and <see cref="DocumentData"/> must be provided.
         /// </summary>
-        public string FilePath { get; set; }
+        public string? FilePath { get; set; }
+
+        /// <summary>
+        /// The content of the overlay or underlay PDF document provided as in-memory binary data.
+        /// Exactly one of <see cref="FilePath"/> and <see cref="DocumentData"/> must be provided.
+        /// </summary>
+        public byte[]? DocumentData { get; set; }
 
         /// <summary>
         /// Specifies the range of pages in the output document where the overlay or underlay will be applied.
@@ -74,31 +86,39 @@ public sealed class DocumentOperation
     {
         /// <summary>
         /// Sets the key for the attachment, specific to the PDF format.
-        /// Defaults to the file name without its path.
+        /// Defaults to the file name without its path, or to the <see cref="AttachmentName"/> value when the attachment is provided as in-memory content.
         /// </summary>
         public string? Key { get; set; }
-    
+
         /// <summary>
         /// The file path of the attachment. Ensure that the specified file exists.
+        /// Exactly one of <see cref="FilePath"/> and <see cref="Content"/> must be provided.
         /// </summary>
-        public string FilePath { get; set; }
-    
+        public string? FilePath { get; set; }
+
+        /// <summary>
+        /// The content of the attachment provided as in-memory binary data.
+        /// Exactly one of <see cref="FilePath"/> and <see cref="Content"/> must be provided.
+        /// When used, please set the <see cref="Key"/> or <see cref="AttachmentName"/> property, as there is no file name to derive them from.
+        /// </summary>
+        public byte[]? Content { get; set; }
+
         /// <summary>
         /// Specifies the display name for the attachment.
         /// This name is typically shown to the user and used by most graphical PDF viewers when saving the file.
-        /// Defaults to the file name without its path.
+        /// Defaults to the file name without its path, or to the <see cref="Key"/> value when the attachment is provided as in-memory content.
         /// </summary>
         public string? AttachmentName { get; set; }
-    
+
         /// <summary>
-        /// Specifies the creation date of the attachment. 
-        /// Defaults to the file's creation time.
+        /// Specifies the creation date of the attachment.
+        /// Defaults to the file's creation time, or to the current time when the attachment is provided as in-memory content.
         /// </summary>
         public DateTime? CreationDate { get; set; }
-    
+
         /// <summary>
         /// Specifies the modification date of the attachment.
-        /// Defaults to the file's last modified time.
+        /// Defaults to the file's last modified time, or to the current time when the attachment is provided as in-memory content.
         /// </summary>
         public DateTime? ModificationDate { get; set; }
     
@@ -203,10 +223,29 @@ public sealed class DocumentOperation
     }
     
     internal JobConfiguration Configuration { get; private set; }
-    
+
+    /// <summary>
+    /// Documents provided as in-memory data, registered under unique human-readable names.
+    /// The job configuration references them using the "qpdf-buffer://name" scheme in place of file paths,
+    /// and qpdf error messages mention these names verbatim.
+    /// </summary>
+    private Dictionary<string, byte[]> InputBuffers { get; } = new();
+
     private DocumentOperation()
     {
-            
+
+    }
+
+    private string RegisterInputBuffer(byte[] data, string role)
+    {
+        var name = role;
+        var index = 2;
+
+        while (InputBuffers.ContainsKey(name))
+            name = $"{role}-{index++}";
+
+        InputBuffers.Add(name, data);
+        return QpdfAPI.BufferReferenceScheme + name;
     }
 
     /// <summary>
@@ -218,7 +257,7 @@ public sealed class DocumentOperation
     {
         if (!File.Exists(filePath))
             throw new Exception($"The file could not be found: {filePath}");
-        
+
         return new DocumentOperation
         {
             Configuration = new JobConfiguration
@@ -227,6 +266,28 @@ public sealed class DocumentOperation
                 Password = password
             }
         };
+    }
+
+    /// <summary>
+    /// Loads the specified PDF document from in-memory binary data for processing, enabling operations such as merging, overlaying or underlaying content, selecting pages, adding attachments, and encrypting.
+    /// The operation reads the data directly, without copying it or creating any temporary files.
+    /// </summary>
+    /// <param name="documentData">The content of the PDF document to be loaded.</param>
+    /// <param name="password">The password for the PDF document, if it is password-protected. Optional.</param>
+    public static DocumentOperation LoadDocument(byte[] documentData, string? password = null)
+    {
+        if (documentData == null || documentData.Length == 0)
+            throw new ArgumentException("The document data cannot be null or empty.", nameof(documentData));
+
+        var operation = new DocumentOperation();
+
+        operation.Configuration = new JobConfiguration
+        {
+            InputFile = operation.RegisterInputBuffer(documentData, "input"),
+            Password = password
+        };
+
+        return operation;
     }
     
     /// <summary>
@@ -265,52 +326,92 @@ public sealed class DocumentOperation
             File = filePath,
             Range = pageSelector ?? "1-z"
         });
-        
+
+        return this;
+    }
+
+    /// <summary>
+    /// Merges pages from the specified in-memory PDF document into the current document, according to the provided page selection.
+    /// The operation reads the data directly, without copying it or creating any temporary files.
+    /// </summary>
+    /// <param name="documentData">The content of the PDF document to be merged.</param>
+    /// <param name="pageSelector">An optional <see cref="DocumentPageSelector"/> to specify the range of pages to merge. If not provided, all pages will be merged.</param>
+    /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
+    public DocumentOperation MergeDocument(byte[] documentData, string? pageSelector = null)
+    {
+        if (documentData == null || documentData.Length == 0)
+            throw new ArgumentException("The document data cannot be null or empty.", nameof(documentData));
+
+        if (Configuration.Pages == null)
+            TakePages("1-z");
+
+        Configuration.Pages.Add(new JobConfiguration.PageConfiguration
+        {
+            File = RegisterInputBuffer(documentData, "merged-document"),
+            Range = pageSelector ?? "1-z"
+        });
+
         return this;
     }
 
     /// <summary>
     /// Applies an underlay to the document using the specified configuration.
     /// The underlay pages are drawn beneath the target pages in the output file, potentially obscured by the original content.
-    /// </summary>    
+    /// </summary>
     public DocumentOperation UnderlayFile(LayerConfiguration configuration)
     {
-        if (!File.Exists(configuration.FilePath))
-            throw new Exception($"The file could not be found: {configuration.FilePath}");
-        
         Configuration.Underlay ??= new List<JobConfiguration.LayerConfiguration>();
-        
+
         Configuration.Underlay.Add(new JobConfiguration.LayerConfiguration
         {
-            File = configuration.FilePath,
+            File = ResolveLayerSource(configuration, "underlay"),
             To = configuration.TargetPages,
             From = configuration.SourcePages,
             Repeat = configuration.RepeatSourcePages
         });
-        
+
         return this;
     }
-    
+
     /// <summary>
     /// Applies an overlay to the document using the specified configuration.
     /// The overlay pages are drawn on top of the target pages in the output file, potentially obscuring the original content.
     /// </summary>
     public DocumentOperation OverlayFile(LayerConfiguration configuration)
     {
-        if (!File.Exists(configuration.FilePath))
-            throw new Exception($"The file could not be found: {configuration.FilePath}");
-        
         Configuration.Overlay ??= new List<JobConfiguration.LayerConfiguration>();
-        
+
         Configuration.Overlay.Add(new JobConfiguration.LayerConfiguration
         {
-            File = configuration.FilePath,
+            File = ResolveLayerSource(configuration, "overlay"),
             To = configuration.TargetPages,
             From = configuration.SourcePages,
             Repeat = configuration.RepeatSourcePages
         });
-        
+
         return this;
+    }
+
+    private string ResolveLayerSource(LayerConfiguration configuration, string role)
+    {
+        if (configuration.FilePath != null && configuration.DocumentData != null)
+            throw new ArgumentException("The layer configuration cannot specify both the FilePath and DocumentData properties. Please provide exactly one of them.");
+
+        if (configuration.DocumentData != null)
+        {
+            if (configuration.DocumentData.Length == 0)
+                throw new ArgumentException("The layer document data cannot be empty.");
+
+            return RegisterInputBuffer(configuration.DocumentData, role);
+        }
+
+        if (configuration.FilePath == null)
+            throw new ArgumentException("The layer configuration must specify either the FilePath or DocumentData property.");
+
+        if (!File.Exists(configuration.FilePath))
+            throw new Exception($"The file could not be found: {configuration.FilePath}");
+
+        return configuration.FilePath;
     }
 
     /// <summary>
@@ -330,43 +431,79 @@ public sealed class DocumentOperation
     
     /// <summary>
     /// Adds an attachment to the document, with specified metadata and configuration options.
+    /// The attachment content can be provided either as a file or as in-memory binary data.
     /// </summary>
     public DocumentOperation AddAttachment(DocumentAttachment attachment)
     {
+        if (attachment.FilePath != null && attachment.Content != null)
+            throw new ArgumentException("The attachment cannot specify both the FilePath and Content properties. Please provide exactly one of them.");
+
+        if (attachment.FilePath == null && attachment.Content == null)
+            throw new ArgumentException("The attachment must specify either the FilePath or Content property.");
+
         Configuration.AddAttachment ??= new List<JobConfiguration.AddDocumentAttachment>();
 
-        if (!File.Exists(attachment.FilePath))
-            throw new Exception($"The file could not be found: {attachment.FilePath}");
-        
-        var file = new FileInfo(attachment.FilePath);
-        
-        Configuration.AddAttachment.Add(new JobConfiguration.AddDocumentAttachment
-        {
-            Key = attachment.Key ?? Path.GetFileName(attachment.FilePath),
-            File = attachment.FilePath,
-            FileName = attachment.AttachmentName ?? file.Name,
-            CreationDate = GetFormattedDate(attachment.CreationDate, File.GetCreationTimeUtc(attachment.FilePath)),
-            ModificationDate = GetFormattedDate(attachment.ModificationDate, File.GetLastWriteTime(attachment.FilePath)),
-            MimeType = attachment.MimeType ?? GetDefaultMimeType(),
-            Description = attachment.Description,
-            Replace = attachment.Replace ? string.Empty : null,
-            Relationship = GetRelationship(attachment.Relationship)
-        });
-        
+        Configuration.AddAttachment.Add(attachment.Content != null
+            ? CreateAttachmentFromContent()
+            : CreateAttachmentFromFile());
+
         return this;
 
-        string GetDefaultMimeType()
+        JobConfiguration.AddDocumentAttachment CreateAttachmentFromContent()
         {
-            var fileExtension = Path.GetExtension(attachment.FilePath);
+            if (attachment.Content!.Length == 0)
+                throw new ArgumentException("The attachment content cannot be empty.");
+
+            var key = attachment.Key ?? attachment.AttachmentName
+                ?? throw new ArgumentException("An attachment provided as in-memory content requires the Key or AttachmentName property to be set.");
+
+            var fileName = attachment.AttachmentName ?? key;
+
+            return new JobConfiguration.AddDocumentAttachment
+            {
+                Key = key,
+                File = RegisterInputBuffer(attachment.Content, "attachment"),
+                FileName = fileName,
+                CreationDate = GetFormattedDate(attachment.CreationDate, DateTime.UtcNow),
+                ModificationDate = GetFormattedDate(attachment.ModificationDate, DateTime.UtcNow),
+                MimeType = attachment.MimeType ?? GetDefaultMimeType(fileName),
+                Description = attachment.Description,
+                Replace = attachment.Replace ? string.Empty : null,
+                Relationship = GetRelationship(attachment.Relationship)
+            };
+        }
+
+        JobConfiguration.AddDocumentAttachment CreateAttachmentFromFile()
+        {
+            if (!File.Exists(attachment.FilePath))
+                throw new Exception($"The file could not be found: {attachment.FilePath}");
+
+            return new JobConfiguration.AddDocumentAttachment
+            {
+                Key = attachment.Key ?? Path.GetFileName(attachment.FilePath),
+                File = attachment.FilePath,
+                FileName = attachment.AttachmentName ?? Path.GetFileName(attachment.FilePath),
+                CreationDate = GetFormattedDate(attachment.CreationDate, File.GetCreationTimeUtc(attachment.FilePath)),
+                ModificationDate = GetFormattedDate(attachment.ModificationDate, File.GetLastWriteTime(attachment.FilePath)),
+                MimeType = attachment.MimeType ?? GetDefaultMimeType(attachment.FilePath),
+                Description = attachment.Description,
+                Replace = attachment.Replace ? string.Empty : null,
+                Relationship = GetRelationship(attachment.Relationship)
+            };
+        }
+
+        string GetDefaultMimeType(string fileName)
+        {
+            var fileExtension = Path.GetExtension(fileName);
             fileExtension = fileExtension.TrimStart('.').ToLowerInvariant();
             return MimeHelper.FileExtensionToMimeConversionTable.TryGetValue(fileExtension, out var value) ? value : "text/plain";
         }
-        
+
         string GetFormattedDate(DateTime? value, DateTime defaultValue)
         {
-            return $"D:{(value ?? defaultValue).ToUniversalTime():yyyyMMddHHmmsss}Z";
+            return $"D:{(value ?? defaultValue).ToUniversalTime():yyyyMMddHHmmss}Z";
         }
-        
+
         string? GetRelationship(DocumentAttachmentRelationship? relationship)
         {
             return relationship switch
@@ -374,9 +511,9 @@ public sealed class DocumentOperation
                 DocumentAttachmentRelationship.Data => "/Data",
                 DocumentAttachmentRelationship.Source => "/Source",
                 DocumentAttachmentRelationship.Alternative => "/Alternative",
-                DocumentAttachmentRelationship.Supplement => "/Alternative",
+                DocumentAttachmentRelationship.Supplement => "/Supplement",
                 DocumentAttachmentRelationship.Unspecified => "/Unspecified",
-                null => null,
+                null => "/Unspecified",
                 _ => throw new ArgumentOutOfRangeException(nameof(relationship), relationship, null)
             };
         }
@@ -505,9 +642,47 @@ public sealed class DocumentOperation
     {
         if (File.Exists(filePath))
             File.Delete(filePath);
-        
+
         Configuration.OutputFile = filePath;
         var json = QpdfJobSerializer.Serialize(Configuration);
-        QpdfAPI.ExecuteJob(json);
+        QpdfAPI.ExecuteJob(json, GetInputBuffers(), outputBufferName: null, outputStream: null);
+    }
+
+    /// <summary>
+    /// Executes the configured operations on the document and writes the resulting document to the specified stream, without creating any temporary files.
+    /// </summary>
+    /// <remarks>
+    /// The stream is written synchronously on the calling thread, chunk by chunk, while the document is produced.
+    /// For destinations that do not accept synchronous writes (e.g. ASP.NET Core response bodies with synchronous IO disabled), please use the <see cref="Save()"/> method instead.
+    /// </remarks>
+    /// <param name="stream">The writable stream to which the output document will be written.</param>
+    public void Save(Stream stream)
+    {
+        if (stream == null)
+            throw new ArgumentNullException(nameof(stream));
+
+        if (!stream.CanWrite)
+            throw new ArgumentException("The provided stream is not writable.", nameof(stream));
+
+        const string outputBufferName = "output";
+
+        Configuration.OutputFile = QpdfAPI.BufferReferenceScheme + outputBufferName;
+        var json = QpdfJobSerializer.Serialize(Configuration);
+        QpdfAPI.ExecuteJob(json, GetInputBuffers(), outputBufferName, stream);
+    }
+
+    /// <summary>
+    /// Executes the configured operations on the document and returns the resulting document as binary data, without creating any temporary files.
+    /// </summary>
+    public byte[] Save()
+    {
+        using var stream = new MemoryStream();
+        Save(stream);
+        return stream.ToArray();
+    }
+
+    private IReadOnlyDictionary<string, byte[]>? GetInputBuffers()
+    {
+        return InputBuffers.Count > 0 ? InputBuffers : null;
     }
 }
