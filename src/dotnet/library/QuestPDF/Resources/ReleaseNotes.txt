@@ -1,1 +1,2 @@
 - Improved reliability of the companion app integration
+- Update skia native dependency to version m152
