@@ -15,6 +15,9 @@ namespace QuestPDF.Companion
         private const int RequiredCompanionApiVersion = 3;
 
         private HttpClient HttpClient { get; }
+        
+        private CompanionDocumentSnapshot? CurrentSnapshot { get; set; }
+        private SemaphoreSlim CurrentSnapshotLock { get; } = new(1, 1);
 
         public static bool IsCompanionAttached { get; private set; }
         public static bool IsDocumentHotReloaded { get; set; }
@@ -34,6 +37,8 @@ namespace QuestPDF.Companion
         {
             IsCompanionAttached = false;
             HttpClient.Dispose();
+            CurrentSnapshot?.Dispose();
+            CurrentSnapshotLock.Dispose();
         }
 
         public async Task Connect(CancellationToken cancellationToken)
@@ -102,8 +107,53 @@ namespace QuestPDF.Companion
                 return true;
             }
         }
+        
+        public async Task UpdateDocumentPreview(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
+        {
+            try
+            {
+                await CurrentSnapshotLock.WaitAsync(cancellationToken);
+            }
+            catch
+            {
+                documentSnapshot.Dispose();
+                throw;
+            }
 
-        public async Task UpdateDocumentStructure(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
+            try
+            {
+                var previousDocument = CurrentSnapshot;
+                CurrentSnapshot = documentSnapshot;
+
+                // safe under the lock: no render can be drawing the pictures of the previous snapshot
+                previousDocument?.Dispose();
+
+                while (true)
+                {
+                    try
+                    {
+                        await UpdateDocumentStructure(documentSnapshot, cancellationToken);
+                        return;
+                    }
+                    catch (HttpRequestException exception) when (exception.HttpRequestError == HttpRequestError.ConnectionError)
+                    {
+                        // app has been closed
+                        return;
+                    }
+                    catch (Exception exception) when (!cancellationToken.IsCancellationRequested && exception is HttpRequestException or TaskCanceledException)
+                    {
+                        // the app is alive but temporarily unresponsive, e.g. busy processing the previous update
+                        await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
+                    }
+                }
+            }
+            finally
+            {
+                CurrentSnapshotLock.Release();
+            }
+        }
+
+        private async Task UpdateDocumentStructure(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
         {
             var command = new CompanionCommands.UpdateDocumentStructure
             {
@@ -124,30 +174,30 @@ namespace QuestPDF.Companion
             result.EnsureSuccessStatusCode();
         }
         
-        public async Task ServeRenderRequests(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
+        public async Task ServeRenderRequests(CancellationToken cancellationToken)
         {
             while (true)
             {
                 try
                 {
-                    await ServeRenderRequestsRound(documentSnapshot, cancellationToken);
+                    await ServeRenderRequestsRound(cancellationToken);
                 }
                 catch (HttpRequestException exception) when (exception.HttpRequestError == HttpRequestError.ConnectionError)
                 {
                     // on localhost, a connection that cannot be established means that the Companion app has been closed
                     return;
                 }
-                catch (Exception exception) when (!cancellationToken.IsCancellationRequested && exception is HttpRequestException or TaskCanceledException)
+                catch when (!cancellationToken.IsCancellationRequested)
                 {
-                    // the app is alive but the round failed, e.g. it timed out while the app was busy
+                    // the app is alive but the round failed
                     await Task.Delay(TimeSpan.FromMilliseconds(250), cancellationToken);
                 }
             }
         }
 
-        private async Task ServeRenderRequestsRound(CompanionDocumentSnapshot documentSnapshot, CancellationToken cancellationToken)
+        private async Task ServeRenderRequestsRound(CancellationToken cancellationToken)
         {
-            // the Companion app keeps this connection open for up to 2 seconds, waiting for new rendering requests
+            // the Companion app keeps this connection open for a couple of seconds, waiting for new rendering requests
             using var renderingRequestsResponse = await HttpClient.GetAsync($"/v{RequiredCompanionApiVersion}/documentPreview/getRenderingRequests", cancellationToken);
             renderingRequestsResponse.EnsureSuccessStatusCode();
 
@@ -156,28 +206,46 @@ namespace QuestPDF.Companion
             if (renderingRequests == null || renderingRequests.Count == 0)
                 return;
 
-            var renderedPages = renderingRequests
-                .AsParallel()
-                .AsOrdered()
-                .WithCancellation(cancellationToken)
-                .Select(RenderPage)
-                .ToArray();
+            await CurrentSnapshotLock.WaitAsync(cancellationToken);
 
-            var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
-
-            using var provideRenderedImagesResponse = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, CompanionJsonContext.Default.ProvideRenderedDocumentPage, cancellationToken);
-            provideRenderedImagesResponse.EnsureSuccessStatusCode();
-
-            CompanionCommands.ProvideRenderedDocumentPage.RenderedPage RenderPage(PageSnapshotIndex request)
+            try
             {
-                var image = documentSnapshot.Pictures[request.PageIndex].RenderImage(request.ZoomLevel);
+                var documentSnapshot = CurrentSnapshot;
+                
+                if (documentSnapshot == null)
+                    return;
 
-                return new CompanionCommands.ProvideRenderedDocumentPage.RenderedPage
+                var renderedPages = renderingRequests
+                    .Where(x => x.PageIndex >= 0 && x.PageIndex < documentSnapshot.Pictures.Count)
+                    .AsParallel()
+                    .AsOrdered()
+                    .WithCancellation(cancellationToken)
+                    .Select(RenderPage)
+                    .ToArray();
+
+                if (renderedPages.Length == 0)
+                    return;
+
+                var command = new CompanionCommands.ProvideRenderedDocumentPage { Pages = renderedPages };
+
+                using var provideRenderedImagesResponse = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/provideRenderedImages", command, CompanionJsonContext.Default.ProvideRenderedDocumentPage, cancellationToken);
+                provideRenderedImagesResponse.EnsureSuccessStatusCode();
+
+                CompanionCommands.ProvideRenderedDocumentPage.RenderedPage RenderPage(PageSnapshotIndex request)
                 {
-                    PageIndex = request.PageIndex,
-                    ZoomLevel = request.ZoomLevel,
-                    ImageData = Convert.ToBase64String(image)
-                };
+                    var image = documentSnapshot.Pictures[request.PageIndex].RenderImage(request.ZoomLevel);
+
+                    return new CompanionCommands.ProvideRenderedDocumentPage.RenderedPage
+                    {
+                        PageIndex = request.PageIndex,
+                        ZoomLevel = request.ZoomLevel,
+                        ImageData = Convert.ToBase64String(image)
+                    };
+                }
+            }
+            finally
+            {
+                CurrentSnapshotLock.Release();
             }
         }
 
