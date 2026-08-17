@@ -14,7 +14,7 @@ namespace QuestPDF.Infrastructure
         
         internal virtual IEnumerable<Element?> GetChildren()
         {
-            yield break;
+            return Array.Empty<Element?>();
         }
 
         internal virtual void CreateProxy(Func<Element?, Element?> create)
