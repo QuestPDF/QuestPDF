@@ -18,19 +18,24 @@ internal sealed class TreeNode<T>
 
 internal static class TreeTraversal
 {
-    public static IEnumerable<TreeNode<T>> ExtractElementsOfType<T>(this Element element) where T : Element
+    public static IEnumerable<TreeNode<T>> ExtractElementsOfType<T>(this Element element) where T : ContainerElement
     {
         if (element is T proxy)
         {
             var result = new TreeNode<T>(proxy);
 
-            foreach (var treeNode in proxy.GetChildren().SelectMany(ExtractElementsOfType<T>))
-            {
-                result.Children.Add(treeNode);
-                treeNode.Parent = result;
+            foreach (var treeNode in ExtractElementsOfType<T>(proxy.Child))            
+            {                                                                          
+                result.Children.Add(treeNode);                                         
+                treeNode.Parent = result;                                              
             }
                 
             yield return result;
+        }
+        else if (element is ContainerElement containerElement)
+        {
+            foreach (var treeNode in ExtractElementsOfType<T>(containerElement.Child))
+                yield return treeNode;
         }
         else
         {

@@ -454,8 +454,15 @@ namespace QuestPDF.Drawing
             if (content is IContentDirectionAware contentDirectionAware)
                 contentDirectionAware.ContentDirection = direction ?? contentDirectionAware.ContentDirection;
             
-            foreach (var child in content.GetChildren())
-                ApplyContentDirection(child, direction);
+            if (content is ContainerElement containerElement)
+            {
+                ApplyContentDirection(containerElement.Child, direction);
+            }
+            else
+            {
+                foreach (var child in content.GetChildren())
+                    ApplyContentDirection(child, direction);
+            }
         }
         
         internal static void ApplyDefaultImageConfiguration(this Element? content, int imageRasterDpi, ImageCompressionQuality imageCompressionQuality, bool useOriginalImages)
