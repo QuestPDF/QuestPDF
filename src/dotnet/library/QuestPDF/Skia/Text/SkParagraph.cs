@@ -45,6 +45,9 @@ internal sealed class SkParagraph : IDisposable
     {
         API.questpdf_skia_paragraph_get_unresolved_codepoints(Instance, out var array, out var arrayLength);
         
+        if (arrayLength == 0)
+            return [];
+        
         var managedArray = new int[arrayLength];
         Marshal.Copy(array, managedArray,  0, arrayLength);
         API.questpdf_skia_paragraph_delete_unresolved_codepoints(array);
