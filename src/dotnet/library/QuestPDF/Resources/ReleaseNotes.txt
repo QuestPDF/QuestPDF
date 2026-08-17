@@ -1,2 +1,4 @@
 - Improved reliability of the companion app integration
 - Update skia native dependency to version m152
+- Improved visual position of the text underline and double underline
+- Improved performance and scalability for text-heavy documents

@@ -496,17 +496,6 @@ namespace QuestPDF.Elements.Text
                 result.Add(new TextBlockParagraphSpacing(ParagraphFirstLineIndentation, 0));
             }
         }
-
-        /// <summary>
-        /// Adjusts the concurrency level for the SkParagraph.PlanLayout method to optimize performance.
-        ///
-        /// While the Skia implementation is thread-safe, it appears to contain internal locks that hinder scalability.
-        /// Consequently, using multithreading for document rendering can reduce performance. This includes increased memory usage 
-        /// and slower generation times—potentially even worse than rendering documents sequentially.
-        ///
-        /// TODO: investigate further on how to improve scalability and remove this mutex
-        /// </summary>
-        private static readonly object PlanLayoutLock = new();
         
         private void CalculateParagraphMetrics(Size availableSpace)
         {
@@ -518,8 +507,7 @@ namespace QuestPDF.Elements.Text
             
             WidthForLineMetricsCalculation = availableSpace.Width;
 
-            lock (PlanLayoutLock)
-                Paragraph.PlanLayout(availableSpace.Width);
+            Paragraph.PlanLayout(availableSpace.Width);
 
             CheckUnresolvedGlyphs();
 
