@@ -12,10 +12,10 @@ using QuestPDF.Companion;
 
 namespace QuestPDF.Infrastructure;
 
-internal readonly struct SourceCodePath(StackFrame frame)
+internal record SourceCodePath(StackFrame Frame)
 {
-    public readonly string FilePath = frame.GetFileName() ?? string.Empty;
-    public readonly int LineNumber = frame.GetFileLineNumber();
+    public readonly string FilePath = Frame.GetFileName() ?? string.Empty;
+    public readonly int LineNumber = Frame.GetFileLineNumber();
 
     internal static SourceCodePath? CreateFromCurrentStackTrace()
     {
