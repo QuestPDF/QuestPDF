@@ -30,9 +30,7 @@ namespace QuestPDF.Elements
 
         internal override IEnumerable<Element?> GetChildren()
         {
-            yield return Before;
-            yield return Content;
-            yield return After;
+            return [Before, Content, After];
         }
         
         internal override void CreateProxy(Func<Element?, Element?> create)
