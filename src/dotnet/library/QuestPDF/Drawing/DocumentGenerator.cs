@@ -452,6 +452,12 @@ namespace QuestPDF.Drawing
                     return false;
                 }
 
+                ApplyCachingToSelectedChildren(content, canApplyCachingPerChild);
+                return false;
+            }
+            
+            static void ApplyCachingToSelectedChildren(Element content, bool[] canApplyCachingPerChild)
+            {
                 var childIndex = 0;
                 
                 content.CreateProxy(x =>
@@ -461,8 +467,6 @@ namespace QuestPDF.Drawing
 
                     return canApplyCaching ? new SnapshotCacheRecorderProxy(x) : x;
                 });
-                
-                return false;
             }
         }
         
