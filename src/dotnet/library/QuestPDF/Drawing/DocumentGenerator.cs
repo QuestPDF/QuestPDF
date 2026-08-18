@@ -383,7 +383,7 @@ namespace QuestPDF.Drawing
                 content?.CreateProxy(x => new SnapshotCacheRecorderProxy(x));
 
             // returns true if can apply caching
-            bool Traverse(Element? content)
+            static bool Traverse(Element? content)
             {
                 if (content is TextBlock textBlock)
                 {
@@ -418,13 +418,39 @@ namespace QuestPDF.Drawing
                     return multiColumnSupportsCaching;
                 }
 
-                var canApplyCachingPerChild = content.GetChildren().Select(Traverse).ToArray();
-                
-                if (canApplyCachingPerChild.All(x => x))
-                    return true;
+                var children = content.GetChildren();
+                var childrenList = children as IReadOnlyList<Element?> ?? children.ToArray();
 
-                if (content is Row row && row.Items.Any(x => x.Type == RowItemType.Auto))
+                bool[]? canApplyCachingPerChild = null;
+
+                for (var i = 0; i < childrenList.Count; i++)
+                {
+                    // every child must be visited, as the traversal also applies caching to nested elements
+                    var canApplyCachingToChild = Traverse(childrenList[i]);
+
+                    if (canApplyCachingPerChild == null)
+                    {
+                        if (canApplyCachingToChild)
+                            continue;
+
+                        canApplyCachingPerChild = new bool[childrenList.Count];
+
+                        for (var previousChildIndex = 0; previousChildIndex < i; previousChildIndex++)
+                            canApplyCachingPerChild[previousChildIndex] = true;
+                    }
+
+                    canApplyCachingPerChild[i] = canApplyCachingToChild;
+                }
+
+                if (canApplyCachingPerChild == null)
+                    return true;
+                
+                // the non-cacheable Row.AutoItem invalidates size of other items, and entire row should not be cached
+                if (content is Row row && row.Items.Exists(x => x.Type == RowItemType.Auto))
+                {
+                    content.RemoveExistingProxiesOfType<SnapshotCacheRecorderProxy>();
                     return false;
+                }
 
                 var childIndex = 0;
                 
