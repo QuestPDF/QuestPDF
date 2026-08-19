@@ -424,6 +424,7 @@ namespace QuestPDF.Drawing
 
                 bool[]? canApplyCachingPerChild = null;
 
+                // indexed loop avoids boxing the enumerator behind IReadOnlyList
                 for (var i = 0; i < childrenList.Count; i++)
                 {
                     // every child must be visited, as the traversal also applies caching to nested elements
@@ -491,8 +492,10 @@ namespace QuestPDF.Drawing
             }
             else
             {
-                foreach (var child in content.GetChildren())
-                    ApplyContentDirection(child, direction);
+                var children = content.GetChildren();
+
+                for (var i = 0; i < children.Count; i++)
+                    ApplyContentDirection(children[i], direction);
             }
         }
         
@@ -574,8 +577,10 @@ namespace QuestPDF.Drawing
             }
             else
             {
-                foreach (var child in content.GetChildren())
-                    ApplyInheritedAndGlobalTexStyle(child, documentDefaultTextStyle);
+                var children = content.GetChildren();
+
+                for (var i = 0; i < children.Count; i++)
+                    ApplyInheritedAndGlobalTexStyle(children[i], documentDefaultTextStyle);
             }
         }
 
@@ -631,8 +636,10 @@ namespace QuestPDF.Drawing
                 }
                 else
                 {
-                    foreach (var child in element.GetChildren())
-                        Traverse(child);
+                    var children = element.GetChildren();
+
+                    for (var i = 0; i < children.Count; i++)
+                        Traverse(children[i]);
                 }
             }
         }
