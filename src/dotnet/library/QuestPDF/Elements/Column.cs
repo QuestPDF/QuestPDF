@@ -7,11 +7,11 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class ColumnItemRenderingCommand
+    internal readonly struct ColumnItemRenderingCommand
     {
-        public Element Element { get; set; }
-        public SpacePlan Measurement { get; set; }
-        public Position Offset { get; set; }
+        public Element Element { get; init; }
+        public SpacePlan Measurement { get; init; }
+        public Position Offset { get; init; }
     }
 
     internal sealed class Column : Element, IStateful
@@ -32,7 +32,7 @@ namespace QuestPDF.Elements
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (!Items.Any())
+            if (Items.Count == 0)
                 return SpacePlan.Empty();
             
             if (CurrentRenderingIndex == Items.Count)
@@ -41,9 +41,9 @@ namespace QuestPDF.Elements
             if (availableSpace.IsNegative())
                 return SpacePlan.Wrap("The available space is negative.");
             
-            var renderingCommands = PlanLayout(availableSpace);
+            using var renderingCommands = PlanLayout(availableSpace);
 
-            if (!renderingCommands.Any())
+            if (renderingCommands.Count == 0)
                 return SpacePlan.Wrap("The available space is not sufficient for even partially rendering a single item.");
 
             var width = renderingCommands.Max(x => x.Measurement.Width);
@@ -66,7 +66,7 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            var renderingCommands = PlanLayout(availableSpace);
+            using var renderingCommands = PlanLayout(availableSpace);
 
             foreach (var command in renderingCommands)
             {
@@ -81,11 +81,12 @@ namespace QuestPDF.Elements
             CurrentRenderingIndex += fullyRenderedItems;
         }
 
-        private List<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
+        private ReusableList<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var topOffset = 0f;
-            var commands = new List<ColumnItemRenderingCommand>();
+            var commands = ReusableListPool<ColumnItemRenderingCommand>.Get();
 
+            var topOffset = 0f;
+            
             foreach (var item in Items.Skip(CurrentRenderingIndex))
             {
                 var isFirstItem = commands.Count == 0;
