@@ -122,23 +122,40 @@ namespace QuestPDF.Elements
 
         private void UpdateItemsWidth(float availableWidth)
         {
-            foreach (var rowItem in Items.Where(x => x.Type == RowItemType.Auto && x.Size == 0))
-                rowItem.Size = rowItem.Measure(Size.Max).Width;
-            
-            var constantWidth = Items.Where(x => x.Type != RowItemType.Relative).Sum(x => x.Size);
-            var relativeWidth = Items.Where(x => x.Type == RowItemType.Relative).Sum(x => x.Size);
-            var spacingWidth = (Items.Count - 1) * Spacing;
+            var widthPerRelativeUnit = GetWidthPerRelativeUnit();
 
-            foreach (var item in Items.Where(x => x.Type != RowItemType.Relative))
-                item.Width = item.Size;
-            
-            if (relativeWidth <= 0)
-                return;
+            foreach (var item in Items)
+            {
+                if (item.Type == RowItemType.Relative)
+                    item.Width = item.Size * widthPerRelativeUnit;
+                
+                else
+                    item.Width = item.Size;
+            }
 
-            var widthPerRelativeUnit = (availableWidth - constantWidth - spacingWidth) / relativeWidth;
-            
-            foreach (var item in Items.Where(x => x.Type == RowItemType.Relative))
-                item.Width = item.Size * widthPerRelativeUnit;
+            float GetWidthPerRelativeUnit()
+            {
+                var constantWidth = 0f;
+                var relativeWidth = 0f;
+
+                foreach (var item in Items)
+                {
+                    if (item.Type == RowItemType.Auto && item.Size == 0)
+                        item.Size = item.Measure(Size.Max).Width;
+
+                    if (item.Type == RowItemType.Relative)
+                        relativeWidth += item.Size;
+                    
+                    else
+                        constantWidth += item.Size;
+                }
+
+                if (relativeWidth <= 0)
+                    return 0;
+
+                var spacingWidth = (Items.Count - 1) * Spacing;
+                return (availableWidth - constantWidth - spacingWidth) / relativeWidth;
+            }
         }
         
         private ReusableList<RowItemRenderingCommand> PlanLayout(Size availableSpace)
