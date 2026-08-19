@@ -12,13 +12,14 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Elements.Text
 {
-    internal sealed class TextBlock : Element, IStateful, IContentDirectionAware, IDisposable
+    internal sealed class TextBlock : Element, IStateful, IPageContextAware, IContentDirectionAware, IDisposable
     {
         // content
         public List<ITextBlockItem> Items { get; set; } = new();
         
         // configuration
         public TextHorizontalAlignment? Alignment { get; set; }
+        public IPageContext PageContext { get; set; }
         public ContentDirection ContentDirection { get; set; }
         
         public int? LineClamp { get; set; }

@@ -370,7 +370,9 @@ namespace QuestPDF.Drawing
                 if (x == null)
                     return;
                 
-                x.PageContext = pageContext;
+                if (x is IPageContextAware pageContextAware)
+                    pageContextAware.PageContext = pageContext;
+
                 x.Canvas = canvas;
             });
         }

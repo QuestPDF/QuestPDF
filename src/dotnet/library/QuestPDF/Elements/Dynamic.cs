@@ -7,7 +7,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class DynamicHost : Element, IStateful, IContentDirectionAware, ISemanticAware
+    internal sealed class DynamicHost : Element, IStateful, IPageContextAware, IContentDirectionAware, ISemanticAware
     {
         public SemanticTreeManager? SemanticTreeManager { get; set; }
         private SemanticTreeSnapshots? SemanticTreeSnapshots { get; set; }
@@ -16,6 +16,7 @@ namespace QuestPDF.Elements
         private object InitialComponentState { get; set; }
 
         internal TextStyle TextStyle { get; set; } = TextStyle.Default;
+        public IPageContext PageContext { get; set; }
         public ContentDirection ContentDirection { get; set; }
         
         internal int? ImageTargetDpi { get; set; }

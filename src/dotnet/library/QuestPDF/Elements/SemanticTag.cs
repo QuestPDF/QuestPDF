@@ -9,8 +9,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal class SemanticTag : ContainerElement, ISemanticAware
+internal class SemanticTag : ContainerElement, IPageContextAware, ISemanticAware
 {
+    public IPageContext PageContext { get; set; }
+    
     public SemanticTreeManager? SemanticTreeManager { get; set; }
     public SemanticTreeNode? SemanticTreeNode { get; private set; }
 

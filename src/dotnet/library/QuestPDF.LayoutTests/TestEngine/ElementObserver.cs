@@ -8,8 +8,10 @@ namespace QuestPDF.LayoutTests.TestEngine;
 
 
 
-internal class ElementObserver : ContainerElement
+internal class ElementObserver : ContainerElement, IPageContextAware
 {
+    public IPageContext PageContext { get; set; }
+    
     public string? ObserverId { get; set; }
     public DrawingRecorder? DrawingRecorder { get; set; }
     

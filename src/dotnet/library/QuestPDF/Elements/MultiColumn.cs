@@ -44,7 +44,7 @@ internal sealed class MultiColumnChildDrawingObserver : ElementProxy
     }
 }
 
-internal sealed class MultiColumn : Element, IContentDirectionAware, IDisposable
+internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectionAware, IDisposable
 {
     // items
     internal Element Content { get; set; } = Empty.Instance;
@@ -55,6 +55,7 @@ internal sealed class MultiColumn : Element, IContentDirectionAware, IDisposable
     public bool BalanceHeight { get; set; } = false;
     public float Spacing { get; set; }
     
+    public IPageContext PageContext { get; set; }
     public ContentDirection ContentDirection { get; set; }
 
     // cache

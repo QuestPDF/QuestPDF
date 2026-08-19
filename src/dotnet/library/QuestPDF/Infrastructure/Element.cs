@@ -8,7 +8,6 @@ namespace QuestPDF.Infrastructure
 {
     internal abstract class Element : IElement
     {
-        internal IPageContext PageContext { get; set; }
         internal IDrawingCanvas Canvas { get; set; }
         internal SourceCodePath? CodeLocation { get; set; }
         

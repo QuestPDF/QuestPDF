@@ -5,7 +5,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal sealed class Lazy : ContainerElement, ISemanticAware, IContentDirectionAware, IStateful
+internal sealed class Lazy : ContainerElement, IPageContextAware, IContentDirectionAware, ISemanticAware, IStateful
 {
     public SemanticTreeManager? SemanticTreeManager { get; set; }
     private SemanticTreeSnapshots? SemanticTreeSnapshots { get; set; }
@@ -14,6 +14,7 @@ internal sealed class Lazy : ContainerElement, ISemanticAware, IContentDirection
     public bool IsCacheable { get; set; }
 
     internal TextStyle TextStyle { get; set; } = TextStyle.Default;
+    public IPageContext PageContext { get; set; }
     public ContentDirection ContentDirection { get; set; }
         
     internal int? ImageTargetDpi { get; set; }
