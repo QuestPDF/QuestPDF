@@ -39,8 +39,11 @@ namespace QuestPDF.Helpers
                 }
                 else
                 {
-                    foreach (var child in element.GetChildren())
-                        Traverse(child);  
+                    var children = element.GetChildren();
+
+                    // indexed loop avoids boxing the enumerator behind IReadOnlyList
+                    for (var i = 0; i < children.Count; i++)
+                        Traverse(children[i]);
                 }
             
                 handler(element);

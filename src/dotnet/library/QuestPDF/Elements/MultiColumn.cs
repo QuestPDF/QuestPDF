@@ -80,10 +80,9 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         Spacer = create(Spacer);
     }
     
-    internal override IEnumerable<Element?> GetChildren()
+    internal override IReadOnlyList<Element?> GetChildren()
     {
-        yield return Content;
-        yield return Spacer;
+        return [Content, Spacer];
     }
     
     private void BuildState()

@@ -420,8 +420,7 @@ namespace QuestPDF.Drawing
                     return multiColumnSupportsCaching;
                 }
 
-                var children = content.GetChildren();
-                var childrenList = children as IReadOnlyList<Element?> ?? children.ToArray();
+                var childrenList = content.GetChildren();
 
                 bool[]? canApplyCachingPerChild = null;
 

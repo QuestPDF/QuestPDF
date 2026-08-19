@@ -14,7 +14,7 @@ namespace QuestPDF.Elements
     {
         public List<Layer> Children { get; set; } = new();
         
-        internal override IEnumerable<Element?> GetChildren()
+        internal override IReadOnlyList<Element?> GetChildren()
         {
             return Children;
         }

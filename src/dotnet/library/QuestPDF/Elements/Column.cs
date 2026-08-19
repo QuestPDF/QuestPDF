@@ -19,7 +19,7 @@ namespace QuestPDF.Elements
         internal List<Element> Items { get; } = new();
         internal float Spacing { get; set; }
         
-        internal override IEnumerable<Element?> GetChildren()
+        internal override IReadOnlyList<Element?> GetChildren()
         {
             return Items;
         }

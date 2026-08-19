@@ -92,8 +92,11 @@ internal class SemanticTag : ContainerElement, IPageContextAware, ISemanticAware
             }
             else
             {
-                foreach (var child in element.GetChildren())
-                    Traverse(builder, child);
+                var children = element.GetChildren();
+                
+                // indexed loop avoids boxing the enumerator behind IReadOnlyList
+                for (var i = 0; i < children.Count; i++)
+                    Traverse(builder, children[i]);
             }
         }
     }

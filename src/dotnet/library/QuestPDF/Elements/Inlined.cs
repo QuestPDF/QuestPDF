@@ -32,7 +32,7 @@ namespace QuestPDF.Elements
         internal InlinedAlignment? ElementsAlignment { get; set; }
         internal VerticalAlignment BaselineAlignment { get; set; }
         
-        internal override IEnumerable<Element?> GetChildren()
+        internal override IReadOnlyList<Element?> GetChildren()
         {
             return Elements;
         }

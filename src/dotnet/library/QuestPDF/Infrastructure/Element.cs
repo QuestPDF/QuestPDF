@@ -11,7 +11,9 @@ namespace QuestPDF.Infrastructure
         internal IDrawingCanvas Canvas { get; set; }
         internal SourceCodePath? CodeLocation { get; set; }
         
-        internal virtual IEnumerable<Element?> GetChildren()
+        // returns IReadOnlyList so traversal hot paths can iterate by index;                                                                                                              
+        // foreach/LINQ over the interface boxes the list enumerator on every call
+        internal virtual IReadOnlyList<Element?> GetChildren()
         {
             return Array.Empty<Element?>();
         }

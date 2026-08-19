@@ -31,7 +31,7 @@ namespace QuestPDF.Elements.Table
         
         private bool IsRendered => CurrentRow > LastRowIndex;
         
-        internal override IEnumerable<Element?> GetChildren()
+        internal override IReadOnlyList<Element?> GetChildren()
         {
             return Cells;
         }
