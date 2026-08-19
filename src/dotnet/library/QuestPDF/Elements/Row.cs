@@ -65,7 +65,7 @@ namespace QuestPDF.Elements
             
             using var renderingCommands = PlanLayout(availableSpace);
 
-            var (width, height, hasWrappedItem, hasPartiallyRenderedItem) = AnalyzeRenderingCommands(renderingCommands);
+            var (width, height, hasWrappedItem, hasPartiallyRenderedItem) = SummarizeLayout(renderingCommands);
 
             if (hasWrappedItem)
                 return SpacePlan.Wrap("One of the items does not fit (even partially) in the available space.");
@@ -141,7 +141,8 @@ namespace QuestPDF.Elements
             return false;
         }
 
-        private static (float Width, float Height, bool HasWrappedItem, bool HasPartiallyRenderedItem) AnalyzeRenderingCommands(List<RowItemRenderingCommand> renderingCommands)
+        // the List parameter type keeps the struct enumerator
+        private static (float Width, float Height, bool HasWrappedItem, bool HasPartiallyRenderedItem) SummarizeLayout(List<RowItemRenderingCommand> renderingCommands)
         {
             var height = 0f;
             var hasWrappedItem = false;
