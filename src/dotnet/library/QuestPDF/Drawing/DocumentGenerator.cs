@@ -355,9 +355,10 @@ namespace QuestPDF.Drawing
                 }
                 else if (x is TextBlock textBlock)
                 {
-                    foreach (var textBlockElement in textBlock.Items.OfType<TextBlockElement>())
+                    foreach (var textBlockItem in textBlock.Items)
                     {
-                        textBlockElement.Element.InjectSemanticTreeManager(semanticTreeManager);
+                        if (textBlockItem is TextBlockElement textBlockElement)
+                            textBlockElement.Element.InjectSemanticTreeManager(semanticTreeManager);
                     }
                 }
             });
@@ -533,9 +534,10 @@ namespace QuestPDF.Drawing
 
                 if (x is TextBlock textBlock)
                 {
-                    foreach (var textBlockElement in textBlock.Items.OfType<TextBlockElement>())
+                    foreach (var textBlockItem in textBlock.Items)
                     {
-                        textBlockElement.Element.ApplyDefaultImageConfiguration(imageRasterDpi, imageCompressionQuality, useOriginalImages);
+                        if (textBlockItem is TextBlockElement textBlockElement)
+                            textBlockElement.Element.ApplyDefaultImageConfiguration(imageRasterDpi, imageCompressionQuality, useOriginalImages);
                     }
                 }
             });
