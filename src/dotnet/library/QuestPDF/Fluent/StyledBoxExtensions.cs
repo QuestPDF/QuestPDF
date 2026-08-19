@@ -39,10 +39,13 @@ namespace QuestPDF.Fluent
             if (colors == null || colors.Length == 0)
                 throw new ArgumentException("The background linear-gradient colors cannot be empty.", nameof(colors));
             
-            var border = element as StyledBox ?? new StyledBox();
-            border.BackgroundGradientAngle = angle;
-            border.BackgroundGradientColors = colors;
-            return element.Element(border);
+            var styledBox = element as StyledBox ?? new StyledBox();
+
+            var configuration = styledBox.GetOrCreateExtendedConfiguration();
+            configuration.BackgroundGradientAngle = angle;
+            configuration.BackgroundGradientColors = colors;
+
+            return element.Element(styledBox);
         }
         
         #region Thickness
@@ -171,17 +174,19 @@ namespace QuestPDF.Fluent
             if (bottomLeft < 0)
                 throw new ArgumentOutOfRangeException(nameof(bottomLeft), "The bottom-left corner radius cannot be negative.");
             
+            var configuration = styledBox.GetOrCreateExtendedConfiguration();
+
             if (topLeft.HasValue)
-                styledBox.BorderRadiusTopLeft = topLeft.Value;
+                configuration.BorderRadiusTopLeft = topLeft.Value;
             
             if (topRight.HasValue)
-                styledBox.BorderRadiusTopRight = topRight.Value;
+                configuration.BorderRadiusTopRight = topRight.Value;
             
             if (bottomRight.HasValue)
-                styledBox.BorderRadiusBottomRight = bottomRight.Value;
+                configuration.BorderRadiusBottomRight = bottomRight.Value;
             
             if (bottomLeft.HasValue)
-                styledBox.BorderRadiusBottomLeft = bottomLeft.Value;
+                configuration.BorderRadiusBottomLeft = bottomLeft.Value;
             
             return element.Element(styledBox);
         }
@@ -257,10 +262,13 @@ namespace QuestPDF.Fluent
             if (colors == null || colors.Length == 0)
                 throw new ArgumentException("The border linear-gradient colors cannot be empty.", nameof(colors));
             
-            var border = element as StyledBox ?? new StyledBox();
-            border.BorderGradientAngle = angle;
-            border.BorderGradientColors = colors;
-            return element.Element(border);
+            var styledBox = element as StyledBox ?? new StyledBox();
+
+            var configuration = styledBox.GetOrCreateExtendedConfiguration();
+            configuration.BorderGradientAngle = angle;
+            configuration.BorderGradientColors = colors;
+            
+            return element.Element(styledBox);
         }
         
         #endregion
@@ -269,9 +277,9 @@ namespace QuestPDF.Fluent
 
         private static IContainer BorderAlignment(this IContainer element, float value)
         {
-            var border = element as StyledBox ?? new StyledBox();
-            border.BorderAlignment = value;
-            return element.Element(border);
+            var styledBox = element as StyledBox ?? new StyledBox();
+            styledBox.GetOrCreateExtendedConfiguration().BorderAlignment = value;
+            return element.Element(styledBox);
         }
 
         /// <summary>
@@ -315,7 +323,7 @@ namespace QuestPDF.Fluent
             style.Validate();
             
             var styledBox = element as StyledBox ?? new StyledBox();
-            styledBox.Shadow = style;
+            styledBox.GetOrCreateExtendedConfiguration().Shadow = style;
             return element.Element(styledBox);
         }
 

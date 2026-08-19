@@ -9,6 +9,37 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Elements
 {
+    internal sealed class StyledBoxExtendedConfiguration
+    {
+        public float BorderRadiusTopLeft { get; set; }
+        public float BorderRadiusTopRight { get; set; }
+        public float BorderRadiusBottomLeft { get; set; }
+        public float BorderRadiusBottomRight { get; set; }
+
+        public bool HasRoundedCorners =>
+            BorderRadiusTopLeft > 0 ||
+            BorderRadiusTopRight > 0 ||
+            BorderRadiusBottomLeft > 0 ||
+            BorderRadiusBottomRight > 0;
+        
+        public bool HasUniformRoundedCorners =>
+            BorderRadiusTopLeft == BorderRadiusTopRight &&
+            BorderRadiusBottomLeft == BorderRadiusBottomRight &&
+            BorderRadiusTopLeft == BorderRadiusBottomLeft;
+
+        public float? BorderAlignment { get; set; } // 0 = inside, 0.5 = middle, 1 = outside
+
+        public float EffectiveBorderAlignment => BorderAlignment ?? (HasRoundedCorners ? 0f : 0.5f);
+
+        public Color[] BackgroundGradientColors { get; set; } = [];
+        public float? BackgroundGradientAngle { get; set; }
+
+        public Color[] BorderGradientColors { get; set; } = [];
+        public float? BorderGradientAngle { get; set; }
+
+        public BoxShadowStyle? Shadow { get; set; }
+    }
+
     internal sealed class StyledBox : ContainerElement
     {
         public float BorderLeft { get; set; }
@@ -16,120 +47,99 @@ namespace QuestPDF.Elements
         public float BorderRight { get; set; }
         public float BorderBottom { get; set; }
 
+        public Color BackgroundColor { get; set; } = Colors.Transparent;
+        public Color BorderColor { get; set; } = Colors.Transparent;
+
+        // optimization: the vast majority of styled boxes use only a solid background and/or a uniform border;
+        // rarely used settings live in a separate object so that typical instances stay small
+        public StyledBoxExtendedConfiguration? ExtendedConfiguration { get; set; }
+
+        private static readonly StyledBoxExtendedConfiguration DefaultExtendedConfiguration = new();
+
+        public StyledBoxExtendedConfiguration GetOrCreateExtendedConfiguration()
+        {
+            return ExtendedConfiguration ??= new StyledBoxExtendedConfiguration();
+        }
+
         private bool HasBorder =>
-            BorderLeft > 0 || 
-            BorderTop > 0 || 
-            BorderRight > 0 || 
-            BorderBottom > 0;
-        
-        private bool HasFullBorder =>
-            BorderLeft > 0 && 
-            BorderTop > 0 && 
-            BorderRight > 0 && 
+            BorderLeft > 0 ||
+            BorderTop > 0 ||
+            BorderRight > 0 ||
             BorderBottom > 0;
 
         private bool HasUniformBorder =>
-            BorderLeft == BorderRight && 
-            BorderTop == BorderBottom && 
+            BorderLeft == BorderRight &&
+            BorderTop == BorderBottom &&
             BorderLeft == BorderTop;
-    
-        public float BorderRadiusTopLeft { get; set; }
-        public float BorderRadiusTopRight { get; set; }
-        public float BorderRadiusBottomLeft { get; set; }
-        public float BorderRadiusBottomRight { get; set; }
 
-        private bool HasRoundedCorners =>
-            BorderRadiusTopLeft > 0 || 
-            BorderRadiusTopRight > 0 || 
-            BorderRadiusBottomLeft > 0 || 
-            BorderRadiusBottomRight > 0;
-        
-        private bool HasUniformRoundedCorners =>
-            BorderRadiusTopLeft == BorderRadiusTopRight && 
-            BorderRadiusBottomLeft == BorderRadiusBottomRight && 
-            BorderRadiusTopLeft == BorderRadiusBottomLeft;
-  
-        public float? BorderAlignment { get; set; } // 0 = inset, 1 = outset
-    
-        public Color BackgroundColor { get; set; } = Colors.Transparent;
-        public Color[] BackgroundGradientColors { get; set; } = [];
-        public float? BackgroundGradientAngle { get; set; }
-
-        public Color BorderColor { get; set; } = Colors.Transparent;
-        public Color[] BorderGradientColors { get; set; } = [];
-        public float? BorderGradientAngle { get; set; }
-
-        private bool HasSimpleStyle => BackgroundGradientColors.Length == 0 && BorderGradientColors.Length == 0;
-        
-        public BoxShadowStyle? Shadow { get; set; }
-        
-        internal void AdjustBorderAlignment()
-        {
-            if (BorderAlignment != null) 
-                return;
-
-            var shouldHaveInsetBorder = HasRoundedCorners;
-            BorderAlignment = shouldHaveInsetBorder ? 0f : 0.5f;
-        }
-        
         internal override void Draw(Size availableSpace)
         {
-            AdjustBorderAlignment();
-
             // optimization: do not perform expensive calls
             if (Canvas is DiscardDrawingCanvas)
             {
                 base.Draw(availableSpace);
                 return;
             }
-            
-            using var backgroundPaint = GetPaint(availableSpace, BackgroundColor, BackgroundGradientColors, BackgroundGradientAngle);
 
-            if (HasFullBorder && HasUniformBorder && !HasRoundedCorners && HasSimpleStyle && BorderAlignment == 0.5f && Shadow == null)
+            if (ExtendedConfiguration == null && HasUniformBorder)
+                DrawSimple(availableSpace);
+
+            else
+                DrawExtended(availableSpace);
+        }
+
+        // optimization: draws a solid background and/or a uniform middle-aligned border using only cached paints
+        private void DrawSimple(Size availableSpace)
+        {
+            if (BackgroundColor.Hex != Colors.Transparent.Hex)
             {
-                // optimization: draw a simple rectangle with border
-                if (backgroundPaint != null)
-                {
-                    using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
-                    Canvas.DrawRectangle(Position.Zero, availableSpace, backgroundPaint);
-                }
-                
-                base.Draw(availableSpace);
-                
-                if (BorderColor.Hex != Colors.Transparent.Hex)
-                {
-                    using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
-                    
-                    using var simpleBorderPaint = SkPaintCache.GetStroke(BorderColor, BorderLeft);
-                    Canvas.DrawRectangle(Position.Zero, availableSpace, simpleBorderPaint);
-                }
-                
-                return;
+                using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
+
+                using var backgroundPaint = SkPaintCache.GetSolidColor(BackgroundColor);
+                Canvas.DrawRectangle(Position.Zero, availableSpace, backgroundPaint);
             }
 
-            using var borderPaint = GetPaint(availableSpace, BorderColor, BorderGradientColors, BorderGradientAngle);
-            
-            var contentRect = GetPrimaryBorderRect(availableSpace);
-            var borderOuterRect = GetOuterRect(availableSpace);
-            var borderInnerRect = GetInnerRect(availableSpace);
+            base.Draw(availableSpace);
 
-            if (Shadow != null)
+            if (HasBorder && BorderColor.Hex != Colors.Transparent.Hex)
             {
-                var shadowRect = ExpandRoundedRect(contentRect, Shadow.Spread);
+                using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
+
+                using var borderPaint = SkPaintCache.GetStroke(BorderColor, BorderLeft);
+                Canvas.DrawRectangle(Position.Zero, availableSpace, borderPaint);
+            }
+        }
+
+        private void DrawExtended(Size availableSpace)
+        {
+            var configuration = ExtendedConfiguration ?? DefaultExtendedConfiguration;
+
+            using var backgroundPaint = GetPaint(availableSpace, BackgroundColor, configuration.BackgroundGradientColors, configuration.BackgroundGradientAngle);
+            using var borderPaint = GetPaint(availableSpace, BorderColor, configuration.BorderGradientColors, configuration.BorderGradientAngle);
+
+            var borderAlignment = configuration.EffectiveBorderAlignment;
+
+            var contentRect = GetPrimaryBorderRect(availableSpace, configuration);
+            var borderOuterRect = ExpandRoundedRectWithBorderThickness(contentRect, borderAlignment);
+            var borderInnerRect = ExpandRoundedRectWithBorderThickness(contentRect, borderAlignment - 1f);
+
+            if (configuration.Shadow != null)
+            {
+                var shadowRect = ExpandRoundedRect(contentRect, configuration.Shadow.Spread);
 
                 var canvasShadow = new SkBoxShadow
                 {
-                    OffsetX = Shadow.OffsetX,
-                    OffsetY = Shadow.OffsetY,
-                    Blur = Shadow.Blur,
-                    Color = Shadow.Color
+                    OffsetX = configuration.Shadow.OffsetX,
+                    OffsetY = configuration.Shadow.OffsetY,
+                    Blur = configuration.Shadow.Blur,
+                    Color = configuration.Shadow.Color
                 };
                 
                 using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.BackgroundArtifact);
                 Canvas.DrawShadow(shadowRect, canvasShadow);
             }
 
-            if (HasRoundedCorners)
+            if (configuration.HasRoundedCorners)
             {
                 Canvas.Save();
                 Canvas.ClipRoundedRectangle(contentRect);
@@ -143,7 +153,7 @@ namespace QuestPDF.Elements
             
             base.Draw(availableSpace);
             
-            if (HasRoundedCorners)
+            if (configuration.HasRoundedCorners)
                 Canvas.Restore();
 
             if (borderPaint != null)
@@ -221,7 +231,7 @@ namespace QuestPDF.Elements
             return SkPaintCache.GetSolidColor(solidColor);
         }
         
-        private SkRoundedRect GetPrimaryBorderRect(Size availableSpace)
+        private static SkRoundedRect GetPrimaryBorderRect(Size availableSpace, StyledBoxExtendedConfiguration configuration)
         {
             return new SkRoundedRect
             {
@@ -232,41 +242,29 @@ namespace QuestPDF.Elements
                     Right = availableSpace.Width,
                     Bottom = availableSpace.Height
                 },
-                TopLeftRadius = new SkPoint(BorderRadiusTopLeft, BorderRadiusTopLeft),
-                TopRightRadius = new SkPoint(BorderRadiusTopRight, BorderRadiusTopRight),
-                BottomLeftRadius = new SkPoint(BorderRadiusBottomLeft, BorderRadiusBottomLeft),
-                BottomRightRadius = new SkPoint(BorderRadiusBottomRight, BorderRadiusBottomRight)
+                TopLeftRadius = new SkPoint(configuration.BorderRadiusTopLeft, configuration.BorderRadiusTopLeft),
+                TopRightRadius = new SkPoint(configuration.BorderRadiusTopRight, configuration.BorderRadiusTopRight),
+                BottomLeftRadius = new SkPoint(configuration.BorderRadiusBottomLeft, configuration.BorderRadiusBottomLeft),
+                BottomRightRadius = new SkPoint(configuration.BorderRadiusBottomRight, configuration.BorderRadiusBottomRight)
             };
         }
-        
-        private SkRoundedRect GetBorderRectExpandedWithBorderThickness(Size availableSpace, float borderThicknessExpansionFactor)
+
+        private SkRoundedRect ExpandRoundedRectWithBorderThickness(SkRoundedRect primaryRect, float borderThicknessExpansionFactor)
         {
-            var primaryRect = GetPrimaryBorderRect(availableSpace);
-            
             return ExpandRoundedRect(
-                primaryRect, 
+                primaryRect,
                 borderThicknessExpansionFactor * BorderLeft,
                 borderThicknessExpansionFactor * BorderTop,
                 borderThicknessExpansionFactor * BorderRight,
                 borderThicknessExpansionFactor * BorderBottom);
         }
-        
-        private SkRoundedRect GetOuterRect(Size availableSpace)
-        {
-            return GetBorderRectExpandedWithBorderThickness(availableSpace, BorderAlignment!.Value);
-        }
-        
-        private SkRoundedRect GetInnerRect(Size availableSpace)
-        {
-            return GetBorderRectExpandedWithBorderThickness(availableSpace, BorderAlignment!.Value - 1f);
-        }
 
-        private SkRoundedRect ExpandRoundedRect(SkRoundedRect rect, float all)
+        private static SkRoundedRect ExpandRoundedRect(SkRoundedRect rect, float all)
         {
             return ExpandRoundedRect(rect, all, all, all, all);
         }
         
-        private SkRoundedRect ExpandRoundedRect(SkRoundedRect input, float left, float top, float right, float bottom)
+        private static SkRoundedRect ExpandRoundedRect(SkRoundedRect input, float left, float top, float right, float bottom)
         {
             var rect = new SkRect
             {
@@ -313,24 +311,26 @@ namespace QuestPDF.Elements
 
         internal IEnumerable<(string Type, string? Hint)> GetCompanionCustomContent()
         {
+            var configuration = ExtendedConfiguration ?? DefaultExtendedConfiguration;
+
             // shadow
-            if (Shadow != null)
+            if (configuration.Shadow != null)
                 yield return ("Shadow", null);
 
             // rounded corners
-            if (HasRoundedCorners)
+            if (configuration.HasRoundedCorners)
             {
-                if (HasUniformRoundedCorners)
-                    yield return ("Border", $"R={BorderRadiusTopLeft}");
+                if (configuration.HasUniformRoundedCorners)
+                    yield return ("Border", $"R={configuration.BorderRadiusTopLeft}");
                 else
-                    yield return ("Border", $"TL={BorderRadiusTopLeft}   TR={BorderRadiusTopRight}   BL={BorderRadiusBottomLeft}   BR={BorderRadiusBottomRight}");
+                    yield return ("Border", $"TL={configuration.BorderRadiusTopLeft}   TR={configuration.BorderRadiusTopRight}   BL={configuration.BorderRadiusBottomLeft}   BR={configuration.BorderRadiusBottomRight}");
             }
 
             // border
             if (HasBorder)
             {
-                var color = BorderGradientColors.Any() ? "gradient" : BorderColor.ToString();
-                
+                var color = configuration.BorderGradientColors.Any() ? "gradient" : BorderColor.ToString();
+
                 if (HasUniformBorder)
                     yield return ("Border", $"A={BorderLeft}   C={color}");
                 else
@@ -338,8 +338,8 @@ namespace QuestPDF.Elements
             }
 
             // background
-            if (BackgroundGradientColors.Length > 0)
-                yield return ("Background", $"Gradient with {BackgroundGradientColors.Length} colors");
+            if (configuration.BackgroundGradientColors.Length > 0)
+                yield return ("Background", $"Gradient with {configuration.BackgroundGradientColors.Length} colors");
 
             else if (BackgroundColor.Hex != Colors.Transparent.Hex)
                 yield return ("Background", BackgroundColor);
