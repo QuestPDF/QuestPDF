@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -56,21 +55,21 @@ namespace QuestPDF.Elements
             if (Items.Count == 0)
                 return SpacePlan.Empty();
 
-            if (Items.All(x => x.IsRendered))
+            if (AreAllItemsRendered())
                 return SpacePlan.Empty();
             
             UpdateItemsWidth(availableSpace.Width);
             
-            if (Items.Any(x => x.Width.IsLessThan(0)))
+            if (AnyItemHasNegativeWidth())
                 return SpacePlan.Wrap("One of the items has a negative size, indicating insufficient horizontal space. Usually, constant items require more space than is available, potentially causing other content to overflow.");
             
             using var renderingCommands = PlanLayout(availableSpace);
 
-            if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.Wrap))
+            var (width, height, hasWrappedItem, hasPartiallyRenderedItem) = AnalyzeRenderingCommands(renderingCommands);
+
+            if (hasWrappedItem)
                 return SpacePlan.Wrap("One of the items does not fit (even partially) in the available space.");
 
-            var width = renderingCommands.Last().Offset.X + renderingCommands.Last().Size.Width;
-            var height = renderingCommands.Max(x => x.Size.Height);
             var size = new Size(width, height);
 
             if (width.IsGreaterThan(availableSpace.Width))
@@ -79,7 +78,7 @@ namespace QuestPDF.Elements
             if (height.IsGreaterThan(availableSpace.Height))
                 return SpacePlan.Wrap("The content requires more vertical space than available.");
             
-            if (renderingCommands.Any(x => !x.RowItem.IsRendered && x.Measurement.Type == SpacePlanType.PartialRender))
+            if (hasPartiallyRenderedItem)
                 return SpacePlan.PartialRender(size);
 
             return SpacePlan.FullRender(size);
@@ -90,7 +89,7 @@ namespace QuestPDF.Elements
             if (Items.Count == 0)
                 return;
 
-            if (Items.All(x => x.IsRendered))
+            if (AreAllItemsRendered())
                 return;
 
             UpdateItemsWidth(availableSpace.Width);
@@ -118,6 +117,54 @@ namespace QuestPDF.Elements
                 command.RowItem.Draw(targetSize);
                 Canvas.Translate(offset.Reverse());
             }
+        }
+
+        private bool AreAllItemsRendered()
+        {
+            foreach (var item in Items)
+            {
+                if (!item.IsRendered)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private bool AnyItemHasNegativeWidth()
+        {
+            foreach (var item in Items)
+            {
+                if (item.Width.IsLessThan(0))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static (float Width, float Height, bool HasWrappedItem, bool HasPartiallyRenderedItem) AnalyzeRenderingCommands(List<RowItemRenderingCommand> renderingCommands)
+        {
+            var height = 0f;
+            var hasWrappedItem = false;
+            var hasPartiallyRenderedItem = false;
+
+            foreach (var command in renderingCommands)
+            {
+                height = Math.Max(height, command.Size.Height);
+
+                if (command.RowItem.IsRendered)
+                    continue;
+
+                if (command.Measurement.Type == SpacePlanType.Wrap)
+                    hasWrappedItem = true;
+
+                else if (command.Measurement.Type == SpacePlanType.PartialRender)
+                    hasPartiallyRenderedItem = true;
+            }
+            
+            var lastCommand = renderingCommands[renderingCommands.Count - 1];
+            var width = lastCommand.Offset.X + lastCommand.Size.Width;
+
+            return (width, height, hasWrappedItem, hasPartiallyRenderedItem);
         }
 
         private void UpdateItemsWidth(float availableWidth)
@@ -160,8 +207,11 @@ namespace QuestPDF.Elements
         
         private ReusableList<RowItemRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var leftOffset = 0f;
             var renderingCommands = ReusableListPool<RowItemRenderingCommand>.Get();
+            
+            // measure all items and their positions
+            var leftOffset = 0f;
+            var hasWrappedItem = false;
 
             foreach (var item in Items)
             {
@@ -177,12 +227,15 @@ namespace QuestPDF.Elements
                 
                 renderingCommands.Add(command);
                 leftOffset += item.Width + Spacing;
+
+                if (command.Measurement.Type == SpacePlanType.Wrap)
+                    hasWrappedItem = true;
             }
 
-            // TODO: investigate
-            if (renderingCommands.Any(x => x.Measurement.Type == SpacePlanType.Wrap))
+            if (hasWrappedItem)
                 return renderingCommands;
 
+            // adjust all items height to the tallest item
             var rowHeight = GetTallestItemHeight();
 
             // RowItemRenderingCommand is a struct: modified copies must be written back to the list
