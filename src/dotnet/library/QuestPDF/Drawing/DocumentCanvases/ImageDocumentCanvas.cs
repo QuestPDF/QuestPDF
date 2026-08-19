@@ -81,9 +81,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
                 if (imageFormatSupportsTransparency && Settings.UseTransparentBackground)
                     return;
                 
-                using var whitePaint = new SkPaint();
-                whitePaint.SetSolidColor(Colors.White);
-                
+                var whitePaint = SkPaintCache.GetSolidColor(Colors.White);
                 CurrentPageCanvas.DrawRectangle(new SkRect(0, 0, size.Width, size.Height), whitePaint);
             }
         }

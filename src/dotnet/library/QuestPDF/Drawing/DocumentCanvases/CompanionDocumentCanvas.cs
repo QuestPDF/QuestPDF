@@ -31,9 +31,7 @@ namespace QuestPDF.Drawing.DocumentCanvases
             canvas.Scale(scale, scale);
             
             // draw white background
-            using var backgroundPaint = new SkPaint();
-            backgroundPaint.SetSolidColor(Colors.White);
-            
+            var backgroundPaint = SkPaintCache.GetSolidColor(Colors.White);
             var backgroundRect = new SkRect(0, 0, Size.Width, Size.Height);
             canvas.DrawRectangle(backgroundRect, backgroundPaint);
             

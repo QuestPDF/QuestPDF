@@ -83,9 +83,8 @@ namespace QuestPDF.Elements
                 return;
             }
             
-            using var backgroundPaint = GetBackgroundPaint(availableSpace);
-            using var borderPaint = GetBorderPaint(availableSpace);
-            
+            using var backgroundPaint = GetPaint(availableSpace, BackgroundColor, BackgroundGradientColors, BackgroundGradientAngle);
+
             if (HasFullBorder && HasUniformBorder && !HasRoundedCorners && HasSimpleStyle && BorderAlignment == 0.5f && Shadow == null)
             {
                 // optimization: draw a simple rectangle with border
@@ -97,16 +96,18 @@ namespace QuestPDF.Elements
                 
                 base.Draw(availableSpace);
                 
-                if (borderPaint != null)
+                if (BorderColor.Hex != Colors.Transparent.Hex)
                 {
-                    borderPaint.SetStroke(BorderLeft);
-                    
                     using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
-                    Canvas.DrawRectangle(Position.Zero, availableSpace, borderPaint);
+                    
+                    using var simpleBorderPaint = SkPaintCache.GetStroke(BorderColor, BorderLeft);
+                    Canvas.DrawRectangle(Position.Zero, availableSpace, simpleBorderPaint);
                 }
                 
                 return;
             }
+
+            using var borderPaint = GetPaint(availableSpace, BorderColor, BorderGradientColors, BorderGradientAngle);
             
             var contentRect = GetPrimaryBorderRect(availableSpace);
             var borderOuterRect = GetOuterRect(availableSpace);
@@ -152,7 +153,7 @@ namespace QuestPDF.Elements
             }
         }
 
-        private (Position start, Position end) GetLinearGradientPositions(Size availableSpace, float angle)
+        private static (Position start, Position end) GetLinearGradientPositions(Size availableSpace, float angle)
         {
             if (angle == 0f)
                 return (Position.Zero, new Position(availableSpace.Width, 0));
@@ -204,44 +205,20 @@ namespace QuestPDF.Elements
             }
         }
         
-        private SkPaint? GetBorderPaint(Size availableSpace)
+        private static SkPaint? GetPaint(Size availableSpace, Color solidColor, Color[] gradientColors, float? gradientAngle)
         {
-            if (BorderGradientColors.Length > 0)
+            if (gradientColors.Length > 0)
             {
                 var paint = new SkPaint();
-                var gradientPoints = GetLinearGradientPositions(availableSpace, BorderGradientAngle ?? 0);
-                paint.SetLinearGradient(gradientPoints.start, gradientPoints.end, BorderGradientColors);
-                return paint;
-            }
-            
-            if (BorderColor.Hex != Colors.Transparent.Hex)
-            {
-                var paint = new SkPaint();
-                paint.SetSolidColor(BorderColor);
+                var gradientPoints = GetLinearGradientPositions(availableSpace, gradientAngle ?? 0);
+                paint.SetLinearGradient(gradientPoints.start, gradientPoints.end, gradientColors);
                 return paint;
             }
 
-            return null;
-        }
-        
-        private SkPaint? GetBackgroundPaint(Size availableSpace)
-        {
-            if (BackgroundGradientColors.Length > 0)
-            {
-                var paint = new SkPaint();
-                var gradientPoints = GetLinearGradientPositions(availableSpace, BackgroundGradientAngle ?? 0);
-                paint.SetLinearGradient(gradientPoints.start, gradientPoints.end, BackgroundGradientColors);
-                return paint;
-            }
-            
-            if (BackgroundColor.Hex != Colors.Transparent.Hex)
-            {
-                var paint = new SkPaint();
-                paint.SetSolidColor(BackgroundColor);
-                return paint;
-            }
+            if (solidColor.Hex == Colors.Transparent.Hex)
+                return null;
 
-            return null;
+            return SkPaintCache.GetSolidColor(solidColor);
         }
         
         private SkRoundedRect GetPrimaryBorderRect(Size availableSpace)
