@@ -61,8 +61,11 @@ namespace QuestPDF.Elements.Text
         {
             Paragraph?.Dispose();
             
-            foreach (var textBlockElement in Items.OfType<TextBlockElement>())
-                textBlockElement.Element.ReleaseDisposableChildren();
+            foreach (var textBlockItem in Items)
+            {
+                if (textBlockItem is TextBlockElement textBlockElement)
+                    textBlockElement.Element.ReleaseDisposableChildren();
+            }
             
             GC.SuppressFinalize(this);
         }
@@ -122,11 +125,7 @@ namespace QuestPDF.Elements.Text
         private (int linesToDraw, float takenHeight) DetermineLinesToDraw(Size availableSpace)
         {
             var firstLine = LineExtents[CurrentLineIndex];
-            
-            var totalLines = LineExtents
-                .Skip(CurrentLineIndex)
-                .TakeWhile(lineExtent => lineExtent.Bottom - firstLine.Top < availableSpace.Height + Size.Epsilon)
-                .Count();
+            var totalLines = CountLinesFittingInAvailableHeight();
             
             if (totalLines == 0)
                 return (0, 0);
@@ -136,6 +135,22 @@ namespace QuestPDF.Elements.Text
             var takenHeight = lastLine.Bottom - firstLine.Top;
 
             return (totalLines, takenHeight);
+
+            int CountLinesFittingInAvailableHeight()
+            {
+                var result = 0;
+                var availableHeightLimit = availableSpace.Height + Size.Epsilon;
+
+                for (var lineIndex = CurrentLineIndex; lineIndex < LineCount; lineIndex++)
+                {
+                    if (LineExtents[lineIndex].Bottom - firstLine.Top >= availableHeightLimit)
+                        break;
+
+                    result++;
+                }
+
+                return result;
+            }
         }
         
         internal override void Draw(Size availableSpace)
@@ -190,71 +205,70 @@ namespace QuestPDF.Elements.Text
                 if (takesMultiplePages)
                     Canvas.ClipRectangle(new SkRect(0, pageStartTop, availableSpace.Width, pageStartTop + takenHeight));
 
-                DrawInjectedElements();
-                DrawHyperlinks();
-                DrawSectionLinks();
+                foreach (var textBlockItem in Items)
+                {
+                    if (textBlockItem is TextBlockElement textBlockElement)
+                        DrawInjectedElement(textBlockElement);
+
+                    else if (textBlockItem is TextBlockHyperlink textBlockHyperlink)
+                        DrawHyperlink(textBlockHyperlink);
+
+                    else if (textBlockItem is TextBlockSectionLink textBlockSectionLink)
+                        DrawSectionLink(textBlockSectionLink);
+                }
                 
                 if (takesMultiplePages)
                     Canvas.Restore();
             }
 
-            void DrawInjectedElements()
+            void DrawInjectedElement(TextBlockElement textBlockElement)
             {
-                foreach (var textBlockElement in Items.OfType<TextBlockElement>())
-                {
-                    var placeholder = PlaceholderPositions[textBlockElement.ParagraphBlockIndex];
-                    
-                    textBlockElement.ConfigureElement(PageContext, Canvas);
+                var placeholder = PlaceholderPositions[textBlockElement.ParagraphBlockIndex];
 
-                    var offset = new Position(placeholder.Left, placeholder.Top);
-                    
-                    if (!IsPositionVisible(placeholder))
+                textBlockElement.ConfigureElement(PageContext, Canvas);
+
+                var offset = new Position(placeholder.Left, placeholder.Top);
+
+                if (!IsPositionVisible(placeholder))
+                    return;
+
+                Canvas.Translate(offset);
+                textBlockElement.Element.Draw(new Size(placeholder.Width, placeholder.Height));
+                Canvas.Translate(offset.Reverse());
+            }
+
+            void DrawHyperlink(TextBlockHyperlink hyperlink)
+            {
+                var positions = Paragraph.GetTextRangePositions(hyperlink.ParagraphBeginIndex, hyperlink.ParagraphBeginIndex + hyperlink.Text.Length);
+
+                foreach (var position in positions)
+                {
+                    var offset = new Position(position.Left, position.Top);
+
+                    if (!IsPositionVisible(position))
                         continue;
-                    
+
                     Canvas.Translate(offset);
-                    textBlockElement.Element.Draw(new Size(placeholder.Width, placeholder.Height));
+                    Canvas.DrawHyperlink(new Size(position.Width, position.Height), hyperlink.Url, hyperlink.Text);
                     Canvas.Translate(offset.Reverse());
                 }
             }
-            
-            void DrawHyperlinks()
+
+            void DrawSectionLink(TextBlockSectionLink sectionLink)
             {
-                foreach (var hyperlink in Items.OfType<TextBlockHyperlink>())
+                var positions = Paragraph.GetTextRangePositions(sectionLink.ParagraphBeginIndex, sectionLink.ParagraphBeginIndex + sectionLink.Text.Length);
+                var targetName = PageContext.GetDocumentLocationName(sectionLink.SectionName);
+
+                foreach (var position in positions)
                 {
-                    var positions = Paragraph.GetTextRangePositions(hyperlink.ParagraphBeginIndex, hyperlink.ParagraphBeginIndex + hyperlink.Text.Length);
-                    
-                    foreach (var position in positions)
-                    {
-                        var offset = new Position(position.Left, position.Top);
-                        
-                        if (!IsPositionVisible(position))
-                            continue;
-                        
-                        Canvas.Translate(offset);
-                        Canvas.DrawHyperlink(new Size(position.Width, position.Height), hyperlink.Url, hyperlink.Text);
-                        Canvas.Translate(offset.Reverse());
-                    }
-                }
-            }
-            
-            void DrawSectionLinks()
-            {
-                foreach (var sectionLink in Items.OfType<TextBlockSectionLink>())
-                {
-                    var positions = Paragraph.GetTextRangePositions(sectionLink.ParagraphBeginIndex, sectionLink.ParagraphBeginIndex + sectionLink.Text.Length);
-                    var targetName = PageContext.GetDocumentLocationName(sectionLink.SectionName);
-                    
-                    foreach (var position in positions)
-                    {
-                        var offset = new Position(position.Left, position.Top);
-                        
-                        if (!IsPositionVisible(position))
-                            continue;
-                        
-                        Canvas.Translate(offset);
-                        Canvas.DrawSectionLink(new Size(position.Width, position.Height), targetName, sectionLink.Text);
-                        Canvas.Translate(offset.Reverse());
-                    }
+                    var offset = new Position(position.Left, position.Top);
+
+                    if (!IsPositionVisible(position))
+                        continue;
+
+                    Canvas.Translate(offset);
+                    Canvas.DrawSectionLink(new Size(position.Width, position.Height), targetName, sectionLink.Text);
+                    Canvas.Translate(offset.Reverse());
                 }
             }
 
@@ -271,13 +285,24 @@ namespace QuestPDF.Elements.Text
 
             if (!AreParagraphItemsTransformedWithSpacingAndIndentation)
             {
-                Items = ApplyParagraphSpacingToTextBlockItems().ToList();
+                Items = ApplyParagraphSpacingToTextBlockItems();
                 AreParagraphItemsTransformedWithSpacingAndIndentation = true;
             }
             
-            RebuildParagraphForEveryPage = Items.Any(x => x is TextBlockPageNumber);
+            RebuildParagraphForEveryPage = ContainsItemOfType<TextBlockPageNumber>();
             BuildParagraph();
             AreParagraphMetricsValid = false;
+        }
+
+        private bool ContainsItemOfType<T>()
+        {
+            foreach (var textBlockItem in Items)
+            {
+                if (textBlockItem is T)
+                    return true;
+            }
+
+            return false;
         }
 
         private void BuildParagraph()
@@ -351,7 +376,7 @@ namespace QuestPDF.Elements.Text
                 var currentTextIndex = 0;
                 var currentBlockIndex = 0;
             
-                if (!Items.Any(x => x is TextBlockSpan))
+                if (!ContainsItemOfType<TextBlockSpan>())
                     builder.AddText("\u200B", DefaultTextStyle.GetSkTextStyle());
                 
                 foreach (var textBlockItem in Items)
@@ -410,7 +435,7 @@ namespace QuestPDF.Elements.Text
             }
         }
 
-        private IEnumerable<ITextBlockItem> ApplyParagraphSpacingToTextBlockItems()
+        private List<ITextBlockItem> ApplyParagraphSpacingToTextBlockItems()
         {
             if (ParagraphSpacing < Size.Epsilon && ParagraphFirstLineIndentation < Size.Epsilon)
                 return Items;
@@ -528,7 +553,7 @@ namespace QuestPDF.Elements.Text
                 
             var unsupportedGlyphs = Paragraph.GetUnresolvedCodepoints();
                    
-            if (!unsupportedGlyphs.Any())
+            if (unsupportedGlyphs.Length == 0)
                 return;
                 
             var formattedGlyphs = unsupportedGlyphs    
