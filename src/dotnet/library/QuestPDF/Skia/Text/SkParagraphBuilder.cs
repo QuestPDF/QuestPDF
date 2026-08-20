@@ -1,5 +1,10 @@
 using System;
+#if NET5_0_OR_GREATER
+using System.Buffers;
+#endif
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace QuestPDF.Skia.Text;
 
@@ -82,7 +87,7 @@ internal struct SkPlaceholderStyle
     }
 }
 
-record ParagraphStyle
+internal readonly record struct ParagraphStyle
 {
     public ParagraphStyleConfiguration.TextAlign Alignment { get; init; }
     public ParagraphStyleConfiguration.TextDirection Direction { get; init; }
@@ -120,9 +125,59 @@ internal sealed class SkParagraphBuilder : IDisposable
         };
     }
     
-    public void AddText(string text, SkTextStyle textStyle)
+    [SkipLocalsInit]
+    public unsafe void AddText(string text, SkTextStyle textStyle)
     {
-        API.questpdf_skia_paragraph_builder_add_text(Instance, text, textStyle.Instance);
+        if (string.IsNullOrEmpty(text))
+            return;
+
+        const int maxStackBufferSize = 1024;
+        var textByteCount = Encoding.UTF8.GetByteCount(text);
+
+        if (textByteCount < maxStackBufferSize)
+        {
+            var buffer = stackalloc byte[textByteCount + 1];
+
+            fixed (char* pText = text)
+            {
+                Encoding.UTF8.GetBytes(pText, text.Length, buffer, textByteCount);
+            }
+
+            buffer[textByteCount] = 0;
+
+            API.questpdf_skia_paragraph_builder_add_text(Instance, (IntPtr)buffer, textStyle.Instance);
+        }
+        else
+        {
+#if NET5_0_OR_GREATER
+            var pooledArray = ArrayPool<byte>.Shared.Rent(textByteCount + 1);
+            
+            try
+            {
+                Encoding.UTF8.GetBytes(text, 0, text.Length, pooledArray, 0);
+                pooledArray[textByteCount] = 0;
+
+                fixed (byte* pBuffer = pooledArray)
+                {
+                    API.questpdf_skia_paragraph_builder_add_text(Instance, (IntPtr)pBuffer, textStyle.Instance);
+                }
+            }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(pooledArray);
+            }
+#else
+            var array = new byte[textByteCount + 1];
+
+            Encoding.UTF8.GetBytes(text, 0, text.Length, array, 0);
+            array[textByteCount] = 0;
+
+            fixed (byte* pBuffer = array)
+            {
+                API.questpdf_skia_paragraph_builder_add_text(Instance, (IntPtr)pBuffer, textStyle.Instance);
+            }
+#endif
+        }
     }
     
     public void AddPlaceholder(SkPlaceholderStyle placeholderStyle)
@@ -165,7 +220,7 @@ internal sealed class SkParagraphBuilder : IDisposable
         public static extern IntPtr questpdf_skia_paragraph_builder_create(in ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr unicode, IntPtr fontCollection);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void questpdf_skia_paragraph_builder_add_text(IntPtr paragraphBuilder, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string text, IntPtr textStyle);
+        public static extern void questpdf_skia_paragraph_builder_add_text(IntPtr paragraphBuilder, IntPtr textPointer, IntPtr textStyle);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void questpdf_skia_paragraph_builder_add_placeholder(IntPtr paragraphBuilder, in SkPlaceholderStyle placeholderStyle);
