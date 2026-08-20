@@ -83,18 +83,60 @@ namespace QuestPDF.Elements.Table
                 
                 return;
             }
+
+            UpdateMaxRowAndMaxRowSpan();
+            CellsCache = GroupCellsByLastOccupiedRow();
+
+            void UpdateMaxRowAndMaxRowSpan()
+            {
+                MaxRow = 0;
+                MaxRowSpan = 1;
+
+                foreach (var cell in Cells)
+                {
+                    MaxRow = Math.Max(MaxRow, GetCellLastOccupiedRow(cell));
+                    MaxRowSpan = Math.Max(MaxRowSpan, cell.RowSpan);
+                }
+            }
             
-            var groups = Cells
-                .GroupBy(x => x.Row + x.RowSpan - 1)
-                .ToDictionary(x => x.Key, x => x.OrderBy(x => x.Column).ToArray());
+            // Builds an array where the N-th element contains all cells whose last occupied row is N, ordered by column.
+            TableCell[][] GroupCellsByLastOccupiedRow()
+            {
+                // first pass: determine the size of each bucket
+                var rowCellCounts = new int[MaxRow + 1];
 
-            MaxRow = groups.Max(x => x.Key);
-            MaxRowSpan = Cells.Max(x => x.RowSpan);
+                foreach (var cell in Cells)
+                    rowCellCounts[GetCellLastOccupiedRow(cell)]++;
 
-            CellsCache = Enumerable
-                .Range(0, MaxRow + 1)
-                .Select(x => groups.TryGetValue(x, out var value) ? value : Array.Empty<TableCell>())
-                .ToArray();
+                var buckets = new TableCell[MaxRow + 1][];
+
+                for (var row = 0; row <= MaxRow; row++)
+                    buckets[row] = rowCellCounts[row] > 0 ? new TableCell[rowCellCounts[row]] : Array.Empty<TableCell>();
+
+                // second pass: fill the buckets
+                var rowInsertionIndexes = new int[MaxRow + 1];
+
+                foreach (var cell in Cells)
+                {
+                    var row = GetCellLastOccupiedRow(cell);
+                    buckets[row][rowInsertionIndexes[row]] = cell;
+                    rowInsertionIndexes[row]++;
+                }
+
+                // final pass: order cells within each bucket by column
+                foreach (var rowCells in buckets)
+                {
+                    if (rowCells.Length > 1)
+                        Array.Sort(rowCells, OrderCellsByColumnThenRow);
+                }
+
+                return buckets;
+            }
+        }
+        
+        private static int GetCellLastOccupiedRow(TableCell cell)
+        {
+            return cell.Row + cell.RowSpan - 1;
         }
         
         internal override SpacePlan Measure(Size availableSpace)
@@ -369,6 +411,28 @@ namespace QuestPDF.Elements.Table
         #region Helpers
         
         private HashSet<TableCell> CalculateCurrentRow_DoneCells_Cache { get; } = new();
+        
+        private static readonly Comparison<TableCell> OrderCellsByRowThenColumn = static (left, right) =>
+        {
+            if (left.Row != right.Row)
+                return left.Row.CompareTo(right.Row);
+
+            if (left.Column != right.Column)
+                return left.Column.CompareTo(right.Column);
+
+            return left.ZIndex.CompareTo(right.ZIndex);
+        };
+
+        private static readonly Comparison<TableCell> OrderCellsByColumnThenRow = static (left, right) =>
+        {
+            if (left.Column != right.Column)
+                return left.Column.CompareTo(right.Column);
+
+            if (left.Row != right.Row)
+                return left.Row.CompareTo(right.Row);
+
+            return left.ZIndex.CompareTo(right.ZIndex);
+        };
         
         private static readonly Comparison<TableCellRenderingCommand> OrderCommandsByCellZIndex =
             static (left, right) => left.Cell.ZIndex.CompareTo(right.Cell.ZIndex);
