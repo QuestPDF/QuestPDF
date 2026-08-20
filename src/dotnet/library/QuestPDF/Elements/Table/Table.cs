@@ -254,19 +254,90 @@ namespace QuestPDF.Elements.Table
         
         private ReusableList<TableCellRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var columnOffsets = GetColumnLeftOffsets(Columns);
+            var commands = ReusableListPool<TableCellRenderingCommand>.Get();
             
-            var commands = GetRenderingCommands();
-
-            if (commands.Count == 0)
-                return commands;
-
-            if (ExtendLastCellsToTableBottom)
+            var columnOffsets = GetColumnLeftOffsets(Columns);
+            var rowBottomOffsets = new DynamicDictionary<int, float>();
+            
+            var cellsToTry = Enumerable
+                .Range(CurrentRow, MaxRow - CurrentRow + 1)
+                .SelectMany(x => CellsCache[x]);
+            
+            var currentRow = CurrentRow;
+            var maxRenderingRow = LastRowIndex;
+            
+            foreach (var cell in cellsToTry)
             {
-                var tableHeight = commands.Max(cell => cell.Offset.Y + cell.Size.Height);
-                AdjustLastCellSizes(tableHeight, commands, Columns.Count);
+                // update position of previous row
+                if (cell.Row > currentRow)
+                {
+                    rowBottomOffsets[currentRow] = Math.Max(rowBottomOffsets[currentRow], rowBottomOffsets[currentRow - 1]);
+                        
+                    if (rowBottomOffsets[currentRow - 1] > availableSpace.Height + Size.Epsilon)
+                        break;
+
+                    foreach (var row in Enumerable.Range(currentRow + 1, cell.Row - (currentRow + 1)))
+                        rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);
+                    
+                    currentRow = cell.Row;
+                }
+                
+                // cell visibility optimizations
+                if (cell.Row > maxRenderingRow + MaxRowSpan)
+                    break;
+
+                // calculate cell position / size
+                var topOffset = rowBottomOffsets[cell.Row - 1];
+                
+                var availableWidth = GetCellWidth(cell);
+                var availableHeight = availableSpace.Height - topOffset;
+                var availableCellSize = new Size(availableWidth, availableHeight);
+
+                var cellSize = cell.Measure(availableCellSize);
+
+                // corner case: if cell within the row is not fully rendered, do not attempt to render next row
+                if (cellSize.Type == SpacePlanType.PartialRender)
+                {
+                    maxRenderingRow = Math.Min(maxRenderingRow, cell.Row + cell.RowSpan - 1);
+                }
+
+                // corner case: if cell within the row want to wrap to the next page, do not attempt to render this row
+                if (cellSize.Type == SpacePlanType.Wrap)
+                {
+                    maxRenderingRow = Math.Min(maxRenderingRow, cell.Row - 1);
+                    continue;
+                }
+
+                // update position of the last row that cell occupies
+                var bottomRow = cell.Row + cell.RowSpan - 1;
+                rowBottomOffsets[bottomRow] = Math.Max(rowBottomOffsets[bottomRow], topOffset + cellSize.Height);
+
+                // accept cell to be rendered
+                commands.Add(new TableCellRenderingCommand()
+                {
+                    Cell = cell,
+                    Measurement = cellSize,
+                    Size = new Size(availableWidth, cellSize.Height),
+                    Offset = new Position(columnOffsets[cell.Column - 1], topOffset)
+                });
             }
 
+            if (!commands.Any())
+                return commands;
+
+            var maxRow = commands.Select(x => x.Cell).Max(x => x.Row + x.RowSpan);
+
+            foreach (var row in Enumerable.Range(CurrentRow, maxRow - CurrentRow))
+                rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);   
+
+            AdjustCellSizes(commands, rowBottomOffsets);
+            
+            // corner case: reject cell if other cells within the same row are rejected
+            commands.RemoveAll(x => x.Cell.Row > maxRenderingRow);
+            
+            if (ExtendLastCellsToTableBottom)
+                AdjustLastCellSizes(commands, Columns.Count);
+            
             return commands;
 
             static float[] GetColumnLeftOffsets(IList<TableColumnDefinition> columns)
@@ -278,89 +349,6 @@ namespace QuestPDF.Elements.Table
                     cellOffsets[column] = columns[column - 1].Width + cellOffsets[column - 1];
 
                 return cellOffsets;
-            }
-            
-            ReusableList<TableCellRenderingCommand> GetRenderingCommands()
-            {
-                var rowBottomOffsets = new DynamicDictionary<int, float>();
-                var commands = ReusableListPool<TableCellRenderingCommand>.Get();
-                
-                var cellsToTry = Enumerable
-                    .Range(CurrentRow, MaxRow - CurrentRow + 1)
-                    .SelectMany(x => CellsCache[x]);
-                
-                var currentRow = CurrentRow;
-                var maxRenderingRow = LastRowIndex;
-                
-                foreach (var cell in cellsToTry)
-                {
-                    // update position of previous row
-                    if (cell.Row > currentRow)
-                    {
-                        rowBottomOffsets[currentRow] = Math.Max(rowBottomOffsets[currentRow], rowBottomOffsets[currentRow - 1]);
-                            
-                        if (rowBottomOffsets[currentRow - 1] > availableSpace.Height + Size.Epsilon)
-                            break;
-
-                        foreach (var row in Enumerable.Range(currentRow + 1, cell.Row - (currentRow + 1)))
-                            rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);
-                        
-                        currentRow = cell.Row;
-                    }
-                    
-                    // cell visibility optimizations
-                    if (cell.Row > maxRenderingRow + MaxRowSpan)
-                        break;
-
-                    // calculate cell position / size
-                    var topOffset = rowBottomOffsets[cell.Row - 1];
-                    
-                    var availableWidth = GetCellWidth(cell);
-                    var availableHeight = availableSpace.Height - topOffset;
-                    var availableCellSize = new Size(availableWidth, availableHeight);
-
-                    var cellSize = cell.Measure(availableCellSize);
-
-                    // corner case: if cell within the row is not fully rendered, do not attempt to render next row
-                    if (cellSize.Type == SpacePlanType.PartialRender)
-                    {
-                        maxRenderingRow = Math.Min(maxRenderingRow, cell.Row + cell.RowSpan - 1);
-                    }
-
-                    // corner case: if cell within the row want to wrap to the next page, do not attempt to render this row
-                    if (cellSize.Type == SpacePlanType.Wrap)
-                    {
-                        maxRenderingRow = Math.Min(maxRenderingRow, cell.Row - 1);
-                        continue;
-                    }
-
-                    // update position of the last row that cell occupies
-                    var bottomRow = cell.Row + cell.RowSpan - 1;
-                    rowBottomOffsets[bottomRow] = Math.Max(rowBottomOffsets[bottomRow], topOffset + cellSize.Height);
-
-                    // accept cell to be rendered
-                    commands.Add(new TableCellRenderingCommand()
-                    {
-                        Cell = cell,
-                        Measurement = cellSize,
-                        Size = new Size(availableWidth, cellSize.Height),
-                        Offset = new Position(columnOffsets[cell.Column - 1], topOffset)
-                    });
-                }
-
-                if (!commands.Any())
-                    return commands;
-
-                var maxRow = commands.Select(x => x.Cell).Max(x => x.Row + x.RowSpan);
-
-                foreach (var row in Enumerable.Range(CurrentRow, maxRow - CurrentRow))
-                    rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);   
-
-                AdjustCellSizes(commands, rowBottomOffsets);
-                
-                // corner case: reject cell if other cells within the same row are rejected
-                commands.RemoveAll(x => x.Cell.Row > maxRenderingRow);
-                return commands;
             }
             
             // corner sase: if two cells end up on the same row (a.Row + a.RowSpan = b.Row + b.RowSpan),
@@ -382,13 +370,16 @@ namespace QuestPDF.Elements.Table
             }
             
             // corner sase: all cells, that are last ones in their respective columns, should take all remaining space
-            static void AdjustLastCellSizes(float tableHeight, List<TableCellRenderingCommand> commands, int columnsCount)
+            static void AdjustLastCellSizes(List<TableCellRenderingCommand> commands, int columnsCount)
             {
+                var tableHeight = 0f;
                 var bottomRowPerColumn = new int[columnsCount];
 
                 // first pass: find the bottom-most occupied row of every column
                 foreach (var command in commands)
                 {
+                    tableHeight = Math.Max(tableHeight, command.Offset.Y + command.Size.Height);
+                    
                     var cell = command.Cell;
 
                     for (var column = cell.Column; column < cell.Column + cell.ColumnSpan; column++)
