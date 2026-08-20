@@ -222,10 +222,21 @@ namespace QuestPDF.Elements.Table
 
             var nextRow = CurrentRow;
             
-            while (nextRow <= MaxRow && CellsCache[nextRow].All(x => x.IsRendered || CalculateCurrentRow_DoneCells_Cache.Contains(x)))
+            while (nextRow <= MaxRow && IsRowFullyRendered(nextRow))
                 nextRow++;
 
             return nextRow;
+
+            bool IsRowFullyRendered(int row)
+            {
+                foreach (var cell in CellsCache[row])
+                {
+                    if (!cell.IsRendered && !CalculateCurrentRow_DoneCells_Cache.Contains(cell))
+                        return false;
+                }
+
+                return true;
+            }
         }
         
         private void UpdateColumnsWidth(float availableWidth)
