@@ -31,7 +31,7 @@ namespace QuestPDF.Infrastructure
     {
         // do not pool oversized buffers, so one huge element cannot
         // keep a large array alive for the lifetime of the thread
-        private const int MaxPooledCapacity = 512;
+        private const int MaxPooledCapacity = 4096;
 
         [ThreadStatic]
         private static Stack<ReusableList<T>>? Pool;
