@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace QuestPDF.Elements.Table
 {
@@ -10,93 +9,135 @@ namespace QuestPDF.Elements.Table
         {
             PlanCellPositions(table.Columns.Count, table.Cells);
         }
-        
+
+        // Cells without an explicit position flow in reading order (left to right, top to bottom):
+        // each takes the first unoccupied position, searching from the most recently placed cell.
+        // An explicitly positioned cell moves that starting point.
+        // A cell with only one coordinate specified keeps it, while the other coordinate is determined automatically.
         private static void PlanCellPositions(int columnsCount, ICollection<TableCell> cells)
         {
-            var cellsWindow = new List<TableCell>();
-            (int x, int y) currentLocation = (1, 1);
+            // for every column, the topmost row that automatic placement considers unoccupied;
+            // index 0 is unused so that columns can be addressed with their natural 1-based numbers
+            var firstFreeRow = new int[columnsCount + 1];
+
+            for (var i = 0; i < firstFreeRow.Length; i++)
+                firstFreeRow[i] = 1;
+
+            var cursorColumn = 1;
+            var cursorRow = 1;
             var zIndex = 0;
-            
+
             foreach (var cell in cells)
             {
                 cell.ZIndex = zIndex;
                 zIndex++;
-                
-                if (cellsWindow.Count > Math.Max(columnsCount, 16))
+
+                if (cell.Column == 0 && cell.Row == 0)
+                    PlaceAutomatically(cell);
+
+                else if (cell.Row == 0)
+                    FindRowForColumn(cell);
+
+                else if (cell.Column == 0)
+                    FindColumnForRow(cell);
+
+                MarkOccupiedPosition(cell);
+
+                cursorColumn = cell.Column;
+                cursorRow = cell.Row;
+            }
+
+            return;
+
+            // a cell with an explicit column but no row flows to the first row,
+            // at or below the cursor, where all of its columns are unoccupied
+            void FindRowForColumn(TableCell cell)
+            {
+                var row = Math.Max(cursorRow, 1);
+
+                // out-of-range fragments are ignored; the validator reports such cells afterwards
+                var firstColumn = Math.Max(cell.Column, 1);
+                var lastColumn = Math.Min(cell.Column + cell.ColumnSpan - 1, columnsCount);
+
+                for (var i = firstColumn; i <= lastColumn; i++)
+                    row = Math.Max(row, firstFreeRow[i]);
+
+                cell.Row = row;
+            }
+
+            // a cell with an explicit row but no column takes the first unoccupied column of that row;
+            // when the row has no space left, the cell is anchored at the row beginning
+            void FindColumnForRow(TableCell cell)
+            {
+                var lastFittingColumn = columnsCount - cell.ColumnSpan + 1;
+
+                for (var column = 1; column <= lastFittingColumn; column++)
                 {
-                    cellsWindow = cellsWindow
-                        .Where(x => x.Row + x.RowSpan > currentLocation.y)
-                        .ToList();
+                    if (IsUnoccupied(column, cell.Row, cell.ColumnSpan))
+                    {
+                        cell.Column = column;
+                        return;
+                    }
                 }
 
-                SetPartialLocation(cell);
-                
-                if (cell.HasLocation())
+                cell.Column = 1;
+            }
+
+            void PlaceAutomatically(TableCell cell)
+            {
+                // a cell spanning more columns than the table has can never fit;
+                // leave it at the table beginning so that the validator reports a descriptive error
+                if (cell.ColumnSpan > columnsCount)
                 {
-                    cellsWindow.Add(cell);
-                    currentLocation = (cell.Column, cell.Row);
-                    continue;
+                    cell.Column = 1;
+                    cell.Row = Math.Max(cursorRow, 1);
+                    return;
                 }
 
-                foreach (var location in GenerateCoordinates(columnsCount, currentLocation))
-                {
-                    if (location.x + cell.ColumnSpan - 1 > columnsCount)
-                        continue;
-                    
-                    cell.Column = location.x;
-                    cell.Row = location.y;
-                    
-                    if (cell.CollidesWithAnyOf(cellsWindow))
-                        continue;
+                var column = Math.Max(cursorColumn, 1);
+                var row = Math.Max(cursorRow, 1);
+                var lastFittingColumn = columnsCount - cell.ColumnSpan + 1;
 
-                    cellsWindow.Add(cell);
-                    currentLocation = (cell.Column, cell.Row);
-                    break;
+                while (true)
+                {
+                    if (column > lastFittingColumn)
+                    {
+                        column = 1;
+                        row++;
+                        continue;
+                    }
+
+                    if (IsUnoccupied(column, row, cell.ColumnSpan))
+                    {
+                        cell.Column = column;
+                        cell.Row = row;
+                        return;
+                    }
+
+                    column++;
                 }
             }
-        }
-        
-        private static IEnumerable<(int x, int y)> GenerateCoordinates(int columnsCount, (int x, int y) startPosition)
-        {
-            if (startPosition.x > columnsCount)
-                throw new ArgumentException();
-            
-            foreach (var x in Enumerable.Range(startPosition.x, columnsCount - startPosition.x + 1))
-                yield return (x, startPosition.y);
 
-            foreach (var y in Enumerable.Range(startPosition.y + 1, 1_000_000))
-            foreach (var x in Enumerable.Range(1, columnsCount))
-                yield return (x, y);
-        }
+            bool IsUnoccupied(int column, int row, int columnSpan)
+            {
+                for (var i = column; i < column + columnSpan; i++)
+                {
+                    if (firstFreeRow[i] > row)
+                        return false;
+                }
 
-        private static bool CollidesWith(this TableCell cell, TableCell neighbour)
-        {
-            return cell.Column < neighbour.Column + neighbour.ColumnSpan &&
-                   cell.Column + cell.ColumnSpan > neighbour.Column &&
-                   cell.Row < neighbour.Row + neighbour.RowSpan &&
-                   cell.RowSpan + cell.Row > neighbour.Row;
-        }
-        
-        private static bool CollidesWithAnyOf(this TableCell cell, ICollection<TableCell> neighbours)
-        {
-            return neighbours.Any(cell.CollidesWith);
-        }
+                return true;
+            }
 
-        private static void SetPartialLocation(this TableCell cell)
-        {
-            if (cell.Row == default && cell.Column == default)
-                return;
+            void MarkOccupiedPosition(TableCell cell)
+            {
+                // out-of-range fragments are ignored; the validator reports such cells afterwards
+                var firstColumn = Math.Max(cell.Column, 1);
+                var lastColumn = Math.Min(cell.Column + cell.ColumnSpan - 1, columnsCount);
 
-            if (cell.Row == default)
-                cell.Row = 1;
-            
-            if (cell.Column == default)
-                cell.Column = 1;
-        }
-        
-        private static bool HasLocation(this TableCell cell)
-        {
-            return cell.Row != 0 && cell.Column != 0;
+                for (var i = firstColumn; i <= lastColumn; i++)
+                    firstFreeRow[i] = Math.Max(firstFreeRow[i], cell.Row + cell.RowSpan);
+            }
         }
     }
 }
