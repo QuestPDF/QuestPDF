@@ -322,13 +322,16 @@ namespace QuestPDF.Elements.Table
                 });
             }
 
-            if (!commands.Any())
+            if (commands.Count == 0)
                 return commands;
 
-            var maxRow = commands.Select(x => x.Cell).Max(x => x.Row + x.RowSpan);
+            var maxRow = 0;
 
-            foreach (var row in Enumerable.Range(CurrentRow, maxRow - CurrentRow))
-                rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);   
+            foreach (var command in commands)
+                maxRow = Math.Max(maxRow, command.Cell.Row + command.Cell.RowSpan);
+
+            for (var row = CurrentRow; row < maxRow; row++)
+                rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);
 
             AdjustCellSizes(commands, rowBottomOffsets);
             
