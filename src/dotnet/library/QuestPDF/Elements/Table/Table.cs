@@ -41,12 +41,33 @@ namespace QuestPDF.Elements.Table
             if (CacheInitialized)
                 return;
 
-            HasRelativeColumns = Columns.Any(x => x.RelativeSize > 0);
-            LastRowIndex = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
-            Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
+            HasRelativeColumns = AnyColumnHasRelativeSize(Columns);
+            LastRowIndex = CalculateLastRowIndex(Cells);
+            Cells.Sort(OrderCellsByRowThenColumn);
             BuildCache();
 
             CacheInitialized = true;
+
+            static bool AnyColumnHasRelativeSize(List<TableColumnDefinition> columns)
+            {
+                foreach (var column in columns)
+                {
+                    if (column.RelativeSize > 0)
+                        return true;
+                }
+
+                return false;
+            }
+
+            static int CalculateLastRowIndex(List<TableCell> cells)
+            {
+                var lastRowIndex = 0;
+
+                foreach (var cell in cells)
+                    lastRowIndex = Math.Max(lastRowIndex, GetCellLastOccupiedRow(cell));
+
+                return lastRowIndex;
+            }
         }
 
         private void BuildCache()
