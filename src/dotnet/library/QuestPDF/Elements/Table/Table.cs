@@ -102,8 +102,11 @@ namespace QuestPDF.Elements.Table
             // Builds an array where the N-th element contains all cells whose last occupied row is N, ordered by column.
             TableCell[][] GroupCellsByLastOccupiedRow()
             {
+                var arrayPool = ArrayPool<int>.Shared;
+
                 // first pass: determine the size of each bucket
-                var rowCellCounts = new int[MaxRow + 1];
+                var rowCellCounts = arrayPool.Rent(MaxRow + 1);
+                Array.Clear(rowCellCounts, 0, MaxRow + 1);
 
                 foreach (var cell in Cells)
                     rowCellCounts[GetCellLastOccupiedRow(cell)]++;
@@ -113,8 +116,11 @@ namespace QuestPDF.Elements.Table
                 for (var row = 0; row <= MaxRow; row++)
                     buckets[row] = rowCellCounts[row] > 0 ? new TableCell[rowCellCounts[row]] : Array.Empty<TableCell>();
 
+                arrayPool.Return(rowCellCounts);
+
                 // second pass: fill the buckets
-                var rowInsertionIndexes = new int[MaxRow + 1];
+                var rowInsertionIndexes = arrayPool.Rent(MaxRow + 1);
+                Array.Clear(rowInsertionIndexes, 0, MaxRow + 1);
 
                 foreach (var cell in Cells)
                 {
@@ -129,6 +135,8 @@ namespace QuestPDF.Elements.Table
                     if (rowCells.Length > 1)
                         Array.Sort(rowCells, OrderCellsByColumnThenRow);
                 }
+                
+                arrayPool.Return(rowInsertionIndexes);
 
                 return buckets;
             }
