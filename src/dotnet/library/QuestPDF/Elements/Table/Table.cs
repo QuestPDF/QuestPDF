@@ -259,67 +259,70 @@ namespace QuestPDF.Elements.Table
             var columnOffsets = GetColumnLeftOffsets(Columns);
             var rowBottomOffsets = new DynamicDictionary<int, float>();
             
-            var cellsToTry = Enumerable
-                .Range(CurrentRow, MaxRow - CurrentRow + 1)
-                .SelectMany(x => CellsCache[x]);
-            
             var currentRow = CurrentRow;
             var maxRenderingRow = LastRowIndex;
-            
-            foreach (var cell in cellsToTry)
+
+            for (var row = CurrentRow; row <= MaxRow; row++)
             {
+                var rowCells = CellsCache[row];
+                
+                if (rowCells.Length == 0)
+                    continue;
+                
                 // update position of previous row
-                if (cell.Row > currentRow)
+                if (row > currentRow)
                 {
                     rowBottomOffsets[currentRow] = Math.Max(rowBottomOffsets[currentRow], rowBottomOffsets[currentRow - 1]);
-                        
+                    
                     if (rowBottomOffsets[currentRow - 1] > availableSpace.Height + Size.Epsilon)
                         break;
 
-                    foreach (var row in Enumerable.Range(currentRow + 1, cell.Row - (currentRow + 1)))
-                        rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);
+                    for (var gapRow = currentRow + 1; gapRow < row; gapRow++)
+                        rowBottomOffsets[gapRow] = Math.Max(rowBottomOffsets[gapRow - 1], rowBottomOffsets[gapRow]);
                     
-                    currentRow = cell.Row;
+                    currentRow = row;
                 }
                 
                 // cell visibility optimizations
-                if (cell.Row > maxRenderingRow + MaxRowSpan)
+                if (row > maxRenderingRow + MaxRowSpan)
                     break;
-
-                // calculate cell position / size
-                var topOffset = rowBottomOffsets[cell.Row - 1];
                 
-                var availableWidth = GetCellWidth(cell);
-                var availableHeight = availableSpace.Height - topOffset;
-                var availableCellSize = new Size(availableWidth, availableHeight);
-
-                var cellSize = cell.Measure(availableCellSize);
-
-                // corner case: if cell within the row is not fully rendered, do not attempt to render next row
-                if (cellSize.Type == SpacePlanType.PartialRender)
+                for (var i = 0; i < rowCells.Length; i++)
                 {
-                    maxRenderingRow = Math.Min(maxRenderingRow, cell.Row + cell.RowSpan - 1);
+                    var cell = rowCells[i];
+                    
+                    // calculate cell position / size
+                    var topOffset = rowBottomOffsets[cell.Row - 1];
+                    
+                    var availableWidth = GetCellWidth(cell);
+                    var availableHeight = availableSpace.Height - topOffset;
+                    var availableCellSize = new Size(availableWidth, availableHeight);
+                    
+                    var cellSize = cell.Measure(availableCellSize);
+                    
+                    // corner case: if cell within the row is not fully rendered, do not attempt to render next row
+                    if (cellSize.Type == SpacePlanType.PartialRender)
+                        maxRenderingRow = Math.Min(maxRenderingRow, cell.Row + cell.RowSpan - 1);
+                    
+                    // corner case: if cell within the row want to wrap to the next page, do not attempt to render this row
+                    if (cellSize.Type == SpacePlanType.Wrap)
+                    {
+                        maxRenderingRow = Math.Min(maxRenderingRow, cell.Row - 1);
+                        continue;
+                    }
+                    
+                    // update position of the last row that cell occupies
+                    var bottomRow = cell.Row + cell.RowSpan - 1;
+                    rowBottomOffsets[bottomRow] = Math.Max(rowBottomOffsets[bottomRow], topOffset + cellSize.Height);
+                    
+                    commands.Add(new TableCellRenderingCommand()
+                    {
+                        Cell = cell,
+                        Measurement = cellSize,
+                        Size = new Size(availableWidth, cellSize.Height),
+                        Offset = new Position(columnOffsets[cell.Column - 1], topOffset)
+                    });
                 }
-
-                // corner case: if cell within the row want to wrap to the next page, do not attempt to render this row
-                if (cellSize.Type == SpacePlanType.Wrap)
-                {
-                    maxRenderingRow = Math.Min(maxRenderingRow, cell.Row - 1);
-                    continue;
-                }
-
-                // update position of the last row that cell occupies
-                var bottomRow = cell.Row + cell.RowSpan - 1;
-                rowBottomOffsets[bottomRow] = Math.Max(rowBottomOffsets[bottomRow], topOffset + cellSize.Height);
-
-                // accept cell to be rendered
-                commands.Add(new TableCellRenderingCommand()
-                {
-                    Cell = cell,
-                    Measurement = cellSize,
-                    Size = new Size(availableWidth, cellSize.Height),
-                    Offset = new Position(columnOffsets[cell.Column - 1], topOffset)
-                });
             }
 
             if (commands.Count == 0)
