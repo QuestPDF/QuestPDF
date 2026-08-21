@@ -143,7 +143,7 @@ internal class SemanticTag : ContainerElement, IPageContextAware, ISemanticAware
         if (PageContext.CurrentPageSize == null)
             return;
 
-        if (SemanticTreeNode.Attributes.Any(x => x is { Owner: "Layout", Name: "BBox" }))
+        if (SemanticTreeNode.Attributes?.Any(x => x is { Owner: "Layout", Name: "BBox" }) == true)
             return;
         
         if (base.Measure(availableSpace).Type is not SpacePlanType.FullRender)
@@ -161,7 +161,7 @@ internal class SemanticTag : ContainerElement, IPageContextAware, ISemanticAware
             (float)Math.Ceiling(pageHeight - bounds.Top)
         };
 
-        SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+        SemanticTreeNode.AddAttribute(new SemanticTreeNode.Attribute
         {
             Owner = "Layout",
             Name = "BBox",

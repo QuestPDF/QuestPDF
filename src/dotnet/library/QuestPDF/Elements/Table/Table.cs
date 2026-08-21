@@ -13,7 +13,7 @@ namespace QuestPDF.Elements.Table
     {
         // configuration
         public List<TableColumnDefinition> Columns { get; set; } = new();
-        public List<TableCell> Cells { get; set; } = new();
+        public List<TableCell> Cells { get; } = new(); // sorted by Row then Column (in Initialize method)
         public bool ExtendLastCellsToTableBottom { get; set; }
         
         public ContentDirection ContentDirection { get; set; }
@@ -541,7 +541,7 @@ namespace QuestPDF.Elements.Table
             if (SemanticTreeManager.IsCurrentContentArtifact())
                 return;
             
-            if (!Cells.Any())
+            if (Cells.Count == 0)
                 return;
             
             if (SemanticTreeManager.TryPeekStack()?.Type != "Table")
@@ -564,38 +564,43 @@ namespace QuestPDF.Elements.Table
             SemanticTreeManager.AddNode(sectionSemanticTreeNode);
             SemanticTreeManager.PushOnStack(sectionSemanticTreeNode);
 
-            foreach (var tableRow in Cells.GroupBy(x => x.Row))
+            // Cells list is sorted by Row then Column (in Initialize method)
+            var cellIndex = 0;
+
+            while (cellIndex < Cells.Count)
             {
+                var currentRow = Cells[cellIndex].Row;
+
                 var rowSemanticTreeNode = new SemanticTreeNode()
                 {
-                    NodeId = SemanticTreeManager.GetNextNodeId(), 
+                    NodeId = SemanticTreeManager.GetNextNodeId(),
                     Type = "TR"
                 };
                 
                 SemanticTreeManager.AddNode(rowSemanticTreeNode);
                 SemanticTreeManager.PushOnStack(rowSemanticTreeNode);
                 
-                foreach (var tableCell in tableRow.OrderBy(x => x.Column))
+                while (cellIndex < Cells.Count && Cells[cellIndex].Row == currentRow)
                 {
-                    tableCell.CreateProxy(x => new SemanticTag
+                    var tableCell = Cells[cellIndex];
+
+                    var semanticTag = new SemanticTag
                     {
                         SemanticTreeManager = SemanticTreeManager,
                         Canvas = Canvas,
                         
-                        TagType = "TD",
-                        Child = x
-                    });
+                        TagType = PartType is TablePartType.Header || tableCell.IsSemanticHorizontalHeader ? "TH" : "TD",
+                        Child = tableCell.Child
+                    };
 
-                    if (tableCell.Child is not SemanticTag semanticTag)
-                        continue;
-                    
-                    if (PartType is TablePartType.Header || tableCell.IsSemanticHorizontalHeader)
-                        semanticTag.TagType = "TH";
+                    tableCell.Child = semanticTag;
                     
                     semanticTag.RegisterCurrentSemanticNode();
                     tableCell.SemanticNodeId = semanticTag.SemanticTreeNode!.NodeId;
                     
                     AssignCellAttributesForColumnAndRowSpans(tableCell, semanticTag);
+
+                    cellIndex++;
                 }
                 
                 SemanticTreeManager.PopStack();
@@ -609,7 +614,7 @@ namespace QuestPDF.Elements.Table
             {
                 if (tableCell.ColumnSpan > 1)
                 {
-                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    semanticTag.SemanticTreeNode.AddAttribute(new SemanticTreeNode.Attribute
                     {
                         Owner = "Table",
                         Name = "ColSpan",
@@ -619,7 +624,7 @@ namespace QuestPDF.Elements.Table
 
                 if (tableCell.RowSpan > 1)
                 {
-                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    semanticTag.SemanticTreeNode.AddAttribute(new SemanticTreeNode.Attribute
                     {
                         Owner = "Table",
                         Name = "RowSpan",
@@ -664,7 +669,7 @@ namespace QuestPDF.Elements.Table
                     if (scopeValue == null)
                         continue;
                     
-                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    semanticTag.SemanticTreeNode.AddAttribute(new SemanticTreeNode.Attribute
                     {
                         Owner = "Table", 
                         Name = "Scope", 
@@ -689,7 +694,7 @@ namespace QuestPDF.Elements.Table
                     if (!relatedHeaders.Any())
                         continue;
                     
-                    semanticTag.SemanticTreeNode!.Attributes.Add(new SemanticTreeNode.Attribute
+                    semanticTag.SemanticTreeNode!.AddAttribute(new SemanticTreeNode.Attribute
                     {
                         Owner = "Table",
                         Name = "Headers",

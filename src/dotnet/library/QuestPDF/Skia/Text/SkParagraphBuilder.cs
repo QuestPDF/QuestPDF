@@ -1,7 +1,5 @@
 using System;
-#if NET5_0_OR_GREATER
 using System.Buffers;
-#endif
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -130,54 +128,10 @@ internal sealed class SkParagraphBuilder : IDisposable
     {
         if (string.IsNullOrEmpty(text))
             return;
-
-        const int maxStackBufferSize = 1024;
-        var textByteCount = Encoding.UTF8.GetByteCount(text);
-
-        if (textByteCount < maxStackBufferSize)
-        {
-            var buffer = stackalloc byte[textByteCount + 1];
-
-            fixed (char* pText = text)
-            {
-                Encoding.UTF8.GetBytes(pText, text.Length, buffer, textByteCount);
-            }
-
-            buffer[textByteCount] = 0;
-
-            API.questpdf_skia_paragraph_builder_add_text(Instance, (IntPtr)buffer, textStyle.Instance);
-        }
-        else
-        {
-#if NET5_0_OR_GREATER
-            var pooledArray = ArrayPool<byte>.Shared.Rent(textByteCount + 1);
-            
-            try
-            {
-                Encoding.UTF8.GetBytes(text, 0, text.Length, pooledArray, 0);
-                pooledArray[textByteCount] = 0;
-
-                fixed (byte* pBuffer = pooledArray)
-                {
-                    API.questpdf_skia_paragraph_builder_add_text(Instance, (IntPtr)pBuffer, textStyle.Instance);
-                }
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(pooledArray);
-            }
-#else
-            var array = new byte[textByteCount + 1];
-
-            Encoding.UTF8.GetBytes(text, 0, text.Length, array, 0);
-            array[textByteCount] = 0;
-
-            fixed (byte* pBuffer = array)
-            {
-                API.questpdf_skia_paragraph_builder_add_text(Instance, (IntPtr)pBuffer, textStyle.Instance);
-            }
-#endif
-        }
+        
+        var textPointer = SkText.MarshalFromManagedToNative(text);
+        API.questpdf_skia_paragraph_builder_add_text(Instance, textPointer, textStyle.Instance);
+        Marshal.FreeHGlobal(textPointer);
     }
     
     public void AddPlaceholder(SkPlaceholderStyle placeholderStyle)

@@ -10,8 +10,22 @@ internal class SemanticTreeNode
     public string Type { get; set; } = "";
     public string? Alt { get; set; }
     public string? Lang { get; set; }
-    public IList<SemanticTreeNode> Children { get; } = [];
-    public ICollection<Attribute> Attributes { get; } = [];
+
+    // created lazily: the majority of nodes are leaves with neither children nor attributes
+    public List<SemanticTreeNode>? Children { get; private set; }
+    public List<Attribute>? Attributes { get; private set; }
+
+    public void AddChild(SemanticTreeNode child)
+    {
+        Children ??= [];
+        Children.Add(child);
+    }
+
+    public void AddAttribute(Attribute attribute)
+    {
+        Attributes ??= [];
+        Attributes.Add(attribute);
+    }
 
     public class Attribute
     {
@@ -56,7 +70,7 @@ class SemanticTreeManager
             return;
         }
         
-        Stack.Peek()?.Children.Add(node);
+        Stack.Peek()?.AddChild(node);
     }
     
     public void PushOnStack(SemanticTreeNode node)
