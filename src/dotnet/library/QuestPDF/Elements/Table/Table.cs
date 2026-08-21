@@ -275,7 +275,9 @@ namespace QuestPDF.Elements.Table
             var commands = ReusableListPool<TableCellRenderingCommand>.Get();
             
             var columnOffsets = GetColumnLeftOffsets(Columns);
-            var rowBottomOffsets = new DynamicDictionary<int, float>();
+            
+            var rowBottomOffsets = ArrayPool<float>.Shared.Rent(MaxRow + 1);
+            Array.Clear(rowBottomOffsets, 0, MaxRow + 1);
             
             var currentRow = CurrentRow;
             var maxRenderingRow = LastRowIndex;
@@ -343,9 +345,6 @@ namespace QuestPDF.Elements.Table
                 }
             }
 
-            if (commands.Count == 0)
-                return commands;
-
             var maxRow = 0;
 
             foreach (var command in commands)
@@ -355,6 +354,7 @@ namespace QuestPDF.Elements.Table
                 rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);
 
             AdjustCellSizes(commands, rowBottomOffsets);
+            ArrayPool<float>.Shared.Return(rowBottomOffsets);
             
             // corner case: reject cell if other cells within the same row are rejected
             commands.RemoveAll(x => x.Cell.Row > maxRenderingRow);
