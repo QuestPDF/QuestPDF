@@ -160,7 +160,7 @@ namespace QuestPDF.Elements.Table
                 return SpacePlan.Wrap("Insufficient space to render (even partially) a single row.");
             
             var width = Columns.Sum(x => x.Width);
-            var height = renderingCommands.Max(x => x.Offset.Y + x.Size.Height);
+            var height = GetTableHeight(renderingCommands);
             var tableSize = new Size(width, height);
 
             if (tableSize.Width > availableSpace.Width + Size.Epsilon)
@@ -169,6 +169,16 @@ namespace QuestPDF.Elements.Table
             return CalculateCurrentRow(renderingCommands) > LastRowIndex 
                 ? SpacePlan.FullRender(tableSize) 
                 : SpacePlan.PartialRender(tableSize);
+
+            static float GetTableHeight(ReusableList<TableCellRenderingCommand> commands)
+            {
+                var result = 0f;
+                
+                foreach (var command in commands)
+                    result = Math.Max(result, command.Offset.Y + command.Size.Height);
+                
+                return result;
+            }
         }
 
         internal override void Draw(Size availableSpace)
