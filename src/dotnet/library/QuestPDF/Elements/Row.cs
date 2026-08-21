@@ -208,7 +208,7 @@ namespace QuestPDF.Elements
         
         private ReusableList<RowItemRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var renderingCommands = ReusableListPool<RowItemRenderingCommand>.Get();
+            var renderingCommands = ReusableList<RowItemRenderingCommand>.Get();
             
             // measure all items and their positions
             var leftOffset = 0f;

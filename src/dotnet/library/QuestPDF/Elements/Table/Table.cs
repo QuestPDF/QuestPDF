@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
@@ -272,7 +273,7 @@ namespace QuestPDF.Elements.Table
         
         private ReusableList<TableCellRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var commands = ReusableListPool<TableCellRenderingCommand>.Get();
+            var commands = ReusableList<TableCellRenderingCommand>.Get();
             
             var columnOffsets = GetColumnLeftOffsets(Columns);
             
@@ -377,7 +378,7 @@ namespace QuestPDF.Elements.Table
             
             // corner sase: if two cells end up on the same row (a.Row + a.RowSpan = b.Row + b.RowSpan),
             // bottom edges of their bounding boxes should be at the same level
-            static void AdjustCellSizes(List<TableCellRenderingCommand> commands, DynamicDictionary<int, float> rowBottomOffsets)
+            static void AdjustCellSizes(List<TableCellRenderingCommand> commands, float[] rowBottomOffsets)
             {
                 for (var i = 0; i < commands.Count; i++)
                 {

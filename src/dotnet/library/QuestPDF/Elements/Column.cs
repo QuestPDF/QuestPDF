@@ -80,7 +80,7 @@ namespace QuestPDF.Elements
 
         private ReusableList<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var commands = ReusableListPool<ColumnItemRenderingCommand>.Get();
+            var commands = ReusableList<ColumnItemRenderingCommand>.Get();
 
             var topOffset = 0f;
             
