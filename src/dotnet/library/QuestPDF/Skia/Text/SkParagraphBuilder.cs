@@ -100,6 +100,8 @@ internal sealed class SkParagraphBuilder : IDisposable
     public ParagraphStyle Style { get; private set; }
     private SkFontCollection FontCollection { get; set; }
 
+    private bool IsPooled { get; set; }
+
     public static SkParagraphBuilder Create(ParagraphStyle style, SkFontCollection fontCollection)
     {
         using var clampLinesEllipsis = new SkText(style.LineClampEllipsis);
@@ -167,10 +169,23 @@ internal sealed class SkParagraphBuilder : IDisposable
     {
         API.questpdf_skia_paragraph_builder_reset(Instance);
     }
+
+    /// <summary>
+    /// Marks the builder as owned by <see cref="QuestPDF.Elements.Text.SkParagraphBuilderPoolManager"/>.
+    /// Pooled builders are reused by every document rendered on their thread, so no scope disposes them;
+    /// they are released by the finalizer once the owning thread is gone, which is expected and not a leak.
+    /// </summary>
+    public void MarkAsPooled()
+    {
+        IsPooled = true;
+        FontCollection.MarkAsPooled();
+    }
     
     ~SkParagraphBuilder()
     {
-        this.WarnThatFinalizerIsReached();
+        if (!IsPooled)
+            this.WarnThatFinalizerIsReached();
+
         Dispose();
     }
     

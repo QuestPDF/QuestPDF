@@ -8,7 +8,10 @@ namespace QuestPDF.Elements.Text;
 internal static class SkParagraphBuilderPoolManager
 {
     // Get and Return always happen on the same thread within one call scope,
-    // so the pool is thread-local to avoid lock contention on parallel renders
+    // so the pool is thread-local to avoid lock contention on parallel renders.
+    // The pool is collected together with its thread, which releases the pooled builders
+    // through their finalizers; they are marked as pooled so that this expected path
+    // is not reported as a missing explicit disposal.
     [ThreadStatic] private static Dictionary<ParagraphStyle, Stack<SkParagraphBuilder>>? ObjectPool;
 
     public static SkParagraphBuilder Get(ParagraphStyle style)
@@ -19,7 +22,9 @@ internal static class SkParagraphBuilderPoolManager
             return specificPool.Pop();
 
         var fontCollection = SkFontCollection.Create(FontManager.TypefaceProvider, FontManager.CurrentFontManager);
-        return SkParagraphBuilder.Create(style, fontCollection);
+        var builder = SkParagraphBuilder.Create(style, fontCollection);
+        builder.MarkAsPooled();
+        return builder;
     }
 
     public static void Return(SkParagraphBuilder builder)

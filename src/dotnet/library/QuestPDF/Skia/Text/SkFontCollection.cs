@@ -6,6 +6,8 @@ namespace QuestPDF.Skia.Text;
 internal sealed class SkFontCollection : IDisposable
 {
     public IntPtr Instance { get; private set; }
+
+    private bool IsPooled { get; set; }
     
     public SkFontCollection(IntPtr instance)
     {
@@ -19,9 +21,20 @@ internal sealed class SkFontCollection : IDisposable
         return new SkFontCollection(instance);
     }
     
+    /// <summary>
+    /// Marks the font collection as owned by a pooled <see cref="SkParagraphBuilder"/>,
+    /// which shares its lifetime and therefore also its lack of an explicit disposal point.
+    /// </summary>
+    public void MarkAsPooled()
+    {
+        IsPooled = true;
+    }
+    
     ~SkFontCollection()
     {
-        this.WarnThatFinalizerIsReached();
+        if (!IsPooled)
+            this.WarnThatFinalizerIsReached();
+
         Dispose();
     }
     
