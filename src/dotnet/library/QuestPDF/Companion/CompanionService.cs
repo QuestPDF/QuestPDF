@@ -239,7 +239,7 @@ namespace QuestPDF.Companion
                     {
                         PageIndex = request.PageIndex,
                         ZoomLevel = request.ZoomLevel,
-                        ImageData = Convert.ToBase64String(image)
+                        ImageData = image
                     };
                 }
             }
