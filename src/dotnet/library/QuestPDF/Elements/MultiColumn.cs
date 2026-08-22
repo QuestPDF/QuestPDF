@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Drawing.Proxy;
@@ -60,7 +58,8 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
 
     // cache
     private ProxyDrawingCanvas ChildrenCanvas { get; } = new();
-    private TreeNode<MultiColumnChildDrawingObserver>[] State { get; set; }
+    private DiscardDrawingCanvas MeasurementCanvas { get; } = new();
+    private List<TreeNode<MultiColumnChildDrawingObserver>> State { get; set; }
 
     ~MultiColumn()
     {
@@ -95,7 +94,7 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
             child.CreateProxy(x => x is IStateful ? new MultiColumnChildDrawingObserver { Child = x } : x);
         });
         
-        State = this.ExtractElementsOfType<MultiColumnChildDrawingObserver>().ToArray();
+        State = this.ExtractElementsOfType<MultiColumnChildDrawingObserver>();
     }
 
     internal override SpacePlan Measure(Size availableSpace)
@@ -106,47 +105,56 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         if (Content.Canvas != ChildrenCanvas)
             Content.InjectDependencies(PageContext, ChildrenCanvas);
         
-        ChildrenCanvas.Target = new DiscardDrawingCanvas();
+        ChildrenCanvas.Target = MeasurementCanvas;
         
         return FindPerfectSpace();
 
-        IEnumerable<SpacePlan> MeasureColumns(Size availableSpace)
+        (SpacePlan First, SpacePlan Last, float MaxHeight) MeasureColumns(Size availableSpace)
         {
             var columnAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
-            
-            foreach (var _ in Enumerable.Range(0, ColumnCount))
+
+            var first = default(SpacePlan);
+            var last = default(SpacePlan);
+            var maxHeight = 0f;
+
+            for (var i = 0; i < ColumnCount; i++)
             {
-                yield return Content.Measure(columnAvailableSpace);
+                var measurement = Content.Measure(columnAvailableSpace);
                 Content.Draw(columnAvailableSpace);
+
+                if (i == 0)
+                    first = measurement;
+
+                last = measurement;
+                maxHeight = Math.Max(maxHeight, measurement.Height);
             }
             
             ResetObserverState(restoreChildState: true);
+            return (first, last, maxHeight);
         }
         
         SpacePlan FindPerfectSpace()
         {
-            var defaultMeasurement = MeasureColumns(availableSpace).ToArray();
+            var defaultMeasurement = MeasureColumns(availableSpace);
 
-            if (defaultMeasurement.First().Type is SpacePlanType.Empty or SpacePlanType.Wrap)
-                return defaultMeasurement.First();
+            if (defaultMeasurement.First.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+                return defaultMeasurement.First;
             
-            var maxHeight = defaultMeasurement.Max(x => x.Height);
-            
-            if (defaultMeasurement.Last().Type is SpacePlanType.PartialRender or SpacePlanType.Wrap)
-                return SpacePlan.PartialRender(availableSpace.Width, maxHeight);
+            if (defaultMeasurement.Last.Type is SpacePlanType.PartialRender or SpacePlanType.Wrap)
+                return SpacePlan.PartialRender(availableSpace.Width, defaultMeasurement.MaxHeight);
             
             if (!BalanceHeight)
-                return SpacePlan.FullRender(availableSpace.Width, maxHeight);
+                return SpacePlan.FullRender(availableSpace.Width, defaultMeasurement.MaxHeight);
 
             var minHeight = 0f;
-            maxHeight = availableSpace.Height;
+            var maxHeight = availableSpace.Height;
             
-            foreach (var _ in Enumerable.Range(0, 8))
+            for (var i = 0; i < 8; i++)
             {
                 var middleHeight = (minHeight + maxHeight) / 2;
                 var middleMeasurement = MeasureColumns(new Size(availableSpace.Width, middleHeight));
                 
-                if (middleMeasurement.Last().Type is SpacePlanType.Empty or SpacePlanType.FullRender)
+                if (middleMeasurement.Last.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                     maxHeight = middleHeight;
                 
                 else
@@ -157,7 +165,7 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         }
     }
 
-    Size GetAvailableSpaceForColumn(Size totalSpace)
+    private Size GetAvailableSpaceForColumn(Size totalSpace)
     {
         var columnWidth = (totalSpace.Width - Spacing * (ColumnCount - 1)) / ColumnCount;
         return new Size(columnWidth, totalSpace.Height);
@@ -171,7 +179,7 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         var horizontalOffset = 0f;
         ChildrenCanvas.Target = Canvas;
 
-        foreach (var i in Enumerable.Range(1, ColumnCount))
+        for (var i = 1; i <= ColumnCount; i++)
         {
             var contentMeasurement = Content.Measure(contentAvailableSpace);
             var targetColumnSize = new Size(contentAvailableSpace.Width, contentMeasurement.Height);
@@ -228,8 +236,8 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
             
             observer.ResetDrawingState();
                 
-            foreach (var child in node.Children)
-                Traverse(child);
+            for (var i = 0; i < node.Children.Count; i++)
+                Traverse(node.Children[i]);
         }
     }
     
