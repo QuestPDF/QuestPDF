@@ -123,15 +123,33 @@ internal sealed class SkParagraphBuilder : IDisposable
         };
     }
     
-    [SkipLocalsInit]
-    public unsafe void AddText(string text, SkTextStyle textStyle)
+    public void AddText(string text, SkTextStyle textStyle)
     {
         if (string.IsNullOrEmpty(text))
             return;
-        
-        var textPointer = SkText.MarshalFromManagedToNative(text);
-        API.questpdf_skia_paragraph_builder_add_text(Instance, textPointer, textStyle.Instance);
-        Marshal.FreeHGlobal(textPointer);
+
+        AddText(text.AsSpan(), textStyle);
+    }
+
+    [SkipLocalsInit]
+    public unsafe void AddText(ReadOnlySpan<char> text, SkTextStyle textStyle)
+    {
+        if (text.IsEmpty)
+            return;
+
+        fixed (char* textPointer = text)
+        {
+            var utf8Length = Encoding.UTF8.GetByteCount(textPointer, text.Length);
+
+            var nativeText = Marshal.AllocHGlobal(utf8Length + 1);
+
+            var nativeTextPointer = (byte*)nativeText;
+            Encoding.UTF8.GetBytes(textPointer, text.Length, nativeTextPointer, utf8Length);
+            nativeTextPointer[utf8Length] = 0; // null termination
+
+            API.questpdf_skia_paragraph_builder_add_text(Instance, nativeText, textStyle.Instance);
+            Marshal.FreeHGlobal(nativeText);
+        }
     }
     
     public void AddPlaceholder(SkPlaceholderStyle placeholderStyle)
