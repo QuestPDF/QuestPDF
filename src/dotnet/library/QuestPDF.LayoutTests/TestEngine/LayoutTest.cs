@@ -187,9 +187,9 @@ internal class LayoutTest
             Assert.That(e.Message.Contains(reason));
             Assert.Pass($"The expected exception was thrown: {e.Message}");
         }
-        catch
+        catch (Exception e)
         {
-            Assert.Fail("Un expected exception was thrown.");
+            Assert.Fail($"An expected exception was thrown:\n\n{e}");
         }
     }
 
