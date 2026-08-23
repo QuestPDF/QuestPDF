@@ -1,4 +1,12 @@
-- Improved reliability of the companion app integration
-- Update skia native dependency to version m152
-- Improved visual position of the text underline and double underline
-- Improved performance and scalability for text-heavy documents
+This release brings significant improvements to performance, parallelism, and use of available resources.
+
+The numbers below were measured on a MacBook Pro M5 (18-core CPU), using the invoice document from the Getting Started tutorial, across various levels of parallelism, over a sample of 5,000 documents.
+
+- Reduced memory usage and allocated object count by 85%.
+- Improved single-threaded performance by around 15%.
+- Substantially improved parallel scaling: throughput previously peaked at 4 threads and flattened beyond that, and now scales with available CPU cores — around 4x better scaling.
+- Improved performance and scalability for text-heavy documents.
+- Improved cache usage (mainly for fonts) and reduced locking.
+- Improved reliability of the Companion App integration.
+- Improved visual position of text underline and double underline.
+- Updated the Skia native dependency to version m152.
