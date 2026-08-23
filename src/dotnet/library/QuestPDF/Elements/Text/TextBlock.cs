@@ -371,7 +371,7 @@ namespace QuestPDF.Elements.Text
                 var currentTextIndex = 0;
                 var currentBlockIndex = 0;
             
-                if (!ContainsItemOfType<TextBlockSpan>())
+                if (!ContainsItemOfType<TextBlockSpan>() && ParagraphFirstLineIndentation <= Size.Epsilon)
                     builder.AddText("\u200B", DefaultTextStyle.GetSkTextStyle());
 
                 AddParagraphFirstLineIndentation();
