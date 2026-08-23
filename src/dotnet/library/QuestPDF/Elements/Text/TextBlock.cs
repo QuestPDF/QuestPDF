@@ -374,18 +374,15 @@ namespace QuestPDF.Elements.Text
                 var currentTextIndex = 0;
                 var currentBlockIndex = 0;
             
-                if (!ContainsItemOfType<TextBlockSpan>() && ParagraphFirstLineIndentation <= Size.Epsilon)
-                    builder.AddText("\u200B", DefaultTextStyle.GetSkTextStyle());
+                UpdatePageNumberTextItems();
 
-                AddParagraphFirstLineIndentation();
+                if (ContainsAnyVisibleContent())
+                    AddParagraphFirstLineIndentation();
 
                 foreach (var textBlockItem in Items)
                 {
                     if (textBlockItem is TextBlockSpan textBlockSpan)
                     {
-                        if (textBlockItem is TextBlockPageNumber textBlockPageNumber)
-                            textBlockPageNumber.UpdatePageNumberText(PageContext);
-
                         var spanBeginIndex = currentTextIndex;
                         AddSpanText(textBlockSpan);
 
@@ -419,8 +416,34 @@ namespace QuestPDF.Elements.Text
                         currentBlockIndex++;
                     }
                 }
+                
+                if (ContainsAnyVisibleContent() && !ContainsItemOfType<TextBlockSpan>())
+                    builder.AddText("\u200B", DefaultTextStyle.GetSkTextStyle());
 
                 return builder.CreateParagraph();
+
+                void UpdatePageNumberTextItems()
+                {
+                    foreach (var textBlockItem in Items)
+                    {
+                        if (textBlockItem is TextBlockPageNumber textBlockPageNumber)
+                            textBlockPageNumber.UpdatePageNumberText(PageContext);
+                    }
+                }
+                
+                bool ContainsAnyVisibleContent()
+                {
+                    foreach (var textBlockItem in Items)
+                    {
+                        if (textBlockItem is TextBlockElement)
+                            return true;
+
+                        if (textBlockItem is TextBlockSpan textBlockSpan && !string.IsNullOrEmpty(textBlockSpan.Text))
+                            return true;
+                    }
+
+                    return false;
+                }
 
                 void AddSpanText(TextBlockSpan textBlockSpan)
                 {
@@ -458,7 +481,10 @@ namespace QuestPDF.Elements.Text
                 void AddParagraphSpacing()
                 {
                     if (ParagraphSpacing <= Size.Epsilon)
+                    {
+                        AddMarkerText("\n");
                         return;
+                    }
 
                     // the surrounding space characters ensure proper line spacing of the placeholder line
                     AddMarkerText("\n ");
@@ -471,7 +497,7 @@ namespace QuestPDF.Elements.Text
                     if (ParagraphFirstLineIndentation <= Size.Epsilon)
                         return;
 
-                    AddMarkerText("\n");
+                    AddMarkerText("\u200B");
                     AddMarkerPlaceholder(width: ParagraphFirstLineIndentation, height: 0);
                 }
 
