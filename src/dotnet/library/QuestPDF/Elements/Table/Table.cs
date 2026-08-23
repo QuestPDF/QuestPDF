@@ -275,8 +275,9 @@ namespace QuestPDF.Elements.Table
         {
             var commands = ReusableList<TableCellRenderingCommand>.Get();
             
-            var columnOffsets = GetColumnLeftOffsets(Columns);
-            
+            var columnOffsets = ArrayPool<float>.Shared.Rent(Columns.Count + 1);
+            PopulateColumnLeftOffsets(columnOffsets, Columns);
+
             var rowBottomOffsets = ArrayPool<float>.Shared.Rent(MaxRow + 1);
             Array.Clear(rowBottomOffsets, 0, MaxRow + 1);
             
@@ -356,6 +357,7 @@ namespace QuestPDF.Elements.Table
 
             AdjustCellSizes(commands, rowBottomOffsets);
             ArrayPool<float>.Shared.Return(rowBottomOffsets);
+            ArrayPool<float>.Shared.Return(columnOffsets);
             
             // corner case: reject cell if other cells within the same row are rejected
             commands.RemoveAll(x => x.Cell.Row > maxRenderingRow);
@@ -365,15 +367,12 @@ namespace QuestPDF.Elements.Table
             
             return commands;
 
-            static float[] GetColumnLeftOffsets(IList<TableColumnDefinition> columns)
+            static void PopulateColumnLeftOffsets(float[] columnOffsets, List<TableColumnDefinition> columns)
             {
-                var cellOffsets = new float[columns.Count + 1];
-                cellOffsets[0] = 0;
+                columnOffsets[0] = 0;
 
-                foreach (var column in Enumerable.Range(1, cellOffsets.Length - 1))
-                    cellOffsets[column] = columns[column - 1].Width + cellOffsets[column - 1];
-
-                return cellOffsets;
+                for (var column = 1; column <= columns.Count; column++)
+                    columnOffsets[column] = columns[column - 1].Width + columnOffsets[column - 1];
             }
             
             // corner sase: if two cells end up on the same row (a.Row + a.RowSpan = b.Row + b.RowSpan),
