@@ -100,6 +100,9 @@ namespace QuestPDF.Elements.Text
 
             CalculateParagraphMetrics(availableSpace);
             
+            if (LineCount == 0)
+                return SpacePlan.FullRender(Size.Zero);
+
             if (availableSpace.Width < TotalWidth - Size.Epsilon)
                 return SpacePlan.Wrap($"The available space is not sufficient to render even a single character.");
 
@@ -165,7 +168,7 @@ namespace QuestPDF.Elements.Text
             
             CalculateParagraphMetrics(availableSpace);
 
-            if (TotalWidth == 0)
+            if (LineCount == 0 || TotalWidth == 0)
                 return;
             
             var pageStartTop = LineExtents[CurrentLineIndex].Top;
