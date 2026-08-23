@@ -1,5 +1,4 @@
 using System.IO;
-using System.Runtime.InteropServices;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
