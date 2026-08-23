@@ -370,11 +370,12 @@ namespace QuestPDF.Elements.Text
 
                 var currentTextIndex = 0;
                 var currentBlockIndex = 0;
-                var isFirstLineOfBlock = true;
             
                 if (!ContainsItemOfType<TextBlockSpan>())
                     builder.AddText("\u200B", DefaultTextStyle.GetSkTextStyle());
-                
+
+                AddParagraphFirstLineIndentation();
+
                 foreach (var textBlockItem in Items)
                 {
                     if (textBlockItem is TextBlockSpan textBlockSpan)
@@ -428,13 +429,9 @@ namespace QuestPDF.Elements.Text
 
                     foreach (var line in textBlockSpan.Text.AsSpan().SplitLines())
                     {
-                        if (isFirstLineOfBlock)
-                            AddParagraphFirstLineIndentation();
-
                         if (!isFirstLineOfSpan)
                             AddLineBreak(textStyle);
 
-                        isFirstLineOfBlock = false;
                         isFirstLineOfSpan = false;
 
                         builder.AddText(line, textStyle);
