@@ -232,30 +232,18 @@ async function stopServer(server) {
 async function validateDocuments(outputDirectory) {
   await validatePdf(`${outputDirectory}/skia.pdf`);
   await validatePdf(`${outputDirectory}/qpdf.pdf`);
-
-  if (isWindows)
-    await validateXps(`${outputDirectory}/skia.xps`);
 }
 
 async function validatePdf(filePath) {
   const buffer = await readDocument(filePath);
-  validateHeader(buffer, '%PDF-');
+
+  if (!hasHeader(buffer, '%PDF-'))
+    throw new Error(`Output file has an invalid header: ${filePath}`);
 
   if (!buffer.subarray(-2048).includes('%%EOF'))
     throw new Error(`PDF EOF marker was not found: ${filePath}`);
 
   console.log(chalk.green(`Validated ${filePath} (${buffer.length} bytes)`));
-}
-
-async function validateXps(filePath) {
-  const buffer = await readDocument(filePath);
-  validateHeader(buffer, 'PK\x03\x04');
-  console.log(chalk.green(`Validated ${filePath} (${buffer.length} bytes)`));
-}
-
-function validateHeader(buffer, expectedHeader) {
-  if (!hasHeader(buffer, expectedHeader))
-    throw new Error(`Output file has an invalid header: ${filePath}`);
 }
 
 async function readDocument(filePath) {

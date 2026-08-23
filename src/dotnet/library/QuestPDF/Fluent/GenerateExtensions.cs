@@ -98,61 +98,30 @@ namespace QuestPDF.Fluent
 
         #region XPS
         
-        /// <summary>
-        /// Generates the document in XPS format and returns it as a byte array.
-        /// </summary>
-        /// <remarks>
-        /// Supported only on the Windows platform.
-        /// </remarks>
+        [Obsolete("XPS generation has been removed in QuestPDF 2026.8.0. Please consider using the PDF format instead.", error: true)]
         public static byte[] GenerateXps(this IDocument document)
         {
-            using var memoryStream = new MemoryStream();
-            document.GenerateXps(memoryStream);
-            return memoryStream.ToArray();
+            throw new NotSupportedException(
+                "XPS generation has been removed in QuestPDF 2026.8.0. " +
+                "Please consider using the PDF format instead.");
         }
         
-        /// <summary>
-        /// Generates the document in XPS format and saves it to the specified file path.
-        /// </summary>
-        /// <remarks>
-        /// Supported only on the Windows platform.
-        /// </remarks>
+        [Obsolete("XPS generation has been removed in QuestPDF 2026.8.0. Please consider using the PDF format instead.", error: true)]
         public static void GenerateXps(this IDocument document, string filePath)
         {
-            if (File.Exists(filePath))
-                File.Delete(filePath);
-            
-            using var fileStream = File.Create(filePath);
-            document.GenerateXps(fileStream);
+            document.GenerateXps();
         }
 
-        /// <summary>
-        /// Generates the document in XPS format and outputs it to a provided stream.
-        /// </summary>
-        /// <remarks>
-        /// Supported only on the Windows platform.
-        /// </remarks>
+        [Obsolete("XPS generation has been removed in QuestPDF 2026.8.0. Please consider using the PDF format instead.", error: true)]
         public static void GenerateXps(this IDocument document, Stream stream)
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                throw new PlatformNotSupportedException("XPS generation is only supported on the Windows platform.");
-            
-            using var skiaStream = new SkWriteStream(stream);
-            DocumentGenerator.GenerateXps(skiaStream, document);
-            skiaStream.Flush();
+            document.GenerateXps();
         }
         
-        /// <summary>
-        /// Generates the document in XPS format, saves it in temporary file, and then opens it with the default application.
-        /// </summary>
-        /// <remarks>
-        /// Supported only on the Windows platform.
-        /// </remarks>
+        [Obsolete("XPS generation has been removed in QuestPDF 2026.8.0. Please consider using the PDF format instead.", error: true)]
         public static void GenerateXpsAndShow(this IDocument document)
         {
-            var filePath = Path.Combine(TemporaryStorage.GetPath(), $"{GenerateAndShowNamePrefix} {Random.Next()}.xps");
-            document.GenerateXps(filePath);
-            Helpers.Helpers.OpenFileUsingDefaultProgram(filePath);
+            document.GenerateXps();
         }
         
         #endregion

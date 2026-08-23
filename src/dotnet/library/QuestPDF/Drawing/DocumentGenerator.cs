@@ -38,16 +38,6 @@ namespace QuestPDF.Drawing
             RenderDocument(canvas, document, settings);
         }
         
-        internal static void GenerateXps(SkWriteStream stream, IDocument document)
-        {
-            LicenseChecker.ValidateLicense();
-            ConfigurationValidator.ShowIfNeeded();
-            
-            var settings = document.GetSettings();
-            using var canvas = new XpsDocumentCanvas(stream, settings);
-            RenderDocument(canvas, document, settings);
-        }
-        
         internal static ICollection<byte[]> GenerateImages(IDocument document, ImageGenerationSettings imageGenerationSettings)
         {
             LicenseChecker.ValidateLicense();
