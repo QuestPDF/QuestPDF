@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy;
@@ -7,35 +7,57 @@ namespace QuestPDF.Drawing.Proxy;
 internal sealed class TreeNode<T>
 {
     public T Value { get; }
-    public TreeNode<T>? Parent { get; set; }
-    public ICollection<TreeNode<T>> Children { get; } = new List<TreeNode<T>>();
+    public TreeNode<T>? Parent { get; private set; }
     
-    public TreeNode(T Value)
+    private List<TreeNode<T>>? ChildrenStore { get; set; }
+    private static readonly List<TreeNode<T>> EmptyChildrenList = [];
+    public IReadOnlyList<TreeNode<T>> Children => ChildrenStore ?? EmptyChildrenList;
+
+    public TreeNode(T value)
     {
-        this.Value = Value;
+        Value = value;
+    }
+
+    public void AddChild(TreeNode<T> child)
+    {
+        ChildrenStore ??= new List<TreeNode<T>>();
+        ChildrenStore.Add(child);
+        child.Parent = this;
     }
 }
 
 internal static class TreeTraversal
 {
-    public static IEnumerable<TreeNode<T>> ExtractElementsOfType<T>(this Element element) where T : Element
+    public static List<TreeNode<T>> ExtractElementsOfType<T>(this Element root) where T : ContainerElement
     {
-        if (element is T proxy)
+        var rootNodes = new List<TreeNode<T>>();
+        Traverse(root, parent: null);
+        return rootNodes;
+        
+        void Traverse(Element element, TreeNode<T>? parent)
         {
-            var result = new TreeNode<T>(proxy);
-
-            foreach (var treeNode in proxy.GetChildren().SelectMany(ExtractElementsOfType<T>))
+            if (element is T proxy)
             {
-                result.Children.Add(treeNode);
-                treeNode.Parent = result;
+                var node = new TreeNode<T>(proxy);
+
+                if (parent == null)
+                    rootNodes.Add(node);
+                else
+                    parent.AddChild(node);
+
+                Traverse(proxy.Child, node);
             }
-                
-            yield return result;
-        }
-        else
-        {
-            foreach (var treeNode in element.GetChildren().SelectMany(ExtractElementsOfType<T>))
-                yield return treeNode;
+            else if (element is ContainerElement containerElement)
+            {
+                Traverse(containerElement.Child, parent);
+            }
+            else
+            {
+                var children = element.GetChildren();
+
+                for (var i = 0; i < children.Count; i++)
+                    Traverse(children[i], parent);
+            }
         }
     }
     
@@ -59,5 +81,13 @@ internal static class TreeTraversal
 
             yield return node;
         }
+    }
+    
+    public static void Visit<T>(this TreeNode<T> root, Action<TreeNode<T>> action)
+    {
+        action(root);
+
+        for (var i = 0; i < root.Children.Count; i++)
+            root.Children[i].Visit(action);
     }
 }

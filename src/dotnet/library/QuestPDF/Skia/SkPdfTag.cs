@@ -1,6 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -9,63 +8,67 @@ namespace QuestPDF.Skia;
 internal sealed class SkPdfTag : IDisposable
 {
     public IntPtr Instance { get; private set; }
-    public int NodeId { get; set; }
-    public string Type { get; set; } = "";
-    public string? Alt { get; set; }
-    public string? Lang { get; set; }
-    private ICollection<SkPdfTag>? Children { get; set; }
-    
-    private SkPdfTag(IntPtr instance)
+
+    public SkPdfTag(IntPtr instance)
     {
         Instance = instance;
         SkiaAPI.EnsureNotNull(Instance);
     }
-    
-    public static SkPdfTag Create(int nodeId, string? type, string? alt, string? lang)
+
+    // strings are marshalled manually: on modern .NET, every P/Invoke argument marshalled
+    // with an ICustomMarshaler allocates a RuntimeMethodInfoStub object per call
+    [SkipLocalsInit]
+    public static IntPtr CreateElement(int nodeId, string? type, string? alt, string? lang)
     {
-        var instance = API.questpdf_skia_pdf_structure_element_create(nodeId, type, alt, lang);
-        return new SkPdfTag(instance) { NodeId = nodeId, Type = type ?? "", Alt = alt, Lang = lang };
-    }
-    
-    public void SetChildren(ICollection<SkPdfTag> children)
-    {
-        Children = children;
+        var typePointer = SkText.MarshalFromManagedToNative(type);
+        var altPointer = SkText.MarshalFromManagedToNative(alt);
+        var langPointer = SkText.MarshalFromManagedToNative(lang);
         
-        var childrenArray = children.ToArray();
-        var childrenPointers = childrenArray.Select(c => c.Instance).ToArray();
-        var unmanagedArray = Marshal.AllocHGlobal(IntPtr.Size * childrenPointers.Length);
-        Marshal.Copy(childrenPointers, 0, unmanagedArray, childrenPointers.Length);
+        var instance = API.questpdf_skia_pdf_structure_element_create(nodeId, typePointer, altPointer, langPointer);
+        SkiaAPI.EnsureNotNull(instance);
         
-        API.questpdf_skia_pdf_structure_element_set_children(Instance, unmanagedArray, childrenPointers.Length);
-        Marshal.FreeHGlobal(unmanagedArray);
+        Marshal.FreeHGlobal(typePointer);
+        Marshal.FreeHGlobal(altPointer);
+        Marshal.FreeHGlobal(langPointer);
+
+        return instance;
     }
 
-    public void AddAttribute(string owner, string name, object value)
+    public static unsafe void SetChildren(IntPtr element, IntPtr[] childElements, int childCount)
     {
-        // for some reason, other marshaling approaches do not work 
+        if (childCount == 0)
+            return;
+
+        fixed (IntPtr* childElementsPointer = childElements)
+            API.questpdf_skia_pdf_structure_element_set_children(element, (IntPtr)childElementsPointer, childCount);
+    }
+
+    public static void AddAttribute(IntPtr element, string owner, string name, object value)
+    {
+        // for some reason, other marshaling approaches do not work
         var ownerBytes = Encoding.ASCII.GetBytes(owner + "\0");
         var nameBytes = Encoding.ASCII.GetBytes(name + "\0");
-        
+
         if (value is string textValue)
         {
             var valueBytes = Encoding.ASCII.GetBytes(textValue + "\0");
-            API.questpdf_skia_pdf_structure_element_add_attribute_text(Instance, ownerBytes, nameBytes, valueBytes);
+            API.questpdf_skia_pdf_structure_element_add_attribute_text(element, ownerBytes, nameBytes, valueBytes);
         }
         else if (value is int intValue)
         {
-            API.questpdf_skia_pdf_structure_element_add_attribute_integer(Instance, ownerBytes, nameBytes, intValue);
+            API.questpdf_skia_pdf_structure_element_add_attribute_integer(element, ownerBytes, nameBytes, intValue);
         }
         else if (value is float floatValue)
         {
-            API.questpdf_skia_pdf_structure_element_add_attribute_float(Instance, ownerBytes, nameBytes, floatValue);
+            API.questpdf_skia_pdf_structure_element_add_attribute_float(element, ownerBytes, nameBytes, floatValue);
         }
         else if (value is float[] floatArray)
         {
-            API.questpdf_skia_pdf_structure_element_add_attribute_float_array(Instance, ownerBytes, nameBytes, floatArray, floatArray.Length);
+            API.questpdf_skia_pdf_structure_element_add_attribute_float_array(element, ownerBytes, nameBytes, floatArray, floatArray.Length);
         }
         else if (value is int[] nodeIds)
         {
-            API.questpdf_skia_pdf_structure_element_add_attribute_node_ids(Instance, ownerBytes, nameBytes, nodeIds, nodeIds.Length);
+            API.questpdf_skia_pdf_structure_element_add_attribute_node_ids(element, ownerBytes, nameBytes, nodeIds, nodeIds.Length);
         }
         else
         {
@@ -84,36 +87,17 @@ internal sealed class SkPdfTag : IDisposable
         if (Instance == IntPtr.Zero)
             return;
 
-        // to dispose the entire tree, it is enough to invoke the pdf_structure_element_delete method on the root element
-        // root's children should be only marked as disposed
-        DisposeChildren(this);
-        
+        // deleting the root element releases the entire native element tree,
+        // child elements never get managed wrappers
         API.questpdf_skia_pdf_structure_element_delete(Instance);
         Instance = IntPtr.Zero;
         GC.SuppressFinalize(this);
-        
-        static void DisposeChildren(SkPdfTag parent)
-        {
-            if (parent.Children == null)
-                return;
-
-            foreach (var child in parent.Children)
-            {
-                child.Instance = IntPtr.Zero;
-                GC.SuppressFinalize(child);
-                DisposeChildren(child);
-            }
-        }
     }
     
     private static class API
     {
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr questpdf_skia_pdf_structure_element_create(
-            int nodeId,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string type,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string alt,
-            [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string lang);
+        public static extern IntPtr questpdf_skia_pdf_structure_element_create(int nodeId, IntPtr type, IntPtr alt, IntPtr lang);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void questpdf_skia_pdf_structure_element_set_children(IntPtr element, IntPtr children, int count);

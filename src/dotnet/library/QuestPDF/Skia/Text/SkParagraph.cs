@@ -35,23 +35,21 @@ internal sealed class SkParagraph : IDisposable
     {
         API.questpdf_skia_paragraph_get_line_extents(Instance, out var array, out var arrayLength);
 
-        var managedArray = new SkLineExtent[arrayLength];
-        
-        var size = Marshal.SizeOf<SkLineExtent>();
-        
-        for (var i = 0; i < arrayLength; i++)
-        {
-            var ptr = IntPtr.Add(array, i * size);
-            managedArray[i] = Marshal.PtrToStructure<SkLineExtent>(ptr);
-        }
-
+        var managedArray = CopyNativeArray<SkLineExtent>(array, arrayLength);
         API.questpdf_skia_paragraph_delete_line_extents(array);
+
         return managedArray;
     }
     
     public int[] GetUnresolvedCodepoints()
     {
         API.questpdf_skia_paragraph_get_unresolved_codepoints(Instance, out var array, out var arrayLength);
+
+        if (arrayLength == 0)
+        {
+            API.questpdf_skia_paragraph_delete_unresolved_codepoints(array);
+            return [];
+        }
         
         var managedArray = new int[arrayLength];
         Marshal.Copy(array, managedArray,  0, arrayLength);
@@ -63,37 +61,36 @@ internal sealed class SkParagraph : IDisposable
     public SkRect[] GetPlaceholderPositions()
     {
         API.questpdf_skia_paragraph_get_placeholder_positions(Instance, out var array, out var arrayLength);
-        
-        var managedArray = new SkRect[arrayLength];
-        
-        var size = Marshal.SizeOf<SkRect>();
-        
-        for (var i = 0; i < arrayLength; i++)
-        {
-            var ptr = IntPtr.Add(array, i * size);
-            managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
-        }
 
+        var managedArray = CopyNativeArray<SkRect>(array, arrayLength);
         API.questpdf_skia_paragraph_delete_positions(array);
+
         return managedArray;
     }
     
     public SkRect[] GetTextRangePositions(int rangeStart, int rangeEnd)
     {
         API.questpdf_skia_paragraph_get_text_range_positions(Instance, rangeStart, rangeEnd, out var array, out var arrayLength);
-        
-        var managedArray = new SkRect[arrayLength];
-        
-        var size = Marshal.SizeOf<SkRect>();
-        
-        for (var i = 0; i < arrayLength; i++)
+
+        var managedArray = CopyNativeArray<SkRect>(array, arrayLength);
+        API.questpdf_skia_paragraph_delete_positions(array);
+
+        return managedArray;
+    }
+
+    private static unsafe T[] CopyNativeArray<T>(IntPtr source, int length) where T : unmanaged
+    {
+        var result = new T[length];
+
+        if (length > 0)
         {
-            var ptr = IntPtr.Add(array, i * size);
-            managedArray[i] = Marshal.PtrToStructure<SkRect>(ptr);
+            var byteCount = (long)length * sizeof(T);
+
+            fixed (T* destination = result)
+                Buffer.MemoryCopy((void*)source, destination, byteCount, byteCount);
         }
 
-        API.questpdf_skia_paragraph_delete_positions(array);
-        return managedArray;
+        return result;
     }
     
     ~SkParagraph()

@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class ColumnItemRenderingCommand
+    internal readonly struct ColumnItemRenderingCommand
     {
-        public Element Element { get; set; }
-        public SpacePlan Measurement { get; set; }
-        public Position Offset { get; set; }
+        public Element Element { get; init; }
+        public SpacePlan Measurement { get; init; }
+        public Position Offset { get; init; }
     }
 
     internal sealed class Column : Element, IStateful
@@ -19,7 +18,7 @@ namespace QuestPDF.Elements
         internal List<Element> Items { get; } = new();
         internal float Spacing { get; set; }
         
-        internal override IEnumerable<Element?> GetChildren()
+        internal override IReadOnlyList<Element?> GetChildren()
         {
             return Items;
         }
@@ -32,7 +31,7 @@ namespace QuestPDF.Elements
 
         internal override SpacePlan Measure(Size availableSpace)
         {
-            if (!Items.Any())
+            if (Items.Count == 0)
                 return SpacePlan.Empty();
             
             if (CurrentRenderingIndex == Items.Count)
@@ -41,13 +40,12 @@ namespace QuestPDF.Elements
             if (availableSpace.IsNegative())
                 return SpacePlan.Wrap("The available space is negative.");
             
-            var renderingCommands = PlanLayout(availableSpace);
+            using var renderingCommands = PlanLayout(availableSpace);
 
-            if (!renderingCommands.Any())
+            if (renderingCommands.Count == 0)
                 return SpacePlan.Wrap("The available space is not sufficient for even partially rendering a single item.");
 
-            var width = renderingCommands.Max(x => x.Measurement.Width);
-            var height = renderingCommands.Last().Offset.Y + renderingCommands.Last().Measurement.Height;
+            var (width, height) = SummarizeLayout(renderingCommands);
             var size = new Size(width, height);
             
             if (width > availableSpace.Width + Size.Epsilon)
@@ -56,7 +54,7 @@ namespace QuestPDF.Elements
             if (height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap("The content requires more vertical space than available.");
             
-            var totalRenderedItems = CurrentRenderingIndex + renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
+            var totalRenderedItems = CurrentRenderingIndex + GetFullyRenderedItemsCount(renderingCommands);
             var willBeFullyRendered = totalRenderedItems == Items.Count;
 
             return willBeFullyRendered
@@ -66,7 +64,7 @@ namespace QuestPDF.Elements
 
         internal override void Draw(Size availableSpace)
         {
-            var renderingCommands = PlanLayout(availableSpace);
+            using var renderingCommands = PlanLayout(availableSpace);
 
             foreach (var command in renderingCommands)
             {
@@ -77,17 +75,18 @@ namespace QuestPDF.Elements
                 Canvas.Translate(command.Offset.Reverse());
             }
             
-            var fullyRenderedItems = renderingCommands.Count(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
-            CurrentRenderingIndex += fullyRenderedItems;
+            CurrentRenderingIndex += GetFullyRenderedItemsCount(renderingCommands);
         }
 
-        private List<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
+        private ReusableList<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var topOffset = 0f;
-            var commands = new List<ColumnItemRenderingCommand>();
+            var commands = ReusableList<ColumnItemRenderingCommand>.Get();
 
-            foreach (var item in Items.Skip(CurrentRenderingIndex))
+            var topOffset = 0f;
+            
+            for (var i = CurrentRenderingIndex; i < Items.Count; i++)
             {
+                var item = Items[i];
                 var isFirstItem = commands.Count == 0;
 
                 var availableHeight = availableSpace.Height - topOffset;
@@ -133,6 +132,36 @@ namespace QuestPDF.Elements
             }
 
             return commands;
+        }
+
+        // the List parameter type keeps the struct enumerator
+        private static (float Width, float Height) SummarizeLayout(List<ColumnItemRenderingCommand> renderingCommands)
+        {
+            var width = 0f;
+
+            foreach (var command in renderingCommands)
+            {
+                width = Math.Max(width, command.Measurement.Width);
+            }
+
+            var lastCommand = renderingCommands[renderingCommands.Count - 1];
+            var height = lastCommand.Offset.Y + lastCommand.Measurement.Height;
+
+            return (width, height);
+        }
+        
+        // the List parameter type keeps the struct enumerator
+        private static int GetFullyRenderedItemsCount(List<ColumnItemRenderingCommand> renderingCommands)
+        {
+            var result = 0;
+            
+            foreach (var command in renderingCommands)
+            {
+                if (command.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
+                    result++;
+            }
+
+            return result;
         }
         
         #region IStateful

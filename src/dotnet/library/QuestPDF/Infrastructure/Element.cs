@@ -8,13 +8,14 @@ namespace QuestPDF.Infrastructure
 {
     internal abstract class Element : IElement
     {
-        internal IPageContext PageContext { get; set; }
         internal IDrawingCanvas Canvas { get; set; }
         internal SourceCodePath? CodeLocation { get; set; }
         
-        internal virtual IEnumerable<Element?> GetChildren()
+        // returns IReadOnlyList so traversal hot paths can iterate by index;                                                                                                              
+        // foreach/LINQ over the interface boxes the list enumerator on every call
+        internal virtual IReadOnlyList<Element?> GetChildren()
         {
-            yield break;
+            return Array.Empty<Element?>();
         }
 
         internal virtual void CreateProxy(Func<Element?, Element?> create)

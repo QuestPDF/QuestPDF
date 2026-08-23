@@ -6,7 +6,7 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class DecorationElementLayout
+    internal ref struct DecorationElementLayout
     {
         public ItemCommand Before { get; set; }
         public ItemCommand Content { get; set; }
@@ -18,6 +18,9 @@ namespace QuestPDF.Elements
             public SpacePlan Measurement;
             public Position Offset;
         }
+        
+        public float TotalWidth => Math.Max(Before.Measurement.Width, Math.Max(Content.Measurement.Width, After.Measurement.Width));
+        public float TotalHeight => Before.Measurement.Height + Content.Measurement.Height + After.Measurement.Height;
     }
 
     internal sealed class Decoration : Element, IContentDirectionAware
@@ -28,11 +31,9 @@ namespace QuestPDF.Elements
         internal Element Content { get; set; } = new DebugPointer(DebugPointerType.ElementStructure, "Content");
         internal Element After { get; set; } = new DebugPointer(DebugPointerType.ElementStructure, "After");
 
-        internal override IEnumerable<Element?> GetChildren()
+        internal override IReadOnlyList<Element?> GetChildren()
         {
-            yield return Before;
-            yield return Content;
-            yield return After;
+            return [Before, Content, After];
         }
         
         internal override void CreateProxy(Func<Element?, Element?> create)
@@ -58,24 +59,15 @@ namespace QuestPDF.Elements
             if (layout.After.Measurement.Type == SpacePlanType.Wrap)
                 return layout.After.Measurement;
             
-            var itemMeasurements = new[]
-            {
-                layout.Before.Measurement,
-                layout.Content.Measurement,
-                layout.After.Measurement
-            };
+            var size = new Size(layout.TotalWidth, layout.TotalHeight);
             
-            var width = itemMeasurements.Max(x => x.Width);
-            var height = itemMeasurements.Sum(x => x.Height);
-            var size = new Size(width, height);
-            
-            if (width > availableSpace.Width + Size.Epsilon)
+            if (size.Width > availableSpace.Width + Size.Epsilon)
                 return SpacePlan.Wrap("The content slot requires more horizontal space than available.");
             
-            if (height > availableSpace.Height + Size.Epsilon)
+            if (size.Height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap("The content slot requires more vertical space than available.");
             
-            var willBeFullyRendered = itemMeasurements.All(x => x.Type is SpacePlanType.Empty or SpacePlanType.FullRender);
+            var willBeFullyRendered = layout.Content.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender;
 
             return willBeFullyRendered
                 ? SpacePlan.FullRender(size)
@@ -85,23 +77,19 @@ namespace QuestPDF.Elements
         internal override void Draw(Size availableSpace)
         {
             var layout = PlanLayout(availableSpace);
+            var contentWidth = layout.TotalWidth;
+
+            DrawCommand(layout.Before);
+            DrawCommand(layout.Content);
+            DrawCommand(layout.After);
             
-            var drawingCommands = new[]
+            void DrawCommand(DecorationElementLayout.ItemCommand command)
             {
-                layout.Before,
-                layout.Content,
-                layout.After
-            };
-            
-            var width = drawingCommands.Max(x => x.Measurement.Width);
-            
-            foreach (var command in drawingCommands)
-            {
-                var elementSize = new Size(width, command.Measurement.Height);
+                var elementSize = new Size(contentWidth, command.Measurement.Height);
                 
                 var offset = ContentDirection == ContentDirection.LeftToRight
                     ? command.Offset
-                    : new Position(availableSpace.Width - width, command.Offset.Y);
+                    : new Position(availableSpace.Width - contentWidth, command.Offset.Y);
                 
                 Canvas.Translate(offset);
                 command.Element.Draw(elementSize);

@@ -239,7 +239,7 @@ namespace QuestPDF.Companion
                     {
                         PageIndex = request.PageIndex,
                         ZoomLevel = request.ZoomLevel,
-                        ImageData = Convert.ToBase64String(image)
+                        ImageData = image
                     };
                 }
             }
@@ -282,4 +282,14 @@ namespace QuestPDF.Companion
     }
 }
 
+#else
+
+namespace QuestPDF.Companion
+{
+    internal static class CompanionService
+    {
+        public static bool IsCompanionAttached => false;
+        public static bool IsDocumentHotReloaded => false;
+    }
+}
 #endif

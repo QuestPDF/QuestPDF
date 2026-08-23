@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
 using QuestPDF.Drawing;
@@ -12,7 +13,7 @@ namespace QuestPDF.Elements.Table
     {
         // configuration
         public List<TableColumnDefinition> Columns { get; set; } = new();
-        public List<TableCell> Cells { get; set; } = new();
+        public List<TableCell> Cells { get; } = new(); // sorted by Row then Column (in Initialize method)
         public bool ExtendLastCellsToTableBottom { get; set; }
         
         public ContentDirection ContentDirection { get; set; }
@@ -31,7 +32,7 @@ namespace QuestPDF.Elements.Table
         
         private bool IsRendered => CurrentRow > LastRowIndex;
         
-        internal override IEnumerable<Element?> GetChildren()
+        internal override IReadOnlyList<Element?> GetChildren()
         {
             return Cells;
         }
@@ -41,12 +42,33 @@ namespace QuestPDF.Elements.Table
             if (CacheInitialized)
                 return;
 
-            HasRelativeColumns = Columns.Any(x => x.RelativeSize > 0);
-            LastRowIndex = Cells.Select(x => x.Row + x.RowSpan - 1).DefaultIfEmpty(0).Max();
-            Cells = Cells.OrderBy(x => x.Row).ThenBy(x => x.Column).ToList();
+            HasRelativeColumns = AnyColumnHasRelativeSize(Columns);
+            LastRowIndex = CalculateLastRowIndex(Cells);
+            Cells.Sort(OrderCellsByRowThenColumn);
             BuildCache();
 
             CacheInitialized = true;
+
+            static bool AnyColumnHasRelativeSize(List<TableColumnDefinition> columns)
+            {
+                foreach (var column in columns)
+                {
+                    if (column.RelativeSize > 0)
+                        return true;
+                }
+
+                return false;
+            }
+
+            static int CalculateLastRowIndex(List<TableCell> cells)
+            {
+                var lastRowIndex = 0;
+
+                foreach (var cell in cells)
+                    lastRowIndex = Math.Max(lastRowIndex, GetCellLastOccupiedRow(cell));
+
+                return lastRowIndex;
+            }
         }
 
         private void BuildCache()
@@ -62,25 +84,75 @@ namespace QuestPDF.Elements.Table
                 
                 return;
             }
+
+            UpdateMaxRowAndMaxRowSpan();
+            CellsCache = GroupCellsByLastOccupiedRow();
+
+            void UpdateMaxRowAndMaxRowSpan()
+            {
+                MaxRow = 0;
+                MaxRowSpan = 1;
+
+                foreach (var cell in Cells)
+                {
+                    MaxRow = Math.Max(MaxRow, GetCellLastOccupiedRow(cell));
+                    MaxRowSpan = Math.Max(MaxRowSpan, cell.RowSpan);
+                }
+            }
             
-            var groups = Cells
-                .GroupBy(x => x.Row + x.RowSpan - 1)
-                .ToDictionary(x => x.Key, x => x.OrderBy(x => x.Column).ToArray());
+            // Builds an array where the N-th element contains all cells whose last occupied row is N, ordered by column.
+            TableCell[][] GroupCellsByLastOccupiedRow()
+            {
+                var arrayPool = ArrayPool<int>.Shared;
 
-            MaxRow = groups.Max(x => x.Key);
-            MaxRowSpan = Cells.Max(x => x.RowSpan);
+                // first pass: determine the size of each bucket
+                var rowCellCounts = arrayPool.Rent(MaxRow + 1);
+                Array.Clear(rowCellCounts, 0, MaxRow + 1);
 
-            CellsCache = Enumerable
-                .Range(0, MaxRow + 1)
-                .Select(x => groups.TryGetValue(x, out var value) ? value : Array.Empty<TableCell>())
-                .ToArray();
+                foreach (var cell in Cells)
+                    rowCellCounts[GetCellLastOccupiedRow(cell)]++;
+
+                var buckets = new TableCell[MaxRow + 1][];
+
+                for (var row = 0; row <= MaxRow; row++)
+                    buckets[row] = rowCellCounts[row] > 0 ? new TableCell[rowCellCounts[row]] : Array.Empty<TableCell>();
+
+                arrayPool.Return(rowCellCounts);
+
+                // second pass: fill the buckets
+                var rowInsertionIndexes = arrayPool.Rent(MaxRow + 1);
+                Array.Clear(rowInsertionIndexes, 0, MaxRow + 1);
+
+                foreach (var cell in Cells)
+                {
+                    var row = GetCellLastOccupiedRow(cell);
+                    buckets[row][rowInsertionIndexes[row]] = cell;
+                    rowInsertionIndexes[row]++;
+                }
+
+                // final pass: order cells within each bucket by column
+                foreach (var rowCells in buckets)
+                {
+                    if (rowCells.Length > 1)
+                        Array.Sort(rowCells, OrderCellsByColumnThenRow);
+                }
+                
+                arrayPool.Return(rowInsertionIndexes);
+
+                return buckets;
+            }
+        }
+        
+        private static int GetCellLastOccupiedRow(TableCell cell)
+        {
+            return cell.Row + cell.RowSpan - 1;
         }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
             Initialize();
             
-            if (!Cells.Any())
+            if (Cells.Count == 0)
                 return SpacePlan.Empty();
             
             if (IsRendered)
@@ -90,13 +162,14 @@ namespace QuestPDF.Elements.Table
                 return SpacePlan.Wrap("Insufficient space to render columns of relative size.");
             
             UpdateColumnsWidth(availableSpace.Width);
-            var renderingCommands = PlanLayout(availableSpace);
+            
+            using var renderingCommands = PlanLayout(availableSpace);
 
-            if (!renderingCommands.Any())
+            if (renderingCommands.Count == 0)
                 return SpacePlan.Wrap("Insufficient space to render (even partially) a single row.");
             
             var width = Columns.Sum(x => x.Width);
-            var height = renderingCommands.Max(x => x.Offset.Y + x.Size.Height);
+            var height = GetTableHeight(renderingCommands);
             var tableSize = new Size(width, height);
 
             if (tableSize.Width > availableSpace.Width + Size.Epsilon)
@@ -105,6 +178,16 @@ namespace QuestPDF.Elements.Table
             return CalculateCurrentRow(renderingCommands) > LastRowIndex 
                 ? SpacePlan.FullRender(tableSize) 
                 : SpacePlan.PartialRender(tableSize);
+
+            static float GetTableHeight(ReusableList<TableCellRenderingCommand> commands)
+            {
+                var result = 0f;
+                
+                foreach (var command in commands)
+                    result = Math.Max(result, command.Offset.Y + command.Size.Height);
+                
+                return result;
+            }
         }
 
         internal override void Draw(Size availableSpace)
@@ -116,9 +199,11 @@ namespace QuestPDF.Elements.Table
                 return;
             
             UpdateColumnsWidth(availableSpace.Width);
-            var renderingCommands = PlanLayout(availableSpace);
+            
+            using var renderingCommands = PlanLayout(availableSpace);
+            renderingCommands.Sort(OrderCommandsByCellZIndex);
 
-            foreach (var command in renderingCommands.OrderBy(x => x.Cell.ZIndex))
+            foreach (var command in renderingCommands)
             {
                 if (command.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                     command.Cell.IsRendered = true;
@@ -138,26 +223,39 @@ namespace QuestPDF.Elements.Table
             CurrentRow = CalculateCurrentRow(renderingCommands);
         }
 
-        private int CalculateCurrentRow(ICollection<TableCellRenderingCommand> commands)
+        private int CalculateCurrentRow(List<TableCellRenderingCommand> commands)
         {
-            if (!commands.Any())
+            if (commands.Count == 0)
                 return CurrentRow;
 
             // Advance past every row whose cells all finished on this page (FullRender or Empty).
             // Stop at the first row that still has a cell needing more space — this also prevents
             // a spanning cell with FullRender measurement from hiding wrapped cells in its span.
-            var doneCells = commands
-                .Where(x => x.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
-                .Select(x => x.Cell);
-            
-            var doneCellsCache = new HashSet<TableCell>(doneCells);
+            CalculateCurrentRow_DoneCells_Cache.Clear();
+
+            foreach (var command in commands)
+            {
+                if (command.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
+                    CalculateCurrentRow_DoneCells_Cache.Add(command.Cell);
+            }
 
             var nextRow = CurrentRow;
             
-            while (nextRow <= MaxRow && CellsCache[nextRow].All(x => x.IsRendered || doneCellsCache.Contains(x)))
+            while (nextRow <= MaxRow && IsRowFullyRendered(nextRow))
                 nextRow++;
 
             return nextRow;
+
+            bool IsRowFullyRendered(int row)
+            {
+                foreach (var cell in CellsCache[row])
+                {
+                    if (!cell.IsRendered && !CalculateCurrentRow_DoneCells_Cache.Contains(cell))
+                        return false;
+                }
+
+                return true;
+            }
         }
         
         private void UpdateColumnsWidth(float availableWidth)
@@ -173,93 +271,72 @@ namespace QuestPDF.Elements.Table
             }
         }
         
-        private ICollection<TableCellRenderingCommand> PlanLayout(Size availableSpace)
+        private ReusableList<TableCellRenderingCommand> PlanLayout(Size availableSpace)
         {
-            var columnOffsets = GetColumnLeftOffsets(Columns);
+            var commands = ReusableList<TableCellRenderingCommand>.Get();
             
-            var commands = GetRenderingCommands();
+            var columnOffsets = ArrayPool<float>.Shared.Rent(Columns.Count + 1);
+            PopulateColumnLeftOffsets(columnOffsets, Columns);
 
-            if (!commands.Any())
-                return commands;
-
-            if (ExtendLastCellsToTableBottom)
-            {
-                var tableHeight = commands.Max(cell => cell.Offset.Y + cell.Size.Height);
-                AdjustLastCellSizes(tableHeight, commands);
-            }
-
-            return commands;
-
-            static float[] GetColumnLeftOffsets(IList<TableColumnDefinition> columns)
-            {
-                var cellOffsets = new float[columns.Count + 1];
-                cellOffsets[0] = 0;
-
-                foreach (var column in Enumerable.Range(1, cellOffsets.Length - 1))
-                    cellOffsets[column] = columns[column - 1].Width + cellOffsets[column - 1];
-
-                return cellOffsets;
-            }
+            var rowBottomOffsets = ArrayPool<float>.Shared.Rent(MaxRow + 1);
+            Array.Clear(rowBottomOffsets, 0, MaxRow + 1);
             
-            ICollection<TableCellRenderingCommand> GetRenderingCommands()
+            var currentRow = CurrentRow;
+            var maxRenderingRow = LastRowIndex;
+
+            for (var row = CurrentRow; row <= MaxRow; row++)
             {
-                var rowBottomOffsets = new DynamicDictionary<int, float>();
-                var commands = new List<TableCellRenderingCommand>();
+                var rowCells = CellsCache[row];
                 
-                var cellsToTry = Enumerable
-                    .Range(CurrentRow, MaxRow - CurrentRow + 1)
-                    .SelectMany(x => CellsCache[x]);
+                if (rowCells.Length == 0)
+                    continue;
                 
-                var currentRow = CurrentRow;
-                var maxRenderingRow = LastRowIndex;
-                
-                foreach (var cell in cellsToTry)
+                // update position of previous row
+                if (row > currentRow)
                 {
-                    // update position of previous row
-                    if (cell.Row > currentRow)
-                    {
-                        rowBottomOffsets[currentRow] = Math.Max(rowBottomOffsets[currentRow], rowBottomOffsets[currentRow - 1]);
-                            
-                        if (rowBottomOffsets[currentRow - 1] > availableSpace.Height + Size.Epsilon)
-                            break;
-
-                        foreach (var row in Enumerable.Range(currentRow + 1, cell.Row - (currentRow + 1)))
-                            rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);
-                        
-                        currentRow = cell.Row;
-                    }
+                    rowBottomOffsets[currentRow] = Math.Max(rowBottomOffsets[currentRow], rowBottomOffsets[currentRow - 1]);
                     
-                    // cell visibility optimizations
-                    if (cell.Row > maxRenderingRow + MaxRowSpan)
+                    if (rowBottomOffsets[currentRow - 1] > availableSpace.Height + Size.Epsilon)
                         break;
 
+                    for (var gapRow = currentRow + 1; gapRow < row; gapRow++)
+                        rowBottomOffsets[gapRow] = Math.Max(rowBottomOffsets[gapRow - 1], rowBottomOffsets[gapRow]);
+                    
+                    currentRow = row;
+                }
+                
+                // cell visibility optimizations
+                if (row > maxRenderingRow + MaxRowSpan)
+                    break;
+                
+                for (var i = 0; i < rowCells.Length; i++)
+                {
+                    var cell = rowCells[i];
+                    
                     // calculate cell position / size
                     var topOffset = rowBottomOffsets[cell.Row - 1];
                     
                     var availableWidth = GetCellWidth(cell);
                     var availableHeight = availableSpace.Height - topOffset;
                     var availableCellSize = new Size(availableWidth, availableHeight);
-
+                    
                     var cellSize = cell.Measure(availableCellSize);
-
+                    
                     // corner case: if cell within the row is not fully rendered, do not attempt to render next row
                     if (cellSize.Type == SpacePlanType.PartialRender)
-                    {
                         maxRenderingRow = Math.Min(maxRenderingRow, cell.Row + cell.RowSpan - 1);
-                    }
-
+                    
                     // corner case: if cell within the row want to wrap to the next page, do not attempt to render this row
                     if (cellSize.Type == SpacePlanType.Wrap)
                     {
                         maxRenderingRow = Math.Min(maxRenderingRow, cell.Row - 1);
                         continue;
                     }
-
+                    
                     // update position of the last row that cell occupies
                     var bottomRow = cell.Row + cell.RowSpan - 1;
                     rowBottomOffsets[bottomRow] = Math.Max(rowBottomOffsets[bottomRow], topOffset + cellSize.Height);
-
-                    // accept cell to be rendered
+                    
                     commands.Add(new TableCellRenderingCommand()
                     {
                         Cell = cell,
@@ -268,51 +345,86 @@ namespace QuestPDF.Elements.Table
                         Offset = new Position(columnOffsets[cell.Column - 1], topOffset)
                     });
                 }
+            }
 
-                if (!commands.Any())
-                    return commands;
+            var maxRow = 0;
 
-                var maxRow = commands.Select(x => x.Cell).Max(x => x.Row + x.RowSpan);
+            foreach (var command in commands)
+                maxRow = Math.Max(maxRow, command.Cell.Row + command.Cell.RowSpan);
 
-                foreach (var row in Enumerable.Range(CurrentRow, maxRow - CurrentRow))
-                    rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);   
+            for (var row = CurrentRow; row < maxRow; row++)
+                rowBottomOffsets[row] = Math.Max(rowBottomOffsets[row - 1], rowBottomOffsets[row]);
 
-                AdjustCellSizes(commands, rowBottomOffsets);
-                
-                // corner case: reject cell if other cells within the same row are rejected
-                return commands.Where(x => x.Cell.Row <= maxRenderingRow).ToList();
+            AdjustCellSizes(commands, rowBottomOffsets);
+            ArrayPool<float>.Shared.Return(rowBottomOffsets);
+            ArrayPool<float>.Shared.Return(columnOffsets);
+            
+            // corner case: reject cell if other cells within the same row are rejected
+            commands.RemoveAll(x => x.Cell.Row > maxRenderingRow);
+            
+            if (ExtendLastCellsToTableBottom)
+                AdjustLastCellSizes(commands, Columns.Count);
+            
+            return commands;
+
+            static void PopulateColumnLeftOffsets(float[] columnOffsets, List<TableColumnDefinition> columns)
+            {
+                columnOffsets[0] = 0;
+
+                for (var column = 1; column <= columns.Count; column++)
+                    columnOffsets[column] = columns[column - 1].Width + columnOffsets[column - 1];
             }
             
             // corner sase: if two cells end up on the same row (a.Row + a.RowSpan = b.Row + b.RowSpan),
             // bottom edges of their bounding boxes should be at the same level
-            static void AdjustCellSizes(ICollection<TableCellRenderingCommand> commands, DynamicDictionary<int, float> rowBottomOffsets)
+            static void AdjustCellSizes(List<TableCellRenderingCommand> commands, float[] rowBottomOffsets)
             {
-                foreach (var command in commands)
+                for (var i = 0; i < commands.Count; i++)
                 {
+                    var command = commands[i];
+                    
                     var lastRow = command.Cell.Row + command.Cell.RowSpan - 1;
                     var height = rowBottomOffsets[lastRow] - command.Offset.Y;
                     
                     command.Size = new Size(command.Size.Width, height);
                     command.Offset = new Position(command.Offset.X, rowBottomOffsets[command.Cell.Row - 1]);
+                    
+                    commands[i] = command;
                 }
             }
             
             // corner sase: all cells, that are last ones in their respective columns, should take all remaining space
-            static void AdjustLastCellSizes(float tableHeight, ICollection<TableCellRenderingCommand> commands)
+            static void AdjustLastCellSizes(List<TableCellRenderingCommand> commands, int columnsCount)
             {
-                var columnsCount = commands.Select(x => x.Cell).Max(x => x.Column + x.ColumnSpan - 1);
-                
-                foreach (var column in Enumerable.Range(1, columnsCount))
+                var tableHeight = 0f;
+                var bottomRowPerColumn = new int[columnsCount];
+
+                // first pass: find the bottom-most occupied row of every column
+                foreach (var command in commands)
                 {
-                    var lastCellInColumn = commands
-                        .Where(x => x.Cell.Column <= column && column < x.Cell.Column + x.Cell.ColumnSpan)
-                        .OrderByDescending(x => x.Cell.Row + x.Cell.RowSpan)
-                        .FirstOrDefault();
-                
-                    if (lastCellInColumn == null)
-                        continue;
-                
-                    lastCellInColumn.Size = new Size(lastCellInColumn.Size.Width, tableHeight - lastCellInColumn.Offset.Y);
+                    tableHeight = Math.Max(tableHeight, command.Offset.Y + command.Size.Height);
+                    
+                    var cell = command.Cell;
+
+                    for (var column = cell.Column; column < cell.Column + cell.ColumnSpan; column++)
+                        bottomRowPerColumn[column - 1] = Math.Max(bottomRowPerColumn[column - 1], cell.Row + cell.RowSpan);
+                }
+
+                // second pass: stretch every cell that touches the bottom of any of its columns
+                for (var i = 0; i < commands.Count; i++)
+                {
+                    var command = commands[i];
+                    var cell = command.Cell;
+
+                    for (var column = cell.Column; column < cell.Column + cell.ColumnSpan; column++)
+                    {
+                        if (bottomRowPerColumn[column - 1] != cell.Row + cell.RowSpan)
+                            continue;
+
+                        command.Size = new Size(command.Size.Width, tableHeight - command.Offset.Y);
+                        commands[i] = command;
+                        break;
+                    }
                 }
             }
 
@@ -321,6 +433,37 @@ namespace QuestPDF.Elements.Table
                 return columnOffsets[cell.Column + cell.ColumnSpan - 1] - columnOffsets[cell.Column - 1];
             }
         }
+        
+        #region Helpers
+        
+        private HashSet<TableCell> CalculateCurrentRow_DoneCells_Cache { get; } = new();
+        
+        private static readonly Comparison<TableCell> OrderCellsByRowThenColumn = static (left, right) =>
+        {
+            if (left.Row != right.Row)
+                return left.Row.CompareTo(right.Row);
+
+            if (left.Column != right.Column)
+                return left.Column.CompareTo(right.Column);
+
+            return left.ZIndex.CompareTo(right.ZIndex);
+        };
+
+        private static readonly Comparison<TableCell> OrderCellsByColumnThenRow = static (left, right) =>
+        {
+            if (left.Column != right.Column)
+                return left.Column.CompareTo(right.Column);
+
+            if (left.Row != right.Row)
+                return left.Row.CompareTo(right.Row);
+
+            return left.ZIndex.CompareTo(right.ZIndex);
+        };
+        
+        private static readonly Comparison<TableCellRenderingCommand> OrderCommandsByCellZIndex =
+            static (left, right) => left.Cell.ZIndex.CompareTo(right.Cell.ZIndex);
+        
+        #endregion
         
         #region IStateful
         
@@ -397,7 +540,7 @@ namespace QuestPDF.Elements.Table
             if (SemanticTreeManager.IsCurrentContentArtifact())
                 return;
             
-            if (!Cells.Any())
+            if (Cells.Count == 0)
                 return;
             
             if (SemanticTreeManager.TryPeekStack()?.Type != "Table")
@@ -420,38 +563,43 @@ namespace QuestPDF.Elements.Table
             SemanticTreeManager.AddNode(sectionSemanticTreeNode);
             SemanticTreeManager.PushOnStack(sectionSemanticTreeNode);
 
-            foreach (var tableRow in Cells.GroupBy(x => x.Row))
+            // Cells list is sorted by Row then Column (in Initialize method)
+            var cellIndex = 0;
+
+            while (cellIndex < Cells.Count)
             {
+                var currentRow = Cells[cellIndex].Row;
+
                 var rowSemanticTreeNode = new SemanticTreeNode()
                 {
-                    NodeId = SemanticTreeManager.GetNextNodeId(), 
+                    NodeId = SemanticTreeManager.GetNextNodeId(),
                     Type = "TR"
                 };
                 
                 SemanticTreeManager.AddNode(rowSemanticTreeNode);
                 SemanticTreeManager.PushOnStack(rowSemanticTreeNode);
                 
-                foreach (var tableCell in tableRow.OrderBy(x => x.Column))
+                while (cellIndex < Cells.Count && Cells[cellIndex].Row == currentRow)
                 {
-                    tableCell.CreateProxy(x => new SemanticTag
+                    var tableCell = Cells[cellIndex];
+
+                    var semanticTag = new SemanticTag
                     {
                         SemanticTreeManager = SemanticTreeManager,
                         Canvas = Canvas,
                         
-                        TagType = "TD",
-                        Child = x
-                    });
+                        TagType = PartType is TablePartType.Header || tableCell.IsSemanticHorizontalHeader ? "TH" : "TD",
+                        Child = tableCell.Child
+                    };
 
-                    if (tableCell.Child is not SemanticTag semanticTag)
-                        continue;
-                    
-                    if (PartType is TablePartType.Header || tableCell.IsSemanticHorizontalHeader)
-                        semanticTag.TagType = "TH";
+                    tableCell.Child = semanticTag;
                     
                     semanticTag.RegisterCurrentSemanticNode();
                     tableCell.SemanticNodeId = semanticTag.SemanticTreeNode!.NodeId;
                     
                     AssignCellAttributesForColumnAndRowSpans(tableCell, semanticTag);
+
+                    cellIndex++;
                 }
                 
                 SemanticTreeManager.PopStack();
@@ -465,7 +613,7 @@ namespace QuestPDF.Elements.Table
             {
                 if (tableCell.ColumnSpan > 1)
                 {
-                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    semanticTag.SemanticTreeNode.AddAttribute(new SemanticTreeNode.Attribute
                     {
                         Owner = "Table",
                         Name = "ColSpan",
@@ -475,7 +623,7 @@ namespace QuestPDF.Elements.Table
 
                 if (tableCell.RowSpan > 1)
                 {
-                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    semanticTag.SemanticTreeNode.AddAttribute(new SemanticTreeNode.Attribute
                     {
                         Owner = "Table",
                         Name = "RowSpan",
@@ -520,7 +668,7 @@ namespace QuestPDF.Elements.Table
                     if (scopeValue == null)
                         continue;
                     
-                    semanticTag.SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+                    semanticTag.SemanticTreeNode.AddAttribute(new SemanticTreeNode.Attribute
                     {
                         Owner = "Table", 
                         Name = "Scope", 
@@ -545,7 +693,7 @@ namespace QuestPDF.Elements.Table
                     if (!relatedHeaders.Any())
                         continue;
                     
-                    semanticTag.SemanticTreeNode!.Attributes.Add(new SemanticTreeNode.Attribute
+                    semanticTag.SemanticTreeNode!.AddAttribute(new SemanticTreeNode.Attribute
                     {
                         Owner = "Table",
                         Name = "Headers",

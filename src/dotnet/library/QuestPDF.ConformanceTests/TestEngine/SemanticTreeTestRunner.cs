@@ -66,13 +66,16 @@ internal static class SemanticTreeTestRunner
 
             void CompareChildren()
             {
-                Assert.That(actual.Children.Count, Is.EqualTo(expected.Children.Count), "Children count mismatch");
-                
-                var hasMultipleChildren = actual.Children.Count > 1;
-            
-                foreach (var (actualChild, expectedChild) in actual.Children.Zip(expected.Children))
+                var actualChildren = actual.Children ?? [];
+                var expectedChildren = expected.Children ?? [];
+
+                Assert.That(actualChildren.Count, Is.EqualTo(expectedChildren.Count), "Children count mismatch");
+
+                var hasMultipleChildren = actualChildren.Count > 1;
+
+                foreach (var (actualChild, expectedChild) in actualChildren.Zip(expectedChildren))
                 {
-                    var prefix = hasMultipleChildren ? $"{actual.Children.IndexOf(actualChild)}:" : "";
+                    var prefix = hasMultipleChildren ? $"{actualChildren.IndexOf(actualChild)}:" : "";
                     currentPath.Push(prefix + actualChild.Type);
                 
                     Compare(actualChild, expectedChild);
@@ -83,10 +86,13 @@ internal static class SemanticTreeTestRunner
             
             void CompareAttributes()
             {
-                Assert.That(actual.Attributes.Count, Is.EqualTo(expected.Attributes.Count), "Attribute count mismatch");
+                var actualAttributes = actual.Attributes ?? [];
+                var expectedAttributes = expected.Attributes ?? [];
 
-                var actualList = actual.Attributes.OrderBy(a => a.Owner).ThenBy(a => a.Name);
-                var expectedList = expected.Attributes.OrderBy(a => a.Owner).ThenBy(a => a.Name);
+                Assert.That(actualAttributes.Count, Is.EqualTo(expectedAttributes.Count), "Attribute count mismatch");
+
+                var actualList = actualAttributes.OrderBy(a => a.Owner).ThenBy(a => a.Name);
+                var expectedList = expectedAttributes.OrderBy(a => a.Owner).ThenBy(a => a.Name);
 
                 foreach (var (actualAttribute, expectedAttribute) in actualList.Zip(expectedList))
                 {
@@ -127,7 +133,7 @@ internal static class ExpectedSemanticTree
         };
 
         configuration?.Invoke(child);
-        parent.Children.Add(child);
+        parent.AddChild(child);
     }
     
     public static SemanticTreeNode Id(this SemanticTreeNode node, int id)
@@ -145,7 +151,7 @@ internal static class ExpectedSemanticTree
             Value = value
         };
         
-        node.Attributes.Add(attribute);
+        node.AddAttribute(attribute);
         return node;
     }
     

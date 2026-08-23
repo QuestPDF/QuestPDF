@@ -5,13 +5,13 @@ using QuestPDF.Elements;
 using QuestPDF.Elements.Text;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
-using Image = QuestPDF.Elements.Image;
-using SvgImage = QuestPDF.Elements.SvgImage;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal sealed class LayoutProxy : ElementProxy
+internal sealed class LayoutProxy : ElementProxy, IPageContextAware
 {
+    public IPageContext PageContext { get; set; }
+    
     public List<CompanionCommands.UpdateDocumentStructure.PageLocation> Snapshots { get; } = new();
     public List<CompanionCommands.UpdateDocumentStructure.LayoutErrorMeasurement> LayoutErrorMeasurements { get; } = new();
 

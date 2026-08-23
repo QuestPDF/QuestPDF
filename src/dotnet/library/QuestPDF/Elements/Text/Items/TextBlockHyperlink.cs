@@ -4,5 +4,6 @@
     {
         public string Url { get; set; }
         public int ParagraphBeginIndex { get; set; }
+        public int ParagraphEndIndex { get; set; }
     }
 }

@@ -21,8 +21,10 @@ public sealed class ShowIfContext
     public int? TotalPages { get; internal set; }
 }
 
-internal sealed class ShowIf : ContainerElement
+internal sealed class ShowIf : ContainerElement, IPageContextAware
 {
+    public IPageContext PageContext { get; set; }
+    
     public Predicate<ShowIfContext> VisibilityPredicate { get; set; }
     
     internal override SpacePlan Measure(Size availableSpace)

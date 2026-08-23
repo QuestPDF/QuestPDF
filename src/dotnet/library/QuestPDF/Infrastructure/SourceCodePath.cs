@@ -12,15 +12,13 @@ using QuestPDF.Companion;
 
 namespace QuestPDF.Infrastructure;
 
-internal readonly struct SourceCodePath(StackFrame frame)
+internal record SourceCodePath(StackFrame Frame)
 {
-    public readonly string FilePath = frame.GetFileName() ?? string.Empty;
-    public readonly int LineNumber = frame.GetFileLineNumber();
+    public readonly string FilePath = Frame.GetFileName() ?? string.Empty;
+    public readonly int LineNumber = Frame.GetFileLineNumber();
 
     internal static SourceCodePath? CreateFromCurrentStackTrace()
     {
-        #if NET8_0_OR_GREATER
-        
         if (!CompanionService.IsCompanionAttached)
             return null;
 
@@ -31,12 +29,6 @@ internal readonly struct SourceCodePath(StackFrame frame)
             return null;
         
         return CaptureUserCodeLocation();
-
-        #else
-        
-        return null;
-        
-        #endif
     }
 
     #if NET8_0_OR_GREATER
@@ -125,5 +117,9 @@ internal readonly struct SourceCodePath(StackFrame frame)
             : null;
     }
 
+    #else
+    
+    internal static SourceCodePath? CaptureUserCodeLocation() => null;
+    
     #endif
 }

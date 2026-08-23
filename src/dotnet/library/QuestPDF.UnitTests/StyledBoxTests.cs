@@ -24,11 +24,9 @@ public class StyledBoxTests
         
         Assert.That(styledBox?.BorderColor, Is.EqualTo(Colors.Amber.Darken2));
         Assert.That(styledBox?.BackgroundColor, Is.EqualTo(Colors.Transparent));
-        
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.Zero);
+
+        // simple styling should not allocate the extended configuration
+        Assert.That(styledBox?.ExtendedConfiguration, Is.Null);
     }
     
     #region Background
@@ -63,8 +61,8 @@ public class StyledBoxTests
         container.BackgroundLinearGradient(30f, [ Colors.Red.Lighten3, Colors.Orange.Lighten3, Colors.Yellow.Lighten3 ]);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BackgroundGradientAngle, Is.EqualTo(30));
-        Assert.That(styledBox?.BackgroundGradientColors, Is.EqualTo([ Colors.Red.Lighten3, Colors.Orange.Lighten3, Colors.Yellow.Lighten3 ]));
+        Assert.That(styledBox?.ExtendedConfiguration?.BackgroundGradientAngle, Is.EqualTo(30));
+        Assert.That(styledBox?.ExtendedConfiguration?.BackgroundGradientColors, Is.EqualTo([ Colors.Red.Lighten3, Colors.Orange.Lighten3, Colors.Yellow.Lighten3 ]));
     }
 
     #endregion
@@ -374,10 +372,10 @@ public class StyledBoxTests
         container.CornerRadius(8);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.EqualTo(8));
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.EqualTo(8));
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.EqualTo(8));
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.EqualTo(8));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.EqualTo(8));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.EqualTo(8));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.EqualTo(8));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.EqualTo(8));
     }
     
     [Test] 
@@ -388,10 +386,10 @@ public class StyledBoxTests
         container.CornerRadius(1.5f, Unit.Inch);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.EqualTo(108));
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.EqualTo(108));
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.EqualTo(108));
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.EqualTo(108));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.EqualTo(108));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.EqualTo(108));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.EqualTo(108));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.EqualTo(108));
     }
 
     [TestCase(-5)]
@@ -414,10 +412,10 @@ public class StyledBoxTests
         container.CornerRadiusTopLeft(8);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.EqualTo(8));
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.EqualTo(8));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.Zero);
     }
     
     [Test] 
@@ -428,10 +426,10 @@ public class StyledBoxTests
         container.CornerRadiusTopLeft(0.25f, Unit.Inch);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.EqualTo(18));
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.EqualTo(18));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.Zero);
     }
 
     [TestCase(-5)]
@@ -454,10 +452,10 @@ public class StyledBoxTests
         container.CornerRadiusTopRight(10);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.EqualTo(10));
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.EqualTo(10));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.Zero);
     }
     
     [Test] 
@@ -468,10 +466,10 @@ public class StyledBoxTests
         container.CornerRadiusTopRight(0.5f, Unit.Inch);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.EqualTo(36));
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.EqualTo(36));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.Zero);
     }
 
     [TestCase(-5)]
@@ -494,10 +492,10 @@ public class StyledBoxTests
         container.CornerRadiusBottomLeft(12);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.EqualTo(12));
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.EqualTo(12));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.Zero);
     }
     
     [Test] 
@@ -508,10 +506,10 @@ public class StyledBoxTests
         container.CornerRadiusBottomLeft(0.75f, Unit.Inch);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.EqualTo(54));
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.EqualTo(54));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.Zero);
     }
 
     [TestCase(-5)]
@@ -534,10 +532,10 @@ public class StyledBoxTests
         container.CornerRadiusBottomRight(14);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.EqualTo(14));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.EqualTo(14));
     }
     
     [Test] 
@@ -548,10 +546,10 @@ public class StyledBoxTests
         container.CornerRadiusBottomRight(1f, Unit.Inch);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.Zero);
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.EqualTo(72));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.EqualTo(72));
     }
 
     [TestCase(-5)]
@@ -580,10 +578,10 @@ public class StyledBoxTests
             .CornerRadiusBottomRight(14);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderRadiusTopLeft, Is.EqualTo(6));
-        Assert.That(styledBox?.BorderRadiusTopRight, Is.EqualTo(8));
-        Assert.That(styledBox?.BorderRadiusBottomLeft, Is.EqualTo(10));
-        Assert.That(styledBox?.BorderRadiusBottomRight, Is.EqualTo(14));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopLeft, Is.EqualTo(6));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusTopRight, Is.EqualTo(8));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomLeft, Is.EqualTo(10));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderRadiusBottomRight, Is.EqualTo(14));
     }
     
     #endregion
@@ -620,8 +618,8 @@ public class StyledBoxTests
         container.BorderLinearGradient(123f, [ Colors.Red.Darken3, Colors.Orange.Darken3, Colors.Yellow.Darken3 ]);
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderGradientAngle, Is.EqualTo(123));
-        Assert.That(styledBox?.BorderGradientColors, Is.EqualTo([ Colors.Red.Darken3, Colors.Orange.Darken3, Colors.Yellow.Darken3 ]));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderGradientAngle, Is.EqualTo(123));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderGradientColors, Is.EqualTo([ Colors.Red.Darken3, Colors.Orange.Darken3, Colors.Yellow.Darken3 ]));
     }
     
     #endregion
@@ -633,21 +631,20 @@ public class StyledBoxTests
     {
         var container = EmptyContainer.Create();
         container.Border(5);
-        
+
         var styledBox = container.Child as StyledBox;
-        styledBox.AdjustBorderAlignment();
-        Assert.That(styledBox?.BorderAlignment, Is.EqualTo(0.5f));
+        var configuration = styledBox?.GetOrCreateExtendedConfiguration();
+        Assert.That(configuration.EffectiveBorderAlignment, Is.EqualTo(0.5f));
     }
-    
+
     [Test]
     public void BorderAlignmentIsInsideWhenHasRoundedCorners()
     {
         var container = EmptyContainer.Create();
         container.Border(5).CornerRadius(10);
-        
+
         var styledBox = container.Child as StyledBox;
-        styledBox.AdjustBorderAlignment();
-        Assert.That(styledBox?.BorderAlignment, Is.EqualTo(0f));
+        Assert.That(styledBox?.ExtendedConfiguration?.EffectiveBorderAlignment, Is.EqualTo(0f));
     }
     
     [Test]
@@ -657,7 +654,7 @@ public class StyledBoxTests
         container.BorderAlignmentInside();
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderAlignment, Is.Zero);
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderAlignment, Is.Zero);
     }
     
     [Test]
@@ -667,7 +664,7 @@ public class StyledBoxTests
         container.BorderAlignmentMiddle();
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderAlignment, Is.EqualTo(0.5f));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderAlignment, Is.EqualTo(0.5f));
     }
     
     [Test]
@@ -677,7 +674,7 @@ public class StyledBoxTests
         container.BorderAlignmentOutside();
         
         var styledBox = container.Child as StyledBox;
-        Assert.That(styledBox?.BorderAlignment, Is.EqualTo(1f));
+        Assert.That(styledBox?.ExtendedConfiguration?.BorderAlignment, Is.EqualTo(1f));
     }
     
     #endregion
@@ -699,7 +696,7 @@ public class StyledBoxTests
         });
         
         var styledBox = container.Child as StyledBox;
-        var shadow = styledBox?.Shadow;
+        var shadow = styledBox?.ExtendedConfiguration?.Shadow;
         
         Assert.That(shadow.Color, Is.EqualTo(new Color(0x7F000000)));
         Assert.That(shadow.OffsetX, Is.EqualTo(5));

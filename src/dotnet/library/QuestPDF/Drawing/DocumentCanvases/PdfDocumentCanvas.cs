@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics;
-using System.Linq;
 using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Infrastructure;
@@ -123,25 +123,51 @@ namespace QuestPDF.Drawing.DocumentCanvases
         
         public void SetSemanticTree(SemanticTreeNode? semanticTree)
         {
+            SemanticTag?.Dispose();
+            SemanticTag = null;
+
             if (semanticTree == null)
-            {
-                SemanticTag?.Dispose();
-                SemanticTag = null;
                 return;
-            }
-            
-            SemanticTag = Convert(semanticTree);
-            
-            static SkPdfTag Convert(SemanticTreeNode node)
+
+            // only the root element gets a managed wrapper: disposing it releases the entire native tree
+            SemanticTag = new SkPdfTag(CreateNativeElement(semanticTree));
+
+            static IntPtr CreateNativeElement(SemanticTreeNode node)
             {
-                var result = SkPdfTag.Create(node.NodeId, node.Type, node.Alt, node.Lang);
-                var children = node.Children.Select(Convert).ToArray();
-                result.SetChildren(children);
-                
-                foreach (var nodeAttribute in node.Attributes)
-                    result.AddAttribute(nodeAttribute.Owner, nodeAttribute.Name, nodeAttribute.Value);
-                
-                return result;
+                var element = SkPdfTag.CreateElement(node.NodeId, node.Type, node.Alt, node.Lang);
+                HandleChildren();
+                HandleAttributes();
+                return element;
+
+                void HandleChildren()
+                {
+                    var children = node.Children;
+                    
+                    if (children == null || children.Count == 0)
+                        return;
+                    
+                    var childElements = ArrayPool<IntPtr>.Shared.Rent(children.Count);
+
+                    for (var i = 0; i < children.Count; i++)
+                        childElements[i] = CreateNativeElement(children[i]);
+
+                    SkPdfTag.SetChildren(element, childElements, children.Count);
+                    ArrayPool<IntPtr>.Shared.Return(childElements);
+                }
+
+                void HandleAttributes()
+                {
+                    var attributes = node.Attributes;
+                    
+                    if (attributes == null || attributes.Count == 0)
+                        return;
+
+                    for (var i = 0; i < attributes.Count; i++)
+                    {
+                        var attribute = attributes[i];
+                        SkPdfTag.AddAttribute(element, attribute.Owner, attribute.Name, attribute.Value);
+                    }
+                }
             }
         }
         

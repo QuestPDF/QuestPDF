@@ -79,8 +79,7 @@ internal sealed class LayoutOverflowVisualization : ElementProxy, IContentDirect
 
     private void DrawOverflowArea(Size availableSpace, Size contentSize)
     {
-        using var availableSpacePaint = new SkPaint();
-        availableSpacePaint.SetSolidColor(AvailableAreaColor.WithAlpha(AreaOpacity));
+        var availableSpacePaint = SkPaintCache.GetSolidColor(AvailableAreaColor.WithAlpha(AreaOpacity));
         Canvas.DrawRectangle(Position.Zero, availableSpace, availableSpacePaint);
 
         Canvas.Save();
@@ -88,9 +87,7 @@ internal sealed class LayoutOverflowVisualization : ElementProxy, IContentDirect
         Canvas.DrawOverflowArea(new SkRect(0, 0, contentSize.Width, contentSize.Height));
         Canvas.Restore();
 
-        using var borderPaint = new SkPaint();
-        borderPaint.SetStroke(BorderThickness);
-        borderPaint.SetSolidColor(LineColor);
+        var borderPaint = SkPaintCache.GetStroke(LineColor, BorderThickness);
         Canvas.DrawRectangle(Position.Zero, contentSize, borderPaint);
     }
 }

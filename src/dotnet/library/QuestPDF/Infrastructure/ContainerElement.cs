@@ -15,9 +15,9 @@ namespace QuestPDF.Infrastructure
             set => Child = value as Element;
         }
 
-        internal override IEnumerable<Element> GetChildren()
+        internal override IReadOnlyList<Element> GetChildren()
         {
-            yield return Child;
+            return [Child];
         }
 
         internal override void CreateProxy(Func<Element, Element> create)

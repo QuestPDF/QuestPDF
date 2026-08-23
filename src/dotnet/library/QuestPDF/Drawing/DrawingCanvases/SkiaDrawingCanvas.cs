@@ -44,7 +44,7 @@ namespace QuestPDF.Drawing.DrawingCanvases
         private SkCanvas CurrentCanvas { get; set; }
         
         private int CurrentZIndex { get; set; } = 0;
-        private IDictionary<int, (SkPictureRecorder PictureRecorder, SkCanvas Canvas)> ZIndexCanvases { get; } = new Dictionary<int, (SkPictureRecorder, SkCanvas)>();
+        private Dictionary<int, (SkPictureRecorder PictureRecorder, SkCanvas Canvas)> ZIndexCanvases { get; } = new();
 
         private SkCanvas GetCanvasForZIndex(int zIndex)
         {

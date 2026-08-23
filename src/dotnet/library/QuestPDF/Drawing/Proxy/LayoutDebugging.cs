@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,14 +40,6 @@ internal static class LayoutDebugging
             var overflowSpace = new Size(Size.Infinity, Size.Infinity);
             return TryOverflow(overflowSpace);
         }
-    }
-    
-    public static void ApplyLayoutOverflowDetection(this Element container)
-    {
-        container.VisitChildren(x =>
-        {
-            x.CreateProxy(y => y is ElementProxy ? y : new OverflowDebuggingProxy(y));
-        });
     }
     
     public static void TryToFixTheLayoutOverflowIssue(this TreeNode<OverflowDebuggingProxy> hierarchyRoot)
@@ -166,14 +157,6 @@ internal static class LayoutDebugging
             });
         });
     }
-
-    public static void StopMeasuring(this TreeNode<OverflowDebuggingProxy> parent)
-    {
-        parent.Value.StopMeasuring();
-            
-        foreach (var child in parent.Children)
-            StopMeasuring(child);
-    }
     
     public static IEnumerable<TreeNode<OverflowDebuggingProxy>> FindLayoutOverflowVisualizationNodes(this TreeNode<OverflowDebuggingProxy> rootNode)
     {
@@ -212,10 +195,6 @@ internal static class LayoutDebugging
                 result.AppendLine($"   Called from: {sourceCodePointer.CalledFrom}");
                 result.AppendLine($"   Source path: {sourceCodePointer.FilePath}");
                 result.AppendLine($"   Line number: {sourceCodePointer.LineNumber}");
-            }
-            else
-            {
-                
             }
             
             result.AppendLine();

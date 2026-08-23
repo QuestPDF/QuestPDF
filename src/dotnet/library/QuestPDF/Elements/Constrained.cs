@@ -11,11 +11,13 @@ namespace QuestPDF.Elements
     {
         public ContentDirection ContentDirection { get; set; }
         
-        public float? MinWidth { get; set; }
-        public float? MaxWidth { get; set; }
+        public float MinWidth { get; set; }
+        public float MaxWidth { get; set; } = float.PositiveInfinity;
+        public float MinHeight { get; set; }
+        public float MaxHeight { get; set; } = float.PositiveInfinity;
 
-        public float? MinHeight { get; set; }
-        public float? MaxHeight { get; set; }
+        internal bool HasWidthConstraint => MinWidth > 0 || !float.IsPositiveInfinity(MaxWidth);
+        internal bool HasHeightConstraint => MinHeight > 0 || !float.IsPositiveInfinity(MaxHeight);
 
         public bool EnforceSizeWhenEmpty { get; set; }
         
@@ -37,8 +39,8 @@ namespace QuestPDF.Elements
                 return SpacePlan.Wrap("The available vertical space is less than the minimum height.");
             
             var available = new Size(
-                Min(MaxWidth, availableSpace.Width),
-                Min(MaxHeight, availableSpace.Height));
+                Math.Min(MaxWidth, availableSpace.Width),
+                Math.Min(MaxHeight, availableSpace.Height));
 
             var measurement = base.Measure(available);
 
@@ -46,26 +48,24 @@ namespace QuestPDF.Elements
                 return measurement;
             
             var actualSize = new Size(
-                Max(MinWidth, measurement.Width),
-                Max(MinHeight, measurement.Height));
-            
-            if (measurement.Type == SpacePlanType.Empty)
-                return EnforceSizeWhenEmpty ? SpacePlan.FullRender(actualSize) : SpacePlan.Empty();
-            
-            if (measurement.Type == SpacePlanType.FullRender)
-                return SpacePlan.FullRender(actualSize);
-            
-            if (measurement.Type == SpacePlanType.PartialRender)
-                return SpacePlan.PartialRender(actualSize);
-            
-            throw new NotSupportedException();
+                Math.Max(MinWidth, measurement.Width),
+                Math.Max(MinHeight, measurement.Height));
+
+            return measurement.Type switch
+            {
+                SpacePlanType.Empty when EnforceSizeWhenEmpty => SpacePlan.FullRender(actualSize),
+                SpacePlanType.Empty => SpacePlan.Empty(),
+                SpacePlanType.FullRender => SpacePlan.FullRender(actualSize),
+                SpacePlanType.PartialRender => SpacePlan.PartialRender(actualSize),
+                _ => throw new NotSupportedException()
+            };
         }
-        
+
         internal override void Draw(Size availableSpace)
         {
             var size = new Size(
-                Min(MaxWidth, availableSpace.Width),
-                Min(MaxHeight, availableSpace.Height));
+                Math.Min(MaxWidth, availableSpace.Width),
+                Math.Min(MaxHeight, availableSpace.Height));
             
             var offset = ContentDirection == ContentDirection.LeftToRight
                 ? Position.Zero
@@ -75,17 +75,7 @@ namespace QuestPDF.Elements
             base.Draw(size);
             Canvas.Translate(offset.Reverse());
         }
-        
-        private static float Min(float? x, float y)
-        {
-            return x.HasValue ? Math.Min(x.Value, y) : y; 
-        }
-        
-        private static float Max(float? x, float y)
-        {
-            return x.HasValue ? Math.Max(x.Value, y) : y;
-        }
-        
+
         internal override string? GetCompanionHint()
         {
             var width = FormatRange("W", MinWidth, MaxWidth);
@@ -93,21 +83,24 @@ namespace QuestPDF.Elements
             
             return string.Join("   ", width.Concat(height));
 
-            static IEnumerable<string> FormatRange(string prefix, float? min, float? max)
+            static IEnumerable<string> FormatRange(string prefix, float min, float max)
             {
-                if (!min.HasValue && !max.HasValue)
-                    yield break;
+                var hasMin = min > 0;
+                var hasMax = !float.IsPositiveInfinity(max);
                 
+                if (!hasMin && !hasMax)
+                    yield break;
+
                 if (min == max)
                 {
                     yield return $"{prefix}={min:F1}";
                     yield break;
                 }
 
-                if (min.HasValue)
+                if (hasMin)
                     yield return $"{prefix}≥{min:F1}";
 
-                if (max.HasValue)
+                if (hasMax)
                     yield return $"{prefix}≤{max:F1}";
             }
         }

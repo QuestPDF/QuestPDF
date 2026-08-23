@@ -1,5 +1,8 @@
 using System;
+using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace QuestPDF.Skia.Text;
 
@@ -82,7 +85,7 @@ internal struct SkPlaceholderStyle
     }
 }
 
-record ParagraphStyle
+internal readonly record struct ParagraphStyle
 {
     public ParagraphStyleConfiguration.TextAlign Alignment { get; init; }
     public ParagraphStyleConfiguration.TextDirection Direction { get; init; }
@@ -96,6 +99,8 @@ internal sealed class SkParagraphBuilder : IDisposable
     
     public ParagraphStyle Style { get; private set; }
     private SkFontCollection FontCollection { get; set; }
+
+    private bool IsPooled { get; set; }
 
     public static SkParagraphBuilder Create(ParagraphStyle style, SkFontCollection fontCollection)
     {
@@ -122,7 +127,31 @@ internal sealed class SkParagraphBuilder : IDisposable
     
     public void AddText(string text, SkTextStyle textStyle)
     {
-        API.questpdf_skia_paragraph_builder_add_text(Instance, text, textStyle.Instance);
+        if (string.IsNullOrEmpty(text))
+            return;
+
+        AddText(text.AsSpan(), textStyle);
+    }
+
+    [SkipLocalsInit]
+    public unsafe void AddText(ReadOnlySpan<char> text, SkTextStyle textStyle)
+    {
+        if (text.IsEmpty)
+            return;
+
+        fixed (char* textPointer = text)
+        {
+            var utf8Length = Encoding.UTF8.GetByteCount(textPointer, text.Length);
+
+            var nativeText = Marshal.AllocHGlobal(utf8Length + 1);
+
+            var nativeTextPointer = (byte*)nativeText;
+            Encoding.UTF8.GetBytes(textPointer, text.Length, nativeTextPointer, utf8Length);
+            nativeTextPointer[utf8Length] = 0; // null termination
+
+            API.questpdf_skia_paragraph_builder_add_text(Instance, nativeText, textStyle.Instance);
+            Marshal.FreeHGlobal(nativeText);
+        }
     }
     
     public void AddPlaceholder(SkPlaceholderStyle placeholderStyle)
@@ -140,10 +169,23 @@ internal sealed class SkParagraphBuilder : IDisposable
     {
         API.questpdf_skia_paragraph_builder_reset(Instance);
     }
+
+    /// <summary>
+    /// Marks the builder as owned by <see cref="QuestPDF.Elements.Text.SkParagraphBuilderPoolManager"/>.
+    /// Pooled builders are reused by every document rendered on their thread, so no scope disposes them;
+    /// they are released by the finalizer once the owning thread is gone, which is expected and not a leak.
+    /// </summary>
+    public void MarkAsPooled()
+    {
+        IsPooled = true;
+        FontCollection.MarkAsPooled();
+    }
     
     ~SkParagraphBuilder()
     {
-        this.WarnThatFinalizerIsReached();
+        if (!IsPooled)
+            this.WarnThatFinalizerIsReached();
+
         Dispose();
     }
     
@@ -165,7 +207,7 @@ internal sealed class SkParagraphBuilder : IDisposable
         public static extern IntPtr questpdf_skia_paragraph_builder_create(in ParagraphStyleConfiguration paragraphStyleConfiguration, IntPtr unicode, IntPtr fontCollection);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void questpdf_skia_paragraph_builder_add_text(IntPtr paragraphBuilder, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string text, IntPtr textStyle);
+        public static extern void questpdf_skia_paragraph_builder_add_text(IntPtr paragraphBuilder, IntPtr textPointer, IntPtr textStyle);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void questpdf_skia_paragraph_builder_add_placeholder(IntPtr paragraphBuilder, in SkPlaceholderStyle placeholderStyle);

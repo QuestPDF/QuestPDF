@@ -204,8 +204,8 @@ namespace QuestPDF.Fluent
             if (container is not Constrained constrained)
                 return AspectRatioOption.FitWidth;
 
-            var hasWidthConstraint = constrained.MinWidth is not null || constrained.MaxWidth is not null;
-            var hasHeightConstraint = constrained.MinHeight is not null || constrained.MaxHeight is not null;
+            var hasWidthConstraint = constrained.HasWidthConstraint;
+            var hasHeightConstraint = constrained.HasHeightConstraint;
                 
             if (hasWidthConstraint && hasHeightConstraint)
                 return AspectRatioOption.FitArea;

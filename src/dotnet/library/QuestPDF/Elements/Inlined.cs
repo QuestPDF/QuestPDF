@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Drawing;
 using QuestPDF.Infrastructure;
 
@@ -14,10 +14,11 @@ namespace QuestPDF.Elements
         SpaceAround
     }
 
-    internal struct InlinedMeasurement
+    internal readonly struct InlinedMeasurement
     {
-        public Element Element { get; set; }
-        public SpacePlan Size { get; set; }
+        public Element Element { get; init; }
+        public Size Size { get; init; }
+        public Position Position { get; init; }
     }
 
     internal sealed class Inlined : Element, IContentDirectionAware, IStateful
@@ -32,43 +33,29 @@ namespace QuestPDF.Elements
         internal InlinedAlignment? ElementsAlignment { get; set; }
         internal VerticalAlignment BaselineAlignment { get; set; }
         
-        internal override IEnumerable<Element?> GetChildren()
+        internal override IReadOnlyList<Element?> GetChildren()
         {
             return Elements;
         }
         
         internal override SpacePlan Measure(Size availableSpace)
         {
-            SetDefaultAlignment();   
+            SetDefaultAlignment();
             
             if (CurrentRenderingIndex == Elements.Count)
                 return SpacePlan.Empty();
             
-            var lines = Compose(availableSpace);
+            using var commands = Compose(availableSpace, out var contentIntrinsicSize);
 
-            if (!lines.Any())
+            if (commands.Count == 0)
                 return SpacePlan.Wrap("The available space is not sufficient to fully render even a single item.");
 
-            var lineSizes = lines
-                .Select(line =>
-                {
-                    var size = GetLineSize(line);
-
-                    var widthWithSpacing = size.Width + (line.Count - 1) * HorizontalSpacing;
-                    return new Size(widthWithSpacing, size.Height);
-                })
-                .ToList();
-            
-            var width = lineSizes.Max(x => x.Width);
-            var height = lineSizes.Sum(x => x.Height) + (lines.Count - 1) * VerticalSpacing;
-            var targetSize = new Size(width, height);
-
-            var totalRenderedItems = CurrentRenderingIndex + lines.Sum(x => x.Count);
+            var totalRenderedItems = CurrentRenderingIndex + commands.Count;
             var willBeFullyRendered = totalRenderedItems == Elements.Count;
 
             return willBeFullyRendered
-                ? SpacePlan.FullRender(targetSize)
-                : SpacePlan.PartialRender(targetSize);
+                ? SpacePlan.FullRender(contentIntrinsicSize)
+                : SpacePlan.PartialRender(contentIntrinsicSize);
         }
 
         internal override void Draw(Size availableSpace)
@@ -77,68 +64,153 @@ namespace QuestPDF.Elements
             
             SetDefaultAlignment();
             
-            var lines = Compose(availableSpace);
-            var topOffset = 0f;
-            
-            foreach (var line in lines)
-            {
-                var height = line.Max(x => x.Size.Height);
-                
-                DrawLine(line);
+            using var commands = Compose(availableSpace, out _);
 
-                topOffset += height + VerticalSpacing;
-                Canvas.Translate(new Position(0, height + VerticalSpacing));
+            foreach (var command in commands)
+            {
+                Canvas.Translate(command.Position);
+                command.Element.Draw(command.Size);
+                Canvas.Translate(command.Position.Reverse());
             }
-            
-            Canvas.Translate(new Position(0, -topOffset));
-            
-            var fullyRenderedItems = lines.Sum(x => x.Count);
-            CurrentRenderingIndex += fullyRenderedItems;
 
-            void DrawLine(ICollection<InlinedMeasurement> lineMeasurements)
+            CurrentRenderingIndex += commands.Count;
+        }
+
+        private void SetDefaultAlignment()
+        {
+            if (ElementsAlignment.HasValue)
+                return;
+
+            ElementsAlignment = ContentDirection == ContentDirection.LeftToRight
+                ? InlinedAlignment.Left
+                : InlinedAlignment.Right;
+        }
+        
+        private ReusableList<InlinedMeasurement> Compose(Size availableSize, out Size contentIntrinsicSize)
+        {
+            var commands = ReusableList<InlinedMeasurement>.Get();
+
+            var localRenderingIndex = CurrentRenderingIndex;
+            var topOffset = 0f;
+
+            // the content size is derived from the line metrics, never from the item positions,
+            // as the latter also include the alignment offsets
+            var maxLineIntrinsicWidth = 0f;
+            var totalLineIntrinsicHeight = 0d; // sums accumulate in double to preserve float precision
+            var lineCount = 0;
+
+            while (true)
             {
-                var lineSize = GetLineSize(lineMeasurements);
+                var lineStartIndex = commands.Count;
+                var (lineWidth, lineHeight) = ComposeLine();
+                var lineItemCount = commands.Count - lineStartIndex;
 
+                if (lineItemCount == 0)
+                    break;
+
+                if (topOffset + lineHeight > availableSize.Height + Size.Epsilon)
+                {
+                    // the line does not fit vertically: discard its measurements
+                    commands.RemoveRange(lineStartIndex, lineItemCount);
+                    break;
+                }
+
+                ApplyLinePositions(lineStartIndex, lineItemCount, lineWidth, lineHeight);
+
+                maxLineIntrinsicWidth = Math.Max(maxLineIntrinsicWidth, lineWidth + (lineItemCount - 1) * HorizontalSpacing);
+                totalLineIntrinsicHeight += lineHeight;
+                lineCount++;
+
+                topOffset += lineHeight + VerticalSpacing;
+            }
+
+            contentIntrinsicSize = lineCount == 0
+                ? Size.Zero
+                : new Size(maxLineIntrinsicWidth, (float) totalLineIntrinsicHeight + (lineCount - 1) * VerticalSpacing);
+
+            return commands;
+
+            (float Width, float Height) ComposeLine()
+            {
+                var lineIntrinsicWidth = 0d; // sums accumulate in double to preserve float precision
+                var lineIntrinsicHeight = 0f;
+                var leftOffset = GetInitialAlignmentOffset();
+
+                while (localRenderingIndex < Elements.Count)
+                {
+                    var element = Elements[localRenderingIndex];
+                    var size = element.Measure(new Size(availableSize.Width, Size.Max.Height));
+
+                    if (size.Type is SpacePlanType.PartialRender or SpacePlanType.Wrap)
+                        break;
+
+                    if (leftOffset + size.Width > availableSize.Width + Size.Epsilon)
+                        break;
+
+                    localRenderingIndex++;
+                    leftOffset += size.Width + HorizontalSpacing;
+
+                    lineIntrinsicWidth += size.Width;
+                    lineIntrinsicHeight = Math.Max(lineIntrinsicHeight, size.Height);
+
+                    commands.Add(new InlinedMeasurement
+                    {
+                        Element = element,
+                        Size = size,
+                        // the position is assigned once the entire line is measured
+                    });
+                }
+
+                return ((float)lineIntrinsicWidth, lineIntrinsicHeight);
+            }
+
+            void ApplyLinePositions(int lineStartIndex, int lineItemCount, float lineWidth, float lineHeight)
+            {
                 var elementOffset = ElementOffset();
                 var leftOffset = AlignOffset();
                 
-                foreach (var measurement in lineMeasurements)
+                for (var i = lineStartIndex; i < lineStartIndex + lineItemCount; i++)
                 {
-                    var size = (Size)measurement.Size;
-                    var baselineOffset = BaselineOffset(size, lineSize.Height);
+                    var command = commands[i];
+
+                    var size = command.Size;
+                    var baselineOffset = BaselineOffset(size.Height);
 
                     if (size.Height == 0)
-                        size = new Size(size.Width, lineSize.Height);
-                    
-                    var offset = ContentDirection == ContentDirection.LeftToRight
-                        ? new Position(leftOffset, baselineOffset)
-                        : new Position(availableSpace.Width - size.Width - leftOffset, baselineOffset);
-                    
-                    Canvas.Translate(offset);
-                    measurement.Element.Draw(size);
-                    Canvas.Translate(offset.Reverse());
+                        size = new Size(size.Width, lineHeight);
+
+                    var position = ContentDirection == ContentDirection.LeftToRight
+                        ? new Position(leftOffset, topOffset + baselineOffset)
+                        : new Position(availableSize.Width - size.Width - leftOffset, topOffset + baselineOffset);
+
+                    commands[i] = new InlinedMeasurement
+                    {
+                        Element = command.Element,
+                        Size = size,
+                        Position = position
+                    };
 
                     leftOffset += size.Width + elementOffset;
                 }
 
                 float ElementOffset()
                 {
-                    var difference = availableSpace.Width - lineSize.Width;
+                    var difference = availableSize.Width - lineWidth;
 
-                    if (lineMeasurements.Count == 1)
+                    if (lineItemCount == 1)
                         return 0;
 
                     return ElementsAlignment switch
                     {
-                        InlinedAlignment.Justify => difference / (lineMeasurements.Count - 1),
-                        InlinedAlignment.SpaceAround => difference / (lineMeasurements.Count + 1),
+                        InlinedAlignment.Justify => difference / (lineItemCount - 1),
+                        InlinedAlignment.SpaceAround => difference / (lineItemCount + 1),
                         _ => HorizontalSpacing
                     };
                 }
 
                 float AlignOffset()
                 {
-                    var emptySpace = availableSpace.Width - lineSize.Width - (lineMeasurements.Count - 1) * HorizontalSpacing;
+                    var emptySpace = availableSize.Width - lineWidth - (lineItemCount - 1) * HorizontalSpacing;
 
                     return ElementsAlignment switch
                     {
@@ -151,9 +223,9 @@ namespace QuestPDF.Elements
                     };
                 }
                 
-                float BaselineOffset(Size elementSize, float lineHeight)
+                float BaselineOffset(float elementHeight)
                 {
-                    var difference = lineHeight - elementSize.Height;
+                    var difference = lineHeight - elementHeight;
 
                     return BaselineAlignment switch
                     {
@@ -162,83 +234,6 @@ namespace QuestPDF.Elements
                         _ => difference
                     };
                 }
-            }
-        }
-
-        void SetDefaultAlignment()
-        {
-            if (ElementsAlignment.HasValue)
-                return;
-
-            ElementsAlignment = ContentDirection == ContentDirection.LeftToRight
-                ? InlinedAlignment.Left
-                : InlinedAlignment.Right;
-        }
-
-        static Size GetLineSize(ICollection<InlinedMeasurement> measurements)
-        {
-            var width = measurements.Sum(x => x.Size.Width);
-            var height = measurements.Max(x => x.Size.Height);
-
-            return new Size(width, height);
-        }
-        
-        // list of lines, each line is a list of elements
-        private ICollection<ICollection<InlinedMeasurement>> Compose(Size availableSize)
-        {
-            var localRenderingIndex = CurrentRenderingIndex;
-            var result = new List<ICollection<InlinedMeasurement>>();
-
-            var topOffset = 0f;
-            
-            while (true)
-            {
-                var line = GetNextLine();
-                
-                if (!line.Any())
-                    break;
-
-                var height = line.Max(x => x.Size.Height);
-                
-                if (topOffset + height > availableSize.Height + Size.Epsilon)
-                    break;
-
-                topOffset += height + VerticalSpacing;
-                result.Add(line);
-            }
-
-            return result;
-
-            ICollection<InlinedMeasurement> GetNextLine()
-            {
-                var result = new List<InlinedMeasurement>();
-                var leftOffset = GetInitialAlignmentOffset();
-                
-                while (true)
-                {
-                    if (localRenderingIndex == Elements.Count)
-                        break;
-                    
-                    var element = Elements[localRenderingIndex];
-                    var size = element.Measure(new Size(availableSize.Width, Size.Max.Height));
-                    
-                    if (size.Type == SpacePlanType.Wrap)
-                        break;
-                    
-                    if (leftOffset + size.Width > availableSize.Width + Size.Epsilon)
-                        break;
-
-                    localRenderingIndex++;
-                    leftOffset += size.Width + HorizontalSpacing;
-                    
-                    result.Add(new InlinedMeasurement
-                    {
-                        Element = element,
-                        Size = size
-                    });    
-                }
-
-                return result;
             }
 
             float GetInitialAlignmentOffset()

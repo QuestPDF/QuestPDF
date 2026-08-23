@@ -7,8 +7,10 @@ using QuestPDF.Skia;
 
 namespace QuestPDF.Drawing.Proxy;
 
-internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IDisposable
+internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IPageContextAware, IDisposable
 {
+    public IPageContext PageContext { get; set; }
+    
     private ProxyDrawingCanvas RecorderCanvas { get; } = new();
     private Dictionary<(int pageNumber, float availableWidth, float availableHeight), SpacePlan> MeasureCache { get; } = new();
     private Dictionary<int, DocumentPageSnapshot> DrawCache { get; } = new();

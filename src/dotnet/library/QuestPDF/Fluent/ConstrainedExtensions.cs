@@ -22,10 +22,10 @@ namespace QuestPDF.Fluent
                 throw new ArgumentOutOfRangeException(nameof(min), "The minimum width cannot be greater than the maximum width.");
             
             if (min.HasValue)
-                constrained.MinWidth = min;
-            
+                constrained.MinWidth = min.Value;
+
             if (max.HasValue)
-                constrained.MaxWidth = max;
+                constrained.MaxWidth = max.Value;
             
             return element.Element(constrained);
         }
@@ -80,11 +80,11 @@ namespace QuestPDF.Fluent
             if (min > max)
                 throw new ArgumentOutOfRangeException(nameof(min), "The minimum height cannot be greater than the maximum height.");
             
-            if (min.HasValue) 
-                constrained.MinHeight = min;
-            
+            if (min.HasValue)
+                constrained.MinHeight = min.Value;
+
             if (max.HasValue)
-                constrained.MaxHeight = max;
+                constrained.MaxHeight = max.Value;
             
             return element.Element(constrained);
         }

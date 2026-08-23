@@ -81,12 +81,12 @@ namespace QuestPDF.UnitTests
                 .MeasureElement(new Size(800, 600))
                 
                 .ExpectChildMeasure(BackgroundLayer, new Size(800, 600), SpacePlan.FullRender(100, 200))
-                .ExpectChildMeasure(MainLayer, new Size(800, 600), SpacePlan.PartialRender(200, 300))
-                .ExpectChildMeasure(ForegroundLayer, new Size(800, 600), SpacePlan.FullRender(300, 400))
-                
-                
                 .ExpectChildDraw(BackgroundLayer, new Size(800, 600))
+
+                .ExpectChildMeasure(MainLayer, new Size(800, 600), SpacePlan.PartialRender(200, 300))
                 .ExpectChildDraw(MainLayer, new Size(800, 600))
+
+                .ExpectChildMeasure(ForegroundLayer, new Size(800, 600), SpacePlan.FullRender(300, 400))
                 .ExpectChildDraw(ForegroundLayer, new Size(800, 600))
                 
                 .CheckDrawResult();
@@ -100,11 +100,12 @@ namespace QuestPDF.UnitTests
                 .MeasureElement(new Size(800, 600))
                 
                 .ExpectChildMeasure(BackgroundLayer, new Size(800, 600), SpacePlan.PartialRender(100, 200))
-                .ExpectChildMeasure(MainLayer, new Size(800, 600), SpacePlan.PartialRender(200, 300))
-                .ExpectChildMeasure(ForegroundLayer, new Size(800, 600), SpacePlan.Wrap("Mock"))
-                
                 .ExpectChildDraw(BackgroundLayer, new Size(800, 600))
+
+                .ExpectChildMeasure(MainLayer, new Size(800, 600), SpacePlan.PartialRender(200, 300))
                 .ExpectChildDraw(MainLayer, new Size(800, 600))
+
+                .ExpectChildMeasure(ForegroundLayer, new Size(800, 600), SpacePlan.Wrap("Mock"))
                 
                 .CheckDrawResult();
         }
@@ -117,10 +118,11 @@ namespace QuestPDF.UnitTests
                 .MeasureElement(new Size(800, 600))
                 
                 .ExpectChildMeasure(BackgroundLayer, new Size(800, 600), SpacePlan.Wrap("Mock"))
+
                 .ExpectChildMeasure(MainLayer, new Size(800, 600), SpacePlan.PartialRender(200, 300))
-                .ExpectChildMeasure(ForegroundLayer, new Size(800, 600), SpacePlan.PartialRender(300, 400))
-                
                 .ExpectChildDraw(MainLayer, new Size(800, 600))
+
+                .ExpectChildMeasure(ForegroundLayer, new Size(800, 600), SpacePlan.PartialRender(300, 400))
                 .ExpectChildDraw(ForegroundLayer, new Size(800, 600))
                 
                 .CheckDrawResult();

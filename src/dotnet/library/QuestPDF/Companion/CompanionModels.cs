@@ -84,7 +84,7 @@ namespace QuestPDF.Companion
             {
                 public int PageIndex { get; set; }
                 public int ZoomLevel { get; set; }
-                public string ImageData { get; set; } // base64
+                public byte[] ImageData { get; set; }
             }
         }
         

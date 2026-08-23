@@ -79,8 +79,8 @@ internal static partial class CompanionModelHelpers
         
         return new CompanionCommands.UpdateDocumentStructure.SourceCodePath
         {
-            FilePath = path.Value.FilePath,
-            LineNumber = path.Value.LineNumber
+            FilePath = path.FilePath,
+            LineNumber = path.LineNumber
         };
     }
     

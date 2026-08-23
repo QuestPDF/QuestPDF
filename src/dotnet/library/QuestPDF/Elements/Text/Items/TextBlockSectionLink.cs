@@ -6,5 +6,6 @@ namespace QuestPDF.Elements.Text.Items
     {
         public string SectionName { get; set; }
         public int ParagraphBeginIndex { get; set; }
+        public int ParagraphEndIndex { get; set; }
     }
 }

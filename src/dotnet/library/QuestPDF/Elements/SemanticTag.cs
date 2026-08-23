@@ -9,8 +9,10 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements;
 
-internal class SemanticTag : ContainerElement, ISemanticAware
+internal class SemanticTag : ContainerElement, IPageContextAware, ISemanticAware
 {
+    public IPageContext PageContext { get; set; }
+    
     public SemanticTreeManager? SemanticTreeManager { get; set; }
     public SemanticTreeNode? SemanticTreeNode { get; private set; }
 
@@ -90,8 +92,11 @@ internal class SemanticTag : ContainerElement, ISemanticAware
             }
             else
             {
-                foreach (var child in element.GetChildren())
-                    Traverse(builder, child);
+                var children = element.GetChildren();
+                
+                // indexed loop avoids boxing the enumerator behind IReadOnlyList
+                for (var i = 0; i < children.Count; i++)
+                    Traverse(builder, children[i]);
             }
         }
     }
@@ -138,7 +143,7 @@ internal class SemanticTag : ContainerElement, ISemanticAware
         if (PageContext.CurrentPageSize == null)
             return;
 
-        if (SemanticTreeNode.Attributes.Any(x => x is { Owner: "Layout", Name: "BBox" }))
+        if (SemanticTreeNode.Attributes?.Any(x => x is { Owner: "Layout", Name: "BBox" }) == true)
             return;
         
         if (base.Measure(availableSpace).Type is not SpacePlanType.FullRender)
@@ -156,7 +161,7 @@ internal class SemanticTag : ContainerElement, ISemanticAware
             (float)Math.Ceiling(pageHeight - bounds.Top)
         };
 
-        SemanticTreeNode.Attributes.Add(new SemanticTreeNode.Attribute
+        SemanticTreeNode.AddAttribute(new SemanticTreeNode.Attribute
         {
             Owner = "Layout",
             Name = "BBox",

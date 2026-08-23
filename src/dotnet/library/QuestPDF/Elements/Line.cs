@@ -60,15 +60,7 @@ namespace QuestPDF.Elements
                 ? new Position(0, availableSpace.Height)
                 : new Position(availableSpace.Width, 0);
 
-            using var paint = new SkPaint();
-            paint.SetStroke(Thickness);
-            paint.SetSolidColor(Color);
-            
-            if (GradientColors.Length > 0)
-                paint.SetLinearGradient(start, end, GradientColors);
-
-            if (DashPattern.Length > 0)
-                paint.SetDashedPathEffect(DashPattern);
+            using var paint = GetPaint();
 
             var offset = Type == LineType.Vertical
                 ? new Position(Thickness / 2, 0)
@@ -81,6 +73,24 @@ namespace QuestPDF.Elements
             Canvas.Translate(offset.Reverse());
             
             IsRendered = true;
+
+            SkPaint GetPaint()
+            {
+                if (GradientColors.Length == 0 && DashPattern.Length == 0)
+                    return SkPaintCache.GetStroke(Color, Thickness);
+
+                var result = new SkPaint();
+                result.SetStroke(Thickness);
+                result.SetSolidColor(Color);
+
+                if (GradientColors.Length > 0)
+                    result.SetLinearGradient(start, end, GradientColors);
+
+                if (DashPattern.Length > 0)
+                    result.SetDashedPathEffect(DashPattern);
+
+                return result;
+            }
         }
         
         #region IStateful

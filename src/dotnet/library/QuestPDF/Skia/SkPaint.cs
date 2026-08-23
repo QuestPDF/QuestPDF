@@ -9,6 +9,8 @@ internal sealed class SkPaint : IDisposable
 {
     public IntPtr Instance { get; private set; }
     
+    public bool IsShared { get; private set; }
+
     public SkPaint()
     {
         Instance = API.questpdf_skia_paint_create();
@@ -17,6 +19,7 @@ internal sealed class SkPaint : IDisposable
     
     public void SetSolidColor(uint color)
     {
+        EnsureNotShared();
         API.questpdf_skia_paint_set_solid_color(Instance, color);
     }
     
@@ -25,6 +28,8 @@ internal sealed class SkPaint : IDisposable
         if (colors.Length == 0)
             throw new ArgumentException("At least one color must be provided to create a gradient.", nameof(colors));
         
+        EnsureNotShared();
+
         var startPoint = new SkPoint(start.X, start.Y);
         var endPoint = new SkPoint(end.X, end.Y);
         
@@ -35,6 +40,7 @@ internal sealed class SkPaint : IDisposable
     
     public void SetStroke(float thickness)
     {
+        EnsureNotShared();
         API.questpdf_skia_paint_set_stroke(Instance, thickness);
     }
     
@@ -45,18 +51,34 @@ internal sealed class SkPaint : IDisposable
         
         if (intervals.Length % 2 != 0)
             throw new ArgumentException("The intervals array must contain an even number of elements.", nameof(intervals));
-        
+
+        EnsureNotShared();
         API.questpdf_skia_paint_set_dashed_path_effect(Instance, intervals.Length, intervals);
     }
     
+    public void MarkAsShared()
+    {
+        IsShared = true;
+        GC.SuppressFinalize(this);
+    }
+
+    private void EnsureNotShared()
+    {
+        if (IsShared)
+            throw new InvalidOperationException("This SkPaint instance is shared via the SkPaintCache and cannot be modified.");
+    }
+
     ~SkPaint()
     {
         this.WarnThatFinalizerIsReached();
         Dispose();
     }
-    
+
     public void Dispose()
     {
+        if (IsShared)
+            return;
+
         if (Instance == IntPtr.Zero)
             return;
         
