@@ -34,13 +34,6 @@ namespace QuestPDF.ReportSample
             Report.GeneratePdfAndShow();
         }
         
-        [Test] 
-        [Ignore("This test is for manual testing only.")]
-        public void GenerateXpsAndShow()
-        {
-            Report.GenerateXpsAndShow();
-        }
-        
         [Test]
         public void GeneratePdfForManualVerificationTesting()
         {
@@ -56,9 +49,6 @@ namespace QuestPDF.ReportSample
             Report.GeneratePdf();
             Report.GenerateImages(new ImageGenerationSettings { RasterDpi = 72 });
             Report.GenerateSvg();
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                Report.GenerateXps();
 
             await Task.Delay(1000);
             GC.Collect();

@@ -19,7 +19,6 @@ public static class TestRunner
         Directory.CreateDirectory(OutputFolder);
         
         var skiaPdfOutput = Path.Combine(OutputFolder, "skia.pdf");
-        var skiaXpsOutput = Path.Combine(OutputFolder, "skia.xps");
         var pdfToMerge = "to-merge.pdf"; 
         var qpdfOutput = Path.Combine(OutputFolder, "qpdf.pdf");
 
@@ -34,9 +33,6 @@ public static class TestRunner
                 FilePath = "Resources/books.xml"
             })
             .Save(qpdfOutput);
-        
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            CreateMainDocument().GenerateXps(skiaXpsOutput);
     }
 
     private static IDocument CreateMainDocument()
