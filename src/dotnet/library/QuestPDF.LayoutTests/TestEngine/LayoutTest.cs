@@ -189,7 +189,7 @@ internal class LayoutTest
         }
         catch (Exception e)
         {
-            Assert.Fail($"An expected exception was thrown:\n\n{e}");
+            Assert.Fail($"An unexpected exception was thrown:\n\n{e}");
         }
     }
 
