@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing.Proxy;
@@ -80,5 +81,13 @@ internal static class TreeTraversal
 
             yield return node;
         }
+    }
+    
+    public static void Visit<T>(this TreeNode<T> root, Action<TreeNode<T>> action)
+    {
+        action(root);
+
+        for (var i = 0; i < root.Children.Count; i++)
+            root.Children[i].Visit(action);
     }
 }

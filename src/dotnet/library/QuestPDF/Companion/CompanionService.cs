@@ -282,4 +282,14 @@ namespace QuestPDF.Companion
     }
 }
 
+#else
+
+namespace QuestPDF.Companion
+{
+    internal static class CompanionService
+    {
+        public static bool IsCompanionAttached => false;
+        public static bool IsDocumentHotReloaded => false;
+    }
+}
 #endif

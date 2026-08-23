@@ -221,6 +221,8 @@ namespace QuestPDF.Drawing
             content.InjectDependencies(pageContext, canvas.GetDrawingCanvas());
             content.VisitChildren(x => (x as IStateful)?.ResetState(hardReset: true));
 
+            var layoutOverflowDebugger = new LayoutOverflowDebugger(pageContext, canvas, content);
+
             while(true)
             {
                 pageContext.IncrementPageNumber();
@@ -233,14 +235,11 @@ namespace QuestPDF.Drawing
                     pageContext.DecrementPageNumber();
                     canvas.EndDocument();
 
-                    #if NET8_0_OR_GREATER
+                    if (Settings.EnableDebugging)
+                        layoutOverflowDebugger.DebugLayoutAndFix();
+
                     if (!CompanionService.IsCompanionAttached)
                         ThrowLayoutException();
-                    #else
-                    ThrowLayoutException();
-                    #endif
-                    
-                    ApplyLayoutDebugging();
                 }
 
                 try
@@ -263,25 +262,6 @@ namespace QuestPDF.Drawing
                     break;
             }
             
-            void ApplyLayoutDebugging()
-            {
-                content.VisitChildren(x => (x as SnapshotCacheRecorderProxy)?.Dispose());
-                content.RemoveExistingProxiesOfType<SnapshotCacheRecorderProxy>();
-
-                content.ApplyLayoutOverflowDetection();
-                content.Measure(Size.Max);
-
-                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
-                overflowState.StopMeasuring();
-                overflowState.TryToFixTheLayoutOverflowIssue();
-                
-                content.ApplyContentDirection();
-                content.InjectDependencies(pageContext, canvas.GetDrawingCanvas());
-
-                content.VisitChildren(x => (x as LayoutProxy)?.CaptureLayoutErrorMeasurement());
-                content.RemoveExistingProxiesOfType<OverflowDebuggingProxy>();
-            }
-            
             void ThrowLayoutException()
             {
                 var newLine = "\n";
@@ -293,18 +273,22 @@ namespace QuestPDF.Drawing
                     $"The provided document content contains conflicting size constraints. " +
                     $"For example, some elements may require more space than is available. {newParagraph}";
                 
-                if (Settings.EnableDebugging)
+                var rootCause = layoutOverflowDebugger.TryFindRootCause();
+                
+                if (Settings.EnableDebugging && rootCause != null)
                 {
-                    var (ancestors, layout) = GenerateLayoutExceptionDebuggingInfo();
-
-                    var ancestorsText = ancestors.FormatAncestors();
-                    var layoutText = layout.FormatLayoutSubtree();
+                    var ancestorsText = rootCause.Ancestors.FormatAncestors();
+                    var layoutText = rootCause.Layout.FormatLayoutSubtree();
 
                     message +=
                         $"The layout issue is likely present in the following part of the document: {newParagraph}{ancestorsText}{newParagraph}" +
                         $"To learn more, please analyse the document measurement of the problematic location: {newParagraph}{layoutText}" +
                         $"{LayoutDebugging.LayoutVisualizationLegend}{newParagraph}" +
                         $"This detailed information is generated because you run the application with a debugger attached or with the {debuggingSettingsName} flag set to true. ";
+                }
+                else if (Settings.EnableDebugging && rootCause == null)
+                {
+                    message += "The library was unable to find the root cause of the layout overflow.";
                 }
                 else
                 {
@@ -314,34 +298,6 @@ namespace QuestPDF.Drawing
                 }
                 
                 throw new DocumentLayoutException(message);
-            }
-            
-            (ICollection<Element> ancestors, TreeNode<OverflowDebuggingProxy> layout) GenerateLayoutExceptionDebuggingInfo()
-            {
-                content.RemoveExistingProxies();
-                content.ApplyLayoutOverflowDetection();
-                content.Measure(Size.Max);
-                
-                var overflowState = content.ExtractElementsOfType<OverflowDebuggingProxy>().Single();
-                overflowState.StopMeasuring();
-                overflowState.TryToFixTheLayoutOverflowIssue();
-
-                var rootCause = overflowState.FindLayoutOverflowVisualizationNodes().First();
-                
-                var ancestors = rootCause
-                    .ExtractAncestors()
-                    .Select(x => x.Value.Child)
-                    .Where(x => x is DebugPointer or SourceCodePointer)
-                    .Reverse()
-                    .ToArray();
-
-                var layout = rootCause
-                    .ExtractAncestors()
-                    .First(x => x.Value.Child is SourceCodePointer or DebugPointer)
-                    .Children
-                    .First();
-
-                return (ancestors, layout);
             }
         }
 

@@ -19,8 +19,6 @@ internal record SourceCodePath(StackFrame Frame)
 
     internal static SourceCodePath? CreateFromCurrentStackTrace()
     {
-        #if NET8_0_OR_GREATER
-        
         if (!CompanionService.IsCompanionAttached)
             return null;
 
@@ -31,12 +29,6 @@ internal record SourceCodePath(StackFrame Frame)
             return null;
         
         return CaptureUserCodeLocation();
-
-        #else
-        
-        return null;
-        
-        #endif
     }
 
     #if NET8_0_OR_GREATER
@@ -125,5 +117,9 @@ internal record SourceCodePath(StackFrame Frame)
             : null;
     }
 
+    #else
+    
+    internal static SourceCodePath? CaptureUserCodeLocation() => null;
+    
     #endif
 }
