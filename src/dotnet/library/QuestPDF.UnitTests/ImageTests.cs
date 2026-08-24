@@ -86,7 +86,11 @@ namespace QuestPDF.UnitTests
         public void ImageObject_ThrowsFileNotFoundException_FileIsNotFound()
         {
             var action = () => Infrastructure.Image.FromFile("non-existing-file.jpg");
-            Assert.That(action, Throws.Exception.TypeOf<DocumentComposeException>().With.Message.EqualTo("Cannot load an image under the provided relative path, file not found: non-existing-file.jpg"));
+
+            Assert.That(action, Throws.Exception.TypeOf<FileNotFoundException>()
+                .With.Message.StartsWith("File not found under the provided relative path: non-existing-file.jpg")
+                .And.Message.Contains("CopyToOutputDirectory")
+                .And.Property(nameof(FileNotFoundException.FileName)).EqualTo("non-existing-file.jpg"));
         }
 
         [Test]
