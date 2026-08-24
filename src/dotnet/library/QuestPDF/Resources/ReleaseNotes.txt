@@ -2,7 +2,7 @@ This release is dedicated to performance, parallelism, and use of available reso
 
 The numbers below were measured on a MacBook Pro M5 (18-core CPU), using the invoice document from the Getting Started tutorial, across various levels of parallelism, over a sample of 5,000 documents.
 
-- Reduced allocated memory and allocated object count by 85%.
+- Reduced allocated memory amount and allocated object count by 85%.
 - Improved single-threaded performance by around 15%.
 - Substantially improved parallel scaling: throughput previously peaked at 4 threads and flattened beyond that, and now scales with available CPU cores — with around 4x better scaling.
 - Improved performance and scalability for text-heavy documents.
@@ -11,10 +11,11 @@ The numbers below were measured on a MacBook Pro M5 (18-core CPU), using the inv
 
 Other improvements:
 
-- Added support for soft hyphens: the library does not hyphenate text automatically, but soft-hyphen characters (U+00AD) are now correctly interpreted as optional break points and rendered as hyphens when a line breaks.
-- Improved visual position of text underline and double underline.
+- Added support for soft hyphens: the library does not hyphenate text automatically, but soft hyphen characters (U+00AD) are now correctly interpreted as optional break points and rendered as hyphens when a line breaks.
+- Added the TextStyle.BreakAnywhere API, which allows a text span to break between any two characters, not only at word boundaries such as spaces or hyphens. Useful for content without natural break points, e.g. long URLs, identifiers, hashes, or file paths.
+- Improved the visual position of the underline and double underline text decorations.
 - Improved reliability of the Companion App integration: document previews are now refreshed from a consistent snapshot, and rendered pages are transferred more efficiently.
+- Increased the zlib compression level used for PDF generation from 1 to 3, which produces significantly smaller files (for text-heavy documents) with a minimal increase in generation time.
 - Updated the Skia native dependency to version m152.
-
 
 Breaking change: XPS generation has been removed. The format was supported only on Windows, had several rendering issues that could not be reliably resolved, and had negligible adoption. The GenerateXps and GenerateXpsAndShow methods are still present, but calling them now results in a compilation error, and code compiled against an earlier version throws an exception at runtime. Please use PDF generation instead.
