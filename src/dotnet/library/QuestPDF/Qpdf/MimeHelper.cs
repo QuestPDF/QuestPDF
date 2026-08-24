@@ -20,7 +20,7 @@ static class MimeHelper
         var text = streamReader.ReadToEnd();
 
         return text
-            .Split('\n')
+            .Split(["\r\n", "\n", "\r"], StringSplitOptions.RemoveEmptyEntries)
             .Select(x => x.Split(','))
             .ToDictionary(x => x.First(), x => x.Last());
     }
