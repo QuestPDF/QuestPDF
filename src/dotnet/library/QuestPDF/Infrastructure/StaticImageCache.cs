@@ -18,7 +18,7 @@ static class StaticImageCache
     public static Image LoadFromCache(string filePath)
     {
         // check fallback path
-        filePath = AdjustPath(filePath);
+        filePath = PathHelpers.ResolveResourceFilePath(filePath);
 
         // check if the image is already in cache
         if (Items.TryGetValue(filePath, out var cacheItem))
@@ -44,26 +44,10 @@ static class StaticImageCache
         // return cached value
         return image;
     }
-
-    public static string AdjustPath(string filePath)
-    {
-        if (File.Exists(filePath))
-            return filePath;
-        
-        if (Path.IsPathRooted(filePath))
-            throw new DocumentComposeException($"Cannot load an image under the provided absolute path, file not found: {filePath}");
-
-        var fallbackPath = Path.Combine(PathHelpers.ApplicationFilesPath, filePath);
-
-        if (!File.Exists(fallbackPath))
-            throw new DocumentComposeException($"Cannot load an image under the provided relative path, file not found: {filePath}");
-
-        return fallbackPath;
-    }
     
     public static Image DirectlyLoadFromFile(string filePath, bool isShared)
     {
-        filePath = AdjustPath(filePath);
+        filePath = PathHelpers.ResolveResourceFilePath(filePath);
         
         using var imageData = SkData.FromFile(filePath);
         return DecodeImage(imageData, isShared);
