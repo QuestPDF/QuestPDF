@@ -27,6 +27,7 @@ namespace QuestPDF.Infrastructure
         internal FontWeight? FontWeight { get; set; }
         internal FontPosition? FontPosition { get; set; }
         internal bool? IsItalic { get; set; }
+        internal bool? BreakAnywhere { get; set; }
         internal bool? HasStrikethrough { get; set; }
         internal bool? HasUnderline { get; set; }
         internal bool? HasOverline { get; set; }
@@ -61,6 +62,7 @@ namespace QuestPDF.Infrastructure
             FontWeight = Infrastructure.FontWeight.Normal,
             FontPosition = Infrastructure.FontPosition.Normal,
             IsItalic = false,
+            BreakAnywhere = false,
             HasStrikethrough = false,
             HasUnderline = false,
             HasOverline = false,
@@ -104,6 +106,7 @@ namespace QuestPDF.Infrastructure
                 FontSize = CalculateTargetFontSize(),
                 FontWeight = (TextStyleConfiguration.FontWeights?)FontWeight ?? TextStyleConfiguration.FontWeights.Normal,
                 IsItalic = IsItalic ?? false,
+                BreakAnywhere = BreakAnywhere ?? false,
                 
                 FontFamilies = GetFontFamilyPointers(fontFamilyTexts),
                 FontFeatures = GetFontFeatures(),

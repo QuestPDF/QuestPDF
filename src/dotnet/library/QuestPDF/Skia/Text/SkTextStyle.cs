@@ -8,7 +8,8 @@ internal struct TextStyleConfiguration
 {
     public float FontSize;
     public FontWeights FontWeight;
-    public bool IsItalic;
+    [MarshalAs(UnmanagedType.U1)] public bool IsItalic;
+    [MarshalAs(UnmanagedType.U1)] public bool BreakAnywhere;
 
     public const int FONT_FAMILIES_LENGTH = 16;
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = FONT_FAMILIES_LENGTH)] public IntPtr[] FontFamilies;

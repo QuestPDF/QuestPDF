@@ -85,7 +85,7 @@ internal sealed class SkImage : IDisposable
         public static extern void questpdf_skia_image_unref(IntPtr image);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr questpdf_skia_image_resize_and_compress(IntPtr image, int targetImageWidth, int targetImageHeight, int compressionQuality, bool downsample);
+        public static extern IntPtr questpdf_skia_image_resize_and_compress(IntPtr image, int targetImageWidth, int targetImageHeight, int compressionQuality, [MarshalAs(UnmanagedType.U1)] bool downsample);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SkImageDetails

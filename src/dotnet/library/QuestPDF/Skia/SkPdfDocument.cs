@@ -20,7 +20,7 @@ internal struct SkPdfDocumentMetadata
     public PDFA_Conformance PDFA_Conformance;
     public PDFUA_Conformance PDFUA_Conformance;
     
-    [MarshalAs(UnmanagedType.I1)] public bool CompressDocument;
+    [MarshalAs(UnmanagedType.U1)] public bool CompressDocument;
     public float RasterDPI;
 
     public IntPtr SemanticNodeRoot;

@@ -92,12 +92,19 @@ namespace QuestPDF.Fluent
             return descriptor;
         }
 
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
-        [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.breakAnywhere"]/*' />
+        [Obsolete("This setting is obsolete since the 2024.3 version. Please use the BreakAnywhere method instead.")]
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static T WrapAnywhere<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
         {
+            return descriptor.BreakAnywhere(value);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.breakAnywhere"]/*' />
+        public static T BreakAnywhere<T>(this T descriptor, bool value = true) where T : TextSpanDescriptor
+        {
+            descriptor.MutateTextStyle(TextStyleExtensions.BreakAnywhere, value);
             return descriptor;
         }
         
