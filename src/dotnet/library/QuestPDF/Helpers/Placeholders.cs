@@ -39,8 +39,7 @@ namespace QuestPDF.Helpers
         
             using var streamReader = new StreamReader(stream);
             var text = streamReader.ReadToEnd();
-
-            return text.Split('\n').ToArray();
+            return text.Split(["\r\n", "\n", "\r"], StringSplitOptions.RemoveEmptyEntries);
         }
         
         #endregion
