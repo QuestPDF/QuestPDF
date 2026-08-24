@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using QuestPDF.Helpers;
 using QuestPDF.Qpdf;
 
 namespace QuestPDF.Fluent;
@@ -18,6 +19,7 @@ public sealed class DocumentOperation
         /// <summary>
         /// The file path of the overlay or underlay PDF file to be used.
         /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="filePath.remarks"]/*' />
         public string FilePath { get; set; }
 
         /// <summary>
@@ -81,6 +83,7 @@ public sealed class DocumentOperation
         /// <summary>
         /// The file path of the attachment. Ensure that the specified file exists.
         /// </summary>
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="filePath.remarks"]/*' />
         public string FilePath { get; set; }
     
         /// <summary>
@@ -212,18 +215,16 @@ public sealed class DocumentOperation
     /// <summary>
     /// Loads the specified PDF file for processing, enabling operations such as merging, overlaying or underlaying content, selecting pages, adding attachments, and encrypting.
     /// </summary>
-    /// <param name="filePath">The full path to the PDF file to be loaded.</param>
+    /// <param name="filePath">The path to the PDF file to be loaded.</param>
     /// <param name="password">The password for the PDF file, if it is password-protected. Optional.</param>
+    /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="filePath.remarks"]/*' />
     public static DocumentOperation LoadFile(string filePath, string? password = null)
     {
-        if (!File.Exists(filePath))
-            throw new Exception($"The file could not be found: {filePath}");
-        
         return new DocumentOperation
         {
             Configuration = new JobConfiguration
             {
-                InputFile = filePath,
+                InputFile = PathHelpers.ResolveResourceFilePath(filePath),
                 Password = password
             }
         };
@@ -252,17 +253,15 @@ public sealed class DocumentOperation
     /// <param name="filePath">The path to the PDF file to be merged.</param>
     /// <param name="pageSelector">An optional <see cref="DocumentPageSelector"/> to specify the range of pages to merge. If not provided, all pages will be merged.</param>
     /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="documentOperation.pageSelector"]/*' />
+    /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="filePath.remarks"]/*' />
     public DocumentOperation MergeFile(string filePath, string? pageSelector = null)
     {
-        if (!File.Exists(filePath))
-            throw new Exception($"The file could not be found: {filePath}");
-        
         if (Configuration.Pages == null)
             TakePages("1-z");
-        
+
         Configuration.Pages.Add(new JobConfiguration.PageConfiguration
         {
-            File = filePath,
+            File = PathHelpers.ResolveResourceFilePath(filePath),
             Range = pageSelector ?? "1-z"
         });
         
@@ -272,17 +271,15 @@ public sealed class DocumentOperation
     /// <summary>
     /// Applies an underlay to the document using the specified configuration.
     /// The underlay pages are drawn beneath the target pages in the output file, potentially obscured by the original content.
-    /// </summary>    
+    /// </summary>
+    /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="filePath.remarks"]/*' />
     public DocumentOperation UnderlayFile(LayerConfiguration configuration)
     {
-        if (!File.Exists(configuration.FilePath))
-            throw new Exception($"The file could not be found: {configuration.FilePath}");
-        
         Configuration.Underlay ??= new List<JobConfiguration.LayerConfiguration>();
         
         Configuration.Underlay.Add(new JobConfiguration.LayerConfiguration
         {
-            File = configuration.FilePath,
+            File = PathHelpers.ResolveResourceFilePath(configuration.FilePath),
             To = configuration.TargetPages,
             From = configuration.SourcePages,
             Repeat = configuration.RepeatSourcePages
@@ -295,16 +292,14 @@ public sealed class DocumentOperation
     /// Applies an overlay to the document using the specified configuration.
     /// The overlay pages are drawn on top of the target pages in the output file, potentially obscuring the original content.
     /// </summary>
+    /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="filePath.remarks"]/*' />
     public DocumentOperation OverlayFile(LayerConfiguration configuration)
     {
-        if (!File.Exists(configuration.FilePath))
-            throw new Exception($"The file could not be found: {configuration.FilePath}");
-        
         Configuration.Overlay ??= new List<JobConfiguration.LayerConfiguration>();
         
         Configuration.Overlay.Add(new JobConfiguration.LayerConfiguration
         {
-            File = configuration.FilePath,
+            File = PathHelpers.ResolveResourceFilePath(configuration.FilePath),
             To = configuration.TargetPages,
             From = configuration.SourcePages,
             Repeat = configuration.RepeatSourcePages
@@ -331,22 +326,21 @@ public sealed class DocumentOperation
     /// <summary>
     /// Adds an attachment to the document, with specified metadata and configuration options.
     /// </summary>
+    /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="filePath.remarks"]/*' />
     public DocumentOperation AddAttachment(DocumentAttachment attachment)
     {
         Configuration.AddAttachment ??= new List<JobConfiguration.AddDocumentAttachment>();
 
-        if (!File.Exists(attachment.FilePath))
-            throw new Exception($"The file could not be found: {attachment.FilePath}");
-        
-        var file = new FileInfo(attachment.FilePath);
+        var filePath = PathHelpers.ResolveResourceFilePath(attachment.FilePath);
+        var file = new FileInfo(filePath);
         
         Configuration.AddAttachment.Add(new JobConfiguration.AddDocumentAttachment
         {
-            Key = attachment.Key ?? Path.GetFileName(attachment.FilePath),
-            File = attachment.FilePath,
+            Key = attachment.Key ?? file.Name,
+            File = filePath,
             FileName = attachment.AttachmentName ?? file.Name,
-            CreationDate = GetFormattedDate(attachment.CreationDate, File.GetCreationTimeUtc(attachment.FilePath)),
-            ModificationDate = GetFormattedDate(attachment.ModificationDate, File.GetLastWriteTime(attachment.FilePath)),
+            CreationDate = GetFormattedDate(attachment.CreationDate, file.CreationTimeUtc),
+            ModificationDate = GetFormattedDate(attachment.ModificationDate, file.LastWriteTime),
             MimeType = attachment.MimeType ?? GetDefaultMimeType(),
             Description = attachment.Description,
             Replace = attachment.Replace ? string.Empty : null,

@@ -12,7 +12,14 @@
     <doc for="param.url">
         <param name="url">The URL of the webpage to which the user will be redirected.</param>
     </doc>
-    
+
+    <doc for="filePath.remarks">
+        <remarks>
+            <para>Absolute paths are used as-is. Relative paths are resolved against the current working directory first, and then against the application directory (where the application binaries are located).</para>
+            <para>This lets the library find resource files shipped with the application regardless of the working directory it was started from, e.g. on ASP.NET, in Windows services, or in containers. If the file cannot be found in any of these locations, a <see cref="System.IO.FileNotFoundException"/> is thrown.</para>
+        </remarks>
+    </doc>
+
     <!-- SCALE -->
     
     <doc for="scale.remarks">
