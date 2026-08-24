@@ -277,10 +277,16 @@
         </remarks>
     </doc>
 
-    <doc for="text.wrapAnywhere">
+    <doc for="text.breakAnywhere">
         <summary>
-            Allows text to wrap at any character, not just spaces.
+            Allows a line to break between any two characters, not only at word boundaries such as spaces or hyphens.
+            Useful for content without natural break points, e.g. long URLs, identifiers, hashes, or file paths, especially in narrow columns.
         </summary>
+
+        <remarks>
+            <para>By default, a word that does not fit on the current line is moved to the next one, and only words wider than the entire line are split to prevent overflow.</para>
+            <para>With this setting enabled, lines are filled as fully as possible, at the cost of splitting words at arbitrary positions without hyphenation. For regular prose, prefer the default behavior for better readability.</para>
+        </remarks>
     </doc>
     
     <doc for="text.lineHeight">

@@ -96,13 +96,19 @@ namespace QuestPDF.Fluent
             return style.Mutate(TextStyleProperty.IsItalic, value);
         }
         
-        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.wrapAnywhere"]/*' />
-        [Obsolete("This setting is not supported since the 2024.3 version. This flag should be handled automatically by the layout engine.")]
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.breakAnywhere"]/*' />
+        [Obsolete("This setting is obsolete since the 2024.3 version. Please use the BreakAnywhere method instead.")]
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public static TextStyle WrapAnywhere(this TextStyle style, bool value = true)
         {
-            return style;
+            return style.BreakAnywhere(value);
+        }
+        
+        /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="text.breakAnywhere"]/*' />
+        public static TextStyle BreakAnywhere(this TextStyle style, bool value = true)
+        {
+            return style.Mutate(TextStyleProperty.BreakAnywhere, value);
         }
 
         #region Text Effects

@@ -22,6 +22,7 @@ namespace QuestPDF.Infrastructure
         WordSpacing,
         FontWeight,
         FontPosition,
+        BreakAnywhere,
         IsItalic,
         HasStrikethrough,
         HasUnderline,

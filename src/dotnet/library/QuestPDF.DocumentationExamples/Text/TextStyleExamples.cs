@@ -341,7 +341,59 @@ public class TextStyleExamples
             })
             .GenerateImages(x => "text-word-spacing.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
     }
-    
+
+    [Test]
+    public void BreakAnywhere()
+    {
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(0, 0));
+                    page.MaxSize(new PageSize(500, 1000));
+                    page.DefaultTextStyle(x => x.FontSize(20));
+                    page.Margin(25);
+
+                    page.Content()
+                        .Row(row =>
+                        {
+                            row.Spacing(25);
+
+                            row.RelativeItem()
+                                .Background(Colors.Grey.Lighten3)
+                                .Padding(10)
+                                .Column(column =>
+                                {
+                                    column.Spacing(10);
+
+                                    column.Item().Text("Default").FontSize(16);
+
+                                    column.Item()
+                                        .Text("Related transactions: 8f14e45fceea167a, 5a36dedd4bea2543 and 9b2c7e1f0d4a6c8e.")
+                                        .FontSize(16);
+                                });
+
+                            row.RelativeItem()
+                                .Background(Colors.Grey.Lighten3)
+                                .Padding(10)
+                                .Column(column =>
+                                {
+                                    column.Spacing(10);
+
+                                    column.Item().Text("Break anywhere").FontSize(16);
+
+                                    column.Item()
+                                        .Text("Related transactions: 8f14e45fceea167a, 5a36dedd4bea2543 and 9b2c7e1f0d4a6c8e.")
+                                        .FontSize(16)
+                                        .BreakAnywhere();
+                                });
+                        });
+                });
+            })
+            .GenerateImages(x => "text-break-anywhere.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
+    }
+
     [Test]
     public void FontFallback()
     {
