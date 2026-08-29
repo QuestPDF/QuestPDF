@@ -35,6 +35,6 @@ public class TextBreakAnywhere
                         });
                 });
             })
-            .GenerateImages(x => "text-break-anywhere-long-link.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
+            .GenerateImages(x => "text-break-anywhere.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
     }
 }
