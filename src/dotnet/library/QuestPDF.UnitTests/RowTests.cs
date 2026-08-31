@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
+using QuestPDF.Drawing;
 using QuestPDF.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using QuestPDF.UnitTests.TestEngine;
 
 namespace QuestPDF.UnitTests;
 
@@ -214,5 +216,37 @@ public class RowTests
         
         rowContainer.ResetState();
         Assert.That(rowContainer.GetState(), Is.EquivalentTo(new bool[10]));
+    }
+
+    [Test]
+    public void NaNItemHeightDoesNotOverrideTallestItemHeight()
+    {
+        TestPlan
+            .For(plan =>
+            {
+                var row = new Row();
+
+                row.Items.Add(new RowItem
+                {
+                    Type = RowItemType.Relative,
+                    Size = 1,
+                    Child = plan.CreateChild("finite")
+                });
+
+                row.Items.Add(new RowItem
+                {
+                    Type = RowItemType.Relative,
+                    Size = 1,
+                    Child = plan.CreateChild("nan")
+                });
+
+                return row;
+            })
+            .MeasureElement(new Size(100, 100))
+            .ExpectChildMeasure("finite", new Size(50, 100), SpacePlan.FullRender(50, 20))
+            .ExpectChildMeasure("nan", new Size(50, 100), SpacePlan.FullRender(50, float.NaN))
+            .ExpectChildMeasure("finite", new Size(50, 20), SpacePlan.FullRender(50, 20))
+            .ExpectChildMeasure("nan", new Size(50, 20), SpacePlan.FullRender(50, float.NaN))
+            .CheckMeasureResult(SpacePlan.FullRender(100, 20));
     }
 }

@@ -258,7 +258,7 @@ namespace QuestPDF.Elements
 
                 foreach (var command in renderingCommands)
                 {
-                    if (!command.RowItem.IsRendered)
+                    if (!command.RowItem.IsRendered && !float.IsNaN(command.Measurement.Height))
                         result = Math.Max(result, command.Measurement.Height);
                 }
 
