@@ -14,14 +14,14 @@ namespace QuestPDF.Elements
         public float Bottom { get; set; }
         public float Left { get; set; }
 
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var internalSpace = InternalSpace(availableSpace);
 
             if (internalSpace.IsNegative())
                 return Child.IsEmpty() ? SpacePlan.Empty() : SpacePlan.Wrap("The available space is negative.");
             
-            var measure = base.Measure(internalSpace);
+            var measure = base.Measure(availableSpace.With(internalSpace));
 
             if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return measure;
@@ -39,12 +39,12 @@ namespace QuestPDF.Elements
             return SpacePlan.FullRender(newSize);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var internalSpace = InternalSpace(availableSpace);
             
             Canvas.Translate(new Position(Left, Top));
-            base.Draw(internalSpace);
+            base.Draw(availableSpace.With(internalSpace));
             Canvas.Translate(new Position(-Left, -Top));
         }
 

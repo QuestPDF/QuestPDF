@@ -19,7 +19,7 @@ internal static class LayoutDebugging
 
         SpacePlan? TryOverflow(Size targetSpace)
         {
-            var contentSize = element.Measure(targetSpace);
+            var contentSize = element.Measure(LayoutSpace.Query(targetSpace));
             return contentSize.Type == SpacePlanType.Wrap ? null : contentSize;
         }
     

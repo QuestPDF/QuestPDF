@@ -29,7 +29,7 @@ namespace QuestPDF.Elements
             InitialComponentState = Child.GetState();
         }
  
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             if (IsRendered)
                 return SpacePlan.Empty();
@@ -53,7 +53,7 @@ namespace QuestPDF.Elements
                 : SpacePlan.FullRender(measurement);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             SemanticTreeSnapshots ??= new SemanticTreeSnapshots(SemanticTreeManager, PageContext);
             using var scope = SemanticTreeSnapshots.StartSemanticStateScope(RenderCount);
@@ -217,7 +217,8 @@ namespace QuestPDF.Elements
             container.InjectDependencies(PageContext, Canvas);
             container.VisitChildren(x => (x as IStateful)?.ResetState());
 
-            container.Size = container.Measure(Size.Max);
+            // the element is asked about its natural size and has to describe itself exactly as configured
+            container.Size = container.Measure(LayoutSpace.Query(Size.Max));
             
             return container;
         }

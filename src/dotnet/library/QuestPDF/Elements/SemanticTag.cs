@@ -20,7 +20,7 @@ internal class SemanticTag : ContainerElement, IPageContextAware, ISemanticAware
     public string? Alt { get; set; }
     public string? Lang { get; set; }
 
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         var shouldIgnoreSemanticMeaning =
             Canvas.Is<DiscardDrawingCanvas>() ||
@@ -129,7 +129,7 @@ internal class SemanticTag : ContainerElement, IPageContextAware, ISemanticAware
         }
     }
     
-    private void CaptureBoundingBoxIfFigureTag(Size availableSpace)
+    private void CaptureBoundingBoxIfFigureTag(LayoutSpace availableSpace)
     {
         if (TagType is not ("Figure" or "Formula"))
             return;

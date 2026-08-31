@@ -9,7 +9,7 @@ internal class ContinuousBlock : Element, IStateful
     public float TotalWidth { get; set; }
     public float TotalHeight { get; set; }
 
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         if (TotalWidth > availableSpace.Width + Size.Epsilon)
             return SpacePlan.Wrap("The content requires more horizontal space than available.");
@@ -28,7 +28,7 @@ internal class ContinuousBlock : Element, IStateful
         return SpacePlan.FullRender(TotalWidth, remainingHeight);
     }
 
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         var height = Math.Min(TotalHeight - HeightOffset, availableSpace.Height);
         var size = new Size(TotalWidth, height);

@@ -7,12 +7,14 @@ namespace QuestPDF.UnitTests.TestEngine.Operations
     {
         public string ChildId { get; }
         public Size Input { get; }
+        public LayoutSpace? Space { get; }
         public SpacePlan Output { get; }
 
-        public ChildMeasureOperation(string childId, Size input, SpacePlan output)
+        public ChildMeasureOperation(string childId, Size input, LayoutSpace? space, SpacePlan output)
         {
             ChildId = childId;
             Input = input;
+            Space = space;
             Output = output;
         }
     }

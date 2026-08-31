@@ -218,7 +218,8 @@ namespace QuestPDF.Drawing
                 pageContext.IncrementPageNumber();
                 pageContext.CurrentPageSize = null;
                 
-                var spacePlan = content.Measure(Size.Max);
+                // the page decides its own size, up to the configured maximum, which is where the constraints originate
+                var spacePlan = content.Measure(LayoutSpace.Query(Size.Max));
 
                 if (spacePlan.Type == SpacePlanType.Wrap)
                 {
@@ -238,7 +239,7 @@ namespace QuestPDF.Drawing
                     
                     pageContext.CurrentPageSize = pageSize;
                     canvas.BeginPage(pageSize);
-                    content.Draw(pageSize);
+                    content.Draw(LayoutSpace.Query(pageSize));
                 }
                 catch (Exception exception)
                 {

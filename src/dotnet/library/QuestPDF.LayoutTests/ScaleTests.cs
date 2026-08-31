@@ -260,15 +260,26 @@ public class ScaleTests
     }
     
     [Test]
-    public void WrapHorizontal()
+    public void WidthGreaterThanTheScaledAvailableSpaceIsClamped()
     {
+        // The scaled space is the largest this content can ever receive, because no later page is wider.
+        // The configured width is therefore lowered to the width that is actually available.
         LayoutTest
             .HavingSpaceOfSize(100, 100)
             .ForContent(content =>
             {
-                content.Scale(3).Width(50).Height(10);
+                content.Scale(3).Width(50).Height(10).Mock("a").SolidBlock(5, 5);
             })
-            .ExpectLayoutException("The available horizontal space is less than the minimum width.");
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(100, 30)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(33.333332f, 10);
+                    });
+            });
     }
     
     [Test]

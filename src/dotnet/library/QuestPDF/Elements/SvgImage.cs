@@ -24,7 +24,7 @@ internal sealed class SvgImage : Element, IStateful, IDisposable
         GC.SuppressFinalize(this);
     }
     
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         if (IsRendered)
             return SpacePlan.Empty();
@@ -35,7 +35,7 @@ internal sealed class SvgImage : Element, IStateful, IDisposable
         return SpacePlan.FullRender(Size.Zero);
     }
 
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         if (IsRendered)
             return;

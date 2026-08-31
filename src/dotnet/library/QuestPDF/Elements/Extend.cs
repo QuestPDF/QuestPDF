@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
         
         public bool EnforceWhenEmpty { get; set; }
         
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var childSize = base.Measure(availableSpace);
 

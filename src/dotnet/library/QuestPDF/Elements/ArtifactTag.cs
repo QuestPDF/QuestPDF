@@ -9,7 +9,7 @@ internal class ArtifactTag : ContainerElement, ISemanticAware
     
     public int Id { get; set; }
     
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         if (SemanticTreeManager == null)
         {

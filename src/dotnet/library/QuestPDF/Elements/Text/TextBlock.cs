@@ -69,7 +69,7 @@ namespace QuestPDF.Elements.Text
             GC.SuppressFinalize(this);
         }
 
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             if (Items.Count == 0)
                 return SpacePlan.Empty();
@@ -155,7 +155,7 @@ namespace QuestPDF.Elements.Text
             }
         }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             if (Items.Count == 0)
                 return;
@@ -235,7 +235,7 @@ namespace QuestPDF.Elements.Text
                     return;
 
                 Canvas.Translate(offset);
-                textBlockElement.Element.Draw(new Size(placeholder.Width, placeholder.Height));
+                textBlockElement.Element.Draw(LayoutSpace.Query(new Size(placeholder.Width, placeholder.Height)));
                 Canvas.Translate(offset.Reverse());
             }
 

@@ -19,7 +19,7 @@ internal sealed class RepeatContent : ContainerElement, IStateful, ISemanticAwar
     
     public RepeatContextType RepeatContext { get; set; } = RepeatContextType.Other;
     
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         OptimizeContentCacheBehavior();
         

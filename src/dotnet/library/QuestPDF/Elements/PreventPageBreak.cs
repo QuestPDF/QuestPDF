@@ -5,7 +5,7 @@ namespace QuestPDF.Elements
 {
     internal sealed class PreventPageBreak : ContainerElement, IStateful
     {
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var measurement = base.Measure(availableSpace);
 
@@ -18,7 +18,7 @@ namespace QuestPDF.Elements
             return SpacePlan.PartialRender(Size.Zero);
         }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             if (IsFirstPageRendered)
             {

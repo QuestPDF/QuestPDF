@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
         public string SectionName { get; set; }
         public string? Description { get; set; }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var targetSize = base.Measure(availableSpace);
 

@@ -8,7 +8,7 @@ namespace QuestPDF.Elements
         public VerticalAlignment? Vertical { get; set; }
         public HorizontalAlignment? Horizontal { get; set; }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var childMeasurement = base.Measure(availableSpace);
             
@@ -23,7 +23,7 @@ namespace QuestPDF.Elements
             var left = GetLeftOffset(availableSpace, childSize);
             
             Canvas.Translate(new Position(left, top));
-            base.Draw(childSize);
+            base.Draw(availableSpace.With(childSize));
             Canvas.Translate(new Position(-left, -top));
         }
         

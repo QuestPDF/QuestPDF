@@ -12,13 +12,13 @@ namespace QuestPDF.Elements
         public float ScaleX { get; set; } = 1;
         public float ScaleY { get; set; } = 1;
         
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var targetSpace = new Size(
                 Math.Abs(availableSpace.Width / ScaleX), 
                 Math.Abs(availableSpace.Height / ScaleY));
             
-            var measure = base.Measure(targetSpace);
+            var measure = base.Measure(availableSpace.With(targetSpace));
 
             if (measure.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return measure;
@@ -37,7 +37,7 @@ namespace QuestPDF.Elements
             throw new ArgumentException();
         }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var targetSpace = new Size(
                 Math.Abs(availableSpace.Width / ScaleX), 
@@ -50,7 +50,7 @@ namespace QuestPDF.Elements
             Canvas.Translate(translate);
             Canvas.Scale(ScaleX, ScaleY);
             
-            Child?.Draw(targetSpace);
+            Child?.Draw(availableSpace.With(targetSpace));
              
             Canvas.Scale(1/ScaleX, 1/ScaleY);
             Canvas.Translate(translate.Reverse());

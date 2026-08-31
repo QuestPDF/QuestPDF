@@ -19,7 +19,8 @@ namespace QuestPDF.Elements.Text.Items
         
         public void UpdateElementSize()
         {
-            ElementSize = Element.Measure(Size.Max);
+            // the element is asked about its natural size and has to describe itself exactly as configured
+            ElementSize = Element.Measure(LayoutSpace.Query(Size.Max));
         }
     }
 }

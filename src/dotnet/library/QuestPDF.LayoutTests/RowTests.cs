@@ -389,7 +389,9 @@ public class RowTests
                 {
                     row.Spacing(200);
                     
+                    // two items, so that the spacing between them is actually applied
                     row.ConstantItem(10).SolidBlock(height: 40); // <-
+                    row.ConstantItem(10).SolidBlock(height: 40);
                 });
             })
             .ExpectLayoutException("The content requires more horizontal space than available.");
@@ -565,19 +567,31 @@ public class RowTests
     }
     
     [Test]
-    public void ConstantItemHasChildOfTooLargeSize()
+    public void ConstantItemHasChildOfTooLargeSizeThatIsClampedToTheColumnWidth()
     {
+        // The column width is the largest space this child can ever receive, because no later page
+        // is wider. Its configured width is therefore lowered to the width of the column.
         LayoutTest
             .HavingSpaceOfSize(100, 100)
             .ForContent(content =>
             {
                 content.Shrink().Row(row =>
                 {
-                    row.ConstantItem(30).Width(20);
-                    row.ConstantItem(40).Width(200); // <-
+                    row.ConstantItem(30).Width(20).Mock("a").SolidBlock(height: 10);
+                    row.ConstantItem(40).Width(200).Mock("b").SolidBlock(height: 10); // <-
                 });
             })
-            .ExpectLayoutException("The available horizontal space is less than the minimum width.");
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(70, 10)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(20, 10);
+                        page.Mock("b").Position(30, 0).Size(40, 10); // clamped from the configured 200
+                    });
+            });
     }
     
     [Test]
@@ -598,19 +612,31 @@ public class RowTests
     }
     
     [Test]
-    public void RelativeItemHasChildOfTooLargeSize()
+    public void RelativeItemHasChildOfTooLargeSizeThatIsClampedToTheColumnWidth()
     {
+        // The column width is the largest space this child can ever receive, because no later page
+        // is wider. Its configured width is therefore lowered to the width of the column.
         LayoutTest
             .HavingSpaceOfSize(100, 100)
             .ForContent(content =>
             {
                 content.Shrink().Row(row =>
                 {
-                    row.RelativeItem(2).Width(30);
-                    row.RelativeItem(3).Width(200); // <-
+                    row.RelativeItem(2).Width(30).Mock("a").SolidBlock(height: 10);
+                    row.RelativeItem(3).Width(200).Mock("b").SolidBlock(height: 10); // <-
                 });
             })
-            .ExpectLayoutException("The available horizontal space is less than the minimum width.");
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(100, 10)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(30, 10);
+                        page.Mock("b").Position(40, 0).Size(60, 10); // clamped from the configured 200
+                    });
+            });
     }
     
     [Test]

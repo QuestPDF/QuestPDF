@@ -30,7 +30,7 @@ internal sealed class DynamicSvgImage : Element, IStateful, IDisposable
         GC.SuppressFinalize(this);
     }
     
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         if (IsRendered)
             return SpacePlan.Empty();
@@ -41,7 +41,7 @@ internal sealed class DynamicSvgImage : Element, IStateful, IDisposable
         return SpacePlan.FullRender(availableSpace);
     }
 
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         var targetImage = Cache.FirstOrDefault(x => Size.Equal(x.Size, availableSpace)).Image;
             

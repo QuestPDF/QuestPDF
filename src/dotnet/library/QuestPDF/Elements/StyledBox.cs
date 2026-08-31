@@ -72,7 +72,7 @@ namespace QuestPDF.Elements
             BorderTop == BorderBottom &&
             BorderLeft == BorderTop;
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             // optimization: do not perform expensive calls
             if (Canvas is DiscardDrawingCanvas)
@@ -89,7 +89,7 @@ namespace QuestPDF.Elements
         }
 
         // optimization: draws a solid background and/or a uniform middle-aligned border using only cached paints
-        private void DrawSimple(Size availableSpace)
+        private void DrawSimple(LayoutSpace availableSpace)
         {
             if (BackgroundColor.Hex != Colors.Transparent.Hex)
             {
@@ -110,7 +110,7 @@ namespace QuestPDF.Elements
             }
         }
 
-        private void DrawExtended(Size availableSpace)
+        private void DrawExtended(LayoutSpace availableSpace)
         {
             var configuration = ExtendedConfiguration ?? DefaultExtendedConfiguration;
 

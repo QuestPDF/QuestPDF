@@ -8,7 +8,7 @@ namespace QuestPDF.Elements
         public const float DefaultMinHeight = 150;
         public float MinHeight { get; set; } = DefaultMinHeight;
 
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var measurement = base.Measure(availableSpace);
 
@@ -24,7 +24,7 @@ namespace QuestPDF.Elements
             return SpacePlan.PartialRender(Size.Zero);
         }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             if (IsFirstPageRendered)
             {

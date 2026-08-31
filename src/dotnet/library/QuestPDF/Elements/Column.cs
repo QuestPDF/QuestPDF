@@ -11,6 +11,7 @@ namespace QuestPDF.Elements
         public Element Element { get; init; }
         public SpacePlan Measurement { get; init; }
         public Position Offset { get; init; }
+        public LayoutSpace Space { get; init; }
     }
 
     internal sealed class Column : Element, IStateful
@@ -29,7 +30,7 @@ namespace QuestPDF.Elements
                 Items[i] = create(Items[i]);
         }
 
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             if (Items.Count == 0)
                 return SpacePlan.Empty();
@@ -62,7 +63,7 @@ namespace QuestPDF.Elements
                 : SpacePlan.PartialRender(size);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             using var renderingCommands = PlanLayout(availableSpace);
 
@@ -71,14 +72,14 @@ namespace QuestPDF.Elements
                 var targetSize = new Size(availableSpace.Width, command.Measurement.Height);
 
                 Canvas.Translate(command.Offset);
-                command.Element.Draw(targetSize);
+                command.Element.Draw(command.Space.With(targetSize));
                 Canvas.Translate(command.Offset.Reverse());
             }
             
             CurrentRenderingIndex += GetFullyRenderedItemsCount(renderingCommands);
         }
 
-        private ReusableList<ColumnItemRenderingCommand> PlanLayout(Size availableSpace)
+        private ReusableList<ColumnItemRenderingCommand> PlanLayout(LayoutSpace availableSpace)
         {
             var commands = ReusableList<ColumnItemRenderingCommand>.Get();
 
@@ -105,7 +106,8 @@ namespace QuestPDF.Elements
                     ? Size.Zero
                     : new Size(availableSpace.Width, availableHeight);
                 
-                var measurement = item.Measure(itemSpace);
+                var itemLayoutSpace = GetItemSpace(availableSpace, itemSpace, availableHeight);
+                var measurement = item.Measure(itemLayoutSpace);
                 
                 if (measurement.Type == SpacePlanType.Wrap)
                     break;
@@ -122,7 +124,8 @@ namespace QuestPDF.Elements
                 {
                     Element = item,
                     Measurement = measurement,
-                    Offset = new Position(0, topOffset)
+                    Offset = new Position(0, topOffset),
+                    Space = itemLayoutSpace
                 });
 
                 if (measurement.Type == SpacePlanType.PartialRender)
@@ -132,6 +135,19 @@ namespace QuestPDF.Elements
             }
 
             return commands;
+        }
+
+        /// <summary>
+        /// An item placed below other content receives less vertical space than a fresh page would offer it,
+        /// so a shortfall may still be resolved by moving it to the next page. Only an item offered the entire
+        /// available height keeps the vertical mode of the column. The width is the same for every item and on every page.
+        /// </summary>
+        private static LayoutSpace GetItemSpace(LayoutSpace availableSpace, Size itemSize, float availableHeight)
+        {
+            var receivesEntireHeight = availableHeight + Size.Epsilon >= availableSpace.Height;
+            var itemSpace = availableSpace.With(itemSize);
+            
+            return receivesEntireHeight ? itemSpace : itemSpace.WithFlowingHeight();
         }
 
         // the List parameter type keeps the struct enumerator

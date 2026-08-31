@@ -12,7 +12,7 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IPageContextAwa
     public IPageContext PageContext { get; set; }
     
     private ProxyDrawingCanvas RecorderCanvas { get; } = new();
-    private Dictionary<(int pageNumber, float availableWidth, float availableHeight), SpacePlan> MeasureCache { get; } = new();
+    private Dictionary<(int pageNumber, LayoutSpace availableSpace), SpacePlan> MeasureCache { get; } = new();
     private Dictionary<int, DocumentPageSnapshot> DrawCache { get; } = new();
 
     ~SnapshotCacheRecorderProxy()
@@ -44,11 +44,11 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IPageContextAwa
         Child.VisitChildren(x => x.Canvas = RecorderCanvas);
     }
     
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         Initialize();
 
-        var cacheItem = (PageContext.CurrentPage, availableSpace.Width, availableSpace.Height);
+        var cacheItem = (PageContext.CurrentPage, availableSpace);
         
         if (MeasureCache.TryGetValue(cacheItem, out var measurement))
             return measurement;
@@ -61,7 +61,7 @@ internal sealed class SnapshotCacheRecorderProxy : ElementProxy, IPageContextAwa
         return result;
     }
         
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         if (DrawCache.TryGetValue(PageContext.CurrentPage, out var snapshot))
         {

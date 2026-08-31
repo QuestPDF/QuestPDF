@@ -75,6 +75,9 @@ namespace QuestPDF.Helpers
             return size.Width < -Size.Epsilon || size.Height < -Size.Epsilon;
         }
         
+        internal static bool IsNegative(this LayoutSpace space) => space.Size.IsNegative();
+        internal static bool IsCloseToZero(this LayoutSpace space) => space.Size.IsCloseToZero();
+
         internal static bool IsCloseToZero(this Size size)
         {
             return Math.Abs(size.Width) < Size.Epsilon && Math.Abs(size.Height) < Size.Epsilon;
@@ -82,7 +85,7 @@ namespace QuestPDF.Helpers
 
         internal static bool IsEmpty(this Element element)
         {
-            return element.Measure(Size.Zero).Type == SpacePlanType.Empty;
+            return element.Measure(LayoutSpace.Query(Size.Zero)).Type == SpacePlanType.Empty;
         }
         
         internal static int ToQualityValue(this ImageCompressionQuality quality)

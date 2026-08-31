@@ -15,7 +15,7 @@ internal sealed class MultiColumnChildDrawingObserver : ElementProxy
     public bool HasBeenDrawn => ChildStateBeforeDrawingOperation != null;
     public object? ChildStateBeforeDrawingOperation { get; private set; }
 
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         ChildStateBeforeDrawingOperation ??= (GetFirstElementChild() as IStateful).GetState();
         Child.Draw(availableSpace);
@@ -97,7 +97,7 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         State = this.ExtractElementsOfType<MultiColumnChildDrawingObserver>();
     }
 
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         BuildState();
         OptimizeTextCacheBehavior();
@@ -109,7 +109,7 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         
         return FindPerfectSpace();
 
-        (SpacePlan First, SpacePlan Last, float MaxHeight) MeasureColumns(Size availableSpace)
+        (SpacePlan First, SpacePlan Last, float MaxHeight) MeasureColumns(LayoutSpace availableSpace)
         {
             var columnAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
 
@@ -119,8 +119,10 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
 
             for (var i = 0; i < ColumnCount; i++)
             {
-                var measurement = Content.Measure(columnAvailableSpace);
-                Content.Draw(columnAvailableSpace);
+                var contentSpace = GetContentSpace(availableSpace.With(columnAvailableSpace));
+                
+                var measurement = Content.Measure(contentSpace);
+                Content.Draw(contentSpace);
 
                 if (i == 0)
                     first = measurement;
@@ -152,7 +154,7 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
             for (var i = 0; i < 8; i++)
             {
                 var middleHeight = (minHeight + maxHeight) / 2;
-                var middleMeasurement = MeasureColumns(new Size(availableSpace.Width, middleHeight));
+                var middleMeasurement = MeasureColumns(availableSpace.With(availableSpace.Width, middleHeight));
                 
                 if (middleMeasurement.Last.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                     maxHeight = middleHeight;
@@ -170,24 +172,39 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         var columnWidth = (totalSpace.Width - Spacing * (ColumnCount - 1)) / ColumnCount;
         return new Size(columnWidth, totalSpace.Height);
     }
+
+    /// <summary>
+    /// Every column is exactly as wide and as tall as the others, so the content inherits the constraints
+    /// of the whole element. When the height is balanced, the offered height is a candidate in a search
+    /// rather than an allocation, and the content has to describe itself as configured at every candidate.
+    /// </summary>
+    private LayoutSpace GetContentSpace(LayoutSpace contentSpace)
+    {
+        return BalanceHeight
+            ? contentSpace.WithFlowingHeight()
+            : contentSpace;
+    }
     
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         var contentAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
         var spacerAvailableSpace = new Size(Spacing, availableSpace.Height);
 
         var horizontalOffset = 0f;
         ChildrenCanvas.Target = Canvas;
+        
+        var contentSpace = GetContentSpace(availableSpace.With(contentAvailableSpace));
+        var spacerSpace = availableSpace.With(spacerAvailableSpace).WithWidthMode(LayoutAxisMode.Final);
 
         for (var i = 1; i <= ColumnCount; i++)
         {
-            var contentMeasurement = Content.Measure(contentAvailableSpace);
+            var contentMeasurement = Content.Measure(contentSpace);
             var targetColumnSize = new Size(contentAvailableSpace.Width, contentMeasurement.Height);
 
             var contentOffset = GetTargetOffset(targetColumnSize.Width);
             
             Canvas.Translate(contentOffset);
-            Content.Draw(targetColumnSize);
+            Content.Draw(contentSpace.With(targetColumnSize));
             Canvas.Translate(contentOffset.Reverse());
             
             horizontalOffset += contentAvailableSpace.Width;
@@ -195,7 +212,7 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
             if (contentMeasurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                 break;
             
-            var spacerMeasurement = Spacer.Measure(spacerAvailableSpace);
+            var spacerMeasurement = Spacer.Measure(spacerSpace);
 
             if (i == ColumnCount || spacerMeasurement.Type is SpacePlanType.Wrap) 
                 continue;
@@ -203,7 +220,7 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
             var spacerOffset = GetTargetOffset(Spacing);
             
             Canvas.Translate(spacerOffset);
-            Spacer.Draw(spacerAvailableSpace);
+            Spacer.Draw(spacerSpace);
             Canvas.Translate(spacerOffset.Reverse());
                 
             horizontalOffset += Spacing;

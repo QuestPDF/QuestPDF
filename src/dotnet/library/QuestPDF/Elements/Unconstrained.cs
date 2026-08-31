@@ -7,9 +7,10 @@ namespace QuestPDF.Elements
     {
         public ContentDirection ContentDirection { get; set; }
         
-        internal override SpacePlan Measure(Size availableSpace)
+        // the content is asked about its natural size and has to describe itself exactly as configured
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
-            var childSize = base.Measure(Size.Max);
+            var childSize = base.Measure(LayoutSpace.Query(Size.Max));
             
             if (childSize.Type == SpacePlanType.PartialRender)
                 return SpacePlan.PartialRender(0, 0);
@@ -20,9 +21,9 @@ namespace QuestPDF.Elements
             return childSize;
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
-            var measurement = base.Measure(Size.Max);
+            var measurement = base.Measure(LayoutSpace.Query(Size.Max));
             
             if (measurement.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return;
@@ -32,7 +33,7 @@ namespace QuestPDF.Elements
                 : Position.Zero;
             
             Canvas.Translate(translate);
-            base.Draw(measurement);
+            base.Draw(LayoutSpace.Query(measurement));
             Canvas.Translate(translate.Reverse());
         }
     }

@@ -9,7 +9,7 @@ namespace QuestPDF.Elements
         
         public string Id { get; set; }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             base.Draw(availableSpace);
 

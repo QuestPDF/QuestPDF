@@ -51,7 +51,7 @@ internal sealed record LayoutOverflowDebugger(IPageContext PageContext, IDocumen
     {
         IsRecording = true;
         OverflowDebuggingProxies?.Visit(x => x.Value.Reset());
-        Content.Measure(Size.Max);
+        Content.Measure(LayoutSpace.Query(Size.Max));
         IsRecording = false;
     }
     

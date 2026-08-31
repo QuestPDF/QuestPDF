@@ -5,7 +5,7 @@ namespace QuestPDF.Elements
 {
     internal sealed class ShowEntire : ContainerElement
     {
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var childMeasurement = base.Measure(availableSpace);
             

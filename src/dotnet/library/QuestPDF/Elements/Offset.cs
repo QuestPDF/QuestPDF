@@ -10,7 +10,7 @@ namespace QuestPDF.Elements
         public float OffsetX { get; set; } = 0;
         public float OffsetY { get; set; } = 0;
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var offset = new Position(OffsetX, OffsetY);
 

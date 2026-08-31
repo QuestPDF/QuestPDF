@@ -9,5 +9,6 @@ namespace QuestPDF.Elements.Table
         public SpacePlan Measurement { get; set; }
         public Size Size { get; set; }
         public Position Offset { get; set; }
+        public LayoutSpace Space { get; set; }
     }
 }

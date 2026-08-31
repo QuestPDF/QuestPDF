@@ -6,7 +6,7 @@ namespace QuestPDF.Elements
 {
     internal sealed class PageBreak : Element, IStateful
     {
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             if (availableSpace.IsNegative())
                 return SpacePlan.Wrap("The available space is negative.");
@@ -17,7 +17,7 @@ namespace QuestPDF.Elements
             return SpacePlan.PartialRender(Size.Zero);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             IsRendered = true;
         }

@@ -20,7 +20,7 @@ namespace QuestPDF.Elements
             return Children;
         }
         
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             PrimaryLayer ??= Children.Single(x => x.IsPrimary);
             
@@ -32,7 +32,7 @@ namespace QuestPDF.Elements
             return measurement;
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             foreach (var child in Children)
             {

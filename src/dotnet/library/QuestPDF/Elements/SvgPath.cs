@@ -10,7 +10,7 @@ internal sealed class SvgPath : Element, IStateful
     public string Path { get; set; } = string.Empty;
     public Color FillColor { get; set; } = Colors.Black;
 
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         if (IsRendered)
             return SpacePlan.Empty();
@@ -21,7 +21,7 @@ internal sealed class SvgPath : Element, IStateful
         return SpacePlan.FullRender(Size.Zero);
     }
 
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         if (IsRendered)
             return;

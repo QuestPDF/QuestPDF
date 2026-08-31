@@ -9,7 +9,7 @@ internal class SolidBlock : Element, IStateful
     public float TotalWidth { get; set; } 
     public float TotalHeight { get; set; }
 
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         if (IsRendered)
             return SpacePlan.Empty();
@@ -23,7 +23,7 @@ internal class SolidBlock : Element, IStateful
         return SpacePlan.FullRender(TotalWidth, TotalHeight);
     }
 
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         using var paint = new SkPaint();
         paint.SetSolidColor(Placeholders.BackgroundColor());

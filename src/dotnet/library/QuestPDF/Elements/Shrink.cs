@@ -11,7 +11,7 @@ namespace QuestPDF.Elements
         
         public ContentDirection ContentDirection { get; set; }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var childSize = base.Measure(availableSpace);
 
@@ -27,7 +27,7 @@ namespace QuestPDF.Elements
                 : Position.Zero;
 
             Canvas.Translate(translate);
-            base.Draw(targetSize);
+            base.Draw(availableSpace.With(targetSize));
             Canvas.Translate(translate.Reverse());
         }
 

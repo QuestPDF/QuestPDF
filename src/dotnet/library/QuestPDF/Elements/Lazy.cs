@@ -23,7 +23,7 @@ internal sealed class Lazy : ContainerElement, IPageContextAware, IContentDirect
 
     internal bool ClearCacheAfterFullRender { get; set; } = true;
     
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         if (IsRendered)
             return SpacePlan.Empty();
@@ -32,7 +32,7 @@ internal sealed class Lazy : ContainerElement, IPageContextAware, IContentDirect
         return Child.Measure(availableSpace);
     }
         
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         if (IsRendered)
             return;

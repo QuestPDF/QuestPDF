@@ -22,6 +22,7 @@ namespace QuestPDF.UnitTests.TestEngine
         private IDrawingCanvas Canvas { get; }
         
         private Size OperationInput { get; set; }
+        private LayoutSpace OperationSpace { get; set; }
         private Queue<OperationBase> Operations { get; } = new Queue<OperationBase>();
 
         public TestPlan()
@@ -111,6 +112,9 @@ namespace QuestPDF.UnitTests.TestEngine
                     
                     ClassicAssert.AreEqual(expected.Input.Width, availableSpace.Width, $"Measure: width of child '{expected.ChildId}'");
                     ClassicAssert.AreEqual(expected.Input.Height, availableSpace.Height, $"Measure: height of child '{expected.ChildId}'");
+                    
+                    if (expected.Space.HasValue)
+                        ClassicAssert.AreEqual(expected.Space.Value, availableSpace, $"Measure: space of child '{expected.ChildId}'");
 
                     return expected.Output;
                 },
@@ -122,19 +126,28 @@ namespace QuestPDF.UnitTests.TestEngine
                     
                     ClassicAssert.AreEqual(expected.Input.Width, availableSpace.Width, $"Draw: width of child '{expected.ChildId}'");
                     ClassicAssert.AreEqual(expected.Input.Height, availableSpace.Height, $"Draw: width of child '{expected.ChildId}'");
+                    
+                    if (expected.Space.HasValue)
+                        ClassicAssert.AreEqual(expected.Space.Value, availableSpace, $"Draw: space of child '{expected.ChildId}'");
                 }
             };
         }
         
-        public TestPlan MeasureElement(Size input)
+        // a plain size is a question about the element as configured; nothing is allowed to adapt
+        public TestPlan MeasureElement(Size input) => MeasureElement(LayoutSpace.Query(input));
+        public TestPlan DrawElement(Size input) => DrawElement(LayoutSpace.Query(input));
+        
+        public TestPlan MeasureElement(LayoutSpace input)
         {
-            OperationInput = input;
+            OperationInput = input.Size;
+            OperationSpace = input;
             return this;
         }
         
-        public TestPlan DrawElement(Size input)
+        public TestPlan DrawElement(LayoutSpace input)
         {
-            OperationInput = input;
+            OperationInput = input.Size;
+            OperationSpace = input;
             return this;
         }
 
@@ -151,7 +164,17 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public TestPlan ExpectChildMeasure(string child, Size expectedInput, SpacePlan returns)
         {
-            return AddOperation(new ChildMeasureOperation(child, expectedInput, returns));
+            return AddOperation(new ChildMeasureOperation(child, expectedInput, null, returns));
+        }
+        
+        public TestPlan ExpectChildMeasure(LayoutSpace expectedInput, SpacePlan returns)
+        {
+            return ExpectChildMeasure(DefaultChildName, expectedInput, returns);
+        }
+        
+        public TestPlan ExpectChildMeasure(string child, LayoutSpace expectedInput, SpacePlan returns)
+        {
+            return AddOperation(new ChildMeasureOperation(child, expectedInput.Size, expectedInput, returns));
         }
         
         public TestPlan ExpectChildDraw(Size expectedInput)
@@ -161,7 +184,12 @@ namespace QuestPDF.UnitTests.TestEngine
         
         public TestPlan ExpectChildDraw(string child, Size expectedInput)
         {
-            return AddOperation(new ChildDrawOperation(child, expectedInput));
+            return AddOperation(new ChildDrawOperation(child, expectedInput, null));
+        }
+        
+        public TestPlan ExpectChildDraw(LayoutSpace expectedInput)
+        {
+            return AddOperation(new ChildDrawOperation(DefaultChildName, expectedInput.Size, expectedInput));
         }
 
         public TestPlan ExpectCanvasTranslate(Position position)
@@ -198,7 +226,7 @@ namespace QuestPDF.UnitTests.TestEngine
         {
             Element.InjectDependencies(null, Canvas);
             
-            var actual = Element.Measure(OperationInput);
+            var actual = Element.Measure(OperationSpace);
             Element.ReleaseDisposableChildren();
             
             ClassicAssert.AreEqual(expected.GetType(), actual.GetType());
@@ -214,7 +242,7 @@ namespace QuestPDF.UnitTests.TestEngine
         public TestPlan CheckDrawResult()
         {
             Element.InjectDependencies(null, Canvas);
-            Element.Draw(OperationInput);
+            Element.Draw(OperationSpace);
             Element.ReleaseDisposableChildren();
             return this;
         }

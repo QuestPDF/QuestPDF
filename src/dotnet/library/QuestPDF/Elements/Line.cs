@@ -20,7 +20,7 @@ namespace QuestPDF.Elements
         public float[] DashPattern { get; set; } = [];
         public Color[] GradientColors { get; set; } = [];
         
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             if (IsRendered)
                 return SpacePlan.Empty();
@@ -32,7 +32,14 @@ namespace QuestPDF.Elements
             if (Type == LineType.Vertical)
             {
                 if (Thickness.IsGreaterThan(availableSpace.Width))
-                    return SpacePlan.Wrap("The line thickness is greater than the available horizontal space.");
+                {
+                    // Along a constrained axis, the offered width is the largest this element can ever receive,
+                    // so a thinner rule is preferred over failing the whole layout.
+                    if (!availableSpace.IsWidthFinal)
+                        return SpacePlan.Wrap("The line thickness is greater than the available horizontal space.");
+
+                    return SpacePlan.FullRender(availableSpace.Width, 0);
+                }
 
                 return SpacePlan.FullRender(Thickness, 0);
             }
@@ -49,7 +56,7 @@ namespace QuestPDF.Elements
             throw new NotSupportedException();
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             if (IsRendered)
                 return;
@@ -60,11 +67,16 @@ namespace QuestPDF.Elements
                 ? new Position(0, availableSpace.Height)
                 : new Position(availableSpace.Width, 0);
 
+            // matches the measurement, which narrows a vertical rule that does not fit its constrained width
+            var thickness = Type == LineType.Vertical && availableSpace.IsWidthFinal
+                ? Math.Min(Thickness, availableSpace.Width)
+                : Thickness;
+
             using var paint = GetPaint();
 
             var offset = Type == LineType.Vertical
-                ? new Position(Thickness / 2, 0)
-                : new Position(0, Thickness / 2);
+                ? new Position(thickness / 2, 0)
+                : new Position(0, thickness / 2);
 
             using var semanticScope = Canvas.StartSemanticScopeWithNodeId(SkSemanticNodeSpecialId.LayoutArtifact);
             
@@ -77,10 +89,10 @@ namespace QuestPDF.Elements
             SkPaint GetPaint()
             {
                 if (GradientColors.Length == 0 && DashPattern.Length == 0)
-                    return SkPaintCache.GetStroke(Color, Thickness);
+                    return SkPaintCache.GetStroke(Color, thickness);
 
                 var result = new SkPaint();
-                result.SetStroke(Thickness);
+                result.SetStroke(thickness);
                 result.SetSolidColor(Color);
 
                 if (GradientColors.Length > 0)

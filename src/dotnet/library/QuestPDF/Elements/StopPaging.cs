@@ -6,7 +6,7 @@ namespace QuestPDF.Elements
 {
     internal sealed class StopPaging : ContainerElement
     {
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var measurement = base.Measure(availableSpace);
 
@@ -20,7 +20,7 @@ namespace QuestPDF.Elements
             };
         }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var measurement = base.Measure(availableSpace);
             

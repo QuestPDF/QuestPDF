@@ -15,7 +15,7 @@ internal class ElementObserver : ContainerElement, IPageContextAware
     public string? ObserverId { get; set; }
     public DrawingRecorder? DrawingRecorder { get; set; }
     
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         Debug.Assert(ObserverId != null);
         Debug.Assert(DrawingRecorder != null);
@@ -27,7 +27,7 @@ internal class ElementObserver : ContainerElement, IPageContextAware
             ObserverId = ObserverId,
             PageNumber = PageContext.CurrentPage,
             Position = new Position(matrix.TranslateX, matrix.TranslateY),
-            Size = ObserverId == "$document" ? Child.Measure(availableSpace) : availableSpace
+            Size = ObserverId == "$document" ? (Size)Child.Measure(availableSpace) : availableSpace.Size
         };
         
         if (!Canvas.Is<DiscardDrawingCanvas>())

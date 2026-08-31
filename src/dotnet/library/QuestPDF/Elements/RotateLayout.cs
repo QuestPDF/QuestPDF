@@ -10,13 +10,12 @@ namespace QuestPDF.Elements
         public int TurnCount { get; set; }
         public int NormalizedTurnCount => (TurnCount % 4 + 4) % 4;
         
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             if (NormalizedTurnCount == 0 || NormalizedTurnCount == 2)
                 return base.Measure(availableSpace);
             
-            availableSpace = new Size(availableSpace.Height, availableSpace.Width);
-            var childSpace = base.Measure(availableSpace);
+            var childSpace = base.Measure(availableSpace.Transposed);
 
             if (childSpace.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return childSpace;
@@ -33,7 +32,7 @@ namespace QuestPDF.Elements
             throw new ArgumentException();
         }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var translate = new Position(
                 (NormalizedTurnCount == 1 || NormalizedTurnCount == 2) ? availableSpace.Width : 0,
@@ -47,7 +46,7 @@ namespace QuestPDF.Elements
             Canvas.Rotate(rotate);
             
             if (NormalizedTurnCount == 1 || NormalizedTurnCount == 3)
-                availableSpace = new Size(availableSpace.Height, availableSpace.Width);
+                availableSpace = availableSpace.Transposed;
             
             Child?.Draw(availableSpace);
             

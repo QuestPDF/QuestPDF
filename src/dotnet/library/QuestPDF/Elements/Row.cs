@@ -36,6 +36,7 @@ namespace QuestPDF.Elements
         public SpacePlan Measurement { get; set; }
         public Size Size { get; set; }
         public Position Offset { get; set; }
+        public LayoutSpace Space { get; set; }
     }
 
     internal sealed class Row : Element, IStateful, IContentDirectionAware
@@ -50,7 +51,7 @@ namespace QuestPDF.Elements
             return Items;
         }
 
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             if (Items.Count == 0)
                 return SpacePlan.Empty();
@@ -84,7 +85,7 @@ namespace QuestPDF.Elements
             return SpacePlan.FullRender(size);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             if (Items.Count == 0)
                 return;
@@ -114,7 +115,7 @@ namespace QuestPDF.Elements
                     continue;
                 
                 Canvas.Translate(offset);
-                command.RowItem.Draw(targetSize);
+                command.RowItem.Draw(command.Space.With(targetSize));
                 Canvas.Translate(offset.Reverse());
             }
         }
@@ -188,8 +189,10 @@ namespace QuestPDF.Elements
 
                 foreach (var item in Items)
                 {
+                    // the item is asked about its natural width; this is a question, not an allocation,
+                    // so the item has to describe itself exactly as configured
                     if (item.Type == RowItemType.Auto && item.Size == 0)
-                        item.Size = item.Measure(Size.Max).Width;
+                        item.Size = item.Measure(LayoutSpace.Query(Size.Max)).Width;
 
                     if (item.Type == RowItemType.Relative)
                         relativeWidth += item.Size;
@@ -206,7 +209,19 @@ namespace QuestPDF.Elements
             }
         }
         
-        private ReusableList<RowItemRenderingCommand> PlanLayout(Size availableSpace)
+        /// <summary>
+        /// A constant or automatic item is given exactly its configured or natural width, on every page alike,
+        /// so its width is always final. A relative item shares whatever remains, which grows only when the row
+        /// itself can grow. The height of the row is not decided here, so its mode is inherited.
+        /// </summary>
+        private static LayoutSpace GetItemSpace(RowItem item, LayoutSpace itemSpace)
+        {
+            return item.Type == RowItemType.Relative
+                ? itemSpace
+                : itemSpace.WithWidthMode(LayoutAxisMode.Final);
+        }
+        
+        private ReusableList<RowItemRenderingCommand> PlanLayout(LayoutSpace availableSpace)
         {
             var renderingCommands = ReusableList<RowItemRenderingCommand>.Get();
             
@@ -217,12 +232,14 @@ namespace QuestPDF.Elements
             foreach (var item in Items)
             {
                 var itemSpace = new Size(item.Width, availableSpace.Height);
+                var itemLayoutSpace = GetItemSpace(item, availableSpace.With(itemSpace));
                 
                 var command = new RowItemRenderingCommand
                 {
                     RowItem = item,
                     Size = itemSpace,
-                    Measurement = item.Measure(itemSpace),
+                    Space = itemLayoutSpace,
+                    Measurement = item.Measure(itemLayoutSpace),
                     Offset = new Position(leftOffset, 0)
                 };
                 
@@ -245,7 +262,8 @@ namespace QuestPDF.Elements
                 var command = renderingCommands[i];
 
                 command.Size = new Size(command.Size.Width, rowHeight);
-                command.Measurement = command.RowItem.Measure(command.Size);
+                command.Space = command.Space.With(command.Size);
+                command.Measurement = command.RowItem.Measure(command.Space);
 
                 renderingCommands[i] = command;
             }

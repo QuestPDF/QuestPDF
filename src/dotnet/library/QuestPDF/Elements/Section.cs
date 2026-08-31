@@ -9,7 +9,7 @@ namespace QuestPDF.Elements
         
         public string SectionName { get; set; }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             if (!IsRendered)
             {

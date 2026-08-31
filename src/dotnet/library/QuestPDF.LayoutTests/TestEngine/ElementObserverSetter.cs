@@ -7,13 +7,13 @@ internal class ElementObserverSetter : ContainerElement
 {
     public required DrawingRecorder Recorder { get; init; }
     
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         SetRecorderOnChildren();
         return base.Measure(availableSpace);
     }
     
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         SetRecorderOnChildren();
         base.Draw(availableSpace);

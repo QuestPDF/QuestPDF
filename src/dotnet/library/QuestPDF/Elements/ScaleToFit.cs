@@ -4,9 +4,14 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
+    /// <remarks>
+    /// The scaled areas offered to the content are candidates in a search, not allocations. The content has to
+    /// describe itself exactly as configured at every scale, otherwise it would adapt to the first candidate
+    /// and the search would never shrink it. This element is the adaptation the author chose explicitly.
+    /// </remarks>
     internal sealed class ScaleToFit : ContainerElement
     {
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var perfectScale = FindPerfectScale(availableSpace);
 
@@ -14,12 +19,12 @@ namespace QuestPDF.Elements
                 return SpacePlan.Wrap("Cannot find the perfect scale to fit the child element in the available space.");
 
             var scaledSpace = ScaleSize(availableSpace, 1 / perfectScale.Value);
-            var childSizeInScale = base.Measure(scaledSpace);
+            var childSizeInScale = base.Measure(LayoutSpace.Candidate(scaledSpace));
             var childSizeInOriginalScale = ScaleSize(childSizeInScale, perfectScale.Value);
             return SpacePlan.FullRender(childSizeInOriginalScale);
         }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var perfectScale = FindPerfectScale(availableSpace);
             
@@ -30,7 +35,7 @@ namespace QuestPDF.Elements
             var targetSpace = ScaleSize(availableSpace, 1 / targetScale);
             
             Canvas.Scale(targetScale, targetScale);
-            Child?.Draw(targetSpace);
+            Child?.Draw(LayoutSpace.Candidate(targetSpace));
             Canvas.Scale(1 / targetScale, 1 / targetScale);
         }
 
@@ -69,7 +74,7 @@ namespace QuestPDF.Elements
             bool ChildFits(float scale)
             {
                 var scaledSpace = ScaleSize(availableSpace, 1 / scale);
-                return base.Measure(scaledSpace).Type is SpacePlanType.Empty or SpacePlanType.FullRender;
+                return base.Measure(LayoutSpace.Candidate(scaledSpace)).Type is SpacePlanType.Empty or SpacePlanType.FullRender;
             }
         }
     }

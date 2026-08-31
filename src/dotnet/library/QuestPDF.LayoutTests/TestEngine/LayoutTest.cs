@@ -181,6 +181,9 @@ internal class LayoutTest
         {
             QuestPDF.Settings.EnableDebugging = true;
             PerformTest();
+
+            // without this, the test passes when the layout succeeds, silently accepting any change in behavior
+            Assert.Fail($"The layout was expected to fail with the following reason, but it succeeded: {reason}");
         }
         catch (DocumentLayoutException e)
         {

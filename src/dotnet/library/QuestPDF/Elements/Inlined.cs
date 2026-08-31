@@ -38,7 +38,7 @@ namespace QuestPDF.Elements
             return Elements;
         }
         
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             SetDefaultAlignment();
             
@@ -58,7 +58,7 @@ namespace QuestPDF.Elements
                 : SpacePlan.PartialRender(contentIntrinsicSize);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             // TODO: empty elements should not introduce spacing?
             
@@ -69,7 +69,7 @@ namespace QuestPDF.Elements
             foreach (var command in commands)
             {
                 Canvas.Translate(command.Position);
-                command.Element.Draw(command.Size);
+                command.Element.Draw(GetItemSpace(availableSpace, command.Size));
                 Canvas.Translate(command.Position.Reverse());
             }
 
@@ -86,7 +86,16 @@ namespace QuestPDF.Elements
                 : InlinedAlignment.Right;
         }
         
-        private ReusableList<InlinedMeasurement> Compose(Size availableSize, out Size contentIntrinsicSize)
+        /// <summary>
+        /// Every item is offered the entire line width, which never grows, so the horizontal constraint is inherited.
+        /// The height is unlimited while measuring: the item is asked how tall it is, not told how tall it may be.
+        /// </summary>
+        private static LayoutSpace GetItemSpace(LayoutSpace availableSpace, Size itemSize)
+        {
+            return availableSpace.With(itemSize).WithHeightMode(LayoutAxisMode.Query);
+        }
+        
+        private ReusableList<InlinedMeasurement> Compose(LayoutSpace availableSize, out Size contentIntrinsicSize)
         {
             var commands = ReusableList<InlinedMeasurement>.Get();
 
@@ -139,7 +148,7 @@ namespace QuestPDF.Elements
                 while (localRenderingIndex < Elements.Count)
                 {
                     var element = Elements[localRenderingIndex];
-                    var size = element.Measure(new Size(availableSize.Width, Size.Max.Height));
+                    var size = element.Measure(GetItemSpace(availableSize, new Size(availableSize.Width, Size.Max.Height)));
 
                     if (size.Type is SpacePlanType.PartialRender or SpacePlanType.Wrap)
                         break;

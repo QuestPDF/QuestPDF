@@ -14,7 +14,7 @@ internal sealed class LayoutOverflowVisualization : ElementProxy, IContentDirect
 
     public ContentDirection ContentDirection { get; set; }
 
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         if (Size.Equal(availableSpace, Size.Zero))
             return SpacePlan.Wrap("There is no available space.");
@@ -35,7 +35,7 @@ internal sealed class LayoutOverflowVisualization : ElementProxy, IContentDirect
         return new SpacePlan(minimalSize.Type, width, height);
     }
         
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         // measure content area
         var childSize = base.Measure(availableSpace);
@@ -61,7 +61,8 @@ internal sealed class LayoutOverflowVisualization : ElementProxy, IContentDirect
             : Position.Zero;
         
         Canvas.Translate(translate);
-        Child?.Draw(contentSize);
+        // the content is drawn at its natural size, exactly as configured, so that the overflow is visible
+        Child?.Draw(LayoutSpace.Query(contentSize));
         Canvas.Translate(translate.Reverse());
         
         // draw overflow area

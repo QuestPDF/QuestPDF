@@ -2,15 +2,17 @@
 
 namespace QuestPDF.UnitTests.TestEngine.Operations
 {
-    public class ChildDrawOperation : OperationBase
+    internal sealed class ChildDrawOperation : OperationBase
     {
         public string ChildId { get; }
         public Size Input { get; }
+        public LayoutSpace? Space { get; }
 
-        public ChildDrawOperation(string childId, Size input)
+        public ChildDrawOperation(string childId, Size input, LayoutSpace? space)
         {
             ChildId = childId;
             Input = input;
+            Space = space;
         }
     }
 }

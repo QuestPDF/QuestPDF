@@ -5,7 +5,7 @@ namespace QuestPDF.Elements
 {
     internal sealed class ShowOnce : ContainerElement, IStateful
     {
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             if (IsRendered)
                 return SpacePlan.Empty();
@@ -13,7 +13,7 @@ namespace QuestPDF.Elements
             return base.Measure(availableSpace);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             if (IsRendered)
                 return;

@@ -6,7 +6,7 @@ namespace QuestPDF.Elements
     {
         public int Depth { get; set; }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var previousZIndex = Canvas.GetZIndex();
             

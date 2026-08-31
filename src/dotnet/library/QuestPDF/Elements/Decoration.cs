@@ -43,7 +43,7 @@ namespace QuestPDF.Elements
             After = create(After);
         }
 
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var layout = PlanLayout(availableSpace);
 
@@ -74,7 +74,7 @@ namespace QuestPDF.Elements
                 : SpacePlan.PartialRender(size);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var layout = PlanLayout(availableSpace);
             var contentWidth = layout.TotalWidth;
@@ -92,12 +92,14 @@ namespace QuestPDF.Elements
                     : new Position(availableSpace.Width - contentWidth, command.Offset.Y);
                 
                 Canvas.Translate(offset);
-                command.Element.Draw(elementSize);
+                command.Element.Draw(availableSpace.With(elementSize));
                 Canvas.Translate(offset.Reverse());
             }
         }
 
-        private DecorationElementLayout PlanLayout(Size availableSpace)
+        // All three slots share the width of the element, and the content is offered what remains between
+        // the other two on every page alike, so every slot inherits the axis modes unchanged.
+        private DecorationElementLayout PlanLayout(LayoutSpace availableSpace)
         {
             SpacePlan GetDecorationMeasurement(Element element)
             {
@@ -113,7 +115,7 @@ namespace QuestPDF.Elements
             var afterMeasurement = GetDecorationMeasurement(After);
             
             var contentSpace = new Size(availableSpace.Width, availableSpace.Height - beforeMeasurement.Height - afterMeasurement.Height);
-            var contentMeasurement = Content.Measure(contentSpace);
+            var contentMeasurement = Content.Measure(availableSpace.With(contentSpace));
 
             return new DecorationElementLayout
             {

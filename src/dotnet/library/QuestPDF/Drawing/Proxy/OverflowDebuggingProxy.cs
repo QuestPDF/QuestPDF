@@ -6,7 +6,7 @@ internal sealed class OverflowDebuggingProxy : ElementProxy
 {
     private LayoutOverflowDebugger Debugger { get; }
 
-    public Size? AvailableSpace { get; private set; }
+    public LayoutSpace? AvailableSpace { get; private set; }
     public SpacePlan? SpacePlan { get; private set; }
 
     public OverflowDebuggingProxy(Element child, LayoutOverflowDebugger debugger)
@@ -15,7 +15,7 @@ internal sealed class OverflowDebuggingProxy : ElementProxy
         Debugger = debugger;
     }
 
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         var spacePlan = Child.Measure(availableSpace);
 

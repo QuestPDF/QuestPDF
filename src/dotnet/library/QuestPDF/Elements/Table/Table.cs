@@ -148,7 +148,7 @@ namespace QuestPDF.Elements.Table
             return cell.Row + cell.RowSpan - 1;
         }
         
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             Initialize();
             
@@ -190,7 +190,7 @@ namespace QuestPDF.Elements.Table
             }
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             Initialize();
             RegisterSemanticTree();
@@ -216,7 +216,7 @@ namespace QuestPDF.Elements.Table
                     : new Position(availableSpace.Width - command.Offset.X - command.Size.Width, command.Offset.Y);
                 
                 Canvas.Translate(offset);
-                command.Cell.Draw(command.Size);
+                command.Cell.Draw(command.Space.With(command.Size));
                 Canvas.Translate(offset.Reverse());
             }
 
@@ -271,7 +271,35 @@ namespace QuestPDF.Elements.Table
             }
         }
         
-        private ReusableList<TableCellRenderingCommand> PlanLayout(Size availableSpace)
+        /// <summary>
+        /// A cell spanning only columns of constant width is given exactly that width on every page, so its width
+        /// is always final; a cell touching a relative column shares the table width, which grows only when the table
+        /// itself can grow. A cell placed below other rows receives less height than a fresh page would offer it,
+        /// so its height is flowing; only a cell at the top of the page keeps the vertical mode of the table.
+        /// </summary>
+        private LayoutSpace GetCellSpace(TableCell cell, LayoutSpace cellSpace, float topOffset)
+        {
+            if (SpansOnlyConstantColumns(cell))
+                cellSpace = cellSpace.WithWidthMode(LayoutAxisMode.Final);
+            
+            if (topOffset >= Size.Epsilon)
+                cellSpace = cellSpace.WithFlowingHeight();
+            
+            return cellSpace;
+        }
+
+        private bool SpansOnlyConstantColumns(TableCell cell)
+        {
+            for (var column = cell.Column; column < cell.Column + cell.ColumnSpan; column++)
+            {
+                if (Columns[column - 1].RelativeSize > 0)
+                    return false;
+            }
+
+            return true;
+        }
+        
+        private ReusableList<TableCellRenderingCommand> PlanLayout(LayoutSpace availableSpace)
         {
             var commands = ReusableList<TableCellRenderingCommand>.Get();
             
@@ -319,8 +347,9 @@ namespace QuestPDF.Elements.Table
                     var availableWidth = GetCellWidth(cell);
                     var availableHeight = availableSpace.Height - topOffset;
                     var availableCellSize = new Size(availableWidth, availableHeight);
+                    var cellSpace = GetCellSpace(cell, availableSpace.With(availableCellSize), topOffset);
                     
-                    var cellSize = cell.Measure(availableCellSize);
+                    var cellSize = cell.Measure(cellSpace);
                     
                     // corner case: if cell within the row is not fully rendered, do not attempt to render next row
                     if (cellSize.Type == SpacePlanType.PartialRender)
@@ -342,7 +371,8 @@ namespace QuestPDF.Elements.Table
                         Cell = cell,
                         Measurement = cellSize,
                         Size = new Size(availableWidth, cellSize.Height),
-                        Offset = new Position(columnOffsets[cell.Column - 1], topOffset)
+                        Offset = new Position(columnOffsets[cell.Column - 1], topOffset),
+                        Space = cellSpace
                     });
                 }
             }

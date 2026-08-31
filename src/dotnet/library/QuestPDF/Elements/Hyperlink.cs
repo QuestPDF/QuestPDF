@@ -12,7 +12,7 @@ namespace QuestPDF.Elements
         public string Url { get; set; } = "https://www.questpdf.com";
         public string? Description { get; set; }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             if (SemanticTreeManager?.IsCurrentContentArtifact() ?? false)
             {

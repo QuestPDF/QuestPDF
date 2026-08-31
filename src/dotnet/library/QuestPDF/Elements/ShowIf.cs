@@ -27,7 +27,7 @@ internal sealed class ShowIf : ContainerElement, IPageContextAware
     
     public Predicate<ShowIfContext> VisibilityPredicate { get; set; }
     
-    internal override SpacePlan Measure(Size availableSpace)
+    internal override SpacePlan Measure(LayoutSpace availableSpace)
     {
         if (!CheckVisibility())
             return SpacePlan.Empty();
@@ -35,7 +35,7 @@ internal sealed class ShowIf : ContainerElement, IPageContextAware
         return base.Measure(availableSpace);
     }
     
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
         if (CheckVisibility())
             base.Draw(availableSpace);

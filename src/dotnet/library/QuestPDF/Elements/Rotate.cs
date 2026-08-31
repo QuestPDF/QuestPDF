@@ -8,7 +8,7 @@ namespace QuestPDF.Elements
     {
         public float Angle { get; set; } = 0;
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var contentSize = base.Measure(availableSpace);
             var pivot = new Position(contentSize.Width / 2, contentSize.Height / 2);

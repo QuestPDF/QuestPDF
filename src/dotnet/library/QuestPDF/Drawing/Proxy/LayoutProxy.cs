@@ -20,9 +20,9 @@ internal sealed class LayoutProxy : ElementProxy, IPageContextAware
         Child = child;
     }
     
-    internal override void Draw(Size availableSpace)
+    internal override void Draw(LayoutSpace availableSpace)
     {
-        var size = ProvideIntrinsicSize() ? Child.Measure(availableSpace) : availableSpace;
+        var size = ProvideIntrinsicSize() ? (Size)Child.Measure(availableSpace) : availableSpace.Size;
         
         base.Draw(availableSpace);
 

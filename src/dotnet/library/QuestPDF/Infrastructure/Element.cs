@@ -23,8 +23,8 @@ namespace QuestPDF.Infrastructure
             
         }
         
-        internal abstract SpacePlan Measure(Size availableSpace);
-        internal abstract void Draw(Size availableSpace);
+        internal abstract SpacePlan Measure(LayoutSpace availableSpace);
+        internal abstract void Draw(LayoutSpace availableSpace);
 
         internal virtual string? GetCompanionHint() => null;
         internal virtual string? GetCompanionSearchableContent() => null;

@@ -51,7 +51,7 @@ namespace QuestPDF.Elements
             GC.SuppressFinalize(this);
         }
         
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             if (IsRendered)
                 return SpacePlan.Empty();
@@ -62,7 +62,7 @@ namespace QuestPDF.Elements
             return SpacePlan.FullRender(availableSpace);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             var stopWatch = Stopwatch.StartNew();
             

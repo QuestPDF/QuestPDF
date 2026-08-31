@@ -3,15 +3,26 @@ namespace QuestPDF.LayoutTests;
 public class LineTests
 {
     [Test]
-    public void VerticalLineRequiresSpaceEqualToItsThickness()
+    public void VerticalLineThickerThanAvailableSpaceIsNarrowed()
     {
+        // No later page is wider, so the configured thickness can never be satisfied.
+        // The rule is drawn as thick as the available space allows.
         LayoutTest
             .HavingSpaceOfSize(5, 100)
             .ForContent(content =>
             {
-                content.Shrink().LineVertical(10);
+                content.ShrinkHorizontal().Mock("line").LineVertical(10);
             })
-            .ExpectLayoutException("The line thickness is greater than the available horizontal space.");
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(5, 0)
+                    .Content(page =>
+                    {
+                        page.Mock("line").Position(0, 0).Size(5, 100);
+                    });
+            });
     }
     
     [Test]

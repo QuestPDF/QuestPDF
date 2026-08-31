@@ -8,14 +8,14 @@ namespace QuestPDF.Elements
     {
         internal static Empty Instance { get; } = new();
         
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             return availableSpace.IsNegative() 
                 ? SpacePlan.Wrap("The available space is negative.") 
                 : SpacePlan.FullRender(0, 0);
         }
 
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             
         }

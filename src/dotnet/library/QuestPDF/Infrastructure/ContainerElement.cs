@@ -25,7 +25,7 @@ namespace QuestPDF.Infrastructure
             Child = create(Child);
         }
 
-        internal override SpacePlan Measure(Size availableSpace)
+        internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
             var measurement = Child.Measure(availableSpace);
             
@@ -35,7 +35,7 @@ namespace QuestPDF.Infrastructure
             return measurement;
         }
         
-        internal override void Draw(Size availableSpace)
+        internal override void Draw(LayoutSpace availableSpace)
         {
             Child?.Draw(availableSpace);
         }
