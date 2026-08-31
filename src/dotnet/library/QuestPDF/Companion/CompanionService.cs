@@ -29,7 +29,7 @@ namespace QuestPDF.Companion
             HttpClient = new()
             {
                 BaseAddress = new Uri($"http://localhost:{port}/"),
-                Timeout = TimeSpan.FromSeconds(5)
+                Timeout = TimeSpan.FromSeconds(10)
             };
         }
 
