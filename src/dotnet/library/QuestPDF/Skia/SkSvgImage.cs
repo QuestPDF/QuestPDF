@@ -49,10 +49,16 @@ internal sealed class SkSvgImage : IDisposable
     {
         get
         {
-            if (Size.WidthUnit is SkSvgImageSize.Unit.Percentage || Size.HeightUnit is SkSvgImageSize.Unit.Percentage)
-                return ViewBox.Width / ViewBox.Height;
-        
-            return Size.Width / Size.Height;
+            var hasPercentageSize = Size.WidthUnit is SkSvgImageSize.Unit.Percentage || Size.HeightUnit is SkSvgImageSize.Unit.Percentage;
+            
+            var ratio = hasPercentageSize
+                ? ViewBox.Width / ViewBox.Height
+                : Size.Width / Size.Height;
+
+            if (float.IsNaN(ratio) || float.IsInfinity(ratio) || ratio <= 0)
+                return 0;
+
+            return ratio;
         }
     }
     
