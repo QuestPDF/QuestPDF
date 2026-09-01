@@ -1,4 +1,5 @@
 ﻿using System;
+using QuestPDF.Helpers;
 
 namespace QuestPDF.Infrastructure
 {
@@ -15,6 +16,9 @@ namespace QuestPDF.Infrastructure
 
         public Size(float width, float height)
         {
+            DebugAssert.Finite(width);
+            DebugAssert.Finite(height);
+            
             Width = width;
             Height = height;
         }

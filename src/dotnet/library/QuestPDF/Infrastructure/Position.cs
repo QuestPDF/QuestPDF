@@ -1,4 +1,5 @@
 ﻿using System;
+using QuestPDF.Helpers;
 
 namespace QuestPDF.Infrastructure
 {
@@ -11,6 +12,9 @@ namespace QuestPDF.Infrastructure
         
         public Position(float x, float y)
         {
+            DebugAssert.Finite(x);
+            DebugAssert.Finite(y);
+            
             X = x;
             Y = y;
         }

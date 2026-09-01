@@ -1,4 +1,5 @@
-﻿using QuestPDF.Infrastructure;
+﻿using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Drawing
 {
@@ -11,6 +12,9 @@ namespace QuestPDF.Drawing
 
         internal SpacePlan(SpacePlanType type, float width, float height, string? wrapReason = null)
         {
+            DebugAssert.Finite(width);
+            DebugAssert.Finite(height);
+            
             Type = type;
             Width = width;
             Height = height;
