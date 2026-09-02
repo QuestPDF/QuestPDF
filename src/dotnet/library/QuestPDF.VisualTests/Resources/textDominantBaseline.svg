@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xml="http://www.w3.org/XML/1998/namespace" width="150px" height="50px" viewBox="0, 0, 150, 50">
+    <rect x="0" y="0" width="150" height="50" stroke-width="0" style="fill:#ffff00;" />
+    <text x="75" y="25" stroke-width="0" text-anchor="middle" font-family="Liberation Sans" font-size="30" font-weight="normal" dominant-baseline="middle" style="fill:#ff0000;">January</text>
+</svg>
