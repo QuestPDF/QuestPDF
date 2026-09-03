@@ -155,12 +155,18 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         for (var i = 0; i < ColumnCount; i++)
         {
             var measurement = Content.Measure(contentSpace);
-            Content.Draw(contentSpace);
 
             if (i == 0)
                 first = measurement;
 
             last = measurement;
+            
+            // the content cannot be placed in this column, so the offer failed as a whole;
+            // drawing it anyway would advance its state and make the next column look like it holds the rest
+            if (measurement.Type is SpacePlanType.Wrap)
+                break;
+            
+            Content.Draw(contentSpace);
             maxHeight = Math.Max(maxHeight, measurement.Height);
         }
         
@@ -225,6 +231,10 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         for (var i = 1; i <= ColumnCount; i++)
         {
             var contentMeasurement = Content.Measure(contentSpace);
+            
+            if (contentMeasurement.Type is SpacePlanType.Wrap)
+                break;
+            
             var targetColumnSize = new Size(contentAvailableSpace.Width, contentMeasurement.Height);
 
             var contentOffset = GetTargetOffset(targetColumnSize.Width);

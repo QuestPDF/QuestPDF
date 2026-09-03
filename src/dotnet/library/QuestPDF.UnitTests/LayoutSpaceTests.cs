@@ -63,14 +63,27 @@ namespace QuestPDF.UnitTests
         }
 
         [Test]
-        public void AspectRatio_FitWidthTooTall_IsNotAdapted()
+        public void AspectRatio_FitWidthTooTall_HeightNotFinal_ReportsShortfall()
         {
             // a vertical shortfall may still be resolved by moving the content to the next page
             TestPlan
                 .For(x => new AspectRatio { Child = x.CreateChild(), Option = AspectRatioOption.FitWidth, Ratio = 2f })
-                .MeasureElement(LayoutSpace.Final(new Size(400, 199)))
+                .MeasureElement(Space(400, 199, Final, Flowing))
                 .ExpectChildMeasure(Size.Zero, EmptinessProbe)
                 .CheckMeasureResult(SpacePlan.Wrap("To preserve the target aspect ratio, the content requires more vertical space than available."));
+        }
+
+        [Test]
+        public void AspectRatio_FitWidthTooTall_FinalHeight_FallsBackToTheLargestFittingArea()
+        {
+            // every later page is exactly as tall, so the option can never be satisfied and the largest area of the same ratio is used;
+            // that area is derived from the final height, so the content is final along both axes
+            TestPlan
+                .For(x => new AspectRatio { Child = x.CreateChild(), Option = AspectRatioOption.FitWidth, Ratio = 2f })
+                .MeasureElement(LayoutSpace.Final(new Size(400, 199)))
+                .ExpectChildMeasure(Size.Zero, EmptinessProbe)
+                .ExpectChildMeasure(Space(398, 199, Final, Final), SpacePlan.FullRender(398, 199))
+                .CheckMeasureResult(SpacePlan.FullRender(398, 199));
         }
 
         [Test]
@@ -95,13 +108,24 @@ namespace QuestPDF.UnitTests
         }
 
         [Test]
-        public void Constrained_MinHeightTooLarge_IsNotAdapted()
+        public void Constrained_MinHeightTooLarge_HeightNotFinal_ReportsShortfall()
+        {
+            TestPlan
+                .For(x => new Constrained { MinHeight = 100, Child = x.CreateChild() })
+                .MeasureElement(Space(400, 50, Final, Flowing))
+                .ExpectChildMeasure(Size.Zero, EmptinessProbe)
+                .CheckMeasureResult(SpacePlan.Wrap("The available vertical space is less than the minimum height."));
+        }
+
+        [Test]
+        public void Constrained_MinHeightTooLarge_FinalHeight_IsClampedToTheAvailableSpace()
         {
             TestPlan
                 .For(x => new Constrained { MinHeight = 100, Child = x.CreateChild() })
                 .MeasureElement(LayoutSpace.Final(new Size(400, 50)))
                 .ExpectChildMeasure(Size.Zero, EmptinessProbe)
-                .CheckMeasureResult(SpacePlan.Wrap("The available vertical space is less than the minimum height."));
+                .ExpectChildMeasure(LayoutSpace.Final(new Size(400, 50)), SpacePlan.FullRender(20, 30))
+                .CheckMeasureResult(SpacePlan.FullRender(20, 50));
         }
 
         [Test]

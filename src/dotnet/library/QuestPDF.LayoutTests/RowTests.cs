@@ -500,19 +500,31 @@ public class RowTests
     }
     
     [Test]
-    public void ItemHeightExceedsAvailableHeight()
+    public void ItemHeightExceedsAvailableHeight_IsClampedToTheAvailableHeight()
     {
+        // The box is fixed in height, so no page ever offers the item more than 100 points.
+        // The configured height can never be satisfied and is lowered to the available height.
         LayoutTest
             .HavingSpaceOfSize(100, 100)
             .ForContent(content =>
             {
                 content.Shrink().Row(row =>
                 {
-                    row.ConstantItem(40).Height(50);
-                    row.ConstantItem(40).Height(200); // <-
+                    row.ConstantItem(40).Height(50).Mock("a").SolidBlock(5, 5);
+                    row.ConstantItem(40).Height(200).Mock("b").SolidBlock(5, 5); // <-
                 });
             })
-            .ExpectLayoutException("The available vertical space is less than the minimum height.");
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(80, 100)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(40, 50);
+                        page.Mock("b").Position(40, 0).Size(40, 100);
+                    });
+            });
     }
     
     #endregion

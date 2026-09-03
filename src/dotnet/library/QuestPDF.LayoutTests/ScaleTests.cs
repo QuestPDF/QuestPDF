@@ -283,14 +283,25 @@ public class ScaleTests
     }
     
     [Test]
-    public void WrapVertical()
+    public void HeightGreaterThanTheScaledAvailableSpaceIsClamped()
     {
+        // The scaled space is also the tallest this content can ever receive: the box is fixed in height,
+        // so no later page offers more. The configured height is lowered to the height that is actually available.
         LayoutTest
             .HavingSpaceOfSize(100, 100)
             .ForContent(content =>
             {
-                content.Scale(3).Width(10).Height(50);
+                content.Scale(3).Width(10).Height(50).Mock("a").SolidBlock(5, 5);
             })
-            .ExpectLayoutException("The available vertical space is less than the minimum height.");
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(30, 100)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(10, 33.333332f);
+                    });
+            });
     }
 }

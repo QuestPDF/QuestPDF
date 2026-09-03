@@ -17,7 +17,8 @@ namespace QuestPDF.Infrastructure
         /// <summary>
         /// More space may still arrive: the element is placed below other content and would receive
         /// an entire page if moved, or the offered length is a candidate in a search. The element describes
-        /// itself exactly as configured and reports a shortfall as usual.
+        /// itself exactly as configured and reports a shortfall as usual. This is the only mode in which
+        /// a pagination hint, such as ShowEntire, requests a move: anywhere else the move could not buy more space.
         /// </summary>
         Flowing,
 
