@@ -20,6 +20,9 @@ namespace QuestPDF.Elements
         internal bool HasHeightConstraint => MinHeight > 0 || !float.IsPositiveInfinity(MaxHeight);
 
         public bool EnforceSizeWhenEmpty { get; set; }
+
+        private bool WasMinWidthClamped { get; set; }
+        private bool WasMinHeightClamped { get; set; }
         
         internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
@@ -32,12 +35,19 @@ namespace QuestPDF.Elements
             if (!EnforceSizeWhenEmpty && Child.IsEmpty())
                 return SpacePlan.Empty();
             
-            var minWidth = GetEffectiveMinWidth(availableSpace);
+            var minWidth = GetEffectiveMinimum(MinWidth, availableSpace.Width, availableSpace.IsWidthFinal);
+            var minHeight = GetEffectiveMinimum(MinHeight, availableSpace.Height, availableSpace.IsHeightFinal);
+
+            if (minWidth < MinWidth)
+                WasMinWidthClamped = true;
+            
+            if (minHeight < MinHeight)
+                WasMinHeightClamped = true;
             
             if (minWidth > availableSpace.Width + Size.Epsilon)
                 return SpacePlan.Wrap("The available horizontal space is less than the minimum width.");
             
-            if (MinHeight > availableSpace.Height + Size.Epsilon)
+            if (minHeight > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap("The available vertical space is less than the minimum height.");
             
             var available = new Size(
@@ -51,7 +61,7 @@ namespace QuestPDF.Elements
             
             var actualSize = new Size(
                 Math.Max(minWidth, measurement.Width),
-                Math.Max(MinHeight, measurement.Height));
+                Math.Max(minHeight, measurement.Height));
 
             return measurement.Type switch
             {
@@ -79,19 +89,20 @@ namespace QuestPDF.Elements
         }
 
         /// <summary>
-        /// Returns the minimum width that is actually enforced.
+        /// Returns the minimum length that is actually enforced along one axis.
         /// </summary>
         /// <remarks>
-        /// Along a constrained axis, the offered width is the largest this element can ever receive.
-        /// A minimum greater than it can never be satisfied, so it is lowered to the largest value the available
-        /// space accommodates, which is the nearest feasible reading of the configuration. The minimum height is
-        /// left as configured: a vertical shortfall is resolved by moving the content to the next page.
+        /// Along a final axis, the offered length is the largest this element can ever receive: no later page is wider,
+        /// and every later page is exactly as tall. A minimum greater than it can never be satisfied, so it is lowered
+        /// to the offered length, which is the nearest feasible reading of the configuration. Along any other axis
+        /// the minimum is left as configured: a flowing height is resolved by moving the content to the next page,
+        /// and a query has to describe the element exactly as configured.
         /// </remarks>
-        private float GetEffectiveMinWidth(LayoutSpace availableSpace)
+        private static float GetEffectiveMinimum(float configuredMinimum, float availableLength, bool isAxisFinal)
         {
-            return availableSpace.IsWidthFinal
-                ? Math.Min(MinWidth, availableSpace.Width)
-                : MinWidth;
+            return isAxisFinal
+                ? Math.Min(configuredMinimum, availableLength)
+                : configuredMinimum;
         }
 
         /// <summary>
@@ -115,8 +126,15 @@ namespace QuestPDF.Elements
         {
             var width = FormatRange("W", MinWidth, MaxWidth);
             var height = FormatRange("H", MinHeight, MaxHeight);
+            var hint = string.Join("   ", width.Concat(height));
+
+            if (WasMinWidthClamped)
+                hint += "   min width lowered to the available space";
             
-            return string.Join("   ", width.Concat(height));
+            if (WasMinHeightClamped)
+                hint += "   min height lowered to the available space";
+            
+            return hint;
 
             static IEnumerable<string> FormatRange(string prefix, float min, float max)
             {

@@ -11,6 +11,8 @@ namespace QuestPDF.Elements
         
         public float Ratio { get; set; }
         public AspectRatioOption Option { get; set; } = AspectRatioOption.FitWidth;
+
+        private bool WasAdapted { get; set; }
         
         internal override SpacePlan Measure(LayoutSpace availableSpace)
         {
@@ -23,8 +25,11 @@ namespace QuestPDF.Elements
             if (availableSpace.IsCloseToZero())
                 return SpacePlan.Wrap("The available space is zero.");
             
-            var targetSpace = GetTargetSpace(availableSpace);
+            var targetSpace = GetTargetSpace(availableSpace, out var isAdapted);
             var targetSize = targetSpace.Size;
+
+            if (isAdapted)
+                WasAdapted = true;
             
             if (targetSize.Height > availableSpace.Height + Size.Epsilon)
                 return SpacePlan.Wrap("To preserve the target aspect ratio, the content requires more vertical space than available.");
@@ -48,7 +53,7 @@ namespace QuestPDF.Elements
 
         internal override void Draw(LayoutSpace availableSpace)
         {
-            var targetSpace = GetTargetSpace(availableSpace);
+            var targetSpace = GetTargetSpace(availableSpace, out _);
             var size = targetSpace.Size;
             
             var offset = ContentDirection == ContentDirection.LeftToRight
@@ -69,8 +74,11 @@ namespace QuestPDF.Elements
         /// of its axes exactly when that source axis is constrained: if more space may still arrive along it,
         /// the whole area may grow.
         /// </remarks>
-        private LayoutSpace GetTargetSpace(LayoutSpace availableSpace)
+        /// <param name="isAdapted">Whether the configured option was abandoned because a final axis could never satisfy it.</param>
+        private LayoutSpace GetTargetSpace(LayoutSpace availableSpace, out bool isAdapted)
         {
+            isAdapted = false;
+            
             if (Ratio == 0)
                 return availableSpace;
             
@@ -87,15 +95,24 @@ namespace QuestPDF.Elements
                 _ => throw new ArgumentOutOfRangeException()
             };
 
-            // The configured option requires more horizontal space than the environment provides.
-            // Along a constrained axis this can never change: no later page is wider, and neither is any
-            // other column of the same layout. The largest area of the desired ratio that does fit is the one
-            // derived from the width, therefore it is used instead.
+            // The configured option requires more space along a final axis than the environment provides.
+            // Along a final axis this can never change: no later page is wider, every later page is exactly as tall,
+            // and neither is any other column of the same layout. The largest area of the desired ratio that does fit
+            // is the one derived from the other axis, therefore it is used instead. At most one of the two conditions
+            // holds, because an area too wide for the width is never too tall for the height, and vice versa.
             //
-            // Along an unconstrained axis the shortfall is reported as usual: a measurement asking about
-            // the natural size has to describe the element exactly as configured.
+            // Along an axis that is not final the shortfall is reported as usual: a flowing height may still be
+            // resolved by moving the content to the next page, and a query has to describe the element exactly as configured.
             if (!isDerivedFromWidth && availableSpace.IsWidthFinal && fitHeight.Width > availableSpace.Width + Size.Epsilon)
+            {
                 isDerivedFromWidth = true;
+                isAdapted = true;
+            }
+            else if (isDerivedFromWidth && availableSpace.IsHeightFinal && fitWidth.Height > availableSpace.Height + Size.Epsilon)
+            {
+                isDerivedFromWidth = false;
+                isAdapted = true;
+            }
 
             return isDerivedFromWidth
                 ? DerivedFromAxis(fitWidth, availableSpace.WidthMode)
@@ -107,6 +124,13 @@ namespace QuestPDF.Elements
             }
         }
 
-        internal override string? GetCompanionHint() => $"{Option.ToString()} with ratio {Ratio:F1}";
+        internal override string? GetCompanionHint()
+        {
+            var hint = $"{Option.ToString()} with ratio {Ratio:F1}";
+            
+            return WasAdapted
+                ? $"{hint}, does not fit: the largest fitting area is used"
+                : hint;
+        }
     }
 }

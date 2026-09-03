@@ -108,36 +108,11 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         ChildrenCanvas.Target = MeasurementCanvas;
         
         return FindPerfectSpace();
-
-        (SpacePlan First, SpacePlan Last, float MaxHeight) MeasureColumns(LayoutSpace availableSpace)
-        {
-            var columnAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
-
-            var first = default(SpacePlan);
-            var last = default(SpacePlan);
-            var maxHeight = 0f;
-
-            for (var i = 0; i < ColumnCount; i++)
-            {
-                var contentSpace = GetContentSpace(availableSpace.With(columnAvailableSpace));
-                
-                var measurement = Content.Measure(contentSpace);
-                Content.Draw(contentSpace);
-
-                if (i == 0)
-                    first = measurement;
-
-                last = measurement;
-                maxHeight = Math.Max(maxHeight, measurement.Height);
-            }
-            
-            ResetObserverState(restoreChildState: true);
-            return (first, last, maxHeight);
-        }
         
         SpacePlan FindPerfectSpace()
         {
-            var defaultMeasurement = MeasureColumns(availableSpace);
+            // the entire height is the most any column will ever receive, so the content may adapt to it
+            var defaultMeasurement = MeasureColumns(GetContentSpace(availableSpace, isCandidate: false));
 
             if (defaultMeasurement.First.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
                 return defaultMeasurement.First;
@@ -154,7 +129,8 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
             for (var i = 0; i < 8; i++)
             {
                 var middleHeight = (minHeight + maxHeight) / 2;
-                var middleMeasurement = MeasureColumns(availableSpace.With(availableSpace.Width, middleHeight));
+                var middleSpace = GetContentSpace(availableSpace.With(availableSpace.Width, middleHeight), isCandidate: true);
+                var middleMeasurement = MeasureColumns(middleSpace);
                 
                 if (middleMeasurement.Last.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
                     maxHeight = middleHeight;
@@ -167,6 +143,31 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
         }
     }
 
+    /// <summary>
+    /// Lays the content out column after column on the measurement canvas, then restores its state.
+    /// </summary>
+    private (SpacePlan First, SpacePlan Last, float MaxHeight) MeasureColumns(LayoutSpace contentSpace)
+    {
+        var first = default(SpacePlan);
+        var last = default(SpacePlan);
+        var maxHeight = 0f;
+
+        for (var i = 0; i < ColumnCount; i++)
+        {
+            var measurement = Content.Measure(contentSpace);
+            Content.Draw(contentSpace);
+
+            if (i == 0)
+                first = measurement;
+
+            last = measurement;
+            maxHeight = Math.Max(maxHeight, measurement.Height);
+        }
+        
+        ResetObserverState(restoreChildState: true);
+        return (first, last, maxHeight);
+    }
+
     private Size GetAvailableSpaceForColumn(Size totalSpace)
     {
         var columnWidth = (totalSpace.Width - Spacing * (ColumnCount - 1)) / ColumnCount;
@@ -175,27 +176,52 @@ internal sealed class MultiColumn : Element, IPageContextAware, IContentDirectio
 
     /// <summary>
     /// Every column is exactly as wide and as tall as the others, so the content inherits the constraints
-    /// of the whole element. When the height is balanced, the offered height is a candidate in a search
-    /// rather than an allocation, and the content has to describe itself as configured at every candidate.
+    /// of the whole element. A height tried while balancing is a candidate in a search rather than an allocation,
+    /// and the content has to describe itself as configured at every candidate.
     /// </summary>
-    private LayoutSpace GetContentSpace(LayoutSpace contentSpace)
+    private LayoutSpace GetContentSpace(LayoutSpace availableSpace, bool isCandidate)
     {
-        return BalanceHeight
-            ? contentSpace.WithFlowingHeight()
-            : contentSpace;
+        var contentSpace = availableSpace.With(GetAvailableSpaceForColumn(availableSpace));
+        return isCandidate ? contentSpace.WithFlowingHeight() : contentSpace;
+    }
+
+    /// <summary>
+    /// A balanced height was found with candidate offers, and the content is drawn with the same offer
+    /// so that it lands in the same columns. When no candidate held the content, the element is as tall
+    /// as it was allowed to be and the content fits only by adapting to that height, so it is drawn with
+    /// the allocation it was measured with.
+    /// </summary>
+    private LayoutSpace GetDrawingContentSpace(LayoutSpace availableSpace)
+    {
+        var allocation = GetContentSpace(availableSpace, isCandidate: false);
+        
+        if (!BalanceHeight)
+            return allocation;
+        
+        var candidate = GetContentSpace(availableSpace, isCandidate: true);
+        
+        if (candidate.Equals(allocation))
+            return allocation;
+
+        ChildrenCanvas.Target = MeasurementCanvas;
+        var measurement = MeasureColumns(candidate);
+        
+        return measurement.Last.Type is SpacePlanType.Empty or SpacePlanType.FullRender
+            ? candidate
+            : allocation;
     }
     
     internal override void Draw(LayoutSpace availableSpace)
     {
         var contentAvailableSpace = GetAvailableSpaceForColumn(availableSpace);
         var spacerAvailableSpace = new Size(Spacing, availableSpace.Height);
+        
+        var contentSpace = GetDrawingContentSpace(availableSpace);
+        var spacerSpace = availableSpace.With(spacerAvailableSpace).WithWidthMode(LayoutAxisMode.Final);
 
         var horizontalOffset = 0f;
         ChildrenCanvas.Target = Canvas;
         
-        var contentSpace = GetContentSpace(availableSpace.With(contentAvailableSpace));
-        var spacerSpace = availableSpace.With(spacerAvailableSpace).WithWidthMode(LayoutAxisMode.Final);
-
         for (var i = 1; i <= ColumnCount; i++)
         {
             var contentMeasurement = Content.Measure(contentSpace);
