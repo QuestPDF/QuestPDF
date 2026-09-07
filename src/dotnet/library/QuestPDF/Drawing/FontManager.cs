@@ -24,7 +24,7 @@ namespace QuestPDF.Drawing
         static FontManager()
         {
             SkNativeDependencyCompatibilityChecker.Test();
-            RegisterLibraryDefaultFonts();
+            RegisterFontsFromDiscoveryPaths();
         }
         
         [Obsolete("Since version 2022.8 this method has been renamed. Please use the RegisterFontWithCustomName method.")]
@@ -43,7 +43,7 @@ namespace QuestPDF.Drawing
         public static void RegisterFontWithCustomName(string fontName, Stream stream)
         {
             using var fontData = SkData.FromStream(stream);
-            TypefaceProvider.AddTypefaceFromData(fontData, fontName);
+            RegisterTypeface(fontData, fontName);
         }
 
         /// <summary>
@@ -53,7 +53,16 @@ namespace QuestPDF.Drawing
         public static void RegisterFont(Stream stream)
         {
             using var fontData = SkData.FromStream(stream);
-            TypefaceProvider.AddTypefaceFromData(fontData);
+            RegisterTypeface(fontData);
+        }
+        
+        private static void RegisterTypeface(SkData fontData, string? alias = null)
+        {
+            lock (FontFamilyNamesLock)
+            {
+                TypefaceProvider.AddTypefaceFromData(fontData, alias);
+                RegisteredFontFamilyNamesCache = null;
+            }
         }
         
         /// <summary>
@@ -98,7 +107,70 @@ namespace QuestPDF.Drawing
             return SkFontManager.System.GetTypefaces();
         }
         
-        private static void RegisterLibraryDefaultFonts()
+        #region Checking Font Family Availability
+        
+        private static readonly object FontFamilyNamesLock = new();
+        private static volatile HashSet<string>? RegisteredFontFamilyNamesCache;
+        private static volatile HashSet<string>? SystemFontFamilyNamesCache;
+        
+        internal static bool IsFontFamilyAvailable(string fontFamily)
+        {
+            if (GetRegisteredFontFamilyNames().Contains(fontFamily))
+                return true;
+            
+            return Settings.UseSystemFonts && GetSystemFontFamilyNames().Contains(fontFamily);
+        }
+        
+        private static HashSet<string> GetRegisteredFontFamilyNames()
+        {
+            var names = RegisteredFontFamilyNamesCache;
+            
+            if (names != null)
+                return names;
+            
+            lock (FontFamilyNamesLock)
+            {
+                names = RegisteredFontFamilyNamesCache;
+                
+                if (names != null)
+                    return names;
+                
+                names = CreateFontFamilyNameSet(TypefaceProvider.GetTypefaces());
+                RegisteredFontFamilyNamesCache = names;
+                return names;
+            }
+        }
+        
+        private static HashSet<string> GetSystemFontFamilyNames()
+        {
+            var names = SystemFontFamilyNamesCache;
+            
+            if (names != null)
+                return names;
+            
+            lock (FontFamilyNamesLock)
+            {
+                names = SystemFontFamilyNamesCache;
+                
+                if (names != null)
+                    return names;
+                
+                names = CreateFontFamilyNameSet(SkFontManager.System.GetTypefaces());
+                SystemFontFamilyNamesCache = names;
+                return names;
+            }
+        }
+        
+        private static HashSet<string> CreateFontFamilyNameSet(IEnumerable<FontInfo> fonts)
+        {
+            return new HashSet<string>(fonts.Select(x => x.FamilyName), StringComparer.OrdinalIgnoreCase);
+        }
+        
+        #endregion
+        
+        #region Automated Font Registration
+        
+        private static void RegisterFontsFromDiscoveryPaths()
         {
             var fontFilePaths = SearchFontFiles();
             
@@ -152,5 +224,7 @@ namespace QuestPDF.Drawing
                 }
             }
         }
+        
+        #endregion
     }
 }

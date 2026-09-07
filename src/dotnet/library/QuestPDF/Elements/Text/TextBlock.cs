@@ -287,6 +287,7 @@ namespace QuestPDF.Elements.Text
                 return;
 
             RebuildParagraphForEveryPage = ContainsItemOfType<TextBlockPageNumber>();
+            CheckFontFamilies();
             BuildParagraph();
             AreParagraphMetricsValid = false;
         }
@@ -549,45 +550,120 @@ namespace QuestPDF.Elements.Text
             AreParagraphMetricsValid = true;
         }
         
+        #region Missing Font Families Check
+        
+        private void CheckFontFamilies()
+        {
+            if (!Settings.ThrowOnMissingFontFamilies)
+                return;
+            
+            List<string>? missingFontFamilies = null;
+            
+            foreach (var textBlockItem in Items)
+            {
+                if (textBlockItem is not TextBlockSpan textBlockSpan)
+                    continue;
+                
+                foreach (var fontFamily in textBlockSpan.Style.FontFamilies ?? [])
+                {
+                    if (FontManager.IsFontFamilyAvailable(fontFamily))
+                        continue;
+                    
+                    missingFontFamilies ??= new List<string>();
+                    
+                    if (!missingFontFamilies.Contains(fontFamily, StringComparer.OrdinalIgnoreCase))
+                        missingFontFamilies.Add(fontFamily);
+                }
+            }
+            
+            if (missingFontFamilies != null)
+                throw new DocumentDrawingException(CreateMissingFontFamiliesReport(missingFontFamilies));
+        }
+        
+        private string CreateMissingFontFamiliesReport(IReadOnlyCollection<string> missingFontFamilies)
+        {
+            var fontFamilies = missingFontFamilies.Select(x => $"'{x}'");
+            
+            return $"""
+                The text "{GetTextForExceptionReport()}" refers to {missingFontFamilies.Count} font family(ies) that are not available: {string.Join(", ", fontFamilies)}.
+                
+                {DescribeFontConfiguration()}
+                
+                Possible solutions:
+                1) (Recommended) Deploy the required font files with your application. QuestPDF scans the application directory and registers every font file it finds.
+                2) Register fonts with 'FontManager.RegisterFont' or 'FontManager.RegisterFontWithCustomName', then select them by family name with 'TextStyle.FontFamily'.
+                3) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library. Font family names are matched ignoring case.
+                4) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
+                
+                'Settings.ThrowOnMissingFontFamilies' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues and the text is rendered with the first available font family from the list, or with another registered font when none is available.
+                """;
+        }
+        
+        #endregion
+        
         #region Unresolved Glyphs Check
         
-        private bool AreUnresolvedGlyphsReported { get; set; }
+        private bool AreMissingGlyphsReported { get; set; }
         
         private void CheckUnresolvedGlyphs()
         {
+            if (!Settings.ThrowOnMissingTextGlyphs)
+                return;
+            
+            if (AreMissingGlyphsReported)
+                return;
+            
             var unresolvedCodepoints = Paragraph.GetUnresolvedCodepoints();
                    
             if (unresolvedCodepoints.Length == 0)
                 return;
 
             var report = CreateUnresolvedGlyphsReport(unresolvedCodepoints);
-            
-            if (Settings.ThrowOnMissingTextGlyphs)
-                throw new DocumentDrawingException(report);
-            
-            // the same text block may be rendered out many times (e.g. on every page), warn once
-            if (AreUnresolvedGlyphsReported)
-                return;
-            
-            AreUnresolvedGlyphsReported = true;
-            Trace.TraceWarning($"[QuestPDF] {report}");
+            throw new DocumentDrawingException(report);
         }
 
         private string CreateUnresolvedGlyphsReport(int[] unresolvedCodepoints)
         {
-            const int maxTextLength = 100;
             const int maxGlyphs = 50;
-
-            var relatedText = Text;
-            
-            if (relatedText.Length > maxTextLength)
-                relatedText = relatedText.Substring(0, maxTextLength) + "...";
             
             var glyphs = unresolvedCodepoints
                 .OrderBy(x => x)
                 .Take(maxGlyphs)
                 .Select(x => $"U+{x:X4} '{char.ConvertFromUtf32(x)}'");
             
+            return $"""
+                The text "{GetTextForExceptionReport()}" contains {unresolvedCodepoints.Length} glyph(s) that are not available in the configured fonts or their fallbacks.
+                
+                Missing glyphs: {string.Join(", ", glyphs)}
+                {DescribeFontConfiguration()}
+                
+                Possible solutions:
+                1) (Recommended) Deploy fonts that contain the missing glyphs with your application. QuestPDF scans the application directory and registers every font file it finds.
+                2) Register fonts with 'FontManager.RegisterFont', then select them with 'TextStyle.FontFamily' or add them with 'TextStyle.FontFamilyFallback'.
+                3) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library.
+                4) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
+                 
+                'Settings.ThrowOnMissingTextGlyphs' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues, missing glyphs are rendered as replacement characters or empty areas, and this report is written to the trace output as a warning.
+                """;
+        }
+        
+        #endregion
+        
+        #region Font Report Helpers
+        
+        private string GetTextForExceptionReport()
+        {
+            const int maxTextLength = 100;
+            
+            var text = Text;
+            
+            return text.Length > maxTextLength 
+                ? text.Substring(0, maxTextLength) + "..." 
+                : text;
+        }
+        
+        private string DescribeFontConfiguration()
+        {
             var usedFonts = Items
                 .OfType<TextBlockSpan>()
                 .SelectMany(x => x.Style.FontFamilies ?? [])
@@ -602,21 +678,10 @@ namespace QuestPDF.Elements.Text
                 .Select(x => $"'{x}'");
             
             return $"""
-                The text "{relatedText}" contains {unresolvedCodepoints.Length} glyph(s) that are not available in the configured fonts or their fallbacks.
-                
-                Missing glyphs: {string.Join(", ", glyphs)}
-                Font families used in this text block: {string.Join(", ", usedFonts)}
-                Registered fonts: {string.Join(", ", registeredFonts)}
-                System fonts (Settings.UseSystemFonts): {(Settings.UseSystemFonts ? "enabled" : "disabled")}
-                
-                Possible solutions:
-                1) (Recommended) Deploy the required font files with your application. QuestPDF scans the application directory and registers every font file it finds.
-                2) Register fonts with 'FontManager.RegisterFont', then select them with 'TextStyle.FontFamily' or add them with 'TextStyle.FontFamilyFallback'.
-                3) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
-                4) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library.
-                
-                'Settings.ThrowOnMissingTextGlyphs' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues, missing glyphs are rendered as replacement characters or empty areas, and this report is written to the trace output as a warning.
-                """;
+                    Font families used in this text block: {string.Join(", ", usedFonts)}
+                    Registered fonts: {string.Join(", ", registeredFonts)}
+                    System fonts (Settings.UseSystemFonts): {(Settings.UseSystemFonts ? "enabled" : "disabled")}
+                    """;
         }
         
         #endregion

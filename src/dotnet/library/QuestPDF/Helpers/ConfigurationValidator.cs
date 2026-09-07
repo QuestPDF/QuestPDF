@@ -12,6 +12,7 @@ internal static class ConfigurationValidator
             return;
 
         WarnIfTextGlyphAvailabilityCheckIsEnabled();
+        WarnIfFontFamilyAvailabilityCheckIsDisabled();
         WarnIfMultipleFontDiscoveryPathsAreConfigured();
         WarnIfDebuggingIsEnabled();
         WarnIfSystemFontsAreEnabled();
@@ -31,6 +32,19 @@ internal static class ConfigurationValidator
             "This is especially helpful during development and for multilingual content, but in production it can surface unexpected font coverage issues as runtime exceptions. " +
             "Make sure the fonts deployed with your application cover all expected text, or disable this setting if you intentionally prefer generation to continue with missing or replacement glyphs. " +
             "By default, QuestPDF enables this setting only when a debugger is attached.");
+    }
+
+    private static void WarnIfFontFamilyAvailabilityCheckIsDisabled()
+    {
+        if (Settings.ThrowOnMissingFontFamilies)
+            return;
+
+        Trace.TraceWarning(
+            "[QuestPDF] QuestPDF.Settings.ThrowOnMissingFontFamilies is disabled. " +
+            "When a text style refers to a font family that is not registered with QuestPDF (and, if QuestPDF.Settings.UseSystemFonts is enabled, not installed on the system), QuestPDF silently renders the text with another available font instead of stopping document generation. " +
+            "This hides configuration mistakes such as typos in font family names or font files missing from the deployment, and the substituted font can change the layout and appearance of documents. " +
+            "For predictable output, keep this setting enabled and deploy the required fonts with your application. " +
+            "By default, QuestPDF enables this setting.");
     }
 
     private static void WarnIfMultipleFontDiscoveryPathsAreConfigured()
