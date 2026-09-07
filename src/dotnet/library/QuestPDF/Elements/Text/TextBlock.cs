@@ -562,7 +562,7 @@ namespace QuestPDF.Elements.Text
 
             var report = CreateUnresolvedGlyphsReport(unresolvedCodepoints);
             
-            if (Settings.CheckIfAllTextGlyphsAreAvailable)
+            if (Settings.ThrowOnMissingTextGlyphs)
                 throw new DocumentDrawingException(report);
             
             // the same text block may be rendered out many times (e.g. on every page), warn once
@@ -615,7 +615,7 @@ namespace QuestPDF.Elements.Text
                 3) Enable 'Settings.UseSystemFonts' to use fonts installed on the system where the application runs (less predictable across deployment environments).
                 4) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library.
                 
-                'Settings.CheckIfAllTextGlyphsAreAvailable' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues, missing glyphs are rendered as replacement characters or empty areas, and this report is written to the trace output as a warning.
+                'Settings.ThrowOnMissingTextGlyphs' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues, missing glyphs are rendered as replacement characters or empty areas, and this report is written to the trace output as a warning.
                 """;
         }
         

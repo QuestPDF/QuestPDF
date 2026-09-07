@@ -21,11 +21,11 @@ internal static class ConfigurationValidator
     
     private static void WarnIfTextGlyphAvailabilityCheckIsEnabled()
     {
-        if (!Settings.CheckIfAllTextGlyphsAreAvailable)
+        if (!Settings.ThrowOnMissingTextGlyphs)
             return;
 
         Trace.TraceWarning(
-            "[QuestPDF] QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable is enabled. " +
+            "[QuestPDF] QuestPDF.Settings.ThrowOnMissingTextGlyphs is enabled. " +
             "QuestPDF will validate that the selected fonts contain every glyph used by your text. " +
             "When a glyph is missing, document generation stops with a detailed exception instead of rendering placeholder characters or empty areas. " +
             "This is especially helpful during development and for multilingual content, but in production it can surface unexpected font coverage issues as runtime exceptions. " +

@@ -39,7 +39,16 @@ namespace QuestPDF
         /// <para>When this flag is disabled, document generation continues: missing glyphs are rendered as replacement characters or empty areas, and a warning listing them is written to the trace output.</para>
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
-        public static bool CheckIfAllTextGlyphsAreAvailable { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        public static bool ThrowOnMissingTextGlyphs { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        
+        [Obsolete("This setting has been renamed since version 2026.9. Please use the ThrowOnMissingTextGlyphs property.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static bool CheckIfAllTextGlyphsAreAvailable
+        {
+            get => ThrowOnMissingTextGlyphs;
+            set => ThrowOnMissingTextGlyphs = value;
+        }
 
         /// <summary>
         /// Decides whether the library may use the fonts installed on the system where the application is running.
