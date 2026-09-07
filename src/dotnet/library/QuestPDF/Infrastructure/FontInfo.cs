@@ -3,7 +3,7 @@ namespace QuestPDF.Infrastructure;
 /// <summary>
 /// Describes a single typeface (font face) available to the QuestPDF library, as returned by the <c>FontManager</c> class.
 /// </summary>
-public sealed class FontInfo
+public sealed record FontInfo
 {
     /// <summary>
     /// Family name under which the typeface can be requested, e.g. with the <c>TextStyle.FontFamily</c> method.
