@@ -397,7 +397,7 @@ public class TextStyleExamples
     [Test]
     public void FontFallback()
     {
-        Settings.UseEnvironmentFonts = false;
+        Settings.UseSystemFonts = false;
         
         Document
             .Create(document =>
@@ -420,7 +420,7 @@ public class TextStyleExamples
     [Test]
     public void FontFallbackEmoji()
     {
-        Settings.UseEnvironmentFonts = false;
+        Settings.UseSystemFonts = false;
         
         Document
             .Create(document =>

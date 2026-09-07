@@ -9,7 +9,7 @@ namespace QuestPDF.ConformanceTests
         public static void Setup()
         {
             QuestPDF.Settings.License = LicenseType.Community;
-            QuestPDF.Settings.UseEnvironmentFonts = false;
+            QuestPDF.Settings.UseSystemFonts = false;
         }
     }
 }

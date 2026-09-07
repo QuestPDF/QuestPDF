@@ -71,7 +71,7 @@ internal sealed class DynamicSvgImage : Element, IStateful, IDisposable
         if (svg == null)
             return null;
 
-        return new SkSvgImage(svg, SkResourceProvider.CurrentResourceProvider, FontManager.CurrentFontManager);
+        return new SkSvgImage(svg, SkResourceProvider.Local, FontManager.TypefaceProvider, FontManager.SystemFontManager);
     }
     
     #region IStateful

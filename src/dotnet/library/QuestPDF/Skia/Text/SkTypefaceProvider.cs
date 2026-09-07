@@ -1,13 +1,12 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Skia.Text;
 
 internal sealed class SkTypefaceProvider : IDisposable
 {
     public IntPtr Instance { get; private set; }
-    private List<SkTypeface> Typefaces { get; } = new();
     
     public SkTypefaceProvider()
     {
@@ -17,15 +16,18 @@ internal sealed class SkTypefaceProvider : IDisposable
     
     public void AddTypefaceFromData(SkData data, string? alias = null)
     {
-        var typeface = SkFontManager.Global.CreateTypeface(data);
-        Typefaces.Add(typeface);
+        var registeredTypefaces = API.questpdf_skia_typeface_font_provider_add_typefaces_from_data(Instance, data.Instance, alias);
         
-        if (alias == null)
-            API.questpdf_skia_typeface_font_provider_add_typeface(Instance, typeface.Instance);
-        else
-            API.questpdf_skia_typeface_font_provider_add_typeface_with_custom_alias(Instance, typeface.Instance, alias);
+        if (registeredTypefaces == 0)
+            throw new InvalidOperationException("QuestPDF cannot load the provided font data. Please make sure that it is a valid TrueType, OpenType or font collection file.");
     }
     
+    public FontInfo[] GetTypefaces()
+    {
+        var fontManager = new SkFontManager(API.questpdf_skia_typeface_font_provider_as_font_manager(Instance));
+        return fontManager.GetTypefaces();
+    }
+
     ~SkTypefaceProvider()
     {
         this.WarnThatFinalizerIsReached();
@@ -36,9 +38,6 @@ internal sealed class SkTypefaceProvider : IDisposable
     {
         if (Instance == IntPtr.Zero)
             return;
-        
-        foreach (var typeface in Typefaces)
-            typeface.Dispose();
         
         API.questpdf_skia_typeface_font_provider_unref(Instance);
         Instance = IntPtr.Zero;
@@ -51,10 +50,10 @@ internal sealed class SkTypefaceProvider : IDisposable
         public static extern IntPtr questpdf_skia_typeface_font_provider_create();
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void questpdf_skia_typeface_font_provider_add_typeface(IntPtr typefaceProvider, IntPtr typeface);
+        public static extern IntPtr questpdf_skia_typeface_font_provider_as_font_manager(IntPtr typefaceProvider);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void questpdf_skia_typeface_font_provider_add_typeface_with_custom_alias(IntPtr typefaceProvider, IntPtr typeface, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string alias);
+        public static extern int questpdf_skia_typeface_font_provider_add_typefaces_from_data(IntPtr typefaceProvider, IntPtr data, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string? alias);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void questpdf_skia_typeface_font_provider_unref(IntPtr typefaceProvider);

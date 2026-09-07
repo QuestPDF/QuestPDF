@@ -12,14 +12,14 @@ using QuestPDF.Skia.Text;
 namespace QuestPDF.Drawing
 {
     /// <summary>
-    /// <para>By default, the library searches all fonts available in the runtime environment.</para>
+    /// <para>By default, the library uses the fonts installed on the system where the application is running (see <see cref="Settings.UseSystemFonts"/>).</para>
     /// <para>This may work well on the development environment but may fail in the cloud where fonts are usually not installed.</para>
-    /// <para>It is safest deploy font files along with the application and then register them using this class.</para>
+    /// <para>It is safest deploy font files along with the application. QuestPDF automtically scans all fonts deployed along with the application. Optionally, you can register additional fonts this class.</para>
     /// </summary>
     public static class FontManager
     {
         internal static SkTypefaceProvider TypefaceProvider { get; } = new();
-        internal static SkFontManager CurrentFontManager => Settings.UseEnvironmentFonts ? SkFontManager.Global : SkFontManager.Local;
+        internal static SkFontManager? SystemFontManager => Settings.UseSystemFonts ? SkFontManager.System : null;
 
         static FontManager()
         {
@@ -43,7 +43,6 @@ namespace QuestPDF.Drawing
         public static void RegisterFontWithCustomName(string fontName, Stream stream)
         {
             using var fontData = SkData.FromStream(stream);
-            TypefaceProvider.AddTypefaceFromData(fontData);
             TypefaceProvider.AddTypefaceFromData(fontData, fontName);
         }
 
@@ -70,6 +69,33 @@ namespace QuestPDF.Drawing
                 throw new ArgumentException($"Cannot load font file from an embedded resource. Please make sure that the resource is available or the path is correct: {pathName}");
             
             RegisterFont(stream);
+        }
+        
+        /// <summary>
+        /// Returns information about the fonts registered in the library: fonts discovered automatically in the <see cref="Settings.FontDiscoveryPaths"/> directories,
+        /// and fonts registered manually with the <see cref="RegisterFont"/>, <see cref="RegisterFontWithCustomName"/> and <see cref="RegisterFontFromEmbeddedResource"/> methods.
+        /// These fonts are always available to the library, regardless of the runtime environment.
+        /// </summary>
+        /// <remarks>
+        /// <para>Each entry describes a single typeface (font face), e.g. the regular and bold faces of one family are listed separately.</para>
+        /// <para>A typeface registered under several names (e.g. a custom name and its own family name) is listed once per name.</para>
+        /// </remarks>
+        public static IReadOnlyCollection<FontInfo> GetRegisteredFonts()
+        {
+            return TypefaceProvider.GetTypefaces();
+        }
+        
+        /// <summary>
+        /// Returns information about the fonts installed on the system where the application is running, as visible to the library.
+        /// System fonts are used only when <see cref="Settings.UseSystemFonts"/> is enabled.
+        /// </summary>
+        /// <remarks>
+        /// <para>Each entry describes a single typeface (font face), e.g. the regular and bold faces of one family are listed separately.</para>
+        /// <para>The result is not cached. Enumerating system fonts may take a moment on systems with many fonts installed.</para>
+        /// </remarks>
+        public static IReadOnlyCollection<FontInfo> GetSystemFonts()
+        {
+            return SkFontManager.System.GetTypefaces();
         }
         
         private static void RegisterLibraryDefaultFonts()

@@ -14,7 +14,7 @@ internal static class ConfigurationValidator
         WarnIfTextGlyphAvailabilityCheckIsEnabled();
         WarnIfMultipleFontDiscoveryPathsAreConfigured();
         WarnIfDebuggingIsEnabled();
-        WarnIfEnvironmentFontsAreEnabled();
+        WarnIfSystemFontsAreEnabled();
 
         IsConfigurationValidated = true;
     }
@@ -58,17 +58,17 @@ internal static class ConfigurationValidator
             "By default, QuestPDF enables this setting only when a debugger is attached.");
     }
 
-    private static void WarnIfEnvironmentFontsAreEnabled()
+    private static void WarnIfSystemFontsAreEnabled()
     {
-        if (!Settings.UseEnvironmentFonts)
+        if (!Settings.UseSystemFonts)
             return;
 
         Trace.TraceWarning(
-            "[QuestPDF] QuestPDF.Settings.UseEnvironmentFonts is enabled. " +
+            "[QuestPDF] QuestPDF.Settings.UseSystemFonts is enabled. " +
             "QuestPDF may use fonts installed on the current machine in addition to fonts explicitly registered with QuestPDF.Drawing.FontManager. " +
             "This is convenient during development, but it can make documents depend on fonts that are not available in production, especially in minimal Docker images, serverless functions, and other reduced runtime environments. " +
             "As a result, the same document may fail to render or may use different fallback fonts after deployment. " +
-            "For predictable output, deploy the required fonts with your application and set QuestPDF.Settings.UseEnvironmentFonts to false. " +
+            "For predictable output, deploy the required fonts with your application and set QuestPDF.Settings.UseSystemFonts to false. " +
             "This setting remains enabled by default for backward compatibility.");
     }
 }

@@ -8,7 +8,7 @@ internal static class BenchmarkEnvironment
     {
         Settings.License = LicenseType.Community;
         Settings.EnableDebugging = false;
-        Settings.UseEnvironmentFonts = false;
+        Settings.UseSystemFonts = false;
         Settings.CheckIfAllTextGlyphsAreAvailable = false;
     }
 }

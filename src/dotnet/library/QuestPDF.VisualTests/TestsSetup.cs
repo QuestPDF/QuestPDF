@@ -20,7 +20,7 @@ namespace QuestPDF.VisualTests
             }
                 
             QuestPDF.Settings.License = LicenseType.Community;
-            QuestPDF.Settings.UseEnvironmentFonts = false;
+            QuestPDF.Settings.UseSystemFonts = false;
             
             VisualTestEngine.ClearActualOutputDirectories();
         }

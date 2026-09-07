@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
@@ -33,32 +34,39 @@ namespace QuestPDF
         public static bool EnableDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
         
         /// <summary>
-        /// This flag enables checking the font glyph availability.
-        /// If your text contains glyphs that are not present in the specified font,
-        /// 1) when this flag is enabled: the DocumentDrawingException is thrown. OR 
-        /// 2) when this flag is disabled: placeholder characters are visible in the produced PDF file. 
-        /// Enabling this flag may slightly decrease document generation performance.
-        /// However, it provides hints that used fonts are not sufficient to produce correct results.
+        /// <para>Decides how the library reacts when the text contains glyphs that are not available in the used fonts, including the configured fallbacks.</para>
+        /// <para>When this flag is enabled, document generation stops with the DocumentDrawingException.</para>
+        /// <para>When this flag is disabled, document generation continues: missing glyphs are rendered as replacement characters or empty areas, and a warning listing them is written to the trace output.</para>
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
         public static bool CheckIfAllTextGlyphsAreAvailable { get; set; } = System.Diagnostics.Debugger.IsAttached;
 
         /// <summary>
-        /// Decides whether the application should use the fonts available in the environment.
+        /// Decides whether the library may use the fonts installed on the system where the application is running.
         /// </summary>
         /// <remarks>
-        /// <para>When set to <c>true</c>, the application will use the fonts installed on the system where it is running. This is the default behavior.</para>
-        /// <para>When set to <c>false</c>, the application will only use the fonts that have been registered using the <c>FontManager</c> class in the QuestPDF library.</para>
-        /// <para>This property is useful when you want to control the fonts used by your application, especially in cases where the environment might not have the necessary fonts installed.</para>
+        /// <para>When set to <c>true</c>, the library uses the system fonts in addition to the registered fonts. This is the default behavior.</para>
+        /// <para>When set to <c>false</c>, the library uses only the fonts registered with the <c>FontManager</c> class: fonts discovered automatically in the <see cref="FontDiscoveryPaths"/> directories and fonts registered manually.</para>
+        /// <para>Disable this setting to make the output independent of the runtime environment, especially where the necessary fonts might not be installed (e.g. minimal Docker images or serverless functions).</para>
         /// </remarks>
-        public static bool UseEnvironmentFonts { get; set; } = true;
+        public static bool UseSystemFonts { get; set; } = true;
+        
+        [Obsolete("This setting has been renamed since version 2026.9. Please use the UseSystemFonts property.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static bool UseEnvironmentFonts
+        {
+            get => UseSystemFonts;
+            set => UseSystemFonts = value;
+        }
         
         /// <summary>
-        /// Specifies the collection of paths where the library will automatically search for font files to register.
+        /// Specifies the collection of directories where the library automatically searches for font files to register (.ttf, .otf, .ttc and .pfb).
         /// </summary>
         /// <remarks>
-        /// <para>By default, this collection contains the application files path.</para>
-        /// <para>You can add additional paths to this collection to include more directories for automatic font registration.</para>
+        /// <para>By default, this collection contains the application directory. Font files deployed along with the application are therefore registered automatically, without calling the <c>FontManager</c> class.</para>
+        /// <para>Add more paths to this collection to include additional directories. They are scanned recursively when the library is used for the first time, so configure this collection at application startup.</para>
+        /// <para>Fonts discovered this way are always available to the library, regardless of the runtime environment (see <see cref="UseSystemFonts"/>).</para>
         /// </remarks>
         public static ICollection<string> FontDiscoveryPaths { get; } = new List<string>()
         {

@@ -19,7 +19,7 @@ public sealed class SvgImage : IDisposable
     
     private SvgImage(string content)
     {
-        SkSvgImage = new SkSvgImage(content, SkResourceProvider.CurrentResourceProvider, FontManager.CurrentFontManager);    
+        SkSvgImage = new SkSvgImage(content, SkResourceProvider.Local, FontManager.TypefaceProvider, FontManager.SystemFontManager);
     }
 
     ~SvgImage()
