@@ -54,11 +54,11 @@ namespace QuestPDF
         /// Decides whether the library may use the fonts installed on the system where the application is running.
         /// </summary>
         /// <remarks>
-        /// <para>When set to <c>true</c>, the library uses the system fonts in addition to the registered fonts. This is the default behavior.</para>
-        /// <para>When set to <c>false</c>, the library uses only the fonts registered with the <c>FontManager</c> class: fonts discovered automatically in the <see cref="FontDiscoveryPaths"/> directories and fonts registered manually.</para>
-        /// <para>Disable this setting to make the output independent of the runtime environment, especially where the necessary fonts might not be installed (e.g. minimal Docker images or serverless functions).</para>
+        /// <para>When set to <c>false</c>, the library uses only the fonts registered with the <c>FontManager</c> class: fonts discovered automatically in the <see cref="FontDiscoveryPaths"/> directories and fonts registered manually. This makes the output independent of the runtime environment, especially where the necessary fonts might not be installed (e.g. minimal Docker images or serverless functions).</para>
+        /// <para>When set to <c>true</c>, the library uses the system fonts in addition to the registered fonts. This is convenient during development, but the same document may render differently, or fail to render, after deployment to an environment with a different set of fonts installed.</para>
+        /// <para>Disabled by default. Before version 2026.8.1, this setting was enabled by default.</para>
         /// </remarks>
-        public static bool UseSystemFonts { get; set; } = true;
+        public static bool UseSystemFonts { get; set; } = false;
         
         [Obsolete("This setting has been renamed since version 2026.9. Please use the UseSystemFonts property.")]
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]

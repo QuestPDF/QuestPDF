@@ -65,10 +65,10 @@ internal static class ConfigurationValidator
 
         Trace.TraceWarning(
             "[QuestPDF] QuestPDF.Settings.UseSystemFonts is enabled. " +
-            "QuestPDF may use fonts installed on the current machine in addition to fonts explicitly registered with QuestPDF.Drawing.FontManager. " +
+            "QuestPDF may use fonts installed on the current machine in addition to fonts registered with QuestPDF.Drawing.FontManager or discovered in QuestPDF.Settings.FontDiscoveryPaths. " +
             "This is convenient during development, but it can make documents depend on fonts that are not available in production, especially in minimal Docker images, serverless functions, and other reduced runtime environments. " +
             "As a result, the same document may fail to render or may use different fallback fonts after deployment. " +
-            "For predictable output, deploy the required fonts with your application and set QuestPDF.Settings.UseSystemFonts to false. " +
-            "This setting remains enabled by default for backward compatibility.");
+            "For predictable output, deploy the required fonts with your application and keep QuestPDF.Settings.UseSystemFonts disabled. " +
+            "By default, QuestPDF disables this setting.");
     }
 }

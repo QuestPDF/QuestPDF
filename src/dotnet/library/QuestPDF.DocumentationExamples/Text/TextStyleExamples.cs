@@ -44,6 +44,8 @@ public class TextStyleExamples
     [Test]
     public void FontFamily()
     {
+        Settings.UseSystemFonts = true;
+        
         Document
             .Create(document =>
             {

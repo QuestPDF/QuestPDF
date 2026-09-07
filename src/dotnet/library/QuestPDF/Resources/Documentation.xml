@@ -234,10 +234,9 @@
         </summary>
         
         <remarks>
-            <para>By default, the library uses the fonts installed on the system where the application is running (see <see cref="QuestPDF.Settings.UseSystemFonts">Settings.UseSystemFonts</see>).</para>
-            <para>This may work well in the development environment but may fail in the cloud, where fonts are usually not installed.</para>
-            <para>It is safest to deploy font files along with the application. The library automatically discovers and registers all font files found in the <see cref="QuestPDF.Settings.FontDiscoveryPaths">Settings.FontDiscoveryPaths</see> directories (by default, the application directory).</para>
+            <para>By default, the library uses only the fonts registered with it. It automatically discovers and registers all font files found in the <see cref="QuestPDF.Settings.FontDiscoveryPaths">Settings.FontDiscoveryPaths</see> directories (by default, the application directory). It is therefore safest to deploy font files along with the application.</para>
             <para>Optionally, use the <see cref="Drawing.FontManager">FontManager</see> class to register additional fonts, e.g. from a stream or an embedded resource.</para>
+            <para>Fonts installed on the system where the application is running are used only when the <see cref="QuestPDF.Settings.UseSystemFonts">Settings.UseSystemFonts</see> setting is enabled. This is convenient during development but may fail in the cloud, where fonts are usually not installed.</para>
         </remarks>
         
         <param name="value">Actual font family (e.g. "Times New Roman", "Calibri", "Lato") or custom identifier used when invoking the <see cref="Drawing.FontManager.RegisterFontWithCustomName">FontManager</see> method.</param>

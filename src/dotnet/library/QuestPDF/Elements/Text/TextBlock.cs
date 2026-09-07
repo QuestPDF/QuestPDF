@@ -612,7 +612,7 @@ namespace QuestPDF.Elements.Text
                 Possible solutions:
                 1) (Recommended) Deploy the required font files with your application. QuestPDF scans the application directory and registers every font file it finds.
                 2) Register fonts with 'FontManager.RegisterFont', then select them with 'TextStyle.FontFamily' or add them with 'TextStyle.FontFamilyFallback'.
-                3) Enable 'Settings.UseSystemFonts' to use fonts installed on the system where the application runs (less predictable across deployment environments).
+                3) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
                 4) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library.
                 
                 'Settings.ThrowOnMissingTextGlyphs' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues, missing glyphs are rendered as replacement characters or empty areas, and this report is written to the trace output as a warning.

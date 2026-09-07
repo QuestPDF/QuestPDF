@@ -12,9 +12,9 @@ using QuestPDF.Skia.Text;
 namespace QuestPDF.Drawing
 {
     /// <summary>
-    /// <para>By default, the library uses the fonts installed on the system where the application is running (see <see cref="Settings.UseSystemFonts"/>).</para>
-    /// <para>This may work well on the development environment but may fail in the cloud where fonts are usually not installed.</para>
-    /// <para>It is safest deploy font files along with the application. QuestPDF automtically scans all fonts deployed along with the application. Optionally, you can register additional fonts this class.</para>
+    /// <para>By default, the library uses only the fonts registered with this class: font files discovered automatically in the <see cref="Settings.FontDiscoveryPaths"/> directories (by default, the application directory) and fonts registered manually with the methods below.</para>
+    /// <para>Fonts installed on the system where the application is running are ignored unless <see cref="Settings.UseSystemFonts"/> is enabled. This keeps the output independent of the runtime environment, e.g. the cloud or containers where fonts are usually not installed.</para>
+    /// <para>It is safest to deploy font files along with the application. Optionally, use this class to register additional fonts, e.g. from a stream or an embedded resource.</para>
     /// </summary>
     public static class FontManager
     {
@@ -87,7 +87,7 @@ namespace QuestPDF.Drawing
         
         /// <summary>
         /// Returns information about the fonts installed on the system where the application is running, as visible to the library.
-        /// System fonts are used only when <see cref="Settings.UseSystemFonts"/> is enabled.
+        /// System fonts are used only when <see cref="Settings.UseSystemFonts"/> is enabled (it is disabled by default).
         /// </summary>
         /// <remarks>
         /// <para>Each entry describes a single typeface (font face), e.g. the regular and bold faces of one family are listed separately.</para>
