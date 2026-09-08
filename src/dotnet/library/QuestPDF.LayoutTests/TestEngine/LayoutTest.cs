@@ -179,7 +179,7 @@ internal class LayoutTest
     {
         try
         {
-            QuestPDF.Settings.EnableDebugging = true;
+            QuestPDF.Settings.EnableDetailedLayoutErrors = true;
             PerformTest();
         }
         catch (DocumentLayoutException e)

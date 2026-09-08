@@ -59,16 +59,14 @@ internal static class ConfigurationValidator
             "For predictable results, use a single directory that contains all required fonts.");
     }
 
-    private static void WarnIfDebuggingIsEnabled()
-    {
-        if (!Settings.EnableDebugging)
+        if (!Settings.EnableDetailedLayoutErrors)
             return;
 
         Trace.TraceWarning(
-            "[QuestPDF] QuestPDF.Settings.EnableDebugging is enabled. " +
-            "QuestPDF will collect additional layout diagnostics and include more context when layout exceptions occur. " +
-            "This is useful during development, but it can reduce performance and increase memory usage. " +
-            "Disable this setting in production environments and during performance testing unless you specifically need diagnostic details. " +
+            "[QuestPDF] QuestPDF.Settings.EnableDetailedLayoutErrors is enabled. " +
+            "When a document contains size constraints that cannot be met, QuestPDF will analyse the layout and include the probable location of the problem, along with detailed layout measurements, in the DocumentLayoutException message. " +
+            "This has no effect on documents that render successfully, but the detailed message may contain fragments of the document content and can be long for large documents. " +
+            "Consider disabling this setting in production environments where exception messages are logged. " +
             "By default, QuestPDF enables this setting only when a debugger is attached.");
     }
 

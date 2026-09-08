@@ -8,7 +8,7 @@ internal static class SemanticTreeTestRunner
     public static void TestSemanticTree(this IDocument document, SemanticTreeNode? semanticTreeRootNode)
     {
         Settings.EnableCaching = false;
-        Settings.EnableDebugging = false;
+        Settings.EnableDetailedLayoutErrors = false;
 
         var canvas = new SemanticAwareDocumentCanvas();
         var settings = new DocumentSettings { PDFA_Conformance = PDFA_Conformance.PDFA_3A };

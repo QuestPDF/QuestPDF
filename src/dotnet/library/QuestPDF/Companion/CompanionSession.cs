@@ -41,7 +41,7 @@ namespace QuestPDF.Companion
         public static async Task RunNewCompanionSession(IDocument document, int port, CancellationToken cancellationToken)
         {
             Settings.EnableCaching = false;
-            Settings.EnableDebugging = true;
+            Settings.EnableDetailedLayoutErrors = true;
 
             if (document is MergedDocument)
                 throw new NotSupportedException("The QuestPDF Companion App does not currently support merged documents. Please use the tool with a single document at a time.");

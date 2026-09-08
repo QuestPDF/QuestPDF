@@ -75,13 +75,13 @@ namespace QuestPDF.Infrastructure
             set => Settings.EnableCaching = value;
         }
         
-        [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.EnableDebugging static property.")]
+        [Obsolete("This API has been moved since version 2022.9. Please use the QuestPDF.Settings.EnableDetailedLayoutErrors static property.")]
         [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
         [ExcludeFromCodeCoverage]
         public bool ApplyDebugging
         {
-            get => Settings.EnableDebugging;
-            set => Settings.EnableDebugging = value;
+            get => Settings.EnableDetailedLayoutErrors;
+            set => Settings.EnableDetailedLayoutErrors = value;
         }
         
         [Obsolete("This API has been moved since version 2023.5. Please use the QuestPDF.Infrastructure.DocumentSettings API.")]

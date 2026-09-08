@@ -23,11 +23,16 @@ namespace QuestPDF
         public static bool EnableCaching { get; set; } = true;
         
         /// <summary>
-        /// This flag generates additional document elements to improve layout debugging experience.
-        /// When the provided content contains size constraints impossible to meet, the library generates an enhanced exception message with additional location and layout measurement details.
+        /// <para>Decides how much detail the <c>DocumentLayoutException</c> carries when the document content contains size constraints that cannot be met.</para>
+        /// <para>When this flag is enabled, the library locates the element that most likely causes the layout overflow and includes its position in the document hierarchy, along with the layout measurements of the surrounding elements, in the exception message.</para>
+        /// <para>When this flag is disabled, the exception message contains only a general description of the problem.</para>
         /// </summary>
-        /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>  
-        public static bool EnableDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        /// <remarks>
+        /// <para>This setting has no effect on documents that render successfully: the additional analysis runs only when a layout error is detected.</para>
+        /// <para>The detailed message may contain fragments of the document content, such as text, and can be long for large documents. Consider this before enabling the setting in production environments where exception messages are logged.</para>
+        /// <para>By default, this flag is enabled only when the debugger IS attached.</para>
+        /// </remarks>
+        public static bool EnableDetailedLayoutErrors { get; set; } = System.Diagnostics.Debugger.IsAttached;
         
         /// <summary>
         /// <para>Decides how the library reacts when the text contains glyphs that are not available in the used fonts, including the configured fallbacks.</para>
@@ -93,6 +98,15 @@ namespace QuestPDF
         {
             get => ThrowOnMissingTextGlyphs;
             set => ThrowOnMissingTextGlyphs = value;
+        }
+        
+        [Obsolete("This setting has been renamed since version 2026.9. Please use the EnableDetailedLayoutErrors property.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static bool EnableDebugging
+        {
+            get => EnableDetailedLayoutErrors;
+            set => EnableDetailedLayoutErrors = value;
         }
         
         [Obsolete("This setting has been renamed since version 2026.9. Please use the UseSystemFonts property.")]
