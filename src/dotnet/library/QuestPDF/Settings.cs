@@ -43,7 +43,7 @@ namespace QuestPDF
         public static bool ThrowOnMissingTextGlyphs { get; set; } = System.Diagnostics.Debugger.IsAttached;
         
         /// <summary>
-        /// <para>Decides how the library reacts when a text style refers to a font family that is not available: neither registered with the <c>FontManager</c> class (including fonts discovered in the <see cref="FontDiscoveryPaths"/> directories) nor, when <see cref="UseSystemFonts"/> is enabled, installed on the system.</para>
+        /// <para>Decides how the library reacts when a text style refers to a font family that is not available: neither registered with the <c>FontManager</c> class (including fonts discovered in the <see cref="FontDiscoveryPath"/> directory) nor, when <see cref="UseSystemFonts"/> is enabled, installed on the system.</para>
         /// <para>When this flag is enabled, document generation stops with the DocumentDrawingException.</para>
         /// <para>When this flag is disabled, document generation continues silently: the text is rendered with the first available font family from the fallback list, or with another registered font when none is available.</para>
         /// </summary>
@@ -54,25 +54,23 @@ namespace QuestPDF
         /// Decides whether the library may use the fonts installed on the system where the application is running.
         /// </summary>
         /// <remarks>
-        /// <para>When set to <c>false</c>, the library uses only the fonts registered with the <c>FontManager</c> class: fonts discovered automatically in the <see cref="FontDiscoveryPaths"/> directories and fonts registered manually. This makes the output independent of the runtime environment, especially where the necessary fonts might not be installed (e.g. minimal Docker images or serverless functions).</para>
+        /// <para>When set to <c>false</c>, the library uses only the fonts registered with the <c>FontManager</c> class: fonts discovered automatically in the <see cref="FontDiscoveryPath"/> directory and fonts registered manually. This makes the output independent of the runtime environment, especially where the necessary fonts might not be installed (e.g. minimal Docker images or serverless functions).</para>
         /// <para>When set to <c>true</c>, the library uses the system fonts in addition to the registered fonts. This is convenient during development, but the same document may render differently, or fail to render, after deployment to an environment with a different set of fonts installed.</para>
         /// <para>Referring to a font family that is not available is reported according to the <see cref="ThrowOnMissingFontFamilies"/> setting.</para>
-        /// <para>Disabled by default. Before version 2026.8.1, this setting was enabled by default.</para>
+        /// <para>Disabled by default. Before version 2026.9.0, this setting was enabled by default.</para>
         /// </remarks>
         public static bool UseSystemFonts { get; set; } = false;
         
         /// <summary>
-        /// Specifies the collection of directories where the library automatically searches for font files to register (.ttf, .otf, .ttc and .pfb).
+        /// Specifies the directory where the library automatically searches for font files to register (.ttf, .otf, .ttc and .pfb).
         /// </summary>
         /// <remarks>
-        /// <para>By default, this collection contains the application directory. Font files deployed along with the application are therefore registered automatically, without calling the <c>FontManager</c> class.</para>
-        /// <para>Add more paths to this collection to include additional directories. They are scanned recursively when the library is used for the first time, so configure this collection at application startup.</para>
+        /// <para>By default, this is the application directory. Font files deployed along with the application are therefore registered automatically, without calling the <c>FontManager</c> class.</para>
+        /// <para>The directory is scanned recursively when the library is used for the first time, so configure this setting at application startup. Set it to <c>null</c> to disable automatic font discovery.</para>
+        /// <para>To register fonts from additional directories, use the <c>FontManager.RegisterFontsFromDirectory</c> method.</para>
         /// <para>Fonts discovered this way are always available to the library, regardless of the runtime environment (see <see cref="UseSystemFonts"/>).</para>
         /// </remarks>
-        public static ICollection<string> FontDiscoveryPaths { get; } = new List<string>()
-        {
-            PathHelpers.ApplicationFilesPath
-        };
+        public static string? FontDiscoveryPath { get; set; } = PathHelpers.ApplicationFilesPath;
 
         /// <summary>
         /// Gets or sets the file path used for temporary storage during the document generation process.
@@ -117,7 +115,12 @@ namespace QuestPDF
             get => UseSystemFonts;
             set => UseSystemFonts = value;
         }
-        
+
+        [Obsolete("This setting has been replaced since version 2026.9. Please use the FontDiscoveryPath property to configure the directory scanned automatically, and the FontManager.RegisterFontsFromDirectory method to register fonts from additional directories.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static ICollection<string> FontDiscoveryPaths { get; } = [];
+
         #endregion
     }
 }

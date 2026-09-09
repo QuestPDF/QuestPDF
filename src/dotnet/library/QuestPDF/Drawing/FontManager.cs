@@ -12,7 +12,7 @@ using QuestPDF.Skia.Text;
 namespace QuestPDF.Drawing
 {
     /// <summary>
-    /// <para>By default, the library uses only the fonts registered with this class: font files discovered automatically in the <see cref="Settings.FontDiscoveryPaths"/> directories (by default, the application directory) and fonts registered manually with the methods below.</para>
+    /// <para>By default, the library uses only the fonts registered with this class: font files discovered automatically in the <see cref="Settings.FontDiscoveryPath"/> directory (by default, the application directory) and fonts registered manually with the methods below.</para>
     /// <para>Fonts installed on the system where the application is running are ignored unless <see cref="Settings.UseSystemFonts"/> is enabled. This keeps the output independent of the runtime environment, e.g. the cloud or containers where fonts are usually not installed.</para>
     /// <para>It is safest to deploy font files along with the application. Optionally, use this class to register additional fonts, e.g. from a stream or an embedded resource.</para>
     /// </summary>
@@ -24,7 +24,7 @@ namespace QuestPDF.Drawing
         static FontManager()
         {
             SkNativeDependencyCompatibilityChecker.Test();
-            RegisterFontsFromDiscoveryPaths();
+            RegisterFontsFromDiscoveryPath();
         }
         
         [Obsolete("Since version 2022.8 this method has been renamed. Please use the RegisterFontWithCustomName method.")]
@@ -81,8 +81,61 @@ namespace QuestPDF.Drawing
         }
         
         /// <summary>
-        /// Returns information about the fonts registered in the library: fonts discovered automatically in the <see cref="Settings.FontDiscoveryPaths"/> directories,
-        /// and fonts registered manually with the <see cref="RegisterFont"/>, <see cref="RegisterFontWithCustomName"/> and <see cref="RegisterFontFromEmbeddedResource"/> methods.
+        /// Registers a TrueType font from a file.
+        /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
+        /// </summary>
+        /// <param name="path">Path to the font file (.ttf, .otf, .ttc or .pfb). Absolute paths are used as-is. Relative paths are resolved first against the current working directory, and then against the application directory.</param>
+        public static void RegisterFontFromFile(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException(nameof(path));
+            
+            path = PathHelpers.ResolveResourceFilePath(path);
+            
+            using var fontData = SkData.FromFile(path);
+            RegisterTypeface(fontData);
+        }
+        
+        private static void TryRegisterFontFromFile(string path)
+        {
+            try
+            {
+                RegisterFontFromFile(path);
+            }
+            catch
+            {
+                // files that cannot be read or are not valid font files are skipped
+            }
+        }
+        
+        /// <summary>
+        /// Registers all font files (.ttf, .otf, .ttc and .pfb) found in the provided directory and its subdirectories.
+        /// The font family names and all related attributes are detected automatically.
+        /// </summary>
+        /// <remarks>
+        /// <para>Font files in the <see cref="Settings.FontDiscoveryPath"/> directory (by default, the application directory) are registered automatically. Use this method to register fonts from additional directories.</para>
+        /// <para>Files that are not valid font files are skipped.</para>
+        /// </remarks>
+        /// <param name="path">Path to the directory containing font files.</param>
+        public static void RegisterFontsFromDirectory(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException(nameof(path));
+            
+            if (!Directory.Exists(path))
+                throw new ArgumentException($"Cannot register fonts from a directory. Please make sure that the directory exists or the path is correct: {path}");
+
+            var fontFiles = PathHelpers
+                .EnumerateFilesRecursively(path)
+                .FilterFontFiles();
+                
+            foreach (var fontFile in fontFiles)
+                TryRegisterFontFromFile(fontFile);
+        }
+        
+        /// <summary>
+        /// Returns information about the fonts registered in the library: fonts discovered automatically in the <see cref="Settings.FontDiscoveryPath"/> directory,
+        /// and fonts registered manually with the <see cref="RegisterFont"/>, <see cref="RegisterFontWithCustomName"/>, <see cref="RegisterFontFromEmbeddedResource"/> and <see cref="RegisterFontsFromDirectory"/> methods.
         /// These fonts are always available to the library, regardless of the runtime environment.
         /// </summary>
         /// <remarks>
@@ -167,64 +220,72 @@ namespace QuestPDF.Drawing
         }
         
         #endregion
+
+        private static bool AreFontsFromDiscoveryPathRegistered { get; set; } = false;
         
-        #region Automated Font Registration
-        
-        private static void RegisterFontsFromDiscoveryPaths()
+        internal static void RegisterFontsFromDiscoveryPath()
         {
-            var fontFilePaths = SearchFontFiles();
+            const int maxFilesToScan = 100_000;
             
-            foreach (var fileName in fontFilePaths)
+            if (AreFontsFromDiscoveryPathRegistered)
+                return;
+            
+            RegisterFromDirectory(Settings.FontDiscoveryPath);
+            
+            #pragma warning disable CS0618 // directories added through the obsolete collection are still honored
+            foreach (var fontDiscoveryPath in Settings.FontDiscoveryPaths)
+                RegisterFromDirectory(fontDiscoveryPath);
+            #pragma warning restore CS0618
+            
+            AreFontsFromDiscoveryPathRegistered = true;
+            
+            static void RegisterFromDirectory(string? path)
             {
+                if (string.IsNullOrWhiteSpace(path))
+                    return;
+                
+                var files = TryEnumerateFiles(path);
+
+                if (files.Count == maxFilesToScan)
+                {
+                    throw new InvalidOperationException(
+                        $"The library has reached the limit of {maxFilesToScan} files to scan for font files. " +
+                        $"Please make sure that the {nameof(Settings)}.{nameof(Settings.FontDiscoveryPath)} setting " +
+                        $"points to a directory that contains only the necessary files. " +
+                        $"The reason of this exception is to prevent scanning too many files and avoid performance issues.");
+                }
+                
+                foreach (var fontFile in files.FilterFontFiles())
+                    TryRegisterFontFromFile(fontFile);
+            }
+            
+            static ICollection<string> TryEnumerateFiles(string? path)
+            {
+                if (path == null)
+                    return [];
+            
                 try
                 {
-                    using var fontFileStream = File.OpenRead(fileName);
-                    RegisterFont(fontFileStream);
+                    if (!Directory.Exists(path))
+                        return [];
+                
+                    return PathHelpers
+                        .EnumerateFilesRecursively(path)
+                        .Take(maxFilesToScan)
+                        .ToArray();
                 }
                 catch
                 {
-                    
-                }
-            }
-
-            ICollection<string> SearchFontFiles()
-            {
-                const int maxFilesToScan = 100_000;
-                
-                var applicationFiles = Settings
-                    .FontDiscoveryPaths
-                    .Where(Directory.Exists)
-                    .Select(TryEnumerateFiles)
-                    .SelectMany(file => file)
-                    .Take(maxFilesToScan)
-                    .ToList();
-                
-                if (applicationFiles.Count == maxFilesToScan)
-                    throw new InvalidOperationException($"The library has reached the limit of {maxFilesToScan} files to scan for font files. Please adjust the {nameof(Settings.FontDiscoveryPaths)} collection to include only the necessary directories. The reason of this exception is to prevent scanning too many files and avoid performance issues on the application startup.");
-                
-                var supportedFontExtensions = new[] { ".ttf", ".otf", ".ttc", ".pfb" };
-                
-                return applicationFiles
-                    .Where(x => supportedFontExtensions.Contains(Path.GetExtension(x).ToLowerInvariant()))
-                    .ToList();
-                
-                ICollection<string> TryEnumerateFiles(string path)
-                {
-                    try
-                    {
-                        return PathHelpers
-                            .EnumerateFilesRecursively(path)
-                            .Take(maxFilesToScan)
-                            .ToArray();
-                    }
-                    catch
-                    {
-                        return Array.Empty<string>();
-                    }
+                    return Array.Empty<string>();
                 }
             }
         }
-        
-        #endregion
+
+        private static IEnumerable<string> FilterFontFiles(this IEnumerable<string> files)
+        {
+            var supportedFontExtensions = new[] { ".ttf", ".otf", ".ttc", ".pfb" };
+            
+            return files.Where(f => supportedFontExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()));
+        }
     }
 }
