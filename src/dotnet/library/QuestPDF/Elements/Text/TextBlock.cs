@@ -591,7 +591,7 @@ namespace QuestPDF.Elements.Text
                 
                 Possible solutions:
                 1) (Recommended) Deploy the required font files with your application. QuestPDF scans the application directory and registers every font file it finds.
-                2) Register fonts with 'FontManager.RegisterFont' or 'FontManager.RegisterFontWithCustomName', then select them by family name with 'TextStyle.FontFamily'.
+                2) Register fonts with the 'FontManager.RegisterFontFrom*' methods, then select them by family name with 'TextStyle.FontFamily'.
                 3) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library. Font family names are matched ignoring case.
                 4) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
                 
@@ -639,7 +639,7 @@ namespace QuestPDF.Elements.Text
                 
                 Possible solutions:
                 1) (Recommended) Deploy fonts that contain the missing glyphs with your application. QuestPDF scans the application directory and registers every font file it finds.
-                2) Register fonts with 'FontManager.RegisterFont', then select them with 'TextStyle.FontFamily' or add them with 'TextStyle.FontFamilyFallback'.
+                2) Register fonts with the 'FontManager.RegisterFontFrom*' methods, then select them with 'TextStyle.FontFamily' or add them as fallbacks by passing several family names to 'TextStyle.FontFamily'.
                 3) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library.
                 4) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
                  

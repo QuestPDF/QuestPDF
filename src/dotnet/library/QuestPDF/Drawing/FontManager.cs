@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
@@ -16,6 +17,10 @@ namespace QuestPDF.Drawing
     /// <para>Fonts installed on the system where the application is running are ignored unless <see cref="Settings.UseSystemFonts"/> is enabled. This keeps the output independent of the runtime environment, e.g. the cloud or containers where fonts are usually not installed.</para>
     /// <para>It is safest to deploy font files along with the application. Optionally, use this class to register additional fonts, e.g. from a stream or an embedded resource.</para>
     /// </summary>
+    /// <remarks>
+    /// <para>The font family name and the weight and italic attributes are read from the font file. Use <see cref="GetRegisteredFonts"/> to learn the family names under which the registered fonts are available.</para>
+    /// <para>Font family names are matched ignoring case.</para>
+    /// </remarks>
     public static class FontManager
     {
         internal static SkTypefaceProvider TypefaceProvider { get; } = new();
@@ -27,85 +32,85 @@ namespace QuestPDF.Drawing
             RegisterFontsFromDiscoveryPath();
         }
         
-        [Obsolete("Since version 2022.8 this method has been renamed. Please use the RegisterFontWithCustomName method.")]
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        [ExcludeFromCodeCoverage]
-        public static void RegisterFontType(string fontName, Stream stream)
-        {
-            RegisterFontWithCustomName(fontName, stream);
-        }
+        #region Font Registration
         
         /// <summary>
-        /// Registers a TrueType font from a stream under the provided custom <paramref name="fontName"/>.
-        /// Refer to this font by using the same name as a font family in the <see cref="TextStyle"/> API later on.
+        /// Registers a font (.ttf, .otf, .ttc or .pfb) from a stream. The font family name and all related attributes are detected automatically.
         /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
         /// </summary>
-        public static void RegisterFontWithCustomName(string fontName, Stream stream)
+        /// <param name="stream">Stream with the font file content.</param>
+        public static void RegisterFontFromStream(Stream stream)
         {
-            using var fontData = SkData.FromStream(stream);
-            RegisterTypeface(fontData, fontName);
-        }
-
-        /// <summary>
-        /// Registers a TrueType font from a stream. The font family name and all related attributes are detected automatically.
-        /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
-        /// </summary>
-        public static void RegisterFont(Stream stream)
-        {
-            using var fontData = SkData.FromStream(stream);
-            RegisterTypeface(fontData);
-        }
-        
-        private static void RegisterTypeface(SkData fontData, string? alias = null)
-        {
-            lock (FontFamilyNamesLock)
-            {
-                TypefaceProvider.AddTypefaceFromData(fontData, alias);
-                RegisteredFontFamilyNamesCache = null;
-            }
-        }
-        
-        /// <summary>
-        /// Registers a TrueType font from an embedded resource. The font family name and all related attributes are detected automatically.
-        /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
-        /// </summary>
-        /// <param name="pathName">Path to the embedded resource (the case-sensitive name of the manifest resource being requested).</param>
-        public static void RegisterFontFromEmbeddedResource(string pathName)
-        {
-            using var stream = Assembly.GetCallingAssembly().GetManifestResourceStream(pathName);
-
             if (stream == null)
-                throw new ArgumentException($"Cannot load font file from an embedded resource. Please make sure that the resource is available or the path is correct: {pathName}");
+                throw new ArgumentNullException(nameof(stream));
             
-            RegisterFont(stream);
+            using var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            
+            RegisterTypeface(memoryStream.ToArray());
         }
         
         /// <summary>
-        /// Registers a TrueType font from a file.
+        /// Registers a font (.ttf, .otf, .ttc or .pfb) from its binary content. The font family name and all related attributes are detected automatically.
         /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
         /// </summary>
-        /// <param name="path">Path to the font file (.ttf, .otf, .ttc or .pfb). Absolute paths are used as-is. Relative paths are resolved first against the current working directory, and then against the application directory.</param>
+        /// <param name="data">Content of the font file.</param>
+        public static void RegisterFontFromBinaryData(byte[] data)
+        {
+            if (data == null)
+                throw new ArgumentNullException(nameof(data));
+            
+            RegisterTypeface(data);
+        }
+        
+        /// <summary>
+        /// Registers a font (.ttf, .otf, .ttc or .pfb) from a file. The font family name and all related attributes are detected automatically.
+        /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
+        /// </summary>
+        /// <param name="path">Path to the font file. Absolute paths are used as-is. Relative paths are resolved first against the current working directory, and then against the application directory.</param>
         public static void RegisterFontFromFile(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
                 throw new ArgumentNullException(nameof(path));
             
             path = PathHelpers.ResolveResourceFilePath(path);
-            
-            using var fontData = SkData.FromFile(path);
-            RegisterTypeface(fontData);
+            RegisterTypeface(File.ReadAllBytes(path));
         }
         
-        private static void TryRegisterFontFromFile(string path)
+        /// <summary>
+        /// Registers a font (.ttf, .otf, .ttc or .pfb) from a resource embedded in the calling assembly. The font family name and all related attributes are detected automatically.
+        /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// The resource is searched in the assembly that calls this method. When the font is embedded in a different assembly, e.g. a shared library, use the overload that accepts the <see cref="Assembly"/> instance.
+        /// </remarks>
+        /// <param name="resourceName">Case-sensitive name of the manifest resource, e.g. "MyApp.Fonts.MyFont.ttf".</param>
+        [MethodImpl(MethodImplOptions.NoInlining)] // the calling assembly must be the one that invoked this method
+        public static void RegisterFontFromEmbeddedResource(string resourceName)
         {
-            try
-            {
-                RegisterFontFromFile(path);
-            }
-            catch
-            {
-                // files that cannot be read or are not valid font files are skipped
-            }
+            RegisterFontFromEmbeddedResource(Assembly.GetCallingAssembly(), resourceName);
+        }
+        
+        /// <summary>
+        /// Registers a font (.ttf, .otf, .ttc or .pfb) from a resource embedded in the provided assembly. The font family name and all related attributes are detected automatically.
+        /// <a href="https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration">Learn more</a>
+        /// </summary>
+        /// <param name="assembly">Assembly containing the embedded resource, e.g. <c>typeof(Program).Assembly</c>.</param>
+        /// <param name="resourceName">Case-sensitive name of the manifest resource, e.g. "MyApp.Fonts.MyFont.ttf".</param>
+        public static void RegisterFontFromEmbeddedResource(Assembly assembly, string resourceName)
+        {
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
+            
+            if (string.IsNullOrWhiteSpace(resourceName))
+                throw new ArgumentNullException(nameof(resourceName));
+            
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+
+            if (stream == null)
+                throw new ArgumentException($"Cannot load font file from an embedded resource. Please make sure that the resource is available in the '{assembly.GetName().Name}' assembly or the path is correct: {resourceName}");
+            
+            RegisterFontFromStream(stream);
         }
         
         /// <summary>
@@ -128,19 +133,34 @@ namespace QuestPDF.Drawing
             var fontFiles = PathHelpers
                 .EnumerateFilesRecursively(path)
                 .FilterFontFiles();
-                
+            
             foreach (var fontFile in fontFiles)
-                TryRegisterFontFromFile(fontFile);
+                RegisterFontFromFile(fontFile);
         }
+        
+        private static void RegisterTypeface(byte[] data, string? customFamilyName = null)
+        {
+            lock (FontFamilyNamesLock)
+            {
+                using var fontData = SkData.FromBinary(data);
+                
+                TypefaceProvider.AddTypefaceFromData(fontData, customFamilyName);
+                RegisteredFontFamilyNamesCache = null;
+            }
+        }
+
+        #endregion
+        
+        #region Font Enumeration
         
         /// <summary>
         /// Returns information about the fonts registered in the library: fonts discovered automatically in the <see cref="Settings.FontDiscoveryPath"/> directory,
-        /// and fonts registered manually with the <see cref="RegisterFont"/>, <see cref="RegisterFontWithCustomName"/>, <see cref="RegisterFontFromEmbeddedResource"/> and <see cref="RegisterFontsFromDirectory"/> methods.
+        /// and fonts registered manually with the <c>RegisterFont*</c> methods.
         /// These fonts are always available to the library, regardless of the runtime environment.
         /// </summary>
         /// <remarks>
         /// <para>Each entry describes a single typeface (font face), e.g. the regular and bold faces of one family are listed separately.</para>
-        /// <para>A typeface registered under several names (e.g. a custom name and its own family name) is listed once per name.</para>
+        /// <para>A typeface available under several family names (e.g. localized names) is listed once per name.</para>
         /// </remarks>
         public static IReadOnlyCollection<FontInfo> GetRegisteredFonts()
         {
@@ -159,6 +179,8 @@ namespace QuestPDF.Drawing
         {
             return SkFontManager.System.GetTypefaces();
         }
+        
+        #endregion
         
         #region Checking Font Family Availability
         
@@ -220,6 +242,8 @@ namespace QuestPDF.Drawing
         }
         
         #endregion
+        
+        #region Font Discovery
 
         private static bool AreFontsFromDiscoveryPathRegistered { get; set; } = false;
         
@@ -256,7 +280,7 @@ namespace QuestPDF.Drawing
                 }
                 
                 foreach (var fontFile in files.FilterFontFiles())
-                    TryRegisterFontFromFile(fontFile);
+                    RegisterFontFromFile(fontFile);
             }
             
             static ICollection<string> TryEnumerateFiles(string? path)
@@ -287,5 +311,41 @@ namespace QuestPDF.Drawing
             
             return files.Where(f => supportedFontExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()));
         }
+        
+        #endregion
+        
+        #region Obsolete
+        
+        [Obsolete("Since version 2026.9 registering fonts under a custom name is no longer supported. Please use the RegisterFontFromStream method and refer to the font by the family name stored in the font file (see the GetRegisteredFonts method).")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static void RegisterFontType(string fontName, Stream stream)
+        {
+            RegisterFontWithCustomName(fontName, stream);
+        }
+        
+        [Obsolete("Since version 2026.9 registering fonts under a custom name is no longer supported. Please use the RegisterFontFromStream method and refer to the font by the family name stored in the font file (see the GetRegisteredFonts method).")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static void RegisterFontWithCustomName(string fontName, Stream stream)
+        {
+            if (stream == null)
+                throw new ArgumentNullException(nameof(stream));
+            
+            using var memoryStream = new MemoryStream();
+            stream.CopyTo(memoryStream);
+            
+            RegisterTypeface(memoryStream.ToArray(), fontName);
+        }
+        
+        [Obsolete("Since version 2026.9 this method has been renamed. Please use the RegisterFontFromStream method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static void RegisterFont(Stream stream)
+        {
+            RegisterFontFromStream(stream);
+        }
+        
+        #endregion
     }
 }

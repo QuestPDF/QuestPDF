@@ -239,7 +239,7 @@
             <para>Fonts installed on the system where the application is running are used only when the <see cref="QuestPDF.Settings.UseSystemFonts">Settings.UseSystemFonts</see> setting is enabled. This is convenient during development but may fail in the cloud, where fonts are usually not installed.</para>
         </remarks>
         
-        <param name="value">Actual font family (e.g. "Times New Roman", "Calibri", "Lato") or custom identifier used when invoking the <see cref="Drawing.FontManager.RegisterFontWithCustomName">FontManager</see> method.</param>
+        <param name="value">Font family name as stored in the font file (e.g. "Times New Roman", "Calibri", "Lato"). Use the <see cref="Drawing.FontManager.GetRegisteredFonts">FontManager.GetRegisteredFonts</see> method to list the available family names.</param>
     </doc>
 
     <doc for="text.fontFeatures">
