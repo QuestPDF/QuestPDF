@@ -16,12 +16,11 @@ internal sealed class SkData : IDisposable
     
     public static SkData FromFile(string filePath)
     {
-        var instance = API.questpdf_skia_data_create_from_file(filePath);
-        
-        if (instance == IntPtr.Zero)
-            throw new Exception($"Cannot load a file under the provided path: {filePath}.");
-        
-        return new SkData(instance);
+        // Skia's native file loader memory-maps the file and keeps the mapping alive
+        // for as long as any object created from the data (e.g. SkImage) exists.
+        // It may result in a file lock and potential problems during application deployment.
+        var content = File.ReadAllBytes(filePath);
+        return FromBinary(content);
     }
     
     public static SkData FromStream(Stream stream)
@@ -74,9 +73,6 @@ internal sealed class SkData : IDisposable
     
     private static class API
     {
-        [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr questpdf_skia_data_create_from_file([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string path);
-    
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe IntPtr questpdf_skia_data_create_from_binary(byte* arrayPointer, int arrayLength);
     
