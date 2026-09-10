@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -29,6 +30,7 @@ namespace QuestPDF.Drawing
         static FontManager()
         {
             SkNativeDependencyCompatibilityChecker.Test();
+            RegisterDefaultFonts();
             RegisterFontsFromDiscoveryPath();
         }
         
@@ -243,6 +245,21 @@ namespace QuestPDF.Drawing
         
         #endregion
         
+        #region Default Fonts
+        
+        private static void RegisterDefaultFonts()
+        {
+            var archivePath = PathHelpers.DefaultFontsArchivePath;
+            
+            if (!File.Exists(archivePath))
+                return;
+            
+            foreach (var (_, content) in ResourceArchive.Read(archivePath))
+                RegisterTypeface(content);
+        }
+        
+        #endregion
+        
         #region Font Discovery
 
         private static bool AreFontsFromDiscoveryPathRegistered { get; set; } = false;
@@ -305,11 +322,16 @@ namespace QuestPDF.Drawing
             }
         }
 
+        private static readonly string[] SupportedFontExtensions = [".ttf", ".otf", ".ttc", ".pfb"];
+        
+        private static bool IsFontFile(string path)
+        {
+            return SupportedFontExtensions.Contains(Path.GetExtension(path).ToLowerInvariant());
+        }
+        
         private static IEnumerable<string> FilterFontFiles(this IEnumerable<string> files)
         {
-            var supportedFontExtensions = new[] { ".ttf", ".otf", ".ttc", ".pfb" };
-            
-            return files.Where(f => supportedFontExtensions.Contains(Path.GetExtension(f).ToLowerInvariant()));
+            return files.Where(IsFontFile);
         }
         
         #endregion
