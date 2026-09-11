@@ -21,15 +21,15 @@ internal class OrderOfSemanticItemsTests : ConformanceTestBase
                         .Column(column =>
                         {
                             column.Item()
-                                .SemanticHeader1()
+                                .SemanticHeading1()
                                 .Text("1 - H1");
                             
                             column.Item()
-                                .SemanticHeader2()
+                                .SemanticHeading2()
                                 .Text("2 - H2");
                             
                             column.Item()
-                                .SemanticHeader2()
+                                .SemanticHeading2()
                                 .Text("3 - H2");
                             
                             column.Item().MultiColumn(multiColumn =>
@@ -39,15 +39,15 @@ internal class OrderOfSemanticItemsTests : ConformanceTestBase
                                 multiColumn.Content().Column(column =>
                                 {
                                     column.Item()
-                                        .SemanticHeader2()
+                                        .SemanticHeading2()
                                         .Text("4 - H2");
                                     
                                     column.Item()
-                                        .SemanticHeader3()
+                                        .SemanticHeading3()
                                         .Text("5 - H3");
                                     
                                     column.Item()
-                                        .SemanticHeader3()
+                                        .SemanticHeading3()
                                         .Text("6 - H3");
                                 });
                             });

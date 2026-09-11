@@ -22,7 +22,7 @@ internal class HeaderTests : ConformanceTestBase
                             column.Spacing(25);
                             
                             column.Item()
-                                .SemanticHeader1()
+                                .SemanticHeading1()
                                 .Text("Conformance Test: Header")
                                 .FontSize(24)
                                 .Bold()

@@ -25,7 +25,7 @@ internal class StyledBoxTests : ConformanceTestBase
                             column.Spacing(30);
 
                             column.Item()
-                                .SemanticHeader1()
+                                .SemanticHeading1()
                                 .Text("Conformance Test: Styled Boxes")
                                 .FontSize(36)
                                 .Bold()

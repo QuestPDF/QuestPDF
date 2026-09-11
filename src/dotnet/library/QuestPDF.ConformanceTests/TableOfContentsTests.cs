@@ -24,7 +24,7 @@ internal class TableOfContentsTests : ConformanceTestBase
                             column.Item()
                                 .ExtendVertical()
                                 .AlignMiddle()
-                                .SemanticHeader1()
+                                .SemanticHeading1()
                                 .Text("Conformance Test:\nTable of Contents")
                                 .FontSize(36)
                                 .Bold()
@@ -95,7 +95,7 @@ internal class TableOfContentsTests : ConformanceTestBase
                                 column.Spacing(15);
                                 
                                 column.Item()
-                                    .SemanticHeader2()
+                                    .SemanticHeading2()
                                     .Text($"Section {i}")
                                     .Bold()
                                     .FontSize(20)

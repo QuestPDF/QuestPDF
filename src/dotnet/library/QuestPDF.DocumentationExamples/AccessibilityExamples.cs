@@ -19,7 +19,7 @@ public class AccessibilityExamples
 
                     page.Header()
                         .PaddingBottom(15)
-                        .SemanticHeader1()
+                        .SemanticHeading1()
                         .Text("Accessibility Test Document")
                         .FontColor(Colors.Blue.Darken3)
                         .FontSize(24)
@@ -36,7 +36,7 @@ public class AccessibilityExamples
                                 {
                                     column.Item()
                                         .PaddingBottom(10)
-                                        .SemanticHeader2()
+                                        .SemanticHeading2()
                                         .Text("Section with text content")
                                         .FontColor(Colors.Blue.Darken1)
                                         .FontSize(16);
@@ -54,7 +54,7 @@ public class AccessibilityExamples
                                 {
                                     column.Item()
                                         .PaddingBottom(10)
-                                        .SemanticHeader2()
+                                        .SemanticHeading2()
                                         .Text("Section with image")
                                         .FontColor(Colors.Blue.Darken1)
                                         .FontSize(16);

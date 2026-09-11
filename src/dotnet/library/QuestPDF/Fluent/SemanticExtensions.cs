@@ -1,5 +1,5 @@
 using System;
-using QuestPDF.Elements;
+using System.Diagnostics.CodeAnalysis;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
 
@@ -46,7 +46,7 @@ public static class SemanticExtensions
     
     /// <summary>
     /// Applies a 'Section' tag, grouping a set of related content.
-    /// A section typically includes a heading (e.g., SemanticHeader2) and its corresponding content.
+    /// A section typically includes a heading (e.g., SemanticHeading2) and its corresponding content.
     /// Sections can be nested to create a hierarchical document structure.
     /// </summary>
     public static IContainer SemanticSection(this IContainer container)
@@ -127,12 +127,12 @@ public static class SemanticExtensions
     
     #endregion
     
-    #region Headers
+    #region Headings
     
-    private static IContainer SemanticHeader(this IContainer container, int level)
+    private static IContainer SemanticHeading(this IContainer container, int level)
     {
         if (level < 1 || level > 6)
-            throw new ArgumentOutOfRangeException(nameof(level), "Header level must be between 1 and 6.");
+            throw new ArgumentOutOfRangeException(nameof(level), "Heading level must be between 1 and 6.");
 
         return container.SemanticTag($"H{level}");
     }
@@ -141,49 +141,49 @@ public static class SemanticExtensions
     /// Marks the content as a level 1 heading (H1), the highest level in the document hierarchy.
     /// Headings are crucial for navigation and outlining the document's structure.
     /// </summary>
-    public static IContainer SemanticHeader1(this IContainer container)
+    public static IContainer SemanticHeading1(this IContainer container)
     {
-        return container.SemanticHeader(1);
+        return container.SemanticHeading(1);
     }
     
     /// <summary>
     /// Marks the content as a level 2 heading (H2).
     /// </summary>
-    public static IContainer SemanticHeader2(this IContainer container)
+    public static IContainer SemanticHeading2(this IContainer container)
     {
-        return container.SemanticHeader(2);
+        return container.SemanticHeading(2);
     }
     
     /// <summary>
     /// Marks the content as a level 3 heading (H3).
     /// </summary>
-    public static IContainer SemanticHeader3(this IContainer container)
+    public static IContainer SemanticHeading3(this IContainer container)
     {
-        return container.SemanticHeader(3);
+        return container.SemanticHeading(3);
     }
     
     /// <summary>
     /// Marks the content as a level 4 heading (H4).
     /// </summary>
-    public static IContainer SemanticHeader4(this IContainer container)
+    public static IContainer SemanticHeading4(this IContainer container)
     {
-        return container.SemanticHeader(4);
+        return container.SemanticHeading(4);
     }
     
     /// <summary>
     /// Marks the content as a level 5 heading (H5).
     /// </summary>
-    public static IContainer SemanticHeader5(this IContainer container)
+    public static IContainer SemanticHeading5(this IContainer container)
     {
-        return container.SemanticHeader(5);
+        return container.SemanticHeading(5);
     }
     
     /// <summary>
     /// Marks the content as a level 6 heading (H6), the lowest level in the document hierarchy.
     /// </summary>
-    public static IContainer SemanticHeader6(this IContainer container)
+    public static IContainer SemanticHeading6(this IContainer container)
     {
-        return container.SemanticHeader(6);
+        return container.SemanticHeading(6);
     }
     
     #endregion
@@ -318,6 +318,58 @@ public static class SemanticExtensions
     public static IContainer SemanticFormula(this IContainer container, string alternativeText)
     {
         return container.SemanticTag("Formula", alternativeText: alternativeText);
+    }
+    
+    #endregion
+    
+    #region Obsolete
+    
+    [Obsolete("This element has been renamed since version 2026.9. Please use the SemanticHeading1 method.")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    public static IContainer SemanticHeader1(this IContainer container)
+    {
+        return container.SemanticHeading1();
+    }
+    
+    [Obsolete("This element has been renamed since version 2026.9. Please use the SemanticHeading2 method.")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    public static IContainer SemanticHeader2(this IContainer container)
+    {
+        return container.SemanticHeading2();
+    }
+    
+    [Obsolete("This element has been renamed since version 2026.9. Please use the SemanticHeading3 method.")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    public static IContainer SemanticHeader3(this IContainer container)
+    {
+        return container.SemanticHeading3();
+    }
+    
+    [Obsolete("This element has been renamed since version 2026.9. Please use the SemanticHeading4 method.")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    public static IContainer SemanticHeader4(this IContainer container)
+    {
+        return container.SemanticHeading4();
+    }
+    
+    [Obsolete("This element has been renamed since version 2026.9. Please use the SemanticHeading5 method.")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    public static IContainer SemanticHeader5(this IContainer container)
+    {
+        return container.SemanticHeading5();
+    }
+    
+    [Obsolete("This element has been renamed since version 2026.9. Please use the SemanticHeading6 method.")]
+    [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+    [ExcludeFromCodeCoverage]
+    public static IContainer SemanticHeader6(this IContainer container)
+    {
+        return container.SemanticHeading6();
     }
     
     #endregion

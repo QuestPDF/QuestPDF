@@ -25,7 +25,7 @@ internal class ListTests : ConformanceTestBase
                             column.Spacing(15);
 
                             column.Item()
-                                .SemanticHeader1()
+                                .SemanticHeading1()
                                 .Text("Conformance Test: Lists")
                                 .FontSize(36)
                                 .Bold()

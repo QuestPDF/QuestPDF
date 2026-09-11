@@ -22,7 +22,7 @@ internal class SvgTests : ConformanceTestBase
                             column.Spacing(25);
 
                             column.Item()
-                                .SemanticHeader1()
+                                .SemanticHeading1()
                                 .Text("Conformance Test: SVG")
                                 .FontSize(24)
                                 .Bold()

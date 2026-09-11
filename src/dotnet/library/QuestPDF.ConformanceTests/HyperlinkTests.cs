@@ -23,7 +23,7 @@ internal class HyperlinkTests : ConformanceTestBase
                             column.Spacing(15);
 
                             column.Item()
-                                .SemanticHeader1()
+                                .SemanticHeading1()
                                 .Text("Conformance Test: Hyperlinks")
                                 .FontSize(24)
                                 .Bold()

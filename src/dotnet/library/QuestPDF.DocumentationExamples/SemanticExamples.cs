@@ -183,7 +183,7 @@ public class SemanticExamples
                                         
                                         column.Item()
                                             .PaddingBottom(8)
-                                            .SemanticHeader1()
+                                            .SemanticHeading1()
                                             .Text(category1.Category)
                                             .FontSize(24)
                                             .FontColor(Colors.Blue.Darken4)
@@ -200,7 +200,7 @@ public class SemanticExamples
                                                     
                                                     column.Item()
                                                         .PaddingBottom(8)
-                                                        .SemanticHeader2()
+                                                        .SemanticHeading2()
                                                         .Text(category2.Category)
                                                         .FontSize(20)
                                                         .FontColor(Colors.Blue.Darken2)
@@ -217,7 +217,7 @@ public class SemanticExamples
                                                                 
                                                                 column.Item()
                                                                     .PaddingBottom(8)
-                                                                    .SemanticHeader3()
+                                                                    .SemanticHeading3()
                                                                     .Text(category3.Category)
                                                                     .FontSize(16)
                                                                     .FontColor(Colors.Blue.Medium)

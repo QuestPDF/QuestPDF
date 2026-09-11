@@ -25,14 +25,14 @@ internal class DynamicTests : ConformanceTestBase
                         {
                             column.Spacing(25);
 
-                            column.Item().SemanticHeader1().Text("Conformance Test: Lazy");
+                            column.Item().SemanticHeading1().Text("Conformance Test: Lazy");
                             
-                            column.Item().SemanticHeader2().Text("Before lazy");
+                            column.Item().SemanticHeading2().Text("Before lazy");
 
                             foreach (var i in Enumerable.Range(0, 10))
                                 column.Item().Dynamic(new DynamicComponent(i));
                             
-                            column.Item().SemanticHeader2().Text("After lazy");
+                            column.Item().SemanticHeading2().Text("After lazy");
                         });
                 });
             });
@@ -70,7 +70,7 @@ internal class DynamicTests : ConformanceTestBase
             {
                 container.SemanticArticle().Column(column =>
                 {
-                    column.Item().SemanticHeader3().Text($"Article {index}").Bold();
+                    column.Item().SemanticHeading3().Text($"Article {index}").Bold();
 
                     foreach (var j in Enumerable.Range(0, 10))
                     {

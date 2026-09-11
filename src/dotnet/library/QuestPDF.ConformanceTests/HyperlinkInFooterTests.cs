@@ -23,7 +23,7 @@ internal class HyperlinkInFooterTests : ConformanceTestBase
                             column.Spacing(15);
 
                             column.Item()
-                                .SemanticHeader1()
+                                .SemanticHeading1()
                                 .Text("Conformance Test: Hyperlink in Footer")
                                 .FontSize(24)
                                 .Bold()

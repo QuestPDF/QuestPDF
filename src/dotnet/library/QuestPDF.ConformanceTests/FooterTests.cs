@@ -23,7 +23,7 @@ internal class FooterTests : ConformanceTestBase
                             column.Spacing(25);
 
                             column.Item()
-                                .SemanticHeader1()
+                                .SemanticHeading1()
                                 .Text("Conformance Test: Footer")
                                 .FontSize(24)
                                 .Bold()
