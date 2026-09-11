@@ -53,7 +53,7 @@ namespace QuestPDF.Infrastructure
             Color = Colors.Black,
             BackgroundColor = Colors.Transparent,
             DecorationColor = Colors.Black,
-            FontFamilies = [ Fonts.Lato ],
+            FontFamilies = [ "Lato" ],
             FontFeatures = [],
             Size = 12,
             LineHeight = NormalLineHeightCalculatedFromFontMetrics,
