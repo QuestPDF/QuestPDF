@@ -1,0 +1,5 @@
+# The default font sources are packed byte-for-byte into the shipped QuestPDF.Fonts.Lato archives.
+# Never convert their line endings on checkout, otherwise the archive test fails on Windows
+# and regenerating the archives there would produce different bytes.
+src/dotnet/library/QuestPDF/Resources/LatoFont/** -text
+src/dotnet/library/QuestPDF/Resources/QuestPDF.Fonts.Lato.* binary
