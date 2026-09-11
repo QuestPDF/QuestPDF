@@ -28,7 +28,7 @@ static class LicenseChecker
             "[QuestPDF] The QuestPDF library is running with the Evaluation license. " +
             "This mode is fully functional and intended only for evaluating the library before choosing a license. " +
             "It must not be used in production. " +
-            "Pricing: https://www.questpdf.com/pricing | License terms: https://www.questpdf.com/license";
+            "Pricing: https://www.questpdf.com/pricing.html | License terms: https://www.questpdf.com/license";
 
         Trace.TraceWarning(warningMessage);
     }
@@ -48,7 +48,7 @@ static class LicenseChecker
             $"- Professional: paid; covers your entire company, with unlimited developers,\n" +
             $"- Enterprise: paid; additionally covers subsidiaries and affiliated companies, includes prioritized support, and off-schedule software updates for critical issues.{newParagraph}" +
             $"Every tier includes the complete feature set; tiers differ only in usage rights and support.{newParagraph}" +
-            $"Visit https://www.questpdf.com/pricing for a human-friendly overview of licensing and pricing.{newParagraph}" +
+            $"Visit https://www.questpdf.com/pricing.html for a human-friendly overview of licensing and pricing.{newParagraph}" +
             $"Visit https://www.questpdf.com/license to access all legal documents.{newParagraph}" +
             $"No license key or activation is required: the setting is a self-declaration, and we simply trust you. By selecting the tier that matches your situation, you help keep QuestPDF sustainable and continuously improving for everyone.{newParagraph}" +
             $"Evaluating at work? You can start right away; that is exactly what the Evaluation tier is for, and the purchasing decision does not need to be yours. When your team is ready, simply forward the pricing page to your team lead or manager.{newParagraph}" +
