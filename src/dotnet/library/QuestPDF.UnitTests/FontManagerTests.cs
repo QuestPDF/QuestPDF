@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Drawing;
+using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
 namespace QuestPDF.UnitTests
@@ -81,6 +82,9 @@ namespace QuestPDF.UnitTests
         [Test]
         public void GetSystemFonts_ReturnsValidEntries()
         {
+            if (NativeRuntimeDetection.RuntimePlatform.Value.StartsWith("linux-musl"))                                                                                                         
+                Assert.Ignore("The linux-musl runtime is tested on Alpine Linux, a minimal distribution whose image ships without any system fonts.");
+            
             var fonts = FontManager.GetSystemFonts();
             
             Assert.That(fonts, Is.Not.Null);
