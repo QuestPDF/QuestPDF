@@ -1,3 +1,4 @@
+using QuestPDF.Drawing;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -45,6 +46,7 @@ public class TextStyleExamples
     public void FontFamily()
     {
         Settings.UseSystemFonts = true;
+        AssumeSystemFontsAreAvailable("Times New Roman", "Courier New");
         
         Document
             .Create(document =>
@@ -583,5 +585,19 @@ public class TextStyleExamples
                 });
             })
             .GenerateImages(x => "text-decoration-advanced.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
+    }
+    
+    private static void AssumeSystemFontsAreAvailable(params string[] fontFamilies)
+    {
+        var systemFontFamilies = FontManager
+            .GetSystemFonts()
+            .Select(x => x.FamilyName)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        
+        var missingFontFamilies = fontFamilies
+            .Where(x => !systemFontFamilies.Contains(x))
+            .ToList();
+        
+        Assume.That(missingFontFamilies, Is.Empty, $"This example requires system fonts that are not installed on this machine: {string.Join(", ", missingFontFamilies)}");
     }
 }
