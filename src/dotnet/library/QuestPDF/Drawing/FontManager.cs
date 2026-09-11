@@ -271,7 +271,7 @@ namespace QuestPDF.Drawing
         
         private static void RegisterDefaultFonts()
         {
-            var archivePath = PathHelpers.DefaultFontsArchivePath;
+            var archivePath = Path.Combine(PathHelpers.ApplicationFilesPath, PathHelpers.DefaultFontsArchiveFileName);
             
             if (!File.Exists(archivePath))
                 return;
