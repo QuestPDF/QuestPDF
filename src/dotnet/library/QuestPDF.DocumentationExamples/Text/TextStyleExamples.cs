@@ -45,9 +45,6 @@ public class TextStyleExamples
     [Test]
     public void FontFamily()
     {
-        Settings.UseSystemFonts = true;
-        AssumeSystemFontsAreAvailable("Times New Roman", "Courier New");
-        
         Document
             .Create(document =>
             {
@@ -59,17 +56,17 @@ public class TextStyleExamples
                     page.Margin(25);
 
                     page.Content()
-                        .Column(column =>
+                         .Column(column =>
                         {
                             column.Spacing(10);
 
                             column.Item().Text("This is text with default font (Lato)");
 
-                            column.Item().Text("This is text with Times New Roman font")
-                                .FontFamily("Times New Roman");
+                            column.Item().Text("This is text with Noto Serif font")
+                                .FontFamily("Noto Serif");
 
-                            column.Item().Text("This is text with Courier New font")
-                                .FontFamily("Courier New");
+                            column.Item().Text("This is text with Jetbrains Mono font")
+                                .FontFamily("Jetbrains Mono");
                         });
                 });
             })
@@ -585,19 +582,5 @@ public class TextStyleExamples
                 });
             })
             .GenerateImages(x => "text-decoration-advanced.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
-    }
-    
-    private static void AssumeSystemFontsAreAvailable(params string[] fontFamilies)
-    {
-        var systemFontFamilies = FontManager
-            .GetSystemFonts()
-            .Select(x => x.FamilyName)
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        
-        var missingFontFamilies = fontFamilies
-            .Where(x => !systemFontFamilies.Contains(x))
-            .ToList();
-        
-        Assume.That(missingFontFamilies, Is.Empty, $"This example requires system fonts that are not installed on this machine: {string.Join(", ", missingFontFamilies)}");
     }
 }
