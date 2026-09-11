@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
@@ -30,9 +29,31 @@ namespace QuestPDF.Drawing
         static FontManager()
         {
             SkNativeDependencyCompatibilityChecker.Test();
-            RegisterDefaultFonts();
-            RegisterFontsFromDiscoveryPath();
         }
+        
+        #region Initialization
+        
+        private static readonly object InitializationLock = new();
+        private static volatile bool IsInitialized;
+        
+        internal static void Initialize()
+        {
+            if (IsInitialized)
+                return;
+            
+            lock (InitializationLock)
+            {
+                if (IsInitialized)
+                    return;
+                
+                RegisterDefaultFonts();
+                RegisterFontsFromDiscoveryPath();
+                
+                IsInitialized = true;
+            }
+        }
+        
+        #endregion
         
         #region Font Registration
         
@@ -166,6 +187,7 @@ namespace QuestPDF.Drawing
         /// </remarks>
         public static IReadOnlyCollection<FontInfo> GetRegisteredFonts()
         {
+            Initialize();
             return TypefaceProvider.GetTypefaces();
         }
         
@@ -254,8 +276,11 @@ namespace QuestPDF.Drawing
             if (!File.Exists(archivePath))
                 return;
             
-            foreach (var (_, content) in ResourceArchive.Read(archivePath))
-                RegisterTypeface(content);
+            foreach (var (name, content) in ResourceArchive.Read(archivePath))
+            {
+                if (IsFontFile(name))
+                    RegisterTypeface(content);
+            }
         }
         
         #endregion
@@ -264,7 +289,7 @@ namespace QuestPDF.Drawing
 
         private static bool AreFontsFromDiscoveryPathRegistered { get; set; } = false;
         
-        internal static void RegisterFontsFromDiscoveryPath()
+        private static void RegisterFontsFromDiscoveryPath()
         {
             const int maxFilesToScan = 100_000;
             

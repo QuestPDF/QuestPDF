@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
@@ -603,14 +602,9 @@ namespace QuestPDF.Elements.Text
         
         #region Unresolved Glyphs Check
         
-        private bool AreMissingGlyphsReported { get; set; }
-        
         private void CheckUnresolvedGlyphs()
         {
             if (!Settings.ThrowOnMissingTextGlyphs)
-                return;
-            
-            if (AreMissingGlyphsReported)
                 return;
             
             var unresolvedCodepoints = Paragraph.GetUnresolvedCodepoints();
@@ -643,7 +637,7 @@ namespace QuestPDF.Elements.Text
                 3) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library.
                 4) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
                  
-                'Settings.ThrowOnMissingTextGlyphs' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues, missing glyphs are rendered as replacement characters or empty areas, and this report is written to the trace output as a warning.
+                'Settings.ThrowOnMissingTextGlyphs' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues and missing glyphs are rendered as replacement characters or empty areas.
                 """;
         }
         

@@ -69,6 +69,8 @@ namespace QuestPDF.Drawing
 
         internal static void RenderDocument(IDocumentCanvas canvas, IDocument document, DocumentSettings settings)
         {
+            FontManager.Initialize();
+            
             if (document is MergedDocument mergedDocument)
             {
                 RenderMergedDocument(canvas, mergedDocument, settings);

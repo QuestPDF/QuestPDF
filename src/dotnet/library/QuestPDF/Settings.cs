@@ -37,7 +37,7 @@ namespace QuestPDF
         /// <summary>
         /// <para>Decides how the library reacts when the text contains glyphs that are not available in the used fonts, including the configured fallbacks.</para>
         /// <para>When this flag is enabled, document generation stops with the DocumentDrawingException.</para>
-        /// <para>When this flag is disabled, document generation continues: missing glyphs are rendered as replacement characters or empty areas, and a warning listing them is written to the trace output.</para>
+        /// <para>When this flag is disabled, document generation continues silently: missing glyphs are rendered as replacement characters or empty areas.</para>
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
         public static bool ThrowOnMissingTextGlyphs { get; set; } = true;
@@ -66,7 +66,7 @@ namespace QuestPDF
         /// </summary>
         /// <remarks>
         /// <para>By default, this is the application directory. Font files deployed along with the application are therefore registered automatically, without calling the <c>FontManager</c> class.</para>
-        /// <para>The directory is scanned recursively when the library is used for the first time, so configure this setting at application startup. Set it to <c>null</c> to disable automatic font discovery.</para>
+        /// <para>The directory is scanned recursively once, when the first document is generated, so configure this setting before generating documents, e.g. at application startup. Set it to <c>null</c> to disable automatic font discovery.</para>
         /// <para>To register fonts from additional directories, use the <c>FontManager.RegisterFontsFromDirectory</c> method.</para>
         /// <para>Fonts discovered this way are always available to the library, regardless of the runtime environment (see <see cref="UseSystemFonts"/>).</para>
         /// </remarks>
