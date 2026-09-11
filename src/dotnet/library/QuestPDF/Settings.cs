@@ -32,7 +32,7 @@ namespace QuestPDF
         /// <para>The detailed message may contain fragments of the document content, such as text, and can be long for large documents. Consider this before enabling the setting in production environments where exception messages are logged.</para>
         /// <para>By default, this flag is enabled only when the debugger IS attached.</para>
         /// </remarks>
-        public static bool EnableDetailedLayoutErrors { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        public static bool EnableDetailedLayoutErrors { get; set; } = true;
         
         /// <summary>
         /// <para>Decides how the library reacts when the text contains glyphs that are not available in the used fonts, including the configured fallbacks.</para>
@@ -40,7 +40,7 @@ namespace QuestPDF
         /// <para>When this flag is disabled, document generation continues: missing glyphs are rendered as replacement characters or empty areas, and a warning listing them is written to the trace output.</para>
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
-        public static bool ThrowOnMissingTextGlyphs { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        public static bool ThrowOnMissingTextGlyphs { get; set; } = true;
         
         /// <summary>
         /// <para>Decides how the library reacts when a text style refers to a font family that is not available: neither registered with the <c>FontManager</c> class (including fonts discovered in the <see cref="FontDiscoveryPath"/> directory) nor, when <see cref="UseSystemFonts"/> is enabled, installed on the system.</para>
@@ -48,7 +48,7 @@ namespace QuestPDF
         /// <para>When this flag is disabled, document generation continues silently: the text is rendered with the first available font family from the fallback list, or with another registered font when none is available.</para>
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
-        public static bool ThrowOnMissingFontFamilies { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        public static bool ThrowOnMissingFontFamilies { get; set; } = true;
 
         /// <summary>
         /// Decides whether the library may use the fonts installed on the system where the application is running.
