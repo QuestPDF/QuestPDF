@@ -16,7 +16,7 @@ namespace QuestPDF.UnitTests
         private static (string Name, byte[] Content)[] ReadDefaultFontFiles()
         {
             return Directory
-                .GetFiles(DefaultFontsDirectory, "*.ttf")
+                .GetFiles(DefaultFontsDirectory)
                 .OrderBy(Path.GetFileName, StringComparer.Ordinal)
                 .Select(x => (Name: Path.GetFileName(x), Content: File.ReadAllBytes(x)))
                 .ToArray();
@@ -76,7 +76,7 @@ namespace QuestPDF.UnitTests
         }
         
         /// <summary>
-        /// Maintainer utility: regenerates QuestPDF/Resources/QuestPDF.Fonts.Lato.{br,gz} from QuestPDF/Resources/LatoFont.
+        /// Maintainer utility: regenerates QuestPDF/Resources/QuestPDF.Fonts.Lato.{br,gz} from QuestPDF/Resources/LatoFont
         /// Run it manually after changing the default font files, then commit the archives.
         /// </summary>
         [Test, Explicit]
