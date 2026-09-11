@@ -100,7 +100,13 @@ jobs:
         shell: bash
         run: |
           apt update --yes
-          apt install --yes bash curl ca-certificates clang zlib1g-dev nodejs npm
+          apt install --yes bash curl ca-certificates clang zlib1g-dev npm
+
+      - name: Setup Node.js (Ubuntu)
+        if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
       - name: Install Alpine prerequisites
         if: matrix.runtime.name == 'linux-musl-x64'
