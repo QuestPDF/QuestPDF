@@ -100,7 +100,7 @@ jobs:
         shell: bash
         run: |
           apt update --yes
-          apt install --yes bash curl ca-certificates clang zlib1g-dev npm
+          apt install --yes bash curl ca-certificates clang zlib1g-dev
 
       - name: Setup Node.js (Ubuntu)
         if: matrix.runtime.name == 'linux-x64' || matrix.runtime.name == 'linux-arm64'
