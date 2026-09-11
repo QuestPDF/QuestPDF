@@ -476,7 +476,7 @@ public class DocumentOperationTests
                                 .Background(color.WithAlpha(64))
                                 .AlignCenter()
                                 .AlignMiddle()
-                                .Text($"{filePath}\npage {i}")
+                                .Text($"Page {i}")
                                 .FontColor(color)
                                 .Bold()
                                 .FontSize(16);
