@@ -33,7 +33,6 @@ namespace QuestPDF.Elements
                         .Padding(2)
                         .Text(Text)
                         .FontColor(Color)
-                        .FontFamily(Fonts.Consolas)
                         .FontSize(8);
                 });
         }
