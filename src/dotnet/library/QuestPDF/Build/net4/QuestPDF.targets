@@ -8,8 +8,9 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
 
-        <None Include="$(MSBuildThisFileDirectory)\..\..\LatoFont\*.*">
-            <Link>LatoFont\%(Filename)%(Extension)</Link>
+        <!-- .NET Framework uses the netstandard2.0 assembly, which reads the gzip archive. -->
+        <None Include="$(MSBuildThisFileDirectory)\..\..\QuestPDF.Fonts.Lato.gz">
+            <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>

@@ -13,7 +13,7 @@ public class BarcodeExamples
     [Test]
     public void BarcodeExample()
     {
-        Settings.UseEnvironmentFonts = false;
+        Settings.UseSystemFonts = false;
 
         Document
             .Create(document =>

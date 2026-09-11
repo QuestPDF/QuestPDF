@@ -12,7 +12,7 @@ public class ChartExamples
     [Test]
     public void PieChartExample()
     {
-        Settings.UseEnvironmentFonts = true;
+        Settings.UseSystemFonts = true;
 
         Document
             .Create(document =>
@@ -72,7 +72,7 @@ public class ChartExamples
     [Test]
     public void BarExample()
     {
-        Settings.UseEnvironmentFonts = true;
+        Settings.UseSystemFonts = true;
 
         Document
             .Create(document =>

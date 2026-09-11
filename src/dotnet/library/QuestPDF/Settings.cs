@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using QuestPDF.Skia;
@@ -14,10 +15,6 @@ namespace QuestPDF
         /// </summary>
         public static LicenseType? License { get; set; }
         
-        [Obsolete("This setting is ignored since the 2023.10 version. The new infinite layout detection algorithm works automatically. You can safely remove this setting from your codebase.")]
-        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
-        public static int DocumentLayoutExceptionThreshold { get; set; } = 250;
-        
         /// <summary>
         /// This flag generates additional document elements to cache layout calculation results.
         /// In the vast majority of cases, this significantly improves performance, while slightly increasing memory consumption.
@@ -26,44 +23,54 @@ namespace QuestPDF
         public static bool EnableCaching { get; set; } = true;
         
         /// <summary>
-        /// This flag generates additional document elements to improve layout debugging experience.
-        /// When the provided content contains size constraints impossible to meet, the library generates an enhanced exception message with additional location and layout measurement details.
+        /// <para>Decides how much detail the <c>DocumentLayoutException</c> carries when the document content contains size constraints that cannot be met.</para>
+        /// <para>When this flag is enabled, the library locates the element that most likely causes the layout overflow and includes its position in the document hierarchy, along with the layout measurements of the surrounding elements, in the exception message.</para>
+        /// <para>When this flag is disabled, the exception message contains only a general description of the problem.</para>
         /// </summary>
-        /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>  
-        public static bool EnableDebugging { get; set; } = System.Diagnostics.Debugger.IsAttached;
+        /// <remarks>
+        /// <para>This setting has no effect on documents that render successfully: the additional analysis runs only when a layout error is detected.</para>
+        /// <para>The detailed message may contain fragments of the document content, such as text, and can be long for large documents. Consider this before enabling the setting in production environments where exception messages are logged.</para>
+        /// <para>By default, this flag is enabled only when the debugger IS attached.</para>
+        /// </remarks>
+        public static bool EnableDetailedLayoutErrors { get; set; } = true;
         
         /// <summary>
-        /// This flag enables checking the font glyph availability.
-        /// If your text contains glyphs that are not present in the specified font,
-        /// 1) when this flag is enabled: the DocumentDrawingException is thrown. OR 
-        /// 2) when this flag is disabled: placeholder characters are visible in the produced PDF file. 
-        /// Enabling this flag may slightly decrease document generation performance.
-        /// However, it provides hints that used fonts are not sufficient to produce correct results.
+        /// <para>Decides how the library reacts when the text contains glyphs that are not available in the used fonts, including the configured fallbacks.</para>
+        /// <para>When this flag is enabled, document generation stops with the DocumentDrawingException.</para>
+        /// <para>When this flag is disabled, document generation continues: missing glyphs are rendered as replacement characters or empty areas, and a warning listing them is written to the trace output.</para>
         /// </summary>
         /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
-        public static bool CheckIfAllTextGlyphsAreAvailable { get; set; } = System.Diagnostics.Debugger.IsAttached;
-
-        /// <summary>
-        /// Decides whether the application should use the fonts available in the environment.
-        /// </summary>
-        /// <remarks>
-        /// <para>When set to <c>true</c>, the application will use the fonts installed on the system where it is running. This is the default behavior.</para>
-        /// <para>When set to <c>false</c>, the application will only use the fonts that have been registered using the <c>FontManager</c> class in the QuestPDF library.</para>
-        /// <para>This property is useful when you want to control the fonts used by your application, especially in cases where the environment might not have the necessary fonts installed.</para>
-        /// </remarks>
-        public static bool UseEnvironmentFonts { get; set; } = true;
+        public static bool ThrowOnMissingTextGlyphs { get; set; } = true;
         
         /// <summary>
-        /// Specifies the collection of paths where the library will automatically search for font files to register.
+        /// <para>Decides how the library reacts when a text style refers to a font family that is not available: neither registered with the <c>FontManager</c> class (including fonts discovered in the <see cref="FontDiscoveryPath"/> directory) nor, when <see cref="UseSystemFonts"/> is enabled, installed on the system.</para>
+        /// <para>When this flag is enabled, document generation stops with the DocumentDrawingException.</para>
+        /// <para>When this flag is disabled, document generation continues silently: the text is rendered with the first available font family from the fallback list, or with another registered font when none is available.</para>
+        /// </summary>
+        /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
+        public static bool ThrowOnMissingFontFamilies { get; set; } = true;
+
+        /// <summary>
+        /// Decides whether the library may use the fonts installed on the system where the application is running.
         /// </summary>
         /// <remarks>
-        /// <para>By default, this collection contains the application files path.</para>
-        /// <para>You can add additional paths to this collection to include more directories for automatic font registration.</para>
+        /// <para>When set to <c>false</c>, the library uses only the fonts registered with the <c>FontManager</c> class: fonts discovered automatically in the <see cref="FontDiscoveryPath"/> directory and fonts registered manually. This makes the output independent of the runtime environment, especially where the necessary fonts might not be installed (e.g. minimal Docker images or serverless functions).</para>
+        /// <para>When set to <c>true</c>, the library uses the system fonts in addition to the registered fonts. This is convenient during development, but the same document may render differently, or fail to render, after deployment to an environment with a different set of fonts installed.</para>
+        /// <para>Referring to a font family that is not available is reported according to the <see cref="ThrowOnMissingFontFamilies"/> setting.</para>
+        /// <para>Disabled by default. Before version 2026.9.0, this setting was enabled by default.</para>
         /// </remarks>
-        public static ICollection<string> FontDiscoveryPaths { get; } = new List<string>()
-        {
-            PathHelpers.ApplicationFilesPath
-        };
+        public static bool UseSystemFonts { get; set; } = false;
+        
+        /// <summary>
+        /// Specifies the directory where the library automatically searches for font files to register (.ttf, .otf, .ttc and .pfb).
+        /// </summary>
+        /// <remarks>
+        /// <para>By default, this is the application directory. Font files deployed along with the application are therefore registered automatically, without calling the <c>FontManager</c> class.</para>
+        /// <para>The directory is scanned recursively when the library is used for the first time, so configure this setting at application startup. Set it to <c>null</c> to disable automatic font discovery.</para>
+        /// <para>To register fonts from additional directories, use the <c>FontManager.RegisterFontsFromDirectory</c> method.</para>
+        /// <para>Fonts discovered this way are always available to the library, regardless of the runtime environment (see <see cref="UseSystemFonts"/>).</para>
+        /// </remarks>
+        public static string? FontDiscoveryPath { get; set; } = PathHelpers.ApplicationFilesPath;
 
         /// <summary>
         /// Gets or sets the file path used for temporary storage during the document generation process.
@@ -75,5 +82,45 @@ namespace QuestPDF
         {
             SkNativeDependencyCompatibilityChecker.Test();
         }
+        
+        #region Obsolete
+        
+        [Obsolete("This setting is ignored since the 2023.10 version. The new infinite layout detection algorithm works automatically. You can safely remove this setting from your codebase.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        public static int DocumentLayoutExceptionThreshold { get; set; } = 250;
+        
+        [Obsolete("This setting has been renamed since version 2026.9. Please use the ThrowOnMissingTextGlyphs property.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static bool CheckIfAllTextGlyphsAreAvailable
+        {
+            get => ThrowOnMissingTextGlyphs;
+            set => ThrowOnMissingTextGlyphs = value;
+        }
+        
+        [Obsolete("This setting has been renamed since version 2026.9. Please use the EnableDetailedLayoutErrors property.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static bool EnableDebugging
+        {
+            get => EnableDetailedLayoutErrors;
+            set => EnableDetailedLayoutErrors = value;
+        }
+        
+        [Obsolete("This setting has been renamed since version 2026.9. Please use the UseSystemFonts property.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static bool UseEnvironmentFonts
+        {
+            get => UseSystemFonts;
+            set => UseSystemFonts = value;
+        }
+
+        [Obsolete("This setting has been replaced since version 2026.9. Please use the FontDiscoveryPath property to configure the directory scanned automatically, and the FontManager.RegisterFontsFromDirectory method to register fonts from additional directories.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static ICollection<string> FontDiscoveryPaths { get; } = [];
+
+        #endregion
     }
 }

@@ -26,7 +26,6 @@ namespace QuestPDF.Drawing
         internal static void GeneratePdf(SkWriteStream stream, IDocument document)
         {
             LicenseChecker.ValidateLicense();
-            ConfigurationValidator.ShowIfNeeded();
             
             var metadata = document.GetMetadata();
             var settings = document.GetSettings();
@@ -41,7 +40,6 @@ namespace QuestPDF.Drawing
         internal static ICollection<byte[]> GenerateImages(IDocument document, ImageGenerationSettings imageGenerationSettings)
         {
             LicenseChecker.ValidateLicense();
-            ConfigurationValidator.ShowIfNeeded();
             
             var documentSettings = document.GetSettings();
             documentSettings.ImageRasterDpi = imageGenerationSettings.RasterDpi;
@@ -55,7 +53,6 @@ namespace QuestPDF.Drawing
         internal static ICollection<string> GenerateSvg(IDocument document)
         {
             LicenseChecker.ValidateLicense();
-            ConfigurationValidator.ShowIfNeeded();
             
             using var canvas = new SvgDocumentCanvas();
             RenderDocument(canvas, document, document.GetSettings());
@@ -225,7 +222,7 @@ namespace QuestPDF.Drawing
                     pageContext.DecrementPageNumber();
                     canvas.EndDocument();
 
-                    if (Settings.EnableDebugging)
+                    if (Settings.EnableDetailedLayoutErrors)
                         layoutOverflowDebugger.DebugLayoutAndFix();
 
                     if (!CompanionService.IsCompanionAttached)
@@ -257,7 +254,7 @@ namespace QuestPDF.Drawing
                 var newLine = "\n";
                 var newParagraph = newLine + newLine;
                 
-                const string debuggingSettingsName = $"{nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDebugging)}";
+                const string detailedLayoutErrorsSettingName = $"{nameof(QuestPDF)}.{nameof(Settings)}.{nameof(Settings.EnableDetailedLayoutErrors)}";
 
                 var message =
                     $"The provided document content contains conflicting size constraints. " +
@@ -265,7 +262,7 @@ namespace QuestPDF.Drawing
                 
                 var rootCause = layoutOverflowDebugger.TryFindRootCause();
                 
-                if (Settings.EnableDebugging && rootCause != null)
+                if (Settings.EnableDetailedLayoutErrors && rootCause != null)
                 {
                     var ancestorsText = rootCause.Ancestors.FormatAncestors();
                     var layoutText = rootCause.Layout.FormatLayoutSubtree();
@@ -274,16 +271,16 @@ namespace QuestPDF.Drawing
                         $"The layout issue is likely present in the following part of the document: {newParagraph}{ancestorsText}{newParagraph}" +
                         $"To learn more, please analyse the document measurement of the problematic location: {newParagraph}{layoutText}" +
                         $"{LayoutDebugging.LayoutVisualizationLegend}{newParagraph}" +
-                        $"This detailed information is generated because you run the application with a debugger attached or with the {debuggingSettingsName} flag set to true. ";
+                        $"This detailed information is generated because you run the application with a debugger attached or with the {detailedLayoutErrorsSettingName} flag set to true. ";
                 }
-                else if (Settings.EnableDebugging && rootCause == null)
+                else if (Settings.EnableDetailedLayoutErrors && rootCause == null)
                 {
                     message += "The library was unable to find the root cause of the layout overflow.";
                 }
                 else
                 {
                     message +=
-                        $"To further investigate the location of the root cause, please run the application with a debugger attached or set the {debuggingSettingsName} flag to true. " +
+                        $"To further investigate the location of the root cause, please run the application with a debugger attached or set the {detailedLayoutErrorsSettingName} flag to true. " +
                         $"The library will generate additional debugging information such as probable code problem location and detailed layout measurement overview.";
                 }
                 

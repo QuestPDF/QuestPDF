@@ -21,7 +21,7 @@ internal static class SkParagraphBuilderPoolManager
         if (specificPool.Count > 0)
             return specificPool.Pop();
 
-        var fontCollection = SkFontCollection.Create(FontManager.TypefaceProvider, FontManager.CurrentFontManager);
+        var fontCollection = SkFontCollection.Create(FontManager.TypefaceProvider, FontManager.SystemFontManager);
         var builder = SkParagraphBuilder.Create(style, fontCollection);
         builder.MarkAsPooled();
         return builder;

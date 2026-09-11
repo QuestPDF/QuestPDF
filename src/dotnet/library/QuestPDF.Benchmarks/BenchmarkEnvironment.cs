@@ -7,8 +7,8 @@ internal static class BenchmarkEnvironment
     public static void ConfigureQuestPdf()
     {
         Settings.License = LicenseType.Community;
-        Settings.EnableDebugging = false;
-        Settings.UseEnvironmentFonts = false;
-        Settings.CheckIfAllTextGlyphsAreAvailable = false;
+        Settings.EnableDetailedLayoutErrors = false;
+        Settings.UseSystemFonts = false;
+        Settings.ThrowOnMissingTextGlyphs = false;
     }
 }

@@ -119,7 +119,7 @@ public class SemanticExamples
     public async Task GenerateBook()
     {
         QuestPDF.Settings.EnableCaching = false;
-        QuestPDF.Settings.EnableDebugging = false;
+        QuestPDF.Settings.EnableDetailedLayoutErrors = false;
         
         var serializerSettings = new JsonSerializerOptions
         {

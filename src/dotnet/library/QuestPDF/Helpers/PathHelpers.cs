@@ -9,6 +9,16 @@ namespace QuestPDF.Helpers;
 internal static class PathHelpers
 {
     internal static readonly string ApplicationFilesPath = FindApplicationFilesPath();
+    
+    /// <summary>
+    /// Path to the archive with the default font files (Lato) shipped with the library.
+    /// A <see cref="ResourceArchive"/> (brotli for net5.0 and newer, gzip for netstandard2.0), see <c>FontManager.RegisterDefaultFonts</c>.
+    /// </summary>
+    internal static string DefaultFontsArchivePath => GetDefaultFontsArchivePath(ApplicationFilesPath);
+    
+    private static readonly string DefaultFontsArchiveFileName = "QuestPDF.Fonts.Lato" + ResourceArchive.RuntimeFileExtension;
+    
+    private static string GetDefaultFontsArchivePath(string applicationPath) => Path.Combine(applicationPath, DefaultFontsArchiveFileName);
 
     /// <summary>
     /// This method tries to find a path where application resource files (e.g. fonts, images) are stored.
@@ -28,20 +38,19 @@ internal static class PathHelpers
 
         return candidates
             .Where(x => !string.IsNullOrWhiteSpace(x))
-            .FirstOrDefault(x => !IsRoot(x) || ContainsLatoFontFolder(x))
+            .FirstOrDefault(x => !IsRoot(x) || ContainsDefaultFontsArchive(x))
             ?? defaultPath;
         
-        // by default, QuestPDF includes the LatoFont folder in application publish artifacts,
-        // so presence of this folder is a good indicator that the path is correct.
-        static bool ContainsLatoFontFolder(string? path)
+        // by default, QuestPDF includes the default fonts archive in application publish artifacts,
+        // so presence of this file is a good indicator that the path is correct.
+        static bool ContainsDefaultFontsArchive(string? path)
         {
             if (string.IsNullOrWhiteSpace(path))
                 return false;
             
             try
             {
-                var latoFontFolderPath = Path.Combine(path, "LatoFont");
-                return Directory.Exists(latoFontFolderPath);
+                return File.Exists(GetDefaultFontsArchivePath(path));
             }
             catch
             {

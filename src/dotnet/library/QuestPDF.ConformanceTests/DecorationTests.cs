@@ -9,7 +9,7 @@ internal class DecorationTests : ConformanceTestBase
 {
     protected override Document GetDocumentUnderTest()
     {
-        QuestPDF.Settings.EnableDebugging = true;
+        QuestPDF.Settings.EnableDetailedLayoutErrors = true;
         
         return Document
             .Create(document =>

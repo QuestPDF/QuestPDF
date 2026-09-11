@@ -58,11 +58,25 @@
             <PackagePath>%(RecursiveDir)\%(Filename)%(Extension)</PackagePath>
         </None>
         
-        <None Include="LatoFont\*.*">
+        <!--
+            Default fonts (Lato).
+            The source font files stay visible in the project but are not packed.
+            Both archives are packed by the Resources glob above; only the matching one is copied to the output:
+            - brotli for net5.0 and newer, where BrotliStream is available in-box,
+            - gzip for netstandard2.0.
+        -->
+        <None Update="Resources\LatoFont\**" Pack="false" />
+
+        <None Update="Resources\QuestPDF.Fonts.Lato.br" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
+            <TargetPath>QuestPDF.Fonts.Lato.br</TargetPath>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-            <Pack>true</Pack>
-            <PackagePath>LatoFont</PackagePath>
+        </None>
+
+        <None Update="Resources\QuestPDF.Fonts.Lato.gz" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
+            <TargetPath>QuestPDF.Fonts.Lato.gz</TargetPath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </None>
         
         <None Include="Runtimes\**\*.*">
