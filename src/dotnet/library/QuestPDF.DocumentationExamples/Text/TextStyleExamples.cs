@@ -65,8 +65,8 @@ public class TextStyleExamples
                             column.Item().Text("This is text with Noto Serif font")
                                 .FontFamily("Noto Serif");
 
-                            column.Item().Text("This is text with Jetbrains Mono font")
-                                .FontFamily("Jetbrains Mono");
+                            column.Item().Text("This is text with JetBrains Mono font")
+                                .FontFamily("JetBrains Mono");
                         });
                 });
             })

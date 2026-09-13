@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using QuestPDF.Drawing;
 using QuestPDF.Drawing.Exceptions;
@@ -584,7 +585,7 @@ namespace QuestPDF.Elements.Text
             var fontFamilies = missingFontFamilies.Select(x => $"'{x}'");
             
             return $"""
-                The text "{GetTextForExceptionReport()}" refers to {missingFontFamilies.Count} font family(ies) that are not available: {string.Join(", ", fontFamilies)}.
+                The text "{GetTextForExceptionReport()}" uses font families that are not available: {string.Join(", ", fontFamilies)}.
                 
                 {DescribeFontConfiguration()}
                 
@@ -636,7 +637,7 @@ namespace QuestPDF.Elements.Text
                 2) Register fonts with the 'FontManager.RegisterFontFrom*' methods, then select them with 'TextStyle.FontFamily' or add them as fallbacks by passing several family names to 'TextStyle.FontFamily'.
                 3) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library.
                 4) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
-                 
+                
                 'Settings.ThrowOnMissingTextGlyphs' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues and missing glyphs are rendered as replacement characters or empty areas.
                 """;
         }
@@ -670,10 +671,15 @@ namespace QuestPDF.Elements.Text
                 .Distinct()
                 .OrderBy(x => x)
                 .Select(x => $"'{x}'");
+
+            var latoFontAvailability = File.Exists(FontManager.DefaultFontsArchivePath)
+                ? "found"
+                : "NOT FOUND, the default font family is unavailable; make sure the file is deployed next to the application";
             
             return $"""
                     Font families used in this text block: {string.Join(", ", usedFonts)}
                     Registered fonts: {string.Join(", ", registeredFonts)}
+                    Default fonts archive (Lato): {FontManager.DefaultFontsArchivePath} ({latoFontAvailability})
                     System fonts (Settings.UseSystemFonts): {(Settings.UseSystemFonts ? "enabled" : "disabled")}
                     """;
         }

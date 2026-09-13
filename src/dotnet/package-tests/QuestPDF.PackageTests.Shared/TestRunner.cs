@@ -12,8 +12,9 @@ public static class TestRunner
     public static void Run()
     {
         QuestPDF.Settings.License = LicenseType.Community;
-        QuestPDF.Settings.UseEnvironmentFonts = false;
-        QuestPDF.Settings.CheckIfAllTextGlyphsAreAvailable = true;
+        QuestPDF.Settings.UseSystemFonts = false;
+        QuestPDF.Settings.ThrowOnMissingTextGlyphs = true;
+        QuestPDF.Settings.ThrowOnMissingFontFamilies = true;
         
         Directory.CreateDirectory(OutputFolder);
         

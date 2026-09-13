@@ -158,7 +158,19 @@ namespace QuestPDF.Drawing
                 .FilterFontFiles();
             
             foreach (var fontFile in fontFiles)
-                RegisterFontFromFile(fontFile);
+                TryRegisterFontFromFile(fontFile);
+        }
+        
+        private static void TryRegisterFontFromFile(string path)
+        {
+            try
+            {
+                RegisterTypeface(File.ReadAllBytes(path));
+            }
+            catch
+            {
+                // skip the font file
+            }
         }
         
         private static void RegisterTypeface(byte[] data, string? customFamilyName = null)
@@ -269,9 +281,11 @@ namespace QuestPDF.Drawing
         
         #region Default Fonts
         
+        internal static string DefaultFontsArchivePath => Path.Combine(PathHelpers.ApplicationFilesPath, PathHelpers.DefaultFontsArchiveFileName);
+
         private static void RegisterDefaultFonts()
         {
-            var archivePath = Path.Combine(PathHelpers.ApplicationFilesPath, PathHelpers.DefaultFontsArchiveFileName);
+            var archivePath = DefaultFontsArchivePath;
             
             if (!File.Exists(archivePath))
                 return;
@@ -287,14 +301,9 @@ namespace QuestPDF.Drawing
         
         #region Font Discovery
 
-        private static bool AreFontsFromDiscoveryPathRegistered { get; set; } = false;
-        
         private static void RegisterFontsFromDiscoveryPath()
         {
             const int maxFilesToScan = 100_000;
-            
-            if (AreFontsFromDiscoveryPathRegistered)
-                return;
             
             RegisterFromDirectory(Settings.FontDiscoveryPath);
             
@@ -302,9 +311,7 @@ namespace QuestPDF.Drawing
             foreach (var fontDiscoveryPath in Settings.FontDiscoveryPaths)
                 RegisterFromDirectory(fontDiscoveryPath);
             #pragma warning restore CS0618
-            
-            AreFontsFromDiscoveryPathRegistered = true;
-            
+
             static void RegisterFromDirectory(string? path)
             {
                 if (string.IsNullOrWhiteSpace(path))
@@ -322,7 +329,7 @@ namespace QuestPDF.Drawing
                 }
                 
                 foreach (var fontFile in files.FilterFontFiles())
-                    RegisterFontFromFile(fontFile);
+                    TryRegisterFontFromFile(fontFile);
             }
             
             static ICollection<string> TryEnumerateFiles(string? path)

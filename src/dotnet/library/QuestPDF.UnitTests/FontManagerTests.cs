@@ -13,8 +13,8 @@ namespace QuestPDF.UnitTests
         [Test]
         public void LoadFontFromFile()
         {
-            using var stream = File.OpenRead("Resources/FontContent.ttf"); 
-            FontManager.RegisterFont(stream);
+            using var stream = File.OpenRead("Resources/FontContent.ttf");
+            FontManager.RegisterFontFromStream(stream);
         }
         
         [Test]
@@ -43,7 +43,7 @@ namespace QuestPDF.UnitTests
         public void GetRegisteredFonts_ContainsLibraryDefaultFontAndManuallyRegisteredFont()
         {
             using var stream = File.OpenRead("Resources/FontContent.ttf");
-            FontManager.RegisterFont(stream);
+            FontManager.RegisterFontFromStream(stream);
             
             var fonts = FontManager.GetRegisteredFonts();
             
@@ -82,7 +82,7 @@ namespace QuestPDF.UnitTests
         [Test]
         public void GetSystemFonts_ReturnsValidEntries()
         {
-            if (NativeRuntimeDetection.RuntimePlatform.Value.StartsWith("linux-musl"))                                                                                                         
+            if (NativeRuntimeDetection.RuntimePlatform.Value.StartsWith("linux-musl"))
                 Assert.Ignore("The linux-musl runtime is tested on Alpine Linux, a minimal distribution whose image ships without any system fonts.");
             
             var fonts = FontManager.GetSystemFonts();

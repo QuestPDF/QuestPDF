@@ -30,7 +30,7 @@ namespace QuestPDF
         /// <remarks>
         /// <para>This setting has no effect on documents that render successfully: the additional analysis runs only when a layout error is detected.</para>
         /// <para>The detailed message may contain fragments of the document content, such as text, and can be long for large documents. Consider this before enabling the setting in production environments where exception messages are logged.</para>
-        /// <para>By default, this flag is enabled only when the debugger IS attached.</para>
+        /// <para>Enabled by default. Before version 2026.9.0, this flag was enabled only when a debugger was attached.</para>
         /// </remarks>
         public static bool EnableDetailedLayoutErrors { get; set; } = true;
         
@@ -39,15 +39,15 @@ namespace QuestPDF
         /// <para>When this flag is enabled, document generation stops with the DocumentDrawingException.</para>
         /// <para>When this flag is disabled, document generation continues silently: missing glyphs are rendered as replacement characters or empty areas.</para>
         /// </summary>
-        /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
+        /// <remarks>Enabled by default. Before version 2026.9.0, this check was enabled only when a debugger was attached.</remarks>
         public static bool ThrowOnMissingTextGlyphs { get; set; } = true;
         
         /// <summary>
-        /// <para>Decides how the library reacts when a text style refers to a font family that is not available: neither registered with the <c>FontManager</c> class (including fonts discovered in the <see cref="FontDiscoveryPath"/> directory) nor, when <see cref="UseSystemFonts"/> is enabled, installed on the system.</para>
+        /// <para>Decides how the library reacts when a text style, or a text element of an SVG image, refers to a font family that is not available: neither registered with the <c>FontManager</c> class (including fonts discovered in the <see cref="FontDiscoveryPath"/> directory) nor, when <see cref="UseSystemFonts"/> is enabled, installed on the system.</para>
         /// <para>When this flag is enabled, document generation stops with the DocumentDrawingException.</para>
-        /// <para>When this flag is disabled, document generation continues silently: the text is rendered with the first available font family from the fallback list, or with another registered font when none is available.</para>
+        /// <para>When this flag is disabled, document generation continues silently: the text is rendered with the first available font family from the fallback list, or with another registered font when none is available. SVG text in an unavailable font family is not rendered.</para>
         /// </summary>
-        /// <remarks>By default, this flag is enabled only when the debugger IS attached.</remarks>
+        /// <remarks>Enabled by default.</remarks>
         public static bool ThrowOnMissingFontFamilies { get; set; } = true;
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace QuestPDF
         /// </summary>
         /// <remarks>
         /// <para>By default, this is the application directory. Font files deployed along with the application are therefore registered automatically, without calling the <c>FontManager</c> class.</para>
-        /// <para>The directory is scanned recursively once, when the first document is generated, so configure this setting before generating documents, e.g. at application startup. Set it to <c>null</c> to disable automatic font discovery.</para>
+        /// <para>The directory is scanned recursively once, when fonts are first needed (the first document generation or the first <c>FontManager.GetRegisteredFonts</c> call), so configure this setting before that, e.g. at application startup. Set it to <c>null</c> to disable automatic font discovery.</para>
         /// <para>To register fonts from additional directories, use the <c>FontManager.RegisterFontsFromDirectory</c> method.</para>
         /// <para>Fonts discovered this way are always available to the library, regardless of the runtime environment (see <see cref="UseSystemFonts"/>).</para>
         /// </remarks>
