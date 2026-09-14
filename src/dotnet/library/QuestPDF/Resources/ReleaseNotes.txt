@@ -1,21 +1,16 @@
-This release is dedicated to performance, parallelism, and use of available resources. Documents render faster, allocate a fraction of the memory they used to, and scale across all available CPU cores. No code changes are required — existing documents benefit simply by upgrading the package.
+QuestPDF 2026.9.0 improves font management to make document rendering predictable across development machines, CI, containers, and cloud environments. System fonts are now excluded by default, and font availability and glyph coverage are validated during document generation, so missing-font problems surface before a PDF reaches its recipient.
 
-The numbers below were measured on a MacBook Pro M5 (18-core CPU), using the invoice document from the Getting Started tutorial, across various levels of parallelism, over a sample of 5,000 documents.
+The release also simplifies font registration: FontManager gains methods for loading fonts from files, streams, binary data, embedded resources, and directories, reading family names and attributes directly from the font files. Family matching is now case-insensitive, and GetRegisteredFonts() and GetSystemFonts() list the available typefaces. SVG rendering gains support for registered fonts and font-family fallback lists, falls back to Lato instead of dropping text when no font matches, and fixes several text positioning issues. Layout errors now include the likely location of the problem by default.
 
-- Reduced allocated memory amount and allocated object count by 85%.
-- Improved single-threaded performance by around 15%.
-- Substantially improved parallel scaling: throughput previously peaked at 4 threads and flattened beyond that, and now scales with available CPU cores — with around 4x better scaling.
-- Improved performance and scalability for text-heavy documents.
-- Improved cache usage (mainly for fonts) and significantly reduced locking.
+BREAKING CHANGES
 
+- System fonts are no longer used by default. Settings.UseEnvironmentFonts is renamed to Settings.UseSystemFonts and defaults to false. QuestPDF uses the bundled Lato fonts, fonts found in the application directory, and fonts registered through FontManager.
+- Unavailable font families now stop document generation (new Settings.ThrowOnMissingFontFamilies, enabled by default).
+- Missing text glyphs now stop document generation. Settings.CheckIfAllTextGlyphsAreAvailable is renamed to Settings.ThrowOnMissingTextGlyphs and enabled by default.
+- Settings.FontDiscoveryPaths is replaced with Settings.FontDiscoveryPath, a single directory that defaults to the application directory.
+- The bundled Lato fonts are now a single compressed archive instead of the LatoFont folder. Deployment scripts that copy that folder explicitly must be updated.
 
-Other improvements:
+Renamed APIs remain available under their previous names with obsolete warnings.
 
-- Added support for soft hyphens: the library does not hyphenate text automatically, but soft hyphen characters (U+00AD) are now correctly interpreted as optional break points and rendered as hyphens when a line breaks.
-- Added the TextStyle.BreakAnywhere API, which allows a text span to break between any two characters, not only at word boundaries such as spaces or hyphens. Useful for content without natural break points, e.g. long URLs, identifiers, hashes, or file paths.
-- Improved the visual position of the underline and double underline text decorations.
-- Improved reliability of the Companion App integration: document previews are now refreshed from a consistent snapshot, and rendered pages are transferred more efficiently.
-- Increased the zlib compression level used for PDF generation from 1 to 3, which produces significantly smaller files (for text-heavy documents) with a minimal increase in generation time.
-- Updated the Skia native dependency to version m152.
-
-Breaking change: XPS generation has been removed. The format was supported only on Windows, had several rendering issues that could not be reliably resolved, and had negligible adoption. The GenerateXps and GenerateXpsAndShow methods are still present, but calling them now results in a compilation error, and code compiled against an earlier version throws an exception at runtime. Please use PDF generation instead.
+Full release notes, upgrade guide, and code samples:
+https://github.com/QuestPDF/QuestPDF/releases/tag/2026.9.0
