@@ -146,4 +146,67 @@ public class PageExamples
             })
             .GenerateImages(x => $"page-background.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
     }
+
+    [Test]
+    public void ContentDirection()
+    {
+        Settings.UseSystemFonts = false;
+
+        Document
+            .Create(document =>
+            {
+                document.Page(page =>
+                {
+                    page.MinSize(new PageSize(0, 0));
+                    page.MaxSize(new PageSize(500, 1000));
+                    page.Margin(20);
+                    page.PageColor(Colors.White);
+
+                    page.DefaultTextStyle(x => x.FontFamily("Lato", "Noto Sans Arabic").FontSize(20));
+                    page.ContentFromRightToLeft();
+
+                    page.Content().Column(column =>
+                    {
+                        column.Spacing(20);
+
+                        column.Item()
+                            .Text("مثال على الفاتورة") // example invoice
+                            .FontSize(32).FontColor(Colors.Blue.Darken2).SemiBold();
+
+                        column.Item().Table(table =>
+                        {
+                            table.ColumnsDefinition(columns =>
+                            {
+                                columns.RelativeColumn();
+                                columns.ConstantColumn(75);
+                                columns.ConstantColumn(125);
+                            });
+
+                            table.Cell().Element(HeaderStyle).Text("وصف السلعة"); // item description
+                            table.Cell().Element(HeaderStyle).Text("كمية"); // quantity
+                            table.Cell().Element(HeaderStyle).Text("سعر"); // price
+
+                            var items = new[]
+                            {
+                                "دورة البرمجة", // programming course
+                                "دورة تصميم الرسومات", // graphics design course
+                                "تحليل وتصميم الخوارزميات", // analysis and design of algorithms
+                            };
+
+                            foreach (var item in items)
+                            {
+                                var price = Placeholders.Random.NextDouble() * 100;
+
+                                table.Cell().Text(item);
+                                table.Cell().Text(Placeholders.Random.Next(1, 10).ToString());
+                                table.Cell().Text($"USD${price:F2}");
+                            }
+
+                            static IContainer HeaderStyle(IContainer x) => x.BorderBottom(1).PaddingVertical(5);
+                        });
+                    });
+                });
+            })
+            .GenerateImages(x => "page-content-direction-rtl.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
+    }
 }
