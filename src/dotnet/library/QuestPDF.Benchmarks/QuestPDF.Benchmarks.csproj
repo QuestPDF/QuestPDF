@@ -13,8 +13,8 @@
 
     <ItemGroup>
         <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
-        <PackageReference Include="SkiaSharp" Version="3.119.4" />
-        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.119.4" />
+        <PackageReference Include="SkiaSharp" Version="4.152.0" />
+        <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.152.0" />
     </ItemGroup>
 
     <ItemGroup>
