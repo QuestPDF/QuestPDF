@@ -1,6 +1,8 @@
 #if NET8_0_OR_GREATER
 
 using System;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -14,6 +16,7 @@ namespace QuestPDF.Companion
     {
         private const int RequiredCompanionApiVersion = 3;
 
+        private int Port { get; }
         private HttpClient HttpClient { get; }
         
         private CompanionDocumentSnapshot? CurrentSnapshot { get; set; }
@@ -25,6 +28,7 @@ namespace QuestPDF.Companion
         public CompanionService(int port)
         {
             IsCompanionAttached = true;
+            Port = port;
 
             HttpClient = new()
             {
@@ -43,21 +47,67 @@ namespace QuestPDF.Companion
 
         public async Task Connect(CancellationToken cancellationToken)
         {
-            await CheckIfCompanionIsRunning(cancellationToken);
+            var isCompanionAppResponding = await IsCompanionResponding(cancellationToken);
+            
+            if (!isCompanionAppResponding)
+            {
+                StartCompanionApplication();
+                await WaitForCompanionConnection(cancellationToken);
+            }
+
             await CheckCompanionVersionCompatibility(cancellationToken);
         }
 
-        private async Task CheckIfCompanionIsRunning(CancellationToken cancellationToken)
+        private async Task<bool> IsCompanionResponding(CancellationToken cancellationToken)
         {
             try
             {
                 using var result = await HttpClient.GetAsync("/ping", cancellationToken);
-                result.EnsureSuccessStatusCode();
+                return result.IsSuccessStatusCode;
             }
-            catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+            catch when (!cancellationToken.IsCancellationRequested)
             {
-                throw new Exception("Cannot connect to the QuestPDF Companion tool. Please ensure that the tool is running and the port is correct. Learn more: https://www.questpdf.com/companion/usage.html", exception);
+                return false;
             }
+        }
+
+        private void StartCompanionApplication()
+        {
+            try
+            {
+                var startInfo = new ProcessStartInfo("questpdf-companion")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                startInfo.ArgumentList.Add(Port.ToString(CultureInfo.InvariantCulture));
+
+                using var process = Process.Start(startInfo);
+                
+                if (process == null)
+                    throw new InvalidOperationException("The process could not be started.");
+            }
+            catch (Exception exception)
+            {
+                throw new Exception($"The QuestPDF Companion application is not running, and the library was not able to launch it automatically. Please start the application manually. Learn more: https://www.questpdf.com/companion/usage.html", exception);
+            }
+        }
+
+        private async Task WaitForCompanionConnection(CancellationToken cancellationToken)
+        {
+            var launchTimeout = TimeSpan.FromSeconds(10);
+            var deadline = DateTime.UtcNow + launchTimeout;
+
+            while (DateTime.UtcNow < deadline)
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+
+                if (await IsCompanionResponding(cancellationToken))
+                    return;
+            }
+            
+            throw new Exception($"The library was not able to launch the QuestPDF Companion application automatically: it did not accept connections on port {Port}. If the application is already running, please close it first, as it keeps listening on the port it was originally started with. Learn more: https://www.questpdf.com/companion/usage.html");
         }
 
         private async Task CheckCompanionVersionCompatibility(CancellationToken cancellationToken)
