@@ -28,7 +28,7 @@ namespace QuestPDF.Companion
 
             HttpClient = new()
             {
-                BaseAddress = new Uri($"http://localhost:{port}/"),
+                BaseAddress = new Uri($"http://127.0.0.1:{port}/"),
                 Timeout = TimeSpan.FromSeconds(10)
             };
         }
