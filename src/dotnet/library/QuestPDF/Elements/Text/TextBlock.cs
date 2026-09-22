@@ -586,6 +586,8 @@ namespace QuestPDF.Elements.Text
             
             return $"""
                 The text "{GetTextForExceptionReport()}" uses font families that are not available: {string.Join(", ", fontFamilies)}.
+
+                Since version 2026.9.0, system fonts are not used by default, and an unavailable font family stops document generation instead of being silently replaced with another font. More info: https://www.questpdf.com/api-reference/text/font-management.html
                 
                 {DescribeFontConfiguration()}
                 
@@ -593,7 +595,7 @@ namespace QuestPDF.Elements.Text
                 1) (Recommended) Deploy the required font files with your application. QuestPDF scans the application directory and registers every font file it finds.
                 2) Register fonts with the 'FontManager.RegisterFontFrom*' methods, then select them by family name with 'TextStyle.FontFamily'.
                 3) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library. Font family names are matched ignoring case.
-                4) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
+                4) (NOT Recommended) Enable 'Settings.UseSystemFonts' to also use fonts installed on the system where the application runs. This restores the default behavior from before version 2026.9.0, but the output then depends on the fonts installed in each deployment environment.
                 
                 'Settings.ThrowOnMissingFontFamilies' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues and the text is rendered with the first available font family from the list, or with another registered font when none is available.
                 """;
@@ -630,13 +632,16 @@ namespace QuestPDF.Elements.Text
                 The text "{GetTextForExceptionReport()}" contains {unresolvedCodepoints.Length} glyph(s) that are not available in the configured fonts or their fallbacks.
                 
                 Missing glyphs: {string.Join(", ", glyphs)}
+
+                Since version 2026.9.0, this check is always performed (previously only with a debugger attached), and system fonts are not used as glyph fallbacks by default. More info: https://www.questpdf.com/api-reference/text/font-management.html
+                
                 {DescribeFontConfiguration()}
                 
                 Possible solutions:
                 1) (Recommended) Deploy fonts that contain the missing glyphs with your application. QuestPDF scans the application directory and registers every font file it finds.
                 2) Register fonts with the 'FontManager.RegisterFontFrom*' methods, then select them with 'TextStyle.FontFamily' or add them as fallbacks by passing several family names to 'TextStyle.FontFamily'.
                 3) Use 'FontManager.GetRegisteredFonts' and 'FontManager.GetSystemFonts' to inspect the fonts visible to the library.
-                4) (NOT Recommended) Enable 'Settings.UseSystemFonts' (disabled by default) to also use fonts installed on the system where the application runs. This is less predictable across deployment environments.
+                4) (NOT Recommended) Enable 'Settings.UseSystemFonts' to also use fonts installed on the system where the application runs. This restores the default behavior from before version 2026.9.0, but the output then depends on the fonts installed in each deployment environment.
                 
                 'Settings.ThrowOnMissingTextGlyphs' controls this check: when enabled, document generation stops with this exception; when disabled, generation continues and missing glyphs are rendered as replacement characters or empty areas.
                 """;
@@ -679,6 +684,7 @@ namespace QuestPDF.Elements.Text
             return $"""
                     Font families used in this text block: {string.Join(", ", usedFonts)}
                     Registered fonts: {string.Join(", ", registeredFonts)}
+                    Discovery font path: {Settings.FontDiscoveryPath}
                     Default fonts archive (Lato): {FontManager.DefaultFontsArchivePath} ({latoFontAvailability})
                     System fonts (Settings.UseSystemFonts): {(Settings.UseSystemFonts ? "enabled" : "disabled")}
                     """;
