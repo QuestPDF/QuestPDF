@@ -43,9 +43,10 @@ namespace QuestPDF
         public static bool ThrowOnMissingTextGlyphs { get; set; } = true;
         
         /// <summary>
-        /// <para>Decides how the library reacts when a text style, or a text element of an SVG image, refers to a font family that is not available: neither registered with the <c>FontManager</c> class (including fonts discovered in the <see cref="FontDiscoveryPath"/> directory) nor, when <see cref="UseSystemFonts"/> is enabled, installed on the system.</para>
+        /// <para>Decides how the library reacts when a text style refers to a font family that is not available: neither registered with the <c>FontManager</c> class (including fonts discovered in the <see cref="FontDiscoveryPath"/> directory) nor, when <see cref="UseSystemFonts"/> is enabled, installed on the system.</para>
         /// <para>When this flag is enabled, document generation stops with the DocumentDrawingException.</para>
-        /// <para>When this flag is disabled, document generation continues silently: the text is rendered with the first available font family from the fallback list, or with another registered font when none is available. SVG text in an unavailable font family is not rendered.</para>
+        /// <para>When this flag is disabled, document generation continues silently: the text is rendered with the first available font family from the fallback list, or with another registered font when none is available.</para>
+        /// <para>This check does not cover text elements of SVG images. Such text is always rendered: with the first available font family from its fallback list, or with Lato when none of them is available.</para>
         /// </summary>
         /// <remarks>Enabled by default.</remarks>
         public static bool ThrowOnMissingFontFamilies { get; set; } = true;
