@@ -368,7 +368,7 @@ public sealed class DocumentOperation
                 DocumentAttachmentRelationship.Data => "/Data",
                 DocumentAttachmentRelationship.Source => "/Source",
                 DocumentAttachmentRelationship.Alternative => "/Alternative",
-                DocumentAttachmentRelationship.Supplement => "/Alternative",
+                DocumentAttachmentRelationship.Supplement => "/Supplement",
                 DocumentAttachmentRelationship.Unspecified => "/Unspecified",
                 null => null,
                 _ => throw new ArgumentOutOfRangeException(nameof(relationship), relationship, null)
