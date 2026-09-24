@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 
 namespace QuestPDF.Skia;
@@ -8,33 +9,55 @@ internal sealed class SkWriteStream : IDisposable
 {
     public IntPtr Instance { get; private set; }
     private GCHandle CallbackHandle { get; }
+    
+    private Stream TargetStream { get; }
+    private ExceptionDispatchInfo? WriteException { get; set; }
 
     public SkWriteStream(Stream stream)
     {
-        var nativeCallback = new API.ByteArrayCallback((data, size) =>
+        TargetStream = stream;
+
+        var nativeCallback = new API.ByteArrayCallback(WriteToTargetStream);
+        CallbackHandle = GCHandle.Alloc(nativeCallback);
+
+        Instance = API.questpdf_skia_write_stream_create(nativeCallback);
+        SkiaAPI.EnsureNotNull(Instance);
+    }
+
+    private void WriteToTargetStream(IntPtr data, int size)
+    {
+        if (WriteException != null)
+            return;
+
+        try
         {
 #if NETCOREAPP2_1_OR_GREATER || NETSTANDARD2_1_OR_GREATER
             unsafe
             {
                 var span = new ReadOnlySpan<byte>((void*)data, size);
-                stream.Write(span);
+                TargetStream.Write(span);
             }
 #else
             var managedArray = new byte[size];
             Marshal.Copy(data, managedArray, 0, size);
-            stream?.Write(managedArray, 0, managedArray.Length);
+            TargetStream.Write(managedArray, 0, managedArray.Length);
 #endif
-        });
-
-        CallbackHandle = GCHandle.Alloc(nativeCallback);
-        
-        Instance = API.questpdf_skia_write_stream_create(nativeCallback);
-        SkiaAPI.EnsureNotNull(Instance);
+        }
+        catch (Exception exception)
+        {
+            WriteException = ExceptionDispatchInfo.Capture(exception);
+        }
     }
     
     public void Flush()
     {
         API.questpdf_skia_write_stream_flush(Instance);
+        ThrowIfWriteFailed();
+    }
+    
+    public void ThrowIfWriteFailed()
+    {
+        WriteException?.Throw();
     }
     
     ~SkWriteStream()
@@ -48,9 +71,9 @@ internal sealed class SkWriteStream : IDisposable
         if (Instance == IntPtr.Zero)
             return;
      
-        CallbackHandle.Free();
         API.questpdf_skia_write_stream_delete(Instance);
         Instance = IntPtr.Zero;
+        CallbackHandle.Free();
         GC.SuppressFinalize(this);
     }
     

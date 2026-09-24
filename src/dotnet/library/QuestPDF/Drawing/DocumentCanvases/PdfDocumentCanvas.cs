@@ -202,6 +202,8 @@ namespace QuestPDF.Drawing.DocumentCanvases
             CurrentPageCanvas = null;
             
             Document.EndPage();
+            
+            WriteStream.ThrowIfWriteFailed();
         }
         
         public IDrawingCanvas GetDrawingCanvas()
