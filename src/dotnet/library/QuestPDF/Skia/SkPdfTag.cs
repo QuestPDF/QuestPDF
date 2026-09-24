@@ -1,7 +1,8 @@
 using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace QuestPDF.Skia;
 
@@ -43,32 +44,43 @@ internal sealed class SkPdfTag : IDisposable
             API.questpdf_skia_pdf_structure_element_set_children(element, (IntPtr)childElementsPointer, childCount);
     }
 
+    // Skia keeps the owner, name and text value pointers until the document is closed (SkPDFUnion::Name(const char*)),
+    // so the strings must not be moved or released in between. The attribute vocabulary is small and fixed,
+    // therefore each distinct string is marshalled once and kept for the process lifetime.
+    private static readonly ConcurrentDictionary<string, IntPtr> AttributeStrings = new();
+
+    private static IntPtr GetAttributeString(string text)
+    {
+        Debug.Assert(text.Length <= 24, "Semantic attribute strings are expected to be short PDF names.");
+        Debug.Assert(AttributeStrings.Count <= 32, "The number of distinct semantic attribute strings is unexpectedly large.");
+        
+        return AttributeStrings.GetOrAdd(text, SkText.MarshalFromManagedToNative);
+    }
+
     public static void AddAttribute(IntPtr element, string owner, string name, object value)
     {
-        // for some reason, other marshaling approaches do not work
-        var ownerBytes = Encoding.ASCII.GetBytes(owner + "\0");
-        var nameBytes = Encoding.ASCII.GetBytes(name + "\0");
+        var ownerPointer = GetAttributeString(owner);
+        var namePointer = GetAttributeString(name);
 
         if (value is string textValue)
         {
-            var valueBytes = Encoding.ASCII.GetBytes(textValue + "\0");
-            API.questpdf_skia_pdf_structure_element_add_attribute_text(element, ownerBytes, nameBytes, valueBytes);
+            API.questpdf_skia_pdf_structure_element_add_attribute_text(element, ownerPointer, namePointer, GetAttributeString(textValue));
         }
         else if (value is int intValue)
         {
-            API.questpdf_skia_pdf_structure_element_add_attribute_integer(element, ownerBytes, nameBytes, intValue);
+            API.questpdf_skia_pdf_structure_element_add_attribute_integer(element, ownerPointer, namePointer, intValue);
         }
         else if (value is float floatValue)
         {
-            API.questpdf_skia_pdf_structure_element_add_attribute_float(element, ownerBytes, nameBytes, floatValue);
+            API.questpdf_skia_pdf_structure_element_add_attribute_float(element, ownerPointer, namePointer, floatValue);
         }
         else if (value is float[] floatArray)
         {
-            API.questpdf_skia_pdf_structure_element_add_attribute_float_array(element, ownerBytes, nameBytes, floatArray, floatArray.Length);
+            API.questpdf_skia_pdf_structure_element_add_attribute_float_array(element, ownerPointer, namePointer, floatArray, floatArray.Length);
         }
         else if (value is int[] nodeIds)
         {
-            API.questpdf_skia_pdf_structure_element_add_attribute_node_ids(element, ownerBytes, nameBytes, nodeIds, nodeIds.Length);
+            API.questpdf_skia_pdf_structure_element_add_attribute_node_ids(element, ownerPointer, namePointer, nodeIds, nodeIds.Length);
         }
         else
         {
@@ -103,19 +115,19 @@ internal sealed class SkPdfTag : IDisposable
         public static extern void questpdf_skia_pdf_structure_element_set_children(IntPtr element, IntPtr children, int count);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void questpdf_skia_pdf_structure_element_add_attribute_text(IntPtr element, byte[] owner, byte[] name, byte[] value);
+        public static extern void questpdf_skia_pdf_structure_element_add_attribute_text(IntPtr element, IntPtr owner, IntPtr name, IntPtr value);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void questpdf_skia_pdf_structure_element_add_attribute_integer(IntPtr element, byte[] owner, byte[] name, int value);
+        public static extern void questpdf_skia_pdf_structure_element_add_attribute_integer(IntPtr element, IntPtr owner, IntPtr name, int value);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void questpdf_skia_pdf_structure_element_add_attribute_float(IntPtr element, byte[] owner, byte[] name, float value);
+        public static extern void questpdf_skia_pdf_structure_element_add_attribute_float(IntPtr element, IntPtr owner, IntPtr name, float value);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void questpdf_skia_pdf_structure_element_add_attribute_float_array(IntPtr element, byte[] owner, byte[] name, float[] array, int arrayLength);
+        public static extern void questpdf_skia_pdf_structure_element_add_attribute_float_array(IntPtr element, IntPtr owner, IntPtr name, float[] array, int arrayLength);
 
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void questpdf_skia_pdf_structure_element_add_attribute_node_ids(IntPtr element, byte[] owner, byte[] name, int[] array, int arrayLength);
+        public static extern void questpdf_skia_pdf_structure_element_add_attribute_node_ids(IntPtr element, IntPtr owner, IntPtr name, int[] array, int arrayLength);
         
         [DllImport(SkiaAPI.LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void questpdf_skia_pdf_structure_element_delete(IntPtr element);
