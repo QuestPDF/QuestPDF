@@ -29,8 +29,8 @@ namespace QuestPDF.Drawing.DocumentCanvases
         public void Dispose()
         {
             CurrentPageCanvas?.Dispose();
-            WriteStream?.Dispose();
             SkiaStream?.Dispose();
+            WriteStream?.Dispose();
             DrawingCanvas?.Dispose();
             
             GC.SuppressFinalize(this);
@@ -53,14 +53,14 @@ namespace QuestPDF.Drawing.DocumentCanvases
         public void EndDocument()
         {
             CurrentPageCanvas?.Dispose();
-            WriteStream?.Dispose();
             SkiaStream?.Dispose();
+            WriteStream?.Dispose();
         }
 
         public void BeginPage(Size size)
         {
-            WriteStream?.Dispose();
             SkiaStream?.Dispose();
+            WriteStream?.Dispose();
             
             WriteStream = new MemoryStream();
             SkiaStream = new SkWriteStream(WriteStream);
