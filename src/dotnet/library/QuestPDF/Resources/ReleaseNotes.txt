@@ -1,16 +1,10 @@
-QuestPDF 2026.9.0 improves font management to make document rendering predictable across development machines, CI, containers, and cloud environments. System fonts are now excluded by default, and font availability and glyph coverage are validated during document generation, so missing-font problems surface before a PDF reaches its recipient.
-
-The release also simplifies font registration: FontManager gains methods for loading fonts from files, streams, binary data, embedded resources, and directories, reading family names and attributes directly from the font files. Family matching is now case-insensitive, and GetRegisteredFonts() and GetSystemFonts() list the available typefaces. SVG rendering gains support for registered fonts and font-family fallback lists, falls back to Lato instead of dropping text when no font matches, and fixes several text positioning issues. Layout errors now include the likely location of the problem by default.
-
-BREAKING CHANGES
-
-- System fonts are no longer used by default. Settings.UseEnvironmentFonts is renamed to Settings.UseSystemFonts and defaults to false. QuestPDF uses the bundled Lato fonts, fonts found in the application directory, and fonts registered through FontManager.
-- Unavailable font families now stop document generation (new Settings.ThrowOnMissingFontFamilies, enabled by default).
-- Missing text glyphs now stop document generation. Settings.CheckIfAllTextGlyphsAreAvailable is renamed to Settings.ThrowOnMissingTextGlyphs and enabled by default.
-- Settings.FontDiscoveryPaths is replaced with Settings.FontDiscoveryPath, a single directory that defaults to the application directory.
-- The bundled Lato fonts are now a single compressed archive instead of the LatoFont folder. Deployment scripts that copy that folder explicitly must be updated.
-
-Renamed APIs remain available under their previous names with obsolete warnings.
-
-Full release notes, upgrade guide, and code samples:
-https://github.com/QuestPDF/QuestPDF/releases/tag/2026.9.0
+- Updated Skia to m154.
+- Updated qpdf to 12.4.1.
+- Fixed an issue where garbage collection could corrupt PDF tag attributes during concurrent PDF generation.
+- Improved PDF/UA-1 compatibility when generating ZUGFeRD and Factur-X invoices.
+- Fixed an issue in the `DocumentOperation` API where `DocumentAttachmentRelationship.Supplement` was incorrectly mapped to `/Alternative`.
+- Improved handling of stream-writing exceptions during PDF generation.
+- The ShowInCompanion API now automatically starts the Companion App if it is not already running (requires Companion App 2026.9.0 or newer).
+- Improved exception messages related to `Settings.ThrowOnMissingFontFamilies`, `Settings.ThrowOnMissingTextGlyphs`, and `Settings.UseSystemFonts`.
+- Reduced connection time to the Companion App on Windows.
+- Added missing license files for dependencies.
