@@ -19,7 +19,6 @@ sealed class JobConfiguration
     [Name("overlay")] public ICollection<LayerConfiguration>? Overlay { get; set; }
     [Name("underlay")] public ICollection<LayerConfiguration>? Underlay { get; set; }
 
-    [Name("extendMetadata")] public string? ExtendMetadata { get; set; }
     [Name("addAttachment")] public ICollection<AddDocumentAttachment>? AddAttachment { get; set; }
     
     [Name("encrypt")] public EncryptionSettings? Encrypt { get; set; } 

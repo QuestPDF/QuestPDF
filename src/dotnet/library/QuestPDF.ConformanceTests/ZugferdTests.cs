@@ -7,8 +7,10 @@ namespace QuestPDF.ConformanceTests;
 
 internal class ZugferdTests
 {
-    [Test]
-    public void ZugferdValidation_WithMustang()
+    [TestCase(PDFA_Conformance.PDFA_3B, PDFUA_Conformance.None)]
+    [TestCase(PDFA_Conformance.PDFA_3B, PDFUA_Conformance.PDFUA_1)]
+    [TestCase(PDFA_Conformance.PDFA_3A, PDFUA_Conformance.PDFUA_1)]
+    public void ZugferdValidation_WithMustang(PDFA_Conformance pdfaConformance, PDFUA_Conformance pdfuaConformance)
     {
         var guid = Guid.NewGuid();
         var invoicePath = Path.Combine(Path.GetTempPath(), $"{guid}.pdf");
@@ -36,7 +38,8 @@ internal class ZugferdTests
             })
             .WithSettings(new DocumentSettings
             {
-                PDFA_Conformance = PDFA_Conformance.PDFA_3B
+                PDFA_Conformance = pdfaConformance,
+                PDFUA_Conformance = pdfuaConformance
             })
             .GeneratePdf(invoicePath);
         

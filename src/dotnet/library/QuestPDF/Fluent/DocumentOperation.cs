@@ -206,7 +206,8 @@ public sealed class DocumentOperation
     }
     
     internal JobConfiguration Configuration { get; private set; }
-    
+    private List<string> MetadataExtensions { get; } = new();
+
     private DocumentOperation()
     {
             
@@ -319,7 +320,7 @@ public sealed class DocumentOperation
     /// </param>
     public DocumentOperation ExtendMetadata(string metadata)
     {
-        Configuration.ExtendMetadata = metadata;
+        MetadataExtensions.Add(metadata);
         return this;
     }
     
@@ -502,6 +503,11 @@ public sealed class DocumentOperation
         
         Configuration.OutputFile = filePath;
         var json = QpdfJobSerializer.Serialize(Configuration);
-        QpdfAPI.ExecuteJob(json);
+
+        Func<byte[], byte[]>? transformMetadata = MetadataExtensions.Count > 0
+            ? xmp => XmpMetadataExtension.Extend(xmp, MetadataExtensions)
+            : null;
+
+        QpdfAPI.ExecuteJob(json, transformMetadata);
     }
 }
