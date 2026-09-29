@@ -1,4 +1,5 @@
 using System.Runtime.InteropServices;
+using System.Text;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -116,9 +117,37 @@ public class DocumentOperationExamples
             .Save($"{prefix}-result.pdf");
     }
     
+    [Test]
+    public void InMemoryProcessing()
+    {
+        const string prefix = "document-operation-in-memory";
+        
+        // e.g. documents generated with QuestPDF, received from a web service, or read from a database
+        var report = CreateSampleDocument(Colors.Blue.Lighten3, 3).GeneratePdf();
+        var appendix = CreateSampleDocument(Colors.Green.Lighten3, 2).GeneratePdf();
+        var reportData = Encoding.UTF8.GetBytes("Month,Revenue\nJanuary,1200\nFebruary,1350");
+        
+        var result = DocumentOperation
+            .LoadDocument(report)
+            .MergeDocument(appendix)
+            .AddAttachment(new DocumentOperation.DocumentAttachment
+            {
+                Content = reportData,
+                AttachmentName = "report-data.csv"
+            })
+            .Save();
+        
+        File.WriteAllBytes($"{prefix}-result.pdf", result);
+    }
+    
     private void GenerateSampleDocument(string fileName, Color pageColor, int numberOfPages)
     {
-        Document
+        CreateSampleDocument(pageColor, numberOfPages).GeneratePdf(fileName);
+    }
+    
+    private IDocument CreateSampleDocument(Color pageColor, int numberOfPages)
+    {
+        return Document
             .Create(container =>
             {
                 container.Page(page =>
@@ -143,7 +172,6 @@ public class DocumentOperationExamples
                         }
                     });
                 });
-            })
-            .GeneratePdf(fileName);
+            });
     }
 }

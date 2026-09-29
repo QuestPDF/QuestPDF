@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using NUnit.Framework;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
@@ -79,15 +81,20 @@ public class DocumentOperationTests
         AssertPagesContainWatermark("operation-underlay.pdf", expectedPageCount: 10, watermarkedPageCount: 5);
     }
 
+    private static void AssertPagesContainWatermark(string filePath, int expectedPageCount, int watermarkedPageCount)
+    {
+        AssertPagesContainWatermark(File.ReadAllBytes(filePath), expectedPageCount, watermarkedPageCount);
+    }
+
     /// <summary>
     /// The sample documents do not use any XObjects on their own,
     /// while qpdf draws the overlay / underlay content as a form XObject on the target pages.
     /// The watermark pages are applied in sequence, so once they are exhausted,
     /// the remaining output pages stay unchanged.
     /// </summary>
-    private static void AssertPagesContainWatermark(string filePath, int expectedPageCount, int watermarkedPageCount)
+    private static void AssertPagesContainWatermark(byte[] document, int expectedPageCount, int watermarkedPageCount)
     {
-        using var inspector = PdfInspector.Load(File.ReadAllBytes(filePath));
+        using var inspector = PdfInspector.Load(document);
 
         var pages = inspector.Pages.ToList();
         Assert.That(pages, Has.Count.EqualTo(expectedPageCount));
@@ -445,9 +452,308 @@ public class DocumentOperationTests
         Assert.That(metadata, Does.Contain("http://purl.org/dc/elements/1.1/"));
     }
     
-    private void GenerateSampleDocument(string filePath, Color color, int length)
+    #region In-Memory Operations
+
+    [Test]
+    public void TakePagesInMemory()
     {
-        Document
+        var output = DocumentOperation
+            .LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 10))
+            .TakePages("2-5")
+            .Save();
+
+        using var inspector = PdfInspector.Load(output);
+        Assert.That(inspector.Pages.Count(), Is.EqualTo(4));
+    }
+
+    [Test]
+    public void MergeInMemory()
+    {
+        var output = DocumentOperation
+            .LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 3))
+            .MergeDocument(GenerateSampleDocument(Colors.Green.Medium, 5))
+            .MergeDocument(GenerateSampleDocument(Colors.Blue.Medium, 7), "1-2")
+            .Save();
+
+        using var inspector = PdfInspector.Load(output);
+        Assert.That(inspector.Pages.Count(), Is.EqualTo(3 + 5 + 2));
+    }
+
+    [Test]
+    public void OverlayInMemory()
+    {
+        var output = DocumentOperation
+            .LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 10))
+            .OverlayFile(new DocumentOperation.LayerConfiguration
+            {
+                DocumentData = GenerateSampleDocument(Colors.Green.Medium, 5)
+            })
+            .Save();
+
+        AssertPagesContainWatermark(output, expectedPageCount: 10, watermarkedPageCount: 5);
+    }
+
+    [Test]
+    public void UnderlayInMemory()
+    {
+        var output = DocumentOperation
+            .LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 10))
+            .UnderlayFile(new DocumentOperation.LayerConfiguration
+            {
+                DocumentData = GenerateSampleDocument(Colors.Green.Medium, 5)
+            })
+            .Save();
+
+        AssertPagesContainWatermark(output, expectedPageCount: 10, watermarkedPageCount: 5);
+    }
+
+    [Test]
+    public void AttachmentFromContent()
+    {
+        var content = Encoding.UTF8.GetBytes("<invoice>Zażółć gęślą jaźń</invoice>");
+
+        var output = DocumentOperation
+            .LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 1))
+            .AddAttachment(new DocumentOperation.DocumentAttachment
+            {
+                Content = content,
+                AttachmentName = "invoice.xml"
+            })
+            .Save();
+
+        using var inspector = PdfInspector.Load(output);
+
+        // the key defaults to the attachment name, the same way it defaults to the file name for file attachments
+        var attachment = inspector.Root.GetProperty("attachments").GetProperty("invoice.xml");
+        Assert.That(attachment.GetProperty("preferredname").GetString(), Is.EqualTo("invoice.xml"));
+
+        var stream = inspector.Resolve(attachment.GetProperty("preferredcontents"));
+        Assert.That(inspector.GetStreamData(stream), Is.EqualTo(content));
+
+        // the MIME type is derived from the extension of the attachment name
+        Assert.That(stream.GetProperty("dict").GetProperty("/Subtype").GetString(), Is.EqualTo("/text/xml"));
+    }
+
+    [Test]
+    public void AttachmentFromContentRequiresAttachmentName()
+    {
+        var operation = DocumentOperation.LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 1));
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+        {
+            operation.AddAttachment(new DocumentOperation.DocumentAttachment
+            {
+                Key = "invoice",
+                Content = [1, 2, 3]
+            });
+        });
+
+        Assert.That(exception.Message, Does.Contain("AttachmentName"));
+    }
+
+    [Test]
+    public void AttachmentRequiresSingleSource()
+    {
+        GenerateSampleDocument("attachment-single-source.pdf", Colors.Red.Medium, 1);
+        var operation = DocumentOperation.LoadFile("attachment-single-source.pdf");
+
+        Assert.Throws<ArgumentException>(() =>
+        {
+            operation.AddAttachment(new DocumentOperation.DocumentAttachment
+            {
+                FilePath = "attachment-single-source.pdf",
+                Content = [1, 2, 3],
+                AttachmentName = "data.bin"
+            });
+        });
+
+        Assert.Throws<ArgumentException>(() =>
+        {
+            operation.AddAttachment(new DocumentOperation.DocumentAttachment
+            {
+                AttachmentName = "data.bin"
+            });
+        });
+    }
+
+    [Test]
+    public void LayerRequiresSingleSource()
+    {
+        GenerateSampleDocument("layer-single-source.pdf", Colors.Red.Medium, 1);
+        var operation = DocumentOperation.LoadFile("layer-single-source.pdf");
+
+        Assert.Throws<ArgumentException>(() =>
+        {
+            operation.OverlayFile(new DocumentOperation.LayerConfiguration
+            {
+                FilePath = "layer-single-source.pdf",
+                DocumentData = File.ReadAllBytes("layer-single-source.pdf")
+            });
+        });
+
+        Assert.Throws<ArgumentException>(() =>
+        {
+            operation.UnderlayFile(new DocumentOperation.LayerConfiguration());
+        });
+    }
+
+    [Test]
+    public void DocumentDataIsValidated()
+    {
+        Assert.Throws<ArgumentNullException>(() => DocumentOperation.LoadDocument(null!));
+        Assert.Throws<ArgumentException>(() => DocumentOperation.LoadDocument([]));
+
+        var operation = DocumentOperation.LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 1));
+        Assert.Throws<ArgumentNullException>(() => operation.MergeDocument(null!));
+        Assert.Throws<ArgumentException>(() => operation.MergeDocument([]));
+        Assert.Throws<ArgumentException>(() => operation.OverlayFile(new DocumentOperation.LayerConfiguration { DocumentData = [] }));
+    }
+
+    [Test]
+    public void EncryptAndDecryptInMemory()
+    {
+        var encrypted = DocumentOperation
+            .LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 3))
+            .Encrypt(new DocumentOperation.Encryption256Bit
+            {
+                UserPassword = "user_password",
+                OwnerPassword = "owner_password"
+            })
+            .Save();
+
+        var decrypted = DocumentOperation
+            .LoadDocument(encrypted, "owner_password")
+            .Decrypt()
+            .Save();
+
+        using var inspector = PdfInspector.Load(decrypted);
+        Assert.That(inspector.Root.GetProperty("encrypt").GetProperty("encrypted").GetBoolean(), Is.False);
+        Assert.That(inspector.Pages.Count(), Is.EqualTo(3));
+    }
+
+    [Test]
+    public void MixedFileAndInMemorySources()
+    {
+        GenerateSampleDocument("mixed-sources-main.pdf", Colors.Red.Medium, 4);
+        GenerateSampleDocument("mixed-sources-merged.pdf", Colors.Blue.Medium, 2);
+
+        DocumentOperation
+            .LoadFile("mixed-sources-main.pdf")
+            .MergeDocument(GenerateSampleDocument(Colors.Green.Medium, 3))
+            .MergeFile("mixed-sources-merged.pdf")
+            .OverlayFile(new DocumentOperation.LayerConfiguration
+            {
+                DocumentData = GenerateSampleDocument(Colors.Green.Medium, 2)
+            })
+            .AddAttachment(new DocumentOperation.DocumentAttachment
+            {
+                FilePath = "mixed-sources-merged.pdf"
+            })
+            .AddAttachment(new DocumentOperation.DocumentAttachment
+            {
+                Content = Encoding.UTF8.GetBytes("Hello, World!"),
+                AttachmentName = "message.txt"
+            })
+            .Save("operation-mixed-sources.pdf");
+
+        AssertPagesContainWatermark("operation-mixed-sources.pdf", expectedPageCount: 4 + 3 + 2, watermarkedPageCount: 2);
+
+        using var inspector = PdfInspector.Load(File.ReadAllBytes("operation-mixed-sources.pdf"));
+        var attachments = inspector.Root.GetProperty("attachments");
+        Assert.That(attachments.TryGetProperty("mixed-sources-merged.pdf", out _), Is.True);
+        Assert.That(attachments.TryGetProperty("message.txt", out _), Is.True);
+    }
+
+    /// <summary>
+    /// The stream receives the document in chunks of about 64 KiB, so a larger document checks that they are written in order.
+    /// qpdf generates a new document ID for every output, and the ID has a constant length, so it is the only expected difference.
+    /// </summary>
+    [Test]
+    public void SaveToStreamProducesSameDocumentAsSaveToFile()
+    {
+        var operation = DocumentOperation
+            .LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 250))
+            .MergeDocument(GenerateSampleDocument(Colors.Green.Medium, 250));
+
+        operation.Save("operation-save-to-file.pdf");
+        var fileOutput = File.ReadAllBytes("operation-save-to-file.pdf");
+
+        using var stream = new MemoryStream();
+        operation.Save(stream);
+        var streamOutput = stream.ToArray();
+
+        Assert.That(fileOutput.Length, Is.GreaterThan(4 * 64 * 1024));
+        Assert.That(stream.CanWrite, Is.True, "The stream should not be closed");
+        Assert.That(RemoveDocumentId(streamOutput), Is.EqualTo(RemoveDocumentId(fileOutput)));
+
+        static string RemoveDocumentId(byte[] document)
+        {
+            var text = Encoding.Latin1.GetString(document);
+            Assert.That(Regex.Count(text, @"/ID\s*\["), Is.EqualTo(1));
+            return Regex.Replace(text, @"/ID\s*\[[^\]]*\]", "/ID []");
+        }
+    }
+
+    [TestCase(0, TestName = "ExceptionThrownByOutputStreamIsPropagated(AtFirstWrite)")]
+    [TestCase(100_000, TestName = "ExceptionThrownByOutputStreamIsPropagated(DuringWriting)")]
+    public void ExceptionThrownByOutputStreamIsPropagated(int failAfterBytes)
+    {
+        // the document spans a few chunks, so the stream can accept the first one and fail on the next
+        var operation = DocumentOperation.LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 250));
+
+        var exception = Assert.Throws<IOException>(() => operation.Save(new FailingStream(failAfterBytes)));
+        Assert.That(exception.Message, Is.EqualTo(FailingStream.ErrorMessage));
+    }
+
+    [Test]
+    public void SaveToStreamRequiresWritableStream()
+    {
+        var operation = DocumentOperation.LoadDocument(GenerateSampleDocument(Colors.Red.Medium, 1));
+
+        Assert.Throws<ArgumentNullException>(() => operation.Save((Stream)null!));
+        Assert.Throws<ArgumentException>(() => operation.Save(new MemoryStream([], writable: false)));
+    }
+
+    /// <summary>
+    /// qpdf error messages quote the names of in-memory inputs, so they describe which input is invalid.
+    /// </summary>
+    [Test]
+    public void InvalidInMemoryDocumentIsNamedInErrorMessage()
+    {
+        var invalidDocument = Encoding.ASCII.GetBytes("This is not a PDF document.");
+
+        var inputException = Assert.Catch(() => DocumentOperation.LoadDocument(invalidDocument).Save());
+        Assert.That(inputException.Message, Does.Contain("qpdf-buffer://input"));
+
+        var validDocument = GenerateSampleDocument(Colors.Red.Medium, 1);
+
+        var mergeException = Assert.Catch(() =>
+        {
+            DocumentOperation
+                .LoadDocument(validDocument)
+                .MergeDocument(validDocument)
+                .MergeDocument(invalidDocument)
+                .Save();
+        });
+
+        Assert.That(mergeException.Message, Does.Contain("qpdf-buffer://merged-document-2"));
+    }
+
+    #endregion
+
+    private static byte[] GenerateSampleDocument(Color color, int length)
+    {
+        return CreateSampleDocument(color, length).GeneratePdf();
+    }
+
+    private static void GenerateSampleDocument(string filePath, Color color, int length)
+    {
+        CreateSampleDocument(color, length).GeneratePdf(filePath);
+    }
+
+    private static IDocument CreateSampleDocument(Color color, int length)
+    {
+        return Document
             .Create(document =>
             {
                 document.Page(page =>
@@ -487,7 +793,6 @@ public class DocumentOperationTests
             .WithSettings(new DocumentSettings
             {
                 PDFA_Conformance = PDFA_Conformance.PDFA_3B
-            })
-            .GeneratePdf(filePath);
+            });
     }
 } 

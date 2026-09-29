@@ -608,6 +608,12 @@
 
     <!-- DOCUMENT OPERATIONS -->
 
+    <doc for="documentOperation.inMemoryData.remarks">
+        <remarks>
+            <para>The data is read directly from the provided array when the operation is saved. Please do not modify the array until then.</para>
+        </remarks>
+    </doc>
+
     <doc for="documentOperation.pageSelector">
         <remarks>
             <list type="table">

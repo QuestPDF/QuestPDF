@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using QuestPDF.Skia;
@@ -7,12 +10,24 @@ namespace QuestPDF.Qpdf;
 
 static class QpdfAPI
 {
+    /// <summary>
+    /// The job configuration references in-memory buffers with this prefix in place of file paths.
+    /// </summary>
+    public const string BufferReferencePrefix = "qpdf-buffer://";
+
+    private const string OutputBufferName = "output";
+    public const string OutputBufferReference = BufferReferencePrefix + OutputBufferName;
+
     public static int GetCompatibilityVersion()
     {
         return API.get_questpdf_version();
     }
     
-    public static void ExecuteJob(string jobJson, Func<byte[], byte[]>? transformMetadata = null)
+    public static void ExecuteJob(
+        string jobJson,
+        IReadOnlyDictionary<string, byte[]>? inputBuffers = null,
+        Stream? outputStream = null,
+        Func<byte[], byte[]>? transformMetadata = null)
     {
         QpdfNativeDependencyCompatibilityChecker.Test();
         
@@ -25,6 +40,10 @@ static class QpdfAPI
         var jobHandle = IntPtr.Zero;
         var documentHandle = IntPtr.Zero;
 
+        var inputHandles = new List<GCHandle>();
+        var output = outputStream != null ? new OutputStreamWriter(outputStream) : null;
+        var outputHandle = default(GCHandle);
+
         try
         {
             // create logger
@@ -34,6 +53,8 @@ static class QpdfAPI
             // prepare the job
             jobHandle = API.qpdfjob_init();
             API.qpdfjob_set_logger(jobHandle, logger);
+            RegisterInputBuffers();
+            RegisterOutputBuffer();
             ThrowOnJobError(API.qpdfjob_initialize_from_json(jobHandle, jobJson));
 
             // load the document and apply all operations
@@ -59,7 +80,38 @@ static class QpdfAPI
             if (logger != IntPtr.Zero)
                 API.qpdflogger_cleanup(ref logger);
 
+            // qpdf reads the input buffers lazily and keeps pointers to them until the clean-up above
+            foreach (var inputHandle in inputHandles)
+                inputHandle.Free();
+
+            if (outputHandle.IsAllocated)
+                outputHandle.Free();
+
             errorHandle.Free();
+        }
+
+        void RegisterInputBuffers()
+        {
+            if (inputBuffers == null)
+                return;
+
+            foreach (var inputBuffer in inputBuffers)
+            {
+                // qpdf reads the buffers in place, without copying them
+                var inputHandle = GCHandle.Alloc(inputBuffer.Value, GCHandleType.Pinned);
+                inputHandles.Add(inputHandle);
+
+                ThrowOnJobError(API.qpdfjob_register_buffer_input(jobHandle, inputBuffer.Key, inputHandle.AddrOfPinnedObject(), (UIntPtr)inputBuffer.Value.Length));
+            }
+        }
+
+        void RegisterOutputBuffer()
+        {
+            if (output == null)
+                return;
+
+            outputHandle = GCHandle.Alloc(output);
+            ThrowOnJobError(API.qpdfjob_register_buffer_output(jobHandle, OutputBufferName, OutputCallbackPointer, GCHandle.ToIntPtr(outputHandle)));
         }
 
         void TransformMetadata(Func<byte[], byte[]> transform)
@@ -93,6 +145,9 @@ static class QpdfAPI
 
         void ThrowOnJobError(int jobResultId)
         {
+            // when the output stream fails, qpdf only reports that the job was aborted, so rethrow the root cause instead
+            output?.WriteException?.Throw();
+
             // 0 = success, 1 = undefined, 2 = error, 3 = warning
             if (jobResultId == JobResultError)
                 throw new Exception($"QuestPDF could not perform document operation:\n\n{error}");
@@ -100,6 +155,56 @@ static class QpdfAPI
     }
     
     private const int JobResultError = 2;
+
+    #region Output Stream
+
+    private sealed class OutputStreamWriter(Stream targetStream)
+    {
+        public ExceptionDispatchInfo? WriteException { get; private set; }
+
+        public int Write(IntPtr data, UIntPtr length)
+        {
+            try
+            {
+                var size = checked((int)length.ToUInt64());
+
+#if NETCOREAPP2_1_OR_GREATER || NETSTANDARD2_1_OR_GREATER
+                unsafe
+                {
+                    targetStream.Write(new ReadOnlySpan<byte>((void*)data, size));
+                }
+#else
+                var managedArray = new byte[size];
+                Marshal.Copy(data, managedArray, 0, size);
+                targetStream.Write(managedArray, 0, size);
+#endif
+
+                return 0;
+            }
+            catch (Exception exception)
+            {
+                // exceptions cannot cross the native boundary, so they are captured and rethrown after the job is aborted
+                WriteException = ExceptionDispatchInfo.Capture(exception);
+                return 1; // any non-zero value aborts the job
+            }
+        }
+    }
+
+    private static int OutputCallback(IntPtr data, UIntPtr length, IntPtr udata)
+    {
+        var handle = GCHandle.FromIntPtr(udata);
+        var writer = (OutputStreamWriter)handle.Target!;
+        return writer.Write(data, length);
+    }
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    private delegate int OutputCallbackDelegate(IntPtr data, UIntPtr length, IntPtr udata);
+
+    private static readonly OutputCallbackDelegate OutputCallbackDelegateInstance = OutputCallback;
+
+    private static readonly IntPtr OutputCallbackPointer = Marshal.GetFunctionPointerForDelegate(OutputCallbackDelegateInstance);
+
+    #endregion
 
     #region Logging
     
@@ -164,6 +269,14 @@ static class QpdfAPI
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void qpdf_oh_free_buffer(ref IntPtr buffer);
         
+        /* IN-MEMORY BUFFERS */
+
+        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int qpdfjob_register_buffer_input(IntPtr jobHandle, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string name, IntPtr data, UIntPtr length);
+
+        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        public static extern int qpdfjob_register_buffer_output(IntPtr jobHandle, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8StringMarshaller))] string name, IntPtr callback, IntPtr udata);
+
         /* LOGGING */
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl, EntryPoint = nameof(qpdflogger_create))]

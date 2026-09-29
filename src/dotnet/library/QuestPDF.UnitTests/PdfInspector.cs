@@ -33,16 +33,16 @@ internal sealed class PdfInspector : IDisposable
 
     public static PdfInspector Load(byte[] pdfData, string? password = null)
     {
-        var inputPath = Path.Combine(Path.GetTempPath(), $"questpdf-inspector-{Guid.NewGuid():N}.pdf");
-        var outputPath = inputPath + ".json";
+        const string inputBufferName = "inspected-document";
+
+        // qpdf reads the document from memory, but writes the JSON representation only to files
+        var outputPath = Path.Combine(Path.GetTempPath(), $"questpdf-inspector-{Guid.NewGuid():N}.json");
 
         try
         {
-            File.WriteAllBytes(inputPath, pdfData);
-
             var job = new Dictionary<string, string>
             {
-                ["inputFile"] = inputPath,
+                ["inputFile"] = QpdfAPI.BufferReferencePrefix + inputBufferName,
                 ["outputFile"] = outputPath,
                 ["json"] = "latest",
                 ["jsonStreamData"] = "inline",
@@ -52,13 +52,13 @@ internal sealed class PdfInspector : IDisposable
             if (password != null)
                 job["password"] = password;
 
-            QpdfAPI.ExecuteJob(JsonSerializer.Serialize(job));
+            var inputBuffers = new Dictionary<string, byte[]> { [inputBufferName] = pdfData };
+            QpdfAPI.ExecuteJob(JsonSerializer.Serialize(job), inputBuffers);
 
             return new PdfInspector(JsonDocument.Parse(File.ReadAllBytes(outputPath)));
         }
         finally
         {
-            File.Delete(inputPath);
             File.Delete(outputPath);
         }
     }
