@@ -10,7 +10,7 @@ internal static class PathHelpers
 {
     internal static readonly string ApplicationFilesPath = FindApplicationFilesPath();
 
-    internal static string DefaultFontsArchiveFileName => "QuestPDF.Fonts.Lato" + ResourceArchive.RuntimeFileExtension;
+    internal static string DefaultFontsArchiveFileName => "questpdf_fonts_lato" + ResourceArchive.RuntimeFileExtension;
     
     /// <summary>
     /// This method tries to find a path where application resource files (e.g. fonts, images) are stored.

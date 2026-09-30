@@ -2,13 +2,13 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
         <!-- Default fonts: the brotli archive matches the net5.0+ assemblies, the gzip archive matches the netstandard2.0 assembly. -->
-        <None Include="$(MSBuildThisFileDirectory)\..\QuestPDF.Fonts.Lato.br" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
+        <None Include="$(MSBuildThisFileDirectory)\..\questpdf_fonts_lato.br" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Visible>false</Visible>
         </None>
         
-        <None Include="$(MSBuildThisFileDirectory)\..\QuestPDF.Fonts.Lato.gz" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
+        <None Include="$(MSBuildThisFileDirectory)\..\questpdf_fonts_lato.gz" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <Visible>false</Visible>

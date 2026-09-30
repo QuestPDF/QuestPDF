@@ -19,7 +19,7 @@ internal static class NativeDependencyProvider
             if (nativeFilesPath == null)
                 return;
 
-            foreach (var baseName in new[] { "QuestPdfSkia", "qpdf" })
+            foreach (var baseName in new[] { "questpdf_skia", "questpdf_qpdf" })
             {
                 var nativeFilePath = Path.Combine(nativeFilesPath, GetNativeLibraryFileName(baseName));
 

@@ -9,7 +9,7 @@
         </None>
 
         <!-- .NET Framework uses the netstandard2.0 assembly, which reads the gzip archive. -->
-        <None Include="$(MSBuildThisFileDirectory)\..\..\QuestPDF.Fonts.Lato.gz">
+        <None Include="$(MSBuildThisFileDirectory)\..\..\questpdf_fonts_lato.gz">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
