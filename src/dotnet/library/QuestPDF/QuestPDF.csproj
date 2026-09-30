@@ -55,7 +55,7 @@
         
         <None Include="Resources\**\*.*">
             <Pack>true</Pack>
-            <PackagePath>%(RecursiveDir)\%(Filename)%(Extension)</PackagePath>
+            <PackagePath>%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
         </None>
         
         <!--
@@ -67,14 +67,14 @@
         -->
         <None Update="Resources\LatoFont\**" Pack="false" />
 
-        <None Update="Resources\QuestPDF.Fonts.Lato.br" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
-            <TargetPath>QuestPDF.Fonts.Lato.br</TargetPath>
+        <None Update="Resources\questpdf_fonts_lato.br" Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
+            <TargetPath>questpdf_fonts_lato.br</TargetPath>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </None>
 
-        <None Update="Resources\QuestPDF.Fonts.Lato.gz" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
-            <TargetPath>QuestPDF.Fonts.Lato.gz</TargetPath>
+        <None Update="Resources\questpdf_fonts_lato.gz" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net5.0'))">
+            <TargetPath>questpdf_fonts_lato.gz</TargetPath>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
         </None>

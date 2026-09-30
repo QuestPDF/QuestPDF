@@ -9,7 +9,7 @@ static class QpdfAPI
 {
     public static int GetCompatibilityVersion()
     {
-        return API.get_questpdf_version();
+        return API.questpdf_get_compatibility_version();
     }
     
     public static void ExecuteJob(string jobJson, Func<byte[], byte[]>? transformMetadata = null)
@@ -126,12 +126,12 @@ static class QpdfAPI
     
     private static class API
     {
-        const string LibraryName = "qpdf";
+        const string LibraryName = "questpdf_qpdf";
         
         /* GENERAL */
         
         [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern int get_questpdf_version();
+        public static extern int questpdf_get_compatibility_version();
     
         /* JOBS */
         

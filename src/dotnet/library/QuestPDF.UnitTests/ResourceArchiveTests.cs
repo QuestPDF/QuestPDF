@@ -11,7 +11,7 @@ namespace QuestPDF.UnitTests
     {
         private static readonly string LibraryResourcesDirectory = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(GetSourcePath())!, "..", "QuestPDF", "Resources"));
         private static readonly string DefaultFontsDirectory = Path.Combine(LibraryResourcesDirectory, "LatoFont");
-        private static readonly string DefaultFontsArchivePath = Path.Combine(LibraryResourcesDirectory, "QuestPDF.Fonts.Lato");
+        private static readonly string DefaultFontsArchivePath = Path.Combine(LibraryResourcesDirectory, "questpdf_fonts_lato");
         
         private static (string Name, byte[] Content)[] ReadDefaultFontFiles()
         {
@@ -76,7 +76,7 @@ namespace QuestPDF.UnitTests
         }
         
         /// <summary>
-        /// Maintainer utility: regenerates QuestPDF/Resources/QuestPDF.Fonts.Lato.{br,gz} from QuestPDF/Resources/LatoFont
+        /// Maintainer utility: regenerates QuestPDF/Resources/questpdf_fonts_lato.{br,gz} from QuestPDF/Resources/LatoFont
         /// Run it manually after changing the default font files, then commit the archives.
         /// </summary>
         [Test, Explicit]
