@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Report a security vulnerability
+    url: https://github.com/QuestPDF/QuestPDF/security/advisories/new
+    about: Do not report security vulnerabilities through public issues. Use the private advisory form (preferred). See SECURITY.md.
