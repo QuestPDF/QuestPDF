@@ -21,7 +21,9 @@ public class TextBasicExamples
                     page.Margin(25);
 
                     page.Content()
+                        #region docs:text/basic container
                         .Text("Sample text");
+                        #endregion
                 });
             })
             .GenerateImages(x => "text-basic.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -41,6 +43,7 @@ public class TextBasicExamples
                     page.Margin(25);
 
                     page.Content()
+                        #region docs:text/customization
                         .Column(column =>
                         {
                             column.Spacing(10);
@@ -65,6 +68,7 @@ public class TextBasicExamples
                             static IContainer CellStyle(IContainer container) =>
                                 container.Background(Colors.Grey.Lighten3).Padding(10);
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "text-basic-descriptor.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -84,6 +88,7 @@ public class TextBasicExamples
                     page.Margin(25);
 
                     page.Content()
+                        #region docs:text/rich container
                         .Text(text =>
                         {
                             text.AlignCenter();
@@ -98,6 +103,7 @@ public class TextBasicExamples
                             text.Span("4").Subscript();
                             text.Span(".");
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "text-rich.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -245,6 +251,7 @@ public class TextBasicExamples
                     page.Margin(25);
 
                     page.Content()
+                        #region docs:text/hyperlink
                         .Text(text =>
                         {
                             var hyperlinkStyle = TextStyle.Default
@@ -259,6 +266,7 @@ public class TextBasicExamples
                             text.Hyperlink("NuGet package page", "https://www.nuget.org/packages/QuestPDF").Style(hyperlinkStyle);
                             text.Span(".");
                         });
+                        #endregion
                 });
             })
             .GeneratePdf("text-hyperlink.pdf");
