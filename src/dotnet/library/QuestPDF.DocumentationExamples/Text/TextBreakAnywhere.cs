@@ -20,6 +20,7 @@ public class TextBreakAnywhere
                     page.Margin(25);
 
                     page.Content()
+                        #region docs:text-style/break-anywhere
                         .Column(column =>
                         {
                             column.Spacing(20);
@@ -33,6 +34,7 @@ public class TextBreakAnywhere
                                 .Text("https://www.questpdf.com/api-reference/text/font-management.html#manual-font-registration")
                                 .BreakAnywhere();
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "text-break-anywhere.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
