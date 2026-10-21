@@ -19,10 +19,11 @@ public class DebugAreaExamples
                     page.DefaultTextStyle(x => x.FontSize(20));
 
                     page.Content()
+                        #region docs:debug-area/example container
                         .Width(250)
                         .Height(250)
                         .Padding(25)
-                        .DebugArea("Grid example", Colors.Blue.Medium)
+                        .DebugArea("Photo gallery", Colors.Blue.Medium)
                         .Column(column =>
                         {
                             column.Spacing(5);
@@ -41,6 +42,7 @@ public class DebugAreaExamples
                                 });
                             }
                         });
+                    #endregion
                 });
             })
             .GenerateImages(x => "debug-area.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 216 });

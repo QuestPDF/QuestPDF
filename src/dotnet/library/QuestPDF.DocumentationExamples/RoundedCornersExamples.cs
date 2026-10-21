@@ -21,11 +21,13 @@ public class RoundedCornersExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:rounded-corners/consistent container
                         .Border(1, Colors.Black)
                         .Background(Colors.Grey.Lighten3)
                         .CornerRadius(25)
                         .Padding(25)
                         .Text("Container with consistently rounded corners");
+                        #endregion
                 });
             })
             .GenerateImages(x => "rounded-corners-consistent.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
@@ -46,6 +48,7 @@ public class RoundedCornersExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:rounded-corners/various container
                         .Border(1, Colors.Black)
                         .Background(Colors.Grey.Lighten3)
                         .CornerRadiusTopLeft(5)
@@ -54,6 +57,7 @@ public class RoundedCornersExamples
                         .CornerRadiusBottomLeft(40)
                         .Padding(25)
                         .Text("Container with rounded corners");
+                        #endregion
                 });
             })
             .GenerateImages(x => "rounded-corners-various.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
@@ -74,6 +78,7 @@ public class RoundedCornersExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:rounded-corners/complex container
                         .Border(1, Colors.Black)
                         .CornerRadius(15)
                         .Table(table =>
@@ -102,11 +107,20 @@ public class RoundedCornersExamples
                                 }
                             });
 
-                            foreach (var index in Enumerable.Range(1, 5))
+                            var products = new[]
                             {
-                                table.Cell().Element(Style).Text(index.ToString());
-                                table.Cell().Element(Style).Text(Placeholders.Label());
-                                table.Cell().Element(Style).Text(Placeholders.Price());
+                                (Index: 1, Label: "Desk lamp", Price: "$34.99"),
+                                (Index: 2, Label: "Notebook", Price: "$4.99"),
+                                (Index: 3, Label: "Fountain pen", Price: "$59.00"),
+                                (Index: 4, Label: "Paper clips", Price: "$1.49"),
+                                (Index: 5, Label: "Monitor stand", Price: "$89.00")
+                            };
+
+                            foreach (var product in products)
+                            {
+                                table.Cell().Element(Style).Text(product.Index.ToString());
+                                table.Cell().Element(Style).Text(product.Label);
+                                table.Cell().Element(Style).Text(product.Price);
                                 
                                 IContainer Style(IContainer container)
                                 {
@@ -117,6 +131,7 @@ public class RoundedCornersExamples
                                 }
                             }
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "rounded-corners-complex.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
@@ -137,8 +152,10 @@ public class RoundedCornersExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:rounded-corners/image container
                         .CornerRadius(25)
                         .Image("Resources/landscape.jpg");
+                        #endregion
                 });
             })
             .GenerateImages(x => "rounded-corners-image.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
