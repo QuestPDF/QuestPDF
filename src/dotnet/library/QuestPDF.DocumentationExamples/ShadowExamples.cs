@@ -21,6 +21,7 @@ public class ShadowExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:shadow/simple container
                         .Border(1, Colors.Black)
                         .Shadow(new BoxShadowStyle
                         {
@@ -33,6 +34,7 @@ public class ShadowExamples
                         .Background(Colors.White)
                         .Padding(15)
                         .Text("Important content");
+                        #endregion
                 });
             })
             .GenerateImages(x => $"shadow-simple.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
@@ -53,6 +55,7 @@ public class ShadowExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:shadow/offset-x
                         .Row(row =>
                         {
                             row.Spacing(50);
@@ -70,6 +73,7 @@ public class ShadowExamples
                                     .Background(Colors.White);
                             }
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => $"shadow-offset-x.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
@@ -90,6 +94,7 @@ public class ShadowExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:shadow/offset-y
                         .Row(row =>
                         {
                             row.Spacing(50);
@@ -107,6 +112,7 @@ public class ShadowExamples
                                     .Background(Colors.White);
                             }
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => $"shadow-offset-y.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
@@ -127,6 +133,7 @@ public class ShadowExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:shadow/color
                         .Row(row =>
                         {
                             row.Spacing(50);
@@ -150,6 +157,7 @@ public class ShadowExamples
                                     .Background(Colors.White);
                             }
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => $"shadow-color.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
@@ -170,6 +178,7 @@ public class ShadowExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:shadow/blur
                         .Row(row =>
                         {
                             row.Spacing(50);
@@ -186,6 +195,7 @@ public class ShadowExamples
                                     .Background(Colors.White);
                             }
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => $"shadow-blur.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
@@ -206,6 +216,7 @@ public class ShadowExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:shadow/spread
                         .Row(row =>
                         {
                             row.Spacing(50);
@@ -223,6 +234,7 @@ public class ShadowExamples
                                     .Background(Colors.White);
                             }
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => $"shadow-spread.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
@@ -243,6 +255,7 @@ public class ShadowExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:shadow/no-blur
                         .Row(row =>
                         {
                             row.Spacing(50);
@@ -272,6 +285,7 @@ public class ShadowExamples
                                 .CornerRadius(16)
                                 .Background(Colors.White);
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => $"shadow-no-blur.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
