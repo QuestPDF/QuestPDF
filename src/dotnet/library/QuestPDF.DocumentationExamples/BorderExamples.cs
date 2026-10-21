@@ -20,6 +20,7 @@ public class BorderExamples
                     page.PageColor(Colors.White);
                     
                     page.Content()
+                        #region docs:border/simple container
                         .Border(3, Colors.Blue.Darken4)
                         .Background(Colors.Blue.Lighten5)
                         .Padding(25) 
@@ -29,6 +30,7 @@ public class BorderExamples
                             text.Span("TIP: ").Bold();
                             text.Span("You can use borders to create visual separation between elements in your document. Borders can be applied to any element, including text, images, and containers.");
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "border-simple.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -49,6 +51,7 @@ public class BorderExamples
                     page.PageColor(Colors.White);
                     
                     page.Content()
+                        #region docs:border/multiple container
                         .Shrink()
                         
                         .BorderVertical(5)
@@ -65,6 +68,7 @@ public class BorderExamples
                         .PaddingVertical(25)
                         .PaddingHorizontal(50)
                         .Text("Content");
+                        #endregion
                 });
             })
             .GenerateImages(x => "border-multiple.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -85,6 +89,7 @@ public class BorderExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:border/thickness-consistent
                         .Row(row =>
                         {
                             row.Spacing(25);
@@ -107,6 +112,7 @@ public class BorderExamples
                                 .AlignCenter()
                                 .Text("Bold");
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "border-thickness-consistent.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -127,12 +133,14 @@ public class BorderExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:border/thickness-various container
                         .BorderLeft(4)
                         .BorderTop(6)
                         .BorderRight(8) 
                         .BorderBottom(10)
                         .Padding(25)
                         .Text("Sample text");
+                        #endregion
                 });
             })
             .GenerateImages(x => "border-thickness-various.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -153,6 +161,7 @@ public class BorderExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:border/alignment
                         .Row(row =>
                         {
                             row.Spacing(25);
@@ -180,6 +189,7 @@ public class BorderExamples
                                 .Padding(25)
                                 .Text("Border Outside");
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "border-alignment.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -200,11 +210,13 @@ public class BorderExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:border/rounded-corners container
                         .CornerRadius(10)
                         .Border(1, Colors.Black)
                         .Background(Colors.Grey.Lighten2)
                         .Padding(25)
                         .Text("Border with rounded corners"); 
+                        #endregion
                 });
             })
             .GenerateImages(x => "border-rounded-corners-1.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -225,6 +237,7 @@ public class BorderExamples
                     page.PageColor(Colors.White);
 
                     page.Content()
+                        #region docs:border/advanced-style container
                         .CornerRadius(10)
                         .BorderLeft(10)
                         .BorderAlignmentInside()
@@ -239,6 +252,7 @@ public class BorderExamples
                             column.Item().Height(5);
                             column.Item().Text("The invoice has been paid in full.").FontSize(16);
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "border-rounded-corners-2.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -258,6 +272,7 @@ public class BorderExamples
                     page.PageColor(Colors.White);
                     
                     page.Content()
+                        #region docs:border/color-solid
                         .Row(row =>
                         {
                             var colors = new[]
@@ -279,6 +294,7 @@ public class BorderExamples
                                     .FontColor(color);
                             }
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "border-color-solid.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -299,6 +315,7 @@ public class BorderExamples
                     page.PageColor(Colors.White);
                     
                     page.Content()
+                        #region docs:border/color-gradient
                         .Column(column =>
                         {
                             column.Spacing(25);
@@ -324,6 +341,7 @@ public class BorderExamples
                                 .Padding(25)
                                 .Text("Vertical gradient");
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "border-color-gradient.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });

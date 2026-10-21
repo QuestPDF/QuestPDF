@@ -20,6 +20,7 @@ public class BackgroundExamples
                     page.PageColor(Colors.White);
                     page.Margin(25);
 
+                    #region docs:background/solid
                     var colors = new[]
                     {
                         Colors.LightBlue.Darken4,
@@ -49,6 +50,7 @@ public class BackgroundExamples
                             foreach (var color in colors)
                                 row.RelativeItem().Background(color);
                         });
+                    #endregion
                 });
             })
             .GenerateImages(x => "background-solid.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -69,6 +71,7 @@ public class BackgroundExamples
                     page.Margin(25);
 
                     page.Content()
+                        #region docs:background/gradient
                         .Column(column =>
                         {
                             column.Spacing(25);
@@ -85,6 +88,7 @@ public class BackgroundExamples
                                 .BackgroundLinearGradient(90, [Colors.Yellow.Lighten2, Colors.Amber.Lighten2, Colors.Orange.Lighten2])
                                 .AspectRatio(2);
                         });
+                    #endregion
                 });
             })
             .GenerateImages(x => "background-gradient.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
@@ -105,11 +109,13 @@ public class BackgroundExamples
                     page.Margin(25);
 
                     page.Content()
+                        #region docs:background/rounded-corners container
                         .Shrink()
                         .Background(Colors.Grey.Lighten2)
                         .CornerRadius(25)
                         .Padding(25)
                         .Text("Content with rounded corners");
+                    #endregion
                 });
             })
             .GenerateImages(x => "background-rounded-corners.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });
