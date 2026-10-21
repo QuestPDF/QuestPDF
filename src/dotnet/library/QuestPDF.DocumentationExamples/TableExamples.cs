@@ -407,12 +407,12 @@ public class TableExamples
                                 table.Cell().Element(CellStyle).ExtendHorizontal().AlignLeft().Text(page.name);
 
                                 // inches
-                                table.Cell().Element(CellStyle).Text(page.width);
-                                table.Cell().Element(CellStyle).Text(page.height);
+                                table.Cell().Element(CellStyle).Text($"{page.width}");
+                                table.Cell().Element(CellStyle).Text($"{page.height}");
 
                                 // points
-                                table.Cell().Element(CellStyle).Text(page.width * inchesToPoints);
-                                table.Cell().Element(CellStyle).Text(page.height * inchesToPoints);
+                                table.Cell().Element(CellStyle).Text($"{page.width * inchesToPoints}");
+                                table.Cell().Element(CellStyle).Text($"{page.height * inchesToPoints}");
 
                                 IContainer CellStyle(IContainer container) =>
                                     DefaultCellStyle(container, Colors.White).ShowOnce();
