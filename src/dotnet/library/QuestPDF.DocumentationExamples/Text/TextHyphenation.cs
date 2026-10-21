@@ -20,6 +20,7 @@ public class TextHyphenation
                     page.Margin(25);
 
                     page.Content()
+                        #region docs:text-style/hyphenation
                         .Column(column =>
                         {
                             column.Spacing(20);
@@ -34,6 +35,7 @@ public class TextHyphenation
                                       "Zu\u00ADgriffs\u00ADbe\u00ADrech\u00ADti\u00ADgun\u00ADgen in der " +
                                       "Ser\u00ADver\u00ADkon\u00ADfi\u00ADgu\u00ADra\u00ADti\u00ADons\u00ADda\u00ADtei.");
                         });
+                        #endregion
                 });
             })
             .GenerateImages(x => "text-hyphenation.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.VeryHigh, RasterDpi = 144 });

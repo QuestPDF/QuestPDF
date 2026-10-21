@@ -22,6 +22,8 @@ var publicDirectory = Path.Combine(docsDirectory, "public");
 
 var errors = new List<string>();
 var snippets = new Dictionary<string, string>();
+var outputFiles = new Dictionary<string, string>();
+var outputFile = new Regex(@"Generate(?:Images|Svg)\(\s*(?:\w+\s*=>\s*)?\$?""(?<name>[^""]+)""");
 
 foreach (var file in Directory.EnumerateFiles(examplesDirectory, "*.cs", SearchOption.AllDirectories).Order())
 {
@@ -32,6 +34,14 @@ foreach (var file in Directory.EnumerateFiles(examplesDirectory, "*.cs", SearchO
     {
         if (!snippets.TryAdd(snippet.Name, snippet.Code))
             errors.Add($"Snippet '{snippet.Name}' is defined more than once (again in {Relative(examplesDirectory, file)}).");
+    }
+
+    foreach (Match match in outputFile.Matches(File.ReadAllText(file)))
+    {
+        var name = match.Groups["name"].Value;
+
+        if (!outputFiles.TryAdd(name, Relative(examplesDirectory, file)))
+            errors.Add($"Two examples write the same file '{name}' ({outputFiles[name]} and {Relative(examplesDirectory, file)}), so the result depends on the test order.");
     }
 }
 
