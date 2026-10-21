@@ -55,52 +55,73 @@ public class CodePatternDocumentStructureExample
     
     private void RedSection(IContainer container)
     {
-        container.Grid(grid =>
+        container.Column(column =>
         {
-            grid.Columns(3);
-            grid.Spacing(15);
-            
-            grid.Item(3 ).Text("Red section")
+            column.Spacing(15);
+
+            column.Item().Text("Red section")
                 .FontColor(Colors.Red.Darken2).FontSize(32).Bold();
 
-            grid.Item(3).Text(Placeholders.Paragraph()).Light();
+            column.Item().Text(Placeholders.Paragraph()).Light();
 
-            foreach (var i in Enumerable.Range(0, 6))
-                grid.Item().AspectRatio(4 / 3f).Background(Colors.Red.Lighten4);
+            foreach (var rowNumber in Enumerable.Range(0, 2))
+            {
+                column.Item().Row(row =>
+                {
+                    row.Spacing(15);
+
+                    foreach (var columnNumber in Enumerable.Range(0, 3))
+                        row.RelativeItem().AspectRatio(4 / 3f).Background(Colors.Red.Lighten4);
+                });
+            }
         });
     }
     
     private void GreenSection(IContainer container)
     {
-        container.Grid(grid =>
+        container.Column(column =>
         {
-            grid.Columns(3);
-            grid.Spacing(15);
-            
-            grid.Item(3).Text("Green section")
+            column.Spacing(15);
+
+            column.Item().Text("Green section")
                 .FontColor(Colors.Green.Darken2).FontSize(32).Bold();
 
-            grid.Item(3).Text(Placeholders.Paragraph()).Light();
+            column.Item().Text(Placeholders.Paragraph()).Light();
 
-            foreach (var i in Enumerable.Range(0, 12))
-                grid.Item().AspectRatio(4 / 3f).Background(Colors.Green.Lighten4);
+            foreach (var rowNumber in Enumerable.Range(0, 4))
+            {
+                column.Item().Row(row =>
+                {
+                    row.Spacing(15);
+
+                    foreach (var columnNumber in Enumerable.Range(0, 3))
+                        row.RelativeItem().AspectRatio(4 / 3f).Background(Colors.Green.Lighten4);
+                });
+            }
         });
     }
     
     private void BlueSection(IContainer container)
     {
-        container.Grid(grid =>
+        container.Column(column =>
         {
-            grid.Columns(3);
-            grid.Spacing(15);
-            
-            grid.Item(3).Text("Blue section")
+            column.Spacing(15);
+
+            column.Item().Text("Blue section")
                 .FontColor(Colors.Blue.Darken2).FontSize(32).Bold();
 
-            grid.Item(3).Text(Placeholders.Paragraph()).Light();
+            column.Item().Text(Placeholders.Paragraph()).Light();
 
-            foreach (var i in Enumerable.Range(0, 18))
-                grid.Item().AspectRatio(4 / 3f).Background(Colors.Blue.Lighten4);
+            foreach (var rowNumber in Enumerable.Range(0, 6))
+            {
+                column.Item().Row(row =>
+                {
+                    row.Spacing(15);
+
+                    foreach (var columnNumber in Enumerable.Range(0, 3))
+                        row.RelativeItem().AspectRatio(4 / 3f).Background(Colors.Blue.Lighten4);
+                });
+            }
         });
     }
 }
