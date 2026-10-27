@@ -23,13 +23,20 @@ public class DebugAreaExamples
                         .Height(250)
                         .Padding(25)
                         .DebugArea("Grid example", Colors.Blue.Medium)
-                        .Grid(grid =>
+                        .Column(column =>
                         {
-                            grid.Columns(3);
-                            grid.Spacing(5);
+                            column.Spacing(5);
 
-                            foreach (var _ in Enumerable.Range(0, 8))
-                                grid.Item().Height(50).Placeholder();
+                            foreach (var _ in Enumerable.Range(0, 3))
+                            {
+                                column.Item().Row(row =>
+                                {
+                                    row.Spacing(5);
+
+                                    foreach (var _ in Enumerable.Range(0, 3))
+                                        row.RelativeItem().Height(50).Placeholder();
+                                });
+                            }
                         });
                 });
             })

@@ -22,17 +22,25 @@ public class ImageExamples
                     page.Margin(25);
 
                     page.Content()
-                        .Grid(grid =>
+                        .Column(column =>
                         {
-                            grid.Columns(2);
-                            grid.Spacing(10);
-                            
-                            grid.Item(2).Text("My photo gallery:").Bold();
-                            
-                            grid.Item().Image("Resources/Photos/photo-gallery-1.jpg");
-                            grid.Item().Image("Resources/Photos/photo-gallery-2.jpg");
-                            grid.Item().Image("Resources/Photos/photo-gallery-3.jpg");
-                            grid.Item().Image("Resources/Photos/photo-gallery-4.jpg");
+                            column.Spacing(10);
+
+                            column.Item().Text("My photo gallery:").Bold();
+
+                            column.Item().Row(row =>
+                            {
+                                row.Spacing(10);
+                                row.RelativeItem().Image("Resources/Photos/photo-gallery-1.jpg");
+                                row.RelativeItem().Image("Resources/Photos/photo-gallery-2.jpg");
+                            });
+
+                            column.Item().Row(row =>
+                            {
+                                row.Spacing(10);
+                                row.RelativeItem().Image("Resources/Photos/photo-gallery-3.jpg");
+                                row.RelativeItem().Image("Resources/Photos/photo-gallery-4.jpg");
+                            });
                         });
                 });
             })
