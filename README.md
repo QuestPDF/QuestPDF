@@ -12,7 +12,7 @@
 QuestPDF is a production-ready library that lets you design documents the way you design software: with clean, maintainable, strong-typed C# code.
 Stop fighting with HTML-to-PDF conversion. Build pixel-perfect reports, invoices, and exports using the language and tools you already love.
 
-The library is free for individuals, non-profits, open-source projects, and organizations under $1M in annual gross revenue. [Read more](https://www.questpdf.com/pricing)
+The library is free for individuals, non-profits, open-source projects, and organizations under $1M in annual gross revenue. [Read more](https://www.questpdf.com/pricing.html)
 
 <br>
 
@@ -20,7 +20,7 @@ The library is free for individuals, non-profits, open-source projects, and orga
 <br>
 [![Nuget package download](https://img.shields.io/nuget/dt/QuestPDF?style=for-the-badge&label=NuGet%20downloads&logo=nuget&color=0277BD&logoColor=white)](https://www.nuget.org/packages/QuestPDF/)
 <br>
-[![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20and%20commercial-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/pricing/)
+[![QuestPDF License](https://img.shields.io/badge/LICENSE-Community%20and%20commercial-2E7D32?style=for-the-badge&logo=googledocs&logoColor=white)](https://www.questpdf.com/pricing.html)
 
 <br>
 <hr>
@@ -33,7 +33,7 @@ The library is free for individuals, non-profits, open-source projects, and orga
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [Features Overview](https://www.questpdf.com/features-overview.html)
 &nbsp;&nbsp;•&nbsp;&nbsp;
-[Pricing](https://www.questpdf.com/pricing/)
+[Pricing](https://www.questpdf.com/pricing.html)
 &nbsp;&nbsp;•&nbsp;&nbsp;
 [License](https://www.questpdf.com/license/)
 &nbsp;&nbsp;•&nbsp;&nbsp;
@@ -374,7 +374,7 @@ A model that benefits everyone. Commercial licensing provides businesses with le
 > Free for individuals, non-profits, open-source projects, and organizations under $1M in annual gross revenue.
 
 [![QuestPDF Pricing](https://img.shields.io/badge/view%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/license)
-[![QuestPDF License Terms](https://img.shields.io/badge/license%20terms-666666?style=for-the-badge)](https://www.questpdf.com/license/guide)
+[![QuestPDF License Terms](https://img.shields.io/badge/license%20terms-666666?style=for-the-badge)](https://www.questpdf.com/license/guide.html)
 
 <br>
 <br>
