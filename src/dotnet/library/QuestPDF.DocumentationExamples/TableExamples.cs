@@ -345,10 +345,10 @@ public class TableExamples
                         .BorderColor(Colors.Grey.Lighten1)
                         .Table(table =>
                         {
-                            var pageSizes = new List<(string name, double width, double height)>()
+                            var pageSizes = new List<(string name, decimal width, decimal height)>()
                             {
-                                ("Letter (ANSI A)", 8.5f, 11),
-                                ("Legal", 8.5f, 14),
+                                ("Letter (ANSI A)", 8.5m, 11),
+                                ("Legal", 8.5m, 14),
                                 ("Ledger (ANSI B)", 11, 17),
                                 ("Tabloid (ANSI B)", 17, 11),
                                 ("ANSI C", 22, 17),

@@ -27,17 +27,14 @@ public class DebugAreaExamples
                         {
                             column.Spacing(5);
 
-                            foreach (var itemsInRow in new[] { 3, 3, 2 })
+                            foreach (var _ in Enumerable.Range(0, 3))
                             {
                                 column.Item().Row(row =>
                                 {
                                     row.Spacing(5);
 
-                                    foreach (var _ in Enumerable.Range(0, itemsInRow))
+                                    foreach (var _ in Enumerable.Range(0, 3))
                                         row.RelativeItem().Height(50).Placeholder();
-
-                                    if (itemsInRow < 3)
-                                        row.RelativeItem(3 - itemsInRow);
                                 });
                             }
                         });
