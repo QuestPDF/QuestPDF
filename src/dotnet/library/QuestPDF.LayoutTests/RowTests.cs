@@ -389,6 +389,8 @@ public class RowTests
                 {
                     row.Spacing(200);
                     
+                    // a single item never gets any spacing, two items are separated by 200 and together need 220
+                    row.ConstantItem(10).SolidBlock(height: 40);
                     row.ConstantItem(10).SolidBlock(height: 40); // <-
                 });
             })
@@ -413,7 +415,38 @@ public class RowTests
             })
             .ExpectLayoutException("One of the items has a negative size, indicating insufficient horizontal space. Usually, constant items require more space than is available, potentially causing other content to overflow.");
     }
-
+    
+    [Test]
+    public void RelativeItemsShareSpaceLeftAfterSpacing()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(100, 100)
+            .ForContent(content =>
+            {
+                content.Shrink().Row(row =>
+                {
+                    row.Spacing(10);
+                    
+                    // the relative items share the width left after the constant item and both gaps: 100 - 20 - 2 * 10 = 60
+                    row.ConstantItem(20).Mock("a").SolidBlock(height: 30);
+                    row.RelativeItem().Mock("b").SolidBlock(height: 40);
+                    row.RelativeItem(2).Mock("c").SolidBlock(height: 20);
+                });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(100, 40)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(20, 40);
+                        page.Mock("b").Position(30, 0).Size(20, 40);
+                        page.Mock("c").Position(60, 0).Size(40, 40);
+                    });
+            });
+    }
+    
     #endregion
     
     #region Paging
@@ -622,8 +655,8 @@ public class RowTests
             {
                 content.Shrink().Row(row =>
                 {
-                    row.ConstantItem(30);
-                    row.AutoItem().Width(80);
+                    // an auto item is as wide as its content, so the row itself reports the overflow
+                    row.AutoItem().Width(200); // <-
                 });
             })
             .ExpectLayoutException("The content requires more horizontal space than available.");
@@ -660,6 +693,39 @@ public class RowTests
                 });
             })
             .ExpectLayoutException("The content requires more horizontal space than available.");
+    }
+    
+    [Test]
+    public void ConstantItemOfZeroWidthDoesNotGrowToFitContent()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(100, 100)
+            .ForContent(content =>
+            {
+                content.Shrink().Row(row =>
+                {
+                    // unlike an auto item, a constant item keeps its declared width, even when it is zero
+                    row.ConstantItem(0).SolidBlock(20, 20); // <-
+                    row.RelativeItem().SolidBlock(20, 20);
+                });
+            })
+            .ExpectLayoutException("One of the items does not fit (even partially) in the available space.");
+    }
+    
+    [Test]
+    public void ItemReportsMoreHeightThanAvailable()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(100, 100)
+            .ForContent(content =>
+            {
+                content.Shrink().Row(row =>
+                {
+                    // simulates a child that breaks the measurement contract, built-in elements never report more space than offered
+                    row.ConstantItem(50).OverflowingBlock(50, 150); // <-
+                });
+            })
+            .ExpectLayoutException("The content requires more vertical space than available.");
     }
     
     #endregion
@@ -725,6 +791,82 @@ public class RowTests
                     {
                         page.Mock("a").Position(0, 0).Size(50, 40);
                         page.Mock("d").Position(50, 0).Size(50, 40);
+                    });
+            });
+    }
+    
+    [Test]
+    public void NoItemsBetweenOtherContent()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(100, 100)
+            .ForContent(content =>
+            {
+                content.Shrink().Column(column =>
+                {
+                    column.Spacing(10);
+                    
+                    column.Item().Mock("a").SolidBlock(50, 30);
+                    
+                    // the row takes no space, so it gets no spacing, but it is still drawn
+                    column.Item().Mock("row").Row(row =>
+                    {
+                        // <-
+                    });
+                    
+                    column.Item().Mock("b").SolidBlock(50, 20);
+                });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(50, 60)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(50, 30);
+                        page.Mock("row").Position(0, 30).Size(50, 0);
+                        page.Mock("b").Position(0, 40).Size(50, 20);
+                    });
+            });
+    }
+    
+    [TestCase(false)]
+    [TestCase(true)]
+    public void HiddenItemsKeepTheirWidth(bool usePredicate)
+    {
+        LayoutTest
+            .HavingSpaceOfSize(100, 100)
+            .ForContent(content =>
+            {
+                content.Shrink().Column(column =>
+                {
+                    column.Spacing(10);
+                    
+                    column.Item().Mock("a").SolidBlock(50, 30);
+                    
+                    // ShowIf hides only the content of the items, so the row keeps the width of its items and spacing (80 + 10 + 10),
+                    // and the column becomes as wide as the row
+                    column.Item().Mock("row").Row(row =>
+                    {
+                        row.Spacing(10);
+                        row.ConstantItem(80).Hide(usePredicate).SolidBlock(20, 20);
+                        row.RelativeItem().Hide(usePredicate).SolidBlock(20, 20);
+                    });
+                    
+                    column.Item().Mock("b").SolidBlock(50, 20);
+                });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(100, 60)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(100, 30);
+                        page.Mock("row").Position(0, 30).Size(100, 0);
+                        page.Mock("b").Position(0, 40).Size(100, 20);
                     });
             });
     }

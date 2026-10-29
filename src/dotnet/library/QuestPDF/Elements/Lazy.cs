@@ -65,6 +65,7 @@ internal sealed class Lazy : ContainerElement, IPageContextAware, IContentDirect
         
         if (SemanticTreeManager != null)
         {
+            container.MoveLinkTagsAboveLinks();
             container.ApplySemanticParagraphs();
             container.InjectSemanticTreeManager(SemanticTreeManager);
         }

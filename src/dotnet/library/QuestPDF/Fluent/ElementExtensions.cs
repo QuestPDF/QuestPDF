@@ -283,6 +283,11 @@ namespace QuestPDF.Fluent
         /// Creates a clickable area that redirects the user to a designated webpage.
         /// <a href="https://www.questpdf.com/api-reference/hyperlink.html">Learn more</a>
         /// </summary>
+        /// <remarks>
+        /// <para>The clickable area covers the entire space available to this container, not only its content. To limit it to the content, reduce the space first, e.g. with <see cref="AlignmentExtensions.AlignLeft">AlignLeft</see> or <see cref="ShrinkExtensions.Shrink">Shrink</see>.</para>
+        /// <para>No clickable area is created on pages where the content is postponed to the next page (e.g. by EnsureSpace or PreventPageBreak), skipped (e.g. by SkipOnce), or has already ended on an earlier page.</para>
+        /// <para>ShowIf hides only the content placed after it, so a ShowIf placed after this element keeps the clickable area. To hide both, call ShowIf first.</para>
+        /// </remarks>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="param.url"]/*' />
         public static IContainer Hyperlink(this IContainer element, string url)
         {
@@ -338,6 +343,11 @@ namespace QuestPDF.Fluent
         /// Creates a clickable area that navigates the user to a designated section.
         /// <a href="https://www.questpdf.com/api-reference/section-link.html">Learn more</a>
         /// </summary>
+        /// <remarks>
+        /// <para>The clickable area covers the entire space available to this container, not only its content. To limit it to the content, reduce the space first, e.g. with <see cref="AlignmentExtensions.AlignLeft">AlignLeft</see> or <see cref="ShrinkExtensions.Shrink">Shrink</see>.</para>
+        /// <para>No clickable area is created on pages where the content is postponed to the next page (e.g. by EnsureSpace or PreventPageBreak), skipped (e.g. by SkipOnce), or has already ended on an earlier page.</para>
+        /// <para>ShowIf hides only the content placed after it, so a ShowIf placed after this element keeps the clickable area. To hide both, call ShowIf first.</para>
+        /// </remarks>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="param.sectionName"]/*' />
         public static IContainer SectionLink(this IContainer element, string sectionName)
         {
@@ -354,6 +364,9 @@ namespace QuestPDF.Fluent
         /// Conditionally draws or hides its inner content.
         /// <a href="https://www.questpdf.com/api-reference/show-if.html">Learn more</a>
         /// </summary>
+        /// <remarks>
+        /// Only the content placed after this element is hidden. Elements placed before it, e.g. Padding, Border or Height, keep their size. To hide them as well, call ShowIf before them.
+        /// </remarks>
         /// <param name="condition">If the value is <see langword="true"/>, its content is visible. Otherwise, it's hidden.</param>
         public static IContainer ShowIf(this IContainer element, bool condition)
         {
@@ -365,6 +378,9 @@ namespace QuestPDF.Fluent
         /// Please use carefully as certain predicates may produce unstable layouts resulting with unexpected content or exceptions.
         /// <a href="https://www.questpdf.com/api-reference/show-if.html">Learn more</a>
         /// </summary>
+        /// <remarks>
+        /// Only the content placed after this element is hidden. Elements placed before it, e.g. Padding, Border or Height, keep their size. To hide them as well, call ShowIf before them.
+        /// </remarks>
         /// <param name="predicate">If the predicate returns <see langword="true"/>, its content is visible. Otherwise, it's hidden.</param>
         public static IContainer ShowIf(this IContainer element, Predicate<ShowIfContext> predicate)
         {

@@ -11,6 +11,7 @@ namespace QuestPDF.Elements
         public ItemCommand Before { get; set; }
         public ItemCommand Content { get; set; }
         public ItemCommand After { get; set; }
+        public Size ContentSpace { get; set; }
         
         public struct ItemCommand
         {
@@ -50,6 +51,9 @@ namespace QuestPDF.Elements
             if (layout.Content.Measurement.Type == SpacePlanType.Empty)
                 return SpacePlan.Empty();
             
+            if (layout.Before.Measurement.Height + layout.After.Measurement.Height > availableSpace.Height + Size.Epsilon)
+                return SpacePlan.Wrap("Decoration slots (before and after) together require more vertical space than available.");
+            
             if (layout.Content.Measurement.Type == SpacePlanType.Wrap)
                 return SpacePlan.Wrap("The primary content does not fit on the page.");
 
@@ -58,6 +62,10 @@ namespace QuestPDF.Elements
             
             if (layout.After.Measurement.Type == SpacePlanType.Wrap)
                 return layout.After.Measurement;
+            
+            // the decoration moves to the next page together with its postponed content, so its slots are not drawn here
+            if (IsPostponed(layout.Content.Measurement))
+                return layout.Content.Measurement;
             
             var size = new Size(layout.TotalWidth, layout.TotalHeight);
             
@@ -77,6 +85,15 @@ namespace QuestPDF.Elements
         internal override void Draw(Size availableSpace)
         {
             var layout = PlanLayout(availableSpace);
+            
+            // without content, or with content postponed to the next page, the decoration takes no space (see Measure), so its slots are not drawn,
+            // the content still receives the same space as when it was measured, e.g. so that EnsureSpace and PreventPageBreak register the postponement
+            if (layout.Content.Measurement.Type == SpacePlanType.Empty || IsPostponed(layout.Content.Measurement))
+            {
+                Content.Draw(layout.ContentSpace);
+                return;
+            }
+            
             var contentWidth = layout.TotalWidth;
 
             DrawCommand(layout.Before);
@@ -97,6 +114,12 @@ namespace QuestPDF.Elements
             }
         }
 
+        // postponed content (e.g. moved to the next page by EnsureSpace or PreventPageBreak) shows nothing on this page
+        private static bool IsPostponed(SpacePlan measurement)
+        {
+            return measurement.Type == SpacePlanType.PartialRender && measurement.Height <= Size.Epsilon;
+        }
+
         private DecorationElementLayout PlanLayout(Size availableSpace)
         {
             SpacePlan GetDecorationMeasurement(Element element)
@@ -112,11 +135,14 @@ namespace QuestPDF.Elements
             var beforeMeasurement = GetDecorationMeasurement(Before);
             var afterMeasurement = GetDecorationMeasurement(After);
             
-            var contentSpace = new Size(availableSpace.Width, availableSpace.Height - beforeMeasurement.Height - afterMeasurement.Height);
+            // the content never receives negative space, when the slots leave no room for it, Measure reports the slots as the cause
+            var contentHeight = availableSpace.Height - beforeMeasurement.Height - afterMeasurement.Height;
+            var contentSpace = new Size(availableSpace.Width, Math.Max(0, contentHeight));
             var contentMeasurement = Content.Measure(contentSpace);
 
             return new DecorationElementLayout
             {
+                ContentSpace = contentSpace,
                 Before = new DecorationElementLayout.ItemCommand
                 {
                     Element = Before,

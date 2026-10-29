@@ -20,6 +20,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public void Spacing(float spacing, Unit unit = Unit.Point)
         {
+            if (float.IsNaN(spacing) || float.IsInfinity(spacing))
+                throw new ArgumentOutOfRangeException(nameof(spacing), "The row spacing must be a finite number.");
+            
             if (spacing < 0)
                 throw new ArgumentOutOfRangeException(nameof(spacing), "The row spacing cannot be negative.");
             
@@ -64,6 +67,9 @@ namespace QuestPDF.Fluent
         /// <returns>The container of the newly added item.</returns>
         public IContainer RelativeItem(float size = 1)
         {
+            if (float.IsNaN(size) || float.IsInfinity(size))
+                throw new ArgumentOutOfRangeException(nameof(size), "The relative item size must be a finite number.");
+            
             if (size <= 0)
                 throw new ArgumentOutOfRangeException(nameof(size), "The relative item size must be greater than zero.");
             
@@ -76,6 +82,9 @@ namespace QuestPDF.Fluent
         /// <returns>The container of the newly created item.</returns>
         public IContainer ConstantItem(float size, Unit unit = Unit.Point)
         {
+            if (float.IsNaN(size) || float.IsInfinity(size))
+                throw new ArgumentOutOfRangeException(nameof(size), "The constant item size must be a finite number.");
+            
             if (size < 0)
                 throw new ArgumentOutOfRangeException(nameof(size), "The constant item size cannot be negative.");
             

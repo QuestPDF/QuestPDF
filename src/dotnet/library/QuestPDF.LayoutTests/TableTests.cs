@@ -286,4 +286,103 @@ public class TableTests
                     });
             });
     }
+    
+    [Test]
+    public void TableWithHeaderAndNoRowsShowsHeader()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(100, 100)
+            .ForContent(content =>
+            {
+                content.Shrink().Column(column =>
+                {
+                    column.Spacing(10);
+
+                    column.Item().Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn();
+                        });
+
+                        // the table has no body cells, e.g. an empty list of records
+                        table.Header(header =>
+                        {
+                            header.Cell().Mock("header").SolidBlock(50, 20);
+                        });
+                    });
+
+                    column.Item().Mock("a").SolidBlock(50, 30);
+                });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(100, 60)
+                    .Content(page =>
+                    {
+                        page.Mock("header").Position(0, 0).Size(100, 20);
+                        page.Mock("a").Position(0, 30).Size(100, 30);
+                    });
+            });
+    }
+    
+    [Test]
+    public void HeaderMovesToNextPageTogetherWithPostponedRows()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(100, 100)
+            .ForContent(content =>
+            {
+                content.Shrink().Column(column =>
+                {
+                    column.Item().Mock("a").SolidBlock(50, 60);
+
+                    column.Item().Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn();
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Mock("header").SolidBlock(50, 10);
+                        });
+
+                        // the first row (40) does not fit below the header in the remaining space (40 - 10 = 30),
+                        // PreventPageBreak moves it to the next page, so the header must not be drawn alone on the first page
+                        table.Cell().PreventPageBreak().Column(cell =>
+                        {
+                            cell.Item().Mock("row1a").SolidBlock(50, 20);
+                            cell.Item().Mock("row1b").SolidBlock(50, 20);
+                        });
+
+                        table.Cell().Mock("row2").SolidBlock(50, 20);
+                    });
+                });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(100, 60)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(100, 60);
+                    });
+
+                document
+                    .Page()
+                    .RequiredAreaSize(100, 70)
+                    .Content(page =>
+                    {
+                        page.Mock("header").Position(0, 0).Size(100, 10);
+                        page.Mock("row1a").Position(0, 10).Size(100, 20);
+                        page.Mock("row1b").Position(0, 30).Size(100, 20);
+                        page.Mock("row2").Position(0, 50).Size(100, 20);
+                    });
+            });
+    }
 }

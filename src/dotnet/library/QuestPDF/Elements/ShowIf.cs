@@ -29,8 +29,10 @@ internal sealed class ShowIf : ContainerElement, IPageContextAware
     
     internal override SpacePlan Measure(Size availableSpace)
     {
+        // hidden content is measured exactly as ShowIf(false), so only the content after ShowIf is hidden,
+        // while the elements before it (e.g. padding, border, height) keep their size
         if (!CheckVisibility())
-            return SpacePlan.Empty();
+            return Empty.Instance.Measure(availableSpace);
 
         return base.Measure(availableSpace);
     }

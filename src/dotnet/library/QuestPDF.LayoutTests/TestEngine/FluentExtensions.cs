@@ -92,7 +92,13 @@ internal static class FluentExtensions
     public static IContainer Size(this IContainer element, float width, float height)
     {
         return element.Width(width).Height(height);
-    }     
+    }
+
+    // hides the content with either ShowIf overload, so a test can check that both behave the same
+    public static IContainer Hide(this IContainer element, bool usePredicate)
+    {
+        return usePredicate ? element.ShowIf(_ => false) : element.ShowIf(false);
+    }
     
     public static void ContinuousBlock(this IContainer element, float width = 1f, float height = 1f)
     {
@@ -107,8 +113,17 @@ internal static class FluentExtensions
     {
         element.Element(new SolidBlock
         {
-            TotalWidth = width, 
+            TotalWidth = width,
             TotalHeight = height
         });
-    } 
+    }
+
+    public static void OverflowingBlock(this IContainer element, float width = 1f, float height = 1f)
+    {
+        element.Element(new OverflowingBlock
+        {
+            TotalWidth = width,
+            TotalHeight = height
+        });
+    }
 }

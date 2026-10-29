@@ -82,53 +82,42 @@ namespace QuestPDF.Elements
         {
             var commands = ReusableList<ColumnItemRenderingCommand>.Get();
 
+            // bottom edge of the last item that has height
             var topOffset = 0f;
-            
+            var anyItemHasHeight = false;
+
             for (var i = CurrentRenderingIndex; i < Items.Count; i++)
             {
                 var item = Items[i];
-                var isFirstItem = commands.Count == 0;
 
-                var availableHeight = availableSpace.Height - topOffset;
-                
-                if (availableHeight < -Size.Epsilon)
-                    break;
+                var spacing = anyItemHasHeight ? Spacing : 0;
+                var availableHeight = Math.Max(0, availableSpace.Height - topOffset - spacing);
 
-                availableHeight = Math.Max(0, availableHeight);
-                
-                if (!isFirstItem)
-                    availableHeight -= Spacing;
+                // the full width is always offered, so an item without height (e.g. postponed content with horizontal padding) is accepted even when no height is left
+                var measurement = item.Measure(new Size(availableSpace.Width, availableHeight));
 
-                var allowOnlyZeroSpaceItems = availableHeight < Size.Epsilon;
-                
-                var itemSpace = allowOnlyZeroSpaceItems
-                    ? Size.Zero
-                    : new Size(availableSpace.Width, availableHeight);
-                
-                var measurement = item.Measure(itemSpace);
-                
                 if (measurement.Type == SpacePlanType.Wrap)
                     break;
 
-                var currentItemTookSpace = !Size.Equal(measurement, Size.Zero);
-                
-                if (allowOnlyZeroSpaceItems && currentItemTookSpace)
-                    break;
+                // the spacing separates items that have height; an item without height sits at the bottom edge of the previous one, regardless of its width
+                var itemHasHeight = measurement.Height > Size.Epsilon;
+                var itemOffset = itemHasHeight ? topOffset + spacing : topOffset;
 
-                if (!isFirstItem && currentItemTookSpace)
-                    topOffset += Spacing;
-                
                 commands.Add(new ColumnItemRenderingCommand
                 {
                     Element = item,
                     Measurement = measurement,
-                    Offset = new Position(0, topOffset)
+                    Offset = new Position(0, itemOffset)
                 });
 
                 if (measurement.Type == SpacePlanType.PartialRender)
                     break;
 
-                topOffset += measurement.Height;
+                if (!itemHasHeight)
+                    continue;
+
+                topOffset = itemOffset + measurement.Height;
+                anyItemHasHeight = true;
             }
 
             return commands;

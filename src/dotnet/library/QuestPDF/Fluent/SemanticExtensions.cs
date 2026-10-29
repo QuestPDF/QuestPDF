@@ -283,6 +283,10 @@ public static class SemanticExtensions
     /// <summary>
     /// Marks the content as a hyperlink (Link).
     /// </summary>
+    /// <remarks>
+    /// Use it together with <see cref="ElementExtensions.Hyperlink">Hyperlink</see> or <see cref="ElementExtensions.SectionLink">SectionLink</see>, placed either before or after it, e.g. <c>.SemanticLink(description).Hyperlink(url)</c> or <c>.Hyperlink(url).SemanticLink(description)</c>.
+    /// When placed after it, only layout elements (e.g. Padding) may stand between them: no other semantic element, no element with multiple children (e.g. Column), and no Lazy or Dynamic element.
+    /// </remarks>
     /// <param name="alternativeText">Alternative text describing the link's purpose or destination. This is essential for screen readers.</param>
     public static IContainer SemanticLink(this IContainer container, string alternativeText)
     {

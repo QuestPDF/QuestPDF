@@ -198,6 +198,7 @@ namespace QuestPDF.Drawing
             
             if (semanticTreeManager != null)
             {
+                content.MoveLinkTagsAboveLinks();
                 content.ApplySemanticParagraphs();
                 content.InjectSemanticTreeManager(semanticTreeManager);
             }
@@ -303,7 +304,9 @@ namespace QuestPDF.Drawing
                 {
                     semanticAware.SemanticTreeManager = semanticTreeManager;
                 }
-                else if (x is TextBlock textBlock)
+                
+                // a text block uses the manager for its own links (above), and also passes it to the elements placed inside the text
+                if (x is TextBlock textBlock)
                 {
                     foreach (var textBlockItem in textBlock.Items)
                     {
@@ -533,6 +536,59 @@ namespace QuestPDF.Drawing
 
                 for (var i = 0; i < children.Count; i++)
                     ApplyInheritedAndGlobalTexStyle(children[i], documentDefaultTextStyle);
+            }
+        }
+
+        // the link annotation is drawn in the semantic element that is current when the link is drawn,
+        // so a SemanticLink placed after Hyperlink or SectionLink, e.g. Hyperlink(url).SemanticLink(description),
+        // is moved before it, which gives exactly the same result as the documented order;
+        // any future step adding Link elements automatically should run after this one, so it does not nest them
+        internal static void MoveLinkTagsAboveLinks(this Element root)
+        {
+            Traverse(root, isInsideLink: false);
+
+            static void Traverse(Element element, bool isInsideLink)
+            {
+                if (element is SemanticTag { TagType: "Link" })
+                    isInsideLink = true;
+
+                if (element is ContainerElement container)
+                {
+                    if (!isInsideLink && container.Child is Hyperlink or SectionLink)
+                        MoveLinkTagAboveLink(container);
+
+                    Traverse(container.Child, isInsideLink);
+                }
+                else
+                {
+                    var children = element.GetChildren();
+
+                    for (var i = 0; i < children.Count; i++)
+                        Traverse(children[i], isInsideLink);
+                }
+            }
+
+            static void MoveLinkTagAboveLink(ContainerElement parent)
+            {
+                var link = (ContainerElement)parent.Child;
+                var previous = link;
+
+                while (previous.Child is ContainerElement current)
+                {
+                    if (current is SemanticTag { TagType: "Link" } linkTag)
+                    {
+                        previous.Child = linkTag.Child;
+                        linkTag.Child = link;
+                        parent.Child = linkTag;
+                        return;
+                    }
+
+                    // other semantic elements and links keep the order in which they were written
+                    if (current is SemanticTag or ArtifactTag or Hyperlink or SectionLink)
+                        return;
+
+                    previous = current;
+                }
             }
         }
 

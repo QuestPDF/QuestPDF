@@ -152,6 +152,10 @@ namespace QuestPDF.Fluent
         /// <br />
         /// <a href="https://www.questpdf.com/api-reference/decoration.html">Learn more</a>
         /// </summary>
+        /// <remarks>
+        /// <para>The "before" and "after" sections are drawn only on pages where the main content appears. When the content is moved to the next page (e.g. by EnsureSpace or PreventPageBreak), skipped (e.g. by SkipOnce), or has already ended on an earlier page, they are not drawn either.</para>
+        /// <para>ShowIf hides only the content placed after it, so content hidden with ShowIf still gets the "before" and "after" sections. To hide the entire decoration, call ShowIf before it.</para>
+        /// </remarks>
         /// <example>
         /// A typical use-case for this method is to render a table that spans multiple pages, with a consistent caption or header on each page.
         /// </example>

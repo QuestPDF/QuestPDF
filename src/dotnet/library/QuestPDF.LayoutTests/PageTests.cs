@@ -186,4 +186,39 @@ public class PageTests
                     });
             });
     }
+    
+    [Test]
+    public void HeaderAndFooter_WhenContentIsHidden()
+    {
+        LayoutTest
+            .ForPage(page =>
+            {
+                page.Size(200, 300);
+                
+                page.Header()
+                    .Height(50)
+                    .ExtendHorizontal()
+                    .Mock("header")
+                    .SolidBlock();
+                
+                page.Content().ShowIf(_ => false).Mock("content").SolidBlock(200, 100);
+                
+                page.Footer()
+                    .Height(50)
+                    .ExtendHorizontal()
+                    .Mock("footer")
+                    .SolidBlock();
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(200, 300)
+                    .Content(page =>
+                    {
+                        page.Mock("header").Position(0, 0).Size(200, 50);
+                        page.Mock("footer").Position(0, 250).Size(200, 50);
+                    });
+            });
+    }
 }

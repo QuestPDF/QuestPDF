@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using QuestPDF.Drawing;
+using QuestPDF.Drawing.DrawingCanvases;
 using QuestPDF.Drawing.Exceptions;
 using QuestPDF.Elements.Text.Items;
 using QuestPDF.Helpers;
@@ -13,7 +14,7 @@ using QuestPDF.Skia.Text;
 
 namespace QuestPDF.Elements.Text
 {
-    internal sealed class TextBlock : Element, IStateful, IPageContextAware, IContentDirectionAware, IDisposable
+    internal sealed class TextBlock : Element, IStateful, IPageContextAware, IContentDirectionAware, ISemanticAware, IDisposable
     {
         // content
         public List<ITextBlockItem> Items { get; set; } = new();
@@ -22,6 +23,7 @@ namespace QuestPDF.Elements.Text
         public TextHorizontalAlignment? Alignment { get; set; }
         public IPageContext PageContext { get; set; }
         public ContentDirection ContentDirection { get; set; }
+        public SemanticTreeManager? SemanticTreeManager { get; set; }
         
         public int? LineClamp { get; set; }
         public string LineClampEllipsis { get; set; }
@@ -208,15 +210,18 @@ namespace QuestPDF.Elements.Text
                 if (takesMultiplePages)
                     Canvas.ClipRectangle(new SkRect(0, pageStartTop, availableSpace.Width, pageStartTop + takenHeight));
 
+                // in a tagged document, links are part of the semantic tree, so text excluded from it (e.g. a repeated header) cannot have them
+                var canDrawLinks = !(SemanticTreeManager?.IsCurrentContentArtifact() ?? false);
+                
                 foreach (var textBlockItem in Items)
                 {
                     if (textBlockItem is TextBlockElement textBlockElement)
                         DrawInjectedElement(textBlockElement);
 
-                    else if (textBlockItem is TextBlockHyperlink textBlockHyperlink)
+                    else if (textBlockItem is TextBlockHyperlink textBlockHyperlink && canDrawLinks)
                         DrawHyperlink(textBlockHyperlink);
 
-                    else if (textBlockItem is TextBlockSectionLink textBlockSectionLink)
+                    else if (textBlockItem is TextBlockSectionLink textBlockSectionLink && canDrawLinks)
                         DrawSectionLink(textBlockSectionLink);
                 }
                 
@@ -251,6 +256,9 @@ namespace QuestPDF.Elements.Text
                     if (!IsPositionVisible(position))
                         continue;
 
+                    hyperlink.SemanticTreeNode ??= CreateLinkSemanticNode(hyperlink.Text);
+                    using var semanticScope = StartLinkSemanticScope(hyperlink.SemanticTreeNode);
+
                     Canvas.Translate(offset);
                     Canvas.DrawHyperlink(new Size(position.Width, position.Height), hyperlink.Url, hyperlink.Text);
                     Canvas.Translate(offset.Reverse());
@@ -269,10 +277,36 @@ namespace QuestPDF.Elements.Text
                     if (!IsPositionVisible(position))
                         continue;
 
+                    sectionLink.SemanticTreeNode ??= CreateLinkSemanticNode(sectionLink.Text);
+                    using var semanticScope = StartLinkSemanticScope(sectionLink.SemanticTreeNode);
+
                     Canvas.Translate(offset);
                     Canvas.DrawSectionLink(new Size(position.Width, position.Height), targetName, sectionLink.Text);
                     Canvas.Translate(offset.Reverse());
                 }
+            }
+
+            // PDF/UA requires each link annotation to be inside a Link element,
+            // so in a tagged document, each text link gets its own Link element inside the element of its paragraph (e.g. P)
+            SemanticTreeNode? CreateLinkSemanticNode(string description)
+            {
+                if (SemanticTreeManager == null || Canvas.Is<DiscardDrawingCanvas>())
+                    return null;
+
+                var node = new SemanticTreeNode
+                {
+                    NodeId = SemanticTreeManager.GetNextNodeId(),
+                    Type = "Link",
+                    Alt = description
+                };
+
+                SemanticTreeManager.AddNode(node);
+                return node;
+            }
+
+            SemanticScope StartLinkSemanticScope(SemanticTreeNode? node)
+            {
+                return Canvas.StartSemanticScopeWithNodeId(node?.NodeId ?? Canvas.GetSemanticNodeId());
             }
 
             bool IsPositionVisible(SkRect rect)

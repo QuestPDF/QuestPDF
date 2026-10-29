@@ -4,28 +4,54 @@ using QuestPDF.Infrastructure;
 
 namespace QuestPDF.Elements
 {
-    internal sealed class SectionLink : ContainerElement, IPageContextAware
+    internal sealed class SectionLink : ContainerElement, IPageContextAware, ISemanticAware
     {
         public IPageContext PageContext { get; set; }
-        
+        public SemanticTreeManager? SemanticTreeManager { get; set; }
+
         public string SectionName { get; set; }
         public string? Description { get; set; }
-        
+
         internal override void Draw(Size availableSpace)
         {
-            var targetSize = base.Measure(availableSpace);
+            var measurement = base.Measure(availableSpace);
 
-            if (targetSize.Type is SpacePlanType.Empty or SpacePlanType.Wrap)
+            if (measurement.Type == SpacePlanType.Wrap)
                 return;
 
-            var targetName = PageContext.GetDocumentLocationName(SectionName);
-            Canvas.DrawSectionLink(targetSize, targetName, Description);
+            // the link covers the entire space offered to the element, as only that space is known to contain the content,
+            // the content may be placed anywhere within it, e.g. with alignment or the right-to-left content direction
+            if (ShouldDrawLink(measurement))
+            {
+                var targetName = PageContext.GetDocumentLocationName(SectionName);
+                Canvas.DrawSectionLink(availableSpace, targetName, Description);
+            }
+
+            // the content is drawn exactly as it would be without the link
             base.Draw(availableSpace);
+        }
+
+        private bool ShouldDrawLink(SpacePlan measurement)
+        {
+            // in a tagged document, links are part of the semantic tree, so content excluded from it (e.g. a repeated header) cannot have them
+            if (SemanticTreeManager?.IsCurrentContentArtifact() ?? false)
+                return false;
+
+            // hidden or already drawn content shows nothing on this page
+            if (measurement.Type == SpacePlanType.Empty)
+                return false;
+
+            // postponed content (e.g. moved to the next page by EnsureSpace or PreventPageBreak) shows nothing on this page,
+            // even when the parent offers space (e.g. a row as tall as its other items)
+            if (measurement.Type == SpacePlanType.PartialRender && measurement.Height <= Size.Epsilon)
+                return false;
+
+            return true;
         }
 
         internal override string? GetCompanionHint() => SectionName;
         internal override string? GetCompanionSearchableContent() => SectionName;
-        
+
         internal override IEnumerable<KeyValuePair<string, string>>? GetCompanionProperties()
         {
             yield return new("SectionName", SectionName);
