@@ -15,6 +15,7 @@ namespace QuestPDF.Companion
     internal sealed class CompanionService : IDisposable
     {
         private const int RequiredCompanionApiVersion = 3;
+        private const int MaxDocumentStructureSizeInBytes = 64 * 1024 * 1024;
 
         private int Port { get; }
         private HttpClient HttpClient { get; }
@@ -220,7 +221,22 @@ namespace QuestPDF.Companion
                     .ToArray()
             };
 
-            using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", command, CompanionJsonContext.Default.UpdateDocumentStructure, cancellationToken);
+            using var content = JsonContent.Create(command, CompanionJsonContext.Default.UpdateDocumentStructure);
+           
+            try
+            {
+                await content.LoadIntoBufferAsync(MaxDocumentStructureSizeInBytes);
+            }
+            catch (HttpRequestException ex) when (ex.HttpRequestError == HttpRequestError.ConfigurationLimitExceeded)
+            {
+                throw new InvalidOperationException(
+                    "The document is too complex to be previewed in the QuestPDF Companion application. " +
+                    "To ensure a responsive preview and quick hot-reload, please consider reducing the amount of content in the document during development. " +
+                    "This applies only to the preview and does not affect PDF generation.",
+                    ex);
+            }
+
+            using var result = await HttpClient.PostAsync($"/v{RequiredCompanionApiVersion}/documentPreview/update", content, cancellationToken);
             result.EnsureSuccessStatusCode();
         }
         
