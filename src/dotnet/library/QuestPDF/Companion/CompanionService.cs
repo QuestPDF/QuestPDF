@@ -148,12 +148,13 @@ namespace QuestPDF.Companion
                     return;
             }
             
-            throw new Exception($"The library was not able to launch the QuestPDF Companion application automatically: it did not accept connections on port {Port}. If the application is already running, please close it first, as it keeps listening on the port it was originally started with. Learn more: https://www.questpdf.com/companion/usage.html");
+            throw new Exception($"The library was not able to launch the QuestPDF Companion application automatically: it did not accept connections on port {Port}. The port may be used by another program, which prevents the Companion application from starting: please stop that program or use a different port. If the Companion application is already running, please close it first, as it keeps listening on the port it was originally started with. Learn more: https://www.questpdf.com/companion/usage.html");
         }
 
         private async Task CheckCompanionVersionCompatibility(CancellationToken cancellationToken)
         {
             using var result = await HttpClient.GetAsync("/version", cancellationToken);
+
             result.EnsureSuccessStatusCode();
 
             var response = await result.Content.ReadFromJsonAsync(CompanionJsonContext.Default.GetVersionCommandResponse, cancellationToken);

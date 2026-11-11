@@ -15,7 +15,7 @@ public static class PreviewerExtensions
     [Obsolete(ObsoleteMessage)]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
-    public static void ShowInPreviewer(this IDocument document, int port = 12500)
+    public static void ShowInPreviewer(this IDocument document, int port = CompanionExtensions.DefaultPort)
     {
         throw new NotSupportedException(ObsoleteMessage);
     }
@@ -23,7 +23,7 @@ public static class PreviewerExtensions
     [Obsolete(ObsoleteMessage)]
     [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
     [ExcludeFromCodeCoverage]
-    public static Task ShowInPreviewerAsync(this IDocument document, int port = 12500, CancellationToken cancellationToken = default)
+    public static Task ShowInPreviewerAsync(this IDocument document, int port = CompanionExtensions.DefaultPort, CancellationToken cancellationToken = default)
     {
         throw new NotSupportedException(ObsoleteMessage);
     }

@@ -577,7 +577,7 @@
             For details on the hot-reload functionality, please refer to the documentation of your preferred IDE.
         </remarks>
         
-        <param name="port">Specifies port for communication with the QuestPDF Previewer application. Default value is 12500.</param>
+        <param name="port">Specifies port for communication with the QuestPDF Companion application. Default value is 12500. When the default value is used and the port is occupied by another program, the next ports (up to 12515) are tried. Any other value is used as provided.</param>
     </doc>
 
     <doc for="companion.notSupported">
