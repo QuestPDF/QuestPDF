@@ -191,7 +191,7 @@ internal static class LayoutDebugging
             }
             else if (node is SourceCodePointer sourceCodePointer)
             {
-                result.AppendLine($"-> In method:   {sourceCodePointer.MethodName}");
+                result.AppendLine($"-> In method:   {sourceCodePointer.DisplayMethodName}");
                 result.AppendLine($"   Called from: {sourceCodePointer.CalledFrom}");
                 result.AppendLine($"   Source path: {sourceCodePointer.FilePath}");
                 result.AppendLine($"   Line number: {sourceCodePointer.LineNumber}");
