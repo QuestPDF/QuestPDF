@@ -76,23 +76,63 @@ namespace QuestPDF.Companion
         {
             try
             {
-                var startInfo = new ProcessStartInfo("questpdf-companion")
-                {
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-
-                startInfo.ArgumentList.Add(Port.ToString(CultureInfo.InvariantCulture));
+                var startInfo = CreateCompanionStartInfo(Port);
 
                 using var process = Process.Start(startInfo);
                 
                 if (process == null)
                     throw new InvalidOperationException("The process could not be started.");
+
+                // On Windows, the launcher is a short-lived cmd.exe that only asks the shell to start Companion.
+                // A failure to locate the Companion executable surfaces here as a non-zero exit code.
+                if (startInfo.FileName != CompanionCommandName && process.WaitForExit(5000) && process.ExitCode != 0)
+                    throw new InvalidOperationException($"The launcher exited with code {process.ExitCode}. Is the '{CompanionCommandName}' tool installed?");
             }
             catch (Exception exception)
             {
                 throw new Exception($"The QuestPDF Companion application is not running, and the library was not able to launch it automatically. Please start the application manually. Learn more: https://www.questpdf.com/companion/usage.html", exception);
             }
+        }
+
+        private const string CompanionCommandName = "questpdf-companion";
+
+        internal static ProcessStartInfo CreateCompanionStartInfo(int port)
+        {
+            var portText = port.ToString(CultureInfo.InvariantCulture);
+
+            if (!OperatingSystem.IsWindows())
+            {
+                var unixStartInfo = new ProcessStartInfo(CompanionCommandName)
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                unixStartInfo.ArgumentList.Add(portText);
+                return unixStartInfo;
+            }
+
+            // When the IDE stops the debugged app (e.g. Stop in Rider), it kills the app's whole process tree on Windows,
+            // so a Companion started as a child process would close too. Starting it through `cmd /c start` detaches it
+            // from that tree, so it stays open between runs.
+            // CreateNoWindow hides only the cmd.exe console. Companion's own window must not be hidden, or it stays hidden for good.
+            var commandInterpreterPath = Environment.GetEnvironmentVariable("ComSpec") is { Length: > 0 } configuredPath 
+                ? configuredPath 
+                : "cmd.exe";
+
+            var windowsStartInfo = new ProcessStartInfo(commandInterpreterPath)
+            {
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            // ArgumentList applies the standard Windows quoting; the empty string becomes the required "" window title.
+            windowsStartInfo.ArgumentList.Add("/c");
+            windowsStartInfo.ArgumentList.Add("start");
+            windowsStartInfo.ArgumentList.Add("");
+            windowsStartInfo.ArgumentList.Add(CompanionCommandName);
+            windowsStartInfo.ArgumentList.Add(portText);
+            return windowsStartInfo;
         }
 
         private async Task WaitForCompanionConnection(CancellationToken cancellationToken)
