@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using NUnit.Framework;
 using QuestPDF.Drawing;
 using QuestPDF.Elements;
@@ -11,183 +12,171 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class ColumnTests
     {
-        private Column CreateColumnWithTwoItems(TestPlan testPlan)
+        #region Fluent API
+
+        [TestCase(float.MinValue)]
+        [TestCase(-5)]
+        [TestCase(-float.Epsilon)]
+        public void NegativeSpacingThrowsException(float spacingValue)
         {
-            return new Column
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
             {
-                Items =
-                {
-                    testPlan.CreateChild("first"),
-                    testPlan.CreateChild("second")
-                }
-            };
+                EmptyContainer
+                    .Create()
+                    .Column(column =>
+                    {
+                        column.Spacing(spacingValue);
+                    });
+            });
+
+            Assert.That(exception.Message, Does.Contain("The column spacing cannot be negative."));
         }
-        
-        private Column CreateColumnWithTwoItemsWhereFirstIsFullyRendered(TestPlan testPlan)
+
+        [TestCase(float.NaN)]
+        [TestCase(float.PositiveInfinity)]
+        [TestCase(float.NegativeInfinity)]
+        public void SpacingMustBeFiniteNumber(float spacingValue)
         {
-            var column = CreateColumnWithTwoItems(testPlan);
-            column.CurrentRenderingIndex = 1;
-            return column;
+            var exception = Assert.Throws<ArgumentOutOfRangeException>(() =>
+            {
+                EmptyContainer
+                    .Create()
+                    .Column(column =>
+                    {
+                        column.Spacing(spacingValue);
+                    });
+            });
+
+            Assert.That(exception.Message, Does.Contain("The column spacing must be a finite number."));
         }
-        
-        #region Measure
+
+        [TestCase(0)]
+        [TestCase(float.Epsilon)]
+        [TestCase(10)]
+        public void ValidSpacingIsCorrectlyApplied(float spacingValue)
+        {
+            var container = EmptyContainer.Create();
+
+            container.Column(column =>
+            {
+                column.Spacing(spacingValue);
+            });
+
+            var column = container.Child as Column;
+            Assert.That(column?.Spacing, Is.EqualTo(spacingValue));
+        }
 
         [Test]
-        public void Measure_ReturnsWrap_WhenFirstChildWraps()
+        public void SpacingSupportsUnitConversion()
         {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap("Mock"))
-                .CheckMeasureResult(SpacePlan.Wrap("The available space is not sufficient for even partially rendering a single item."));
+            var container = EmptyContainer.Create();
+
+            container.Column(column =>
+            {
+                column.Spacing(5, Unit.Inch);
+            });
+
+            var column = container.Child as Column;
+            Assert.That(column?.Spacing, Is.EqualTo(360));
         }
-        
+
         [Test]
-        public void Measure_ReturnsPartialRender_WhenFirstChildReturnsPartialRender()
+        public void ItemsAreRegisteredInOrderAndReturnedToCaller()
         {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.PartialRender(300, 200))
-                .CheckMeasureResult(SpacePlan.PartialRender(300, 200));
-        }
-        
-        [Test]
-        public void Measure_ReturnsPartialRender_WhenSecondChildWraps()
-        {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap("Mock"))
-                .CheckMeasureResult(SpacePlan.PartialRender(200, 100));
-        }
-        
-        [Test]
-        public void Measure_ReturnsPartialRender_WhenSecondChildReturnsPartialRender()
-        {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.PartialRender(300, 150))
-                .CheckMeasureResult(SpacePlan.PartialRender(300, 250));
-        }
-        
-        [Test]
-        public void Measure_ReturnsFullRender_WhenSecondChildReturnsFullRender()
-        {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .MeasureElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.FullRender(100, 50))
-                .CheckMeasureResult(SpacePlan.FullRender(200, 150));
+            var container = EmptyContainer.Create();
+            
+            IContainer first = null;
+            IContainer second = null;
+            IContainer third = null;
+
+            container.Column(column =>
+            {
+                first = column.Item();
+                second = column.Item();
+                third = column.Item();
+            });
+
+            var column = container.Child as Column;
+            Assert.That(column?.Items, Is.EqualTo([first, second, third]));
         }
 
         #endregion
-        
-        #region Draw
-        
+
+        #region Proxy
+
         [Test]
-        public void Draw_WhenFirstChildWraps()
+        public void CreateProxy_WrapsEveryItem()
         {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.Wrap("Mock"))
-                .CheckDrawResult();
+            var first = new ElementMock { Id = "first" };
+            var second = new ElementMock { Id = "second" };
+            var third = new ElementMock { Id = "third" };
+
+            var column = new Column
+            {
+                Items = { first, second, third }
+            };
+
+            column.CreateProxy(x => new ProxyMock { Child = x });
+
+            Assert.That(column.Items, Is.All.TypeOf<ProxyMock>());
+
+            var proxiedItems = column.Items.Cast<ProxyMock>().Select(x => x.Child);
+            Assert.That(proxiedItems, Is.EqualTo([first, second, third]));
         }
-        
+
+        #endregion
+
+        #region Measure
+
+        [TestCase(-1, 300)]
+        [TestCase(400, -1)]
+        public void Measure_ReturnsWrap_WhenAvailableSpaceIsNegative(float width, float height)
+        {
+            var column = new Column
+            {
+                Items = { new ElementMock { MeasureFunc = _ => SpacePlan.FullRender(100, 50) } }
+            };
+
+            var result = column.Measure(new Size(width, height));
+
+            Assert.That(result.Type, Is.EqualTo(SpacePlanType.Wrap));
+            Assert.That(result.WrapReason, Is.EqualTo("The available space is negative."));
+        }
+
+        #endregion
+
+        #region State
+
         [Test]
-        public void Draw_WhenFirstChildPartiallyRenders()
+        public void ColumnSupportsStatefulOperations()
         {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.PartialRender(200, 100))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("first", new Size(400, 100))
-                .ExpectCanvasTranslate(0, 0)
-                .CheckDrawResult();
+            var container = EmptyContainer.Create();
+
+            container.Column(column =>
+            {
+                foreach (var _ in Enumerable.Range(0, 10))
+                    column.Item();
+            });
+
+            var column = container.Child as Column;
+            Assert.That(column?.Items.Count, Is.EqualTo(10));
+
+            // the state is the index of the first item that is not fully rendered yet
+            Assert.That(column.GetState(), Is.EqualTo(0));
+
+            column.SetState(7);
+            Assert.That(column.GetState(), Is.EqualTo(7));
+            Assert.That(column.CurrentRenderingIndex, Is.EqualTo(7));
+
+            // the soft reset is used by repeating content (e.g. page header), the column must start again from its first item
+            column.ResetState(hardReset: false);
+            Assert.That(column.GetState(), Is.EqualTo(0));
+
+            column.SetState(7);
+            column.ResetState(hardReset: true);
+            Assert.That(column.GetState(), Is.EqualTo(0));
         }
-        
-        [Test]
-        public void Draw_WhenFirstChildFullyRenders_AndSecondChildWraps()
-        {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.Wrap("Mock"))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("first", new Size(400, 100))
-                .ExpectCanvasTranslate(0, 0)
-                .CheckDrawResult();
-        }
-        
-        [Test]
-        public void Draw_WhenFirstChildFullyRenders_AndSecondChildPartiallyRenders()
-        {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.PartialRender(250, 150))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("first", new Size(400, 100))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectCanvasTranslate(0, 100)
-                .ExpectChildDraw("second", new Size(400, 150))
-                .ExpectCanvasTranslate(0, -100)
-                .CheckDrawResult();
-        }
-        
-        [Test]
-        public void Draw_WhenFirstChildFullyRenders_AndSecondChildFullyRenders()
-        {
-            TestPlan
-                .For(CreateColumnWithTwoItems)
-                .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("first", new Size(400, 300), SpacePlan.FullRender(200, 100))
-                .ExpectChildMeasure("second", new Size(400, 200), SpacePlan.FullRender(250, 150))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("first", new Size(400, 100))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectCanvasTranslate(0, 100)
-                .ExpectChildDraw("second", new Size(400, 150))
-                .ExpectCanvasTranslate(0, -100)
-                .CheckDrawResult();
-        }
-        
-        [Test]
-        public void Draw_UsesEmpty_WhenFirstChildIsRendered()
-        {
-            TestPlan
-                .For(CreateColumnWithTwoItemsWhereFirstIsFullyRendered)
-                .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("second", new Size(400, 300), SpacePlan.PartialRender(200, 300))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("second", new Size(400, 300))
-                .ExpectCanvasTranslate(0, 0)
-                .CheckState<Column>(x => x.CurrentRenderingIndex > 0)
-                .CheckDrawResult();
-        }
-        
-        [Test]
-        public void Draw_DoesNotToggleFirstRenderedFlag_WhenSecondFullyRenders()
-        {
-            TestPlan
-                .For(CreateColumnWithTwoItemsWhereFirstIsFullyRendered)
-                .DrawElement(new Size(400, 300))
-                .ExpectChildMeasure("second", new Size(400, 300), SpacePlan.FullRender(200, 300))
-                .ExpectCanvasTranslate(0, 0)
-                .ExpectChildDraw("second", new Size(400, 300))
-                .ExpectCanvasTranslate(0, 0)
-                .CheckDrawResult()
-                .CheckState<Column>(x => x.CurrentRenderingIndex == 2);
-        }
-        
+
         #endregion
     }
 }

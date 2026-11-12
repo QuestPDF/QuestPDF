@@ -17,8 +17,14 @@ namespace QuestPDF.Fluent
         /// <summary>
         /// Adjusts vertical spacing between items.
         /// </summary>
+        /// <remarks>
+        /// Spacing is added only between items that have height. Items of zero height (for example, content hidden with ShowIf) do not receive any spacing.
+        /// </remarks>
         public void Spacing(float value, Unit unit = Unit.Point)
         {
+            if (float.IsNaN(value) || float.IsInfinity(value))
+                throw new ArgumentOutOfRangeException(nameof(value), "The column spacing must be a finite number.");
+            
             if (value < 0)
                 throw new ArgumentOutOfRangeException(nameof(value), "The column spacing cannot be negative.");
             

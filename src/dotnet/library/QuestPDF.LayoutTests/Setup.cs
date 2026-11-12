@@ -8,6 +8,7 @@
         {
             QuestPDF.Settings.License = LicenseType.Community;
             QuestPDF.Settings.EnableCaching = false;
+            QuestPDF.Settings.EnableDetailedLayoutErrors = false;
         }
     }
 }
