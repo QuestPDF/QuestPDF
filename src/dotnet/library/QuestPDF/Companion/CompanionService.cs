@@ -1,8 +1,10 @@
 #if NET8_0_OR_GREATER
 
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -97,6 +99,11 @@ namespace QuestPDF.Companion
 
         private void StartCompanionApplication()
         {
+            // On Windows, `start` reports a missing command with a dialog window that blocks the launcher until it is closed,
+            // so the command is looked up first. This is what every new user hits when Companion is not installed yet.
+            if (OperatingSystem.IsWindows() && !IsCompanionCommandAvailableOnWindows())
+                throw CreateCompanionNotFoundException();
+
             try
             {
                 var startInfo = CreateCompanionStartInfo(Port);
@@ -107,9 +114,13 @@ namespace QuestPDF.Companion
                     throw new InvalidOperationException("The process could not be started.");
 
                 // On Windows, the launcher is a short-lived cmd.exe that only asks the shell to start Companion.
-                // A failure to locate the Companion executable surfaces here as a non-zero exit code.
+                // A failure to start the Companion executable surfaces here as a non-zero exit code.
                 if (startInfo.FileName != CompanionCommandName && process.WaitForExit(5000) && process.ExitCode != 0)
-                    throw new InvalidOperationException($"The launcher exited with code {process.ExitCode}. Is the '{CompanionCommandName}' tool installed?");
+                    throw new InvalidOperationException($"The launcher exited with code {process.ExitCode}.");
+            }
+            catch (Win32Exception exception) when (!OperatingSystem.IsWindows() && exception.NativeErrorCode == FileNotFoundErrorCode)
+            {
+                throw CreateCompanionNotFoundException(exception);
             }
             catch (Exception exception)
             {
@@ -118,6 +129,42 @@ namespace QuestPDF.Companion
         }
 
         private const string CompanionCommandName = "questpdf-companion";
+
+        // ENOENT on macOS and Linux
+        private const int FileNotFoundErrorCode = 2;
+
+        private static Exception CreateCompanionNotFoundException(Exception? innerException = null)
+        {
+            return new Exception($"The QuestPDF Companion application is not running, and the library could not launch it: the '{CompanionCommandName}' command was not found. Most likely, the application is not installed yet: please install it. If it is already installed, please start it manually. Learn more: https://www.questpdf.com/companion/usage.html", innerException);
+        }
+
+        private static bool IsCompanionCommandAvailableOnWindows()
+        {
+            // the same places `start` searches: the current directory, then every PATH entry
+            return (Environment.GetEnvironmentVariable("PATH") ?? string.Empty)
+                .Split(Path.PathSeparator)
+                .Prepend(Environment.CurrentDirectory)
+                .Any(ContainsCompanionCommand);
+
+            static bool ContainsCompanionCommand(string directory)
+            {
+                // PATH entries may be empty, padded with spaces or wrapped in quotes
+                var directoryPath = directory.Trim().Trim('"');
+
+                if (directoryPath.Length == 0)
+                    return false;
+
+                try
+                {
+                    return File.Exists(Path.Combine(directoryPath, $"{CompanionCommandName}.exe"));
+                }
+                catch (ArgumentException)
+                {
+                    // a malformed PATH entry
+                    return false;
+                }
+            }
+        }
 
         internal static ProcessStartInfo CreateCompanionStartInfo(int port)
         {
