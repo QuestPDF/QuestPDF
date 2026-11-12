@@ -30,9 +30,10 @@ namespace QuestPDF
         /// <remarks>
         /// <para>This setting has no effect on documents that render successfully: the additional analysis runs only when a layout error is detected.</para>
         /// <para>The detailed message may contain fragments of the document content, such as text, and can be long for large documents. Consider this before enabling the setting in production environments where exception messages are logged.</para>
-        /// <para>Enabled by default. Before version 2026.9.0, this flag was enabled only when a debugger was attached.</para>
+        /// <para>The additional analysis may take a long time for deeply nested content, significantly delaying the exception. It is intended for development, not for production environments.</para>
+        /// <para>Disabled by default. In versions 2026.9.0 and 2026.9.1, this flag was enabled by default. Before version 2026.9.0, it was enabled only when a debugger was attached.</para>
         /// </remarks>
-        public static bool EnableDetailedLayoutErrors { get; set; } = true;
+        public static bool EnableDetailedLayoutErrors { get; set; } = false;
         
         /// <summary>
         /// <para>Decides how the library reacts when the text contains glyphs that are not available in the used fonts, including the configured fallbacks.</para>
