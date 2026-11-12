@@ -11,10 +11,10 @@ internal struct TextStyleConfiguration
     [MarshalAs(UnmanagedType.U1)] public bool IsItalic;
     [MarshalAs(UnmanagedType.U1)] public bool BreakAnywhere;
 
-    public const int FONT_FAMILIES_LENGTH = 16;
+    public const int FONT_FAMILIES_LENGTH = 128;
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = FONT_FAMILIES_LENGTH)] public IntPtr[] FontFamilies;
     
-    public const int FONT_FEATURES_LENGTH = 16;
+    public const int FONT_FEATURES_LENGTH = 32;
     [MarshalAs(UnmanagedType.ByValArray, SizeConst = FONT_FEATURES_LENGTH)] public FontFeature[] FontFeatures;
     
     public uint ForegroundColor;
