@@ -4,7 +4,6 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -65,18 +64,10 @@ namespace QuestPDF.Companion
         {
             try
             {
-                using var pingResult = await client.GetAsync($"http://127.0.0.1:{port}/ping", cancellationToken);
+                using var result = await client.GetAsync($"http://127.0.0.1:{port}{CompanionService.IdentityEndpoint}", cancellationToken);
+                var identity = await result.Content.ReadAsStringAsync(cancellationToken);
 
-                if (!pingResult.IsSuccessStatusCode)
-                    return false;
-
-                using var result = await client.GetAsync($"http://127.0.0.1:{port}/version", cancellationToken);
-
-                if (!result.IsSuccessStatusCode)
-                    return false;
-
-                var response = await result.Content.ReadFromJsonAsync(CompanionJsonContext.Default.GetVersionCommandResponse, cancellationToken);
-                return response?.SupportedVersions != null;
+                return result.IsSuccessStatusCode && identity == CompanionService.IdentityResponse;
             }
             catch when (!cancellationToken.IsCancellationRequested)
             {

@@ -17,6 +17,10 @@ namespace QuestPDF.Companion
     {
         internal const string ClientIdHeaderName = "X-QuestPDF-Client-Id";
         internal const string CodeLocationIdHeaderName = "X-QuestPDF-Code-Location-Id";
+
+        // only the Companion app answers this request with this exact content
+        internal const string IdentityEndpoint = "/questpdf-companion";
+        internal const string IdentityResponse = "QuestPDF Companion";
         
         private const int RequiredCompanionApiVersion = 4;
         private const int MaxDocumentStructureSizeInBytes = 64 * 1024 * 1024;
@@ -75,13 +79,20 @@ namespace QuestPDF.Companion
         {
             try
             {
-                using var result = await HttpClient.GetAsync("/ping", cancellationToken);
-                return result.IsSuccessStatusCode;
+                using var result = await HttpClient.GetAsync(IdentityEndpoint, cancellationToken);
+                var identity = await result.Content.ReadAsStringAsync(cancellationToken);
+
+                if (result.IsSuccessStatusCode && identity == IdentityResponse)
+                    return true;
             }
             catch when (!cancellationToken.IsCancellationRequested)
             {
+                // nothing is listening on the port
                 return false;
             }
+
+            // something has responded, but not as the Companion app: launching another instance would not help
+            throw new Exception($"The program listening on port {Port} is not a compatible QuestPDF Companion application. Most likely, the installed Companion application is outdated: please update it to the newest version. Otherwise, the port is used by another program: please stop that program or use a different port. Learn more: https://www.questpdf.com/companion/usage.html");
         }
 
         private void StartCompanionApplication()
