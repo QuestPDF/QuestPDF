@@ -42,6 +42,7 @@ internal class LayoutTest
         
         layoutTest
             .Content
+            .Element(new PageLimitGuard())
             .ElementObserverSetter(layoutTest.ActualDrawingRecorder)
             .Mock("$document")
             .Component(pageDescriptor.Page);
@@ -59,6 +60,7 @@ internal class LayoutTest
         Content = new Container();
         
         Content
+            .Element(new PageLimitGuard())
             .Width(AvailableSpace?.Width ?? 0)
             .Height(AvailableSpace?.Height ?? 0)
             .ElementObserverSetter(ActualDrawingRecorder)
@@ -177,6 +179,8 @@ internal class LayoutTest
 
     public void ExpectLayoutException(string reason)
     {
+        var detailedLayoutErrors = QuestPDF.Settings.EnableDetailedLayoutErrors;
+
         try
         {
             QuestPDF.Settings.EnableDetailedLayoutErrors = true;
@@ -184,13 +188,19 @@ internal class LayoutTest
         }
         catch (DocumentLayoutException e)
         {
-            Assert.That(e.Message.Contains(reason));
-            Assert.Pass($"The expected exception was thrown: {e.Message}");
+            Assert.That(e.Message, Does.Contain(reason));
+            return;
         }
         catch (Exception e)
         {
             Assert.Fail($"An unexpected exception was thrown:\n\n{e}");
         }
+        finally
+        {
+            QuestPDF.Settings.EnableDetailedLayoutErrors = detailedLayoutErrors;
+        }
+
+        Assert.Fail("The layout did not throw any exception.");
     }
 
     private void PerformTest()

@@ -110,5 +110,14 @@ internal static class FluentExtensions
             TotalWidth = width, 
             TotalHeight = height
         });
-    } 
+    }
+
+    public static void OverflowingBlock(this IContainer element, float width = 1f, float height = 1f)
+    {
+        element.Element(new OverflowingBlock
+        {
+            TotalWidth = width,
+            TotalHeight = height
+        });
+    }
 }
