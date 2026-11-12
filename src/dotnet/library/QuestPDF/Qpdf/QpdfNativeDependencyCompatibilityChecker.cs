@@ -5,7 +5,7 @@ namespace QuestPDF.Qpdf;
 
 internal static class QpdfNativeDependencyCompatibilityChecker
 {
-    private const int ExpectedNativeLibraryVersion = 4;
+    private const int ExpectedNativeLibraryVersion = 5;
     
     private static NativeDependencyCompatibilityChecker Instance { get; } = new()
     {
