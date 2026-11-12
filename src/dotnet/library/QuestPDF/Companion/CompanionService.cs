@@ -197,7 +197,7 @@ namespace QuestPDF.Companion
         {
             try
             {
-                using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify { ClientId = ClientId }, CompanionJsonContext.Default.Notify, cancellationToken);
+                using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), CompanionJsonContext.Default.Notify, cancellationToken);
                 
                 // the Companion app has given up on this application (e.g. it was unresponsive for too long) and shows its welcome screen
                 return result.StatusCode != HttpStatusCode.Conflict;

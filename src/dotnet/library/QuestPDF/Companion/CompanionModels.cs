@@ -17,7 +17,6 @@ namespace QuestPDF.Companion
     {
         internal sealed class Notify
         {
-            public required string ClientId { get; init; }
             public LicenseType License => Settings.License ?? LicenseType.Community;
         }
         
