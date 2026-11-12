@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
@@ -14,10 +15,16 @@ namespace QuestPDF.Companion
 {
     internal sealed class CompanionService : IDisposable
     {
-        private const int RequiredCompanionApiVersion = 3;
+        internal const string ClientIdHeaderName = "X-QuestPDF-Client-Id";
+        internal const string CodeLocationIdHeaderName = "X-QuestPDF-Code-Location-Id";
+        
+        private const int RequiredCompanionApiVersion = 4;
         private const int MaxDocumentStructureSizeInBytes = 64 * 1024 * 1024;
 
         private int Port { get; }
+
+        // unique for every preview session: a restarted application, as well as another ShowInCompanion call, gets a new one
+        private string ClientId { get; } = Guid.NewGuid().ToString();
         private HttpClient HttpClient { get; }
         
         private CompanionDocumentSnapshot? CurrentSnapshot { get; set; }
@@ -36,6 +43,11 @@ namespace QuestPDF.Companion
                 BaseAddress = new Uri($"http://127.0.0.1:{port}/"),
                 Timeout = TimeSpan.FromSeconds(10)
             };
+
+            // every request tells the Companion app which session has sent it, and from which application:
+            // the application folder stays the same when the application restarts (percent-encoded, as header values must be ASCII)
+            HttpClient.DefaultRequestHeaders.Add(ClientIdHeaderName, ClientId);
+            HttpClient.DefaultRequestHeaders.Add(CodeLocationIdHeaderName, Uri.EscapeDataString(AppContext.BaseDirectory));
         }
 
         public void Dispose()
@@ -179,14 +191,16 @@ namespace QuestPDF.Companion
         }
 
         /// <summary>
-        /// Sends a single heartbeat. Returns false only when the Companion app has been closed.
+        /// Sends a single heartbeat. Returns false when the Companion app has been closed or has stopped accepting this application.
         /// </summary>
         private async Task<bool> SendHeartbeat(CancellationToken cancellationToken)
         {
             try
             {
-                using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify(), CompanionJsonContext.Default.Notify, cancellationToken);
-                return true;
+                using var result = await HttpClient.PostAsJsonAsync($"/v{RequiredCompanionApiVersion}/notify", new CompanionCommands.Notify { ClientId = ClientId }, CompanionJsonContext.Default.Notify, cancellationToken);
+                
+                // the Companion app has given up on this application (e.g. it was unresponsive for too long) and shows its welcome screen
+                return result.StatusCode != HttpStatusCode.Conflict;
             }
             catch (HttpRequestException exception) when (exception.HttpRequestError == HttpRequestError.ConnectionError)
             {
