@@ -1,10 +1,13 @@
-- Updated Skia to m154.
-- Updated qpdf to 12.4.1.
-- Fixed an issue where garbage collection could corrupt PDF tag attributes during concurrent PDF generation.
-- Improved PDF/UA-1 compatibility when generating ZUGFeRD and Factur-X invoices.
-- Fixed an issue in the `DocumentOperation` API where `DocumentAttachmentRelationship.Supplement` was incorrectly mapped to `/Alternative`.
-- Improved handling of stream-writing exceptions during PDF generation.
-- The ShowInCompanion API now automatically starts the Companion App if it is not already running (requires Companion App 2026.9.0 or newer).
-- Improved exception messages related to `Settings.ThrowOnMissingFontFamilies`, `Settings.ThrowOnMissingTextGlyphs`, and `Settings.UseSystemFonts`.
-- Reduced connection time to the Companion App on Windows.
-- Added missing license files for dependencies.
+- Updated Skia to m158.
+- Fixed a rare issue where a Table with row spans could generate empty pages endlessly.
+- Changed the default value of Settings.EnableDetailedLayoutErrors to false, so layout errors are reported immediately. Finding the root cause of a layout error can be time-consuming and resource-intensive. Enable this setting during development to get detailed diagnostics.
+- Soft hyphens and zero-width spaces no longer appear as spaces in the PDF text layer, which improves screen reader output, text search, and copy-paste.
+- Increased the maximum number of font families in a fallback chain from 16 to 128.
+- Increased the maximum number of font features per text style from 16 to 32.
+- Improved the stability of the Column element. Spacing is now applied only between items that have height, so hidden items no longer leave empty gaps.
+- Fixed rare cases where PreventPageBreak and EnsureSpace could cause a layout exception or endless document generation.
+- Fixed SVG rendering of dashed lines, where an additional hairline was drawn between the dashes.
+- When the default port is occupied, ShowInCompanion now connects to the Companion App on the nearest available port.
+- Improved the reliability of launching and connecting to the Companion App (requires updating the Companion App to the newest version).
+- When a document is too complex for a responsive preview in the Companion App, the library now throws an exception that explains the problem.
+- Renamed the native files shipped with the library to follow the snake_case convention (for example, questpdf_skia and questpdf_qpdf). Deployment scripts that reference these files by name must be updated.
