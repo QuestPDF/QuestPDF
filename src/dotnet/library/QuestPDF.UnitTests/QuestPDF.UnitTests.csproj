@@ -15,6 +15,7 @@
         </PackageReference>
         <PackageReference Include="NUnit3TestAdapter" Version="6.3.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
+        <PackageReference Include="PdfPig" Version="0.1.16" />
         <PackageReference Include="SkiaSharp" Version="4.152.0" />
         <PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="4.152.0" />
     </ItemGroup>
