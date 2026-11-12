@@ -167,7 +167,13 @@ namespace QuestPDF.Elements.Table
 
             if (renderingCommands.Count == 0)
                 return SpacePlan.Wrap("Insufficient space to render (even partially) a single row.");
-            
+
+            // A non-empty plan does not always mean that the table shows something new on this page.
+            // If all cells within current layout plan have been already fully drawn on previous pages, 
+            // the current page will be empty, and the rendering will be looped / infinite.
+            if (AllCellsWereRenderedOnPreviousPages(renderingCommands))
+                return SpacePlan.Wrap("Insufficient space to render (even partially) a single row.");
+
             var width = Columns.Sum(x => x.Width);
             var height = GetTableHeight(renderingCommands);
             var tableSize = new Size(width, height);
@@ -178,6 +184,20 @@ namespace QuestPDF.Elements.Table
             return CalculateCurrentRow(renderingCommands) > LastRowIndex 
                 ? SpacePlan.FullRender(tableSize) 
                 : SpacePlan.PartialRender(tableSize);
+            
+            static bool AllCellsWereRenderedOnPreviousPages(List<TableCellRenderingCommand> commands)
+            {
+                // The IsRendered flag is set only in Draw, and only for cells that are fully rendered or empty.
+                // During measurement it therefore means "finished on a previous page".
+                
+                foreach (var command in commands)
+                {
+                    if (!command.Cell.IsFullyRendered)
+                        return false;
+                }
+
+                return true;
+            }
 
             static float GetTableHeight(ReusableList<TableCellRenderingCommand> commands)
             {
@@ -206,7 +226,7 @@ namespace QuestPDF.Elements.Table
             foreach (var command in renderingCommands)
             {
                 if (command.Measurement.Type is SpacePlanType.Empty or SpacePlanType.FullRender)
-                    command.Cell.IsRendered = true;
+                    command.Cell.IsFullyRendered = true;
 
                 if (command.Measurement.Type == SpacePlanType.Wrap)
                     continue;
@@ -250,7 +270,7 @@ namespace QuestPDF.Elements.Table
             {
                 foreach (var cell in CellsCache[row])
                 {
-                    if (!cell.IsRendered && !CalculateCurrentRow_DoneCells_Cache.Contains(cell))
+                    if (!cell.IsFullyRendered && !CalculateCurrentRow_DoneCells_Cache.Contains(cell))
                         return false;
                 }
 
@@ -479,7 +499,7 @@ namespace QuestPDF.Elements.Table
         public void ResetState(bool hardReset = false)
         {
             foreach (var x in Cells)
-                x.IsRendered = false;
+                x.IsFullyRendered = false;
             
             CurrentRow = 1;
         }
@@ -489,7 +509,7 @@ namespace QuestPDF.Elements.Table
             var cellsRenderingState = new bool[Cells.Count];
             
             for (var i = 0; i < Cells.Count; i++)
-                cellsRenderingState[i] = Cells[i].IsRendered;
+                cellsRenderingState[i] = Cells[i].IsFullyRendered;
             
             return new TableState
             {
@@ -503,7 +523,7 @@ namespace QuestPDF.Elements.Table
             var tableState = (TableState) state;
             
             for (var i = 0; i < Cells.Count; i++)
-                Cells[i].IsRendered = tableState.CellsRenderingState[i];
+                Cells[i].IsFullyRendered = tableState.CellsRenderingState[i];
             
             CurrentRow = tableState.CurrentRow;
         }

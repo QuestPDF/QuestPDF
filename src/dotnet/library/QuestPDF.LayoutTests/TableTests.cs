@@ -286,4 +286,79 @@ public class TableTests
                     });
             });
     }
+
+    [Test]
+    public void CellThatNeverFitsBelowFinishedRowSpanThrowsLayoutException()
+    {
+        // https://github.com/QuestPDF/QuestPDF/issues/1492
+        // The spanning cell "a" finishes on the first page but still covers the second row.
+        // The cell "c" does not fit on any page; previously the already rendered "a" kept the table
+        // reporting a partial render, and the document generated empty pages forever.
+        LayoutTest
+            .HavingSpaceOfSize(200, 200)
+            .ForContent(content =>
+            {
+                content
+                    .Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn();
+                            columns.RelativeColumn();
+                        });
+
+                        table.Cell().Row(1).Column(1).RowSpan(2).Mock("a").SolidBlock(100, 50);
+                        table.Cell().Row(1).Column(2).Mock("b").SolidBlock(100, 50);
+                        table.Cell().Row(2).Column(2).Mock("c").SolidBlock(100, 300);
+                    });
+            })
+            .ExpectLayoutException("Insufficient space to render (even partially) a single row.");
+    }
+
+    [Test]
+    public void FinishedRowSpanContinuesNextToPaginatedCell()
+    {
+        // Counterpart of the test above: the spanning cell "a" finishes on the first page as well,
+        // but the cell "c" below "b" is rendered partially on every page, so the table must continue.
+        // The spanning cell is drawn again on the second page, next to the rest of "c".
+        LayoutTest
+            .HavingSpaceOfSize(200, 200)
+            .ForContent(content =>
+            {
+                content
+                    .Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn();
+                            columns.RelativeColumn();
+                        });
+
+                        table.Cell().Row(1).Column(1).RowSpan(2).Mock("a").SolidBlock(100, 50);
+                        table.Cell().Row(1).Column(2).Mock("b").SolidBlock(100, 50);
+                        table.Cell().Row(2).Column(2).Mock("c").ContinuousBlock(100, 350);
+                    });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(200, 200)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(100, 200);
+                        page.Mock("b").Position(100, 0).Size(100, 50);
+                        page.Mock("c").Position(100, 50).Size(100, 150);
+                    });
+
+                document
+                    .Page()
+                    .RequiredAreaSize(200, 200)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(100, 200);
+                        page.Mock("c").Position(100, 0).Size(100, 200);
+                    });
+            });
+    }
 }

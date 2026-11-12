@@ -16,7 +16,7 @@ namespace QuestPDF.Elements.Table
         public bool IsSemanticHorizontalHeader { get; set; }
         public int SemanticNodeId { get; set; }
         
-        public bool IsRendered { get; set; }
+        public bool IsFullyRendered { get; set; }
 
         internal override string? GetCompanionHint()
         {
