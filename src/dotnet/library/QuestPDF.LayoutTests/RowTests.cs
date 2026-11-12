@@ -387,12 +387,40 @@ public class RowTests
             {
                 content.Shrink().Row(row =>
                 {
-                    row.Spacing(200);
-                    
-                    row.ConstantItem(10).SolidBlock(height: 40); // <-
+                    row.Spacing(200); // <-
+
+                    // the spacing is placed between items, so at least two items are needed for it to take any space
+                    row.ConstantItem(10).SolidBlock(height: 40);
+                    row.ConstantItem(10).SolidBlock(height: 40);
                 });
             })
             .ExpectLayoutException("The content requires more horizontal space than available.");
+    }
+
+    [Test]
+    public void SpacingIsNotAppliedToSingleItem()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(100, 100)
+            .ForContent(content =>
+            {
+                content.Shrink().Row(row =>
+                {
+                    row.Spacing(200); // larger than the available space, but there is no gap between items to fill
+
+                    row.ConstantItem(10).Mock("a").SolidBlock(height: 40);
+                });
+            })
+            .ExpectDrawResult(document =>
+            {
+                document
+                    .Page()
+                    .RequiredAreaSize(10, 40)
+                    .Content(page =>
+                    {
+                        page.Mock("a").Position(0, 0).Size(10, 40);
+                    });
+            });
     }
     
     [Test]
