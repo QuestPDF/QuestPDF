@@ -262,7 +262,7 @@ namespace QuestPDF.Fluent
         /// Represents the primary content, located in-between the header and footer.
         /// </summary>
         /// <remarks>
-        /// This container does support paging capability and determines the final lenght of the document.
+        /// This container does support paging capability and determines the final length of the document.
         /// </remarks>
         public IContainer Content()
         {
