@@ -247,7 +247,7 @@ namespace QuestPDF.Drawing
                 catch (Exception exception)
                 {
                     canvas.EndDocument();
-                    throw new DocumentDrawingException("An exception occured during document drawing.", exception);
+                    throw new DocumentDrawingException("An exception occurred during document drawing.", exception);
                 }
 
                 canvas.EndPage();
