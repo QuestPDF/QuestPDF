@@ -336,7 +336,7 @@ namespace QuestPDF.Fluent
         
         /// <summary>
         /// Creates a clickable area that navigates the user to a designated section.
-        /// <a href="https://www.questpdf.com/api-reference/section-link.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/section.html">Learn more</a>
         /// </summary>
         /// <include file='../Resources/Documentation.xml' path='documentation/doc[@for="param.sectionName"]/*' />
         public static IContainer SectionLink(this IContainer element, string sectionName)
@@ -508,7 +508,7 @@ namespace QuestPDF.Fluent
         /// By default, the library draws content in the order it is defined, which may not always be the desired behavior.
         /// This element allows you to alter the rendering order, ensuring that the content is displayed in the correct sequence.
         /// The default z-index is 0, unless a different value is inherited from a parent container.
-        /// <a href="https://www.questpdf.com/api-reference/z-index.html">Learn more</a>
+        /// <a href="https://www.questpdf.com/api-reference/zindex.html">Learn more</a>
         /// </summary>
         /// <param name="indexValue">The z-index value. Higher values are rendered above lower values.</param>
         public static IContainer ZIndex(this IContainer element, int indexValue)

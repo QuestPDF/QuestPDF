@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// Represents the document abstraction, including its content, metadata, and configuration settings.
-    /// <a href="https://www.questpdf.com/getting-started.html">Learn more</a>
+    /// <a href="https://www.questpdf.com/invoice-tutorial.html">Learn more</a>
     /// </summary>
     /// <remarks>
     /// <para>Implement this interface to centralize your entire document's structure within a single class for easy management.</para>

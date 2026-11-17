@@ -374,7 +374,7 @@ A model that benefits everyone. Commercial licensing provides businesses with le
 > Free for individuals, non-profits, open-source projects, and organizations under $1M in annual gross revenue.
 
 [![QuestPDF Pricing](https://img.shields.io/badge/view%20pricing-388E3C?style=for-the-badge)](https://www.questpdf.com/license)
-[![QuestPDF License Terms](https://img.shields.io/badge/license%20terms-666666?style=for-the-badge)](https://www.questpdf.com/license/guide)
+[![QuestPDF License Terms](https://img.shields.io/badge/license%20terms-666666?style=for-the-badge)](https://www.questpdf.com/license/guide.html)
 
 <br>
 <br>
