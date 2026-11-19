@@ -23,6 +23,7 @@ namespace QuestPDF.Companion
         private const int RequiredCompanionApiVersion = 4;
         private const int MaxDocumentStructureSizeInBytes = 64 * 1024 * 1024;
 
+        private CompanionHost Host { get; }
         private int Port { get; }
 
         // unique for every preview session: a restarted application, as well as another ShowInCompanion call, gets a new one
@@ -35,14 +36,15 @@ namespace QuestPDF.Companion
         public static bool IsCompanionAttached { get; private set; }
         public static bool IsDocumentHotReloaded { get; set; }
 
-        public CompanionService(int port)
+        public CompanionService(CompanionHost host, int port)
         {
             IsCompanionAttached = true;
+            Host = host;
             Port = port;
 
             HttpClient = new()
             {
-                BaseAddress = new Uri($"http://127.0.0.1:{port}/"),
+                BaseAddress = host.CreateBaseAddress(port),
                 Timeout = TimeSpan.FromSeconds(10)
             };
 
@@ -64,6 +66,10 @@ namespace QuestPDF.Companion
         {
             var isCompanionAppResponding = await IsCompanionResponding(cancellationToken);
             
+            // the library can launch the Companion application only on this machine
+            if (!isCompanionAppResponding && !Host.IsLocal)
+                throw new Exception($"The QuestPDF Companion application is not reachable at {Host.Name}:{Port} (set by the {CompanionHost.EnvironmentVariableName} environment variable). Please start the application on that machine and make sure it accepts connections from this one. Learn more: https://www.questpdf.com/companion/usage.html");
+
             if (!isCompanionAppResponding)
             {
                 CompanionLauncher.Launch(Port);
