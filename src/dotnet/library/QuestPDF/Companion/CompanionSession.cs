@@ -71,9 +71,14 @@ namespace QuestPDF.Companion
         {
             try
             {
-                var port = await CompanionPortResolver.ResolveWithFallback(Port, CancellationTokenSource.Token);
+                var host = CompanionHost.Resolve();
 
-                using var companionService = new CompanionService(port);
+                // the fallback port search checks ports of this machine, so it only applies to a local Companion application
+                var port = host.IsLocal
+                    ? await CompanionPortResolver.ResolveWithFallback(Port, CancellationTokenSource.Token)
+                    : Port;
+
+                using var companionService = new CompanionService(host, port);
                 await companionService.Connect(CancellationTokenSource.Token);
 
                 HotReloadManager.UpdateApplicationRequested += InvalidatePreview;
