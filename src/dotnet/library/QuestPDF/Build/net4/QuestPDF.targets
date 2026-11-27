@@ -1,17 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <ItemGroup>
+        <!-- Content, so ClickOnce publishes these files; Pack=false keeps them out of packages built from projects that reference QuestPDF. -->
         <!-- .NET Framework is Windows-only; exclude linux/osx native binaries that would never load here. -->
-        <None Include="$(MSBuildThisFileDirectory)\..\..\runtimes\**\*.*"
+        <Content Include="$(MSBuildThisFileDirectory)\..\..\runtimes\**\*.*"
               Exclude="$(MSBuildThisFileDirectory)\..\..\runtimes\linux-*\**\*.*;$(MSBuildThisFileDirectory)\..\..\runtimes\osx-*\**\*.*">
             <Link>runtimes\%(RecursiveDir)%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+            <Pack>false</Pack>
+        </Content>
 
         <!-- .NET Framework uses the netstandard2.0 assembly, which reads the gzip archive. -->
-        <None Include="$(MSBuildThisFileDirectory)\..\..\questpdf_fonts_lato.gz">
+        <Content Include="$(MSBuildThisFileDirectory)\..\..\questpdf_fonts_lato.gz">
             <Link>%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
+            <Pack>false</Pack>
+        </Content>
     </ItemGroup>
 </Project>
