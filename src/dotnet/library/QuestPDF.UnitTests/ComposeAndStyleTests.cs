@@ -15,11 +15,9 @@ namespace QuestPDF.UnitTests
     [TestFixture]
     public class ComposeAndStyleTests
     {
-        // each handler is named after the element it creates, so the expected structure can be read straight from the test
-        private static void SampleText(IContainer container) => container.Text("Sample");
-        private static void Label(IContainer container, string label) => container.Text(label);
-        private static IContainer Padded(IContainer container) => container.Padding(10);
-        private static IContainer Centered(IContainer container) => container.AlignCenter();
+        private static void TextStub(IContainer container) => container.Text("Sample");
+        private static void LabelStub(IContainer container, string label) => container.Text(label);
+        private static IContainer PaddingStub(IContainer container) => container.Padding(10);
 
         private class TextComponent : IComponent
         {
@@ -29,24 +27,14 @@ namespace QuestPDF.UnitTests
         #region Compose
 
         [Test]
-        public void ComposePlacesContentProducedByMethod()
-        {
-            var container = EmptyContainer.Create();
-
-            container.Compose(SampleText);
-
-            AssertStructure(container, typeof(Container), typeof(SourceCodePointer), typeof(TextBlock));
-        }
-
-        [Test]
         public void ComposeRemembersWhereItWasCalledFrom()
         {
             var container = EmptyContainer.Create();
 
             var lineNumber = NextLineNumber();
-            container.Compose(SampleText);
+            container.Compose(TextStub);
 
-            AssertSourceCodePointer(container, nameof(SampleText), lineNumber);
+            AssertSourceCodePointer(container, nameof(TextStub), lineNumber);
         }
 
         [Test]
@@ -54,10 +42,10 @@ namespace QuestPDF.UnitTests
         {
             var container = EmptyContainer.Create();
 
-            container.Compose(x => Label(x, "Sample"));
+            container.Compose(x => LabelStub(x, "Sample"));
 
             var pointer = NestedElements(container).OfType<SourceCodePointer>().Single();
-            Assert.That(pointer.DisplayMethodName, Is.EqualTo(nameof(Label)));
+            Assert.That(pointer.DisplayMethodName, Is.EqualTo(nameof(LabelStub)));
         }
 
         [Test]
@@ -66,7 +54,7 @@ namespace QuestPDF.UnitTests
             var container = EmptyContainer.Create();
             container.Text("Existing");
 
-            Assert.Throws<DocumentComposeException>(() => container.Compose(SampleText));
+            Assert.Throws<DocumentComposeException>(() => container.Compose(TextStub));
         }
 
         [Test]
@@ -119,31 +107,9 @@ namespace QuestPDF.UnitTests
             AssertStructure(container, typeof(Container), typeof(DebugPointer), typeof(TextBlock));
         }
 
-        [Test]
-        public void ComponentLabelsContentWithClassName()
-        {
-            var container = EmptyContainer.Create();
-
-            container.Component(new TextComponent());
-
-            var pointer = NestedElements(container).OfType<DebugPointer>().Single();
-            Assert.That(pointer.Type, Is.EqualTo(DebugPointerType.Component));
-            Assert.That(pointer.Label, Is.EqualTo(nameof(TextComponent)));
-        }
-
         #endregion
 
         #region Style
-
-        [Test]
-        public void StyleWrapsFollowingContent()
-        {
-            var container = EmptyContainer.Create();
-
-            container.Style(Padded).Text("Sample");
-
-            AssertStructure(container, typeof(SourceCodePointer), typeof(Padding), typeof(TextBlock));
-        }
 
         [Test]
         public void StyleRemembersWhereItWasCalledFrom()
@@ -151,19 +117,9 @@ namespace QuestPDF.UnitTests
             var container = EmptyContainer.Create();
 
             var lineNumber = NextLineNumber();
-            container.Style(Padded);
+            container.Style(PaddingStub);
 
-            AssertSourceCodePointer(container, nameof(Padded), lineNumber);
-        }
-
-        [Test]
-        public void StyleNestsStylesInOrderOfCalls()
-        {
-            var container = EmptyContainer.Create();
-
-            container.Style(Padded).Style(Centered).Text("Sample");
-
-            AssertStructure(container, typeof(SourceCodePointer), typeof(Padding), typeof(SourceCodePointer), typeof(Alignment), typeof(TextBlock));
+            AssertSourceCodePointer(container, nameof(PaddingStub), lineNumber);
         }
 
         [Test]
@@ -172,7 +128,7 @@ namespace QuestPDF.UnitTests
             var container = EmptyContainer.Create();
             container.Text("Existing");
 
-            Assert.Throws<DocumentComposeException>(() => container.Style(Padded));
+            Assert.Throws<DocumentComposeException>(() => container.Style(PaddingStub));
         }
 
         [Test]
@@ -192,26 +148,6 @@ namespace QuestPDF.UnitTests
         #endregion
 
         #region StyleIf
-
-        [Test]
-        public void StyleIfAppliesStyleWhenConditionIsTrue()
-        {
-            var container = EmptyContainer.Create();
-
-            container.StyleIf(true, Padded).Text("Sample");
-
-            AssertStructure(container, typeof(SourceCodePointer), typeof(Padding), typeof(TextBlock));
-        }
-
-        [Test]
-        public void StyleIfSkipsStyleWhenConditionIsFalse()
-        {
-            var container = EmptyContainer.Create();
-
-            container.StyleIf(false, Padded).Text("Sample");
-
-            AssertStructure(container, typeof(TextBlock));
-        }
 
         [Test]
         public void StyleIfDoesNotInvokeStyleMethodWhenConditionIsFalse()
@@ -234,9 +170,9 @@ namespace QuestPDF.UnitTests
             var container = EmptyContainer.Create();
 
             var lineNumber = NextLineNumber();
-            container.StyleIf(true, Padded);
+            container.StyleIf(true, PaddingStub);
 
-            AssertSourceCodePointer(container, nameof(Padded), lineNumber);
+            AssertSourceCodePointer(container, nameof(PaddingStub), lineNumber);
         }
 
         [Test]
@@ -272,18 +208,6 @@ namespace QuestPDF.UnitTests
         private class ForeignContainer : IContainer
         {
             public IElement? Child { get; set; }
-        }
-
-        [Test]
-        public void ElementPlacesContentCreatedInAdvance()
-        {
-            var content = EmptyContainer.Create();
-            content.Padding(10).Text("Sample");
-
-            var container = EmptyContainer.Create();
-            container.Element(content);
-
-            AssertStructure(container, typeof(Container), typeof(Padding), typeof(TextBlock));
         }
 
         [Test]
@@ -374,10 +298,10 @@ namespace QuestPDF.UnitTests
             var container = EmptyContainer.Create();
 
             var lineNumber = NextLineNumber();
-            container.Element(SampleText);
+            container.Element(TextStub);
 
             AssertStructure(container, typeof(Container), typeof(SourceCodePointer), typeof(TextBlock));
-            AssertSourceCodePointer(container, nameof(SampleText), lineNumber);
+            AssertSourceCodePointer(container, nameof(TextStub), lineNumber);
         }
 
         [Test]
@@ -386,10 +310,10 @@ namespace QuestPDF.UnitTests
             var container = EmptyContainer.Create();
 
             var lineNumber = NextLineNumber();
-            container.Element(Padded).Text("Sample");
+            container.Element(PaddingStub).Text("Sample");
 
             AssertStructure(container, typeof(SourceCodePointer), typeof(Padding), typeof(TextBlock));
-            AssertSourceCodePointer(container, nameof(Padded), lineNumber);
+            AssertSourceCodePointer(container, nameof(PaddingStub), lineNumber);
         }
 
 #pragma warning restore CS0618

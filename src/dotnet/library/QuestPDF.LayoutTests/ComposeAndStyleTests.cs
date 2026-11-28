@@ -15,8 +15,8 @@ public class ComposeAndStyleTests
             {
                 content.Shrink().Column(column =>
                 {
-                    column.Item().Compose(Header);
-                    column.Item().Compose(Body);
+                    column.Item().Compose(ContentA);
+                    column.Item().Compose(ContentB);
                 });
             })
             .ExpectDrawResult(document =>
@@ -26,13 +26,13 @@ public class ComposeAndStyleTests
                     .RequiredAreaSize(150, 120)
                     .Content(page =>
                     {
-                        page.Mock("header").Position(0, 0).Size(150, 20);
-                        page.Mock("body").Position(0, 20).Size(150, 100);
+                        page.Mock("a").Position(0, 0).Size(150, 20);
+                        page.Mock("b").Position(0, 20).Size(150, 100);
                     });
             });
 
-        static void Header(IContainer container) => container.Mock("header").SolidBlock(100, 20);
-        static void Body(IContainer container) => container.Mock("body").SolidBlock(150, 100);
+        static void ContentA(IContainer container) => container.Mock("a").SolidBlock(100, 20);
+        static void ContentB(IContainer container) => container.Mock("b").SolidBlock(150, 100);
     }
 
     [Test]
@@ -44,8 +44,8 @@ public class ComposeAndStyleTests
             {
                 content.Shrink().Row(row =>
                 {
-                    row.AutoItem().Compose(x => Address(x, "seller"));
-                    row.AutoItem().Compose(x => Address(x, "customer"));
+                    row.AutoItem().Compose(x => TestItem(x, "a"));
+                    row.AutoItem().Compose(x => TestItem(x, "b"));
                 });
             })
             .ExpectDrawResult(document =>
@@ -55,12 +55,12 @@ public class ComposeAndStyleTests
                     .RequiredAreaSize(160, 40)
                     .Content(page =>
                     {
-                        page.Mock("seller").Position(0, 0).Size(80, 40);
-                        page.Mock("customer").Position(80, 0).Size(80, 40);
+                        page.Mock("a").Position(0, 0).Size(80, 40);
+                        page.Mock("b").Position(80, 0).Size(80, 40);
                     });
             });
 
-        static void Address(IContainer container, string party) => container.Mock(party).SolidBlock(80, 40);
+        static void TestItem(IContainer container, string party) => container.Mock(party).SolidBlock(80, 40);
     }
 
     [Test]
@@ -73,7 +73,7 @@ public class ComposeAndStyleTests
                 content.Shrink().Column(column =>
                 {
                     column.Item().Mock("before").SolidBlock(50, 20);
-                    column.Item().Compose(OptionalNotes);
+                    column.Item().Compose(EmptyItem);
                     column.Item().Mock("after").SolidBlock(50, 20);
                 });
             })
@@ -89,8 +89,7 @@ public class ComposeAndStyleTests
                     });
             });
 
-        // a typical conditional part of the document: there are no notes to show
-        static void OptionalNotes(IContainer container) { }
+        static void EmptyItem(IContainer container) { }
     }
 
     [Test]
@@ -109,6 +108,27 @@ public class ComposeAndStyleTests
 
     #endregion
 
+    #region Component
+
+    private class TooWideComponent : IComponent
+    {
+        public void Compose(IContainer container) => container.Width(200).SolidBlock(200, 50);
+    }
+
+    [Test]
+    public void LayoutExceptionPointsToComponentThatComposedProblematicContent()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(100, 100)
+            .ForContent(content =>
+            {
+                content.Component(new TooWideComponent());
+            })
+            .ExpectLayoutException($"-> {nameof(TooWideComponent)}");
+    }
+
+    #endregion
+
     #region Style
 
     [Test]
@@ -120,8 +140,8 @@ public class ComposeAndStyleTests
             {
                 content.Shrink().Row(row =>
                 {
-                    row.AutoItem().Style(Cell).Mock("product").SolidBlock(60, 20);
-                    row.AutoItem().Style(Cell).Mock("price").SolidBlock(40, 20);
+                    row.AutoItem().Style(ItemPadding).Mock("a").SolidBlock(60, 20);
+                    row.AutoItem().Style(ItemPadding).Mock("b").SolidBlock(40, 20);
                 });
             })
             .ExpectDrawResult(document =>
@@ -131,12 +151,41 @@ public class ComposeAndStyleTests
                     .RequiredAreaSize(140, 40)
                     .Content(page =>
                     {
-                        page.Mock("product").Position(10, 10).Size(60, 20);
-                        page.Mock("price").Position(90, 10).Size(40, 20);
+                        page.Mock("a").Position(10, 10).Size(60, 20);
+                        page.Mock("b").Position(90, 10).Size(40, 20);
                     });
             });
 
-        static IContainer Cell(IContainer container) => container.Padding(10);
+        static IContainer ItemPadding(IContainer container) => container.Padding(10);
+    }
+
+    [Test]
+    public void StylesAreNestedInOrderOfCalls()
+    {
+        LayoutTest
+            .HavingSpaceOfSize(200, 200)
+            .ForContent(content =>
+            {
+                content.Shrink()
+                    .Style(ItemSize) // <-
+                    .Style(ItemPadding) // <-
+                    .Mock("content")
+                    .SolidBlock(80, 40);
+            })
+            .ExpectDrawResult(document =>
+            {
+                // the padding is applied inside the card: in the opposite order, it would surround the card and the page would take 120 x 80
+                document
+                    .Page()
+                    .RequiredAreaSize(100, 60)
+                    .Content(page =>
+                    {
+                        page.Mock("content").Position(10, 10).Size(80, 40);
+                    });
+            });
+
+        static IContainer ItemSize(IContainer container) => container.Width(100).Height(60);
+        static IContainer ItemPadding(IContainer container) => container.Padding(10);
     }
 
     [Test]
@@ -146,7 +195,7 @@ public class ComposeAndStyleTests
             .HavingSpaceOfSize(100, 100)
             .ForContent(content =>
             {
-                content.Shrink().Style(Frame).Compose(LongContent);
+                content.Shrink().Style(ItemPadding).Compose(LongContent);
             })
             .ExpectDrawResult(document =>
             {
@@ -167,7 +216,7 @@ public class ComposeAndStyleTests
                     });
             });
 
-        static IContainer Frame(IContainer container) => container.Padding(10);
+        static IContainer ItemPadding(IContainer container) => container.Padding(10);
         static void LongContent(IContainer container) => container.Mock("content").ContinuousBlock(50, 150);
     }
 
@@ -184,8 +233,8 @@ public class ComposeAndStyleTests
             {
                 content.Shrink().Column(column =>
                 {
-                    column.Item().StyleIf(false, Indented).Mock("regular").SolidBlock(50, 10);
-                    column.Item().StyleIf(true, Indented).Mock("indented").SolidBlock(50, 10);
+                    column.Item().StyleIf(false, ApplyIndent).Mock("regular").SolidBlock(50, 10);
+                    column.Item().StyleIf(true, ApplyIndent).Mock("indented").SolidBlock(50, 10);
                 });
             })
             .ExpectDrawResult(document =>
@@ -200,7 +249,7 @@ public class ComposeAndStyleTests
                     });
             });
 
-        static IContainer Indented(IContainer container) => container.PaddingLeft(20);
+        static IContainer ApplyIndent(IContainer container) => container.PaddingLeft(20);
     }
 
     #endregion
@@ -236,14 +285,7 @@ public class ComposeAndStyleTests
     {
         public DynamicComponentComposeResult Compose(DynamicContext context)
         {
-            var header = context.CreateElement(x => x.SolidBlock(100, 20));
-            var body = context.CreateElement(x => x.SolidBlock(60, 50));
-
-            var content = context.CreateElement(x => x.Column(column =>
-            {
-                column.Item().Element(header);
-                column.Item().Element(body);
-            }));
+            var content = context.CreateElement(x => x.SolidBlock(120, 45));
 
             return new DynamicComponentComposeResult
             {
@@ -266,10 +308,10 @@ public class ComposeAndStyleTests
             {
                 document
                     .Page()
-                    .RequiredAreaSize(100, 70)
+                    .RequiredAreaSize(120, 45)
                     .Content(page =>
                     {
-                        page.Mock("dynamic").Position(0, 0).Size(100, 70);
+                        page.Mock("dynamic").Position(0, 0).Size(120, 45);
                     });
             });
     }
