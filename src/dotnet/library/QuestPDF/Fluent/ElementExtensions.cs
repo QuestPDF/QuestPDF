@@ -40,23 +40,52 @@ namespace QuestPDF.Fluent
         }
         
         /// <summary>
-        /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
-        /// <a href="https://www.questpdf.com/concepts/code-patterns/content-styling.html">Learn more</a>
+        /// Places content produced by the provided method inside the current container.
+        /// <a href="https://www.questpdf.com/concepts/code-patterns/document-structure.html">Learn more</a>
         /// </summary>
         /// <remarks>
-        /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
-        /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
+        /// <para>Use it to divide a document into smaller, well-named parts and to reuse them in many places.</para>
+        /// <para>If the content requires its own state or configuration, implement the <see cref="IComponent"/> interface and use the <see cref="ComponentExtensions.Component{T}(IContainer, T)">Component</see> method instead.</para>
+        /// <para>This method ends the Fluent API chain. To apply a reusable style and continue the chain, use the <see cref="Style">Style</see> method.</para>
         /// </remarks>
-        /// <param name="handler">A delegate that takes the current container and populates it with content.</param>
-        public static void Element(
-            this IContainer parent, 
+        /// <example>
+        /// <code>
+        /// page.Header().Compose(ComposeHeader);
+        ///
+        /// void ComposeHeader(IContainer container)
+        /// {
+        ///     container.Text("Invoice").FontSize(20).Bold();
+        /// }
+        /// </code>
+        /// To pass additional data to the method, use a lambda expression:
+        /// <code>
+        /// row.RelativeItem().Compose(c => ComposeAddress(c, "From", invoice.Seller));
+        /// row.RelativeItem().Compose(c => ComposeAddress(c, "For", invoice.Customer));
+        ///
+        /// void ComposeAddress(IContainer container, string title, Address address)
+        /// {
+        ///     container.Column(column =>
+        ///     {
+        ///         column.Item().Text(title).Bold();
+        ///         column.Item().Text(address.Street);
+        ///         column.Item().Text(address.City);
+        ///     });
+        /// }
+        /// </code>
+        /// </example>
+        /// <param name="handler">Handler that populates the provided container with content.</param>
+        public static void Compose(
+            this IContainer element, 
             Action<IContainer> handler,
             [CallerArgumentExpression("handler")] string handlerName = null,
             [CallerMemberName] string parentName = "",
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
         {
-            var handlerContainer = parent
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
+            var contentContainer = element
                 .Container()
                 .Element(new SourceCodePointer
                 {
@@ -66,28 +95,42 @@ namespace QuestPDF.Fluent
                     LineNumber = sourceLineNumber
                 });
             
-            handler(handlerContainer);
+            handler(contentContainer);
         }
-        
+
         /// <summary>
-        /// Passes the Fluent API chain to the provided <paramref name="handler"/> method.
+        /// Applies a reusable style to the current container.
         /// <a href="https://www.questpdf.com/concepts/code-patterns/content-styling.html">Learn more</a>
         /// </summary>
         /// <remarks>
-        /// <para>This method is particularly useful for code refactoring, improving its structure and readability.</para>
-        /// <para>Extracting implementation of certain layout structures into separate methods, allows you to accurately describe their purpose and reuse them code in various parts of the application.</para>
+        /// <para>Use it to define a style once (e.g. a border, background and padding) and share it across many elements, such as table cells.</para>
+        /// <para>To place content produced by a method, use the <see cref="Compose">Compose</see> method.</para>
         /// </remarks>
-        /// <param name="handler">A method that accepts the current container, optionally populates it with content, and returns a subsequent container to continue the Fluent API chain.</param>
-        /// <returns>The container returned by the <paramref name="handler"/> method.</returns>
-        public static IContainer Element(
-            this IContainer parent, 
+        /// <example>
+        /// <code>
+        /// table.Cell().Style(CellStyle).Text("Product");
+        /// table.Cell().Style(CellStyle).Text("Price");
+        ///
+        /// static IContainer CellStyle(IContainer container)
+        /// {
+        ///     return container.BorderBottom(1).PaddingVertical(5);
+        /// }
+        /// </code>
+        /// </example>
+        /// <param name="handler">Handler that applies the style to the provided container and returns the styled container.</param>
+        /// <returns>The container with the applied style.</returns>
+        public static IContainer Style(
+            this IContainer element, 
             Func<IContainer, IContainer> handler,
             [CallerArgumentExpression("handler")] string handlerName = null,
             [CallerMemberName] string parentName = "",
             [CallerFilePath] string sourceFilePath = "",
             [CallerLineNumber] int sourceLineNumber = 0)
         {
-            var handlerContainer = parent
+            if (handler == null)
+                throw new ArgumentNullException(nameof(handler));
+
+            var styleContainer = element
                 .Element(new SourceCodePointer
                 {
                     MethodName = handlerName,
@@ -96,13 +139,109 @@ namespace QuestPDF.Fluent
                     LineNumber = sourceLineNumber
                 });
             
-            return handler(handlerContainer);
+            return handler(styleContainer);
         }
-        
+
+        /// <summary>
+        /// Applies a style to the current container only when the condition is met.
+        /// <a href="https://www.questpdf.com/concepts/code-patterns/content-styling.html">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// <para>Use it when a part of the style depends on the data, e.g. to highlight every second row of a table, without breaking the Fluent API chain.</para>
+        /// <para>To choose between two styles, use the <see cref="Style">Style</see> method with a conditional expression, e.g. <c>.Style(x => invoice.IsPaid ? PaidStyle(x) : UnpaidStyle(x))</c>.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// table.Cell()
+        ///     .StyleIf(isEvenRow, x => x.Background(Colors.Grey.Lighten4))
+        ///     .Style(CellStyle)
+        ///     .Text(product.Name);
+        /// </code>
+        /// </example>
+        /// <param name="condition">If the value is <see langword="true"/>, the style is applied. Otherwise, the container is left unchanged.</param>
+        /// <param name="handler">Handler that applies the style to the provided container and returns the styled container. It is invoked only when the condition is met.</param>
+        /// <returns>The container with the applied style, or the unchanged container when the condition is not met.</returns>
+        public static IContainer StyleIf(
+            this IContainer element,
+            bool condition,
+            Func<IContainer, IContainer> handler,
+            [CallerArgumentExpression("handler")] string handlerName = null,
+            [CallerMemberName] string parentName = "",
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
+        {
+            if (!condition)
+                return element;
+
+            return element.Style(handler, handlerName, parentName, sourceFilePath, sourceLineNumber);
+        }
+
+        /// <summary>
+        /// Places content that was created in advance inside the current container.
+        /// <a href="https://www.questpdf.com/concepts/code-patterns/components.html">Learn more</a>
+        /// </summary>
+        /// <remarks>
+        /// <para>Use it when the content is defined before its final position in the document is known, e.g. when a component collects content from its caller and arranges it later.</para>
+        /// <para>Create the container with the <see cref="EmptyContainer.Create">EmptyContainer.Create</see> method. Each container should be placed in only one position of the document.</para>
+        /// <para>To place content produced by a method, use the <see cref="Compose">Compose</see> method.</para>
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// var content = EmptyContainer.Create();
+        /// content.Padding(10).Text("Sample text");
+        ///
+        /// page.Content().Element(content);
+        /// </code>
+        /// </example>
+        /// <param name="child">The container with the content, created with the <see cref="EmptyContainer.Create">EmptyContainer.Create</see> method.</param>
         public static void Element(this IContainer parent, IContainer child)
         {
-            parent.Child = child as IElement;
+            if (child == null)
+                throw new ArgumentNullException(nameof(child));
+
+            if (child is not Element childElement)
+                throw new ArgumentException("The provided container cannot be placed in the document. Please create it with the EmptyContainer.Create method.", nameof(child));
+
+            // the Companion app should still point to the code that has created the content, not to the code that places it
+            var contentCodeLocation = childElement.CodeLocation;
+
+            parent.Element(childElement);
+
+            if (contentCodeLocation != null)
+                childElement.CodeLocation = contentCodeLocation;
         }
+        
+        #region Element [Obsolete]
+
+        [Obsolete("This method has been renamed since version 2026.12. Please use the Compose method to place content produced by a method.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static void Element(
+            this IContainer parent, 
+            Action<IContainer> handler,
+            [CallerArgumentExpression("handler")] string handlerName = null,
+            [CallerMemberName] string parentName = "",
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
+        {
+            parent.Compose(handler, handlerName, parentName, sourceFilePath, sourceLineNumber);
+        }
+        
+        [Obsolete("This method has been renamed since version 2026.12. Please use the Style method to apply a reusable style and continue the Fluent API chain.")]
+        [System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)]
+        [ExcludeFromCodeCoverage]
+        public static IContainer Element(
+            this IContainer parent, 
+            Func<IContainer, IContainer> handler,
+            [CallerArgumentExpression("handler")] string handlerName = null,
+            [CallerMemberName] string parentName = "",
+            [CallerFilePath] string sourceFilePath = "",
+            [CallerLineNumber] int sourceLineNumber = 0)
+        {
+            return parent.Style(handler, handlerName, parentName, sourceFilePath, sourceLineNumber);
+        }
+        
+        #endregion
         
         internal static IContainer NonTrackingElement(this IContainer parent, Func<IContainer, IContainer> handler)
         {

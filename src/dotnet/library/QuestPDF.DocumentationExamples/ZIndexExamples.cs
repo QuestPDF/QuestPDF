@@ -26,7 +26,7 @@ public class ZIndexExamples
                         {
                             row.RelativeItem()
                                 .Background(Colors.Grey.Lighten3)
-                                .Element(c => AddPricingItem(c, "Community", "Free"));
+                                .Compose(c => PricingItem(c, "Community", "Free"));
                             
                             row.RelativeItem()
                                 .ZIndex(1) // -1 or 0 or 1
@@ -34,13 +34,13 @@ public class ZIndexExamples
                                 .Border(1)
                                 .Background(Colors.Grey.Lighten1)
                                 .PaddingTop(15)
-                                .Element(c => AddPricingItem(c, "Professional", "$699"));
+                                .Compose(c => PricingItem(c, "Professional", "$699"));
                             
                             row.RelativeItem()
                                 .Background(Colors.Grey.Lighten3)
-                                .Element(c => AddPricingItem(c, "Enterprise", "$1999")); 
+                                .Compose(c => PricingItem(c, "Enterprise", "$1999")); 
 
-                            void AddPricingItem(IContainer container, string name, string formattedPrice)
+                            void PricingItem(IContainer container, string name, string formattedPrice)
                             {
                                 container
                                     .Padding(25)

@@ -122,17 +122,17 @@ container.Column(column =>
     column.Item().Text("Order Items").Bold();
 
     if (Model.ShowSummary)
-        column.Item().Element(ComposeOrderSummary);
+        column.Item().Compose(OrderSummary);
 
     foreach (var item in Model.Items)
-        column.Item().Element(c => ComposeItem(c, item));
+        column.Item().Compose(c => OrderItem(c, item));
 });
 ```
 
 Review document changes like any other code. Get clean diffs, PR approvals, and traceable history.
 
 ```diff
-void ComposeItem(IContainer container, OrderItem item)
+void OrderItem(IContainer container, OrderItem item)
 {
     container
         .Border(1, Colors.Grey.Darken2)

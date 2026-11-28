@@ -54,9 +54,9 @@ public class DynamicCompositionConfigurableTablesExample
                             table.Header(header =>
                             {
                                 foreach (var column in reportColumns)
-                                    header.Cell().Element(HeaderCellStyle).Text(column.Header);
+                                    header.Cell().Style(HeaderCell).Text(column.Header);
 
-                                static IContainer HeaderCellStyle(IContainer container)
+                                static IContainer HeaderCell(IContainer container)
                                 {
                                     return container
                                         .Background(Colors.Blue.Darken2)
@@ -69,10 +69,10 @@ public class DynamicCompositionConfigurableTablesExample
                             foreach (var product in products)
                             {
                                 foreach (var column in reportColumns)
-                                    table.Cell().Element(CellStyle).Text(product.GetValueOrDefault(column.PropertyName));
+                                    table.Cell().Style(Cell).Text(product.GetValueOrDefault(column.PropertyName));
                             }
 
-                            static IContainer CellStyle(IContainer container)
+                            static IContainer Cell(IContainer container)
                             {
                                 return container
                                     .BorderBottom(1)

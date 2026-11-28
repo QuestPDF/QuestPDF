@@ -34,14 +34,14 @@ public class DynamicCompositionMixedContentBlocksExample
                             column.Spacing(15);
 
                             foreach (var block in blocks)
-                                column.Item().Element(container => ComposeBlock(container, block));
+                                column.Item().Compose(container => Block(container, block));
                         });
                 });
             })
             .GenerateImages(x => "dynamic-composition-content-blocks.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
     }
 
-    private void ComposeBlock(IContainer container, ContentBlock block)
+    private void Block(IContainer container, ContentBlock block)
     {
         if (block is HeadingBlock heading)
         {

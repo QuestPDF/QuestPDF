@@ -92,7 +92,7 @@ public class CodePatternComponentProgressbarComponentExample
             var content = context.CreateElement(element =>
             {
                 element
-                    .Element(x => context.PageNumber % 2 == 0 ? x.AlignRight() : x.AlignLeft())
+                    .Style(x => context.PageNumber % 2 == 0 ? x.AlignRight() : x.AlignLeft())
                     .Text(text =>
                     {
                         text.Span("Page ");

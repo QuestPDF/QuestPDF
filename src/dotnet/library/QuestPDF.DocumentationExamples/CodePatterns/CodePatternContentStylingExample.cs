@@ -31,11 +31,11 @@ public class CodePatternContentStylingExample
                             
                             table.Header(header =>
                             {
-                                header.Cell().Element(Style).Text("#");
-                                header.Cell().Element(Style).Text("Product Name");
-                                header.Cell().Element(Style).Text("Description");
+                                header.Cell().Style(HeaderCell).Text("#");
+                                header.Cell().Style(HeaderCell).Text("Product Name");
+                                header.Cell().Style(HeaderCell).Text("Description");
 
-                                IContainer Style(IContainer container)
+                                IContainer HeaderCell(IContainer container)
                                 {
                                     return container
                                         .Background(Colors.Blue.Lighten5)
@@ -46,12 +46,12 @@ public class CodePatternContentStylingExample
 
                             foreach (var i in Enumerable.Range(1, 5))
                             {
-                                table.Cell().Element(Style).Text(i.ToString());
-                                table.Cell().Element(Style).Text(Placeholders.Label());
-                                table.Cell().Element(Style).Text(Placeholders.Sentence());
+                                table.Cell().Style(Cell).Text(i.ToString());
+                                table.Cell().Style(Cell).Text(Placeholders.Label());
+                                table.Cell().Style(Cell).Text(Placeholders.Sentence());
                             }
 
-                            IContainer Style(IContainer container)
+                            IContainer Cell(IContainer container)
                             { 
                                 return container
                                     .BorderTop(2)

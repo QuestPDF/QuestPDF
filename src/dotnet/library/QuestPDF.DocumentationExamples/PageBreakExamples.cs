@@ -37,10 +37,10 @@ public class PageBreakExamples
                             foreach (var term in terms)
                             {
                                 column.Item().PageBreak();
-                                column.Item().Element(c => GeneratePage(c, term.Item1, term.Item2));
+                                column.Item().Compose(c => TermDefinition(c, term.Item1, term.Item2));
                             }
 
-                            static void GeneratePage(IContainer container, string term, string definition)
+                            static void TermDefinition(IContainer container, string term, string definition)
                             {
                                 container.Text(text =>
                                 {

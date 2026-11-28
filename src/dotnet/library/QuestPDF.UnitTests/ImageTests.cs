@@ -161,7 +161,7 @@ namespace QuestPDF.UnitTests
                 {
                     document.Page(page =>
                     {
-                        page.Content().Element(container);
+                        page.Content().Compose(container);
                     });
                 })
                 .GeneratePdf()

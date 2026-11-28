@@ -105,18 +105,18 @@ public class ColumnExamples
                             column.Spacing(15);
                             
                             column.Item()
-                                .Element(LabelStyle)
+                                .Style(Label)
                                 .Text("REST API");
                             
                             column.Item()
-                                .Element(LabelStyle)
+                                .Style(Label)
                                 .Text("Garbage Collection");
                             
                             column.Item()
-                                .Element(LabelStyle)
+                                .Style(Label)
                                 .Text("Object-Oriented Programming");
                             
-                            static IContainer LabelStyle(IContainer container) => container
+                            static IContainer Label(IContainer container) => container
                                 .ShrinkHorizontal()
                                 .Background(Colors.Grey.Lighten3)
                                 .CornerRadius(15)

@@ -4,7 +4,7 @@ namespace QuestPDF.LayoutTests;
 
 public class ScaleTests
 {
-    private void DrawTestSubject(IContainer container)
+    private void TestSubject(IContainer container)
     {
         container
             .Inlined(inlined =>
@@ -25,7 +25,7 @@ public class ScaleTests
             .HavingSpaceOfSize(800, 500)
             .ForContent(content =>
             {
-                content.Element(DrawTestSubject);
+                content.Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -51,7 +51,7 @@ public class ScaleTests
             .HavingSpaceOfSize(800, 500)
             .ForContent(content =>
             {
-                content.Scale(0.5f).Element(DrawTestSubject);
+                content.Scale(0.5f).Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -77,7 +77,7 @@ public class ScaleTests
             .HavingSpaceOfSize(800, 500)
             .ForContent(content =>
             {
-                content.Scale(1.5f).Element(DrawTestSubject);
+                content.Scale(1.5f).Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -103,7 +103,7 @@ public class ScaleTests
             .HavingSpaceOfSize(800, 500)
             .ForContent(content =>
             {
-                content.Scale(2.5f).Element(DrawTestSubject);
+                content.Scale(2.5f).Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -129,7 +129,7 @@ public class ScaleTests
             .HavingSpaceOfSize(800, 250)
             .ForContent(content =>
             {
-                content.Scale(2).Element(DrawTestSubject);
+                content.Scale(2).Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -162,7 +162,7 @@ public class ScaleTests
             .HavingSpaceOfSize(450, 800)
             .ForContent(content =>
             {
-                content.ScaleVertical(2f).Element(DrawTestSubject);
+                content.ScaleVertical(2f).Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -188,7 +188,7 @@ public class ScaleTests
             .HavingSpaceOfSize(400, 500)
             .ForContent(content =>
             {
-                content.ScaleVertical(-1.5f).Element(DrawTestSubject);
+                content.ScaleVertical(-1.5f).Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -214,7 +214,7 @@ public class ScaleTests
             .HavingSpaceOfSize(450, 800)
             .ForContent(content =>
             {
-                content.ScaleHorizontal(2f).Element(DrawTestSubject);
+                content.ScaleHorizontal(2f).Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -240,7 +240,7 @@ public class ScaleTests
             .HavingSpaceOfSize(700, 400)
             .ForContent(content =>
             {
-                content.ScaleHorizontal(-1.5f).Element(DrawTestSubject);
+                content.ScaleHorizontal(-1.5f).Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {

@@ -21,8 +21,8 @@ namespace QuestPDF.ReportSample.Layouts
                 .Column(column =>
                 {
                     column.Spacing(5);
-                    column.Item().Element(PhotoWithMaps);
-                    column.Item().Element(PhotoDetails);
+                    column.Item().Compose(PhotoWithMaps);
+                    column.Item().Compose(PhotoDetails);
                 });
         }
         

@@ -52,26 +52,26 @@ public class ParagraphStyleExamples
                             column.Spacing(20);
                             
                             column.Item()
-                                .Element(CellStyle)
+                                .Style(Cell)
                                 .Text("This is an example of left-aligned text, showcasing how the text starts from the left margin and continues naturally across the container.")
                                 .AlignLeft();
 
                             column.Item()
-                                .Element(CellStyle)
+                                .Style(Cell)
                                 .Text("This text is centered within its container, creating a balanced look, especially for titles or headers.")
                                 .AlignCenter();
 
                             column.Item()
-                                .Element(CellStyle)
+                                .Style(Cell)
                                 .Text("This example demonstrates right-aligned text, often used for dates, numbers, or aligning text to the right margin.")
                                 .AlignRight();
 
                             column.Item()
-                                .Element(CellStyle)
+                                .Style(Cell)
                                 .Text("Justified text adjusts the spacing between words so that both the left and right edges of the text block are aligned, creating a clean, newspaper-like look.")
                                 .Justify();
     
-                            static IContainer CellStyle(IContainer container) 
+                            static IContainer Cell(IContainer container) 
                                 => container.Background(Colors.Grey.Lighten3).Padding(10);
                         });
 

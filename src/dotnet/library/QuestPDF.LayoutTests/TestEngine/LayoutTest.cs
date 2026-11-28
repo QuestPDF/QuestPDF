@@ -65,7 +65,7 @@ internal class LayoutTest
             .Height(AvailableSpace?.Height ?? 0)
             .ElementObserverSetter(ActualDrawingRecorder)
             .Mock("$document")
-            .Element(handler);
+            .Compose(handler);
         
         return this;
     }

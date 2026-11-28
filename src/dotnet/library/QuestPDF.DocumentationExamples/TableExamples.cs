@@ -77,11 +77,11 @@ public class TableExamples
 
                             table.Header(header =>
                             {
-                                header.Cell().Element(CellStyle).Text("Day");
-                                header.Cell().Element(CellStyle).AlignCenter().Text("Weather");
-                                header.Cell().Element(CellStyle).AlignRight().Text("Temp");
+                                header.Cell().Style(Cell).Text("Day");
+                                header.Cell().Style(Cell).AlignCenter().Text("Weather");
+                                header.Cell().Style(Cell).AlignRight().Text("Temp");
 
-                                static IContainer CellStyle(IContainer container)
+                                static IContainer Cell(IContainer container)
                                 {
                                     return container
                                         .Background(Colors.Blue.Darken2)
@@ -95,16 +95,16 @@ public class TableExamples
                             {
                                 var weatherIndex = Random.Shared.Next(0, weatherIcons.Length);
 
-                                table.Cell().Element(CellStyle)
+                                table.Cell().Style(Cell)
                                     .Text(new DateTime(2025, 2, 26).AddDays(i).ToString("dd MMMM"));
                                 
-                                table.Cell().Element(CellStyle).AlignCenter().Height(24)
+                                table.Cell().Style(Cell).AlignCenter().Height(24)
                                     .Svg($"Resources/WeatherIcons/{weatherIcons[weatherIndex]}");
                                 
-                                table.Cell().Element(CellStyle).AlignRight()
+                                table.Cell().Style(Cell).AlignRight()
                                     .Text($"{Random.Shared.Next(-10, 35)}°");
 
-                                IContainer CellStyle(IContainer container)
+                                IContainer Cell(IContainer container)
                                 {
                                     var backgroundColor = i % 2 == 0 
                                         ? Colors.Blue.Lighten5 
@@ -230,53 +230,53 @@ public class TableExamples
                             });
             
                             table.Cell().Row(1).Column(3).ColumnSpan(2)
-                                .Element(HeaderCellStyle)
+                                .Style(HeaderCell)
                                 .Text("Predicted condition").Bold();
                             
                             table.Cell().Row(3).Column(1).RowSpan(2)
-                                .Element(HeaderCellStyle).RotateLayoutCounterclockwise()
+                                .Style(HeaderCell).RotateLayoutCounterclockwise()
                                 .Text("Actual\ncondition").Bold().AlignCenter();
             
                             table.Cell().Row(2).Column(3)
-                                .Element(HeaderCellStyle)
+                                .Style(HeaderCell)
                                 .Text("Positive (PP)");
                             
                             table.Cell().Row(2).Column(4)
-                                .Element(HeaderCellStyle)
+                                .Style(HeaderCell)
                                 .Text("Negative (PN)");
             
                             table.Cell().Row(3).Column(2)
-                                .Element(HeaderCellStyle).Text("Positive (P)");
+                                .Style(HeaderCell).Text("Positive (P)");
                             
                             table.Cell().Row(4).Column(2)
-                                .Element(HeaderCellStyle)
+                                .Style(HeaderCell)
                                 .Text("Negative (N)");
             
                             table.Cell()
-                                .Row(3).Column(3).Element(GoodCellStyle)
+                                .Row(3).Column(3).Style(GoodCell)
                                 .Text("True positive (TP)");
                             
                             table.Cell()
-                                .Row(3).Column(4).Element(BadCellStyle)
+                                .Row(3).Column(4).Style(BadCell)
                                 .Text("False negative (FN)");
             
                             table.Cell().Row(4).Column(3)
-                                .Element(BadCellStyle).Text("False positive (FP)");
+                                .Style(BadCell).Text("False positive (FP)");
                             
                             table.Cell().Row(4).Column(4)
-                                .Element(GoodCellStyle).Text("True negative (TN)");
+                                .Style(GoodCell).Text("True negative (TN)");
 
-                            static IContainer CellStyle(IContainer container, Color color)
+                            static IContainer Cell(IContainer container, Color color)
                                 => container.Border(1).Background(color).PaddingHorizontal(10).PaddingVertical(15).AlignCenter().AlignMiddle();
 
-                            static IContainer HeaderCellStyle(IContainer container) 
-                                => CellStyle(container, Colors.Grey.Lighten4 );
+                            static IContainer HeaderCell(IContainer container) 
+                                => Cell(container, Colors.Grey.Lighten4 );
                             
-                            static IContainer GoodCellStyle(IContainer container) 
-                                => CellStyle(container, Colors.Green.Lighten4).DefaultTextStyle(x => x.FontColor(Colors.Green.Darken2));
+                            static IContainer GoodCell(IContainer container) 
+                                => Cell(container, Colors.Green.Lighten4).DefaultTextStyle(x => x.FontColor(Colors.Green.Darken2));
                             
-                            static IContainer BadCellStyle(IContainer container) 
-                                => CellStyle(container, Colors.Red.Lighten4).DefaultTextStyle(x => x.FontColor(Colors.Red.Darken2));
+                            static IContainer BadCell(IContainer container) 
+                                => Cell(container, Colors.Red.Lighten4).DefaultTextStyle(x => x.FontColor(Colors.Red.Darken2));
                         });
                 });
             })
@@ -308,18 +308,18 @@ public class TableExamples
                             });
 
                             table.Cell().ColumnSpan(3)
-                                .Background(Colors.Grey.Lighten2).Element(CellStyle)
+                                .Background(Colors.Grey.Lighten2).Style(Cell)
                                 .Text("Total width: 450px");
                             
-                            table.Cell().Element(CellStyle).Text("Constant: 150px");
-                            table.Cell().Element(CellStyle).Text("Relative: 2*");
-                            table.Cell().Element(CellStyle).Text("Relative: 3*");
+                            table.Cell().Style(Cell).Text("Constant: 150px");
+                            table.Cell().Style(Cell).Text("Relative: 2*");
+                            table.Cell().Style(Cell).Text("Relative: 3*");
                             
-                            table.Cell().Element(CellStyle).Text("150px");
-                            table.Cell().Element(CellStyle).Text("120px");
-                            table.Cell().Element(CellStyle).Text("180px");
+                            table.Cell().Style(Cell).Text("150px");
+                            table.Cell().Style(Cell).Text("120px");
+                            table.Cell().Style(Cell).Text("180px");
 
-                            static IContainer CellStyle(IContainer container)
+                            static IContainer Cell(IContainer container)
                                 => container.Border(1).Padding(10);
                         });
                 });
@@ -358,7 +358,7 @@ public class TableExamples
 
                             const int inchesToPoints = 72;
 
-                            IContainer DefaultCellStyle(IContainer container, string backgroundColor)
+                            IContainer DefaultCell(IContainer container, string backgroundColor)
                             {
                                 return container
                                     .Border(1)
@@ -385,37 +385,37 @@ public class TableExamples
                             {
                                 // please be sure to call the 'header' handler!
 
-                                header.Cell().RowSpan(2).Element(CellStyle).ExtendHorizontal().AlignLeft()
+                                header.Cell().RowSpan(2).Style(Cell).ExtendHorizontal().AlignLeft()
                                     .Text("Document type").Bold();
 
-                                header.Cell().ColumnSpan(2).Element(CellStyle).Text("Inches").Bold();
-                                header.Cell().ColumnSpan(2).Element(CellStyle).Text("Points").Bold();
+                                header.Cell().ColumnSpan(2).Style(Cell).Text("Inches").Bold();
+                                header.Cell().ColumnSpan(2).Style(Cell).Text("Points").Bold();
 
-                                header.Cell().Element(CellStyle).Text("Width");
-                                header.Cell().Element(CellStyle).Text("Height");
+                                header.Cell().Style(Cell).Text("Width");
+                                header.Cell().Style(Cell).Text("Height");
 
-                                header.Cell().Element(CellStyle).Text("Width");
-                                header.Cell().Element(CellStyle).Text("Height");
+                                header.Cell().Style(Cell).Text("Width");
+                                header.Cell().Style(Cell).Text("Height");
 
                                 // you can extend existing styles by creating additional methods
-                                IContainer CellStyle(IContainer container) =>
-                                    DefaultCellStyle(container, Colors.Grey.Lighten3);
+                                IContainer Cell(IContainer container) =>
+                                    DefaultCell(container, Colors.Grey.Lighten3);
                             });
 
                             foreach (var page in pageSizes)
                             {
-                                table.Cell().Element(CellStyle).ExtendHorizontal().AlignLeft().Text(page.name);
+                                table.Cell().Style(Cell).ExtendHorizontal().AlignLeft().Text(page.name);
 
                                 // inches
-                                table.Cell().Element(CellStyle).Text($"{page.width}");
-                                table.Cell().Element(CellStyle).Text($"{page.height}");
+                                table.Cell().Style(Cell).Text($"{page.width}");
+                                table.Cell().Style(Cell).Text($"{page.height}");
 
                                 // points
-                                table.Cell().Element(CellStyle).Text($"{page.width * inchesToPoints}");
-                                table.Cell().Element(CellStyle).Text($"{page.height * inchesToPoints}");
+                                table.Cell().Style(Cell).Text($"{page.width * inchesToPoints}");
+                                table.Cell().Style(Cell).Text($"{page.height * inchesToPoints}");
 
-                                IContainer CellStyle(IContainer container) =>
-                                    DefaultCellStyle(container, Colors.White).ShowOnce();
+                                IContainer Cell(IContainer container) =>
+                                    DefaultCell(container, Colors.White).ShowOnce();
                             }
                         });
                 });

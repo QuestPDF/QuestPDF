@@ -34,41 +34,41 @@ internal class TableWithHeaderCellsSpanningMultipleRowsTests : ConformanceTestBa
                             
                             table.Header(header =>
                             {
-                                header.Cell().Element(HeaderCellStyle).Text("Year");
-                                header.Cell().Element(HeaderCellStyle).Text("Quarter");
-                                header.Cell().Element(HeaderCellStyle).Text("Outcome");
-                                header.Cell().Element(HeaderCellStyle).Text("Income");
+                                header.Cell().Style(HeaderCell).Text("Year");
+                                header.Cell().Style(HeaderCell).Text("Quarter");
+                                header.Cell().Style(HeaderCell).Text("Outcome");
+                                header.Cell().Style(HeaderCell).Text("Income");
                             });
 
-                            table.Cell().RowSpan(4).AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("2024");
+                            table.Cell().RowSpan(4).AsSemanticHorizontalHeader().Style(HeaderCell).Text("2024");
                                 
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Q1");
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Q1");
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
                                 
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Q2");
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Q2");
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
                                 
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Q3");
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Q3");
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
                                 
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Q4");
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Q4");
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
 
-                            table.Cell().RowSpan(2).AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("2025");
+                            table.Cell().RowSpan(2).AsSemanticHorizontalHeader().Style(HeaderCell).Text("2025");
 
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Q1");
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Q1");
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
                                 
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Q2");
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Price());
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Q2");
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
+                            table.Cell().Style(Cell).Text(Placeholders.Price());
                             
-                            IContainer HeaderCellStyle(IContainer container) =>
+                            IContainer HeaderCell(IContainer container) =>
                                 container
                                     .Border(1)
                                     .BorderColor(Colors.Grey.Lighten2)
@@ -77,7 +77,7 @@ internal class TableWithHeaderCellsSpanningMultipleRowsTests : ConformanceTestBa
                                     .AlignMiddle()
                                     .DefaultTextStyle(x => x.Bold());
 
-                            IContainer CellStyle(IContainer container) =>
+                            IContainer Cell(IContainer container) =>
                                 container
                                     .Border(1)
                                     .BorderColor(Colors.Grey.Lighten2)

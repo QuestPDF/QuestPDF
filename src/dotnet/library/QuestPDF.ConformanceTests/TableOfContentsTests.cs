@@ -32,16 +32,16 @@ internal class TableOfContentsTests : ConformanceTestBase
 
                             column.Item().PageBreak();
 
-                            column.Item().Element(GenerateTableOfContentsSection);
+                            column.Item().Compose(TableOfContentsSection);
 
                             column.Item().PageBreak();
 
-                            column.Item().Element(GeneratePlaceholderContentSection);
+                            column.Item().Compose(PlaceholderContentSection);
                         });
                 });
             });
         
-        static void GenerateTableOfContentsSection(IContainer container)
+        static void TableOfContentsSection(IContainer container)
         {
             container
                 .SemanticSection()
@@ -80,7 +80,7 @@ internal class TableOfContentsTests : ConformanceTestBase
                 });
         }
         
-        static void GeneratePlaceholderContentSection(IContainer container)
+        static void PlaceholderContentSection(IContainer container)
         {
             container
                 .Column(column =>

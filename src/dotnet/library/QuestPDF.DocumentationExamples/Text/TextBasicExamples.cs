@@ -46,23 +46,23 @@ public class TextBasicExamples
                             column.Spacing(10);
 
                             column.Item()
-                                .Element(CellStyle)
+                                .Style(Cell)
                                 .Text("Text with blue color")
                                 .FontColor(Colors.Blue.Darken1);
 
                             column.Item()
-                                .Element(CellStyle)
+                                .Style(Cell)
                                 .Text("Bold and underlined text")
                                 .Bold()
                                 .Underline();
 
                             column.Item()
-                                .Element(CellStyle)
+                                .Style(Cell)
                                 .Text("Centered small text")
                                 .FontSize(12)
                                 .AlignCenter();
 
-                            static IContainer CellStyle(IContainer container) =>
+                            static IContainer Cell(IContainer container) =>
                                 container.Background(Colors.Grey.Lighten3).Padding(10);
                         });
                 });
@@ -139,11 +139,11 @@ public class TextBasicExamples
                             
                                     table.Header(header =>
                                     {
-                                        header.Cell().Element(Style).Text("ID");
-                                        header.Cell().Element(Style).Text("Name");
-                                        header.Cell().Element(Style).Text("Description");
+                                        header.Cell().Style(HeaderCell).Text("ID");
+                                        header.Cell().Style(HeaderCell).Text("Name");
+                                        header.Cell().Style(HeaderCell).Text("Description");
 
-                                        IContainer Style(IContainer container)
+                                        IContainer HeaderCell(IContainer container)
                                         {
                                             return container
                                                 .Background(Colors.Grey.Lighten3)
@@ -156,12 +156,12 @@ public class TextBasicExamples
 
                                     foreach (var i in Enumerable.Range(0, 5))
                                     {
-                                        table.Cell().Element(Style).Text(i.ToString()).Bold();
-                                        table.Cell().Element(Style).Text(Placeholders.Label());
-                                        table.Cell().Element(Style).Text(Placeholders.Sentence());
+                                        table.Cell().Style(Cell).Text(i.ToString()).Bold();
+                                        table.Cell().Style(Cell).Text(Placeholders.Label());
+                                        table.Cell().Style(Cell).Text(Placeholders.Sentence());
                                     }
                                 
-                                    IContainer Style(IContainer container)
+                                    IContainer Cell(IContainer container)
                                     {
                                         return container.Padding(5);
                                     }

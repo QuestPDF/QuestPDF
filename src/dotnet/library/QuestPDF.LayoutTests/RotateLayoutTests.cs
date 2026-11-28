@@ -4,7 +4,7 @@ namespace QuestPDF.LayoutTests;
 
 public class RotateLayoutTests
 {
-    private void DrawTestSubject(IContainer container)
+    private void TestSubject(IContainer container)
     {
         container
             .Column(column =>
@@ -34,7 +34,7 @@ public class RotateLayoutTests
             .HavingSpaceOfSize(500, 500)
             .ForContent(content =>
             {
-                content.Shrink().Element(DrawTestSubject);
+                content.Shrink().Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -63,7 +63,7 @@ public class RotateLayoutTests
                 content
                     .Shrink()
                     .RotateLayoutClockwise() // <-
-                    .Element(DrawTestSubject);
+                    .Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -93,7 +93,7 @@ public class RotateLayoutTests
                     .Shrink()
                     .RotateLayoutClockwise() // <-
                     .RotateLayoutClockwise()
-                    .Element(DrawTestSubject);
+                    .Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -124,7 +124,7 @@ public class RotateLayoutTests
                     .RotateLayoutClockwise() // <-
                     .RotateLayoutClockwise()
                     .RotateLayoutClockwise()
-                    .Element(DrawTestSubject);
+                    .Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -154,7 +154,7 @@ public class RotateLayoutTests
             .HavingSpaceOfSize(500, 150)
             .ForContent(content =>
             {
-                content.Shrink().Element(DrawTestSubject);
+                content.Shrink().Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -190,7 +190,7 @@ public class RotateLayoutTests
                 content
                     .Shrink()
                     .RotateLayoutClockwise() // <-
-                    .Element(DrawTestSubject);
+                    .Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -227,7 +227,7 @@ public class RotateLayoutTests
                     .Shrink()
                     .RotateLayoutClockwise() // <-
                     .RotateLayoutClockwise()
-                    .Element(DrawTestSubject);
+                    .Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {
@@ -265,7 +265,7 @@ public class RotateLayoutTests
                     .RotateLayoutClockwise() // <-
                     .RotateLayoutClockwise()
                     .RotateLayoutClockwise()
-                    .Element(DrawTestSubject);
+                    .Compose(TestSubject);
             })
             .ExpectDrawResult(document =>
             {

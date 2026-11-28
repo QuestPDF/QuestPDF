@@ -18,7 +18,7 @@ namespace QuestPDF.Elements
                 .Padding(5)
                 .AlignMiddle()
                 .AlignCenter()
-                .Element(x =>
+                .Compose(x =>
                 {
                     if (string.IsNullOrWhiteSpace(Text))
                         x.Height(imageSvgSize).Width(imageSvgSize).SvgPath(imageSvgPath, Colors.Black);

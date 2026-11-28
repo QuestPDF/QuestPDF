@@ -1,3 +1,4 @@
+using System;
 using QuestPDF.Elements;
 using QuestPDF.Infrastructure;
 
@@ -46,6 +47,9 @@ namespace QuestPDF.Fluent
         /// </summary>
         public static void Element(this IContainer element, IDynamicElement child)
         {
+            if (child == null)
+                throw new ArgumentNullException(nameof(child));
+
             ElementExtensions.Element(element, child);
         }
     }

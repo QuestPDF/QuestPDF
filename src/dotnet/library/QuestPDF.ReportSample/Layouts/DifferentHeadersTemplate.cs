@@ -19,13 +19,13 @@ namespace QuestPDF.ReportSample.Layouts
 
                     page.Size(PageSizes.A4);
 
-                    page.Header().Element(ComposeHeader);
-                    page.Content().Element(ComposeContent);
-                    page.Footer().Element(ComposeFooter);
+                    page.Header().Compose(Header);
+                    page.Content().Compose(Content);
+                    page.Footer().Compose(Footer);
                 });
         }
 
-        private void ComposeHeader(IContainer container)
+        private void Header(IContainer container)
         {
             container.Background(Colors.Grey.Lighten3).Border(1).Column(column =>
             {
@@ -42,7 +42,7 @@ namespace QuestPDF.ReportSample.Layouts
             });
         }
 
-        private void ComposeContent(IContainer container)
+        private void Content(IContainer container)
         {
             container.Column(column =>
             {
@@ -55,7 +55,7 @@ namespace QuestPDF.ReportSample.Layouts
             });
         }
 
-        private void ComposeFooter(IContainer container)
+        private void Footer(IContainer container)
         {
             container.Background(Colors.Grey.Lighten3).Column(column =>
             {

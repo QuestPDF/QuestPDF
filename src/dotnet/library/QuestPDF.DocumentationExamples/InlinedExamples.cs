@@ -28,7 +28,7 @@ public class InlinedExamples
                             inlined.AlignCenter();
                             
                             foreach (var _ in Enumerable.Range(0, 15))
-                                inlined.Item().Element(RandomBlock);
+                                inlined.Item().Compose(RandomBlock);
                         });
                 });
             })
@@ -56,7 +56,7 @@ public class InlinedExamples
                             inlined.HorizontalSpacing(30);
                             
                             foreach (var _ in Enumerable.Range(0, 10))
-                                inlined.Item().Element(RandomBlock);
+                                inlined.Item().Compose(RandomBlock);
                         });
                 });
             })

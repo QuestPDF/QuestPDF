@@ -35,34 +35,34 @@ internal class TableWithHeaderCellsSpanningMultipleColumnsTests : ConformanceTes
                             
                             table.Header(header =>
                             {
-                                header.Cell().RowSpan(2).Element(HeaderCellStyle).Text("Paper Type");
-                                header.Cell().ColumnSpan(2).Element(HeaderCellStyle).Text("Width");
-                                header.Cell().ColumnSpan(2).Element(HeaderCellStyle).Text("Height");
-                                header.Cell().Element(HeaderCellStyle).Text("Inches");
-                                header.Cell().Element(HeaderCellStyle).Text("Points");
-                                header.Cell().Element(HeaderCellStyle).Text("Inches");
-                                header.Cell().Element(HeaderCellStyle).Text("Points");
+                                header.Cell().RowSpan(2).Style(HeaderCell).Text("Paper Type");
+                                header.Cell().ColumnSpan(2).Style(HeaderCell).Text("Width");
+                                header.Cell().ColumnSpan(2).Style(HeaderCell).Text("Height");
+                                header.Cell().Style(HeaderCell).Text("Inches");
+                                header.Cell().Style(HeaderCell).Text("Points");
+                                header.Cell().Style(HeaderCell).Text("Inches");
+                                header.Cell().Style(HeaderCell).Text("Points");
                             });
 
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("A3");
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("A3");
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
                                 
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("A4");
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("A4");
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
                             
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("A5");
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
-                            table.Cell().Element(CellStyle).Text(Placeholders.Decimal());
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("A5");
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
+                            table.Cell().Style(Cell).Text(Placeholders.Decimal());
                             
-                            IContainer HeaderCellStyle(IContainer container) =>
+                            IContainer HeaderCell(IContainer container) =>
                                 container
                                     .Border(1)
                                     .BorderColor(Colors.Grey.Lighten2)
@@ -71,7 +71,7 @@ internal class TableWithHeaderCellsSpanningMultipleColumnsTests : ConformanceTes
                                     .AlignMiddle()
                                     .DefaultTextStyle(x => x.Bold());
 
-                            IContainer CellStyle(IContainer container) =>
+                            IContainer Cell(IContainer container) =>
                                 container
                                     .Border(1)
                                     .BorderColor(Colors.Grey.Lighten2)

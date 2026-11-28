@@ -252,7 +252,7 @@ public static class VisualTest
                     page.PageColor(Colors.White);
                     page.DefaultTextStyle(x => x.FontSize(16));
                     
-                    page.Content().Element(contentBuilder);
+                    page.Content().Compose(contentBuilder);
                 });
             })
             .ShouldMatchExpectedImage();

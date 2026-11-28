@@ -36,8 +36,8 @@ namespace QuestPDF.ReportSample.Layouts
                     
                     page.Size(PageSizes.A4);
                         
-                    page.Header().Element(ComposeHeader);
-                    page.Content().Element(ComposeContent);
+                    page.Header().Compose(Header);
+                    page.Content().Compose(Content);
                     
                     page.Footer().AlignCenter().Text(text =>
                     {
@@ -48,7 +48,7 @@ namespace QuestPDF.ReportSample.Layouts
                 });
         }
 
-        private void ComposeHeader(IContainer container)
+        private void Header(IContainer container)
         {
             container.Column(column =>
             {
@@ -79,7 +79,7 @@ namespace QuestPDF.ReportSample.Layouts
             });
         }
 
-        void ComposeContent(IContainer container)
+        void Content(IContainer container)
         {
             container.PaddingVertical(20).Column(column =>
             {

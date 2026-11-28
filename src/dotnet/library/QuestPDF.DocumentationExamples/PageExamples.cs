@@ -182,9 +182,9 @@ public class PageExamples
                                 columns.ConstantColumn(125);
                             });
 
-                            table.Cell().Element(HeaderStyle).Text("وصف السلعة"); // item description
-                            table.Cell().Element(HeaderStyle).Text("كمية"); // quantity
-                            table.Cell().Element(HeaderStyle).Text("سعر"); // price
+                            table.Cell().Style(HeaderCell).Text("وصف السلعة"); // item description
+                            table.Cell().Style(HeaderCell).Text("كمية"); // quantity
+                            table.Cell().Style(HeaderCell).Text("سعر"); // price
 
                             var items = new[]
                             {
@@ -202,7 +202,7 @@ public class PageExamples
                                 table.Cell().Text($"USD${price:F2}");
                             }
 
-                            static IContainer HeaderStyle(IContainer x) => x.BorderBottom(1).PaddingVertical(5);
+                            static IContainer HeaderCell(IContainer x) => x.BorderBottom(1).PaddingVertical(5);
                         });
                     });
                 });

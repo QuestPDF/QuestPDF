@@ -33,13 +33,13 @@ public class DynamicCompositionNestedContentExample
                     page.DefaultTextStyle(x => x.FontSize(18));
                     page.Margin(25);
 
-                    page.Content().Element(container => ComposeCategory(container, catalog));
+                    page.Content().Compose(container => Category(container, catalog));
                 });
             })
             .GenerateImages(x => "dynamic-composition-recursive-content.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
     }
 
-    private void ComposeCategory(IContainer container, CategoryNode node, int depth = 0)
+    private void Category(IContainer container, CategoryNode node, int depth = 0)
     {
         container.Column(column =>
         {
@@ -52,7 +52,7 @@ public class DynamicCompositionNestedContentExample
                 });
 
             foreach (var child in node.Children)
-                column.Item().PaddingTop(8).Element(childContainer => ComposeCategory(childContainer, child, depth + 1));
+                column.Item().PaddingTop(8).Compose(childContainer => Category(childContainer, child, depth + 1));
         });
     }
 }

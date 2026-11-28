@@ -43,12 +43,12 @@ public class DynamicCompositionConditionalFormattingExample
 
                             table.Header(header =>
                             {
-                                header.Cell().Element(HeaderCellStyle).Text("Company");
-                                header.Cell().Element(HeaderCellStyle).AlignRight().Text("Price");
-                                header.Cell().Element(HeaderCellStyle).AlignRight().Text("Day");
-                                header.Cell().Element(HeaderCellStyle).AlignRight().Text("YTD");
+                                header.Cell().Style(HeaderCell).Text("Company");
+                                header.Cell().Style(HeaderCell).AlignRight().Text("Price");
+                                header.Cell().Style(HeaderCell).AlignRight().Text("Day");
+                                header.Cell().Style(HeaderCell).AlignRight().Text("YTD");
 
-                                static IContainer HeaderCellStyle(IContainer container)
+                                static IContainer HeaderCell(IContainer container)
                                 {
                                     return container
                                         .ZIndex(1)
@@ -62,29 +62,29 @@ public class DynamicCompositionConditionalFormattingExample
 
                             foreach (var quote in quotes)
                             {
-                                table.Cell().Element(CellStyle).Text(text =>
+                                table.Cell().Style(Cell).Text(text =>
                                 {
                                     text.Span(quote.Company);
                                     text.Span($" ({quote.Ticker})").FontSize(12).FontColor(Colors.Grey.Darken1);
                                 });
 
-                                table.Cell().Element(CellStyle).AlignRight()
+                                table.Cell().Style(Cell).AlignRight()
                                     .Text(quote.Price.ToString("$#,##0.00", CultureInfo.InvariantCulture));
 
                                 table.Cell()
-                                    .Element(container => PriceChangeHighlightStyle(container, quote.DailyChange))
-                                    .Element(CellStyle)
+                                    .Style(container => PriceChangeHighlight(container, quote.DailyChange))
+                                    .Style(Cell)
                                     .AlignRight()
                                     .Text(FormatChange(quote.DailyChange));
 
                                 table.Cell()
-                                    .Element(container => PriceChangeHighlightStyle(container, quote.YearToDateChange))
-                                    .Element(CellStyle)
+                                    .Style(container => PriceChangeHighlight(container, quote.YearToDateChange))
+                                    .Style(Cell)
                                     .AlignRight()
                                     .Text(FormatChange(quote.YearToDateChange));
                             }
 
-                            static IContainer CellStyle(IContainer container)
+                            static IContainer Cell(IContainer container)
                             {
                                 return container
                                     .BorderBottom(1)
@@ -98,7 +98,7 @@ public class DynamicCompositionConditionalFormattingExample
             .GenerateImages(x => "dynamic-composition-value-based-styling.webp", new ImageGenerationSettings() { ImageFormat = ImageFormat.Webp, ImageCompressionQuality = ImageCompressionQuality.Best, RasterDpi = 144 });
     }
 
-    private static IContainer PriceChangeHighlightStyle(IContainer container, decimal changeInPercent)
+    private static IContainer PriceChangeHighlight(IContainer container, decimal changeInPercent)
     {
         if (changeInPercent > 1m)
         {

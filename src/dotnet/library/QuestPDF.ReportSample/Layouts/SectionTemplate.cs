@@ -39,10 +39,10 @@ namespace QuestPDF.ReportSample.Layouts
                                     frame.ShowEntire().Text(text.Text);
                                 
                                 if (part is ReportSectionMap map)
-                                    frame.Element(x => MapElement(x, map));
+                                    frame.Compose(x => MapElement(x, map));
                                 
                                 if (part is ReportSectionPhotos photos)
-                                    frame.Element(x => PhotosElement(x, photos));
+                                    frame.Compose(x => PhotosElement(x, photos));
                             });
                         }
                     });

@@ -34,24 +34,24 @@ internal class TableWithVerticalHeadersTests : ConformanceTestBase
                             
                             table.Header(header =>
                             {
-                                header.Cell().Element(HeaderCellStyle).Text("Name");
-                                header.Cell().Element(HeaderCellStyle).Text("Position");
-                                header.Cell().Element(HeaderCellStyle).Text("Department");
-                                header.Cell().Element(HeaderCellStyle).Text("Experience");
+                                header.Cell().Style(HeaderCell).Text("Name");
+                                header.Cell().Style(HeaderCell).Text("Position");
+                                header.Cell().Style(HeaderCell).Text("Department");
+                                header.Cell().Style(HeaderCell).Text("Experience");
                             });
 
                             // Row 1:
-                            table.Cell().Element(CellStyle).Text("John Smith");
-                            table.Cell().Element(CellStyle).Text("Senior Developer");
-                            table.Cell().Element(CellStyle).Text("Engineering");
-                            table.Cell().Element(CellStyle).Text("5 years");
+                            table.Cell().Style(Cell).Text("John Smith");
+                            table.Cell().Style(Cell).Text("Senior Developer");
+                            table.Cell().Style(Cell).Text("Engineering");
+                            table.Cell().Style(Cell).Text("5 years");
                             
                             // Row 2:
-                            table.Cell().Element(CellStyle).Text("Jane Doe");
-                            table.Cell().Element(CellStyle).Text("UX Designer");
-                            table.Cell().Element(CellStyle).Text("Design");
-                            table.Cell().Element(CellStyle).Text("3 years");
-                            IContainer HeaderCellStyle(IContainer container) =>
+                            table.Cell().Style(Cell).Text("Jane Doe");
+                            table.Cell().Style(Cell).Text("UX Designer");
+                            table.Cell().Style(Cell).Text("Design");
+                            table.Cell().Style(Cell).Text("3 years");
+                            IContainer HeaderCell(IContainer container) =>
                                 container
                                     .Border(1)
                                     .BorderColor(Colors.Grey.Lighten2)
@@ -60,7 +60,7 @@ internal class TableWithVerticalHeadersTests : ConformanceTestBase
                                     .AlignMiddle()
                                     .DefaultTextStyle(x => x.Bold());
 
-                            IContainer CellStyle(IContainer container) =>
+                            IContainer Cell(IContainer container) =>
                                 container
                                     .Border(1)
                                     .BorderColor(Colors.Grey.Lighten2)

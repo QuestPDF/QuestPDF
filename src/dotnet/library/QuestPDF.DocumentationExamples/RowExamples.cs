@@ -121,14 +121,14 @@ public class RowExamples
                             row.Spacing(15);
                             
                             row.RelativeItem()
-                                .Element(LabelStyle)
+                                .Style(Label)
                                 .Text("Programming is both a science and an art — it demands precision, creativity, and patience. At its core, it’s about understanding how to break down complex problems into small, logical steps that a computer can execute.");
                             
                             row.RelativeItem()
-                                .Element(LabelStyle)
+                                .Style(Label)
                                 .Text("Programming is the art of turning ideas into logic, logic into code, and code into something that solves real problems.");
                             
-                            static IContainer LabelStyle(IContainer container) => container
+                            static IContainer Label(IContainer container) => container
                                 .ShrinkVertical()
                                 .Background(Colors.Grey.Lighten3)
                                 .CornerRadius(15)

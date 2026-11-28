@@ -32,26 +32,26 @@ internal class TableWithHorizontalHeadersTests : ConformanceTestBase
                             });
 
                             // Row 1: Name
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Name");
-                            table.Cell().Element(CellStyle).Text("John Smith");
-                            table.Cell().Element(CellStyle).Text("Jane Doe");
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Name");
+                            table.Cell().Style(Cell).Text("John Smith");
+                            table.Cell().Style(Cell).Text("Jane Doe");
 
                             // Row 2: Position
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Position");
-                            table.Cell().Element(CellStyle).Text("Senior Developer");
-                            table.Cell().Element(CellStyle).Text("UX Designer");
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Position");
+                            table.Cell().Style(Cell).Text("Senior Developer");
+                            table.Cell().Style(Cell).Text("UX Designer");
 
                             // Row 3: Department
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Department");
-                            table.Cell().Element(CellStyle).Text("Engineering");
-                            table.Cell().Element(CellStyle).Text("Design");
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Department");
+                            table.Cell().Style(Cell).Text("Engineering");
+                            table.Cell().Style(Cell).Text("Design");
 
                             // Row 4: Experience
-                            table.Cell().AsSemanticHorizontalHeader().Element(HeaderCellStyle).Text("Experience");
-                            table.Cell().Element(CellStyle).Text("5 years");
-                            table.Cell().Element(CellStyle).Text("3 years");
+                            table.Cell().AsSemanticHorizontalHeader().Style(HeaderCell).Text("Experience");
+                            table.Cell().Style(Cell).Text("5 years");
+                            table.Cell().Style(Cell).Text("3 years");
 
-                            IContainer HeaderCellStyle(IContainer container) =>
+                            IContainer HeaderCell(IContainer container) =>
                                 container
                                     .Border(1)
                                     .BorderColor(Colors.Grey.Lighten2)
@@ -60,7 +60,7 @@ internal class TableWithHorizontalHeadersTests : ConformanceTestBase
                                     .AlignMiddle()
                                     .DefaultTextStyle(x => x.Bold());
 
-                            IContainer CellStyle(IContainer container) =>
+                            IContainer Cell(IContainer container) =>
                                 container
                                     .Border(1)
                                     .BorderColor(Colors.Grey.Lighten2)

@@ -87,11 +87,11 @@ public class RoundedCornersExamples
                             
                             table.Header(header =>
                             {
-                                header.Cell().Element(Style).Text("Index");
-                                header.Cell().Element(Style).Text("Label");
-                                header.Cell().Element(Style).Text("Price");
+                                header.Cell().Style(HeaderCell).Text("Index");
+                                header.Cell().Style(HeaderCell).Text("Label");
+                                header.Cell().Style(HeaderCell).Text("Price");
 
-                                IContainer Style(IContainer container)
+                                IContainer HeaderCell(IContainer container)
                                 {
                                     return container
                                         .Border(1, Colors.Grey.Darken2)
@@ -104,11 +104,11 @@ public class RoundedCornersExamples
 
                             foreach (var index in Enumerable.Range(1, 5))
                             {
-                                table.Cell().Element(Style).Text(index.ToString());
-                                table.Cell().Element(Style).Text(Placeholders.Label());
-                                table.Cell().Element(Style).Text(Placeholders.Price());
+                                table.Cell().Style(Cell).Text(index.ToString());
+                                table.Cell().Style(Cell).Text(Placeholders.Label());
+                                table.Cell().Style(Cell).Text(Placeholders.Price());
                                 
-                                IContainer Style(IContainer container)
+                                IContainer Cell(IContainer container)
                                 {
                                     return container
                                         .Border(1, Colors.Grey.Darken2)

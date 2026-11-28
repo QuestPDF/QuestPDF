@@ -28,13 +28,13 @@ public class CodePatternDocumentStructureExample
                         .PaddingBottom(15)
                         .Column(column =>
                         {
-                            column.Item().Element(ReportTitle);
+                            column.Item().Compose(ReportTitle);
                             column.Item().PageBreak();
-                            column.Item().Element(RedSection);
+                            column.Item().Compose(RedSection);
                             column.Item().PageBreak();
-                            column.Item().Element(GreenSection);
+                            column.Item().Compose(GreenSection);
                             column.Item().PageBreak();
-                            column.Item().Element(BlueSection);
+                            column.Item().Compose(BlueSection);
                         });
 
                     page.Footer().AlignCenter().Text(text => text.CurrentPageNumber());

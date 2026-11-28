@@ -110,7 +110,7 @@ public static class MultiColumnExtensions
         handler(descriptor);
 
         element
-            .Element(x => descriptor.MultiColumn.BalanceHeight ? x.ShrinkVertical() : x)
+            .StyleIf(descriptor.MultiColumn.BalanceHeight, x => x.ShrinkVertical())
             .Element(descriptor.MultiColumn);
     }
 }

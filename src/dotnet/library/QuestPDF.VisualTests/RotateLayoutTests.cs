@@ -14,7 +14,7 @@ public class RotateLayoutTests
             container
                 .Width(150)
                 .Height(150)
-                .Element(element =>
+                .Style(element =>
                 {
                     foreach (var i in Enumerable.Range(0, rotationCount))
                         element = element.RotateLayoutClockwise();

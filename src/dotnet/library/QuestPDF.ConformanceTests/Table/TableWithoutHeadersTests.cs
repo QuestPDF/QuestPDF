@@ -31,26 +31,26 @@ internal class TableWithoutHeadersTests : ConformanceTestBase
                             });
 
                             // Row 1
-                            table.Cell().Element(CellStyle).Text("11");
-                            table.Cell().Element(CellStyle).Text("12");
-                            table.Cell().Element(CellStyle).Text("13");
+                            table.Cell().Style(Cell).Text("11");
+                            table.Cell().Style(Cell).Text("12");
+                            table.Cell().Style(Cell).Text("13");
 
                             // Row 2
-                            table.Cell().Element(CellStyle).Text("21");
-                            table.Cell().Element(CellStyle).Text("22");
-                            table.Cell().Element(CellStyle).Text("23");
+                            table.Cell().Style(Cell).Text("21");
+                            table.Cell().Style(Cell).Text("22");
+                            table.Cell().Style(Cell).Text("23");
 
                             // Row 3
-                            table.Cell().Element(CellStyle).Text("31");
-                            table.Cell().Element(CellStyle).Text("32");
-                            table.Cell().Element(CellStyle).Text("33");
+                            table.Cell().Style(Cell).Text("31");
+                            table.Cell().Style(Cell).Text("32");
+                            table.Cell().Style(Cell).Text("33");
 
                             // Row 4
-                            table.Cell().Element(CellStyle).Text("41");
-                            table.Cell().Element(CellStyle).Text("42");
-                            table.Cell().Element(CellStyle).Text("43");
+                            table.Cell().Style(Cell).Text("41");
+                            table.Cell().Style(Cell).Text("42");
+                            table.Cell().Style(Cell).Text("43");
                             
-                            IContainer CellStyle(IContainer container) =>
+                            IContainer Cell(IContainer container) =>
                                 container
                                     .Border(1)
                                     .BorderColor(Colors.Grey.Lighten2)

@@ -34,14 +34,14 @@ namespace QuestPDF.ReportSample.Layouts
                         column.Spacing(5);
                         
                         for (var i = 0; i < Sections.Count; i++)
-                            column.Item().Element(c => DrawLink(c, i+1, Sections[i].Title));
+                            column.Item().Compose(c => Link(c, i+1, Sections[i].Title));
 
-                        column.Item().Element(c => DrawLink(c, Sections.Count+1, "Photos"));
+                        column.Item().Compose(c => Link(c, Sections.Count+1, "Photos"));
                     });
                 });
         }
 
-        private static void DrawLink(IContainer container, int number, string locationName)
+        private static void Link(IContainer container, int number, string locationName)
         {
             container
                 .SectionLink(locationName)
